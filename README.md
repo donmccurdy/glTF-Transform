@@ -34,7 +34,8 @@ gltf-split original.gltf --output split/split.gltf --meshes MeshA,MeshB
 
 Limitations:
 
-- All meshes in the original mesh must use separate buffer views.
-- All buffers in the original mesh must use Data URIs.
-- Embedded images are not supported.
-- Binary (.glb) files are not supported.
+- All meshes in the original asset must use separate buffer views.
+- All buffers in the original asset must use Data URIs.
+- Embedded images in original asset are not supported.
+- External buffers (.bin) in original asset are not supported.
+- Binary assets (.glb) are not supported.
