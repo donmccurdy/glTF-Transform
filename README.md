@@ -12,7 +12,7 @@ Splits a glTF file, so that separate meshes are in separate bin files.
 ## Installation
 
 ```
-npm i -g gltf-split
+npm install --global gltf-split
 ```
 
 ## Usage
