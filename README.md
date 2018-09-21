@@ -28,14 +28,15 @@ Example:
 
 ```
 gltf-split original.gltf --output split/split.gltf --meshes MeshA,MeshB
+
+# Input: original.gltf
+# Output: split.gltf, MeshA.bin, MeshB.bin
 ```
 
 ## Status
 
 Limitations:
 
-- All meshes in the original asset must use separate buffer views.
-- All buffers in the original asset must use Data URIs.
-- Embedded images in original asset are not supported.
-- External buffers (.bin) in original asset are not supported.
+- Input asset must use embedded buffers, not external (.bin) buffers.
+- Meshes in the input asset must each use separate buffer views.
 - Binary assets (.glb) are not supported.
