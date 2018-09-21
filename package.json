@@ -1,0 +1,25 @@
+{
+  "name": "gltf-split",
+  "version": "1.0.0",
+  "description": "Splits a glTF file, so that separate meshes are in separate bin files.",
+  "main": "gltfsplit.js",
+  "dependencies": {
+    "buffer-splice": "^1.0.0",
+    "commander": "^2.18.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "clean": "rm test/out/*",
+    "test": "./gltf-split.js test/combined.gltf --output test/out/split.gltf --meshes A,B --prettyprint"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "models"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "bin": {
+    "gltf-split": "gltf-split.js"
+  }
+}
