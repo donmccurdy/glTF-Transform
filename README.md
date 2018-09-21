@@ -7,7 +7,7 @@
 
 > **NOTICE:** Experimental and incomplete.
 
-Splits a glTF file, so that separate meshes are in separate bin files.
+Splits a glTF file's binary payload, so that separate meshes are in separate bin files.
 
 ## Installation
 

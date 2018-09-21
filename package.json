@@ -1,7 +1,7 @@
 {
   "name": "gltf-split",
   "version": "0.0.1",
-  "description": "Splits a glTF file, so that separate meshes are in separate bin files.",
+  "description": "Splits a glTF file's binary payload, so that separate meshes are in separate bin files.",
   "main": "gltf-split.js",
   "dependencies": {
     "buffer-splice": "^1.0.0",
