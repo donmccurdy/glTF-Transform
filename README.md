@@ -1,13 +1,15 @@
 # glTF-Transform
 
 ![Status](https://img.shields.io/badge/status-experimental-orange.svg)
+[![Build Status](https://travis-ci.com/donmccurdy/gltf-transform.svg?branch=master)](https://travis-ci.com/donmccurdy/gltf-transform)
+[![License](https://img.shields.io/npm/l/gltf-transform.svg)](https://github.com/donmccurdy/gltf-transform/blob/master/LICENSE)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Core:
 
-- transform (`gltf-transform`)
+- util (`gltf-transform-util`)
 
 Packages:
 

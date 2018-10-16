@@ -1,4 +1,4 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity } from 'gltf-transform';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity } from 'gltf-transform-util';
 import splice from 'buffer-splice';
 
 const split = function (container: GLTFContainer, meshes: Array<string>): GLTFContainer {

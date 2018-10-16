@@ -1,9 +1,9 @@
 {
-  "name": "gltf-transform",
+  "name": "gltf-transform-util",
   "version": "0.0.1",
   "description": "{DESCRIPTION}",
-  "main": "dist/gltf-transform.js",
-  "module": "dist/gltf-transform.module.js",
+  "main": "dist/gltf-transform-util.js",
+  "module": "dist/gltf-transform-util.module.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
   "scripts": {

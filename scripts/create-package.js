@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const meow = require('meow');
 const camelcase = require('camelcase');
+const uppercamelcase = require('uppercamelcase');
 const decamelize = require('decamelize');
 const load = require('load-json-file');
 
@@ -21,6 +22,7 @@ let name = cli.input[0];
 // gltf-transform-clone => clone
 name = name.replace(/gltf-transform-/i, '');
 const camelcaseName = camelcase(name);
+const uppercamelcaseName = uppercamelcase(name);
 const decamelizeName = decamelize(name);
 
 // Create Folder
@@ -28,6 +30,7 @@ const folderPath = path.join(__dirname, '..', 'packages', `gltf-transform-${deca
 if (!fs.existsSync(folderPath)) {
   fs.mkdirSync(folderPath);
   fs.mkdirSync(path.join(folderPath, 'dist'));
+  fs.mkdirSync(path.join(folderPath, 'src'));
   fs.mkdirSync(path.join(folderPath, 'typings'));
 }
 
@@ -68,7 +71,7 @@ const path = require('path');
 const load = require('load-json-file');
 const write = require('write-json-file');
 
-const { GLTFUtil, GLTFContainer } = require('gltf-transform');
+const { GLTFUtil, GLTFContainer } = require('gltf-transform-util');
 const { ${camelcaseName} } = require('../');
 
 test('gltf-transform-${decamelizeName}', t => {
@@ -89,6 +92,6 @@ test('gltf-transform-${decamelizeName}', t => {
 
 // Create README.md
 let readme = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'tpl-readme.md'), 'utf8');
-readme = readme.replace(/\{name\}/g, `glTF-Transform-${camelcaseName}`);
+readme = readme.replace(/\{name\}/g, `glTF-Transform-${uppercamelcaseName}`);
 readme = readme.replace(/\{module\}/g, `gltf-transform-${decamelizeName}`);
 fs.writeFileSync(path.join(folderPath, 'README.md'), readme);

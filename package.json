@@ -22,6 +22,7 @@
     "meow": "^5.0.0",
     "microbundle": "^0.6.0",
     "typescript": "*",
+    "uppercamelcase": "^3.0.0",
     "write-json-file": "^3.0.2",
     "yamljs": "^0.3.0"
   },

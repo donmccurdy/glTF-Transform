@@ -4,7 +4,7 @@ const path = require('path');
 const load = require('load-json-file');
 const write = require('write-json-file');
 
-const { GLTFUtil, GLTFContainer } = require ('gltf-transform');
+const { GLTFUtil, GLTFContainer } = require ('gltf-transform-util');
 const { split } = require('../');
 
 test('gltf-transform-split', t => {

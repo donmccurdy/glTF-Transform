@@ -1,9 +1,12 @@
-import test from 'tape';
-import glob from 'glob';
-import path from 'path';
-import load from 'load-json-file';
-import write from 'write-json-file';
-import { atlas } from '.';
+const test = require('tape');
+const glob = require('glob');
+const path = require('path');
+const load = require('load-json-file');
+const write = require('write-json-file');
+
+const { GLTFUtil } = require('gltf-transform-util');
+const { atlas } = require('../');
+
 test('gltf-transform-atlas', t => {
   glob.sync(path.join(__dirname, 'test', 'in', '*.json')).forEach(filepath => {
     // Define params

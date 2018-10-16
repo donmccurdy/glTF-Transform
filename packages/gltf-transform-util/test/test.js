@@ -4,7 +4,7 @@ const path = require('path');
 const load = require('load-json-file');
 const write = require('write-json-file');
 const { GLTFUtil, GLTFContainer } = require('../');
-test('gltf-transform-core', t => {
+test('gltf-transform-util', t => {
   glob.sync(path.join(__dirname, 'test', 'in', '*.json')).forEach(filepath => {
     // Define params
     const {name} = path.parse(filepath);

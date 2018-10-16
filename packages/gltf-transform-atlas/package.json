@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "atlaspack": "^1.0.0",
-    "gltf-transform": "*"
+    "gltf-transform-util": "*"
   }
 }
