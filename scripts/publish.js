@@ -4,7 +4,7 @@ const path = require('path');
 const glob = require('glob');
 const { spawnSync } = require('child_process');
 
-glob.sync(path.join(__dirname, '..', 'packages', 'gltf-transform-*', 'index.ts')).forEach(filepath => {
+glob.sync(path.join(__dirname, '..', 'packages', 'gltf-transform-*', 'package.json')).forEach(filepath => {
   const { dir } = path.parse(filepath);
   const log = spawnSync('npm', ['publish'], { encoding: 'utf8', cwd: dir });
   console.log(log.stdout.trim());

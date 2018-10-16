@@ -1,38 +1,17 @@
-import { GLTFContainer, IBufferMap } from './container';
+interface IBufferMap { [s: string]: ArrayBuffer; }
 
-class GLTFUtil {
-  /**
-   * Creates a GLTFContainer from the given JSON and files.
-   * @param json
-   * @param files
-   */
-  static wrapGLTF(json: GLTF.IGLTF, resources: IBufferMap) {
-    return new GLTFContainer(json, resources);
-  }
+/**
+ * Wrapper for a glTF asset.
+ */
+class GLTFContainer {
+  constructor(public json: GLTF.IGLTF, public resources: IBufferMap) {}
 
   /**
-   * Creates a GLTFContainer from the given GLB binary.
-   * @param glb
+   * Resolves a resource URI.
+   * @param uri
    */
-  static wrapGLB(glb: ArrayBuffer) {
-    throw new Error('Not implemented.');
-  }
-
-  /**
-   * Serializes a GLTFContainer to GLTF JSON and external files.
-   * @param container
-   */
-  static bundleGLTF(container: GLTFContainer) {
-    const {json, resources} = container;
-    return {json, resources};
-  }
-
-  /**
-   * Serializes a GLTFContainer to a GLB binary.
-   * @param container
-   */
-  static bundleGLB(container: GLTFContainer): ArrayBuffer {
-    throw new Error('Not implemented.');
+  resolveURI(uri: string): ArrayBuffer {
+    return this.resources[uri];
   }
 
   /**
@@ -90,11 +69,11 @@ class GLTFUtil {
    * @param buffer
    */
   static addBuffer(
-      container: GLTFContainer,
-      name: string,
-      buffer: ArrayBuffer): GLTFContainer {
+    container: GLTFContainer,
+    name: string,
+    buffer: ArrayBuffer): GLTFContainer {
     const uri = `${name}.bin`;
-    container.json.buffers.push({name, uri, byteLength: buffer.byteLength});
+    container.json.buffers.push({ name, uri, byteLength: buffer.byteLength });
     container.resources[uri] = buffer;
     return container;
   }
@@ -105,8 +84,8 @@ class GLTFUtil {
    * @param index
    */
   static removeBuffer(
-      container: GLTFContainer,
-      index: number): GLTFContainer {
+    container: GLTFContainer,
+    index: number): GLTFContainer {
     const bufferViews = container.json.bufferViews.filter((view) => view.buffer === index);
     if (bufferViews.length) {
       throw new Error(`Buffer is in use by ${bufferViews.length} bufferViews and cannot be removed.`);
@@ -118,4 +97,4 @@ class GLTFUtil {
   }
 }
 
-export { GLTFUtil };
+export { GLTFContainer, IBufferMap };

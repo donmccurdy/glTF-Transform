@@ -4,9 +4,12 @@
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform.js",
   "module": "dist/gltf-transform.module.js",
-  "source": "index.ts",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
   "scripts": {
-    "dist": "microbundle"
+    "test": "node test/test.js",
+    "dist": "microbundle",
+    "watch": "microbundle --watch"
   },
   "keywords": [
     "gltf",
@@ -21,7 +24,5 @@
     "microbundle": "*",
     "tape": "*"
   },
-  "dependencies": {
-    "gltf-transform": "*"
-  }
+  "dependencies": {}
 }

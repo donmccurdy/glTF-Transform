@@ -18,7 +18,7 @@ if (!cli.input.length) cli.showHelp();
 let name = cli.input[0];
 
 // Normalize module name
-// turf-clone => clone
+// gltf-transform-clone => clone
 name = name.replace(/gltf-transform-/i, '');
 const camelcaseName = camelcase(name);
 const decamelizeName = decamelize(name);
@@ -28,13 +28,11 @@ const folderPath = path.join(__dirname, '..', 'packages', `gltf-transform-${deca
 if (!fs.existsSync(folderPath)) {
   fs.mkdirSync(folderPath);
   fs.mkdirSync(path.join(folderPath, 'dist'));
-  fs.mkdirSync(path.join(folderPath, 'test'));
-  fs.mkdirSync(path.join(folderPath, 'test/in'));
-  fs.mkdirSync(path.join(folderPath, 'test/out'));
+  fs.mkdirSync(path.join(folderPath, 'typings'));
 }
 
 // Create index.js
-const indexPath = path.join(folderPath, 'index.ts');
+const indexPath = path.join(folderPath, 'src', 'index.ts');
 if (!fs.existsSync(indexPath)) {
   fs.writeFileSync(indexPath, `import { GLTFContainer } from 'gltf-transform';`);
 }
@@ -50,8 +48,21 @@ fs.writeFileSync(path.join(folderPath, 'package.json'), JSON.stringify(pkg, null
 const license = path.join(__dirname, '..', 'LICENSE');
 fs.copySync(license, path.join(folderPath, 'LICENSE'));
 
+// Create tsconfig.json
+const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
+fs.copySync(tsconfig, path.join(folderPath, 'tsconfig.json'));
+
+// Create typings
+const typings = path.join(__dirname, '..', 'typings', 'gltf.d.ts');
+fs.copySync(typings, path.join(folderPath, 'typings', 'gltf.d.ts'));
+
 // Create test.js
-fs.writeFileSync(path.join(folderPath, 'test.js'), `import test from 'tape';
+const testPath = path.join(folderPath, 'test', 'test.js');
+if (!fs.existsSync(testPath)) {
+  fs.mkdirSync(path.join(folderPath, 'test'));
+  fs.mkdirSync(path.join(folderPath, 'test/in'));
+  fs.mkdirSync(path.join(folderPath, 'test/out'));
+  fs.writeFileSync(testPath, `import test from 'tape';
 import glob from 'glob';
 import path from 'path';
 import load from 'load-json-file';
@@ -71,6 +82,7 @@ test('gltf-transform-${decamelizeName}', t => {
   t.end();
 });
 `);
+}
 
 // Create README.md
 let readme = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'tpl-readme.md'), 'utf8');

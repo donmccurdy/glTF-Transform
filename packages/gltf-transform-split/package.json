@@ -4,9 +4,12 @@
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-split.js",
   "module": "dist/gltf-transform-split.module.js",
-  "source": "index.ts",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
   "scripts": {
-    "dist": "microbundle"
+    "test": "node test/test.js",
+    "dist": "microbundle",
+    "watch": "microbundle --watch"
   },
   "keywords": [
     "gltf",
@@ -18,10 +21,11 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "devDependencies": {
-    "microbundle": "*",
-    "tape": "*"
+    "microbundle": "^0.6.0",
+    "tape": "^4.9.1"
   },
   "dependencies": {
+    "buffer-splice": "^1.0.0",
     "gltf-transform": "*"
   }
 }

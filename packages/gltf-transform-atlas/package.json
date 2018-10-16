@@ -1,9 +1,9 @@
 {
-  "name": "{MODULE}",
+  "name": "gltf-transform-atlas",
   "version": "0.0.1",
   "description": "{DESCRIPTION}",
-  "main": "dist/{MODULE}.js",
-  "module": "dist/{MODULE}.module.js",
+  "main": "dist/gltf-transform-atlas.js",
+  "module": "dist/gltf-transform-atlas.module.js",
   "types": "dist/index.d.ts",
   "source": "src/index.ts",
   "scripts": {
@@ -25,6 +25,7 @@
     "tape": "*"
   },
   "dependencies": {
+    "atlaspack": "^1.0.0",
     "gltf-transform": "*"
   }
 }
