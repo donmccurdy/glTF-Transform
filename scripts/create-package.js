@@ -62,14 +62,17 @@ if (!fs.existsSync(testPath)) {
   fs.mkdirSync(path.join(folderPath, 'test'));
   fs.mkdirSync(path.join(folderPath, 'test/in'));
   fs.mkdirSync(path.join(folderPath, 'test/out'));
-  fs.writeFileSync(testPath, `import test from 'tape';
-import glob from 'glob';
-import path from 'path';
-import load from 'load-json-file';
-import write from 'write-json-file';
-import { ${camelcaseName} } from '.';
+  fs.writeFileSync(testPath, `const test = require('tape');
+const glob = require('glob');
+const path = require('path');
+const load = require('load-json-file');
+const write = require('write-json-file');
+
+const { GLTFUtil, GLTFContainer } = require('gltf-transform');
+const { ${camelcaseName} } = require('../');
+
 test('gltf-transform-${decamelizeName}', t => {
-  glob.sync(path.join(__dirname, 'test', 'in', '*.json')).forEach(filepath => {
+  glob.sync(path.join(__dirname, 'in', '*.json')).forEach(filepath => {
     // Define params
     const {name} = path.parse(filepath);
     const gltf = load.sync(filepath);
@@ -86,6 +89,6 @@ test('gltf-transform-${decamelizeName}', t => {
 
 // Create README.md
 let readme = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'tpl-readme.md'), 'utf8');
-readme = readme.replace('{name}', `glTF-Transform-${camelcaseName}`);
-readme = readme.replace('{module}', `gltf-transform-${decamelizeName}`);
+readme = readme.replace(/\{name\}/g, `glTF-Transform-${camelcaseName}`);
+readme = readme.replace(/\{module\}/g, `gltf-transform-${decamelizeName}`);
 fs.writeFileSync(path.join(folderPath, 'README.md'), readme);
