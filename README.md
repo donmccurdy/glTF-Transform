@@ -4,10 +4,9 @@ JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Core:
 
-- GLTFTransform
-- GLTFContainer
+- transform (`gltf-transform`)
 
 Packages:
 
-- split
-- atlas
+- split (`gltf-transform-split`)
+- atlas (`gltf-transform-atlas`)

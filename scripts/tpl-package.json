@@ -1,0 +1,27 @@
+{
+  "name": "{MODULE}",
+  "version": "0.0.1",
+  "description": "{DESCRIPTION}",
+  "main": "dist/{MODULE}.js",
+  "module": "dist/{MODULE}.module.js",
+  "source": "index.ts",
+  "scripts": {
+    "dist": "microbundle"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "microbundle": "*",
+    "tape": "*"
+  },
+  "dependencies": {
+    "gltf-transform": "*"
+  }
+}

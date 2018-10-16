@@ -1,23 +1,29 @@
 {
-  "name": "gltf-transform",
-  "version": "0.0.1",
-  "description": "JavaScript utilities for manipulating glTF files.",
-  "main": "dist/gltf-util.js",
-  "module": "dist/gltf-util.module.js",
-  "source": "src/index.ts",
-  "scripts": {
-    "dist": "microbundle"
-  },
-  "keywords": [
-    "gltf",
-    "3d",
-    "model",
-    "threejs"
-  ],
+  "private": true,
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "prelint": "tsc",
+    "postlint": "documentation lint packages/turf-*/index.js",
+    "pretest": "lerna bootstrap --use-workspaces && npm run lint",
+    "test": "lerna run test --use-workspaces",
+    "docs": "node ./scripts/generate-readmes"
+  },
   "devDependencies": {
-    "microbundle": "^0.6.0"
+    "camelcase": "^5.0.0",
+    "decamelize": "^2.0.0",
+    "documentation": "^8.1.2",
+    "fs-extra": "^7.0.0",
+    "lerna": "2.8.0",
+    "load-json-file": "^5.1.0",
+    "meow": "^5.0.0",
+    "microbundle": "^0.6.0",
+    "typescript": "*",
+    "write-json-file": "^3.0.2",
+    "yamljs": "^0.3.0"
   },
   "dependencies": {}
 }
