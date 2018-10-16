@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<style>
+  html, body {
+    font-family: monospace;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  #dropzone {
+    background: #f0f0f0;
+    border-radius: 8px;
+    height: 200px;
+    width: 200px;
+  }
+</style>
+<h1>glTF-Transform</h1>
+<div id="dropzone">dropzone</div>
+<input type="file" id="input">
+<label>resolution:
+  <select id="maxSize">
+    <option value="128">128</option>
+    <option value="256">256</option>
+    <option value="512">512</option>
+    <option value="1024">1024</option>
+    <option value="2048" selected>2048</option>
+  </select>
+</label>
+<script src="https://unpkg.com/simple-dropzone@0.5.3/index.js"></script>
+<script>
+const GLTFTransform = window.gltfTransform;
+
+const dropEl = document.querySelector('#dropzone');
+const inputEl = document.querySelector('#input');
+const maxSizeEl = document.querySelector('#maxSize');
+const dropzone = new SimpleDropzone(dropEl, inputEl);
+
+dropzone.on('drop', ({files}) => {
+
+  const maxSize = Number(maxSizeEl.value);
+
+  // const container = GLTFTransform.wrapGLTF(...);
+
+  // save(result, 'Packed.glb');
+
+});
+
+function save(blob, filename) {
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  // URL.revokeObjectURL( url ); breaks Firefox...
+}
+</script>

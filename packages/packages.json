@@ -1,0 +1,16 @@
+[
+  {
+    "name": "gltf-split",
+    "description": "Splits a glTF file.",
+    "dependencies": [
+      "buffer-splice"
+    ]
+  },
+  {
+    "name": "gltf-atlas",
+    "description": "Packs a texture atlas for a glTF file.",
+    "dependencies": [
+      "atlaspack"
+    ]
+  }
+]

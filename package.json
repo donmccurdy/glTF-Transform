@@ -1,26 +1,23 @@
 {
-  "name": "gltf-split",
+  "name": "gltf-transform",
   "version": "0.0.1",
-  "description": "Splits a glTF file's binary payload, so that separate meshes are in separate bin files.",
-  "main": "gltf-split.js",
-  "dependencies": {
-    "buffer-splice": "^1.0.0",
-    "commander": "^2.18.0"
-  },
-  "devDependencies": {},
+  "description": "JavaScript utilities for manipulating glTF files.",
+  "main": "dist/gltf-util.js",
+  "module": "dist/gltf-util.module.js",
+  "source": "src/index.ts",
   "scripts": {
-    "clean": "rm test/out/*",
-    "postversion": "git push && git push --tags && npm publish",
-    "test": "./gltf-split.js test/combined.gltf --output test/out/split.gltf --meshes A,B --prettyprint"
+    "dist": "microbundle"
   },
   "keywords": [
     "gltf",
     "3d",
-    "models"
+    "model",
+    "threejs"
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
-  "bin": {
-    "gltf-split": "gltf-split.js"
-  }
+  "devDependencies": {
+    "microbundle": "^0.6.0"
+  },
+  "dependencies": {}
 }
