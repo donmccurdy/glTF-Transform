@@ -1,4 +1,4 @@
-import { GLTFContainer } from '../../../src/container';
+import { GLTFContainer } from 'gltf-transform';
 // import * as splice from 'buffer-splice';
 
 const split = function (container: GLTFContainer, meshes: Array<string>): GLTFContainer {

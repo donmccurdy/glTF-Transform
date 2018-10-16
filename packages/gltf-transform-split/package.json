@@ -1,0 +1,27 @@
+{
+  "name": "gltf-transform-split",
+  "version": "0.0.1",
+  "description": "{DESCRIPTION}",
+  "main": "dist/gltf-transform-split.js",
+  "module": "dist/gltf-transform-split.module.js",
+  "source": "index.ts",
+  "scripts": {
+    "dist": "microbundle"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "microbundle": "*",
+    "tape": "*"
+  },
+  "dependencies": {
+    "gltf-transform": "*"
+  }
+}

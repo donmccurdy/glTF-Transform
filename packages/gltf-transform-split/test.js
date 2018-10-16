@@ -3,8 +3,8 @@ import glob from 'glob';
 import path from 'path';
 import load from 'load-json-file';
 import write from 'write-json-file';
-import { foo } from '.';
-test('gltf-transform-foo', t => {
+import { split } from '.';
+test('gltf-transform-split', t => {
   glob.sync(path.join(__dirname, 'test', 'in', '*.json')).forEach(filepath => {
     // Define params
     const {name} = path.parse(filepath);

@@ -1,9 +1,9 @@
 {
-  "name": "gltf-transform-foo",
+  "name": "gltf-transform",
   "version": "0.0.1",
   "description": "{DESCRIPTION}",
-  "main": "dist/gltf-transform-foo.js",
-  "module": "dist/gltf-transform-foo.module.js",
+  "main": "dist/gltf-transform.js",
+  "module": "dist/gltf-transform.module.js",
   "source": "index.ts",
   "scripts": {
     "dist": "microbundle"
