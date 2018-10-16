@@ -94,4 +94,5 @@ test('gltf-transform-${decamelizeName}', t => {
 let readme = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'tpl-readme.md'), 'utf8');
 readme = readme.replace(/\{name\}/g, `glTF-Transform-${uppercamelcaseName}`);
 readme = readme.replace(/\{module\}/g, `gltf-transform-${decamelizeName}`);
+readme = readme.replace(/\{fn\}/g, camelcaseName);
 fs.writeFileSync(path.join(folderPath, 'README.md'), readme);

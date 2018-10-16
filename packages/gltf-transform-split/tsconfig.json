@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "",
-    "rootDir": "./src",
-    "paths": {
-      "gltf-transform": [
-        "node_modules/gltf-transform"
-      ]
-    }
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*"
