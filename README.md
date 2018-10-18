@@ -17,9 +17,9 @@ Core:
 
 Packages:
 
-- split (`gltf-transform-split`)
+- [x] split (`gltf-transform-split`)
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
-- atlas (`gltf-transform-atlas`)
+- [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:
