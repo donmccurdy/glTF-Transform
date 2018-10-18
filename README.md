@@ -9,12 +9,18 @@ JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Core:
 
-- util (`gltf-transform-util`)
+- [x] util (`gltf-transform-util`)
+  - GLTFContainer — Wrapper class for a glTF file and its resources.
+  - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
+- [ ] cli (`gltf-transform-cli`)
+  - Provides a CLI interface to Node.js-compatible packages.
 
 Packages:
 
 - split (`gltf-transform-split`)
+  - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
 - atlas (`gltf-transform-atlas`)
+  - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:
 
@@ -29,4 +35,3 @@ Roadmap / ideas / help wanted:
 - [ ] sparse accessors
 - [ ] colorspace fixes
 - [ ] flatten node hierarchy
-- ...
