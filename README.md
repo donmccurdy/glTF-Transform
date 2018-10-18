@@ -27,4 +27,6 @@ Roadmap / ideas / help wanted:
 - [ ] unlit materials
 - [ ] optimize animation
 - [ ] sparse accessors
+- [ ] colorspace fixes
+- [ ] flatten node hierarchy
 - ...
