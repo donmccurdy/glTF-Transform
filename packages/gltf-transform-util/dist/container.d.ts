@@ -20,25 +20,31 @@ declare class GLTFContainer {
      * @param file
      * @param type
      */
-    static addImage(container: GLTFContainer, name: string, file: ArrayBuffer, type: string): GLTFContainer;
+    addImage(name: string, file: ArrayBuffer, type: string): GLTFContainer;
     /**
      * Removes an image from the glTF container. Fails if image is still in use.
      * @param container
      * @param index
      */
-    static removeImage(container: GLTFContainer, index: number): GLTFContainer;
+    removeImage(index: number): GLTFContainer;
     /**
      * Adds a new buffer to the glTF container.
      * @param container
      * @param name
      * @param buffer
      */
-    static addBuffer(container: GLTFContainer, name: string, buffer: ArrayBuffer): GLTFContainer;
+    addBuffer(name: string, buffer: ArrayBuffer): GLTFContainer;
     /**
      * Removes a buffer from the glTF container. Fails if buffer is still in use.
      * @param container
      * @param index
      */
-    static removeBuffer(container: GLTFContainer, index: number): GLTFContainer;
+    removeBuffer(index: number): GLTFContainer;
+    addAccessor(array: Float32Array | Uint32Array | Uint16Array, type: GLTF.AccessorType, target: number): GLTFContainer;
+    /**
+     * Returns the accessor for the given index, as a typed array.
+     * @param index
+     */
+    getAccessorArray(index: number): Float32Array | Uint32Array | Uint16Array;
 }
 export { GLTFContainer, IBufferMap };
