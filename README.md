@@ -19,12 +19,13 @@ Packages:
 
 - [x] split (`gltf-transform-split`)
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
+- [x] occlusionVertex (`gltf-occlusion-vertex`)
+  - Bakes per-vertex ambient occlusion.
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:
 
-- [ ] bake per-vertex occlusion (with regl / headless-gl)
 - [ ] bake texture occlusion (with regl / headless-gl)
 - [ ] deduplicate accessors
 - [ ] merge geometry
