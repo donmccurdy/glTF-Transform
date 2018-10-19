@@ -6,6 +6,9 @@
     "packages/*"
   ],
   "scripts": {
+    "lerna:bootstrap": "lerna bootstrap",
+    "lerna:link": "lerna link",
+    "lerna:clean": "lerna clean",
     "prelint": "tsc",
     "postlint": "documentation lint packages/turf-*/index.js",
     "pretest": "lerna bootstrap --use-workspaces && npm run lint",

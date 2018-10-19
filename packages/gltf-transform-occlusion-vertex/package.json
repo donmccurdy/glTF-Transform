@@ -1,0 +1,31 @@
+{
+  "name": "gltf-transform-occlusion-vertex",
+  "version": "0.0.1",
+  "description": "{DESCRIPTION}",
+  "main": "dist/gltf-transform-occlusion-vertex.js",
+  "module": "dist/gltf-transform-occlusion-vertex.module.js",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
+  "scripts": {
+    "test": "node test/test.js",
+    "dist": "microbundle",
+    "watch": "microbundle --watch"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "microbundle": "*",
+    "tape": "*"
+  },
+  "dependencies": {
+    "geo-ambient-occlusion": "^3.0.2",
+    "gltf-transform-util": "*"
+  }
+}

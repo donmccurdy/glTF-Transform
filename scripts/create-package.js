@@ -37,7 +37,7 @@ if (!fs.existsSync(folderPath)) {
 // Create index.js
 const indexPath = path.join(folderPath, 'src', 'index.ts');
 if (!fs.existsSync(indexPath)) {
-  fs.writeFileSync(indexPath, `import { GLTFContainer } from 'gltf-transform';`);
+  fs.writeFileSync(indexPath, `import { GLTFContainer } from 'gltf-transform-util';`);
 }
 
 // Create package.json
