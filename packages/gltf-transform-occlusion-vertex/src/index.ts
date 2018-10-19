@@ -75,7 +75,7 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         }
         container.addAccessor(uv2Data, GLTF.AccessorType.VEC2, 12345);
         primitive.attributes['TEXCOORD_1'] = container.json.accessors.length - 1;
-        if (primitive.attributes['TEXCOORD_1'] === undefined) {
+        if (primitive.attributes['TEXCOORD_0'] === undefined) {
             primitive.attributes['TEXCOORD_0'] = container.json.accessors.length - 1;
         }
         container.json.materials[primitive.material].occlusionTexture = {index: occlusionTextureIndex};
