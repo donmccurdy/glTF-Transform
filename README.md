@@ -36,3 +36,25 @@ Roadmap / ideas / help wanted:
 - [ ] sparse accessors
 - [ ] colorspace fixes
 - [ ] flatten node hierarchy
+
+## Usage (not yet implemented)
+
+### Programmatic
+
+```js
+import { GLTFUtil, GLTFContainer } from 'gltf-transform-util';
+import { split } from 'gltf-transform-split';
+import { occlusionVertex } from 'gltf-transform-occlusion-vertex';
+
+
+const container = GLTFUtil.wrapGLTF( myJSON, { 'scene.bin': buffer } );
+split( container, { meshes: [ 'A', 'B' ] } );
+occlusionVertex( container, { samples: 1000 } );
+const glbBuffer = GLTFUtil.bundleGLB( container );
+```
+
+### CLI
+
+```shell
+gltf-transform -i input.glb -o output.glb [ split --meshes A,B ] [ occlusionVertex --samples 1000 ] [ draco ]
+```
