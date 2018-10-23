@@ -1,6 +1,21 @@
 import { GLTFContainer, IBufferMap } from './container';
 import { Logger, LoggerVerbosity } from './logger';
 
+interface IGLTFAnalysis {
+  meshes: number,
+  textures: number,
+  materials: number,
+  animations: number,
+  primitives: number,
+  dataUsage: {
+    geometry: number,
+    targets: number,
+    animation: number,
+    textures: number,
+    json: number
+  }
+};
+
 /**
  * Utility class for glTF transforms.
  */
@@ -116,6 +131,113 @@ class GLTFUtil {
     }
     const a = Buffer.from(buffer) as any; 
     return a.toString('utf8');
+  }
+
+  static analyze(container: GLTFContainer): IGLTFAnalysis {
+    const report = {
+      meshes: (container.json.meshes||[]).length,
+      textures: (container.json.textures||[]).length,
+      materials: (container.json.materials||[]).length,
+      animations: (container.json.animations||[]).length,
+      primitives: 0,
+      dataUsage: {
+        geometry: 0,
+        targets: 0,
+        animation: 0,
+        textures: 0,
+        json: 0
+      }
+    };
+
+    // Primitives and targets.
+    (container.json.meshes||[]).forEach((mesh) => {
+      report.primitives += mesh.primitives.length;
+      mesh.primitives.forEach((primitive) => {
+        if (primitive.indices !== undefined) {
+          report.dataUsage.geometry += this.getAccessorByteLength(container.json.accessors[primitive.indices]);
+        }
+        Object.keys(primitive.attributes).forEach((attr) => {
+          const accessor = container.json.accessors[primitive.attributes[attr]];
+          report.dataUsage.geometry += this.getAccessorByteLength(accessor);
+        });
+
+        (primitive.targets||[]).forEach((target) => {
+          Object.keys(target).forEach((attr) => {
+            const accessor = container.json.accessors[target[attr]];
+            report.dataUsage.targets += this.getAccessorByteLength(accessor);
+          });
+        });
+      });
+    });
+
+    // Animation
+    (container.json.animations||[]).forEach((animation) => {
+      animation.samplers.forEach((sampler) => {
+        const input = container.json.accessors[sampler.input];
+        const output = container.json.accessors[sampler.output];
+        report.dataUsage.animation += this.getAccessorByteLength(input);
+        report.dataUsage.animation += this.getAccessorByteLength(output);
+      });
+    });
+
+    // Textures
+    (container.json.images||[]).forEach((image) => {
+      if (image.uri !== undefined) {
+        report.dataUsage.textures += container.resolveURI(image.uri).byteLength;
+      } else {
+        report.dataUsage.textures += container.json.bufferViews[image.bufferView].byteLength;
+      }
+    });
+
+    // JSON
+    report.dataUsage.json += JSON.stringify(container.json).length;
+
+    return report;
+  }
+
+  static getAccessorByteLength(accessor: GLTF.IAccessor): number {
+    let itemSize;
+    let valueSize;
+    switch (accessor.type) {
+      case GLTF.AccessorType.VEC4:
+        itemSize = 4;
+        break;
+      case GLTF.AccessorType.VEC3:
+        itemSize = 3;
+        break;
+      case GLTF.AccessorType.VEC2:
+        itemSize = 2;
+        break;
+      case GLTF.AccessorType.MAT4:
+        itemSize = 16;
+        break;
+      case GLTF.AccessorType.MAT3:
+        itemSize = 9;
+        break;
+      case GLTF.AccessorType.MAT2:
+        itemSize = 4;
+        break;
+      case GLTF.AccessorType.SCALAR:
+        itemSize = 1;
+        break;
+      default:
+        throw new Error(`Unexpected accessor type, ${accessor.type}.`);
+    }
+    switch (accessor.componentType) {
+      case GLTF.AccessorComponentType.UNSIGNED_INT:
+      case GLTF.AccessorComponentType.FLOAT:
+        valueSize = 4;
+        break;
+      case GLTF.AccessorComponentType.UNSIGNED_SHORT:
+      case GLTF.AccessorComponentType.SHORT:
+        valueSize = 2;
+        break;
+        case GLTF.AccessorComponentType.UNSIGNED_BYTE:
+      case GLTF.AccessorComponentType.BYTE:
+        valueSize = 1;
+        break;
+    }
+    return itemSize * valueSize * accessor.count;
   }
 }
 

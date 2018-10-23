@@ -15,6 +15,7 @@ test('gltf-transform-util', t => {
     const glb = glbBuffer.buffer.slice(byteOffset, byteOffset + byteLength);
     const container = GLTFUtil.wrapGLB(glb);
     console.log(container.json);
+    console.log(GLTFUtil.analyze(container));
     // etc.
     // const results = [];
     // const out = filepath.replace(path.join('test', 'in'), path.join('test', 'out'));
