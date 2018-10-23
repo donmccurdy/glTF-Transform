@@ -1,5 +1,19 @@
 import { GLTFContainer, IBufferMap } from './container';
 import { Logger, LoggerVerbosity } from './logger';
+interface IGLTFAnalysis {
+    meshes: number;
+    textures: number;
+    materials: number;
+    animations: number;
+    primitives: number;
+    dataUsage: {
+        geometry: number;
+        targets: number;
+        animation: number;
+        textures: number;
+        json: number;
+    };
+}
 /**
  * Utility class for glTF transforms.
  */
@@ -38,5 +52,9 @@ declare class GLTFUtil {
      */
     static createBufferFromDataURI(dataURI: string): ArrayBuffer;
     static createLogger(name: string, verbosity: LoggerVerbosity): Logger;
+    static encodeText(text: string): ArrayBuffer;
+    static decodeText(buffer: ArrayBuffer): string;
+    static analyze(container: GLTFContainer): IGLTFAnalysis;
+    static getAccessorByteLength(accessor: GLTF.IAccessor): number;
 }
 export { GLTFUtil };
