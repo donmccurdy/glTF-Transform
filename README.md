@@ -1,4 +1,4 @@
-> 🚨 Under development
+🚨 Under development
 
 # glTF-Transform
 
