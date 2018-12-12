@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node test/test.js",
     "dist": "rollup -c",
-    "watch": "rollup -w -c"
+    "watch": "rollup -w -c",
+    "clean": "rm -rf node_modules && rm -rf dist/*"
   },
   "keywords": [
     "gltf",

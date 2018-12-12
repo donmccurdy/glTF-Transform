@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 const test = require('tape');
 const glob = require('glob');
 const path = require('path');

@@ -1,5 +1,19 @@
 import { GLTFContainer, GLTFUtil, LoggerVerbosity } from 'gltf-transform-util';
-import splice from 'buffer-splice';
+
+const splice = (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> => {
+  const a1 = buffer.slice(0, begin);
+  const a2 = buffer.slice(begin + count);
+  const a = join(a1, a2);
+  const b = buffer.slice(begin, begin + count);
+  return [a, b];
+};
+
+const join = (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer => {
+  const out = new Uint8Array(a.byteLength + b.byteLength);
+  out.set(new Uint8Array(a), 0);
+  out.set(new Uint8Array(b), a.byteLength);
+  return out.buffer;
+}
 
 const split = function (container: GLTFContainer, meshes: Array<string>): GLTFContainer {
 
@@ -51,10 +65,9 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
       // Extract data from original buffer.
       logger.info(`original before: ${json.buffers[bufferView.buffer]['_buffer'].byteLength} w/ offset ${bufferView.byteOffset} and length ${bufferView.byteLength}`);
-      const spliceOpts = { buffer: json.buffers[bufferView.buffer]['_buffer'] };
-      const tmp = splice(spliceOpts, bufferView.byteOffset, bufferView.byteLength);
+      const [ original, tmp ] = splice(json.buffers[bufferView.buffer]['_buffer'], bufferView.byteOffset, bufferView.byteLength);
       logger.info(`spliced: ${tmp.byteLength}`);
-      json.buffers[bufferView.buffer]['_buffer'] = spliceOpts.buffer;
+      json.buffers[bufferView.buffer]['_buffer'] = original;
       logger.info(`original after: ${json.buffers[bufferView.buffer]['_buffer'].byteLength}`);
 
       // Write data to new buffer.
@@ -62,7 +75,7 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
       const affectedBuffer = bufferView.buffer;
       bufferView.byteOffset = buffer.byteLength;
       bufferView.buffer = json.buffers.length;
-      buffer = splice(buffer, null, null, tmp);
+      buffer = join(buffer, tmp);
 
       // Update remaining buffers.
       json.bufferViews.forEach((affectedBufferView) => {
@@ -93,4 +106,6 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
   return container;
 }
 
-export { split };
+const test = 'test';
+
+export { split, test };

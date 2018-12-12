@@ -1,6 +1,7 @@
 import { GLTFContainer, GLTFUtil, LoggerVerbosity } from 'gltf-transform-util';
-import * as geoao from 'geo-ambient-occlusion';
+import * as geoaoNamespace from 'geo-ambient-occlusion';
 
+const geoao = geoaoNamespace as Function;
 const logger = GLTFUtil.createLogger('gltf-transform-occlusion-vertex', LoggerVerbosity.INFO);
 
 interface IOcclusionOptions {

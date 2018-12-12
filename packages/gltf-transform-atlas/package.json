@@ -8,8 +8,9 @@
   "source": "src/index.ts",
   "scripts": {
     "test": "node test/test.js",
-    "dist": "microbundle",
-    "watch": "microbundle --watch"
+    "dist": "rollup -c",
+    "watch": "rollup -w -c",
+    "clean": "rm -rf node_modules && rm -rf dist/*"
   },
   "keywords": [
     "gltf",
@@ -21,8 +22,11 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "devDependencies": {
-    "microbundle": "*",
-    "tape": "*"
+    "rollup-plugin-typescript": "^1.0.0",
+    "source-map-support": "^0.5.9",
+    "tape": "*",
+    "tslib": "^1.9.3",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "atlaspack": "^1.0.0",
