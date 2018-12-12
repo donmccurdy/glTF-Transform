@@ -44,19 +44,20 @@ class GLTFUtil {
 
     // Decode and verify chunk headers.
     const jsonChunkHeader = new Uint32Array(glb, 12, 2);
-    const binaryChunkHeader = new Uint32Array(glb, 12 + 8 + jsonChunkHeader[0], 2);
+    const jsonByteOffset = 20;
+    const jsonByteLength = jsonChunkHeader[0];
+    const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
     if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
       throw new Error('Unexpected GLB layout.');
     }
 
-    // Decode content.
-    const jsonByteOffset = 20;
-    const jsonByteLength = jsonChunkHeader[0];
-    const json = JSON.parse(this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength)));
-    const binaryByteOffset = 12 + 8 + jsonByteLength;
+    // Decode content.    
+    const jsonText = this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
+    const json = JSON.parse(jsonText) as GLTF.IGLTF;
+    const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
     const binaryByteLength = binaryChunkHeader[0];
     const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
-    const buffer = json.buffers.find((b) => !b.uri);
+    const buffer = json.buffers.filter((b) => !b.uri).pop();
     buffer.uri = 'resources.bin';
 
     // TODO(donmccurdy): Unpack embedded textures.
@@ -196,49 +197,29 @@ class GLTFUtil {
   }
 
   static getAccessorByteLength(accessor: GLTF.IAccessor): number {
-    let itemSize;
-    let valueSize;
-    switch (accessor.type) {
-      case GLTF.AccessorType.VEC4:
-        itemSize = 4;
-        break;
-      case GLTF.AccessorType.VEC3:
-        itemSize = 3;
-        break;
-      case GLTF.AccessorType.VEC2:
-        itemSize = 2;
-        break;
-      case GLTF.AccessorType.MAT4:
-        itemSize = 16;
-        break;
-      case GLTF.AccessorType.MAT3:
-        itemSize = 9;
-        break;
-      case GLTF.AccessorType.MAT2:
-        itemSize = 4;
-        break;
-      case GLTF.AccessorType.SCALAR:
-        itemSize = 1;
-        break;
-      default:
-        throw new Error(`Unexpected accessor type, ${accessor.type}.`);
-    }
-    switch (accessor.componentType) {
-      case GLTF.AccessorComponentType.UNSIGNED_INT:
-      case GLTF.AccessorComponentType.FLOAT:
-        valueSize = 4;
-        break;
-      case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-      case GLTF.AccessorComponentType.SHORT:
-        valueSize = 2;
-        break;
-        case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-      case GLTF.AccessorComponentType.BYTE:
-        valueSize = 1;
-        break;
-    }
+    const itemSize = AccessorType[accessor.type].size;
+    const valueSize = AccessorComponentType[accessor.componentType].size;
     return itemSize * valueSize * accessor.count;
   }
 }
+
+const AccessorType = {
+  SCALAR: {value: 'SCALAR', size: 1},
+  VEC2: {value: 'VEC2', size: 2},
+  VEC3: {value: 'VEC3', size: 3},
+  VEC4: {value: 'VEC4', size: 4},
+  MAT2: {value: 'MAT2', size: 4},
+  MAT3: {value: 'MAT3', size: 9},
+  MAT4: {value: 'MAT4', size: 16},
+}
+
+const AccessorComponentType = {
+  '5120': {value: 'BYTE', size: 1 },
+  '5121': {value: 'UNSIGNED_BYTE', size: 1 },
+  '5122': {value: 'SHORT', size: 2 },
+  '5123': {value: 'UNSIGNED_SHORT', size: 2 },
+  '5125': {value: 'UNSIGNED_INT', size: 4 },
+  '5126': {value: 'FLOAT', size: 4 },
+};
 
 export { GLTFUtil };
