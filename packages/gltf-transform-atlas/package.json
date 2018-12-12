@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-atlas",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-atlas.js",
   "module": "dist/gltf-transform-atlas.module.js",
@@ -30,6 +30,6 @@
   },
   "dependencies": {
     "atlaspack": "^1.0.0",
-    "gltf-transform-util": "*"
+    "gltf-transform-util": "^0.0.2"
   }
 }

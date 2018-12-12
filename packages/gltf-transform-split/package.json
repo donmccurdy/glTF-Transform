@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-split",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-split.js",
   "module": "dist/gltf-transform-split.module.js",
@@ -29,6 +29,6 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "gltf-transform-util": "*"
+    "gltf-transform-util": "^0.0.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "DESCRIPTION",
   "main": "src/index.js",
   "bin": {
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
     "commander": "^2.19.0",
-    "gltf-transform-util": "*",
-    "gltf-transform-split": "*"
+    "gltf-transform-split": "^0.0.2",
+    "gltf-transform-util": "^0.0.2"
   }
 }

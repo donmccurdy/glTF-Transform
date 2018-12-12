@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-occlusion-vertex",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-occlusion-vertex.js",
   "module": "dist/gltf-transform-occlusion-vertex.module.js",
@@ -30,6 +30,6 @@
   },
   "dependencies": {
     "geo-ambient-occlusion": "^3.0.2",
-    "gltf-transform-util": "*"
+    "gltf-transform-util": "^0.0.2"
   }
 }

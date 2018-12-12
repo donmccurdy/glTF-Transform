@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-util",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-util.js",
   "module": "dist/gltf-transform-util.module.js",
@@ -27,6 +27,5 @@
     "tape": "*",
     "tslib": "^1.9.3",
     "typescript": "^3.2.2"
-  },
-  "dependencies": {}
+  }
 }
