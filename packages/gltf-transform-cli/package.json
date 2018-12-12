@@ -1,0 +1,27 @@
+{
+  "name": "gltf-transform-cli",
+  "version": "0.0.1",
+  "description": "DESCRIPTION",
+  "main": "src/index.js",
+  "bin": {
+    "gltf-transform": "src/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/donmccurdy/glTF-Transform.git"
+  },
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/donmccurdy/glTF-Transform/issues"
+  },
+  "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "gltf-transform-util": "*",
+    "gltf-transform-split": "*"
+  }
+}

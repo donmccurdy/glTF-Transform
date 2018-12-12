@@ -14,7 +14,7 @@ Core:
 - [x] util (`gltf-transform-util`)
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
-- [ ] cli (`gltf-transform-cli`)
+- [x] cli (`gltf-transform-cli`)
   - Provides a CLI interface to Node.js-compatible packages.
 
 Packages:
