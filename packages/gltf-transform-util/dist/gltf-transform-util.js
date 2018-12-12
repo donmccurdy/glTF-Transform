@@ -139,7 +139,6 @@ var GLTFContainer = /** @class */ (function () {
     };
     return GLTFContainer;
 }());
-//# sourceMappingURL=container.js.map
 
 (function (LoggerVerbosity) {
     LoggerVerbosity[LoggerVerbosity["NONE"] = 3] = "NONE";
@@ -184,7 +183,6 @@ var Logger = /** @class */ (function () {
     };
     return Logger;
 }());
-//# sourceMappingURL=logger.js.map
 
 /**
  * Utility class for glTF transforms.
@@ -377,8 +375,6 @@ var AccessorComponentType = {
     '5125': { value: 'UNSIGNED_INT', size: 4 },
     '5126': { value: 'FLOAT', size: 4 }
 };
-
-//# sourceMappingURL=index.js.map
 
 exports.GLTFUtil = GLTFUtil;
 exports.GLTFContainer = GLTFContainer;
