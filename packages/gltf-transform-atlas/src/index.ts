@@ -1,14 +1,14 @@
 import * as atlaspack from 'atlaspack';
 import { GLTFContainer } from 'gltf-transform-util';
 
-interface PackingOptions {};
+interface AtlasOptions {};
 
 const DEFAULTS = {
   maxSize: 2048
 };
 
-function pack(container: GLTFContainer, options: PackingOptions): GLTFContainer {
+function atlas(container: GLTFContainer, options: AtlasOptions): GLTFContainer {
   throw new Error('Not implemented');
 }
 
-export { pack };
+export { atlas };

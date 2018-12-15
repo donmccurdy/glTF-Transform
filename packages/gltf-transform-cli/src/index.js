@@ -31,10 +31,10 @@ program.command('format [model]')
         console.error('[format] Not implemented.');
     });
 
-program.command('pack [model]')
+program.command('atlas [model]')
     .option('-s, --max-size', 'Maximum texture size. Default is 2048.')
     .action((file) => {
-        console.error('[pack] Not implemented.');
+        console.error('[atlas] Not implemented.');
     });
 
 program.command('ao [model]')
