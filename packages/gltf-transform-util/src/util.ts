@@ -1,3 +1,4 @@
+import { AccessorComponentTypeData, AccessorTypeData } from './constants';
 import { GLTFContainer, IBufferMap } from './container';
 import { Logger, LoggerVerbosity } from './logger';
 
@@ -197,29 +198,25 @@ class GLTFUtil {
   }
 
   static getAccessorByteLength(accessor: GLTF.IAccessor): number {
-    const itemSize = AccessorType[accessor.type].size;
-    const valueSize = AccessorComponentType[accessor.componentType].size;
+    const itemSize = AccessorTypeData[accessor.type].size;
+    const valueSize = AccessorComponentTypeData[accessor.componentType].size;
     return itemSize * valueSize * accessor.count;
   }
-}
 
-const AccessorType = {
-  SCALAR: {value: 'SCALAR', size: 1},
-  VEC2: {value: 'VEC2', size: 2},
-  VEC3: {value: 'VEC3', size: 3},
-  VEC4: {value: 'VEC4', size: 4},
-  MAT2: {value: 'MAT2', size: 4},
-  MAT3: {value: 'MAT3', size: 9},
-  MAT4: {value: 'MAT4', size: 16},
-}
+  static splice (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> {
+    const a1 = buffer.slice(0, begin);
+    const a2 = buffer.slice(begin + count);
+    const a = this.join(a1, a2);
+    const b = buffer.slice(begin, begin + count);
+    return [a, b];
+  }
 
-const AccessorComponentType = {
-  '5120': {value: 'BYTE', size: 1 },
-  '5121': {value: 'UNSIGNED_BYTE', size: 1 },
-  '5122': {value: 'SHORT', size: 2 },
-  '5123': {value: 'UNSIGNED_SHORT', size: 2 },
-  '5125': {value: 'UNSIGNED_INT', size: 4 },
-  '5126': {value: 'FLOAT', size: 4 },
-};
+  static join (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
+    const out = new Uint8Array(a.byteLength + b.byteLength);
+    out.set(new Uint8Array(a), 0);
+    out.set(new Uint8Array(b), a.byteLength);
+    return out.buffer;
+  }
+}
 
 export { GLTFUtil };

@@ -26,6 +26,13 @@ Packages:
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
+Short-term TODO:
+
+- [ ] read/write binary and JSON
+- [ ] texture read/write is off
+- [ ] pack bufferviews better
+- [ ] efficient memory use
+
 Roadmap / ideas / help wanted:
 
 - [ ] bake texture occlusion (with regl / headless-gl)

@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
-    "commander": "^2.19.0",
+    "caporal": "^1.1.0",
+    "gl": "^4.1.1",
+    "gltf-transform-occlusion-vertex": "0.0.2",
     "gltf-transform-split": "^0.0.2",
     "gltf-transform-util": "^0.0.2"
   }
