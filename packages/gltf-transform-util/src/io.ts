@@ -26,14 +26,15 @@ class NodeIO implements IO {
     }
 
     private readGLTF (uri: string): GLTFContainer {
+        const dir = this.path.dirname(uri);
         const json: GLTF.IGLTF = JSON.parse(this.fs.readFileSync(uri, 'utf8'));
         const resources = {} as IBufferMap;
         const images = json.images || [];
         const buffers = json.buffers || [];
         [...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
-            if (resource.uri) {
-                const buffer: Buffer = this.fs.readFileSync(resource.uri);
-                resources[resource.uri] = GLTFUtil.trimBuffer(buffer);
+            if (resource.uri && !resource.uri.match(/data:/)) {
+                const absURI = this.path.resolve(dir, resource.uri);
+                resources[resource.uri] = GLTFUtil.trimBuffer(this.fs.readFileSync(absURI));
             } else {
                 throw new Error('Embedded resources not implemented.');
             }

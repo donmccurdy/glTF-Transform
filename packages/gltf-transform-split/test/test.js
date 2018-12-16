@@ -12,7 +12,7 @@ test('gltf-transform-split', t => {
   glob.sync(path.join(__dirname, 'in', '*.gltf')).forEach(filepath => {
     const {name} = path.parse(filepath);
     const json = load.sync(filepath);
-    const model = GLTFUtil.wrapGLTF(json, {});
+    const model = GLTFUtil.fromGLTF(json, {});
     t.equal(model.json.buffers.length, 1, 'initialized with one buffer');
     split(model, ['CubeA', 'CubeB']);
     // TODO: This should be two, not three.

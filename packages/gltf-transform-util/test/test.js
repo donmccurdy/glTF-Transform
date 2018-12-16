@@ -24,30 +24,30 @@ test('gltf-transform-util::io -- glb', t => {
       io.writeGLB(outputURI, container);
     } else {
       const expectedContainer = io.read(outputURI);
-      t.ok(container.equals(expectedContainer));
+      t.ok(container.equals(expectedContainer), `Read/write "${basepath}".`);
     }
   });
   t.end();
 });
 
-// test('gltf-transform-util::io -- gltf', t => {
-//   glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
-//     const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
-//     const outputURI = path.join(__dirname, 'out', basepath);
+test('gltf-transform-util::io -- gltf', t => {
+  glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
+    const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+    const outputURI = path.join(__dirname, 'out', basepath);
 
-//     const io = new NodeIO(fs, path);
-//     const container = io.read(inputURI);
+    const io = new NodeIO(fs, path);
+    const container = io.read(inputURI);
 
-//     if (process.env.REGEN) {
-//       ensureDir(outputURI);
-//       io.writeGLTF(outputURI, container);
-//     } else {
-//       const expectedContainer = io.read(outputURI);
-//       t.ok(container.equals(expectedContainer));
-//     }
-//   });
-//   t.end();
-// });
+    if (process.env.REGEN) {
+      ensureDir(outputURI);
+      io.writeGLTF(outputURI, container);
+    } else {
+      const expectedContainer = io.read(outputURI);
+      t.ok(container.equals(expectedContainer), `Read/write "${basepath}".`);
+    }
+  });
+  t.end();
+});
 
 test('gltf-transform-util::analyze', (t) => {
   const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');

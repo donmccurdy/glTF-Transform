@@ -82,11 +82,11 @@ class GLTFUtil {
     }
 
     const jsonText = JSON.stringify(container.json);
-    const jsonChunkData = GLTFUtil.encodeText(jsonText);
+    const jsonChunkData = this.pad( GLTFUtil.encodeText(jsonText), 0x20 );
     const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
     const jsonChunk = this.join(jsonChunkHeader, jsonChunkData);
 
-    const binaryChunkData = container.getBuffer(0);
+    const binaryChunkData = this.pad( container.getBuffer(0), 0x00 );
     const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
     const binaryChunk = this.join(binaryChunkHeader, binaryChunkData);
 
@@ -353,6 +353,39 @@ class GLTFUtil {
     out.set(new Uint8Array(a), 0);
     out.set(new Uint8Array(b), a.byteLength);
     return out.buffer;
+  }
+
+  /**
+   * Pad buffer to the next 4-byte boundary.
+   * https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
+   */
+  static pad (arrayBuffer: ArrayBuffer, paddingByte: number): ArrayBuffer {
+
+    paddingByte = paddingByte || 0;
+
+    var paddedLength = Math.ceil( arrayBuffer.byteLength / 4 ) * 4;
+  
+    if ( paddedLength !== arrayBuffer.byteLength ) {
+  
+      var array = new Uint8Array( paddedLength );
+      array.set( new Uint8Array( arrayBuffer ) );
+  
+      if ( paddingByte !== 0 ) {
+  
+        for ( var i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
+  
+          array[ i ] = paddingByte;
+  
+        }
+  
+      }
+  
+      return array.buffer;
+  
+    }
+  
+    return arrayBuffer;
+
   }
 }
 
