@@ -9,16 +9,13 @@
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
-Core:
+Packages:
 
 - [x] util (`gltf-transform-util`)
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
 - [x] cli (`gltf-transform-cli`)
   - Provides a CLI interface to Node.js-compatible packages.
-
-Packages:
-
 - [x] split (`gltf-transform-split`)
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
 - [x] occlusionVertex (`gltf-occlusion-vertex`)
@@ -28,44 +25,49 @@ Packages:
 
 Short-term TODO:
 
-- [x] read/write binary and JSON
-- [x] texture read/write is off
-- [ ] pack bufferviews better
-- [ ] efficient memory use
 - [ ] run validator on outputs
 - [ ] more unit tests on util functions
 
 Roadmap / ideas / help wanted:
 
-- [ ] bake texture occlusion (with regl / headless-gl)
 - [ ] deduplicate accessors
+- [ ] deduplicate images
+- [ ] defrag bufferviews
 - [ ] merge geometry
-- [ ] merge files
 - [ ] draco (de)compression
 - [ ] unlit materials
 - [ ] optimize animation
 - [ ] sparse accessors
-- [ ] colorspace fixes
 - [ ] flatten node hierarchy
+- [ ] compute AABBs
 
-## Usage (not yet implemented)
+## Usage
 
 ### Programmatic
 
 ```js
-import { GLTFUtil, GLTFContainer } from 'gltf-transform-util';
-import { split } from 'gltf-transform-split';
+import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from 'gltf-transform-util';
 import { occlusionVertex } from 'gltf-transform-occlusion-vertex';
 
+const io = new WebIO();
+const container = io.read( 'scene.gltf' );
 
-const container = GLTFUtil.wrapGLTF( myJSON, { 'scene.bin': buffer } );
-split( container, { meshes: [ 'A', 'B' ] } );
+// analyze
+const analysis = GLTFUtil.analyze( container );
+
+// ambient occlusion
 occlusionVertex( container, { samples: 1000 } );
-const glbBuffer = GLTFUtil.bundleGLB( container );
+
+// serialize
+const glbBuffer = GLTFUtil.toGLB( container );
 ```
 
 ### CLI
 
 ```shell
-gltf-transform -i input.glb -o output.glb [ split --meshes A,B ] [ occlusionVertex --samples 1000 ] [ draco ]
+# analyze
+gltf-transform analyze input.glb
+
+# ambient occlusion
+gltf-transform ao --samples 1000 input.glb output.glb 
 ```
