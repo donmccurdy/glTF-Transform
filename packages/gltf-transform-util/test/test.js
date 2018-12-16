@@ -4,53 +4,54 @@ const fs = require('fs');
 const test = require('tape');
 const glob = require('glob');
 const path = require('path');
-// const load = require('load-json-file');
-// const write = require('write-json-file');
-const { GLTFUtil, GLTFContainer } = require('../');
+const { GLTFUtil, NodeIO } = require('../');
 
-test('gltf-transform-util::io', t => {
-  glob.sync(path.join(__dirname, 'in', '*.glb')).forEach(filepath => {
-    
-    let {name} = path.parse(filepath);
-    name = name.replace(/\.glb|\.gltf/, '');
+function ensureDir(uri) {
+  const outdir = path.dirname(uri);
+  if (!fs.existsSync(outdir)) fs.mkdirSync(outdir);
+}
 
-    const glbBuffer = fs.readFileSync(filepath);
-    // Byte offset may be non-zero.
-    const {byteOffset, byteLength} = glbBuffer;
-    const glb = glbBuffer.buffer.slice(byteOffset, byteOffset + byteLength);
-    const container = GLTFUtil.wrapGLB(glb);
+test('gltf-transform-util::io -- glb', t => {
+  glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
+    const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+    const outputURI = path.join(__dirname, 'out', basepath);
 
-    const {json, resources} = GLTFUtil.bundleGLTF(container);
+    const io = new NodeIO(fs, path);
+    const container = io.read(inputURI);
 
-    const out = path.join(__dirname, 'out', name);
-    if (!fs.existsSync(out)) { fs.mkdirSync(out); }
-  
     if (process.env.REGEN) {
-      fs.writeFileSync(path.join(out, `${name}.gltf`), JSON.stringify(json));
-      Object.keys(resources).forEach((resourceName) => {
-        const resource = new Buffer(resources[resourceName]);
-        fs.writeFileSync(path.join(out, resourceName), resource);
-      });
+      ensureDir(outputURI);
+      io.writeGLB(outputURI, container);
     } else {
-      const expected = fs.readFileSync(path.join(out, `${name}.gltf`), 'utf8');
-      t.equal(expected, JSON.stringify(json),  `${name} JSON`);
-      Object.keys(resources).forEach((resourceName) => {
-        const resource = new Buffer(resources[resourceName]);
-        const expected = fs.readFileSync(path.join(out, resourceName));
-        t.equal(resource.equals(expected), true, `${name} -- ${resourceName}`);
-      });
+      const expectedContainer = io.read(outputURI);
+      t.ok(container.equals(expectedContainer));
     }
   });
   t.end();
 });
 
+// test('gltf-transform-util::io -- gltf', t => {
+//   glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
+//     const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+//     const outputURI = path.join(__dirname, 'out', basepath);
+
+//     const io = new NodeIO(fs, path);
+//     const container = io.read(inputURI);
+
+//     if (process.env.REGEN) {
+//       ensureDir(outputURI);
+//       io.writeGLTF(outputURI, container);
+//     } else {
+//       const expectedContainer = io.read(outputURI);
+//       t.ok(container.equals(expectedContainer));
+//     }
+//   });
+//   t.end();
+// });
+
 test('gltf-transform-util::analyze', (t) => {
   const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');
-  const glbBuffer = fs.readFileSync(filename);
-  // Byte offset may be non-zero.
-  const {byteOffset, byteLength} = glbBuffer;
-  const glb = glbBuffer.buffer.slice(byteOffset, byteOffset + byteLength);
-  const container = GLTFUtil.wrapGLB(glb);
+  const container = new NodeIO(fs, path).readGLB(filename);
   const report = GLTFUtil.analyze(container);
   t.deepEqual(report, {
     meshes: 1,

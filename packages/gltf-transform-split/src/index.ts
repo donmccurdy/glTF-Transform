@@ -40,7 +40,7 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
   // Write data for each mesh to a new buffer.
   meshes.forEach((meshName) => {
-    let buffer = GLTFUtil.createBuffer();
+    let buffer = new ArrayBuffer(0);
 
     logger.info(`📦  ${meshName}`);
 

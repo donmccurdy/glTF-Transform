@@ -1,4 +1,4 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorType, AccessorComponentType, BufferViewTarget } from 'gltf-transform-util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorComponentType, BufferViewTarget } from 'gltf-transform-util';
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
 
@@ -56,7 +56,7 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         return;
     }
 
-    container.addImage('occlusion', aoTextureBuffer, TEXTURE_MIME_TYPE);
+    GLTFUtil.addImage(container, 'occlusion', aoTextureBuffer, TEXTURE_MIME_TYPE);
     container.json.textures.push({source: container.json.images.length - 1});
     const occlusionTextureIndex = container.json.textures.length - 1;
 
@@ -88,18 +88,25 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         aoSampler.dispose();
 
         // Write UV set and add AO map.
-        const numVertices = ao.length;
-        const uv2Data = new Float32Array(numVertices * 2);
-        for (let i = 0; i < numVertices; i++) {
-            uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
-        }
-        container.addAccessor(uv2Data, AccessorType.VEC2, AccessorComponentType.FLOAT, numVertices, BufferViewTarget.ARRAY_BUFFER);
-        const accessorIndex = container.json.accessors.length - 1;
-        primitiveDef.attributes['TEXCOORD_1'] = accessorIndex;
-        if (primitiveDef.attributes['TEXCOORD_0'] === undefined) {
-            primitiveDef.attributes['TEXCOORD_0'] = accessorIndex;
-        }
-        container.json.materials[primitiveDef.material].occlusionTexture = {index: occlusionTextureIndex};
+        // const numVertices = ao.length;
+        // const uv2Data = new Float32Array(numVertices * 2);
+        // for (let i = 0; i < numVertices; i++) {
+        //     uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
+        // }
+        // GLTFUtil.addAccessor(
+        //     container,
+        //     uv2Data,
+        //     'VEC2' as GLTF.AccessorType.VEC2,
+        //     AccessorComponentType.FLOAT,
+        //     numVertices,
+        //     BufferViewTarget.ARRAY_BUFFER
+        // );
+        // const accessorIndex = container.json.accessors.length - 1;
+        // primitiveDef.attributes['TEXCOORD_1'] = accessorIndex;
+        // if (primitiveDef.attributes['TEXCOORD_0'] === undefined) {
+        //     primitiveDef.attributes['TEXCOORD_0'] = accessorIndex;
+        // }
+        // container.json.materials[primitiveDef.material].occlusionTexture = {index: occlusionTextureIndex};
     });
 
     logger.info('Finished baking per-vertex occlusion.');

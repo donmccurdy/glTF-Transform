@@ -1,4 +1,5 @@
 node_modules
 .rpt2_cache
-**/dist/*.js
-**/dist/*.js.map
+**/dist/*
+!**/dist/.gitkeep
+

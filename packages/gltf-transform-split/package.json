@@ -5,7 +5,6 @@
   "main": "dist/gltf-transform-split.js",
   "module": "dist/gltf-transform-split.module.js",
   "types": "dist/index.d.ts",
-  "source": "src/index.ts",
   "scripts": {
     "test": "node test/test.js",
     "dist": "rollup -c",

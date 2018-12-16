@@ -5,7 +5,6 @@
   "main": "dist/gltf-transform-occlusion-vertex.js",
   "module": "dist/gltf-transform-occlusion-vertex.module.js",
   "types": "dist/index.d.ts",
-  "source": "src/index.ts",
   "scripts": {
     "test": "node test/test.js",
     "dist": "rollup -c",

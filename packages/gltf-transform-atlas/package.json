@@ -5,7 +5,6 @@
   "main": "dist/gltf-transform-atlas.js",
   "module": "dist/gltf-transform-atlas.module.js",
   "types": "dist/index.d.ts",
-  "source": "src/index.ts",
   "scripts": {
     "test": "node test/test.js",
     "dist": "rollup -c",

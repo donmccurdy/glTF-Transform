@@ -1,6 +1,7 @@
 import { AccessorComponentTypeData, AccessorTypeData } from './constants';
-import { GLTFContainer, IBufferMap } from './container';
+import { GLTFContainer, IBufferMap, IContainer } from './container';
 import { Logger, LoggerVerbosity } from './logger';
+import { PackedGLTFContainer } from './packed-container';
 
 interface IGLTFAnalysis {
   meshes: number,
@@ -26,7 +27,7 @@ class GLTFUtil {
    * @param json
    * @param files
    */
-  static wrapGLTF(json: GLTF.IGLTF, resources: IBufferMap) {
+  static fromGLTF(json: GLTF.IGLTF, resources: IBufferMap) {
     return new GLTFContainer(json, resources);
   }
 
@@ -34,7 +35,7 @@ class GLTFUtil {
    * Creates a GLTFContainer from the given GLB binary.
    * @param glb
    */
-  static wrapGLB(glb: ArrayBuffer): GLTFContainer {
+  static fromGLB(glb: ArrayBuffer): GLTFContainer {
     // Decode and verify GLB header.
     const header = new Uint32Array(glb, 0, 3);
     if (header[0] !== 0x46546C67) {
@@ -58,20 +59,15 @@ class GLTFUtil {
     const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
     const binaryByteLength = binaryChunkHeader[0];
     const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
-    const buffer = json.buffers.filter((b) => !b.uri).pop();
-    buffer.uri = 'resources.bin';
 
-    // TODO(donmccurdy): Unpack embedded textures.
-    // TODO(donmccurdy): Decode Draco content.
-
-    return new GLTFContainer(json, {'resources.bin': binary});
+    return new PackedGLTFContainer(json, binary).unpack();
   }
 
   /**
    * Serializes a GLTFContainer to GLTF JSON and external files.
    * @param container
    */
-  static bundleGLTF(container: GLTFContainer): {json: Object, resources: IBufferMap} {
+  static toGLTF(container: GLTFContainer): {json: Object, resources: IBufferMap} {
     const {json, resources} = container;
     return {json, resources};
   }
@@ -80,21 +76,22 @@ class GLTFUtil {
    * Serializes a GLTFContainer to a GLB binary.
    * @param container
    */
-  static bundleGLB(container: GLTFContainer): ArrayBuffer {
-    throw new Error('Not implemented.');
-  }
-
-  /**
-   * Creates an empty buffer.
-   */
-  static createBuffer(): ArrayBuffer {
-    if (typeof Buffer === 'undefined') {
-      // Browser.
-      return new ArrayBuffer(0);
-    } else {
-      // Node.js.
-      return new Buffer([]);
+  static toGLB(container: IContainer): ArrayBuffer {
+    if (container instanceof GLTFContainer) {
+      container = PackedGLTFContainer.pack(container);
     }
+
+    const jsonText = JSON.stringify(container.json);
+    const jsonChunkData = GLTFUtil.encodeText(jsonText);
+    const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
+    const jsonChunk = this.join(jsonChunkHeader, jsonChunkData);
+
+    const binaryChunkData = container.getBuffer(0);
+    const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
+    const binaryChunk = this.join(binaryChunkHeader, binaryChunkData);
+
+    const header = new Uint32Array([0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]).buffer;
+    return this.join(this.join(header, jsonChunk), binaryChunk);
   }
 
   /**
@@ -112,7 +109,7 @@ class GLTFUtil {
       return ia.buffer;
     } else {
       // Node.js.
-      return new Buffer(dataURI.split(',')[1], 'base64');
+      return new Buffer(dataURI.split(',')[1], 'base64').buffer;
     }
   }
 
@@ -122,9 +119,9 @@ class GLTFUtil {
 
   static encodeText(text: string): ArrayBuffer {
     if (typeof TextEncoder !== 'undefined') {
-      return new TextEncoder().encode(text);
+      return new TextEncoder().encode(text).buffer;
     }
-    return Buffer.from(text).buffer;
+    return this.trimBuffer(Buffer.from(text));
   }
 
   static decodeText(buffer: ArrayBuffer): string {
@@ -133,6 +130,11 @@ class GLTFUtil {
     }
     const a = Buffer.from(buffer) as any; 
     return a.toString('utf8');
+  }
+
+  static trimBuffer(buffer: Buffer): ArrayBuffer {
+    const {byteOffset, byteLength} = buffer;
+    return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
   }
 
   static analyze(container: GLTFContainer): IGLTFAnalysis {
@@ -197,12 +199,144 @@ class GLTFUtil {
     return report;
   }
 
+  /**
+   * Adds a new image to the glTF container.
+   * @param container
+   * @param name
+   * @param file
+   * @param type
+   */
+  static addImage(container: GLTFContainer, name: string, file: ArrayBuffer, type: string): GLTFContainer {
+    let uri, mimeType
+    switch (type) {
+      case 'image/jpeg':
+        uri = `${name}.jpg`;
+        mimeType = 'image/jpeg';
+        break;
+      case 'image/png':
+        uri = `${name}.png`;
+        mimeType = 'image/png';
+        break;
+      default:
+        throw new Error(`Unsupported image type, "${type}".`);
+    }
+    container.json.images = container.json.images || [];
+    container.json.images.push({ name, mimeType, uri });
+    container.resources[uri] = file;
+    return container;
+  }
+
+  /**
+   * Removes an image from the glTF container. Fails if image is still in use.
+   * @param container
+   * @param index
+   */
+  static removeImage(container: GLTFContainer, index: number): GLTFContainer {
+    const textures = container.json.textures.filter((texture) => texture.source === index);
+    if (textures.length) {
+      throw new Error(`Image is in use by ${textures.length} textures and cannot be removed.`);
+    }
+    const image = container.json.images[index];
+    const imageBuffer = container.resolveURI(image.uri);
+    if (!imageBuffer) {
+      throw new Error('No such image, or image is embedded.');
+    }
+    container.json.images.splice(index, 1);
+    container.json.textures.forEach((texture) => {
+      if (texture.source > index) texture.source--;
+    });
+    return container;
+  }
+
+  /**
+   * Adds a new buffer to the glTF container.
+   * @param container
+   * @param name
+   * @param buffer
+   */
+  static addBuffer(container: GLTFContainer, name: string, buffer: ArrayBuffer): GLTFContainer {
+    const uri = `${name}.bin`;
+    container.json.buffers.push({ name, uri, byteLength: buffer.byteLength });
+    container.resources[uri] = buffer;
+    return container;
+  }
+
+  /**
+   * Removes a buffer from the glTF container. Fails if buffer is still in use.
+   * @param container
+   * @param index
+   */
+  static removeBuffer(container: GLTFContainer, index: number): GLTFContainer {
+    const bufferViews = container.json.bufferViews.filter((view) => view.buffer === index);
+    if (bufferViews.length) {
+      throw new Error(`Buffer is in use by ${bufferViews.length} bufferViews and cannot be removed.`);
+    }
+    const buffer = container.json.buffers[index];
+    container.json.buffers.splice(index, 1);
+    delete container.resources[buffer.uri];
+    return container;
+  }
+
+  static addBufferView(container: IContainer, arrayBuffer: ArrayBuffer, bufferIndex: number = 0): GLTF.IBufferView {
+    const buffer = container.json.buffers[0];
+    const resource = container.getBuffer(bufferIndex);
+    const byteOffset = resource.byteLength;
+    container.setBuffer(bufferIndex, GLTFUtil.join(resource, arrayBuffer));
+    buffer.byteLength = resource.byteLength;
+    const bufferView: GLTF.IBufferView = {buffer: 0, byteLength: arrayBuffer.byteLength, byteOffset};
+    return bufferView;
+  }
+
+  static removeBufferView(container: IContainer, bufferViewIndex: number): GLTF.IBufferView {
+    const bufferView = container.json.bufferViews[bufferViewIndex];
+    const accessors = container.json.accessors.filter((accessor) => accessor.bufferView === bufferViewIndex);
+    if (accessors.length) {
+      throw new Error(`Buffer is in use by ${accessors.length} accessors and cannot be removed.`);
+    }
+    let resource = container.getBuffer(bufferView.buffer);
+    [resource] = this.splice(resource, bufferView.byteOffset, bufferView.byteLength);
+    container.setBuffer(bufferView.buffer, resource);
+    container.json.bufferViews.splice(bufferViewIndex, 1);
+    container.json.bufferViews.forEach((bufferView) => {
+      if (bufferView.byteOffset > bufferView.byteOffset) {
+        bufferView.byteOffset -= bufferView.byteLength;
+      }
+    });
+    container.json.accessors.forEach((accessor) => {
+      if (accessor.bufferView > bufferViewIndex) accessor.bufferView--;
+    });
+    return bufferView;
+  }
+
+  static addAccessor(
+      container: GLTFContainer, 
+      array: Float32Array | Uint32Array | Uint16Array,
+      type: GLTF.AccessorType,
+      componentType: GLTF.AccessorComponentType,
+      count: number,
+      target: number): GLTF.IAccessor {
+    const bufferView = this.addBufferView(container, array.buffer, 0);
+    bufferView['target'] = target; // TODO: Add to typings.
+    const accessor: GLTF.IAccessor = {
+      bufferView: container.json.bufferViews.length - 1,
+      byteOffset: 0,
+      type,
+      componentType,
+      count
+    };
+    container.json.accessors.push(accessor);
+    return accessor;
+  }
+
   static getAccessorByteLength(accessor: GLTF.IAccessor): number {
     const itemSize = AccessorTypeData[accessor.type].size;
     const valueSize = AccessorComponentTypeData[accessor.componentType].size;
     return itemSize * valueSize * accessor.count;
   }
 
+  /**
+   * Removes segment from an arraybuffer, returning two arraybuffers: [original, removed].
+   */
   static splice (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> {
     const a1 = buffer.slice(0, begin);
     const a2 = buffer.slice(begin + count);
@@ -211,6 +345,7 @@ class GLTFUtil {
     return [a, b];
   }
 
+  /** Joins two ArrayBuffers. */
   static join (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
     const out = new Uint8Array(a.byteLength + b.byteLength);
     out.set(new Uint8Array(a), 0);

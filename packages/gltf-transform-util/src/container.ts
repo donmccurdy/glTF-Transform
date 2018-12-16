@@ -1,12 +1,18 @@
 import { AccessorTypeData, AccessorComponentType } from './constants';
-import { GLTFUtil } from './util';
 
 interface IBufferMap { [s: string]: ArrayBuffer; }
+
+interface IContainer {
+  json: GLTF.IGLTF;
+  getBuffer(bufferIndex: number): ArrayBuffer;
+  setBuffer(bufferIndex: number, buffer: ArrayBuffer): void;
+  validate(): void;
+}
 
 /**
  * Wrapper for a glTF asset.
  */
-class GLTFContainer {
+class GLTFContainer implements IContainer {
   constructor(public json: GLTF.IGLTF, public resources: IBufferMap) {}
 
   /**
@@ -17,100 +23,44 @@ class GLTFContainer {
     return this.resources[uri];
   }
 
-  /**
-   * Adds a new image to the glTF container.
-   * @param container
-   * @param name
-   * @param file
-   * @param type
-   */
-  addImage(name: string, file: ArrayBuffer, type: string): GLTFContainer {
-    let uri, mimeType
-    switch (type) {
-      case 'image/jpeg':
-        uri = `${name}.jpg`;
-        mimeType = 'image/jpeg';
-        break;
-      case 'image/png':
-        uri = `${name}.png`;
-        mimeType = 'image/png';
-        break;
-      default:
-        throw new Error(`Unsupported image type, "${type}".`);
-    }
-    this.json.images.push({ name, mimeType, uri });
-    this.resources[uri] = file;
-    return this;
+  getBuffer(bufferIndex: number): ArrayBuffer {
+    return this.resolveURI(this.json.buffers[bufferIndex].uri);
+  }
+
+  setBuffer(bufferIndex: number, buffer: ArrayBuffer): void {
+    this.resources[this.json.buffers[bufferIndex].uri] = buffer;
   }
 
   /**
-   * Removes an image from the glTF container. Fails if image is still in use.
-   * @param container
-   * @param index
+   * Creates a deep copy of the asset.
    */
-  removeImage(index: number): GLTFContainer {
-    const textures = this.json.textures.filter((texture) => texture.source === index);
-    if (textures.length) {
-      throw new Error(`Image is in use by ${textures.length} textures and cannot be removed.`);
+  clone(): GLTFContainer {
+    const json = JSON.parse(JSON.stringify(this.json));
+    const resources = {} as IBufferMap;
+    for (const uri in this.resources) {
+      const resource = this.resolveURI(uri);
+      resources[uri] = resource.slice(0);
     }
-    const image = this.json.images[index];
-    const imageBuffer = this.resolveURI(image.uri);
-    if (!imageBuffer) {
-      throw new Error('No such image, or image is embedded.');
-    }
-    this.json.images.splice(index, 1);
-    this.json.textures.forEach((texture) => {
-      if (texture.source > index) texture.source--;
-    });
-    return this;
+    return new GLTFContainer(json, resources);
   }
 
-  /**
-   * Adds a new buffer to the glTF container.
-   * @param container
-   * @param name
-   * @param buffer
-   */
-  addBuffer(name: string, buffer: ArrayBuffer): GLTFContainer {
-    const uri = `${name}.bin`;
-    this.json.buffers.push({ name, uri, byteLength: buffer.byteLength });
-    this.resources[uri] = buffer;
-    return this;
-  }
-
-  /**
-   * Removes a buffer from the glTF container. Fails if buffer is still in use.
-   * @param container
-   * @param index
-   */
-  removeBuffer(index: number): GLTFContainer {
-    const bufferViews = this.json.bufferViews.filter((view) => view.buffer === index);
-    if (bufferViews.length) {
-      throw new Error(`Buffer is in use by ${bufferViews.length} bufferViews and cannot be removed.`);
+  validate() {
+    if (this.json.buffers.length > 1) {
+      throw new Error(`Expected one buffer, found ${this.json.buffers.length}.`);
     }
-    const buffer = this.json.buffers[index];
-    this.json.buffers.splice(index, 1);
-    delete this.resources[buffer.uri];
-    return this;
-  }
-
-  addAccessor(
-      array: Float32Array | Uint32Array | Uint16Array,
-      type: GLTF.AccessorType,
-      componentType: GLTF.AccessorComponentType,
-      count: number,
-      target: number): GLTFContainer {
-    const buffer = this.json.buffers[0];
-    const bufferURI = buffer.uri;
-    const resource = this.resources[bufferURI];
-    const byteOffset = this.resources[bufferURI].byteLength;
-    this.resources[bufferURI] = GLTFUtil.join(resource, array.buffer);
-    buffer.byteLength = resource.byteLength;
-    const bufferView: GLTF.IBufferView = {buffer: 0, byteLength: array.byteLength, byteOffset};
-    this.json.bufferViews.push(bufferView);
-    const accessor: GLTF.IAccessor = {bufferView: this.json.bufferViews.length - 1, byteOffset: 0, type, componentType, count};
-    this.json.accessors.push(accessor);
-    return this;
+    const embeddedImages = (this.json.images||[]).filter((image) => image.bufferView !== undefined);
+    if (embeddedImages.length) {
+      throw new Error(`Expected only external images, found ${embeddedImages.length} embedded.`)
+    }
+    const embeddedBuffers = this.json.buffers.filter((buffer) => buffer.uri === undefined);
+    if (embeddedBuffers.length) {
+      throw new Error(`Expected exactly one buffer, which should be external, and found ${embeddedBuffers.length} embedded.`)
+    }
+    for (var key in this.json) {
+      if (Array.isArray(this.json[key]) && this.json[key].length === 0) {
+        throw new Error(`Empty top-level array, "${this.json[key]}".`);
+      }
+    }
   }
 
   /**
@@ -145,6 +95,17 @@ class GLTFContainer {
         throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
     }
   }
+
+  equals(other: GLTFContainer): boolean {
+    if (JSON.stringify(this.json) !== JSON.stringify(other.json)) return false;
+    if (Object.keys(this.resources).length !== Object.keys(other.resources).length) return false;
+    for (const resourceName in this.resources) {
+      const resource = Buffer.from(this.resources[resourceName]);
+      const otherResource = Buffer.from(other.resources[resourceName]);
+      if (!resource.equals(otherResource)) return false;
+    }
+    return true;
+  }
 }
 
-export { GLTFContainer, IBufferMap };
+export { GLTFContainer, IBufferMap, IContainer };

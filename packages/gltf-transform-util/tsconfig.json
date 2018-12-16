@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "lib": ["es6", "dom"],
+    "declaration": true
   },
   "include": [
     "src/**/*"

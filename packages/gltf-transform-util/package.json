@@ -5,7 +5,6 @@
   "main": "dist/gltf-transform-util.js",
   "module": "dist/gltf-transform-util.module.js",
   "types": "dist/index.d.ts",
-  "source": "src/index.ts",
   "scripts": {
     "test": "node test/test.js",
     "dist": "rollup -c",
@@ -22,7 +21,9 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^10.12.15",
     "rollup-plugin-typescript": "^1.0.0",
+    "rollup-plugin-typescript2": "^0.18.1",
     "source-map-support": "^0.5.9",
     "tape": "*",
     "tslib": "^1.9.3",

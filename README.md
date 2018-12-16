@@ -28,10 +28,11 @@ Packages:
 
 Short-term TODO:
 
-- [ ] read/write binary and JSON
+- [x] read/write binary and JSON
 - [ ] texture read/write is off
 - [ ] pack bufferviews better
 - [ ] efficient memory use
+- [ ] run validator on outputs
 
 Roadmap / ideas / help wanted:
 

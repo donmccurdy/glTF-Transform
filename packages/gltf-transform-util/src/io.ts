@@ -1,0 +1,105 @@
+import { GLTFUtil } from "./util";
+import { GLTFContainer, IBufferMap } from "./container";
+
+interface IO {
+    read: (uri: string) => GLTFContainer|Promise<GLTFContainer>;
+}
+
+class NodeIO implements IO {
+    private fs: any;
+    private path: any;
+
+    constructor(fs, path) {
+        this.fs = fs;
+        this.path = path;
+    }
+
+    read (uri: string): GLTFContainer {
+        const isGLB = !!uri.match(/\.glb$/);
+        return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+    }
+
+    private readGLB (uri: string): GLTFContainer {
+        const buffer: Buffer = this.fs.readFileSync(uri);
+        const arrayBuffer = GLTFUtil.trimBuffer(buffer);
+        return GLTFUtil.fromGLB(arrayBuffer);
+    }
+
+    private readGLTF (uri: string): GLTFContainer {
+        const json: GLTF.IGLTF = JSON.parse(this.fs.readFileSync(uri, 'utf8'));
+        const resources = {} as IBufferMap;
+        const images = json.images || [];
+        const buffers = json.buffers || [];
+        [...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
+            if (resource.uri) {
+                const buffer: Buffer = this.fs.readFileSync(resource.uri);
+                resources[resource.uri] = GLTFUtil.trimBuffer(buffer);
+            } else {
+                throw new Error('Embedded resources not implemented.');
+            }
+        })
+        return GLTFUtil.fromGLTF(json, resources);
+    }
+
+    writeGLTF (uri: string, container: GLTFContainer, embedded: boolean): void {
+        if (embedded) {
+            throw new Error('Not implemented.');
+        }
+        const {fs, path} = this;
+        const dir = path.dirname(uri);
+        const {json, resources} = container;
+        fs.writeFileSync(uri, JSON.stringify(json));
+        Object.keys(resources).forEach((resourceName) => {
+          const resource = new Buffer(resources[resourceName]);
+          fs.writeFileSync(path.join(dir, resourceName), resource);
+        });
+    }
+
+    writeGLB (uri: string, container: GLTFContainer): void {
+        const buffer = Buffer.from(GLTFUtil.toGLB(container));
+        this.fs.writeFileSync(uri, buffer);
+    }
+}
+
+class WebIO implements IO {
+    private fetchConfig: RequestInit;
+
+    constructor(fetchConfig: RequestInit) {
+        this.fetchConfig = fetchConfig;
+    }
+
+    read (uri: string): Promise<GLTFContainer> {
+        const isGLB = !!uri.match(/\.glb$/);
+        return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+    }
+
+    private readGLTF (uri: string): Promise<GLTFContainer> {
+        return fetch(uri, this.fetchConfig)
+            .then((response) => response.json())
+            .then((json: GLTF.IGLTF) => {
+                const resources = {} as IBufferMap;
+                const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
+                    .map((resource: GLTF.IBuffer|GLTF.IImage) => {
+                        if (resource.uri) {
+                            return fetch(resource.uri, this.fetchConfig)
+                                .then((response) => response.arrayBuffer())
+                                .then((arrayBuffer) => {
+                                    resources[resource.uri] = arrayBuffer;
+                                });
+                        } else {
+                            throw new Error('Embedded resources not implemented.');
+                        }
+                    });
+                return Promise.all(pendingResources)
+                    .then(() => GLTFUtil.fromGLTF(json, resources));
+            });
+    }
+
+    private readGLB (uri: string): Promise<GLTFContainer> {
+        return fetch(uri, this.fetchConfig)
+            .then((response) => response.arrayBuffer())
+            .then((arrayBuffer) => GLTFUtil.fromGLB(arrayBuffer));
+    }
+}
+
+export {NodeIO, WebIO};
