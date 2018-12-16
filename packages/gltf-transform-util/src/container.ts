@@ -69,27 +69,27 @@ class GLTFContainer implements IContainer {
    */
   getAccessorArray(index: number): Float32Array | Uint32Array | Uint16Array {
     const accessor = this.json.accessors[index];
-    const type = accessor.type;
     const bufferView = this.json.bufferViews[accessor.bufferView];
     const buffer = this.json.buffers[bufferView.buffer];
     const resource = this.resources[buffer.uri];
 
-    let valueSize = AccessorTypeData[accessor.type].size;
+    const valueSize = AccessorTypeData[accessor.type].size;
+    const start = bufferView.byteOffset + accessor.byteOffset;
 
     let elementSize;
     let data;
     switch (accessor.componentType) {
       case AccessorComponentType.FLOAT:
         elementSize = Float32Array.BYTES_PER_ELEMENT;
-        data = resource.slice(bufferView.byteOffset + accessor.byteOffset, accessor.count * valueSize * elementSize);
+        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
         return new Float32Array(data);
       case AccessorComponentType.UNSIGNED_INT:
         elementSize = Uint32Array.BYTES_PER_ELEMENT;
-        data = resource.slice(bufferView.byteOffset + accessor.byteOffset, accessor.count * valueSize * elementSize);
+        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
         return new Uint32Array(data);
       case AccessorComponentType.UNSIGNED_SHORT:
         elementSize = Uint16Array.BYTES_PER_ELEMENT;
-        data = resource.slice(bufferView.byteOffset + accessor.byteOffset, accessor.count * valueSize * elementSize);
+        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
         return new Uint16Array(data);
       default:
         throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);

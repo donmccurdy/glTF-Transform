@@ -279,11 +279,13 @@ class GLTFUtil {
 
   static addBufferView(container: IContainer, arrayBuffer: ArrayBuffer, bufferIndex: number = 0): GLTF.IBufferView {
     const buffer = container.json.buffers[0];
-    const resource = container.getBuffer(bufferIndex);
+    let resource = container.getBuffer(bufferIndex);
     const byteOffset = resource.byteLength;
-    container.setBuffer(bufferIndex, GLTFUtil.join(resource, arrayBuffer));
+    resource = GLTFUtil.join(resource, arrayBuffer)
+    container.setBuffer(bufferIndex, resource);
     buffer.byteLength = resource.byteLength;
     const bufferView: GLTF.IBufferView = {buffer: 0, byteLength: arrayBuffer.byteLength, byteOffset};
+    container.json.bufferViews.push(bufferView);
     return bufferView;
   }
 

@@ -57,9 +57,9 @@ class PackedGLTFContainer implements IContainer {
             const bufferViewIndex = image.bufferView;
             const bufferView = json.bufferViews[bufferViewIndex];
             delete image.bufferView;
-            const imageData = this.buffer.slice(bufferView.byteOffset, bufferView.byteLength);
+            const imageData = this.buffer.slice(bufferView.byteOffset, bufferView.byteOffset + bufferView.byteLength);
             GLTFUtil.removeBufferView(this, bufferViewIndex);
-            const extension = image.mimeType === 'image/jpeg' ? '.jpg' : '.png';
+            const extension = image.mimeType === 'image/jpeg' ? 'jpg' : 'png';
             image.uri = image.name ? image.name.replace(/\.\w+$/, '') + `.${extension}` : `image-${imageIndex}.${extension}`;
             resources[image.uri] = imageData;
         });

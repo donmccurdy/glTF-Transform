@@ -21,23 +21,17 @@ const DEFAULT_OPTIONS: IOcclusionOptions = {
     samples: 500,
 };
 
+// A greyscale 256x1 gradient.
 const TEXTURE_MIME_TYPE = 'image/png';
-const TEXTURE_DATA = 'iVBORw0KGgoAAAANSUhEUgAAAQAAAAABCAYAAAAxWXB3AAAAIElEQVQ4T2NkYGD4z8TExAACo/RoOIymg5GTDxgZGRkA/oMD/vOwS0YAAAAASUVORK5CYII=';
-
-function getTextureBuffer (): ArrayBuffer {
-    const buffer = new ArrayBuffer(TEXTURE_DATA.length);
-    const array = new Uint8Array(buffer);
-    for (let i = 0; i < TEXTURE_DATA.length; i++) {
-        array[i] = TEXTURE_DATA.charCodeAt(i);
-    }
-    return buffer;
-}
-
-let aoTextureBuffer;
+const TEXTURE_DATA = new Uint8Array([
+    137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 1, 0, 0, 0, 0, 1, 8, 6, 0,
+    0, 0, 49, 89, 112, 119, 0, 0, 0, 32, 73, 68, 65, 84, 56, 79, 99, 100, 96, 96, 248, 207, 196,
+    196, 196, 0, 2, 163, 244, 104, 56, 140, 166, 131, 145, 147, 15, 24, 25, 25, 25, 0, 254, 131,
+    3, 254, 243, 176, 75, 70, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
+]).buffer;
 
 function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions): GLTFContainer {
     options = {...DEFAULT_OPTIONS, ...options};
-    aoTextureBuffer = aoTextureBuffer || getTextureBuffer();
     const {resolution, samples} = options;    
     logger.info(`Resolution: ${resolution}; Samples: ${samples}`);
 
@@ -56,7 +50,7 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         return;
     }
 
-    GLTFUtil.addImage(container, 'occlusion', aoTextureBuffer, TEXTURE_MIME_TYPE);
+    GLTFUtil.addImage(container, 'occlusion', TEXTURE_DATA, TEXTURE_MIME_TYPE);
     container.json.textures.push({source: container.json.images.length - 1});
     const occlusionTextureIndex = container.json.textures.length - 1;
 
@@ -88,25 +82,25 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         aoSampler.dispose();
 
         // Write UV set and add AO map.
-        // const numVertices = ao.length;
-        // const uv2Data = new Float32Array(numVertices * 2);
-        // for (let i = 0; i < numVertices; i++) {
-        //     uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
-        // }
-        // GLTFUtil.addAccessor(
-        //     container,
-        //     uv2Data,
-        //     'VEC2' as GLTF.AccessorType.VEC2,
-        //     AccessorComponentType.FLOAT,
-        //     numVertices,
-        //     BufferViewTarget.ARRAY_BUFFER
-        // );
-        // const accessorIndex = container.json.accessors.length - 1;
-        // primitiveDef.attributes['TEXCOORD_1'] = accessorIndex;
-        // if (primitiveDef.attributes['TEXCOORD_0'] === undefined) {
-        //     primitiveDef.attributes['TEXCOORD_0'] = accessorIndex;
-        // }
-        // container.json.materials[primitiveDef.material].occlusionTexture = {index: occlusionTextureIndex};
+        const numVertices = ao.length;
+        const uv2Data = new Float32Array(numVertices * 2);
+        for (let i = 0; i < numVertices; i++) {
+            uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
+        }
+        GLTFUtil.addAccessor(
+            container,
+            uv2Data,
+            'VEC2' as GLTF.AccessorType.VEC2,
+            AccessorComponentType.FLOAT,
+            numVertices,
+            BufferViewTarget.ARRAY_BUFFER
+        );
+        const accessorIndex = container.json.accessors.length - 1;
+        primitiveDef.attributes['TEXCOORD_1'] = accessorIndex;
+        if (primitiveDef.attributes['TEXCOORD_0'] === undefined) {
+            primitiveDef.attributes['TEXCOORD_0'] = accessorIndex;
+        }
+        container.json.materials[primitiveDef.material].occlusionTexture = {index: occlusionTextureIndex};
     });
 
     logger.info('Finished baking per-vertex occlusion.');

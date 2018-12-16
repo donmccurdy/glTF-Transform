@@ -56,7 +56,8 @@ class NodeIO implements IO {
     }
 
     writeGLB (uri: string, container: GLTFContainer): void {
-        const buffer = Buffer.from(GLTFUtil.toGLB(container));
+        const glbBuffer = GLTFUtil.toGLB(container);
+        const buffer = Buffer.from(glbBuffer);
         this.fs.writeFileSync(uri, buffer);
     }
 }
