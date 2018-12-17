@@ -1,5 +1,20 @@
 language: node_js
 node_js:
   - "10"
+# headless-gl addons (?)
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - xutils-dev
+    - libxi-dev
+    - libxxf86vm-dev
+    - x11proto-xf86vidmode-dev
+    - mesa-utils
+    - xvfb
+    - libgl1-mesa-dri
+    - libglapi-mesa
+    - libosmesa6
 before_script:
   - npm run lerna:bootstrap && npm run lerna:install && npm run lerna:link
