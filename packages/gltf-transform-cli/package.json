@@ -8,10 +8,6 @@
     "gltf-transform": "src/index.js"
   },
   "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/donmccurdy/glTF-Transform.git"
-  },
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "bugs": {
