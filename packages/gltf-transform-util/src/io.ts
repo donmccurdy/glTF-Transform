@@ -42,7 +42,12 @@ class NodeIO implements IO {
         return GLTFUtil.fromGLTF(json, resources);
     }
 
-    writeGLTF (uri: string, container: GLTFContainer, embedded: boolean): void {
+    write (uri: string, container: GLTFContainer): void {
+        const isGLB = !!uri.match(/\.glb$/);
+        isGLB ? this.writeGLB(uri, container) : this.writeGLTF(uri, container);
+    }
+
+    writeGLTF (uri: string, container: GLTFContainer, embedded?: boolean): void {
         if (embedded) {
             throw new Error('Not implemented.');
         }

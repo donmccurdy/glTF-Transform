@@ -24,6 +24,8 @@ Packages:
   - Bakes per-vertex ambient occlusion.
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
+- [ ] prune (`gltf-transform-prune`)
+  - Prunes duplicate accessors (and, in the future, images).
 
 TODO:
 

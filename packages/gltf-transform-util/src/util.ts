@@ -293,6 +293,7 @@ class GLTFUtil {
     return bufferView;
   }
 
+  /** Removes bufferView, after checking to see whether it is used by any accessors. */
   static removeBufferView(container: IContainer, bufferViewIndex: number): GLTF.IBufferView {
     const bufferView = container.json.bufferViews[bufferViewIndex];
     const accessors = container.json.accessors.filter((accessor) => accessor.bufferView === bufferViewIndex);
@@ -300,19 +301,21 @@ class GLTFUtil {
       throw new Error(`Buffer is in use by ${accessors.length} accessors and cannot be removed.`);
     }
 
-    let resource = container.getBuffer(bufferView.buffer);
-    [resource] = this.splice(resource, bufferView.byteOffset, bufferView.byteLength);
-    container.setBuffer(bufferView.buffer, resource);
-    const buffer = container.json.buffers[bufferView.buffer];
-    buffer.byteLength -= bufferView.byteLength;
+    if (bufferView.byteLength > 0) {
+      let resource = container.getBuffer(bufferView.buffer);
+      [resource] = this.splice(resource, bufferView.byteOffset, bufferView.byteLength);
+      container.setBuffer(bufferView.buffer, resource);
+      const buffer = container.json.buffers[bufferView.buffer];
+      buffer.byteLength -= bufferView.byteLength;
+
+      container.json.bufferViews.forEach((bufferView) => {
+        if (bufferView.byteOffset > bufferView.byteOffset) {
+          bufferView.byteOffset -= bufferView.byteLength;
+        }
+      });
+    }
 
     container.json.bufferViews.splice(bufferViewIndex, 1);
-    container.json.bufferViews.forEach((bufferView) => {
-      if (bufferView.byteOffset > bufferView.byteOffset) {
-        bufferView.byteOffset -= bufferView.byteLength;
-      }
-    });
-
     container.json.accessors.forEach((accessor) => {
       if (accessor.bufferView > bufferViewIndex) accessor.bufferView--;
     });
@@ -338,6 +341,76 @@ class GLTFUtil {
     };
     container.json.accessors.push(accessor);
     return accessor;
+  }
+
+  /**
+   * Removes accessor, without checking to see whether it is used.
+   * 
+   * - NOTE: Cannot currently update nonmesh accessors, which will lead to bugs.
+   */
+  static removeAccessor(container: GLTFContainer, index: number): GLTF.IAccessor { 
+    if ((container.json.animations||[]).length > 0) {
+      throw new Error('Not implemented: cannot remove accessors from animated models.');
+    }
+    
+    const accessor = container.json.accessors[index];
+    const byteOffset = accessor.byteOffset || 0;
+    const byteLength = GLTFUtil.getAccessorByteLength(accessor);
+    if (byteLength) {
+      this.spliceBufferView(container, accessor.bufferView, byteOffset, byteLength);
+    }
+
+    // remove accessor from JSON
+    container.json.accessors.splice(index, 1);
+
+    // update byteOffset of other accessors
+    container.json.accessors.forEach((otherAccessor) => {
+      if (otherAccessor.bufferView === accessor.bufferView && (otherAccessor.byteOffset||0) > byteOffset) {
+        otherAccessor.byteOffset -= byteLength;
+      }
+    });
+
+    // update pointers into following accessors
+    container.json.meshes.forEach((mesh) => {
+      mesh.primitives.forEach((primitive) => {
+        for (let semantic in primitive.attributes) {
+          if (primitive.attributes[semantic] === index) {
+            throw new Error('Unexpected accessor use.');
+          } else if (primitive.attributes[semantic] > index) {
+            primitive.attributes[semantic]--;
+          }
+        }
+        if (primitive.indices === index) {
+          throw new Error('Unexpected accessor use.');
+        } else if (primitive.indices > index) {
+          primitive.indices--;
+        }
+      });
+    });
+
+    return accessor;
+  }
+
+  /**
+   * Removes data from a bufferView, updating other affected bufferviews.
+   *
+   * - Does not check for existing uses.
+   * - Does not update any accessors.
+   */
+  static spliceBufferView(container: GLTFContainer, bufferViewIndex: number, byteOffset: number, byteLength: number): ArrayBuffer {
+    const bufferView = container.json.bufferViews[bufferViewIndex];
+    let bufferData = container.getBuffer(bufferView.buffer);
+    let splicedData;
+    [bufferData, splicedData] = GLTFUtil.splice(bufferData, (bufferView.byteOffset||0) + byteOffset, byteLength);
+    container.setBuffer(bufferView.buffer, bufferData);
+    container.json.buffers[bufferView.buffer].byteLength -= byteLength; // TODO: do this when setBuffer is called?
+    bufferView.byteLength -= byteLength;
+    container.json.bufferViews.forEach((otherBufferView) => {
+      if (bufferView.buffer === otherBufferView.buffer && (bufferView.byteOffset||0) < (otherBufferView.byteOffset||0)) {
+        otherBufferView.byteOffset -= byteLength;
+      }
+    });
+    return splicedData;
   }
 
   static getAccessorByteLength(accessor: GLTF.IAccessor): number {
@@ -396,6 +469,22 @@ class GLTFUtil {
   
     return arrayBuffer;
 
+  }
+
+  static arrayBufferEquals(a: ArrayBuffer, b: ArrayBuffer) {
+    if (a === b) return true;
+
+    if (a.byteLength !== b.byteLength) return false;
+
+    const view1 = new DataView(a);
+    const view2 = new DataView(b);
+
+    let i = a.byteLength;
+    while (i--) {
+      if (view1.getUint8(i) !== view2.getUint8(i)) return false;
+    }
+
+    return true;
   }
 }
 

@@ -21,6 +21,7 @@
     "caporal": "^1.1.0",
     "gl": "^4.1.1",
     "gltf-transform-occlusion-vertex": "^0.0.3",
+    "gltf-transform-prune": "^0.0.3",
     "gltf-transform-split": "^0.0.3",
     "gltf-transform-util": "^0.0.3"
   }

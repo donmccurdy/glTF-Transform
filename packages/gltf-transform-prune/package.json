@@ -1,0 +1,34 @@
+{
+  "name": "gltf-transform-prune",
+  "version": "0.0.3",
+  "description": "{DESCRIPTION}",
+  "main": "dist/gltf-transform-prune.js",
+  "module": "dist/gltf-transform-prune.module.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "node test/test.js",
+    "dist": "rollup -c",
+    "watch": "rollup -w -c",
+    "clean": "rm -rf node_modules && rm -rf dist/*"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^0.68.0",
+    "rollup-plugin-typescript": "^1.0.0",
+    "source-map-support": "^0.5.9",
+    "tape": "*",
+    "tslib": "^1.9.3",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "gltf-transform-util": "^0.0.3"
+  }
+}

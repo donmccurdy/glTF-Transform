@@ -67,14 +67,14 @@ class GLTFContainer implements IContainer {
    * Returns the accessor for the given index, as a typed array.
    * @param index
    */
-  getAccessorArray(index: number): Float32Array | Uint32Array | Uint16Array {
+  getAccessorArray(index: number): Float32Array | Uint32Array | Uint16Array | Uint8Array {
     const accessor = this.json.accessors[index];
     const bufferView = this.json.bufferViews[accessor.bufferView];
     const buffer = this.json.buffers[bufferView.buffer];
     const resource = this.resources[buffer.uri];
 
     const valueSize = AccessorTypeData[accessor.type].size;
-    const start = bufferView.byteOffset + accessor.byteOffset;
+    const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
 
     let elementSize;
     let data;
@@ -91,6 +91,10 @@ class GLTFContainer implements IContainer {
         elementSize = Uint16Array.BYTES_PER_ELEMENT;
         data = resource.slice(start, start + accessor.count * valueSize * elementSize);
         return new Uint16Array(data);
+        case AccessorComponentType.UNSIGNED_BYTE:
+        elementSize = Uint8Array.BYTES_PER_ELEMENT;
+        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
+        return new Uint8Array(data);
       default:
         throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
     }

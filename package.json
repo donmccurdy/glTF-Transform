@@ -10,6 +10,7 @@
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "dist": "lerna run dist",
+    "prepublish": "npm run dist",
     "test": "lerna run test --use-workspaces",
     "docs": "node ./scripts/generate-readmes"
   },
