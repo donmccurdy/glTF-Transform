@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
+    "lerna:install": "lerna install",
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "dist": "lerna run dist",
