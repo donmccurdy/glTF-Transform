@@ -18,14 +18,14 @@ Packages:
   - WebIO - Read GLTFContainers from a URL.
 - [x] cli (`gltf-transform-cli`)
   - Provides a CLI interface to Node.js-compatible packages.
-- [x] split (`gltf-transform-split`)
-  - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
 - [x] occlusionVertex (`gltf-occlusion-vertex`)
   - Bakes per-vertex ambient occlusion.
+- [x] prune (`gltf-transform-prune`)
+  - Prunes duplicate accessors (and, in the future, images).
+- [x] split (`gltf-transform-split`)
+  - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
-- [ ] prune (`gltf-transform-prune`)
-  - Prunes duplicate accessors (and, in the future, images).
 
 TODO:
 
@@ -34,7 +34,6 @@ TODO:
 
 Roadmap / ideas / help wanted:
 
-- [ ] deduplicate accessors
 - [ ] deduplicate images
 - [ ] defrag bufferviews
 - [ ] merge geometry

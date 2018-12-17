@@ -7,11 +7,10 @@
   ],
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
-    "lerna:install": "lerna install",
+    "lerna:install": "lerna exec -- npm install",
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "dist": "lerna run dist",
-    "prepublish": "npm run dist",
     "test": "lerna run test --use-workspaces",
     "docs": "node ./scripts/generate-readmes"
   },
