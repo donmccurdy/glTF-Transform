@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "DESCRIPTION",
   "main": "src/index.js",
@@ -17,9 +17,9 @@
   "dependencies": {
     "caporal": "^1.1.0",
     "gl": "^4.1.1",
-    "gltf-transform-occlusion-vertex": "^0.0.3",
-    "gltf-transform-prune": "^0.0.3",
-    "gltf-transform-split": "^0.0.3",
-    "gltf-transform-util": "^0.0.3"
+    "gltf-transform-occlusion-vertex": "^0.0.4",
+    "gltf-transform-prune": "^0.0.4",
+    "gltf-transform-split": "^0.0.4",
+    "gltf-transform-util": "^0.0.4"
   }
 }

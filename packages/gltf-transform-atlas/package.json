@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-atlas",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "{DESCRIPTION}",
   "repository": "github:donmccurdy/glTF-Transform",
   "main": "dist/gltf-transform-atlas.js",
@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "atlaspack": "^1.0.0",
-    "gltf-transform-util": "^0.0.3"
+    "gltf-transform-util": "^0.0.4"
   }
 }
