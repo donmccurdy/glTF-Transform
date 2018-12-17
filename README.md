@@ -14,6 +14,8 @@ Packages:
 - [x] util (`gltf-transform-util`)
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
+  - NodeIO - Read/write GLTFContainers from the filesystem.
+  - WebIO - Read GLTFContainers from a URL.
 - [x] cli (`gltf-transform-cli`)
   - Provides a CLI interface to Node.js-compatible packages.
 - [x] split (`gltf-transform-split`)
@@ -23,7 +25,7 @@ Packages:
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
-Short-term TODO:
+TODO:
 
 - [ ] run validator on outputs
 - [ ] more unit tests on util functions
