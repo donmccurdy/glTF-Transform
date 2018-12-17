@@ -21,6 +21,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "devDependencies": {
+    "rollup": "^0.68.0",
     "rollup-plugin-typescript": "^1.0.0",
     "source-map-support": "^0.5.9",
     "tape": "*",
