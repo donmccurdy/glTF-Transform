@@ -33,7 +33,6 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
     json.bufferViews.forEach((bufferView, bufferViewIndex) => {
       if (bufferViewMap[bufferViewIndex] !== meshName) return;
-      logger.info(meshName + ':' + bufferViewIndex);
 
       const bufferData = container.getBuffer(bufferView.buffer);
       const bufferViewData = bufferData.slice(bufferView.byteOffset, bufferView.byteOffset + bufferView.byteLength);
