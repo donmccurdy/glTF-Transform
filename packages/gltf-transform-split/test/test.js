@@ -1,30 +1,25 @@
 require('source-map-support').install();
 
-const test = require('tape');
-const glob = require('glob');
+const fs = require('fs');
 const path = require('path');
-const load = require('load-json-file');
+const test = require('tape');
 
-const { GLTFUtil } = require ('gltf-transform-util');
+const { NodeIO } = require ('gltf-transform-util');
 const { split } = require('../');
 
 test('gltf-transform-split', t => {
-  glob.sync(path.join(__dirname, 'in', '*.gltf')).forEach(filepath => {
-    const {name} = path.parse(filepath);
-    const json = load.sync(filepath);
-    const model = GLTFUtil.fromGLTF(json, {});
-    t.equal(model.json.buffers.length, 1, 'initialized with one buffer');
-    split(model, ['CubeA', 'CubeB']);
-    // TODO: This should be two, not three.
-    t.deepEqual(model.json.buffers, [
-      { byteLength: 36, uri: 'buffer0.bin' },
-      { uri: 'CubeA.bin', byteLength: 288 },
-      { uri: 'CubeB.bin', byteLength: 324 }
-    ], 'splits into three buffers');
 
-    // const results = [];
-    // const out = filepath.replace(path.join('test', 'in'), path.join('test', 'out'));
-    // if (process.env.REGEN) write.sync(out, results);
-  });
+  const io = new NodeIO(fs, path);
+  const container = io.read(path.join(__dirname, 'in/TwoCubes.glb'));
+  t.equal(container.json.buffers.length, 1, 'initialized with one buffer');
+
+  split(container, ['CubeA', 'CubeB']);
+  // TODO: This should be two, not three.
+  t.deepEqual(container.json.buffers, [
+    { uri: 'resources.bin', byteLength: 36, name: 'TwoCubes', },
+    { uri: 'CubeA.bin', byteLength: 288, name: 'CubeA' },
+    { uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' }
+  ], 'splits into three buffers');
+
   t.end();
 });

@@ -7,6 +7,7 @@ const program = require('caporal');
 const { version } = require('../package.json');
 const { GLTFUtil, NodeIO } = require('gltf-transform-util');
 const { occlusionVertex } = require('gltf-transform-occlusion-vertex');
+const { split } = require('gltf-transform-split');
 
 const io = new NodeIO(fs, path);
 
@@ -31,26 +32,26 @@ program
     .option('--resolution <n>', 'AO resolution', program.INT, 512)
     .option('--samples <n>', 'Number of samples', program.INT, 500)
     .action(({input, output}, {resolution, samples}, logger) => {
-        logger.info(`[ao] ${input} ${output} --resolution ${resolution} --samples ${samples}`);
         const container = io.read(input);
         occlusionVertex(container, {gl, resolution, samples});
         io.writeGLB(output, container);
-        logger.info('[ao] Done.');
     });
 
-    // .command('format <model>')
-    // .description('TODO: Description.')
-    // .option('-m, --mode [value]', 'Format ("binary", "separate", or "embedded"). Default is "binary".')
-    // .action((file) => {
-    //     console.error('[format] Not implemented.');
-    // })
+// SPLIT
+program
+    .command('split', 'Split a model\'s binary data into separate files')
+    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+    .argument('<output>', 'Path to write output')
+    .option('--meshes [meshes]', 'Mesh names.', program.LIST)
+    .action(({input, output}, {meshes}) => {
+        const container = io.read(input);
+        split(container, meshes);
+        io.writeGLTF(output, container);
+    });
 
-    // .command('atlas <model>')
-    // .description('TODO: Description.')
-    // .option('-s, --max-size <n>', 'Maximum texture size. Default is 2048.')
-    // .action((file) => {
-    //     console.error('[atlas] Not implemented.');
-    // })
+// PACK:TODO
+
+// ATLAS:TODO
 
 program
     .parse(process.argv);

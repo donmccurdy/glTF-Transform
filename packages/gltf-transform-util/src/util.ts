@@ -254,11 +254,12 @@ class GLTFUtil {
    * @param name
    * @param buffer
    */
-  static addBuffer(container: GLTFContainer, name: string, buffer: ArrayBuffer): GLTFContainer {
+  static addBuffer(container: GLTFContainer, name: string, arrayBuffer: ArrayBuffer): GLTF.IBuffer {
     const uri = `${name}.bin`;
-    container.json.buffers.push({ name, uri, byteLength: buffer.byteLength });
-    container.resources[uri] = buffer;
-    return container;
+    const buffer = { name, uri, byteLength: arrayBuffer.byteLength };
+    container.json.buffers.push(buffer);
+    container.resources[uri] = arrayBuffer;
+    return buffer;
   }
 
   /**
@@ -266,7 +267,7 @@ class GLTFUtil {
    * @param container
    * @param index
    */
-  static removeBuffer(container: GLTFContainer, index: number): GLTFContainer {
+  static removeBuffer(container: GLTFContainer, index: number): GLTF.IBuffer {
     const bufferViews = container.json.bufferViews.filter((view) => view.buffer === index);
     if (bufferViews.length) {
       throw new Error(`Buffer is in use by ${bufferViews.length} bufferViews and cannot be removed.`);
@@ -274,17 +275,20 @@ class GLTFUtil {
     const buffer = container.json.buffers[index];
     container.json.buffers.splice(index, 1);
     delete container.resources[buffer.uri];
-    return container;
+    container.json.bufferViews.forEach((bufferView) => {
+      if (bufferView.buffer >= index) bufferView.buffer--;
+    });
+    return buffer;
   }
 
   static addBufferView(container: IContainer, arrayBuffer: ArrayBuffer, bufferIndex: number = 0): GLTF.IBufferView {
-    const buffer = container.json.buffers[0];
+    const buffer = container.json.buffers[bufferIndex];
     let resource = container.getBuffer(bufferIndex);
     const byteOffset = resource.byteLength;
     resource = GLTFUtil.join(resource, arrayBuffer)
     container.setBuffer(bufferIndex, resource);
     buffer.byteLength = resource.byteLength;
-    const bufferView: GLTF.IBufferView = {buffer: 0, byteLength: arrayBuffer.byteLength, byteOffset};
+    const bufferView: GLTF.IBufferView = {buffer: bufferIndex, byteLength: arrayBuffer.byteLength, byteOffset};
     container.json.bufferViews.push(bufferView);
     return bufferView;
   }
@@ -295,18 +299,24 @@ class GLTFUtil {
     if (accessors.length) {
       throw new Error(`Buffer is in use by ${accessors.length} accessors and cannot be removed.`);
     }
+
     let resource = container.getBuffer(bufferView.buffer);
     [resource] = this.splice(resource, bufferView.byteOffset, bufferView.byteLength);
     container.setBuffer(bufferView.buffer, resource);
+    const buffer = container.json.buffers[bufferView.buffer];
+    buffer.byteLength -= bufferView.byteLength;
+
     container.json.bufferViews.splice(bufferViewIndex, 1);
     container.json.bufferViews.forEach((bufferView) => {
       if (bufferView.byteOffset > bufferView.byteOffset) {
         bufferView.byteOffset -= bufferView.byteLength;
       }
     });
+
     container.json.accessors.forEach((accessor) => {
       if (accessor.bufferView > bufferViewIndex) accessor.bufferView--;
     });
+
     return bufferView;
   }
 

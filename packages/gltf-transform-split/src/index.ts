@@ -5,18 +5,8 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
   const json = container.json;
   const logger = GLTFUtil.createLogger('gltf-transform-split', LoggerVerbosity.INFO);
 
-  // Create Buffer instances.
-  json.buffers.forEach((buffer, bufferIndex) => {
-    if (buffer.uri && buffer.uri.match(/^data:/)) {
-      const uri = buffer.uri;
-      buffer.uri = `buffer${bufferIndex}.bin`;
-      buffer['_buffer'] = GLTFUtil.createBufferFromDataURI(uri);
-      return;
-    }
-    throw new Error('Only buffers using Data URIs are currently supported');
-  });
-
   const bufferViewMap = {};
+  const removedBufferViews = [];
 
   // Group bufferviews by mesh.
   json.meshes.forEach((mesh) => {
@@ -28,7 +18,6 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
       });
 
       function markAccessor(accessor) {
-        const bufferView = json.bufferViews[accessor.bufferView];
         if (bufferViewMap[accessor.bufferView] === undefined) {
           bufferViewMap[accessor.bufferView] = mesh.name;
         } else if (bufferViewMap[accessor.bufferView] !== mesh.name) {
@@ -40,57 +29,44 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
   // Write data for each mesh to a new buffer.
   meshes.forEach((meshName) => {
-    let buffer = new ArrayBuffer(0);
-
     logger.info(`📦  ${meshName}`);
 
     json.bufferViews.forEach((bufferView, bufferViewIndex) => {
       if (bufferViewMap[bufferViewIndex] !== meshName) return;
       logger.info(meshName + ':' + bufferViewIndex);
 
-      // Extract data from original buffer.
-      logger.info(`original before: ${json.buffers[bufferView.buffer]['_buffer'].byteLength} w/ offset ${bufferView.byteOffset} and length ${bufferView.byteLength}`);
-      const [ original, tmp ] = GLTFUtil.splice(json.buffers[bufferView.buffer]['_buffer'], bufferView.byteOffset, bufferView.byteLength);
-      logger.info(`spliced: ${tmp.byteLength}`);
-      json.buffers[bufferView.buffer]['_buffer'] = original;
-      logger.info(`original after: ${json.buffers[bufferView.buffer]['_buffer'].byteLength}`);
+      const bufferData = container.getBuffer(bufferView.buffer);
+      const bufferViewData = bufferData.slice(bufferView.byteOffset, bufferView.byteOffset + bufferView.byteLength);
+      
+      const newBufferURI = `${meshName}.bin`;
+      const newBuffer = container.json.buffers.find((buffer) => buffer.uri === newBufferURI)
+        || GLTFUtil.addBuffer(container, meshName, new ArrayBuffer(0));
+      const newBufferIndex = container.json.buffers.indexOf(newBuffer);
 
-      // Write data to new buffer.
-      const affectedByteOffset = bufferView.byteOffset + bufferView.byteLength;
-      const affectedBuffer = bufferView.buffer;
-      bufferView.byteOffset = buffer.byteLength;
-      bufferView.buffer = json.buffers.length;
-      buffer = GLTFUtil.join(buffer, tmp);
-
-      // Update remaining buffers.
-      json.bufferViews.forEach((affectedBufferView) => {
-        if (affectedBufferView.buffer === affectedBuffer
-          && affectedBufferView.byteOffset >= affectedByteOffset) {
-          affectedBufferView.byteOffset -= bufferView.byteLength;
+      const newBufferView = GLTFUtil.addBufferView(container, bufferViewData, newBufferIndex);
+      const newBufferViewIndex = container.json.bufferViews.indexOf(newBufferView);
+      container.json.accessors.forEach((accessor) => {
+        if (accessor.bufferView === bufferViewIndex) {
+          accessor.bufferView = newBufferViewIndex;
         }
-      });
-      // TODO: Update embedded images, or throw an error.
+      })
+
+      removedBufferViews.push(bufferViewIndex);
     });
 
-    const meshBuffer = { uri: `${meshName}.bin`, byteLength: undefined } as GLTF.IBuffer;
-    meshBuffer['_buffer'] = buffer;
-    json.buffers.push(meshBuffer);
   });
 
-  // Filter out empty buffers.
-  json.buffers = json.buffers.filter((buffer, bufferIndex) => {
-    buffer.byteLength = buffer['_buffer'].byteLength;
-    delete buffer['_buffer'];
-    if (buffer.byteLength > 0) return true;
-    json.bufferViews.forEach((bufferView) => {
-      if (bufferView.buffer >= bufferIndex) bufferView.buffer--;
-    });
-    return false;
-  });
+  // Removed emptied bufferviews.
+  removedBufferViews.sort((a, b) => a > b ? -1 : 1);
+  removedBufferViews.forEach((index) => GLTFUtil.removeBufferView(container, index));
+
+  // Remove initial buffer, if empty.
+  const buffer = json.buffers[0];
+  if (buffer.byteLength === 0) {
+    GLTFUtil.removeBuffer(container, 0);
+  }
 
   return container;
 }
 
-const test = 'test';
-
-export { split, test };
+export { split };
