@@ -27,11 +27,6 @@ Packages:
 - [ ] atlas (`gltf-transform-atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
-TODO:
-
-- [ ] run validator on outputs
-- [ ] more unit tests on util functions
-
 Roadmap / ideas / help wanted:
 
 - [ ] deduplicate images
