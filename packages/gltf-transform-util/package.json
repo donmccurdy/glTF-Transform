@@ -1,6 +1,6 @@
 {
   "name": "gltf-transform-util",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-util.js",
   "module": "dist/gltf-transform-util.module.js",
