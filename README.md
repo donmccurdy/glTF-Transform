@@ -74,3 +74,41 @@ gltf-transform analyze input.glb
 # ambient occlusion
 gltf-transform ao --samples 1000 input.glb output.glb 
 ```
+## Contributing
+
+This project consists of multiple NPM packages, managed in one repository with
+https://lernajs.io/. All code, excluding Node.js-based tests, is written in TypeScript.
+I recommend using VSCode for linting and type information, which becomes very helpful
+when modifying glTF schema objects.
+
+After cloning the repository, run:
+
+```
+npm install && npm install -g lerna
+lerna bootstrap
+```
+
+The command `lerna bootstrap` will install dependencies into each package, and will then
+`npm link` them together. If you make changes to a package's dependencies (e.g. run
+`npm install <anything>`) you will need to run `lerna link` again to re-create the symlinks.
+
+To build and test all code, run:
+
+```
+lerna run dist
+lerna run test
+```
+
+To run an arbitrary command across all packages:
+
+```
+lerna exec -- <command>
+```
+
+While editing any one package, use `npm run dev` in that package to watch and rebuild code
+after changes. When editing multiple packages, you may need to run `npm run dev` in each.
+To use a local version of the CLI, run `npm link` within the `packages/gltf-transform-cli`
+directory. Then `gltf-transform -h` will use local code instead of any global installation.
+
+In the event that dependencies get into a broken state, removing `package-lock.json` and
+reinstalling may resolve things.
