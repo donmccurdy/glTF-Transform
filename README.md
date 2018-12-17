@@ -21,7 +21,7 @@ Packages:
 - [x] occlusionVertex (`gltf-occlusion-vertex`)
   - Bakes per-vertex ambient occlusion.
 - [x] prune (`gltf-transform-prune`)
-  - Prunes duplicate accessors (and, in the future, images).
+  - Prunes duplicate accessors (and, in the future, images), based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
 - [x] split (`gltf-transform-split`)
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
 - [ ] atlas (`gltf-transform-atlas`)
