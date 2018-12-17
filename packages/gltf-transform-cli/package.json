@@ -1,6 +1,7 @@
 {
   "name": "gltf-transform-cli",
   "version": "0.0.3",
+  "repository": "github:donmccurdy/glTF-Transform",
   "description": "DESCRIPTION",
   "main": "src/index.js",
   "bin": {

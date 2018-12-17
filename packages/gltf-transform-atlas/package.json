@@ -2,6 +2,7 @@
   "name": "gltf-transform-atlas",
   "version": "0.0.3",
   "description": "{DESCRIPTION}",
+  "repository": "github:donmccurdy/glTF-Transform",
   "main": "dist/gltf-transform-atlas.js",
   "module": "dist/gltf-transform-atlas.module.js",
   "types": "dist/index.d.ts",

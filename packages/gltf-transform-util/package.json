@@ -1,6 +1,7 @@
 {
   "name": "gltf-transform-util",
   "version": "0.0.3",
+  "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-util.js",
   "module": "dist/gltf-transform-util.module.js",

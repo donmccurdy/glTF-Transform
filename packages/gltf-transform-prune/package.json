@@ -1,6 +1,7 @@
 {
   "name": "gltf-transform-prune",
   "version": "0.0.3",
+  "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-prune.js",
   "module": "dist/gltf-transform-prune.module.js",
