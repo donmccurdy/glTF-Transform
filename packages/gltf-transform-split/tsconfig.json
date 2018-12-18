@@ -1,12 +1,4 @@
 {
-  "compilerOptions": {
-    "rootDir": "./src",
-    "lib": ["es6"],
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "files": [
-    "typings/gltf.d.ts"
-  ]
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*"]
 }

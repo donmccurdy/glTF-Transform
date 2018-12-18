@@ -23,6 +23,8 @@ export default {
         },
     ],
     plugins: [
-        typescript()
+        typescript({
+            "include": ["src/**/*"]
+        })
     ]
 }
