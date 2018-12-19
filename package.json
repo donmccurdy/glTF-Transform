@@ -17,12 +17,6 @@
     "docs": "node ./scripts/generate-readmes"
   },
   "devDependencies": {
-    "@gltf-transform/ao": "file:packages/ao",
-    "@gltf-transform/atlas": "file:packages/atlas",
-    "@gltf-transform/cli": "file:packages/cli",
-    "@gltf-transform/core": "file:packages/core",
-    "@gltf-transform/prune": "file:packages/prune",
-    "@gltf-transform/split": "file:packages/split",
     "@types/node": "^10.12.17",
     "camelcase": "^5.0.0",
     "lerna": "2.8.0",
