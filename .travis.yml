@@ -4,8 +4,10 @@ node_js:
 env:
   global:
     - CI=1
+install:
+  - npm i -g lerna
+  - lerna bootstrap --ignore @gltf-transform/ao --ignore @gltf-transform/cli
 before_script:
-  - npm run lerna:bootstrap:ci
   - npm run dist
 script:
-  - npm run test:ci
+  - lerna run test --ignore @gltf-transform/ao --ignore @gltf-transform/cli
