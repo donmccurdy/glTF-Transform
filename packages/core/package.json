@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-core.js",
@@ -17,6 +17,5 @@
     "threejs"
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "devDependencies": {}
+  "license": "MIT"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/split",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
   "main": "dist/gltf-transform-split.js",
@@ -18,8 +18,7 @@
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
-  "devDependencies": {},
   "dependencies": {
-    "@gltf-transform/core": "^0.0.4"
+    "@gltf-transform/core": "^0.0.5"
   }
 }
