@@ -20,7 +20,7 @@ who need to write or reuse a custom transformation.*
 
 glTF-Transform offers [CLI](#cli) and [programmatic](#programmatic) access to a library
 of [packages](#packages), along with reusable utilities for extending the framework with
-new packages. Most packages work both in Node.js and on the web.
+new features. Most packages work both in Node.js and on the web.
 
 ## Packages
 
