@@ -2,7 +2,7 @@
   "name": "@gltf-transform/split",
   "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "{DESCRIPTION}",
+  "description": "Splits the binary payload of a glTF file",
   "main": "dist/gltf-transform-split.js",
   "module": "dist/gltf-transform-split.module.js",
   "types": "dist/index.d.ts",

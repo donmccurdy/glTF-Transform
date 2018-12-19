@@ -2,7 +2,7 @@
   "name": "@gltf-transform/core",
   "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "{DESCRIPTION}",
+  "description": "JavaScript and TypeScript utilities for processing glTF 3D models",
   "main": "dist/gltf-transform-core.js",
   "module": "dist/gltf-transform-core.module.js",
   "types": "dist/index.d.ts",

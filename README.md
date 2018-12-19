@@ -11,20 +11,20 @@ JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Packages:
 
-- [x] util (`@gltf-transform/core`)
+- [x] util
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
   - NodeIO - Read/write GLTFContainers from the filesystem.
   - WebIO - Read GLTFContainers from a URL.
-- [x] cli (`@gltf-transform/cli`)
+- [x] cli
   - Provides a CLI interface to Node.js-compatible packages.
-- [x] ao (`@gltf-transform/ao`)
-  - Bakes per-vertex ambient occlusion.
-- [x] prune (`@gltf-transform/prune`)
+- [x] ao
+  - Bakes per-vertex ambient occlusion. Cheaper, but lower-quality, than AO baked with a UV set.
+- [x] prune
   - Prunes duplicate accessors (and, in the future, images), based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
-- [x] split (`@gltf-transform/split`)
+- [x] split
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
-- [ ] atlas (`@gltf-transform/atlas`)
+- [ ] atlas
   - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:

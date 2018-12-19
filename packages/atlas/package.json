@@ -1,7 +1,7 @@
 {
   "name": "@gltf-transform/atlas",
   "version": "0.0.5",
-  "description": "{DESCRIPTION}",
+  "description": "Merges small textures and materials, creating a basic texture atlas",
   "repository": "github:donmccurdy/glTF-Transform",
   "main": "dist/gltf-transform-atlas.js",
   "module": "dist/gltf-transform-atlas.module.js",

@@ -2,7 +2,7 @@
   "name": "@gltf-transform/cli",
   "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "DESCRIPTION",
+  "description": "CLI interface to glTF Transform",
   "main": "src/index.js",
   "bin": {
     "gltf-transform": "src/index.js"

@@ -2,7 +2,7 @@
   "name": "@gltf-transform/prune",
   "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "{DESCRIPTION}",
+  "description": "Prunes duplicate accessors",
   "main": "dist/gltf-transform-prune.js",
   "module": "dist/gltf-transform-prune.module.js",
   "types": "dist/index.d.ts",

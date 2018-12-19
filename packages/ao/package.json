@@ -2,7 +2,7 @@
   "name": "@gltf-transform/ao",
   "version": "0.0.5",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "{DESCRIPTION}",
+  "description": "Bakes per-vertex ambient occlusion",
   "main": "dist/gltf-transform-ao.js",
   "module": "dist/gltf-transform-ao.module.js",
   "types": "dist/index.d.ts",
