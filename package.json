@@ -19,12 +19,7 @@
   "devDependencies": {
     "@types/node": "^10.12.17",
     "camelcase": "^5.0.0",
-    "decamelize": "^2.0.0",
-    "documentation": "^8.1.2",
-    "fs-extra": "^7.0.0",
     "lerna": "2.8.0",
-    "load-json-file": "^5.1.0",
-    "meow": "^5.0.0",
     "rollup": "^0.68.0",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
@@ -32,10 +27,7 @@
     "source-map-support": "^0.5.9",
     "tape": "^4.9.1",
     "tslib": "^1.9.3",
-    "typescript": "^3.2.2",
-    "uppercamelcase": "^3.0.0",
-    "write-json-file": "^3.0.2",
-    "yamljs": "^0.3.0"
+    "typescript": "^3.2.2"
   },
   "dependencies": {}
 }
