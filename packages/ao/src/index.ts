@@ -1,10 +1,10 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorComponentType, BufferViewTarget } from '@gltf-transform/util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorComponentType, BufferViewTarget } from '@gltf-transform/core';
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
 
 const REGL = reglNamespace['default'] as Function;
 const geoao = geoaoNamespace['default'] as Function;
-const logger = GLTFUtil.createLogger('gltf-transform-occlusion-vertex', LoggerVerbosity.INFO);
+const logger = GLTFUtil.createLogger('@gltf-transform/ao', LoggerVerbosity.INFO);
 
 interface GLFactory {
     (w: number, h: number): WebGLRenderingContext;
@@ -30,7 +30,7 @@ const TEXTURE_DATA = new Uint8Array([
     3, 254, 243, 176, 75, 70, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
 ]).buffer;
 
-function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions): GLTFContainer {
+function ao (container: GLTFContainer, options: IOcclusionOptions): GLTFContainer {
     options = {...DEFAULT_OPTIONS, ...options};
     const {resolution, samples} = options;
     logger.info(`Resolution: ${resolution}; Samples: ${samples}`);
@@ -107,4 +107,4 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
     return container;
 }
 
-export { occlusionVertex };
+export { ao };

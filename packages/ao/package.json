@@ -1,10 +1,10 @@
 {
-  "name": "gltf-transform-occlusion-vertex",
+  "name": "@gltf-transform/ao",
   "version": "0.0.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
-  "main": "dist/gltf-transform-occlusion-vertex.js",
-  "module": "dist/gltf-transform-occlusion-vertex.module.js",
+  "main": "dist/gltf-transform-ao.js",
+  "module": "dist/gltf-transform-ao.module.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "node test/test.js"
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "geo-ambient-occlusion": "^3.0.2",
-    "@gltf-transform/util": "^0.0.4",
+    "@gltf-transform/core": "^0.0.4",
     "regl": "^1.3.11"
   }
 }

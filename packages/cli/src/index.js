@@ -5,8 +5,8 @@ const gl = require('gl');
 const path = require('path');
 const program = require('caporal');
 const { version } = require('../package.json');
-const { GLTFUtil, NodeIO } = require('@gltf-transform/util');
-const { occlusionVertex } = require('gltf-transform-occlusion-vertex');
+const { GLTFUtil, NodeIO } = require('@gltf-transform/core');
+const { ao } = require('@gltf-transform/ao');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
 
@@ -34,7 +34,7 @@ program
     .option('--samples <n>', 'Number of samples', program.INT, 500)
     .action(({input, output}, {resolution, samples}, logger) => {
         const container = io.read(input);
-        occlusionVertex(container, {gl, resolution, samples});
+        ao(container, {gl, resolution, samples});
         io.write(output, container);
     });
 

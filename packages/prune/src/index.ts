@@ -1,4 +1,4 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity, BufferViewTarget } from '@gltf-transform/util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity, BufferViewTarget } from '@gltf-transform/core';
 
 const prune = function (container: GLTFContainer): GLTFContainer {
   const json = container.json;

@@ -5,11 +5,11 @@ const path = require('path');
 const test = require('tape');
 const gl = require('gl');
 
-const { NodeIO } = require('@gltf-transform/util');
-const { occlusionVertex } = require('../');
+const { NodeIO } = require('@gltf-transform/core');
+const { ao } = require('../');
 
 
-test('gltf-transform-occlusion-vertex', t => {
+test('@gltf-transform/ao', t => {
   const io = new NodeIO(fs, path);
   const container = io.read(path.join(__dirname, 'in/chr_knight.glb'));
   const material = container.json.materials[0];
@@ -19,7 +19,7 @@ test('gltf-transform-occlusion-vertex', t => {
   t.notOk(mesh.primitives[0].attributes.TEXCOORD_1, 'begins without TEXCOORD_1');
   t.equals(container.json.textures.length, 1, 'begins with one texture')
 
-  occlusionVertex(container, {gl});
+  ao(container, {gl});
 
   t.ok(material.occlusionTexture, 'adds occlusionTexture');
   t.ok(mesh.primitives[0].attributes.TEXCOORD_1, 'adds TEXCOORD_1');

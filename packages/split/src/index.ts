@@ -1,4 +1,4 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity } from '@gltf-transform/util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity } from '@gltf-transform/core';
 
 const split = function (container: GLTFContainer, meshes: Array<string>): GLTFContainer {
 

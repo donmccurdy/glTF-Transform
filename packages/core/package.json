@@ -1,10 +1,10 @@
 {
-  "name": "@gltf-transform/util",
+  "name": "@gltf-transform/core",
   "version": "0.0.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
-  "main": "dist/gltf-transform-util.js",
-  "module": "dist/gltf-transform-util.module.js",
+  "main": "dist/gltf-transform-core.js",
+  "module": "dist/gltf-transform-core.module.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "node test/test.js"

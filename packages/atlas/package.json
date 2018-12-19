@@ -21,6 +21,6 @@
   "devDependencies": {},
   "dependencies": {
     "atlaspack": "^1.0.0",
-    "@gltf-transform/util": "^0.0.4"
+    "@gltf-transform/core": "^0.0.4"
   }
 }

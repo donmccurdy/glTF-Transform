@@ -11,7 +11,7 @@ function ensureDir(uri) {
   if (!fs.existsSync(outdir)) fs.mkdirSync(outdir);
 }
 
-test('gltf-transform-util::io -- glb', t => {
+test('@gltf-transform/core::io -- glb', t => {
   glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
     const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
     const outputURI = path.join(__dirname, 'out', basepath);
@@ -30,7 +30,7 @@ test('gltf-transform-util::io -- glb', t => {
   t.end();
 });
 
-test('gltf-transform-util::io -- gltf', t => {
+test('@gltf-transform/core::io -- gltf', t => {
   glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
     const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
     const outputURI = path.join(__dirname, 'out', basepath);
@@ -49,7 +49,7 @@ test('gltf-transform-util::io -- gltf', t => {
   t.end();
 });
 
-test('gltf-transform-util::analyze', (t) => {
+test('@gltf-transform/core::analyze', (t) => {
   const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');
   const container = new NodeIO(fs, path).readGLB(filename);
   const report = GLTFUtil.analyze(container);

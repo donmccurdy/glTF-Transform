@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 
-const { NodeIO } = require ('@gltf-transform/util');
+const { NodeIO } = require ('@gltf-transform/core');
 const { prune } = require('../');
 
 test('@gltf-transform/split', t => {

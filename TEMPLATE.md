@@ -5,9 +5,9 @@ if you find an error, edit the source file (likely index.ts), and re-run
 ./scripts/update-readmes in the turf project. -->
 
 ![Status](https://img.shields.io/badge/status-experimental-orange.svg)
-[![Latest NPM release](https://img.shields.io/npm/v/{module}.svg)](https://www.npmjs.com/package/gltf-transform-util)
-[![License](https://img.shields.io/npm/l/gltf-transform-util.svg)](https://github.com/donmccurdy/gltf-transform/blob/master/LICENSE)
-[![Build Status](https://travis-ci.com/donmccurdy/gltf-transform.svg?branch=master)](https://travis-ci.com/donmccurdy/gltf-transform)
+[![Latest NPM release](https://img.shields.io/npm/v/{module}.svg)](https://www.npmjs.com/package/{module})
+[![License](https://img.shields.io/npm/l/@gltf-transform/core.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
 
 > This module is part of the [glTF-Transform project](https://github.com/donmccurdy/glTF-Transform), where you can create PRs and
 issues.

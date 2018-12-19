@@ -4,7 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 
-const PACKAGES = [ 'atlas', 'occlusion-vertex', 'prune', 'split', 'util' ];
+const PACKAGES = [ 'core', 'atlas', 'ao', 'prune', 'split' ];
 
 // Ensure dist/ directories exist.
 PACKAGES.forEach((name) => {

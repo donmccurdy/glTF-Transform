@@ -3,28 +3,28 @@
 # glTF-Transform
 
 ![Status](https://img.shields.io/badge/status-experimental-orange.svg)
-[![Build Status](https://travis-ci.com/donmccurdy/gltf-transform.svg?branch=master)](https://travis-ci.com/donmccurdy/gltf-transform)
-[![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/gltf-transform/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
+[![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-007ec6.svg)](https://lernajs.io/)
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Packages:
 
-- [x] util (`gltf-transform-util`)
+- [x] util (`@gltf-transform/core`)
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
   - NodeIO - Read/write GLTFContainers from the filesystem.
   - WebIO - Read GLTFContainers from a URL.
-- [x] cli (`gltf-transform-cli`)
+- [x] cli (`@gltf-transform/cli`)
   - Provides a CLI interface to Node.js-compatible packages.
-- [x] occlusionVertex (`gltf-occlusion-vertex`)
+- [x] ao (`@gltf-transform/ao`)
   - Bakes per-vertex ambient occlusion.
-- [x] prune (`gltf-transform-prune`)
+- [x] prune (`@gltf-transform/prune`)
   - Prunes duplicate accessors (and, in the future, images), based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
-- [x] split (`gltf-transform-split`)
+- [x] split (`@gltf-transform/split`)
   - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
-- [ ] atlas (`gltf-transform-atlas`)
+- [ ] atlas (`@gltf-transform/atlas`)
   - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:
@@ -44,8 +44,8 @@ Roadmap / ideas / help wanted:
 ### Programmatic
 
 ```js
-import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/util';
-import { occlusionVertex } from 'gltf-transform-occlusion-vertex';
+import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/core';
+import { ao } from '@gltf-transform/ao';
 
 const io = new WebIO();
 const container = io.read( 'scene.gltf' );
@@ -54,7 +54,7 @@ const container = io.read( 'scene.gltf' );
 const analysis = GLTFUtil.analyze( container );
 
 // ambient occlusion
-occlusionVertex( container, { samples: 1000 } );
+ao( container, { samples: 1000 } );
 
 // serialize
 const glbBuffer = GLTFUtil.toGLB( container );
