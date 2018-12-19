@@ -17,4 +17,4 @@ addons:
     - libglapi-mesa
     - libosmesa6
 before_script:
-  - npm run lerna:bootstrap && npm run dist
+  - npm run lerna:bootstrap && npm run lerna:install && npm run lerna:link && npm run dist
