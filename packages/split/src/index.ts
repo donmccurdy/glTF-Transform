@@ -36,7 +36,7 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
       const bufferData = container.getBuffer(bufferView.buffer);
       const bufferViewData = bufferData.slice(bufferView.byteOffset, bufferView.byteOffset + bufferView.byteLength);
-      
+
       const newBufferURI = `${meshName}.bin`;
       const newBuffer = container.json.buffers.find((buffer) => buffer.uri === newBufferURI)
         || GLTFUtil.addBuffer(container, meshName, new ArrayBuffer(0));

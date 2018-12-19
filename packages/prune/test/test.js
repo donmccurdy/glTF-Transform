@@ -13,7 +13,7 @@ test('gltf-transform-split', t => {
   t.equal(container.json.accessors.length, 1503, 'begins with duplicate accessors');
   prune(container);
   t.equal(container.json.accessors.length, 4, 'prunes duplicate accessors');
-  
+
   const outputURI = path.join(__dirname, 'out/many-cubes.gltf');
   if (process.env.REGEN) {
     io.writeGLTF(outputURI, container);
