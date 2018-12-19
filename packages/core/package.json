@@ -17,5 +17,12 @@
     "threejs"
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "package.json",
+    "package-lock.json"
+  ]
 }

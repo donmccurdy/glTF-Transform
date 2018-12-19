@@ -21,5 +21,12 @@
   "dependencies": {
     "@gltf-transform/core": "^0.0.6",
     "atlaspack": "^1.0.0"
-  }
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "package.json",
+    "package-lock.json"
+  ]
 }
