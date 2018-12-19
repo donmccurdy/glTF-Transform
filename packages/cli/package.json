@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/cli",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "CLI interface to glTF Transform",
   "main": "src/index.js",
@@ -15,10 +15,10 @@
   },
   "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
-    "@gltf-transform/ao": "^0.0.6",
-    "@gltf-transform/core": "^0.0.6",
-    "@gltf-transform/prune": "^0.0.6",
-    "@gltf-transform/split": "^0.0.6",
+    "@gltf-transform/ao": "^0.0.7",
+    "@gltf-transform/core": "^0.0.7",
+    "@gltf-transform/prune": "^0.0.7",
+    "@gltf-transform/split": "^0.0.7",
     "caporal": "^1.1.0",
     "gl": "^4.1.1"
   },
