@@ -4,7 +4,7 @@ node_js:
 env:
   global:
     - CI=1
-# headless-gl deps
+# headless-gl deps must be installed, not run.
 addons:
   apt:
     sources:
@@ -24,5 +24,6 @@ install:
   - lerna bootstrap
 before_script:
   - npm run dist
+# omit 'ao', as GPU functions don't work in CI.
 script:
   - lerna run test --ignore @gltf-transform/ao
