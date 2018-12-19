@@ -11,7 +11,7 @@
     "lerna:install": "lerna exec -- npm install",
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
-    "dist": "rollup -c .",
+    "dist": "rollup -c",
     "watch": "rollup -c -w .",
     "test": "lerna run test --use-workspaces",
     "docs": "node ./scripts/generate-readmes"
