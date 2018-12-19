@@ -18,7 +18,7 @@ addons:
     - xvfb
     - libgl1-mesa-dri
     - libglapi-mesa
-- libosmesa6
+    - libosmesa6
 install:
   - npm i -g lerna
   - lerna bootstrap
