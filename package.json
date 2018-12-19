@@ -25,6 +25,7 @@
     "@gltf-transform/split": "file:packages/split",
     "@types/node": "^10.12.17",
     "camelcase": "^5.0.0",
+    "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "2.8.0",
     "rollup": "^0.68.0",
     "rollup-plugin-commonjs": "^9.2.0",
