@@ -1,3 +1,4 @@
+import fs from 'fs';
 import camelcase from 'camelcase';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
@@ -5,6 +6,14 @@ import typescript from 'rollup-plugin-typescript2';
 
 const PACKAGES = [ 'atlas', 'occlusion-vertex', 'prune', 'split', 'util' ];
 
+// Ensure dist/ directories exist.
+PACKAGES.forEach((name) => {
+  if (!fs.existsSync(`packages/${name}/dist`)) {
+    fs.mkdirSync(`packages/${name}/dist`);
+  }
+});
+
+// Export one input per package.
 export default PACKAGES.map((name) => ({
   input: `packages/${name}/src/index.ts`,
   output: [

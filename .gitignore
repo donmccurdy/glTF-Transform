@@ -1,6 +1,5 @@
 node_modules
 .rpt2_cache
 **/dist/*
-!**/dist/.gitkeep
 **/test/**/*-tmp.glb
 **/test/**/*-tmp.gltf
