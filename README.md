@@ -11,21 +11,22 @@ JavaScript and TypeScript utilities for processing glTF 3D models.
 
 Packages:
 
-- [x] util
+| package                 | compatibility | description                                                                                                                                          |
+|-------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [core](packages/core)   | Node.js, Web  | Core framework utilities.                                                                                                                            |
+| [cli](packages/cli)     | Node.js       | Commandline interface to Node.js-compatible packages.                                                                                                |
+|                         |               |                                                                                                                                                      |
+| [ao](packages/ao)       | Node.js, Web  | Bakes per-vertex ambient occlusion. Cheaper but lower-quality than AO baked with a UV map.                                                           |
+| [atlas](packages/atlas) | Node.js, Web  | Merges small textures and materials, creating a basic texture atlas.                                                                                 |
+| [prune](packages/prune) | Node.js, Web  | Prunes duplicate accessors (and more, eventually). Based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8). |
+| [split](packages/split) | Node.js, Web  | Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.                                                            |
+
+Utilities in core package:
+
   - GLTFContainer — Wrapper class for a glTF file and its resources.
   - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
   - NodeIO - Read/write GLTFContainers from the filesystem.
   - WebIO - Read GLTFContainers from a URL.
-- [x] cli
-  - Provides a CLI interface to Node.js-compatible packages.
-- [x] ao
-  - Bakes per-vertex ambient occlusion. Cheaper, but lower-quality, than AO baked with a UV set.
-- [x] prune
-  - Prunes duplicate accessors (and, in the future, images), based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
-- [x] split
-  - Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.
-- [ ] atlas
-  - Merges small textures and materials, creating a basic texture atlas.
 
 Roadmap / ideas / help wanted:
 
