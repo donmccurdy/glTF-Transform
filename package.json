@@ -8,13 +8,14 @@
   ],
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
+    "lerna:bootstrap:ci": "lerna bootstrap --ignore @gltf-transform/ao --ignore @gltf-transform/cli",
     "lerna:install": "lerna exec -- npm install",
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "dist": "rollup -c",
     "watch": "rollup -c -w .",
     "test": "lerna run test --use-workspaces",
-    "test:ci": "lerna run test --ignore @gltf-transform/ao",
+    "test:ci": "lerna run test --ignore @gltf-transform/ao --ignore @gltf-transform/cli",
     "docs": "node ./scripts/generate-readmes"
   },
   "devDependencies": {

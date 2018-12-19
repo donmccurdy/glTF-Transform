@@ -1,8 +1,11 @@
 language: node_js
 node_js:
   - "10"
+env:
+  global:
+    - CI=1
 before_script:
-  - npm run lerna:bootstrap
+  - npm run lerna:bootstrap:ci
   - npm run dist
 script:
   - npm run test:ci
