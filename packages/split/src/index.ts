@@ -1,9 +1,9 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity } from 'gltf-transform-util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity } from '@gltf-transform/util';
 
 const split = function (container: GLTFContainer, meshes: Array<string>): GLTFContainer {
 
   const json = container.json;
-  const logger = GLTFUtil.createLogger('gltf-transform-split', LoggerVerbosity.INFO);
+  const logger = GLTFUtil.createLogger('@gltf-transform/split', LoggerVerbosity.INFO);
 
   const bufferViewMap = {};
   const removedBufferViews = [];

@@ -1,5 +1,5 @@
 import * as atlaspack from 'atlaspack';
-import { GLTFContainer } from 'gltf-transform-util';
+import { GLTFContainer } from '@gltf-transform/util';
 
 interface AtlasOptions {};
 

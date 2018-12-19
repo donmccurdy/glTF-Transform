@@ -1,5 +1,5 @@
 {
-  "name": "gltf-transform-cli",
+  "name": "@gltf-transform/cli",
   "version": "0.0.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "DESCRIPTION",
@@ -18,8 +18,8 @@
     "caporal": "^1.1.0",
     "gl": "^4.1.1",
     "gltf-transform-occlusion-vertex": "^0.0.4",
-    "gltf-transform-prune": "^0.0.4",
-    "gltf-transform-split": "^0.0.4",
-    "gltf-transform-util": "^0.0.4"
+    "@gltf-transform/prune": "^0.0.4",
+    "@gltf-transform/split": "^0.0.4",
+    "@gltf-transform/util": "^0.0.4"
   }
 }

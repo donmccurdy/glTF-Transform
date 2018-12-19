@@ -20,8 +20,8 @@ npm install gltf-transform-split
 
 ```js
 // ES6
-import { split } from 'gltf-transform-split';
+import { split } from '@gltf-transform/split';
 
 // CommonJS
-const { split } = require('gltf-transform-split');
+const { split } = require('@gltf-transform/split');
 ```

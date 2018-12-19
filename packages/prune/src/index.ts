@@ -1,8 +1,8 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity, BufferViewTarget } from 'gltf-transform-util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity, BufferViewTarget } from '@gltf-transform/util';
 
 const prune = function (container: GLTFContainer): GLTFContainer {
   const json = container.json;
-  const logger = GLTFUtil.createLogger('gltf-transform-prune', LoggerVerbosity.INFO);
+  const logger = GLTFUtil.createLogger('@gltf-transform/prune', LoggerVerbosity.INFO);
 
   // Find all accessors used for mesh data.
   let meshAccessorIndices = [];

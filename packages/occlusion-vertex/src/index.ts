@@ -1,4 +1,4 @@
-import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorComponentType, BufferViewTarget } from 'gltf-transform-util';
+import { GLTFContainer, GLTFUtil, LoggerVerbosity, AccessorComponentType, BufferViewTarget } from '@gltf-transform/util';
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
 
@@ -32,7 +32,7 @@ const TEXTURE_DATA = new Uint8Array([
 
 function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions): GLTFContainer {
     options = {...DEFAULT_OPTIONS, ...options};
-    const {resolution, samples} = options;    
+    const {resolution, samples} = options;
     logger.info(`Resolution: ${resolution}; Samples: ${samples}`);
 
     const primitives = [];
@@ -43,7 +43,7 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
             const cells = primitive.indices !== undefined ? container.getAccessorArray(primitive.indices) : undefined;
             primitives.push({position, cells, def: primitive});
         })
-    });    
+    });
 
     if (primitives.length === 0) {
         logger.warn('No primitives found.');
@@ -61,7 +61,7 @@ function occlusionVertex (container: GLTFContainer, options: IOcclusionOptions):
         gl.getExtension('OES_element_index_uint');
         regl = REGL({gl, extensions: ['OES_texture_float', 'OES_element_index_uint']});
     }
-    
+
     // TODO: Implement baking such that primitives affect other primitives, and respect
     // world transforms.
     primitives.forEach((primitive, index) => {

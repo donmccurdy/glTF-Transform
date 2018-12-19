@@ -4,10 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 
-const { NodeIO } = require ('gltf-transform-util');
+const { NodeIO } = require ('@gltf-transform/util');
 const { prune } = require('../');
 
-test('gltf-transform-split', t => {
+test('@gltf-transform/split', t => {
   const io = new NodeIO(fs, path);
   const container = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
   t.equal(container.json.accessors.length, 1503, 'begins with duplicate accessors');

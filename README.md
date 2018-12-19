@@ -44,7 +44,7 @@ Roadmap / ideas / help wanted:
 ### Programmatic
 
 ```js
-import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from 'gltf-transform-util';
+import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/util';
 import { occlusionVertex } from 'gltf-transform-occlusion-vertex';
 
 const io = new WebIO();
@@ -67,7 +67,7 @@ const glbBuffer = GLTFUtil.toGLB( container );
 gltf-transform analyze input.glb
 
 # ambient occlusion
-gltf-transform ao --samples 1000 input.glb output.glb 
+gltf-transform ao --samples 1000 input.glb output.glb
 ```
 ## Contributing
 

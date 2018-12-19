@@ -20,8 +20,8 @@ npm install gltf-transform-atlas
 
 ```js
 // ES6
-import { atlas } from 'gltf-transform-atlas';
+import { atlas } from '@gltf-transform/atlas';
 
 // CommonJS
-const { atlas } = require('gltf-transform-atlas');
+const { atlas } = require('@gltf-transform/atlas');
 ```

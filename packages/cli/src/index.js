@@ -5,10 +5,10 @@ const gl = require('gl');
 const path = require('path');
 const program = require('caporal');
 const { version } = require('../package.json');
-const { GLTFUtil, NodeIO } = require('gltf-transform-util');
+const { GLTFUtil, NodeIO } = require('@gltf-transform/util');
 const { occlusionVertex } = require('gltf-transform-occlusion-vertex');
-const { split } = require('gltf-transform-split');
-const { prune } = require('gltf-transform-prune');
+const { split } = require('@gltf-transform/split');
+const { prune } = require('@gltf-transform/prune');
 
 const io = new NodeIO(fs, path);
 

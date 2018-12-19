@@ -4,10 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 
-const { NodeIO } = require ('gltf-transform-util');
+const { NodeIO } = require ('@gltf-transform/util');
 const { split } = require('../');
 
-test('gltf-transform-split', t => {
+test('@gltf-transform/split', t => {
 
   const io = new NodeIO(fs, path);
   const container = io.read(path.join(__dirname, 'in/TwoCubes.glb'));

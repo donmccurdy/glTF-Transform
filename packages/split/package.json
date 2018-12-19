@@ -1,5 +1,5 @@
 {
-  "name": "gltf-transform-split",
+  "name": "@gltf-transform/split",
   "version": "0.0.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "{DESCRIPTION}",
@@ -20,6 +20,6 @@
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
-    "gltf-transform-util": "^0.0.4"
+    "@gltf-transform/util": "^0.0.4"
   }
 }

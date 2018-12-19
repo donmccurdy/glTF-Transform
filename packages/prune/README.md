@@ -20,8 +20,8 @@ npm install gltf-transform-prune
 
 ```js
 // ES6
-import { prune } from 'gltf-transform-prune';
+import { prune } from '@gltf-transform/prune';
 
 // CommonJS
-const { prune } = require('gltf-transform-prune');
+const { prune } = require('@gltf-transform/prune');
 ```

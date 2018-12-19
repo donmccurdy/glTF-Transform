@@ -5,7 +5,7 @@ const path = require('path');
 const test = require('tape');
 const gl = require('gl');
 
-const { NodeIO } = require('gltf-transform-util');
+const { NodeIO } = require('@gltf-transform/util');
 const { occlusionVertex } = require('../');
 
 
