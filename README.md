@@ -9,6 +9,19 @@
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
+AGI's [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/) and
+Microsoft's [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit) are robust,
+well-maintained tools for production workflows — I fully recommend using them for
+the features the offer. However, neither covers the "long tail" of small, niche
+changes to a glTF model: adjusting a material parameter, adding extensions, and so
+on. For those situations, *this framework provides a better alternative to starting
+from scratch, or modifying a library not designed with modularity in mind, for users
+who need to write or reuse a custom transformation.*
+
+glTF-Transform offers [CLI](#cli) and [programmatic](#programmatic) access to a library
+of [packages](#packages), along with reusable utilities for extending the framework with
+new packages. Most packages work both in Node.js and on the web.
+
 ## Packages
 
 | package                 | compatibility | description                                                                                                                                          |
