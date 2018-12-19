@@ -6,7 +6,7 @@ if you find an error, edit the source file (likely index.ts), and re-run
 
 ![Status](https://img.shields.io/badge/status-experimental-orange.svg)
 [![Latest NPM release](https://img.shields.io/npm/v/gltf-transform-prune.svg)](https://www.npmjs.com/package/gltf-transform-prune)
-[![License](https://img.shields.io/npm/l/gltf-transform.svg)](https://github.com/donmccurdy/gltf-transform/blob/master/LICENSE)
+[![License](https://img.shields.io/npm/l/gltf-transform-util.svg)](https://github.com/donmccurdy/gltf-transform/blob/master/LICENSE)
 [![Build Status](https://travis-ci.com/donmccurdy/gltf-transform.svg?branch=master)](https://travis-ci.com/donmccurdy/gltf-transform)
 
 > This module is part of the glTF-Transform project, where you can create PRs and
