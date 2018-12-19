@@ -9,7 +9,7 @@
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
-Packages:
+## Packages
 
 | package                 | compatibility | description                                                                                                                                          |
 |-------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -21,14 +21,7 @@ Packages:
 | [prune](packages/prune) | Node.js, Web  | Prunes duplicate accessors (and more, eventually). Based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8). |
 | [split](packages/split) | Node.js, Web  | Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.                                                            |
 
-Utilities in core package:
-
-  - GLTFContainer — Wrapper class for a glTF file and its resources.
-  - GLTFUtil — Common utilities for manipulating a GLTFContainer instance.
-  - NodeIO - Read/write GLTFContainers from the filesystem.
-  - WebIO - Read GLTFContainers from a URL.
-
-Roadmap / ideas / help wanted:
+## Roadmap and ideas
 
 - [ ] deduplicate images
 - [ ] defrag bufferviews
@@ -85,14 +78,14 @@ lerna bootstrap
 ```
 
 The command `lerna bootstrap` will install dependencies into each package, and will then
-`npm link` them together. If you make changes to a package's dependencies (e.g. run
-`npm install <anything>`) you will need to run `lerna link` again to re-create the symlinks.
+link them together. If you make changes to a package's dependencies (e.g. run
+`npm install <anything>`) you will need to run `lerna link` re-create the symlinks.
 
 To build and test all code, run:
 
 ```
-lerna run dist
-lerna run test
+npm run dist
+npm run test
 ```
 
 To run an arbitrary command across all packages:
@@ -101,10 +94,9 @@ To run an arbitrary command across all packages:
 lerna exec -- <command>
 ```
 
-While editing any one package, use `npm run dev` in that package to watch and rebuild code
-after changes. When editing multiple packages, you may need to run `npm run dev` in each.
-To use a local version of the CLI, run `npm link` within the `packages/gltf-transform-cli`
-directory. Then `gltf-transform -h` will use local code instead of any global installation.
+While working, use `npm run watch` to watch and rebuild code after changes. To use a local
+version of the CLI, run `npm link` within the `packages/cli` directory. Then
+`gltf-transform -h` will use local code instead of any global installation.
 
 In the event that dependencies get into a broken state, removing `package-lock.json` and
 reinstalling may resolve things.
