@@ -7,7 +7,7 @@ import typescript from 'rollup-plugin-typescript2';
 let PACKAGES = [ 'core', 'atlas', 'ao', 'prune', 'split' ];
 
 if (process.env.CI) {
-  PACKAGES = PACKAGES.filter((pkg) => pkg !== 'ao');
+  PACKAGES = PACKAGES.filter((pkg) => pkg !== 'ao' && pkg !== 'atlas');
 }
 
 // Ensure dist/ directories exist.
