@@ -3,3 +3,4 @@ node_modules
 **/dist/*
 **/test/**/*-tmp.glb
 **/test/**/*-tmp.gltf
+packages/*/package-lock.json
