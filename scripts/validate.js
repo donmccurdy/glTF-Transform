@@ -5,6 +5,8 @@ const path = require('path');
 const glob = require('glob');
 const validator = require('gltf-validator');
 
+const verbose = process.argv.indexOf('--verbose') > 0;
+
 const messages = {
     numAssets: 0,
     numFailed: 0,
@@ -22,10 +24,12 @@ const validateURI = (uri) => {
     const asset = fs.readFileSync(uri);
     const dir = path.dirname(uri);
     const promise = validator.validateBytes(new Uint8Array(asset), {
+        uri,
         externalResourceFunction: (uri) =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             uri = path.resolve(dir, decodeURIComponent(uri));
-            resolve(fs.readFileSync(uri));
+            const buffer = fs.readFileSync(uri)
+            resolve(new Uint8Array(buffer));
         })
     })
         .then((report) => {
@@ -34,7 +38,9 @@ const validateURI = (uri) => {
             messages.numWarnings += report.issues.numWarnings;
             messages.numInfos += report.issues.numInfos;
             messages.numHints += report.issues.numHints;
-            messages.reports.push(report);
+            if (verbose) {
+                messages.reports.push(report);
+            }
             if (report.issues.numErrors || report.issues.numWarnings) {
                 messages.failed.push(uri);
             }

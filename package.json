@@ -14,6 +14,8 @@
     "dist": "rollup -c",
     "watch": "rollup -c -w .",
     "test": "lerna run test --use-workspaces",
+    "validate": "scripts/validate.js",
+    "preversion": "npm run validate",
     "docs": "node ./scripts/generate-readmes"
   },
   "devDependencies": {
