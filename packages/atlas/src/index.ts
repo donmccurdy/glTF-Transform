@@ -1,5 +1,7 @@
+// TODO: Test rollup-plugin-typescript2 with sourcemaps, figure out why the TS code isn't visible.
 import ShelfPack from '@mapbox/shelf-pack';
 import { GLTFContainer, GLTFUtil } from '@gltf-transform/core';
+// TODO: Put this in core.
 import { getSizePNG, getSizeJPEG } from './image-util';
 
 interface IAtlasOptions {
@@ -30,19 +32,47 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
   options = {...DEFAULT_OPTIONS, ...options};
 
   if (options.bake) {
+    // TODO: Implement 'bake' option, and/or support fallback.
     throw new Error('Not implemented: Baking UVs not yet supported.');
   }
 
+  const bannedMaterials = new Set();
+
+  container.json.meshes.forEach((meshDef) => {
+    meshDef.primitives.forEach((primitiveDef) => {
+      if (primitiveDef.material !== undefined && primitiveDef.attributes.TEXCOORD_0) {
+        const accessorData = container.getAccessorArray(primitiveDef.attributes.TEXCOORD_0);
+        for (let i = 0; i < accessorData.length; i += 2) {
+          const u = accessorData[i];
+          const v = accessorData[i + 1];
+          if (u < -0.1 || u > 1.1 || v < -0.1 || v > 1.1) {
+            console.log(`Banning: ${u},${v}`);
+            bannedMaterials.add(primitiveDef.material);
+            break;
+          }
+        }
+      }
+    });
+  });
+
   // Gather base color textures.
   let baseColorImages = [];
-  container.json.materials.forEach((material) => {
+  const bannedImages = new Set();
+  container.json.materials.forEach((material, materialIndex) => {
     if (!material.pbrMetallicRoughness) return;
     if (!material.pbrMetallicRoughness.baseColorTexture) return;
     const textureIndex = material.pbrMetallicRoughness.baseColorTexture.index;
     const texture = container.json.textures[textureIndex];
-    baseColorImages.push(texture.source);
+    if (bannedMaterials.has(materialIndex)) {
+      bannedImages.add(texture.source);
+    } else {
+      baseColorImages.push(texture.source);
+    }
   });
-  baseColorImages = Array.from(new Set(baseColorImages));
+  console.log('Before filter: ' + baseColorImages.length);
+  baseColorImages = Array.from(new Set(baseColorImages))
+    .filter((index) => !bannedImages.has(index));
+  console.log('After filter: ' + baseColorImages.length);
 
   // Gather texture resources.
   // TODO: Separate PNG/JPEG atlases?
@@ -60,7 +90,8 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
 
   // Pack textures.
   const atlas = new ShelfPack(options.size, options.size);
-  images.sort((a, b) => a.width * a.height > b.width * b.height ? 1 : -1);
+  images.sort((a, b) => a.width * a.height > b.width * b.height ? -1 : 1); // sort descending by area
+  // TODO: This seems like a very suboptimal packing algorithm.
   atlas.pack(images, {inPlace: true});
 
   if (!options.createImage || !options.createCanvas) {
@@ -73,7 +104,6 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
   }
 
   // Add KHR_texture_transform.
-  // TODO: Implement 'bake' option, and/or support fallback.
   if (container.json.extensionsUsed
       && container.json.extensionsUsed.indexOf(KHR_TEXTURE_TRANSFORM) >= 0) {
     throw new Error('Not implemented: Cannot create atlas on models already using KHR_texture_transform.')
@@ -115,14 +145,25 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
     GLTFUtil.addImage(container, 'atlas', arrayBuffer, atlasIsPNG ? 'image/png': 'image/jpeg');
     const atlasImageIndex = container.json.images.length - 1;
 
+    // TODO: If the texture repeats (this is the default) we need to scan the mesh
+    // for UVs >1 or <0, to indicate that we can't safely atlas the texture?
+
     // Reassign textures to atlas.
     const imageMap = new Map();
     images.forEach((i) => imageMap.set(i.index, i));
-    container.json.textures.forEach((textureDef) => {
+    container.json.materials.forEach((material) => {
+      if (!material.pbrMetallicRoughness) return;
+      if (!material.pbrMetallicRoughness.baseColorTexture) return;
+      const baseColorTexture = material.pbrMetallicRoughness.baseColorTexture;
+      const textureIndex = baseColorTexture.index;
+      const textureDef = container.json.textures[textureIndex];
       if (!imageMap.has(textureDef.source)) return;
       const image = imageMap.get(textureDef.source);
-      textureDef.extensions = textureDef.extensions || {};
-      textureDef.extensions[KHR_TEXTURE_TRANSFORM] = {offset: [image.x, image.y]};
+      baseColorTexture['extensions'] = baseColorTexture['extensions'] || {};
+      baseColorTexture['extensions'][KHR_TEXTURE_TRANSFORM] = {
+        offset: [image.x / options.size, image.y / options.size],
+        scale: [image.width / options.size, image.height / options.size]
+      };
       textureDef.source = atlasImageIndex;
     });
 
@@ -130,6 +171,34 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
     const unusedImageIndices = images.map((i) => i.index);
     unusedImageIndices.sort((a, b) => a > b ? -1 : 1); // sort descending
     unusedImageIndices.forEach((index) => GLTFUtil.removeImage(container, index));
+
+    // Merge duplicate textures.
+    // TODO: This is pretty verbose.
+    const reusedTextureMap = new Map();
+    const duplicateTextureMap = new Map();
+    const duplicateTextureIndices = [];
+    container.json.textures.forEach((textureDef, textureIndex) => {
+      // Ignore transforms here, because we disallowed arbitrary transform inputs.
+      const textureKey = `${textureDef.source}:${textureDef.sampler}`;
+      if (reusedTextureMap.has(textureKey)) {
+        duplicateTextureMap.set(textureIndex, reusedTextureMap.get(textureKey)[1]);
+        duplicateTextureIndices.push(textureIndex);
+      } else {
+        reusedTextureMap.set(textureKey, textureIndex);
+      }
+    });
+    container.json.materials.forEach((materialDef) => {
+      if (!materialDef.pbrMetallicRoughness) return;
+      if (!materialDef.pbrMetallicRoughness.baseColorTexture) return;
+      const baseColorTexture = materialDef.pbrMetallicRoughness.baseColorTexture;
+      if (duplicateTextureMap.has(baseColorTexture.index)) {
+        baseColorTexture.index = duplicateTextureMap.get(baseColorTexture.index);
+      }
+    });
+    duplicateTextureIndices.sort((a, b) => a[0] > b[0] ? -1 : 1); // sort descending
+    duplicateTextureIndices.forEach((index) => {
+      GLTFUtil.removeTexture(container, index);
+    });
 
     return container;
   });

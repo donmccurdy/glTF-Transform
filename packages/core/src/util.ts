@@ -53,7 +53,7 @@ class GLTFUtil {
       throw new Error('Unexpected GLB layout.');
     }
 
-    // Decode content.    
+    // Decode content.
     const jsonText = this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
     const json = JSON.parse(jsonText) as GLTF.IGLTF;
     const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
@@ -128,7 +128,7 @@ class GLTFUtil {
     if (typeof TextDecoder !== 'undefined') {
       return new TextDecoder().decode(buffer);
     }
-    const a = Buffer.from(buffer) as any; 
+    const a = Buffer.from(buffer) as any;
     return a.toString('utf8');
   }
 
@@ -251,6 +251,31 @@ class GLTFUtil {
   }
 
   /**
+   * Removes a texture from the glTF container.
+   * @param container
+   * @param index
+   */
+  static removeTexture(container: GLTFContainer, index: number): GLTFContainer {
+    container.json.materials.forEach((material) => {
+      [
+        material.emissiveTexture,
+        material.normalTexture,
+        material.occlusionTexture,
+        material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture,
+        material.pbrMetallicRoughness && material.pbrMetallicRoughness.metallicRoughnessTexture
+      ].forEach((texture) => {
+        if (texture.index === index) {
+          throw new Error('Texture still in use.');
+        } else if (texture.index > index) {
+          texture.index--;
+        }
+      });
+    });
+    container.json.textures.splice(index, 1);
+    return container;
+  }
+
+  /**
    * Adds a new buffer to the glTF container.
    * @param container
    * @param name
@@ -326,7 +351,7 @@ class GLTFUtil {
   }
 
   static addAccessor(
-      container: GLTFContainer, 
+      container: GLTFContainer,
       array: Float32Array | Uint32Array | Uint16Array,
       type: GLTF.AccessorType,
       componentType: GLTF.AccessorComponentType,
@@ -347,14 +372,14 @@ class GLTFUtil {
 
   /**
    * Removes accessor, without checking to see whether it is used.
-   * 
+   *
    * - NOTE: Cannot currently update nonmesh accessors, which will lead to bugs.
    */
-  static removeAccessor(container: GLTFContainer, index: number): GLTF.IAccessor { 
+  static removeAccessor(container: GLTFContainer, index: number): GLTF.IAccessor {
     if ((container.json.animations||[]).length > 0) {
       throw new Error('Not implemented: cannot remove accessors from animated models.');
     }
-    
+
     const accessor = container.json.accessors[index];
     const byteOffset = accessor.byteOffset || 0;
     const byteLength = GLTFUtil.getAccessorByteLength(accessor);
@@ -449,26 +474,26 @@ class GLTFUtil {
     paddingByte = paddingByte || 0;
 
     var paddedLength = Math.ceil( arrayBuffer.byteLength / 4 ) * 4;
-  
+
     if ( paddedLength !== arrayBuffer.byteLength ) {
-  
+
       var array = new Uint8Array( paddedLength );
       array.set( new Uint8Array( arrayBuffer ) );
-  
+
       if ( paddingByte !== 0 ) {
-  
+
         for ( var i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
-  
+
           array[ i ] = paddingByte;
-  
+
         }
-  
+
       }
-  
+
       return array.buffer;
-  
+
     }
-  
+
     return arrayBuffer;
 
   }
