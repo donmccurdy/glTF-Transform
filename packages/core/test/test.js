@@ -56,6 +56,7 @@ test('@gltf-transform/core::analyze', (t) => {
   t.deepEqual(report, {
     meshes: 1,
     textures: 0,
+    images: 0,
     materials: 1,
     animations: 0,
     primitives: 1,
