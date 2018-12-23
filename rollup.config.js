@@ -19,7 +19,7 @@ PACKAGES.forEach((name) => {
 
 // Export one input per package.
 export default PACKAGES.map((name) => ({
-  input: `packages/${name}/src/index.ts`,
+  input: `packages/${name}/src/${name}.ts`,
   output: [
     {
       file: `packages/${name}/dist/gltf-transform-${name}.js`,
