@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const gl = require('gl');
 const path = require('path');
+const gl = require('gl');
+const { createCanvas, Image } = require('canvas');
 const program = require('caporal');
 const { version } = require('../package.json');
 const { GLTFUtil, NodeIO } = require('@gltf-transform/core');
 const { ao } = require('@gltf-transform/ao');
+const { atlas } = require('@gltf-transform/atlas');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
 
@@ -38,6 +40,21 @@ program
         io.write(output, container);
     });
 
+// ATLAS
+program
+    .command('atlas', 'Creates a texture atlas with simple rectangular packing')
+    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+    .argument('<output>', 'Path to write output')
+    .option('--size [size]', 'Atlas size', program.INT)
+    .option('--bake [bakeUVs]', 'If set, bakes transformed UVs to meshes. '
+        + 'Otherwise, adds UV transforms to each material.', program.BOOL)
+    .action(({input, output}, {size}) => {
+        const container = io.read(input);
+        atlas(container, {size, createCanvas, createImage: () => new Image()}).then(() => {
+            io.write(output, container);
+        });
+    });
+
 // PRUNE
 program
     .command('prune', 'Prunes duplicate accessors')
@@ -63,7 +80,7 @@ program
 
 // PACK:TODO
 
-// ATLAS:TODO
+
 
 program
     .parse(process.argv);

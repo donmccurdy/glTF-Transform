@@ -141,6 +141,7 @@ class GLTFUtil {
     const report = {
       meshes: (container.json.meshes||[]).length,
       textures: (container.json.textures||[]).length,
+      images: (container.json.images||[]).length,
       materials: (container.json.materials||[]).length,
       animations: (container.json.animations||[]).length,
       primitives: 0,
@@ -245,6 +246,7 @@ class GLTFUtil {
     container.json.textures.forEach((texture) => {
       if (texture.source > index) texture.source--;
     });
+    delete container.resources[image.uri];
     return container;
   }
 

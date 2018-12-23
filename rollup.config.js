@@ -24,13 +24,13 @@ export default PACKAGES.map((name) => ({
     {
       file: `packages/${name}/dist/gltf-transform-${name}.js`,
       format: 'cjs',
-      sourcemap: true
+      sourcemap: !process.env.PRODUCTION
     },
     {
       file: `packages/${name}/dist/gltf-transform-${name}.umd.js`,
       format: 'umd',
       name: `gltfTransform.${camelcase(name)}`,
-      sourcemap: true
+      sourcemap: !process.env.PRODUCTION
     },
     {
       file: `packages/${name}/dist/gltf-transform-${name}.module.js`,
