@@ -5,6 +5,7 @@ import { getSizePNG, getSizeJPEG } from './image-util';
 interface IAtlasOptions {
   size,
   tilepad: boolean,
+  bake: boolean,
   createCanvas: ICanvasFactory,
   createImage: IImageFactory,
 };
@@ -20,28 +21,37 @@ interface IImageFactory {
 const DEFAULT_OPTIONS = {
   size: 512,
   tilepad: false,
-  bakeUVs: false,
+  bake: false,
 };
+
+const KHR_TEXTURE_TRANSFORM = 'KHR_texture_transform';
 
 function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFContainer> {
   options = {...DEFAULT_OPTIONS, ...options};
 
+  if (options.bake) {
+    throw new Error('Not implemented: Baking UVs not yet supported.');
+  }
+
   // Gather base color textures.
-  let baseColorTextures = [];
+  let baseColorImages = [];
   container.json.materials.forEach((material) => {
     if (!material.pbrMetallicRoughness) return;
     if (!material.pbrMetallicRoughness.baseColorTexture) return;
-    const baseColorTexture = material.pbrMetallicRoughness.baseColorTexture;
-    baseColorTextures.push(baseColorTexture.index);
+    const textureIndex = material.pbrMetallicRoughness.baseColorTexture.index;
+    const texture = container.json.textures[textureIndex];
+    baseColorImages.push(texture.source);
   });
-  baseColorTextures = Array.from(new Set(baseColorTextures));
+  baseColorImages = Array.from(new Set(baseColorImages));
 
   // Gather texture resources.
-  const textures = baseColorTextures.map((index) => {
-    const texture = container.json.textures[index];
-    const image = container.json.images[texture.source];
+  // TODO: Separate PNG/JPEG atlases?
+  let atlasIsPNG = false;
+  let images = baseColorImages.map((index) => {
+    const image = container.json.images[index];
     const arrayBuffer = container.resolveURI(image.uri);
     const mimeType = image.mimeType || (image.uri.match(/\.png$/) ? 'image/png' : 'image/jpeg');
+    atlasIsPNG = atlasIsPNG || mimeType === 'image/png';
     const {width, height} = mimeType === 'image/png'
       ? getSizePNG(Buffer.from(arrayBuffer))
       : getSizeJPEG(Buffer.from(arrayBuffer));
@@ -50,14 +60,28 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
 
   // Pack textures.
   const atlas = new ShelfPack(options.size, options.size);
-  textures.sort((a, b) => a.width * a.height > b.width * b.height ? 1 : -1);
-  atlas.pack(textures, {inPlace: true});
-
-  // console.log(textures);
+  images.sort((a, b) => a.width * a.height > b.width * b.height ? 1 : -1);
+  atlas.pack(images, {inPlace: true});
 
   if (!options.createImage || !options.createCanvas) {
     throw new Error('Support in browser not yet implemented.');
   }
+
+  images = images.filter((t) => t.x !== undefined);
+  if (images.length < 2) {
+    throw new Error('No textures could be packed at this size.');
+  }
+
+  // Add KHR_texture_transform.
+  // TODO: Implement 'bake' option, and/or support fallback.
+  if (container.json.extensionsUsed
+      && container.json.extensionsUsed.indexOf(KHR_TEXTURE_TRANSFORM) >= 0) {
+    throw new Error('Not implemented: Cannot create atlas on models already using KHR_texture_transform.')
+  }
+  container.json.extensionsUsed = container.json.extensionsUsed || [];
+  container.json.extensionsUsed.push(KHR_TEXTURE_TRANSFORM);
+  container.json.extensionsRequired = container.json.extensionsRequired || [];
+  container.json.extensionsRequired.push(KHR_TEXTURE_TRANSFORM);
 
   // Write pixels.
   let canvas: HTMLCanvasElement;
@@ -71,17 +95,16 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
 
   // Update texture references.
   const ctx = canvas.getContext('2d');
-  const pending: Array<Promise<void>> = textures.map((texture) => {
-    if (texture.x === undefined) return Promise.resolve();
-
+  const pending: Array<Promise<void>> = images.map((image) => {
+    if (image.x === undefined) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      const img = options.createImage();
-      img.onload = () => {
-        ctx.drawImage(img, texture.x, texture.y);
+      const imageEl = options.createImage();
+      imageEl.onload = () => {
+        ctx.drawImage(imageEl, image.x, image.y);
         resolve();
       };
-      img.onerror = err => reject(err);
-      img.src = Buffer.from(texture.arrayBuffer) as any;
+      imageEl.onerror = err => reject(err);
+      imageEl.src = Buffer.from(image.arrayBuffer) as any;
     });
   });
 
@@ -89,33 +112,24 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
     const buffer = (canvas as any).toBuffer() as Buffer;
     const arrayBuffer = GLTFUtil.trimBuffer(buffer);
 
-    // TODO: Detect mimeType and reuse, or create separate atlases?
-    GLTFUtil.addImage(container, 'atlas', arrayBuffer, 'image/png');
+    GLTFUtil.addImage(container, 'atlas', arrayBuffer, atlasIsPNG ? 'image/png': 'image/jpeg');
     const atlasImageIndex = container.json.images.length - 1;
 
-    textures.forEach((texture) => {
-      if (texture.x === undefined) return;
-      const textureDef = container.json.textures[texture.index];
-      textureDef.source = atlasImageIndex;
-      // TODO: Check if texture transform already exists.
+    // Reassign textures to atlas.
+    const imageMap = new Map();
+    images.forEach((i) => imageMap.set(i.index, i));
+    container.json.textures.forEach((textureDef) => {
+      if (!imageMap.has(textureDef.source)) return;
+      const image = imageMap.get(textureDef.source);
       textureDef.extensions = textureDef.extensions || {};
-      textureDef.extensions.KHR_texture_transform = {offset: [texture.x, texture.y]};
+      textureDef.extensions[KHR_TEXTURE_TRANSFORM] = {offset: [image.x, image.y]};
+      textureDef.source = atlasImageIndex;
     });
-
-    // TODO: Try rotating images that didn't fit?
 
     // Remove unused images.
-    // TODO: This doesn't quite seem to be working.
-    const usedImages = new Set();
-    const unusedImages = [];
-    container.json.textures.forEach((texture) => usedImages.add(texture.source));
-    container.json.images.forEach((image, imageIndex) => {
-      if (!usedImages.has(imageIndex)) unusedImages.push(imageIndex);
-    });
-    unusedImages.sort((a, b) => a > b ? -1 : 1); // sort descending
-    unusedImages.forEach((index) => GLTFUtil.removeImage(container, index));
-
-    // console.log(container.json, container.resources);
+    const unusedImageIndices = images.map((i) => i.index);
+    unusedImageIndices.sort((a, b) => a > b ? -1 : 1); // sort descending
+    unusedImageIndices.forEach((index) => GLTFUtil.removeImage(container, index));
 
     return container;
   });

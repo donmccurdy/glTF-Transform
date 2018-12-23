@@ -48,10 +48,12 @@ program
     .option('--size [size]', 'Atlas size', program.INT)
     .option('--bake [bakeUVs]', 'If set, bakes transformed UVs to meshes. '
         + 'Otherwise, adds UV transforms to each material.', program.BOOL)
-    .action(({input, output}, {size}) => {
+    .action(({input, output}, {size, bake}, logger) => {
         const container = io.read(input);
-        atlas(container, {size, createCanvas, createImage: () => new Image()}).then(() => {
+        atlas(container, {size, bake, createCanvas, createImage: () => new Image()}).then(() => {
             io.write(output, container);
+        }).catch((e) => {
+            logger.error(e);
         });
     });
 
