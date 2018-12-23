@@ -71,4 +71,4 @@ function getSizePNG (buffer: Buffer): ISize {
     };
 }
 
-export { getSizeJPEG, getSizePNG };
+export { getSizeJPEG, getSizePNG, ISize };

@@ -1,8 +1,6 @@
 // TODO: Test rollup-plugin-typescript2 with sourcemaps, figure out why the TS code isn't visible.
 import ShelfPack from '@mapbox/shelf-pack';
 import { GLTFContainer, GLTFUtil } from '@gltf-transform/core';
-// TODO: Put this in core.
-import { getSizePNG, getSizeJPEG } from './image-util';
 
 interface IAtlasOptions {
   size,
@@ -82,9 +80,7 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
     const arrayBuffer = container.resolveURI(image.uri);
     const mimeType = image.mimeType || (image.uri.match(/\.png$/) ? 'image/png' : 'image/jpeg');
     atlasIsPNG = atlasIsPNG || mimeType === 'image/png';
-    const {width, height} = mimeType === 'image/png'
-      ? getSizePNG(Buffer.from(arrayBuffer))
-      : getSizeJPEG(Buffer.from(arrayBuffer));
+    const {width, height} = GLTFUtil.getImageSize(container, index);
     return {index, width, height, arrayBuffer, mimeType, x: undefined, y: undefined};
   });
 

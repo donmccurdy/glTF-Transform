@@ -2,6 +2,7 @@ import { AccessorComponentTypeData, AccessorTypeData } from './constants';
 import { GLTFContainer, IBufferMap, IContainer } from './container';
 import { Logger, LoggerVerbosity } from './logger';
 import { PackedGLTFContainer } from './packed-container';
+import { getSizeJPEG, getSizePNG, ISize } from './image-util';
 
 interface IGLTFAnalysis {
   meshes: number,
@@ -248,6 +249,20 @@ class GLTFUtil {
     });
     delete container.resources[image.uri];
     return container;
+  }
+
+  static getImageSize(container: GLTFContainer, index: number): ISize {
+    const image = container.json.images[index];
+    let isPNG;
+    if (image.mimeType) {
+      isPNG = image.mimeType === 'image/png';
+    } else {
+      isPNG = image.uri.match(/\.png$/);
+    }
+    const arrayBuffer = container.resolveURI(image.uri);
+    return isPNG
+      ? getSizePNG(Buffer.from(arrayBuffer))
+      : getSizeJPEG(Buffer.from(arrayBuffer));
   }
 
   /**
