@@ -1,6 +1,5 @@
-// TODO: Test rollup-plugin-typescript2 with sourcemaps, figure out why the TS code isn't visible.
-import ShelfPack from '@mapbox/shelf-pack';
 import { GLTFContainer, GLTFUtil } from '@gltf-transform/core';
+import { pack } from './packer';
 
 interface IAtlasOptions {
   size,
@@ -85,10 +84,7 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
   });
 
   // Pack textures.
-  const atlas = new ShelfPack(options.size, options.size);
-  images.sort((a, b) => a.width * a.height > b.width * b.height ? -1 : 1); // sort descending by area
-  // TODO: This seems like a very suboptimal packing algorithm.
-  atlas.pack(images, {inPlace: true});
+  const [atlasWidth, atlasHeight] = pack(images);
 
   if (!options.createImage || !options.createCanvas) {
     throw new Error('Support in browser not yet implemented.');
@@ -112,11 +108,11 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
   // Write pixels.
   let canvas: HTMLCanvasElement;
   if (options.createCanvas) {
-    canvas = options.createCanvas(options.size, options.size);
+    canvas = options.createCanvas(atlasWidth, atlasHeight);
   } else {
     canvas = document.createElement('canvas');
-    canvas.height = options.size;
-    canvas.width = options.size;
+    canvas.height = atlasHeight;
+    canvas.width = atlasWidth;
   }
 
   // Update texture references.
@@ -141,9 +137,6 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
     GLTFUtil.addImage(container, 'atlas', arrayBuffer, atlasIsPNG ? 'image/png': 'image/jpeg');
     const atlasImageIndex = container.json.images.length - 1;
 
-    // TODO: If the texture repeats (this is the default) we need to scan the mesh
-    // for UVs >1 or <0, to indicate that we can't safely atlas the texture?
-
     // Reassign textures to atlas.
     const imageMap = new Map();
     images.forEach((i) => imageMap.set(i.index, i));
@@ -157,8 +150,8 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
       const image = imageMap.get(textureDef.source);
       baseColorTexture['extensions'] = baseColorTexture['extensions'] || {};
       baseColorTexture['extensions'][KHR_TEXTURE_TRANSFORM] = {
-        offset: [image.x / options.size, image.y / options.size],
-        scale: [image.width / options.size, image.height / options.size]
+        offset: [image.x / atlasWidth, image.y / atlasHeight],
+        scale: [image.width / atlasWidth, image.height / atlasHeight]
       };
       textureDef.source = atlasImageIndex;
     });
@@ -170,31 +163,31 @@ function atlas(container: GLTFContainer, options: IAtlasOptions): Promise<GLTFCo
 
     // Merge duplicate textures.
     // TODO: This is pretty verbose.
-    const reusedTextureMap = new Map();
-    const duplicateTextureMap = new Map();
-    const duplicateTextureIndices = [];
-    container.json.textures.forEach((textureDef, textureIndex) => {
-      // Ignore transforms here, because we disallowed arbitrary transform inputs.
-      const textureKey = `${textureDef.source}:${textureDef.sampler}`;
-      if (reusedTextureMap.has(textureKey)) {
-        duplicateTextureMap.set(textureIndex, reusedTextureMap.get(textureKey)[1]);
-        duplicateTextureIndices.push(textureIndex);
-      } else {
-        reusedTextureMap.set(textureKey, textureIndex);
-      }
-    });
-    container.json.materials.forEach((materialDef) => {
-      if (!materialDef.pbrMetallicRoughness) return;
-      if (!materialDef.pbrMetallicRoughness.baseColorTexture) return;
-      const baseColorTexture = materialDef.pbrMetallicRoughness.baseColorTexture;
-      if (duplicateTextureMap.has(baseColorTexture.index)) {
-        baseColorTexture.index = duplicateTextureMap.get(baseColorTexture.index);
-      }
-    });
-    duplicateTextureIndices.sort((a, b) => a[0] > b[0] ? -1 : 1); // sort descending
-    duplicateTextureIndices.forEach((index) => {
-      GLTFUtil.removeTexture(container, index);
-    });
+    // const reusedTextureMap = new Map();
+    // const duplicateTextureMap = new Map();
+    // const duplicateTextureIndices = [];
+    // container.json.textures.forEach((textureDef, textureIndex) => {
+    //   // Ignore transforms here, because we disallowed arbitrary transform inputs.
+    //   const textureKey = `${textureDef.source}:${textureDef.sampler}`;
+    //   if (reusedTextureMap.has(textureKey)) {
+    //     duplicateTextureMap.set(textureIndex, reusedTextureMap.get(textureKey)[1]);
+    //     duplicateTextureIndices.push(textureIndex);
+    //   } else {
+    //     reusedTextureMap.set(textureKey, textureIndex);
+    //   }
+    // });
+    // container.json.materials.forEach((materialDef) => {
+    //   if (!materialDef.pbrMetallicRoughness) return;
+    //   if (!materialDef.pbrMetallicRoughness.baseColorTexture) return;
+    //   const baseColorTexture = materialDef.pbrMetallicRoughness.baseColorTexture;
+    //   if (duplicateTextureMap.has(baseColorTexture.index)) {
+    //     baseColorTexture.index = duplicateTextureMap.get(baseColorTexture.index);
+    //   }
+    // });
+    // duplicateTextureIndices.sort((a, b) => a[0] > b[0] ? -1 : 1); // sort descending
+    // duplicateTextureIndices.forEach((index) => {
+    //   GLTFUtil.removeTexture(container, index);
+    // });
 
     return container;
   });

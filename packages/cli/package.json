@@ -3,9 +3,9 @@
   "version": "0.0.7",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "CLI interface to glTF Transform",
-  "main": "src/index.js",
+  "main": "src/cli.js",
   "bin": {
-    "gltf-transform": "src/index.js"
+    "gltf-transform": "src/cli.js"
   },
   "scripts": {},
   "author": "Don McCurdy <dm@donmccurdy.com>",

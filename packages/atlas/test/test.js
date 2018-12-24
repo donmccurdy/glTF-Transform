@@ -11,10 +11,10 @@ const { atlas } = require('../');
 test('@gltf-transform/atlas', t => {
   const io = new NodeIO(fs, path);
   const container = io.read('test/in/VC_glTF/VC.gltf');
-  // atlas(container, {size: 2048, createCanvas, createImage: () =>  new Image()}).then(() => {
-  //   // console.log(container);
-  //   io.write('test/out/VC_glTF/VC.gltf', container);
-
-  // });
+  atlas(container, {size: 2048, createCanvas, createImage: () =>  new Image()})
+    .then(() => {
+      io.write('test/out/VC_glTF/VC.gltf', container);
+    })
+    .catch((e) => t.fail(e));
   t.end();
 });

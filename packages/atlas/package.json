@@ -19,8 +19,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.0.7",
-    "@mapbox/shelf-pack": "^3.2.0"
+    "@gltf-transform/core": "^0.0.7"
   },
   "files": [
     "dist/",
