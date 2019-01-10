@@ -45,6 +45,7 @@ new features. Most packages work both in Node.js and on the web.
 - [ ] sparse accessors
 - [ ] flatten node hierarchy
 - [ ] compute AABBs
+- [ ] mesh optimization [[1](https://github.com/zeux/meshoptimizer)][[2](https://github.com/KhronosGroup/glTF-Compressonator)]
 
 ## Usage
 
