@@ -10,12 +10,9 @@ const { colorspace } = require('../');
 
 test('@gltf-transform/colorspace', t => {
   const io = new NodeIO(fs, path);
-  const container = io.read(path.join(__dirname, 'in/Parrot.glb'));
-
-  colorspace(container, {inputEncoding: 'sRGB'});
-
-  // TODO: Test the result.
-  // io.write(path.join(__dirname, 'out/Parrot.glb'), container);
-
+  const input = io.read(path.join(__dirname, 'in/Parrot.glb'));
+  const expected = io.read(path.join(__dirname, 'out/Parrot.glb'));
+  colorspace(input, {inputEncoding: 'sRGB'});
+  t.ok(input.equals(expected), 'converts vertex colors from sRGB to linear');
   t.end();
 });
