@@ -76,25 +76,15 @@ class GLTFContainer implements IContainer {
     const valueSize = AccessorTypeData[accessor.type].size;
     const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
 
-    let elementSize;
-    let data;
     switch (accessor.componentType) {
       case AccessorComponentType.FLOAT:
-        elementSize = Float32Array.BYTES_PER_ELEMENT;
-        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
-        return new Float32Array(data);
+        return new Float32Array(resource, start, accessor.count * valueSize);
       case AccessorComponentType.UNSIGNED_INT:
-        elementSize = Uint32Array.BYTES_PER_ELEMENT;
-        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
-        return new Uint32Array(data);
+        return new Uint32Array(resource, start, accessor.count * valueSize);
       case AccessorComponentType.UNSIGNED_SHORT:
-        elementSize = Uint16Array.BYTES_PER_ELEMENT;
-        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
-        return new Uint16Array(data);
-        case AccessorComponentType.UNSIGNED_BYTE:
-        elementSize = Uint8Array.BYTES_PER_ELEMENT;
-        data = resource.slice(start, start + accessor.count * valueSize * elementSize);
-        return new Uint8Array(data);
+        return new Uint16Array(resource, start, accessor.count * valueSize);
+      case AccessorComponentType.UNSIGNED_BYTE:
+        return new Uint8Array(resource, start, accessor.count * valueSize);
       default:
         throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
     }

@@ -4,7 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 
-let PACKAGES = [ 'core', 'atlas', 'ao', 'prune', 'split' ];
+let PACKAGES = [ 'core', 'atlas', 'ao', 'colorspace', 'prune', 'split' ];
 
 if (process.env.CI) {
   PACKAGES = PACKAGES.filter((pkg) => pkg !== 'ao' && pkg !== 'atlas');

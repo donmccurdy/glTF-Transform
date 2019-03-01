@@ -9,6 +9,7 @@ const { version } = require('../package.json');
 const { GLTFUtil, NodeIO } = require('@gltf-transform/core');
 const { ao } = require('@gltf-transform/ao');
 const { atlas } = require('@gltf-transform/atlas');
+const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
 
@@ -55,6 +56,18 @@ program
         }).catch((e) => {
             logger.error(e);
         });
+    });
+
+// COLORSPACE
+program
+    .command('colorspace', 'Colorspace correction for vertex colors')
+    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+    .argument('<output>', 'Path to write output')
+    .option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', program.STRING)
+    .action(({input, output}, {inputEncoding}, logger) => {
+        const container = io.read(input);
+        colorspace(container, {inputEncoding});
+        io.write(output, container);
     });
 
 // PRUNE

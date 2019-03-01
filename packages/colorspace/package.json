@@ -1,0 +1,32 @@
+{
+  "name": "@gltf-transform/colorspace",
+  "version": "0.0.7",
+  "repository": "github:donmccurdy/glTF-Transform",
+  "description": "Vertex color colorspace correction",
+  "main": "dist/gltf-transform-colorspace.js",
+  "module": "dist/gltf-transform-colorspace.module.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "@gltf-transform/core": "^0.0.7"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "package.json",
+    "package-lock.json"
+  ]
+}
