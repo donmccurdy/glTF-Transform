@@ -23,8 +23,8 @@ function colorspace (container: GLTFContainer, options: IColorspaceOptions): GLT
     container.json.meshes.forEach((mesh) => {
         mesh.primitives.forEach((primitive) => {
             for (let i = 0; primitive.attributes[`COLOR_${i}`] !== undefined; i++) {
-                const accessorIndex = primitive.attributes[`COLOR_${i}`];
 
+                const accessorIndex = primitive.attributes[`COLOR_${i}`];
                 if (converted.has(accessorIndex)) continue;
 
                 const accessorDef = container.json.accessors[accessorIndex];
