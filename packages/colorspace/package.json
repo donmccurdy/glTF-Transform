@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/colorspace",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Vertex color colorspace correction",
   "main": "dist/gltf-transform-colorspace.js",
@@ -18,9 +18,8 @@
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
-  "devDependencies": {},
   "dependencies": {
-    "@gltf-transform/core": "^0.0.7"
+    "@gltf-transform/core": "^0.0.8"
   },
   "files": [
     "dist/",
