@@ -14,7 +14,7 @@ function colorspace (container: GLTFContainer, options: IColorspaceOptions): GLT
     }
 
     if (options.inputEncoding !== 'sRGB') {
-        logger.error(`Unknown input encoding "${options.inputEncoding}"; should be "sRGB" or "linear". Skipping conversion.`);
+        logger.error(`Unknown input encoding "${options.inputEncoding}" – should be "sRGB" or "linear". Skipping conversion.`);
         return container;
     }
 
