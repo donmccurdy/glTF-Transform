@@ -115,3 +115,15 @@ version of the CLI, run `npm link` within the `packages/cli` directory. Then
 
 In the event that dependencies get into a broken state, removing `package-lock.json` and
 reinstalling may resolve things.
+
+## Releasing
+
+> NOTE: Only the author can create new releases.
+
+Currently Lerna [has trouble with 2FA OTPs](https://github.com/lerna/lerna/issues/1091). As a result,
+new packages need to be published manually before they can be included in a repo-wide release. Once
+that is done, normal releases should use:
+
+```shell
+NPM_CONFIG_OTP=123456 lerna publish <version> --force-publish=*
+```
