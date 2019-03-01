@@ -62,6 +62,7 @@ function colorspace (container: GLTFContainer, options: IColorspaceOptions): GLT
     });
 
     logger.info(`Corrected vertex colors from ${options.inputEncoding} to linear.`);
+
     return container;
 
 }
