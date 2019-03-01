@@ -25,11 +25,11 @@ const prune = function (container: GLTFContainer): GLTFContainer {
   for (let i = 0; i < meshAccessorIndices.length; i++) {
     if (duplicateAccessors.has(i)) continue;
     const iAccessor = container.json.accessors[i];
-    const iAccessorData = container.getAccessorArray(i).buffer;
+    const iAccessorData = container.getAccessorArray(i).slice().buffer;
     for (let j = i + 1; j < meshAccessorIndices.length; j++) {
       if (duplicateAccessors.has(j)) continue;
       const jAccessor = container.json.accessors[j];
-      const jAccessorData = container.getAccessorArray(j).buffer;
+      const jAccessorData = container.getAccessorArray(j).slice().buffer;
       if (iAccessor.type !== jAccessor.type) continue;
       if (iAccessor.componentType !== jAccessor.componentType) continue;
       if (iAccessor.count !== jAccessor.count) continue;
