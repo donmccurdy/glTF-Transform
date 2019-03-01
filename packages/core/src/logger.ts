@@ -16,7 +16,7 @@ class Logger {
    * @param text
    */
   info (text: string) {
-    if (this.verbosity >= LoggerVerbosity.INFO) {
+    if (this.verbosity <= LoggerVerbosity.INFO) {
       console.log(`${this.name}: ${text}`);
     }
   }
@@ -26,7 +26,7 @@ class Logger {
    * @param text
    */
   warn (text: string) {
-    if (this.verbosity >= LoggerVerbosity.WARNING) {
+    if (this.verbosity <= LoggerVerbosity.WARNING) {
       console.warn(`${this.name}: ${text}`);
     }
   }
@@ -36,7 +36,7 @@ class Logger {
    * @param text
    */
   error (text: string) {
-    if (this.verbosity >= LoggerVerbosity.ERROR) {
+    if (this.verbosity <= LoggerVerbosity.ERROR) {
       console.error(`${this.name}: ${text}`);
     }
   }
