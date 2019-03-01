@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/cli",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "CLI interface to glTF Transform",
   "main": "src/cli.js",
@@ -15,11 +15,11 @@
   },
   "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
-    "@gltf-transform/ao": "^0.0.11",
-    "@gltf-transform/colorspace": "^0.0.11",
-    "@gltf-transform/core": "^0.0.11",
-    "@gltf-transform/prune": "^0.0.11",
-    "@gltf-transform/split": "^0.0.11",
+    "@gltf-transform/ao": "^0.0.12",
+    "@gltf-transform/colorspace": "^0.0.12",
+    "@gltf-transform/core": "^0.0.12",
+    "@gltf-transform/prune": "^0.0.12",
+    "@gltf-transform/split": "^0.0.12",
     "caporal": "^1.1.0",
     "gl": "^4.1.1"
   },
