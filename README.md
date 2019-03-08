@@ -52,7 +52,7 @@ new features. Most packages work both in Node.js and on the web.
 
 ### Programmatic
 
-See full [API documentation](./API.md).
+See full [API documentation](API.md).
 
 ```js
 import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/core';
