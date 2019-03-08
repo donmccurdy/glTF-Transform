@@ -16,7 +16,6 @@ test('@gltf-transform/colorspace', t => {
   const container = io.read(path.join(__dirname, 'in/Parrot.glb'));
 
   const colorAccessorIndex = container.json.meshes[0].primitives[0].attributes['COLOR_0'];
-  console.log('accessor --> ' + colorAccessorIndex);
   const colorArray = container.getAccessorArray(colorAccessorIndex);
   colorArray.set(input);
 
