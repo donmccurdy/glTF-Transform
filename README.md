@@ -52,6 +52,8 @@ new features. Most packages work both in Node.js and on the web.
 
 ### Programmatic
 
+See full [API documentation](./API.md).
+
 ```js
 import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/core';
 import { ao } from '@gltf-transform/ao';
@@ -72,6 +74,9 @@ const glbBuffer = GLTFUtil.toGLB( container );
 ### CLI
 
 ```shell
+# help
+gltf-transform --help
+
 # analyze
 gltf-transform analyze input.glb
 

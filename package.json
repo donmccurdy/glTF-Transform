@@ -16,7 +16,8 @@
     "test": "lerna run test --use-workspaces",
     "validate": "scripts/validate.js",
     "preversion": "npm run validate",
-    "docs": "node ./scripts/generate-readmes"
+    "version": "npm run docs && git add -A API.md",
+    "docs": "documentation build packages/core/dist/gltf-transform-core.js -f md > API.md"
   },
   "devDependencies": {
     "@gltf-transform/ao": "file:packages/ao",
@@ -29,6 +30,7 @@
     "@types/node": "^10.12.17",
     "camelcase": "^5.0.0",
     "canvas": "^2.2.0",
+    "documentation": "^9.3.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "2.8.0",
     "rollup": "^0.68.0",
