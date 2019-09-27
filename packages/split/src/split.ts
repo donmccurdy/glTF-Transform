@@ -11,13 +11,22 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
   // Group bufferviews by mesh.
   json.meshes.forEach((mesh) => {
     if (meshes.indexOf(mesh.name) === -1) return;
-    mesh.primitives.forEach((prim) => {
-      if (prim.indices) markAccessor(json.accessors[prim.indices]);
-      Object.keys(prim.attributes).forEach((attrName) => {
-        markAccessor(json.accessors[prim.attributes[attrName]]);
-      });
 
-      function markAccessor(accessor) {
+    mesh.primitives.forEach((primitive) => {
+      if (primitive.indices) markAccessor(primitive.indices);
+
+      markAttributesAccessors(primitive.attributes);
+      if (primitive.targets) primitive.targets.forEach(markAttributesAccessors);
+
+      function markAttributesAccessors(attributes) {
+        Object.values(attributes).forEach((index) => {
+          markAccessor(index);
+        });
+      }
+
+      function markAccessor(index) {
+        const accessor = json.accessors[index];
+
         if (bufferViewMap[accessor.bufferView] === undefined) {
           bufferViewMap[accessor.bufferView] = mesh.name;
         } else if (bufferViewMap[accessor.bufferView] !== mesh.name) {
