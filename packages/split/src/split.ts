@@ -14,14 +14,12 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
 
     mesh.primitives.forEach((primitive) => {
       if (primitive.indices) markAccessor(primitive.indices);
-
-      markAttributesAccessors(primitive.attributes);
       if (primitive.targets) primitive.targets.forEach(markAttributesAccessors);
 
+      markAttributesAccessors(primitive.attributes);
+
       function markAttributesAccessors(attributes) {
-        Object.values(attributes).forEach((index) => {
-          markAccessor(index);
-        });
+        Object.values(attributes).forEach(markAccessor);
       }
 
       function markAccessor(index) {
