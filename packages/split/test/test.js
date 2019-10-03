@@ -14,12 +14,11 @@ test('@gltf-transform/split', t => {
   t.equal(container.json.buffers.length, 1, 'initialized with one buffer');
 
   split(container, ['CubeA', 'CubeB']);
-  // TODO: This should be two, not three.
+
   t.deepEqual(container.json.buffers, [
-    { uri: 'resources.bin', byteLength: 36, name: 'TwoCubes', },
-    { uri: 'CubeA.bin', byteLength: 288, name: 'CubeA' },
+    { uri: 'CubeA.bin', byteLength: 324, name: 'CubeA' },
     { uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' }
-  ], 'splits into three buffers');
+  ], 'splits into two buffers');
 
   t.end();
 });
