@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/status-experimental-orange.svg)
 [![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-007ec6.svg)](https://lernajs.io/)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-007ec6.svg)](https://lerna.js.org/)
 
 JavaScript and TypeScript utilities for processing glTF 3D models.
 
@@ -86,7 +86,7 @@ gltf-transform ao --samples 1000 input.glb output.glb
 ## Contributing
 
 This project consists of multiple NPM packages, managed in one repository with
-https://lernajs.io/. All code, excluding Node.js-based tests, is written in TypeScript.
+https://lerna.js.org/. All code, excluding Node.js-based tests, is written in TypeScript.
 I recommend using VSCode for linting and type information, which becomes very helpful
 when modifying glTF schema objects.
 
