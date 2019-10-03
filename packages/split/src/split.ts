@@ -13,7 +13,7 @@ const split = function (container: GLTFContainer, meshes: Array<string>): GLTFCo
     if (meshes.indexOf(mesh.name) === -1) return;
 
     mesh.primitives.forEach((primitive) => {
-      if (primitive.indices) markAccessor(primitive.indices);
+      if (primitive.indices !== undefined) markAccessor(primitive.indices);
       if (primitive.targets) primitive.targets.forEach(markAttributesAccessors);
 
       markAttributesAccessors(primitive.attributes);
