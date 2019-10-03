@@ -350,9 +350,9 @@ class GLTFUtil {
       const buffer = container.json.buffers[bufferView.buffer];
       buffer.byteLength -= bufferView.byteLength;
 
-      container.json.bufferViews.forEach((bufferView) => {
-        if (bufferView.byteOffset > bufferView.byteOffset) {
-          bufferView.byteOffset -= bufferView.byteLength;
+      container.json.bufferViews.forEach((otherBufferView) => {
+        if (otherBufferView.buffer === bufferView.buffer && otherBufferView.byteOffset > bufferView.byteOffset) {
+          otherBufferView.byteOffset -= bufferView.byteLength;
         }
       });
     }
