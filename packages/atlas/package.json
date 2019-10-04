@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/atlas",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "Merges small textures and materials, creating a basic texture atlas",
   "repository": "github:donmccurdy/glTF-Transform",
   "main": "dist/gltf-transform-atlas.js",
@@ -19,7 +19,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.0.14"
+    "@gltf-transform/core": "^0.1.0"
   },
   "files": [
     "dist/",
