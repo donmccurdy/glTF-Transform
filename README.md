@@ -1,4 +1,4 @@
-🚨 In development
+🚨 Experimental
 
 # glTF-Transform
 
@@ -47,6 +47,7 @@ new features. Most packages work both in Node.js and on the web.
 - [ ] flatten node hierarchy
 - [ ] compute AABBs
 - [ ] mesh optimization [[1](https://github.com/zeux/meshoptimizer)][[2](https://github.com/KhronosGroup/glTF-Compressonator)]
+- [ ] graph-based debug viewer (via [sigma](http://sigmajs.org/))
 
 ## Usage
 
