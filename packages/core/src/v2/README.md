@@ -1,0 +1,5 @@
+Scratch space.
+
+```ts
+...
+```
