@@ -1,6 +1,10 @@
 node_modules
+lerna-debug.log
 .rpt2_cache
 **/dist/*
 **/test/**/*-tmp.glb
 **/test/**/*-tmp.gltf
 packages/*/package-lock.json
+packages/*/test/out/*
+!packages/*/test/out/.gitkeep
+
