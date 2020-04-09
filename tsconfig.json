@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": ["es6", "dom"],
     "target": "es6",
-    "declaration": true
+    "declaration": true,
+    "experimentalDecorators": true
   },
   "files": [
     "typings/gltf.d.ts"

@@ -75,6 +75,8 @@ test('@gltf-transform/core::analyze', (t) => {
  * V2
  */
 
+const util = require('util');
+
 test('@gltf-transform/core::io -- glb (v2)', t => {
   glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
     const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
@@ -97,6 +99,7 @@ test('@gltf-transform/core::io -- gltf (v2)', t => {
     const container = io.read_v2(inputURI);
 
     t.ok(container, `Read "${basepath}". (v2)`)
+    const mesh = container.getRoot().listMeshes()[0];
     console.log(container);
   });
   t.end();

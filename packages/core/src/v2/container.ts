@@ -29,6 +29,7 @@ export class Container {
     this.root.addMesh(mesh);
     return mesh;
   }
+  // TODO(donmccurdy): Move this to mesh.createPrimitive()?
   createPrimitive(/*name: string*/): Primitive {
     const primitive = new Primitive(this.graph/*, name*/);
     // this.root.addPrimitive(primitive);
@@ -49,4 +50,6 @@ export class Container {
     this.root.addAccessor(accessor);
     return accessor;
   }
+  // TODO(donmccurdy): Add container.createBuffer()?
+  // TODO(donmccurdy): Add container.createBufferView(buffer)?
 }

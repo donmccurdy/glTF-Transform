@@ -146,7 +146,9 @@ export class GLTFReader {
     const nodes = nodeDefs.map((nodeDef) => {
       const node = container.createNode(nodeDef.name);
 
+      console.log('[reader] setting mesh')
       if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
+      console.log('[reader] end setting mesh')
 
       if (nodeDef.translation !== undefined) {
         node.setTranslation(new Vector3(...nodeDef.translation));
@@ -206,14 +208,14 @@ function getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap
 
   switch (accessor.componentType) {
     case AccessorComponentType.FLOAT:
-    return new Float32Array(resource, start, accessor.count * itemSize);
+      return new Float32Array(resource, start, accessor.count * itemSize);
     case AccessorComponentType.UNSIGNED_INT:
-    return new Uint32Array(resource, start, accessor.count * itemSize);
+      return new Uint32Array(resource, start, accessor.count * itemSize);
     case AccessorComponentType.UNSIGNED_SHORT:
-    return new Uint16Array(resource, start, accessor.count * itemSize);
+      return new Uint16Array(resource, start, accessor.count * itemSize);
     case AccessorComponentType.UNSIGNED_BYTE:
-    return new Uint8Array(resource, start, accessor.count * itemSize);
+      return new Uint8Array(resource, start, accessor.count * itemSize);
     default:
-    throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
+      throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
   }
 };

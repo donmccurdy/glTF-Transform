@@ -23,13 +23,47 @@ const NOT_IMPLEMENTED = new Error('Not implemented.');
 export class Graph {
     private links: Link<Element, Element>[] = [];
 
+    public listParentElements(element: Element): Element[] {
+        // #optimize
+        return this.links
+            .filter((link) => link.getRight() === element)
+            .map((link) => link.getLeft());
+    }
+
+    public listChildElements(element: Element): Element[] {
+        // #optimize
+        return this.links
+            .filter((link) => link.getLeft() === element)
+            .map((link) => link.getRight());
+    }
+
+    public disconnectChildElements(element: GraphElement): Graph {
+        // #optimize
+        this.links
+            .filter((link) => link.getLeft() === element)
+            .forEach((link) => link.dispose());
+        return this;
+    }
+
+    public disconnectParentElements(element: GraphElement): Graph {
+        // #optimize
+        this.links
+            .filter((link) => link.getRight() === element)
+            .forEach((link) => link.dispose());
+        return this;
+    }
+
     /**
      * Creates a link between two {@link Element} instances. Link is returned
      * for the caller to store.
      * @param a Owner
      * @param b Resource
      */
-    public link(a: Element, b: Element): Link<Element, Element> {
+    public link(a: Element, b: Element | null): Link<Element, Element> {
+        // If there's no resource, return a null link. Avoids a lot of boilerplate
+        // in Element setters.
+        if (!b) return null;
+
         const link = new Link(a, b);
         this.registerLink(link);
         return link;
@@ -37,6 +71,12 @@ export class Graph {
 
     public linkTexture(a: Material, b: Texture): TextureLink {
         const link = new TextureLink(a, b);
+        this.registerLink(link);
+        return link;
+    }
+
+    public linkAttribute(a: Primitive, b: Accessor): AttributeLink {
+        const link = new AttributeLink(a, b);
         this.registerLink(link);
         return link;
     }
@@ -55,23 +95,6 @@ export class Graph {
      */
     private unlink(link: Link<Element, Element>): Graph {
         this.links = this.links.filter((l) => l !== link);
-        return this;
-    }
-
-    /**
-     * Detaches an element, removing all of its inbound links while keeping its
-     * outbound resources.
-     * @param element
-     */
-    public detach(element: Element): Graph {
-        const prunedLinks = new Set<Link<Element, Element>>();
-        for (const link of this.links) {
-            if (link.getRight() === element) {
-                prunedLinks.add(link);
-                link.getLeft().disconnect(link);
-            }
-        }
-        this.links = this.links.filter((link) => !prunedLinks.has(link));
         return this;
     }
 }
@@ -97,9 +120,10 @@ export class Link<Left extends Element, Right extends Element> {
 
     /** Destroys a (currently intact) link, updating both the graph and the owner. */
     dispose(): void {
-        this.getLeft().disconnect(this);
+        if (this.disposed) return;
         this.disposed = true;
         this.listeners.forEach((fn) => fn());
+        this.listeners.length = 0;
     }
 
     /** Registers a listener to be invoked if this link is destroyed. */
@@ -114,24 +138,67 @@ export class Link<Left extends Element, Right extends Element> {
 
 /***************************************************************
  * Elements
- *
- * To do:
- * - [ ] Animation
- * - [ ] Image
  */
 
-export abstract class Element {
+// TODO(donmccurdy): Perhaps the Graph-related stuff here could be moved
+// into another parent class (GraphElement?), so that Element deals only
+// with glTF concepts.
+
+abstract class GraphElement {
     protected readonly graph: Graph = null;
+    private disposed = false;
+    constructor(graph: Graph) {
+        this.graph = graph;
+    }
+
+    public isDisposed(): boolean { return this.disposed; }
+
+    /**
+     * Removes both inbound references to and outbound references from this element.
+     */
+    public dispose(): void {
+        this.graph.disconnectChildElements(this);
+        this.graph.disconnectParentElements(this);
+        this.disposed = true;
+    }
+
+    /**
+     * Removes all inbound references to this element. Subclasses do not override this method.
+     */
+    public detach(): GraphElement {
+        this.graph.disconnectParentElements(this);
+        return this;
+    }
+
+    protected addGraphChild(links: Link<Element, Element>[], link: Link<Element, Element>): GraphElement {
+        links.push(link);
+        // This listener handles dispose events for arrays of Links. The @GraphChild
+        // annotation handles the events for property Links.
+        link.onDispose(() => {
+            // console.log('[GraphElement] Removing disposed link from array.');
+            const remaining = links.filter((l) => l !== link);
+            links.length = 0;
+            links.push(...remaining);
+        });
+        return this;
+    }
+
+    protected removeGraphChild(links: Link<Element, Element>[], child: Element): GraphElement {
+        const link = links.find((link) => link.getRight() === child);
+        link.dispose();
+        return this;
+    }
+}
+
+export abstract class Element extends GraphElement {
     protected name: string = '';
     protected extras: object = {};
 
     // TODO(donmccurdy): Extensions should be Elements.
     protected extensions: object = {};
 
-    private disposed = false;
-
     constructor(graph: Graph, name = '') {
-        this.graph = graph;
+        super(graph);
         this.name = name;
     }
 
@@ -153,8 +220,6 @@ export abstract class Element {
         return this;
     }
 
-    public isDisposed(): boolean { return this.disposed; }
-
     /**
      * Makes a copy of this element with no inbound links, and with cloned outbound links.
      */
@@ -169,36 +234,38 @@ export abstract class Element {
     public equals(element: Element): boolean {
         throw NOT_IMPLEMENTED;
     }
-
-    /**
-     * Removes both inbound references to and outbound references from this element.
-     */
-    public dispose(): void {
-        this.detach();
-        this.disposed = true;
-    }
-
-    /**
-     * Removes all inbound references to this element. Subclasses do not override this method.
-     */
-    public detach(): Element {
-        this.graph.detach(this);
-        return this;
-    }
-
-    /**
-     * Removes any outbound references using the given link. Changes are not
-     * propagated elsewhere; it is up to the caller to ensure the graph is
-     * updated accordingly. This method is usually invoked by disposing a
-     * link, or by calling a setter that destroys a previous link.
-     *
-     * Elements are responsible for being able to disconnect any of their
-     * linked resources.
-     *
-     * @param link
-     */
-    abstract disconnect(link: Link<Element, Element>): Element;
 }
+
+function GraphChild (target: any, propertyKey: string) {
+    Object.defineProperty(target, propertyKey, {
+        get: function () {
+            return this['_' + propertyKey];
+        },
+        set: function (value) {
+            const link = this['_' + propertyKey];
+
+            if (link && !Array.isArray(link)) {
+                // console.log('[GraphChild] Disposing link: ' + propertyKey, link, value);
+                link.dispose();
+            }
+
+            if (value && !Array.isArray(value)) {
+                // This listener handles dispose events for property Links. The addGraphChild
+                // method handles the events for arrays of Links.
+                value.onDispose(() => {
+                    // console.log('[GraphChild] Unassigning link: ' + propertyKey, link);
+                    this['_' + propertyKey] = null;
+                });
+            }
+
+            // if (value) console.log('[GraphChild] Assigning link: ' + propertyKey, value);
+            this['_' + propertyKey] = value;
+        },
+        enumerable: true
+    });
+}
+
+function GraphChildList (target: any, propertyKey: string) {}
 
 export class Root extends Element {
     private asset: GLTF.IAsset = {
@@ -206,12 +273,12 @@ export class Root extends Element {
         version: '2.0'
     };
 
-    private scenes: Link<Root, Scene>[] = [];
-    private nodes: Link<Root, Node>[] = [];
-    private meshes: Link<Root, Mesh>[] = [];
-    private materials: Link<Root, Material>[] = [];
-    private textures: Link<Root, Texture>[] = [];
-    private accessors: Link<Root, Accessor>[] = [];
+    @GraphChildList private scenes: Link<Root, Scene>[] = [];
+    @GraphChildList private nodes: Link<Root, Node>[] = [];
+    @GraphChildList private meshes: Link<Root, Mesh>[] = [];
+    @GraphChildList private materials: Link<Root, Material>[] = [];
+    @GraphChildList private textures: Link<Root, Texture>[] = [];
+    @GraphChildList private accessors: Link<Root, Accessor>[] = [];
 
     public getAsset(): GLTF.IAsset { return this.asset; }
 
@@ -221,186 +288,154 @@ export class Root extends Element {
     }
 
     public addScene(scene: Scene): Root {
-        this.scenes.push(this.graph.link(this, scene) as Link<Root, Scene>);
-        return this;
+        return this.addGraphChild(this.scenes, this.graph.link(this, scene) as Link<Root, Scene>) as Root;
     }
     public removeScene(scene: Scene): Root {
-        const link = this.scenes.find((link) => link.getRight() === scene);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.scenes, scene) as Root;
     }
     public listScenes(): Scene[] {
         return this.scenes.map((p) => p.getRight());
     }
 
     public addNode(node: Node): Root {
-        this.nodes.push(this.graph.link(this, node) as Link<Root, Node>);
-        return this;
+        return this.addGraphChild(this.nodes, this.graph.link(this, node) as Link<Root, Node>) as Root;
     }
+
     public removeNode(node: Node): Root {
-        const link = this.nodes.find((link) => link.getRight() === node);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.nodes, node) as Root;
     }
+
     public listNodes(): Node[] {
         return this.nodes.map((p) => p.getRight());
     }
 
     public addMesh(mesh: Mesh): Root {
-        this.meshes.push(this.graph.link(this, mesh) as Link<Root, Mesh>);
-        return this;
+        return this.addGraphChild(this.meshes, this.graph.link(this, mesh) as Link<Root, Mesh>) as Root;
     }
+
     public removeMesh(mesh: Mesh): Root {
-        const link = this.meshes.find((link) => link.getRight() === mesh);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.meshes, mesh) as Root;
     }
+
     public listMeshes(): Mesh[] {
         return this.meshes.map((p) => p.getRight());
     }
 
     public addMaterial(material: Material): Root {
-        this.materials.push(this.graph.link(this, material) as Link<Root, Material>);
-        return this;
+        return this.addGraphChild(this.materials, this.graph.link(this, material) as Link<Root, Material>) as Root;
     }
+
     public removeMaterial(material: Material): Root {
-        const link = this.materials.find((link) => link.getRight() === material);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.materials, material) as Root;
     }
+
     public listMaterials(): Material[] {
         return this.materials.map((p) => p.getRight());
     }
 
     public addTexture(texture: Texture): Root {
-        this.textures.push(this.graph.link(this, texture) as Link<Root, Texture>);
-        return this;
+        return this.addGraphChild(this.textures, this.graph.link(this, texture) as Link<Root, Texture>) as Root;
     }
+
     public removeTexture(texture: Texture): Root {
-        const link = this.textures.find((link) => link.getRight() === texture);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.textures, texture) as Root;
     }
+
     public listTextures(): Texture[] {
         return this.textures.map((p) => p.getRight());
     }
 
     public addAccessor(accessor: Accessor): Root {
-        this.accessors.push(this.graph.link(this, accessor) as Link<Root, Accessor>);
-        return this;
-    }
-    public removeAccessor(accessor: Accessor): Root {
-        const link = this.accessors.find((link) => link.getRight() === accessor);
-        link.dispose();
-        return this;
-    }
-    public listAccessors(): Accessor[] {
-        return this.accessors.map((p) => p.getRight());
+        return this.addGraphChild(this.accessors, this.graph.link(this, accessor) as Link<Root, Accessor>) as Root;
     }
 
-    public dispose(): void {
-        while (this.scenes.length > 0) this.scenes[0].dispose();
-        while (this.nodes.length > 0) this.nodes[0].dispose();
-        while (this.meshes.length > 0) this.meshes[0].dispose();
-        while (this.materials.length > 0) this.materials[0].dispose();
-        while (this.textures.length > 0) this.textures[0].dispose();
-        super.dispose();
+    public removeAccessor(accessor: Accessor): Root {
+        return this.removeGraphChild(this.accessors, accessor) as Root;
     }
-    public disconnect(link: Link<Root, Element>): Root {
-        this.scenes = this.scenes.filter((child) => child !== link);
-        this.nodes = this.nodes.filter((child) => child !== link);
-        this.meshes = this.meshes.filter((child) => child !== link);
-        this.materials = this.materials.filter((child) => child !== link);
-        this.textures = this.textures.filter((child) => child !== link);
-        return this;
+
+    public listAccessors(): Accessor[] {
+        return this.accessors.map((p) => p.getRight());
     }
 }
 
 export class Scene extends Element {
-    private nodes: Link<Scene, Node>[] = [];
+    @GraphChildList private nodes: Link<Scene, Node>[] = [];
     public addNode(node: Node): Scene {
-        this.nodes.push(this.graph.link(this, node) as Link<Scene, Node>);
-        return this;
+        return this.addGraphChild(this.nodes, this.graph.link(this, node) as Link<Root, Node>) as Scene;
     }
+
     public removeNode(node: Node): Scene {
-        const link = this.nodes.find((link) => link.getRight() === node);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.nodes, node) as Scene;
     }
+
     public listNodes(): Node[] {
         return this.nodes.map((p) => p.getRight());
-    }
-    public dispose(): void {
-        while (this.nodes.length > 0) this.nodes[0].dispose();
-        super.dispose();
-    }
-    public disconnect(link: Link<Scene, Node>): Scene {
-        this.nodes = this.nodes.filter((child) => child !== link);
-        return this;
     }
 }
 
 export class Mesh extends Element {
-    private primitives: Link<Mesh, Primitive>[] = [];
+    @GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
+
     public addPrimitive(primitive: Primitive): Mesh {
-        this.primitives.push(this.graph.link(this, primitive) as Link<Mesh, Primitive>);
-        return this;
+        return this.addGraphChild(this.primitives, this.graph.link(this, primitive) as Link<Root, Primitive>) as Mesh;
     }
+
     public removePrimitive(primitive: Primitive): Mesh {
-        const link = this.primitives.find((link) => link.getRight() === primitive);
-        link.dispose();
-        return this;
+        return this.removeGraphChild(this.primitives, primitive) as Mesh;
     }
+
     public listPrimitives(): Primitive[] {
         return this.primitives.map((p) => p.getRight());
     }
-    public disconnect(link: Link<Mesh, Element>): Mesh {
-        this.primitives = this.primitives.filter((l) => l !== link);
-        return this;
-    }
-    public dispose(): void {
-        while (this.primitives.length > 0) this.primitives[0].dispose();
-        super.dispose();
-    }
 }
 
-interface AttributeMap { [key: string]: Link<Primitive, Accessor>; }
+// interface AttributeMap { [key: string]: Link<Primitive, Accessor>; }
+
+class AttributeLink extends Link<Primitive, Accessor> {
+    public semantic = '';
+}
 
 export class Primitive extends Element {
-    private attributes: AttributeMap = {};
-    private indices: Link<Primitive, Accessor> = null;
-    private targets: AttributeMap[] = [];
-    private targetNames: string[] = [];
-    private material: Link<Primitive, Material> = null;
     private mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
+    // TODO(donmccurdy): Kinda feeling like I want an accessors array and a semantics array.
+    // private attributeSemantics: {[key: string]: number} = {};
+    // private targetSemantics: {[key: string]: number}[] = [];
+    // private targets: AttributeMap[] = [];
+    // private targetNames: string[] = [];
+
+    @GraphChild private indices: Link<Primitive, Accessor> = null;
+    @GraphChildList private attributes: AttributeLink[] = [];
+    // @GraphChildList private targets: AttributeLink[][] = [];
+    @GraphChild private material: Link<Primitive, Material> = null;
 
     public getIndices(): Accessor {
         return this.indices ? this.indices.getRight() : null;
     }
     public setIndices(indices: Accessor): Primitive {
-        if (this.indices) {
-            this.indices.dispose();
-        }
         this.indices = this.graph.link(this, indices) as Link<Primitive, Accessor>;
         return this;
     }
     public getAttribute(semantic: string): Accessor {
-        return this.attributes[semantic] ? this.attributes[semantic].getRight() : null;
+        const link = this.attributes.find((link) => link.semantic === semantic);
+        return link ? link.getRight() : null;
     }
     public setAttribute(semantic: string, accessor: Accessor): Primitive {
-        if (this.attributes[semantic]) {
-            this.attributes[semantic].dispose();
-        }
-        this.attributes[semantic] = this.graph.link(this, accessor) as Link<Primitive, Accessor>;
-        return this;
+        const link = this.graph.linkAttribute(this, accessor) as AttributeLink;
+        link.semantic = semantic;
+        return this.addGraphChild(this.attributes, link) as Primitive;
     }
+
     public listAttributes(): Accessor[] {
-        return Object.values(this.attributes).map((link) => link.getRight());
+        return this.attributes.map((link) => link.getRight());
     }
+
     public listTargets(): Accessor[][] {
-        return this.targets.map((target) => Object.values(target).map((link) => link.getRight()));
+        throw NOT_IMPLEMENTED;
+        // return this.targets.map((target) => Object.values(target).map((link) => link.getRight()));
     }
-    public listTargetNames(): string[] { return this.targetNames; }
+    public listTargetNames(): string[] {
+        throw NOT_IMPLEMENTED;
+     }
     public getMaterial(): Material { return this.material.getRight(); }
     public setMaterial(material: Material): Primitive {
         this.material = this.graph.link(this, material) as Link<Primitive, Material>;
@@ -411,38 +446,11 @@ export class Primitive extends Element {
         this.mode = mode;
         return this;
     }
-
-    public disconnect(link: Link<Primitive, Element>): Primitive {
-        for (const semantic in this.attributes) {
-            if (this.attributes[semantic] === link) {
-                delete this.attributes[semantic];
-            }
-        }
-        if (this.indices === link) {
-            this.indices = null;
-        }
-        for (const target of this.targets) {
-            for (const semantic in target) {
-                if (this.targets[semantic] === link) {
-                    delete this.targets[semantic];
-                }
-            }
-        }
-        if (this.material === link) {
-            this.material = null;
-        }
-        return this;
-    }
-
-    public dispose(): void {
-        throw NOT_IMPLEMENTED;
-        super.dispose();
-    }
 }
 
 export class Attribute {
     private semantic: string = '';
-    private accessor: Link<Primitive, Accessor> = null;
+    @GraphChild private accessor: Link<Primitive, Accessor> = null;
     public getSemantic(): string { return this.semantic; }
     public getAccessor(): Accessor { return this.accessor.getRight(); }
 }
@@ -543,15 +551,6 @@ export class Accessor extends Element {
         this.array[index * itemSize + 3] = v.w;
         return this;
     }
-
-    public disconnect(link: Link<Accessor, Element>): Accessor {
-        throw new Error('Type "Accessor" has no outbound links.');
-    }
-
-    public dispose(): void {
-        throw NOT_IMPLEMENTED;
-        super.dispose();
-    }
 }
 
 export class Node extends Element {
@@ -559,8 +558,8 @@ export class Node extends Element {
     private rotation = new Vector4();
     private scale = new Vector3();
 
-    private mesh: Link<Node, Mesh> = null;
-    private children: Link<Node, Node>[] = [];
+    @GraphChild private mesh: Link<Node, Mesh> = null;
+    @GraphChildList private children: Link<Node, Node>[] = [];
 
     public getTranslation(): Vector3 { return this.translation; }
     public getRotation(): Vector3 { return this.rotation; }
@@ -580,36 +579,19 @@ export class Node extends Element {
     }
 
     public addChild(child: Node): Node {
-        const link = this.graph.link(this, child) as Link<Node, Node>;
-        this.children.push(link);
-        return this;
+        return this.addGraphChild(this.children, this.graph.link(this, child) as Link<Root, Node>) as Node;
+    }
+    public removeChild(child: Node): Node {
+        return this.removeGraphChild(this.children, child) as Node;
     }
     public listChildren(): Node[] {
         return this.children.map((link) => link.getRight());
     }
     public setMesh(mesh: Mesh): Node {
-        if (this.mesh) {
-            this.mesh.dispose();
-        }
-        if (mesh) {
-            this.mesh = this.graph.link(this, mesh) as Link<Node, Mesh>;
-        }
+        this.mesh = this.graph.link(this, mesh) as Link<Node, Mesh>;
         return this;
     }
     public getMesh(): Mesh { return this.mesh.getRight(); }
-
-    public disconnect(link: Link<Node, Element>): Node {
-        if (this.mesh === link) {
-            this.mesh = null;
-        }
-        this.children = this.children.filter((l) => l !== link);
-        return this;
-    }
-
-    public dispose(): void {
-        throw NOT_IMPLEMENTED;
-        super.dispose();
-    }
 }
 
 export class Material extends Element {
@@ -617,9 +599,13 @@ export class Material extends Element {
     private alphaCutoff: number;
     private doubleSided: boolean;
     private baseColorFactor: Vector4 = new Vector4(1, 1, 1, 1);
-    private baseColorTexture: TextureLink = null;
     private emissiveFactor: Vector3 = new Vector3(0, 0, 0);
-    private emissiveTexture: TextureLink = null;
+
+    @GraphChild private baseColorTexture: TextureLink = null;
+    @GraphChild private emissiveTexture: TextureLink = null;
+    @GraphChild private normalTexture: TextureLink = null;
+    @GraphChild private occlusionTexture: TextureLink = null;
+    @GraphChild private roughnessMetallicTexture: TextureLink = null;
 
     public getAlphaMode(): GLTF.MaterialAlphaMode { return this.alphaMode; }
     public getAlphaCutoff(): number { return this.alphaCutoff; }
@@ -656,37 +642,12 @@ export class Material extends Element {
     public getEmissiveTextureInfo(): TextureInfo { return this.emissiveTexture.textureInfo; }
 
     public setBaseColorTexture(texture: Texture): Material {
-        if (this.baseColorTexture) {
-            this.baseColorTexture.dispose();
-        }
-        if (texture) {
-            this.baseColorTexture = this.graph.linkTexture(this, texture);
-        }
+        this.baseColorTexture = this.graph.linkTexture(this, texture);
         return this;
     }
     public setEmissiveTexture(texture: Texture): Material {
-        if (this.emissiveTexture) {
-            this.emissiveTexture.dispose();
-        }
-        if (texture) {
-            this.emissiveTexture = this.graph.linkTexture(this, texture);
-        }
+        this.emissiveTexture = this.graph.linkTexture(this, texture);
         return this;
-    }
-
-    public disconnect(link: Link<Material, Element>): Material {
-        if (this.baseColorTexture === link) {
-            this.baseColorTexture = null;
-        }
-        if (this.emissiveTexture === link) {
-            this.emissiveTexture = null;
-        }
-        return this;
-    }
-
-    public dispose(): void {
-        throw NOT_IMPLEMENTED;
-        super.dispose();
     }
 }
 
@@ -704,15 +665,6 @@ export class Texture extends Element {
     public setMimeType(mimeType: GLTF.ImageMimeType): Texture {
         this.mimeType = mimeType;
         return this;
-    }
-
-    public disconnect(link: Link<Texture, Element>): Texture {
-        throw NOT_IMPLEMENTED;
-    }
-
-    public dispose(): void {
-        throw NOT_IMPLEMENTED;
-        super.dispose();
     }
 }
 
@@ -757,7 +709,3 @@ export class TextureInfo {
         return this;
     }
 }
-
-/***************************************************************
- * Archive
- */
