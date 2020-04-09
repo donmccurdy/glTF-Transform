@@ -1,6 +1,7 @@
 import { GLTFUtil } from "./util";
 import { GLTFContainer, IBufferMap } from "./container";
 import { Container } from "./v2/container";
+import { GLTFReader } from "./v2/reader";
 
 interface IO {
     read: (uri: string) => GLTFContainer|Promise<GLTFContainer>;
@@ -36,7 +37,7 @@ class NodeIO implements IO {
         const buffer: Buffer = this.fs.readFileSync(uri);
         const arrayBuffer = GLTFUtil.trimBuffer(buffer);
         const {json, resources} = GLTFUtil.fromGLB(arrayBuffer);
-        return Container.fromGLTF_v2(json, resources);
+        return GLTFReader.read(json, resources);
     }
 
     private readGLTF (uri: string): GLTFContainer {
@@ -70,7 +71,7 @@ class NodeIO implements IO {
                 throw new Error('Embedded resources not implemented.');
             }
         })
-        return Container.fromGLTF_v2(json, resources);
+        return GLTFReader.read(json, resources);
     }
 
     write (uri: string, container: GLTFContainer): void {
