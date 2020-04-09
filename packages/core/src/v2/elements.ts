@@ -114,12 +114,23 @@ export abstract class Element {
         this.name = name;
     }
 
+    public getName(): string { return this.name; }
     public setName(name: string): Element {
         this.name = name;
         return this;
     }
 
-    public getName(): string { return this.name; }
+    public getExtras(): object { return this.extras; }
+    public setExtras(extras: object): Element {
+        this.extras = extras;
+        return this;
+    }
+
+    public getExtensions(): object { return this.extensions; }
+    public setExtensions(extensions: object): Element {
+        this.extensions = extensions;
+        return this;
+    }
 
     public isDisposed(): boolean { return this.disposed; }
 
