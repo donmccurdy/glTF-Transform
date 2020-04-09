@@ -1,6 +1,14 @@
 import { Vector2, Vector3, Vector4 } from "./math";
 import { AccessorComponentType, AccessorTypeData } from "../core";
 
+/**
+ * Elements.
+ *
+ * TODO(donmccurdy): Separating the Graph and Element classes into separate files
+ * seems like an obviously nice housekeeping goal. The inter-dependencies are a bit
+ * tricky though, if we want to be strict about circular dependencies.
+ */
+
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
 
 const NOT_IMPLEMENTED = new Error('Not implemented.');
@@ -23,6 +31,17 @@ export class Graph {
      */
     public link(a: Element, b: Element): Link<Element, Element> {
         const link = new Link(a, b);
+        this.registerLink(link);
+        return link;
+    }
+
+    public linkTexture(a: Material, b: Texture): TextureLink {
+        const link = new TextureLink(a, b);
+        this.registerLink(link);
+        return link;
+    }
+
+    private registerLink(link: Link<Element, Element>) {
         this.links.push(link);
         link.onDispose(() => this.unlink(link));
         return link;
@@ -596,9 +615,9 @@ export class Material extends Element {
     private alphaCutoff: number;
     private doubleSided: boolean;
     private baseColorFactor: Vector4 = new Vector4(1, 1, 1, 1);
-    private baseColorTexture: Link<Material, Texture> = null;
+    private baseColorTexture: TextureLink = null;
     private emissiveFactor: Vector3 = new Vector3(0, 0, 0);
-    private emissiveTexture: Link<Material, Texture> = null;
+    private emissiveTexture: TextureLink = null;
 
     public getAlphaMode(): GLTF.MaterialAlphaMode { return this.alphaMode; }
     public getAlphaCutoff(): number { return this.alphaCutoff; }
@@ -630,14 +649,16 @@ export class Material extends Element {
     }
 
     public getBaseColorTexture(): Texture { return this.baseColorTexture.getRight(); }
+    public getBaseColorTextureInfo(): TextureInfo { return this.baseColorTexture.textureInfo; }
     public getEmissiveTexture(): Texture { return this.emissiveTexture.getRight(); }
+    public getEmissiveTextureInfo(): TextureInfo { return this.emissiveTexture.textureInfo; }
 
     public setBaseColorTexture(texture: Texture): Material {
         if (this.baseColorTexture) {
             this.baseColorTexture.dispose();
         }
         if (texture) {
-            this.baseColorTexture = this.graph.link(this, texture) as Link<Material, Texture>;
+            this.baseColorTexture = this.graph.linkTexture(this, texture);
         }
         return this;
     }
@@ -646,7 +667,7 @@ export class Material extends Element {
             this.emissiveTexture.dispose();
         }
         if (texture) {
-            this.emissiveTexture = this.graph.link(this, texture) as Link<Material, Texture>;
+            this.emissiveTexture = this.graph.linkTexture(this, texture);
         }
         return this;
     }
@@ -667,11 +688,22 @@ export class Material extends Element {
     }
 }
 
-// TODO(donmccurdy): Not totally sure this should be its own class.
-// Consider an ImageReference? Something more graph-link-like?
-//
-// Material --> [ TextureInfo, Texture, Sampler ] --> Image
 export class Texture extends Element {
+    private buffer: ArrayBuffer = null;
+    private mimeType: GLTF.ImageMimeType = null;
+
+    public getBuffer(): ArrayBuffer { return this.buffer; }
+    public setBuffer(buffer: ArrayBuffer): Texture {
+        this.buffer = buffer;
+        return this;
+    }
+
+    public getMimeType(): GLTF.ImageMimeType { return this.mimeType; }
+    public setMimeType(mimeType: GLTF.ImageMimeType): Texture {
+        this.mimeType = mimeType;
+        return this;
+    }
+
     public disconnect(link: Link<Texture, Element>): Texture {
         throw NOT_IMPLEMENTED;
     }
@@ -679,6 +711,48 @@ export class Texture extends Element {
     public dispose(): void {
         throw NOT_IMPLEMENTED;
         super.dispose();
+    }
+}
+
+class TextureLink extends Link<Material, Texture> {
+    public textureInfo = new TextureInfo();
+}
+
+export class TextureInfo {
+    private texCoord: number = 0;
+    private magFilter: GLTF.TextureMagFilter = null;
+    private minFilter: GLTF.TextureMinFilter = null;
+    private wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
+    private wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
+
+    public getTexCoord(): number { return this.texCoord; }
+    public setTexCoord(texCoord: number): TextureInfo {
+        this.texCoord = texCoord;
+        return this;
+    }
+
+    public getMagFilter(): GLTF.TextureMagFilter { return this.magFilter; }
+    public setMagFilter(magFilter: GLTF.TextureMagFilter): TextureInfo {
+        this.magFilter = magFilter;
+        return this;
+    }
+
+    public getMinFilter(): GLTF.TextureMinFilter { return this.minFilter; }
+    public setMinFilter(minFilter: GLTF.TextureMinFilter): TextureInfo {
+        this.minFilter = minFilter;
+        return this;
+    }
+
+    public getWrapS(): GLTF.TextureWrapMode { return this.wrapS; }
+    public setWrapS(wrapS: GLTF.TextureWrapMode): TextureInfo {
+        this.wrapS = wrapS;
+        return this;
+    }
+
+    public getWrapT(): GLTF.TextureWrapMode { return this.wrapT; }
+    public setWrapT(wrapT: GLTF.TextureWrapMode): TextureInfo {
+        this.wrapT = wrapT;
+        return this;
     }
 }
 
