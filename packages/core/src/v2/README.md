@@ -67,4 +67,43 @@ Other thoughts:
     - Skin references Node[].
     - Number of joints in Skin must match number of weights in Mesh.
         - This is probably just a validation step.
-- 
+- We could, just as a convenience, include BufferView, Buffer, and Image
+  types as Elements. These wouldn't necessarily hold data in the unpacked
+  state: moving an accessor to another BufferView would _only_ change a
+  link. But then the graph representation would look more like glTF, and
+  it would be possible to visualize operations on these elements. This also
+  means that some operations (`split()`, `interleave()`) potentially go from
+  the `pack` stage to the `transform` stage, which is probably a good thing,
+  because operations in the `pack` stage are subject to various conflicts.
+
+```ts
+// This has some real benefits.
+accessor.bufferView: Link<Accessor, BufferView>;
+bufferView.interleaved = true // 😱
+bufferView.buffer: Link<BufferView, Buffer>;
+
+// ... not sure what to do with this one.
+// but, in fairness, my simpler current structure
+// will have some trouble maintaining separate image
+// fallbacks. I think I can live with that, though?
+texture.image: Link<Texture, Image>; 
+```
+
+## Editor domains
+
+- ~~gltf.ist~~
+- ~~gltf.gallery~~
+- gltf.review (FBX Review)
+- gltf.report 
+- gltf.info
+- ~~gltf.help~~
+- ~~gltf.guide~~
+- gltf.stream
+- gltf.tube
+- gltf.tools
+- gltf.build ($60!)
+- gltf.studio
+- gltf.software (KTX-Software)
+
+- gltf.dev (taken!)
+- gltf.app (taken!)

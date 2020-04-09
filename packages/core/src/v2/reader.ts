@@ -14,17 +14,20 @@ export class GLTFReader {
       const accessor = container.createAccessor(accessorDef.name);
 
       if (accessorDef.sparse !== undefined) {
-        // TODO(donmccurdy): Support accessorDef.sparse.
+        // TODO(donmccurdy): Support accessorDef.sparse. Unpack this.
+        // accessor.setSparse(accessorDef.sparse === true);
         throw new Error('Sparse accessors not yet implemented.')
       }
 
       if (accessorDef.normalized !== undefined) {
-        // TODO(donmccurdy): Support accessorDef.normalized.
+        // TODO(donmccurdy): Support accessorDef.normalized. Unpack this?
+        // accessor.setNormalized(accessorDef.normalized === true);
         throw new Error('Normalized accessors not yet implemented.');
       }
 
       accessor.setType(accessorDef.type);
       accessor.setArray(getAccessorArray(index, json, resources));
+      
 
       return accessor;
     });
