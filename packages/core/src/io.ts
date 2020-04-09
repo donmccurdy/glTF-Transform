@@ -1,8 +1,10 @@
 import { GLTFUtil } from "./util";
 import { GLTFContainer, IBufferMap } from "./container";
+import { Container } from "./v2/container";
 
 interface IO {
     read: (uri: string) => GLTFContainer|Promise<GLTFContainer>;
+    read_v2: (uri: string) => Container|Promise<Container>;
 }
 
 class NodeIO implements IO {
@@ -19,10 +21,22 @@ class NodeIO implements IO {
         return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
     }
 
+    read_v2 (uri: string): Container {
+        const isGLB = !!uri.match(/\.glb$/);
+        return isGLB ? this.readGLB_v2(uri) : this.readGLTF_v2(uri);
+    }
+
     private readGLB (uri: string): GLTFContainer {
         const buffer: Buffer = this.fs.readFileSync(uri);
         const arrayBuffer = GLTFUtil.trimBuffer(buffer);
         return GLTFUtil.fromGLB(arrayBuffer);
+    }
+
+    private readGLB_v2 (uri: string): Container {
+        const buffer: Buffer = this.fs.readFileSync(uri);
+        const arrayBuffer = GLTFUtil.trimBuffer(buffer);
+        const {json, resources} = GLTFUtil.fromGLB(arrayBuffer);
+        return Container.fromGLTF_v2(json, resources);
     }
 
     private readGLTF (uri: string): GLTFContainer {
@@ -40,6 +54,23 @@ class NodeIO implements IO {
             }
         })
         return GLTFUtil.fromGLTF(json, resources);
+    }
+
+    private readGLTF_v2 (uri: string): Container {
+        const dir = this.path.dirname(uri);
+        const json: GLTF.IGLTF = JSON.parse(this.fs.readFileSync(uri, 'utf8'));
+        const resources = {} as IBufferMap;
+        const images = json.images || [];
+        const buffers = json.buffers || [];
+        [...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
+            if (resource.uri && !resource.uri.match(/data:/)) {
+                const absURI = this.path.resolve(dir, resource.uri);
+                resources[resource.uri] = GLTFUtil.trimBuffer(this.fs.readFileSync(absURI));
+            } else {
+                throw new Error('Embedded resources not implemented.');
+            }
+        })
+        return Container.fromGLTF_v2(json, resources);
     }
 
     write (uri: string, container: GLTFContainer): void {
@@ -78,6 +109,10 @@ class WebIO implements IO {
     read (uri: string): Promise<GLTFContainer> {
         const isGLB = !!uri.match(/\.glb$/);
         return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+    }
+
+    read_v2 (uri:string): Promise<Container> {
+        throw new Error('Not implemented.');
     }
 
     private readGLTF (uri: string): Promise<GLTFContainer> {

@@ -1,5 +1,7 @@
 import { Vector2, Vector3, Vector4 } from "./math";
+import { AccessorComponentType, AccessorTypeData } from "../core";
 
+export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
 
 const NOT_IMPLEMENTED = new Error('Not implemented.');
 
@@ -22,17 +24,18 @@ export class Graph {
     public link(a: Element, b: Element): Link<Element, Element> {
         const link = new Link(a, b);
         this.links.push(link);
+        link.onDispose(() => this.unlink(link));
         return link;
     }
 
     /**
-     * Disposes of a link, destroying the link in the process. Caller is
-     * expected to be the link's owner, and to disconnect it after calling.
+     * Removes the link from the graph. This method should only be invoked by
+     * the onDispose() listener created in {@link link()}. The public method
+     * of removing a link is {@link link.dispose()}.
      * @param link
      */
-    public dispose(link: Link<Element, Element>): Graph {
+    private unlink(link: Link<Element, Element>): Graph {
         this.links = this.links.filter((l) => l !== link);
-        link.dispose();
         return this;
     }
 
@@ -54,14 +57,39 @@ export class Graph {
     }
 }
 
-// An Element is responsible for being able to dissolve a link, without
-// knowing in advance what that link is for.
+/**
+ * Represents a connection between two {@link Element} resources in a {@link Graph}.
+ *
+ * The left element is considered the owner, and the right element the resource. The
+ * owner is responsible for being able find and remove a reference to a resource, given
+ * that link. The resource does not hold a reference to the link or to the owner,
+ * although that reverse lookup can be done on the graph.
+ */
 export class Link<Left extends Element, Right extends Element> {
     private disposed: boolean = false;
+    private listeners: (() => void)[] = [];
     constructor(private left: Left, private right: Right) {}
+
+    /** Owner element. */
     getLeft(): Left { return this.left; }
+
+    /** Resource element. */
     getRight(): Right { return this.right; }
-    dispose(): void { this.disposed = true; }
+
+    /** Destroys a (currently intact) link, updating both the graph and the owner. */
+    dispose(): void {
+        this.getLeft().disconnect(this);
+        this.disposed = true;
+        this.listeners.forEach((fn) => fn());
+    }
+
+    /** Registers a listener to be invoked if this link is destroyed. */
+    onDispose(fn: () => void): Link<Left, Right> {
+        this.listeners.push(fn);
+        return this;
+    }
+
+    /** Whether this link has been destroyed. */
     isDisposed(): boolean { return this.disposed; }
 }
 
@@ -103,12 +131,19 @@ export abstract class Element {
     }
 
     /**
+     * Returns true if the given element is equivalent to this one. Equivalency requires that all
+     * outbound links reference the same elements. Inbound links are not considered.
+     */
+    public equals(element: Element): boolean {
+        throw NOT_IMPLEMENTED;
+    }
+
+    /**
      * Removes both inbound references to and outbound references from this element.
      */
     public dispose(): void {
         this.detach();
         this.disposed = true;
-        // TODO(donmccurdy): No links should exist at this point. Need to confirm that?
     }
 
     /**
@@ -122,7 +157,8 @@ export abstract class Element {
     /**
      * Removes any outbound references using the given link. Changes are not
      * propagated elsewhere; it is up to the caller to ensure the graph is
-     * updated accordingly.
+     * updated accordingly. This method is usually invoked by disposing a
+     * link, or by calling a setter that destroys a previous link.
      *
      * Elements are responsible for being able to disconnect any of their
      * linked resources.
@@ -130,31 +166,112 @@ export abstract class Element {
      * @param link
      */
     abstract disconnect(link: Link<Element, Element>): Element;
-
-    // TODO(donmccurdy): Likely to need a listLinks() method or similar, unfortunately.
-    // Otherwise, not sure how to ... okay I forgot why.
 }
 
 export class Root extends Element {
-    private asset: object = {};
+    private asset: GLTF.IAsset = {
+        generator: 'glTF-Transform v0.1', // TODO(donmccurdy): Autogenerate this.
+        version: '2.0'
+    };
 
     private scenes: Link<Root, Scene>[] = [];
     private nodes: Link<Root, Node>[] = [];
     private meshes: Link<Root, Mesh>[] = [];
     private materials: Link<Root, Material>[] = [];
     private textures: Link<Root, Texture>[] = [];
+    private accessors: Link<Root, Accessor>[] = [];
+
+    public getAsset(): GLTF.IAsset { return this.asset; }
+
+    public updateAsset(asset: object): Root {
+        Object.assign(this.asset, asset);
+        return this;
+    }
+
+    public addScene(scene: Scene): Root {
+        this.scenes.push(this.graph.link(this, scene) as Link<Root, Scene>);
+        return this;
+    }
+    public removeScene(scene: Scene): Root {
+        const link = this.scenes.find((link) => link.getRight() === scene);
+        link.dispose();
+        return this;
+    }
+    public listScenes(): Scene[] {
+        return this.scenes.map((p) => p.getRight());
+    }
+
+    public addNode(node: Node): Root {
+        this.nodes.push(this.graph.link(this, node) as Link<Root, Node>);
+        return this;
+    }
+    public removeNode(node: Node): Root {
+        const link = this.nodes.find((link) => link.getRight() === node);
+        link.dispose();
+        return this;
+    }
+    public listNodes(): Node[] {
+        return this.nodes.map((p) => p.getRight());
+    }
+
+    public addMesh(mesh: Mesh): Root {
+        this.meshes.push(this.graph.link(this, mesh) as Link<Root, Mesh>);
+        return this;
+    }
+    public removeMesh(mesh: Mesh): Root {
+        const link = this.meshes.find((link) => link.getRight() === mesh);
+        link.dispose();
+        return this;
+    }
+    public listMeshes(): Mesh[] {
+        return this.meshes.map((p) => p.getRight());
+    }
+
+    public addMaterial(material: Material): Root {
+        this.materials.push(this.graph.link(this, material) as Link<Root, Material>);
+        return this;
+    }
+    public removeMaterial(material: Material): Root {
+        const link = this.materials.find((link) => link.getRight() === material);
+        link.dispose();
+        return this;
+    }
+    public listMaterials(): Material[] {
+        return this.materials.map((p) => p.getRight());
+    }
+
+    public addTexture(texture: Texture): Root {
+        this.textures.push(this.graph.link(this, texture) as Link<Root, Texture>);
+        return this;
+    }
+    public removeTexture(texture: Texture): Root {
+        const link = this.textures.find((link) => link.getRight() === texture);
+        link.dispose();
+        return this;
+    }
+    public listTextures(): Texture[] {
+        return this.textures.map((p) => p.getRight());
+    }
+
+    public addAccessor(accessor: Accessor): Root {
+        this.accessors.push(this.graph.link(this, accessor) as Link<Root, Accessor>);
+        return this;
+    }
+    public removeAccessor(accessor: Accessor): Root {
+        const link = this.accessors.find((link) => link.getRight() === accessor);
+        link.dispose();
+        return this;
+    }
+    public listAccessors(): Accessor[] {
+        return this.accessors.map((p) => p.getRight());
+    }
 
     public dispose(): void {
-        this.scenes.forEach(this.graph.dispose);
-        this.scenes.length = 0;
-        this.nodes.forEach(this.graph.dispose);
-        this.nodes.length = 0;
-        this.meshes.forEach(this.graph.dispose);
-        this.meshes.length = 0;
-        this.materials.forEach(this.graph.dispose);
-        this.materials.length = 0;
-        this.textures.forEach(this.graph.dispose);
-        this.textures.length = 0;
+        while (this.scenes.length > 0) this.scenes[0].dispose();
+        while (this.nodes.length > 0) this.nodes[0].dispose();
+        while (this.meshes.length > 0) this.meshes[0].dispose();
+        while (this.materials.length > 0) this.materials[0].dispose();
+        while (this.textures.length > 0) this.textures[0].dispose();
         super.dispose();
     }
     public disconnect(link: Link<Root, Element>): Root {
@@ -168,14 +285,25 @@ export class Root extends Element {
 }
 
 export class Scene extends Element {
-    private children: Link<Scene, Node>[] = [];
+    private nodes: Link<Scene, Node>[] = [];
+    public addNode(node: Node): Scene {
+        this.nodes.push(this.graph.link(this, node) as Link<Scene, Node>);
+        return this;
+    }
+    public removeNode(node: Node): Scene {
+        const link = this.nodes.find((link) => link.getRight() === node);
+        link.dispose();
+        return this;
+    }
+    public listNodes(): Node[] {
+        return this.nodes.map((p) => p.getRight());
+    }
     public dispose(): void {
-        this.children.forEach(this.graph.dispose);
-        this.children.length = 0;
+        while (this.nodes.length > 0) this.nodes[0].dispose();
         super.dispose();
     }
     public disconnect(link: Link<Scene, Node>): Scene {
-        this.children = this.children.filter((child) => child !== link);
+        this.nodes = this.nodes.filter((child) => child !== link);
         return this;
     }
 }
@@ -183,8 +311,12 @@ export class Scene extends Element {
 export class Mesh extends Element {
     private primitives: Link<Mesh, Primitive>[] = [];
     public addPrimitive(primitive: Primitive): Mesh {
-        const link = this.graph.link(this, primitive) as Link<Mesh, Primitive>;
-        this.primitives.push(link);
+        this.primitives.push(this.graph.link(this, primitive) as Link<Mesh, Primitive>);
+        return this;
+    }
+    public removePrimitive(primitive: Primitive): Mesh {
+        const link = this.primitives.find((link) => link.getRight() === primitive);
+        link.dispose();
         return this;
     }
     public listPrimitives(): Primitive[] {
@@ -195,8 +327,7 @@ export class Mesh extends Element {
         return this;
     }
     public dispose(): void {
-        this.primitives.forEach((link) => this.graph.dispose(link));
-        this.primitives.length = 0;
+        while (this.primitives.length > 0) this.primitives[0].dispose();
         super.dispose();
     }
 }
@@ -214,8 +345,22 @@ export class Primitive extends Element {
     public getIndices(): Accessor {
         return this.indices ? this.indices.getRight() : null;
     }
+    public setIndices(indices: Accessor): Primitive {
+        if (this.indices) {
+            this.indices.dispose();
+        }
+        this.indices = this.graph.link(this, indices) as Link<Primitive, Accessor>;
+        return this;
+    }
     public getAttribute(semantic: string): Accessor {
         return this.attributes[semantic] ? this.attributes[semantic].getRight() : null;
+    }
+    public setAttribute(semantic: string, accessor: Accessor): Primitive {
+        if (this.attributes[semantic]) {
+            this.attributes[semantic].dispose();
+        }
+        this.attributes[semantic] = this.graph.link(this, accessor) as Link<Primitive, Accessor>;
+        return this;
     }
     public listAttributes(): Accessor[] {
         return Object.values(this.attributes).map((link) => link.getRight());
@@ -225,6 +370,15 @@ export class Primitive extends Element {
     }
     public listTargetNames(): string[] { return this.targetNames; }
     public getMaterial(): Material { return this.material.getRight(); }
+    public setMaterial(material: Material): Primitive {
+        this.material = this.graph.link(this, material) as Link<Primitive, Material>;
+        return this;
+    }
+    public getMode(): GLTF.MeshPrimitiveMode { return this.mode; }
+    public setMode(mode: GLTF.MeshPrimitiveMode): Primitive {
+        this.mode = mode;
+        return this;
+    }
 
     public disconnect(link: Link<Primitive, Element>): Primitive {
         for (const semantic in this.attributes) {
@@ -261,57 +415,100 @@ export class Attribute {
     public getAccessor(): Accessor { return this.accessor.getRight(); }
 }
 
-export type AccessorArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
-
 export class Accessor extends Element {
-    private array: AccessorArray = null;
-    private itemSize: number = 1;
-    public getArray(): AccessorArray { return this.array; }
-    public getItemSize(): number { return this.itemSize; }
+    private array: TypedArray = null;
+    private type: GLTF.AccessorType = GLTF.AccessorType.SCALAR;
+    public getArray(): TypedArray { return this.array; }
+    public setArray(array: TypedArray): Accessor {
+        this.array = array;
+        return this;
+    }
+    public getType(): GLTF.AccessorType { return this.type; }
+    public setType(type: GLTF.AccessorType): Accessor {
+        this.type = type;
+        return this;
+    }
+    public getComponentType(): GLTF.AccessorComponentType {
+        switch (this.array.constructor) {
+            case Float32Array:
+                return AccessorComponentType.FLOAT;
+            case Uint32Array:
+                return AccessorComponentType.UNSIGNED_INT;
+            case Uint16Array:
+                return AccessorComponentType.UNSIGNED_SHORT;
+            case Uint8Array:
+                return AccessorComponentType.UNSIGNED_BYTE;
+            default:
+                throw new Error('Unknown accessor componentType.');
+        }
+    }
+    public getCount(): number {
+        return this.array.length / this.getItemSize();
+    }
+
+    public getMin(): number[] {
+        throw new Error('accessor.getMin() not implemented.');
+    }
+
+    public getMax(): number[] {
+        throw new Error('accessor.getMax() not implemented.');
+    }
+
+    private getItemSize(): number {
+        return AccessorTypeData[this.type].size;
+    }
 
     public getX(index: number, x: number): Accessor {
-        this.array[index * this.itemSize] = x;
+        const itemSize = this.getItemSize();
+        this.array[index * itemSize] = x;
         return this;
     }
     public getXY(index: number, target = new Vector2()): Vector2 {
-        target.x = this.array[index * this.itemSize];
-        target.y = this.array[index * this.itemSize + 1];
+        const itemSize = this.getItemSize();
+        target.x = this.array[index * itemSize];
+        target.y = this.array[index * itemSize + 1];
         return target;
     }
     public getXYZ(index: number, target = new Vector3()): Vector3 {
-        target.x = this.array[index * this.itemSize];
-        target.y = this.array[index * this.itemSize + 1];
-        target.z = this.array[index * this.itemSize + 2];
+        const itemSize = this.getItemSize();
+        target.x = this.array[index * itemSize];
+        target.y = this.array[index * itemSize + 1];
+        target.z = this.array[index * itemSize + 2];
         return target;
     }
     public getXYZW(index: number, target = new Vector4()): Vector4 {
-        target.x = this.array[index * this.itemSize];
-        target.y = this.array[index * this.itemSize + 1];
-        target.z = this.array[index * this.itemSize + 2];
-        target.w = this.array[index * this.itemSize + 3];
+        const itemSize = this.getItemSize();
+        target.x = this.array[index * itemSize];
+        target.y = this.array[index * itemSize + 1];
+        target.z = this.array[index * itemSize + 2];
+        target.w = this.array[index * itemSize + 3];
         return target;
     }
 
     public setX(index: number, x: number): Accessor {
-        this.array[index * this.itemSize] = x;
+        const itemSize = this.getItemSize();
+        this.array[index * itemSize] = x;
         return this;
     }
     public setXY(index: number, v: Vector2): Accessor {
-        this.array[index * this.itemSize] = v.x;
-        this.array[index * this.itemSize + 1] = v.y;
+        const itemSize = this.getItemSize();
+        this.array[index * itemSize] = v.x;
+        this.array[index * itemSize + 1] = v.y;
         return this;
     }
     public setXYZ(index: number, v: Vector3): Accessor {
-        this.array[index * this.itemSize] = v.x;
-        this.array[index * this.itemSize + 1] = v.y;
-        this.array[index * this.itemSize + 2] = v.z;
+        const itemSize = this.getItemSize();
+        this.array[index * itemSize] = v.x;
+        this.array[index * itemSize + 1] = v.y;
+        this.array[index * itemSize + 2] = v.z;
         return this;
     }
     public setXYZW(index: number, v: Vector4): Accessor {
-        this.array[index * this.itemSize] = v.x;
-        this.array[index * this.itemSize + 1] = v.y;
-        this.array[index * this.itemSize + 2] = v.z;
-        this.array[index * this.itemSize + 3] = v.w;
+        const itemSize = this.getItemSize();
+        this.array[index * itemSize] = v.x;
+        this.array[index * itemSize + 1] = v.y;
+        this.array[index * itemSize + 2] = v.z;
+        this.array[index * itemSize + 3] = v.w;
         return this;
     }
 
@@ -326,16 +523,29 @@ export class Accessor extends Element {
 }
 
 export class Node extends Element {
-    private position = new Vector3();
-    private quaternion = new Vector4();
+    private translation = new Vector3();
+    private rotation = new Vector4();
     private scale = new Vector3();
 
     private mesh: Link<Node, Mesh> = null;
     private children: Link<Node, Node>[] = [];
 
-    public getPosition(): Vector3 { return this.position; }
-    public getQuaternion(): Vector3 { return this.quaternion; }
+    public getTranslation(): Vector3 { return this.translation; }
+    public getRotation(): Vector3 { return this.rotation; }
     public getScale(): Vector3 { return this.scale; }
+
+    public setTranslation(translation: Vector3): Node {
+        this.translation = translation;
+        return this;
+    }
+    public setRotation(rotation: Vector4): Node {
+        this.rotation = rotation;
+        return this;
+    }
+    public setScale(scale: Vector3): Node {
+        this.scale = scale;
+        return this;
+    }
 
     public addChild(child: Node): Node {
         const link = this.graph.link(this, child) as Link<Node, Node>;
@@ -346,7 +556,12 @@ export class Node extends Element {
         return this.children.map((link) => link.getRight());
     }
     public setMesh(mesh: Mesh): Node {
-        this.mesh = this.graph.link(this, mesh) as Link<Node, Mesh>;
+        if (this.mesh) {
+            this.mesh.dispose();
+        }
+        if (mesh) {
+            this.mesh = this.graph.link(this, mesh) as Link<Node, Mesh>;
+        }
         return this;
     }
     public getMesh(): Mesh { return this.mesh.getRight(); }
@@ -378,11 +593,52 @@ export class Material extends Element {
     public getAlphaCutoff(): number { return this.alphaCutoff; }
     public getDoubleSided(): boolean { return this.doubleSided; }
 
+    public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): Material {
+        this.alphaMode = alphaMode;
+        return this;
+    }
+    public setAlphaCutoff(alphaCutoff: number): Material {
+        this.alphaCutoff = alphaCutoff;
+        return this;
+    }
+    public setDoubleSided(doubleSided: boolean): Material {
+        this.doubleSided = doubleSided;
+        return this;
+    }
+
     public getBaseColorFactor(): Vector4 { return this.baseColorFactor; }
     public getEmissiveFactor(): Vector3 { return this.emissiveFactor; }
 
+    public setBaseColorFactor(baseColorFactor: Vector4): Material {
+        this.baseColorFactor = baseColorFactor;
+        return this;
+    }
+    public setEmissiveFactor(emissiveFactor: Vector3): Material {
+        this.emissiveFactor = emissiveFactor;
+        return this;
+    }
+
     public getBaseColorTexture(): Texture { return this.baseColorTexture.getRight(); }
     public getEmissiveTexture(): Texture { return this.emissiveTexture.getRight(); }
+
+    public setBaseColorTexture(texture: Texture): Material {
+        if (this.baseColorTexture) {
+            this.baseColorTexture.dispose();
+        }
+        if (texture) {
+            this.baseColorTexture = this.graph.link(this, texture) as Link<Material, Texture>;
+        }
+        return this;
+    }
+    public setEmissiveTexture(texture: Texture): Material {
+        if (this.emissiveTexture) {
+            this.emissiveTexture.dispose();
+        }
+        if (texture) {
+            this.emissiveTexture = this.graph.link(this, texture) as Link<Material, Texture>;
+        }
+        return this;
+    }
 
     public disconnect(link: Link<Material, Element>): Material {
         if (this.baseColorTexture === link) {
@@ -418,31 +674,3 @@ export class Texture extends Element {
 /***************************************************************
  * Archive
  */
-
-// export class List<T> {
-//     private items: T[] = [];
-
-//     constructor (items: T[]) {
-//         this.items = items;
-//     }
-
-//     map(fn: (T) => T): List<T> {
-//         this.items = this.items.map(fn);
-//         return this;
-//     }
-
-//     forEach(fn: (T) => void): List<T> {
-//         this.items.forEach(fn);
-//         return this;
-//     }
-
-//     filter(fn: (T) => boolean): List<T> {
-//         this.items = this.items.filter(fn);
-//         return this;
-//     }
-
-//     remove(item: T): List<T> {
-//         return this.filter((i) => i !== item);
-//     }
-
-// }
