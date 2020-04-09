@@ -1,5 +1,5 @@
 import { Graph, Root, Node, Scene, Texture, Material, Mesh, Accessor, Primitive, TypedArray } from "./elements";
-import { IBufferMap, GLTFContainer } from "../container";
+import { IBufferMap } from "../container";
 import { Vector3, Vector4 } from "./math";
 import { AccessorTypeData, AccessorComponentType } from "../core";
 

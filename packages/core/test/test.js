@@ -87,3 +87,17 @@ test('@gltf-transform/core::io -- glb (v2)', t => {
   });
   t.end();
 });
+
+
+test('@gltf-transform/core::io -- gltf (v2)', t => {
+  glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
+    const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+
+    const io = new NodeIO(fs, path);
+    const container = io.read_v2(inputURI);
+
+    t.ok(container, `Read "${basepath}". (v2)`)
+    console.log(container);
+  });
+  t.end();
+});
