@@ -124,6 +124,8 @@ export abstract class Element {
     protected readonly graph: Graph = null;
     protected name: string = '';
     protected extras: object = {};
+
+    // TODO(donmccurdy): Extensions should be Elements.
     protected extensions: object = {};
 
     private disposed = false;
