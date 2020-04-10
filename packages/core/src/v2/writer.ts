@@ -1,7 +1,7 @@
 import { Accessor } from "../elements/accessor";
 import { Container } from "./container";
 import { Element } from "../elements/element";
-import { IBufferMap } from "../container";
+import { IBufferMap } from "../v1/container";
 import { Material } from "../elements/material";
 import { Node } from "../elements/node";
 import { Texture } from "../elements/texture";

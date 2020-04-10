@@ -1,8 +1,10 @@
 import { AccessorComponentTypeData, AccessorTypeData } from './constants';
-import { GLTFContainer, IBufferMap, IContainer } from './container';
+import { GLTFContainer, IBufferMap, IContainer } from './v1/container';
+import { ISize, getSizeJPEG, getSizePNG } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
-import { PackedGLTFContainer } from './packed-container';
-import { getSizeJPEG, getSizePNG, ISize } from './image-util';
+
+import { Container } from './v2/container';
+import { PackedGLTFContainer } from './v1/packed-container';
 
 interface IGLTFAnalysis {
   meshes: number,
@@ -61,7 +63,7 @@ class GLTFUtil {
     const binaryByteLength = binaryChunkHeader[0];
     const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-    return new PackedGLTFContainer(json, binary).unpack();
+    return new GLTFContainer(json, {'': binary} as IBufferMap);
   }
 
   /**
@@ -78,9 +80,9 @@ class GLTFUtil {
    * @param container
    */
   static toGLB(container: IContainer): ArrayBuffer {
-    if (container instanceof GLTFContainer) {
-      container = PackedGLTFContainer.pack(container);
-    }
+    // if (container instanceof GLTFContainer) {
+    //   container = PackedGLTFContainer.pack(container);
+    // }
 
     const jsonText = JSON.stringify(container.json);
     const jsonChunkData = this.pad( GLTFUtil.encodeText(jsonText), 0x20 );
@@ -138,117 +140,25 @@ class GLTFUtil {
     return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
   }
 
-  static analyze(container: GLTFContainer): IGLTFAnalysis {
+  static analyze(container: Container): IGLTFAnalysis {
+    const root = container.getRoot();
+
     const report = {
-      meshes: (container.json.meshes||[]).length,
-      textures: (container.json.textures||[]).length,
-      images: (container.json.images||[]).length,
-      materials: (container.json.materials||[]).length,
-      animations: (container.json.animations||[]).length,
-      primitives: 0,
+      meshes: root.listMeshes().length,
+      textures: root.listTextures().length,
+      materials: root.listMaterials().length,
+      animations: -1,
+      primitives: -1,
       dataUsage: {
-        geometry: 0,
-        targets: 0,
-        animation: 0,
-        textures: 0,
-        json: 0
+        geometry: -1,
+        targets: -1,
+        animation: -1,
+        textures: -1,
+        json: -1
       }
     };
 
-    // Primitives and targets.
-    (container.json.meshes||[]).forEach((mesh) => {
-      report.primitives += mesh.primitives.length;
-      mesh.primitives.forEach((primitive) => {
-        if (primitive.indices !== undefined) {
-          report.dataUsage.geometry += this.getAccessorByteLength(container.json.accessors[primitive.indices]);
-        }
-        Object.keys(primitive.attributes).forEach((attr) => {
-          const accessor = container.json.accessors[primitive.attributes[attr]];
-          report.dataUsage.geometry += this.getAccessorByteLength(accessor);
-        });
-
-        (primitive.targets||[]).forEach((target) => {
-          Object.keys(target).forEach((attr) => {
-            const accessor = container.json.accessors[target[attr]];
-            report.dataUsage.targets += this.getAccessorByteLength(accessor);
-          });
-        });
-      });
-    });
-
-    // Animation
-    (container.json.animations||[]).forEach((animation) => {
-      animation.samplers.forEach((sampler) => {
-        const input = container.json.accessors[sampler.input];
-        const output = container.json.accessors[sampler.output];
-        report.dataUsage.animation += this.getAccessorByteLength(input);
-        report.dataUsage.animation += this.getAccessorByteLength(output);
-      });
-    });
-
-    // Textures
-    (container.json.images||[]).forEach((image) => {
-      if (image.uri !== undefined) {
-        report.dataUsage.textures += container.resolveURI(image.uri).byteLength;
-      } else {
-        report.dataUsage.textures += container.json.bufferViews[image.bufferView].byteLength;
-      }
-    });
-
-    // JSON
-    report.dataUsage.json += JSON.stringify(container.json).length;
-
     return report;
-  }
-
-  /**
-   * Adds a new image to the glTF container.
-   * @param container
-   * @param name
-   * @param file
-   * @param type
-   */
-  static addImage(container: GLTFContainer, name: string, file: ArrayBuffer, type: string): GLTFContainer {
-    let uri, mimeType
-    switch (type) {
-      case 'image/jpeg':
-        uri = `${name}.jpg`;
-        mimeType = 'image/jpeg';
-        break;
-      case 'image/png':
-        uri = `${name}.png`;
-        mimeType = 'image/png';
-        break;
-      default:
-        throw new Error(`Unsupported image type, "${type}".`);
-    }
-    container.json.images = container.json.images || [];
-    container.json.images.push({ name, mimeType, uri });
-    container.resources[uri] = file;
-    return container;
-  }
-
-  /**
-   * Removes an image from the glTF container. Fails if image is still in use.
-   * @param container
-   * @param index
-   */
-  static removeImage(container: GLTFContainer, index: number): GLTFContainer {
-    const textures = container.json.textures.filter((texture) => texture.source === index);
-    if (textures.length) {
-      throw new Error(`Image is in use by ${textures.length} textures and cannot be removed.`);
-    }
-    const image = container.json.images[index];
-    const imageBuffer = container.resolveURI(image.uri);
-    if (!imageBuffer) {
-      throw new Error('No such image, or image is embedded.');
-    }
-    container.json.images.splice(index, 1);
-    container.json.textures.forEach((texture) => {
-      if (texture.source > index) texture.source--;
-    });
-    delete container.resources[image.uri];
-    return container;
   }
 
   static getImageSize(container: GLTFContainer, index: number): ISize {
@@ -263,196 +173,6 @@ class GLTFUtil {
     return isPNG
       ? getSizePNG(Buffer.from(arrayBuffer))
       : getSizeJPEG(Buffer.from(arrayBuffer));
-  }
-
-  /**
-   * Removes a texture from the glTF container.
-   * @param container
-   * @param index
-   */
-  static removeTexture(container: GLTFContainer, index: number): GLTFContainer {
-    container.json.materials.forEach((material) => {
-      [
-        material.emissiveTexture,
-        material.normalTexture,
-        material.occlusionTexture,
-        material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture,
-        material.pbrMetallicRoughness && material.pbrMetallicRoughness.metallicRoughnessTexture
-      ].forEach((texture) => {
-        if (texture.index === index) {
-          throw new Error('Texture still in use.');
-        } else if (texture.index > index) {
-          texture.index--;
-        }
-      });
-    });
-    container.json.textures.splice(index, 1);
-    return container;
-  }
-
-  /**
-   * Adds a new buffer to the glTF container.
-   * @param container
-   * @param name
-   * @param buffer
-   */
-  static addBuffer(container: GLTFContainer, name: string, arrayBuffer: ArrayBuffer): GLTF.IBuffer {
-    const uri = `${name}.bin`;
-    const buffer = { name, uri, byteLength: arrayBuffer.byteLength };
-    container.json.buffers.push(buffer);
-    container.resources[uri] = arrayBuffer;
-    return buffer;
-  }
-
-  /**
-   * Removes a buffer from the glTF container. Fails if buffer is still in use.
-   * @param container
-   * @param index
-   */
-  static removeBuffer(container: GLTFContainer, index: number): GLTF.IBuffer {
-    const bufferViews = container.json.bufferViews.filter((view) => view.buffer === index);
-    if (bufferViews.length) {
-      throw new Error(`Buffer is in use by ${bufferViews.length} bufferViews and cannot be removed.`);
-    }
-    const buffer = container.json.buffers[index];
-    container.json.buffers.splice(index, 1);
-    delete container.resources[buffer.uri];
-    container.json.bufferViews.forEach((bufferView) => {
-      if (bufferView.buffer >= index) bufferView.buffer--;
-    });
-    return buffer;
-  }
-
-  static addBufferView(container: IContainer, arrayBuffer: ArrayBuffer, bufferIndex: number = 0): GLTF.IBufferView {
-    const buffer = container.json.buffers[bufferIndex];
-    let resource = container.getBuffer(bufferIndex);
-    const byteOffset = resource.byteLength;
-    resource = GLTFUtil.join(resource, arrayBuffer)
-    container.setBuffer(bufferIndex, resource);
-    buffer.byteLength = resource.byteLength;
-    const bufferView: GLTF.IBufferView = {buffer: bufferIndex, byteLength: arrayBuffer.byteLength, byteOffset};
-    container.json.bufferViews.push(bufferView);
-    return bufferView;
-  }
-
-  /** Removes bufferView, after checking to see whether it is used by any accessors. */
-  static removeBufferView(container: IContainer, bufferViewIndex: number): GLTF.IBufferView {
-    const bufferView = container.json.bufferViews[bufferViewIndex];
-    const accessors = container.json.accessors.filter((accessor) => accessor.bufferView === bufferViewIndex);
-    if (accessors.length) {
-      throw new Error(`Buffer is in use by ${accessors.length} accessors and cannot be removed.`);
-    }
-
-    if (bufferView.byteLength > 0) {
-      let resource = container.getBuffer(bufferView.buffer);
-      [resource] = this.splice(resource, bufferView.byteOffset, bufferView.byteLength);
-      container.setBuffer(bufferView.buffer, resource);
-      const buffer = container.json.buffers[bufferView.buffer];
-      buffer.byteLength -= bufferView.byteLength;
-
-      container.json.bufferViews.forEach((otherBufferView) => {
-        if (otherBufferView.buffer === bufferView.buffer && otherBufferView.byteOffset > bufferView.byteOffset) {
-          otherBufferView.byteOffset -= bufferView.byteLength;
-        }
-      });
-    }
-
-    container.json.bufferViews.splice(bufferViewIndex, 1);
-    container.json.accessors.forEach((accessor) => {
-      if (accessor.bufferView > bufferViewIndex) accessor.bufferView--;
-    });
-
-    return bufferView;
-  }
-
-  static addAccessor(
-      container: GLTFContainer,
-      array: Float32Array | Uint32Array | Uint16Array,
-      type: GLTF.AccessorType,
-      componentType: GLTF.AccessorComponentType,
-      count: number,
-      target: number): GLTF.IAccessor {
-    const bufferView = this.addBufferView(container, array.buffer, 0);
-    bufferView['target'] = target; // TODO: Add to typings.
-    const accessor: GLTF.IAccessor = {
-      bufferView: container.json.bufferViews.length - 1,
-      byteOffset: 0,
-      type,
-      componentType,
-      count
-    };
-    container.json.accessors.push(accessor);
-    return accessor;
-  }
-
-  /**
-   * Removes accessor, without checking to see whether it is used.
-   *
-   * - NOTE: Cannot currently update nonmesh accessors, which will lead to bugs.
-   */
-  static removeAccessor(container: GLTFContainer, index: number): GLTF.IAccessor {
-    if ((container.json.animations||[]).length > 0) {
-      throw new Error('Not implemented: cannot remove accessors from animated models.');
-    }
-
-    const accessor = container.json.accessors[index];
-    const byteOffset = accessor.byteOffset || 0;
-    const byteLength = GLTFUtil.getAccessorByteLength(accessor);
-    if (byteLength) {
-      this.spliceBufferView(container, accessor.bufferView, byteOffset, byteLength);
-    }
-
-    // remove accessor from JSON
-    container.json.accessors.splice(index, 1);
-
-    // update byteOffset of other accessors
-    container.json.accessors.forEach((otherAccessor) => {
-      if (otherAccessor.bufferView === accessor.bufferView && (otherAccessor.byteOffset||0) > byteOffset) {
-        otherAccessor.byteOffset -= byteLength;
-      }
-    });
-
-    // update pointers into following accessors
-    container.json.meshes.forEach((mesh) => {
-      mesh.primitives.forEach((primitive) => {
-        for (let semantic in primitive.attributes) {
-          if (primitive.attributes[semantic] === index) {
-            throw new Error('Unexpected accessor use.');
-          } else if (primitive.attributes[semantic] > index) {
-            primitive.attributes[semantic]--;
-          }
-        }
-        if (primitive.indices === index) {
-          throw new Error('Unexpected accessor use.');
-        } else if (primitive.indices > index) {
-          primitive.indices--;
-        }
-      });
-    });
-
-    return accessor;
-  }
-
-  /**
-   * Removes data from a bufferView, updating other affected bufferviews.
-   *
-   * - Does not check for existing uses.
-   * - Does not update any accessors.
-   */
-  static spliceBufferView(container: GLTFContainer, bufferViewIndex: number, byteOffset: number, byteLength: number): ArrayBuffer {
-    const bufferView = container.json.bufferViews[bufferViewIndex];
-    let bufferData = container.getBuffer(bufferView.buffer);
-    let splicedData;
-    [bufferData, splicedData] = GLTFUtil.splice(bufferData, (bufferView.byteOffset||0) + byteOffset, byteLength);
-    container.setBuffer(bufferView.buffer, bufferData);
-    container.json.buffers[bufferView.buffer].byteLength -= byteLength; // TODO: do this when setBuffer is called?
-    bufferView.byteLength -= byteLength;
-    container.json.bufferViews.forEach((otherBufferView) => {
-      if (bufferView.buffer === otherBufferView.buffer && (bufferView.byteOffset||0) < (otherBufferView.byteOffset||0)) {
-        otherBufferView.byteOffset -= byteLength;
-      }
-    });
-    return splicedData;
   }
 
   static getAccessorByteLength(accessor: GLTF.IAccessor): number {

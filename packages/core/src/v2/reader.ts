@@ -1,8 +1,8 @@
-import { AccessorComponentType, AccessorTypeData } from "../core";
+import { AccessorComponentType, AccessorTypeData } from "../constants";
 import { Vector3, Vector4 } from "../math";
 
 import { Container } from "./container";
-import { IBufferMap } from "../container";
+import { IBufferMap } from "../v1/container";
 import { TypedArray } from "../constants";
 
 export class GLTFReader {

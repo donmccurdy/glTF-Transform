@@ -49,27 +49,28 @@ const { GLTFUtil, NodeIO, Root, Graph, Node } = require('../');
 //   t.end();
 // });
 
-test('@gltf-transform/core::analyze', (t) => {
-  const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');
-  const container = new NodeIO(fs, path).readGLB(filename);
-  const report = GLTFUtil.analyze(container);
-  t.deepEqual(report, {
-    meshes: 1,
-    textures: 0,
-    images: 0,
-    materials: 1,
-    animations: 0,
-    primitives: 1,
-    dataUsage: {
-      geometry: 1224,
-      targets: 0,
-      animation: 0,
-      textures: 0,
-      json: 1647
-    }
-  }, 'BoxVertexColors.glb -- analysis');
-  t.end();
-});
+// test('@gltf-transform/core::analyze', (t) => {
+//   const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');
+//   const container = new NodeIO(fs, path).read_v2(filename);
+//   const report = GLTFUtil.analyze(container);
+//   // TODO(donmccurdy): v2 analysis only partially implemented.
+//   t.deepEqual(report, {
+//     meshes: 1,
+//     textures: 0,
+//     images: 0,
+//     materials: 1,
+//     animations: 0,
+//     primitives: 1,
+//     dataUsage: {
+//       geometry: 1224,
+//       targets: 0,
+//       animation: 0,
+//       textures: 0,
+//       json: 1647
+//     }
+//   }, 'BoxVertexColors.glb -- analysis');
+//   t.end();
+// });
 
 test('@gltf-transform/core::io -- glb', t => {
   glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
