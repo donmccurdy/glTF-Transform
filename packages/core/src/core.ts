@@ -3,7 +3,7 @@ import { Logger, LoggerVerbosity } from './logger';
 import { NodeIO, WebIO } from './io';
 
 import { Element } from './elements/element';
-import { GLTFContainer } from './container';
+import { GLTFContainer } from './v1/container';
 import { GLTFUtil } from './util';
 import { Graph } from './graph/graph';
 import { Material } from './elements/material';

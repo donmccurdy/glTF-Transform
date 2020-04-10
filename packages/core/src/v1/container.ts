@@ -1,4 +1,4 @@
-import { AccessorTypeData, AccessorComponentType } from './constants';
+import { AccessorComponentType, AccessorTypeData } from '../constants';
 
 interface IBufferMap { [s: string]: ArrayBuffer; }
 

@@ -1,7 +1,8 @@
-import { GLTFUtil } from "./util";
-import { GLTFContainer, IBufferMap } from "./container";
+import { GLTFContainer, IBufferMap } from "./v1/container";
+
 import { Container } from "./v2/container";
 import { GLTFReader } from "./v2/reader";
+import { GLTFUtil } from "./util";
 
 interface IO {
     read: (uri: string) => GLTFContainer|Promise<GLTFContainer>;
