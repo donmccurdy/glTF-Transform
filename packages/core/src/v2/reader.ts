@@ -147,9 +147,7 @@ export class GLTFReader {
     const nodes = nodeDefs.map((nodeDef) => {
       const node = container.createNode(nodeDef.name);
 
-      console.log('[reader] setting mesh')
       if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
-      console.log('[reader] end setting mesh')
 
       if (nodeDef.translation !== undefined) {
         node.setTranslation(new Vector3(...nodeDef.translation));

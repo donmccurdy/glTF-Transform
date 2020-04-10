@@ -79,7 +79,6 @@ test('@gltf-transform/core::io -- glb', t => {
     const container = io.read_v2(inputURI);
 
     t.ok(container, `Read "${basepath}".`)
-    console.log(container);
   });
   t.end();
 });
@@ -93,8 +92,6 @@ test('@gltf-transform/core::io -- gltf', t => {
     const container = io.read_v2(inputURI);
 
     t.ok(container, `Read "${basepath}".`)
-    const mesh = container.getRoot().listMeshes()[0];
-    console.log(container);
   });
   t.end();
 });
