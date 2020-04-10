@@ -144,6 +144,9 @@ export class Link<Left extends Element, Right extends Element> {
 // into another parent class (GraphElement?), so that Element deals only
 // with glTF concepts.
 
+// TODO(donmccurdy): Some kind of UUID on each graph element would be nice.
+// Maybe a 4-5 character base64 hash?
+
 abstract class GraphElement {
     protected readonly graph: Graph = null;
     private disposed = false;
@@ -184,8 +187,8 @@ abstract class GraphElement {
     }
 
     protected removeGraphChild(links: Link<Element, Element>[], child: Element): GraphElement {
-        const link = links.find((link) => link.getRight() === child);
-        link.dispose();
+        const pruned = links.filter((link) => link.getRight() === child);
+        pruned.forEach((link) => link.dispose());
         return this;
     }
 }
