@@ -1,8 +1,9 @@
-import { IBufferMap } from "../container";
-import { Container } from "./container";
 import { AccessorComponentType, AccessorTypeData } from "../core";
-import { TypedArray } from "./elements";
-import { Vector4, Vector3 } from "./math";
+import { Vector3, Vector4 } from "../math";
+
+import { Container } from "./container";
+import { IBufferMap } from "../container";
+import { TypedArray } from "../constants";
 
 export class GLTFReader {
   public static read(json: GLTF.IGLTF, resources: IBufferMap): Container {

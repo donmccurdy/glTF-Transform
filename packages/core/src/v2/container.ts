@@ -1,4 +1,12 @@
-import { Graph, Root, Node, Scene, Texture, Material, Mesh, Accessor, Primitive } from "./elements";
+import { Accessor } from "../elements/accessor";
+import { Graph } from "../graph/graph";
+import { Material } from "../elements/material";
+import { Mesh } from "../elements/mesh";
+import { Node } from "../elements/node";
+import { Primitive } from "../elements/mesh";
+import { Root } from "../elements/root";
+import { Scene } from "../elements/scene";
+import { Texture } from "../elements/texture";
 
 export class Container {
   private graph: Graph = new Graph();
