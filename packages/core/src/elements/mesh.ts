@@ -1,8 +1,9 @@
-import { AttributeLink, Link } from "../graph/graph-links";
-import { GraphChild, GraphChildList } from "../graph/graph-decorators";
+import { GraphChild, GraphChildList } from "../graph/index";
 
 import { Accessor } from "./accessor";
+import { AttributeLink } from "./element-links";
 import { Element } from "./element";
+import { Link } from "../graph/index";
 import { Material } from "./material";
 import { NOT_IMPLEMENTED } from "../constants";
 import { Root } from "./root";
@@ -73,11 +74,4 @@ export class Primitive extends Element {
         this.mode = mode;
         return this;
     }
-}
-
-class Attribute {
-    private semantic: string = '';
-    @GraphChild private accessor: Link<Primitive, Accessor> = null;
-    public getSemantic(): string { return this.semantic; }
-    public getAccessor(): Accessor { return this.accessor.getRight(); }
 }

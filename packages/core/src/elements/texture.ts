@@ -1,4 +1,6 @@
 import { Element } from "./element";
+import { Link } from "../graph/index";
+import { Material } from "./material";
 
 export class Texture extends Element {
     private buffer: ArrayBuffer = null;

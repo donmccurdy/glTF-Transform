@@ -1,15 +1,7 @@
-import { Accessor } from "../elements/accessor";
-import { Graph } from "../graph/graph";
-import { Material } from "../elements/material";
-import { Mesh } from "../elements/mesh";
-import { Node } from "../elements/node";
-import { Primitive } from "../elements/mesh";
-import { Root } from "../elements/root";
-import { Scene } from "../elements/scene";
-import { Texture } from "../elements/texture";
+import { Accessor, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from "../elements/index";
 
 export class Container {
-  private graph: Graph = new Graph();
+  private graph: ElementGraph = new ElementGraph();
   private root: Root = new Root(this.graph);
 
   public getRoot(): Root {

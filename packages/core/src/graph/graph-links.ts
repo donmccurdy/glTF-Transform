@@ -1,9 +1,4 @@
-import { Texture, TextureInfo } from "../elements/texture";
-
-import { Accessor } from "../elements/accessor";
-import { GraphElement } from "./graph-element";
-import { Material } from "../elements/material";
-import { Primitive } from "../elements/mesh";
+import { GraphNode } from "./graph-node";
 
 /**
  * Represents a connection between two {@link Element} resources in a {@link Graph}.
@@ -13,7 +8,7 @@ import { Primitive } from "../elements/mesh";
  * that link. The resource does not hold a reference to the link or to the owner,
  * although that reverse lookup can be done on the graph.
  */
-export class Link<Left extends GraphElement, Right extends GraphElement> {
+export class Link<Left extends GraphNode, Right extends GraphNode> {
     private disposed: boolean = false;
     private listeners: (() => void)[] = [];
     constructor(private left: Left, private right: Right) {}
@@ -40,12 +35,4 @@ export class Link<Left extends GraphElement, Right extends GraphElement> {
 
     /** Whether this link has been destroyed. */
     isDisposed(): boolean { return this.disposed; }
-}
-
-export class TextureLink extends Link<Material, Texture> {
-    public textureInfo = new TextureInfo();
-}
-
-export class AttributeLink extends Link<Primitive, Accessor> {
-    public semantic = '';
 }

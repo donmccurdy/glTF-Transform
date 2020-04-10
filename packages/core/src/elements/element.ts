@@ -1,15 +1,18 @@
-import { Graph } from "../graph/graph";
-import { GraphElement } from "../graph/graph-element";
+import { ElementGraph } from "./element-graph";
+import { GraphNode } from "../graph/index";
 import { NOT_IMPLEMENTED } from "../constants";
 
-export abstract class Element extends GraphElement {
+export abstract class Element extends GraphNode {
+    protected readonly graph: ElementGraph;
     protected name: string = '';
+
+    // TODO(donmccurdy): Extras should be Elements.
     protected extras: object = {};
 
     // TODO(donmccurdy): Extensions should be Elements.
     protected extensions: object = {};
 
-    constructor(graph: Graph, name = '') {
+    constructor(graph: ElementGraph, name = '') {
         super(graph);
         this.name = name;
     }

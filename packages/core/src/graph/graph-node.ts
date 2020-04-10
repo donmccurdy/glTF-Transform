@@ -5,8 +5,8 @@ import { Link } from "./graph-links";
 // Maybe a 4-5 character base64 hash?
 
 /** Represents a node in a {@link Graph}. */
-export abstract class GraphElement {
-    protected readonly graph: Graph = null;
+export abstract class GraphNode {
+    protected readonly graph: Graph;
     private disposed = false;
     constructor(graph: Graph) {
         this.graph = graph;
@@ -27,7 +27,7 @@ export abstract class GraphElement {
     /**
      * Removes all inbound references to this element. Subclasses do not override this method.
      */
-    public detach(): GraphElement {
+    public detach(): GraphNode {
         this.graph.disconnectParentElements(this);
         return this;
     }
@@ -39,8 +39,8 @@ export abstract class GraphElement {
      * {@link @GraphChild} instead.
      */
     protected addGraphChild(
-            links: Link<GraphElement, GraphElement>[],
-            link: Link<GraphElement, GraphElement>): GraphElement {
+            links: Link<GraphNode, GraphNode>[],
+            link: Link<GraphNode, GraphNode>): GraphNode {
         links.push(link);
         link.onDispose(() => {
             const remaining = links.filter((l) => l !== link);
@@ -53,7 +53,7 @@ export abstract class GraphElement {
     /**
      * Removes a {@link GraphElement} from a {@link @GraphChildList}.
      */
-    protected removeGraphChild(links: Link<GraphElement, GraphElement>[], child: GraphElement): GraphElement {
+    protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): GraphNode {
         const pruned = links.filter((link) => link.getRight() === child);
         pruned.forEach((link) => link.dispose());
         return this;
