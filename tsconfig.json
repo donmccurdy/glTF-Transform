@@ -7,5 +7,6 @@
   },
   "files": [
     "typings/gltf.d.ts"
-  ]
+  ],
+  "include": ["packages/*/src/**/*.ts"]
 }
