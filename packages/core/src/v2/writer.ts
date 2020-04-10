@@ -1,10 +1,7 @@
-import { Accessor } from "../elements/accessor";
+import { Accessor, Element, Material, Node, Texture } from "../elements/index";
+
 import { Container } from "./container";
-import { Element } from "../elements/element";
 import { IBufferMap } from "../v1/container";
-import { Material } from "../elements/material";
-import { Node } from "../elements/node";
-import { Texture } from "../elements/texture";
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 

@@ -4,7 +4,6 @@ import { ISize, getSizeJPEG, getSizePNG } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
 
 import { Container } from './v2/container';
-import { PackedGLTFContainer } from './v1/packed-container';
 
 interface IGLTFAnalysis {
   meshes: number,

@@ -1,6 +1,6 @@
+import { GraphChildList, Link } from "../graph/index";
+
 import { Element } from "./element";
-import { GraphChildList } from "../graph/graph-decorators";
-import { Link } from "../graph/graph-links";
 import { Node } from "./node";
 import { Root } from "./root";
 

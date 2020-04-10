@@ -1,7 +1,7 @@
+import { GraphChildList, Link } from "../graph/index";
+
 import { Accessor } from "./accessor";
 import { Element } from "./element";
-import { GraphChildList } from "../graph/graph-decorators";
-import { Link } from "../graph/graph-links";
 import { Material } from "./material";
 import { Mesh } from "./mesh";
 import { Node } from "./node";

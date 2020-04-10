@@ -2,8 +2,8 @@ import { Texture, TextureInfo } from "./texture";
 import { Vector3, Vector4 } from "../math";
 
 import { Element } from "./element";
-import { GraphChild } from "../graph/graph-decorators";
-import { TextureLink } from "../graph/graph-links";
+import { GraphChild } from "../graph/index";
+import { TextureLink } from "./element-links";
 
 export class Material extends Element {
     private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
