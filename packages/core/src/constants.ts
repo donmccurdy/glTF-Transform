@@ -1,4 +1,4 @@
-const AccessorType = {
+export const AccessorType = {
     SCALAR: 'SCALAR',
     VEC2: 'VEC2',
     VEC3: 'VEC3',
@@ -8,7 +8,7 @@ const AccessorType = {
     MAT4: 'MAT4',
 }
 
-const AccessorTypeData = {
+export const AccessorTypeData = {
     SCALAR: {value: 'SCALAR', size: 1},
     VEC2: {value: 'VEC2', size: 2},
     VEC3: {value: 'VEC3', size: 3},
@@ -18,7 +18,7 @@ const AccessorTypeData = {
     MAT4: {value: 'MAT4', size: 16},
 };
   
-const AccessorComponentType = {
+export const AccessorComponentType = {
     BYTE: 5120,
     UNSIGNED_BYTE: 5121,
     SHORT: 5122,
@@ -27,7 +27,7 @@ const AccessorComponentType = {
     FLOAT: 5126,
 };
 
-const AccessorComponentTypeData = {
+export const AccessorComponentTypeData = {
     '5120': {value: 'BYTE', size: 1 },
     '5121': {value: 'UNSIGNED_BYTE', size: 1 },
     '5122': {value: 'SHORT', size: 2 },
@@ -36,9 +36,11 @@ const AccessorComponentTypeData = {
     '5126': {value: 'FLOAT', size: 4 },
 };
 
-const BufferViewTarget = {
+export const BufferViewTarget = {
     ARRAY_BUFFER: 34962,
     ELEMENT_ARRAY_BUFFER: 34963
-}
+};
 
-export { AccessorType, AccessorTypeData, AccessorComponentType, AccessorComponentTypeData, BufferViewTarget };
+export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
+
+export const NOT_IMPLEMENTED = new Error('Not implemented.');
