@@ -1,6 +1,8 @@
 import { GraphChildList, Link } from "../graph/index";
 
 import { Accessor } from "./accessor";
+import { Buffer } from "./buffer";
+import { BufferView } from "./buffer-view";
 import { Element } from "./element";
 import { Material } from "./material";
 import { Mesh } from "./mesh";
@@ -20,6 +22,8 @@ export class Root extends Element {
     @GraphChildList private materials: Link<Root, Material>[] = [];
     @GraphChildList private textures: Link<Root, Texture>[] = [];
     @GraphChildList private accessors: Link<Root, Accessor>[] = [];
+    @GraphChildList private bufferViews: Link<Root, BufferView>[] = [];
+    @GraphChildList private buffers: Link<Root, Buffer>[] = [];
 
     public getAsset(): GLTF.IAsset { return this.asset; }
 
@@ -96,5 +100,29 @@ export class Root extends Element {
 
     public listAccessors(): Accessor[] {
         return this.accessors.map((p) => p.getRight());
+    }
+
+    public addBufferView(bufferView: BufferView): Root {
+        return this.addGraphChild(this.bufferViews, this.graph.link(this, bufferView) as Link<Root, BufferView>) as Root;
+    }
+
+    public removeBufferView(bufferView: BufferView): Root {
+        return this.removeGraphChild(this.bufferViews, bufferView) as Root;
+    }
+
+    public listBufferViews(): BufferView[] {
+        return this.bufferViews.map((p) => p.getRight());
+    }
+
+    public addBuffer(buffer: Buffer): Root {
+        return this.addGraphChild(this.buffers, this.graph.link(this, buffer) as Link<Root, Buffer>) as Root;
+    }
+
+    public removeBuffer(buffer: Buffer): Root {
+        return this.removeGraphChild(this.buffers, buffer) as Root;
+    }
+
+    public listBuffers(): Buffer[] {
+        return this.buffers.map((p) => p.getRight());
     }
 }

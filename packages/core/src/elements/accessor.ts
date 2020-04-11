@@ -1,11 +1,22 @@
 import { AccessorComponentType, AccessorTypeData, TypedArray } from "../constants";
+import { GraphChild, Link } from "../graph/index";
 import { Vector2, Vector3, Vector4 } from "../math";
 
+import { BufferView } from "./buffer-view";
 import { Element } from "./element";
 
 export class Accessor extends Element {
     private array: TypedArray = null;
     private type: GLTF.AccessorType = GLTF.AccessorType.SCALAR;
+
+    @GraphChild private bufferView: Link<Accessor, BufferView> = null;
+
+    public getBufferView(): BufferView { return this.bufferView.getRight(); }
+    public setBufferView(bufferView: BufferView): Accessor {
+        this.bufferView = this.graph.link(this, bufferView) as Link<Accessor, BufferView>;
+        return this;
+    }
+
     public getArray(): TypedArray { return this.array; }
     public setArray(array: TypedArray): Accessor {
         this.array = array;

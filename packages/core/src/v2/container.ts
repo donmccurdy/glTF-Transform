@@ -1,4 +1,4 @@
-import { Accessor, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from "../elements/index";
+import { Accessor, Buffer, BufferView, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from "../elements/index";
 
 export class Container {
   private graph: ElementGraph = new ElementGraph();
@@ -29,10 +29,8 @@ export class Container {
     this.root.addMesh(mesh);
     return mesh;
   }
-  // TODO(donmccurdy): Move this to mesh.createPrimitive()?
-  createPrimitive(/*name: string*/): Primitive {
-    const primitive = new Primitive(this.graph/*, name*/);
-    // this.root.addPrimitive(primitive);
+  createPrimitive(): Primitive {
+    const primitive = new Primitive(this.graph);
     return primitive;
   }
   createMaterial(name: string): Material {
@@ -45,11 +43,19 @@ export class Container {
     this.root.addTexture(texture);
     return texture;
   }
-  createAccessor(name: string): Accessor {
-    const accessor = new Accessor(this.graph, name);
+  createAccessor(name: string, bufferView: BufferView): Accessor {
+    const accessor = new Accessor(this.graph, name).setBufferView(bufferView);
     this.root.addAccessor(accessor);
     return accessor;
   }
-  // TODO(donmccurdy): Add container.createBuffer()?
-  // TODO(donmccurdy): Add container.createBufferView(buffer)?
+  createBufferView(name: string, buffer: Buffer): BufferView {
+    const bufferView = new BufferView(this.graph, name).setBuffer(buffer);
+    this.root.addBufferView(bufferView);
+    return bufferView;
+  }
+  createBuffer(name: string): Buffer {
+    const buffer = new Buffer(this.graph, name);
+    this.root.addBuffer(buffer);
+    return buffer;
+  }
 }
