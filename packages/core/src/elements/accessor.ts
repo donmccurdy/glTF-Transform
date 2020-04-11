@@ -12,7 +12,7 @@ export class Accessor extends Element {
 
     public getBuffer(): Buffer { return this.buffer.getRight(); }
     public setBuffer(buffer: Buffer): Accessor {
-        this.buffer = this.graph.link(this, buffer) as Link<Accessor, Buffer>;
+        this.buffer = this.graph.link('buffer', this, buffer) as Link<Accessor, Buffer>;
         return this;
     }
 

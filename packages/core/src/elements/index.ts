@@ -2,6 +2,7 @@ import { Accessor } from "./accessor";
 import { Buffer } from "./buffer";
 import { Element } from "./element";
 import { ElementGraph } from "./element-graph";
+import { AttributeLink, IndexLink, TextureLink } from "./element-links";
 import { Material } from "./material";
 import { Mesh, Primitive } from "./mesh";
 import { Node } from "./node";
@@ -21,5 +22,8 @@ export {
     Root,
     Scene,
     Texture,
-    TextureInfo
+    TextureInfo,
+    TextureLink,
+    AttributeLink,
+    IndexLink,
 };

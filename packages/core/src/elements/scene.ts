@@ -1,5 +1,4 @@
 import { GraphChildList, Link } from "../graph/index";
-
 import { Element } from "./element";
 import { Node } from "./node";
 import { Root } from "./root";
@@ -7,7 +6,7 @@ import { Root } from "./root";
 export class Scene extends Element {
     @GraphChildList private nodes: Link<Scene, Node>[] = [];
     public addNode(node: Node): Scene {
-        return this.addGraphChild(this.nodes, this.graph.link(this, node) as Link<Root, Node>) as Scene;
+        return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>) as Scene;
     }
 
     public removeNode(node: Node): Scene {

@@ -1,8 +1,7 @@
 import { GraphChild, GraphChildList } from "../graph/graph-decorators";
-import { Vector3, Vector4 } from "../math";
-
-import { Element } from "./element";
 import { Link } from "../graph/graph-links";
+import { Vector3, Vector4 } from "../math";
+import { Element } from "./element";
 import { Mesh } from "./mesh";
 import { Root } from "./root";
 
@@ -32,7 +31,7 @@ export class Node extends Element {
     }
 
     public addChild(child: Node): Node {
-        return this.addGraphChild(this.children, this.graph.link(this, child) as Link<Root, Node>) as Node;
+        return this.addGraphChild(this.children, this.graph.link('child', this, child) as Link<Root, Node>) as Node;
     }
     public removeChild(child: Node): Node {
         return this.removeGraphChild(this.children, child) as Node;
@@ -41,8 +40,8 @@ export class Node extends Element {
         return this.children.map((link) => link.getRight());
     }
     public setMesh(mesh: Mesh): Node {
-        this.mesh = this.graph.link(this, mesh) as Link<Node, Mesh>;
+        this.mesh = this.graph.link('mesh', this, mesh) as Link<Node, Mesh>;
         return this;
     }
-    public getMesh(): Mesh { return this.mesh.getRight(); }
+    public getMesh(): Mesh { return this.mesh ? this.mesh.getRight() : null; }
 }

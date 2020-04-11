@@ -30,7 +30,7 @@ export class Root extends Element {
     }
 
     public addScene(scene: Scene): Root {
-        return this.addGraphChild(this.scenes, this.graph.link(this, scene) as Link<Root, Scene>) as Root;
+        return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene) as Link<Root, Scene>) as Root;
     }
     public removeScene(scene: Scene): Root {
         return this.removeGraphChild(this.scenes, scene) as Root;
@@ -40,7 +40,7 @@ export class Root extends Element {
     }
 
     public addNode(node: Node): Root {
-        return this.addGraphChild(this.nodes, this.graph.link(this, node) as Link<Root, Node>) as Root;
+        return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>) as Root;
     }
 
     public removeNode(node: Node): Root {
@@ -52,7 +52,7 @@ export class Root extends Element {
     }
 
     public addMesh(mesh: Mesh): Root {
-        return this.addGraphChild(this.meshes, this.graph.link(this, mesh) as Link<Root, Mesh>) as Root;
+        return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh) as Link<Root, Mesh>) as Root;
     }
 
     public removeMesh(mesh: Mesh): Root {
@@ -64,7 +64,7 @@ export class Root extends Element {
     }
 
     public addMaterial(material: Material): Root {
-        return this.addGraphChild(this.materials, this.graph.link(this, material) as Link<Root, Material>) as Root;
+        return this.addGraphChild(this.materials, this.graph.link('material', this, material) as Link<Root, Material>) as Root;
     }
 
     public removeMaterial(material: Material): Root {
@@ -76,7 +76,7 @@ export class Root extends Element {
     }
 
     public addTexture(texture: Texture): Root {
-        return this.addGraphChild(this.textures, this.graph.link(this, texture) as Link<Root, Texture>) as Root;
+        return this.addGraphChild(this.textures, this.graph.link('texture', this, texture) as Link<Root, Texture>) as Root;
     }
 
     public removeTexture(texture: Texture): Root {
@@ -88,7 +88,7 @@ export class Root extends Element {
     }
 
     public addAccessor(accessor: Accessor): Root {
-        return this.addGraphChild(this.accessors, this.graph.link(this, accessor) as Link<Root, Accessor>) as Root;
+        return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor) as Link<Root, Accessor>) as Root;
     }
 
     public removeAccessor(accessor: Accessor): Root {
@@ -100,7 +100,7 @@ export class Root extends Element {
     }
 
     public addBuffer(buffer: Buffer): Root {
-        return this.addGraphChild(this.buffers, this.graph.link(this, buffer) as Link<Root, Buffer>) as Root;
+        return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer) as Link<Root, Buffer>) as Root;
     }
 
     public removeBuffer(buffer: Buffer): Root {
