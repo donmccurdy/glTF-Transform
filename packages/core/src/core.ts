@@ -1,11 +1,12 @@
 import { AccessorComponentType, AccessorComponentTypeData, AccessorType, AccessorTypeData, BufferViewTarget } from './constants';
-import { Element } from './elements/element';
-import { Material, Mesh, Node, Root } from './elements/index';
-import { Graph } from './graph/index';
-import { NodeIO, WebIO } from './io';
 import { Logger, LoggerVerbosity } from './logger';
-import { GLTFUtil } from './util';
+import { Material, Mesh, Node, Root } from './elements/index';
+import { NodeIO, WebIO } from './io';
+
+import { Element } from './elements/element';
 import { GLTFContainer } from './v1/container';
+import { GLTFUtil } from './util';
+import { Graph } from './graph/index';
 
 export {
     GLTFUtil, GLTFContainer,
