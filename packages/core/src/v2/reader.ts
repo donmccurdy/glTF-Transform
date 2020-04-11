@@ -12,14 +12,13 @@ export class GLTFReader {
     const buffers = bufferDefs.map((bufferDef) => container.createBuffer(bufferDef.name));
 
     const bufferViewDefs = json.bufferViews || [];
-    const bufferViews = bufferViewDefs.map((bufferViewDef) => {
-      return container.createBufferView(bufferViewDef.name, buffers[bufferViewDef.buffer]);
-    });
+    const bufferViewToBuffer = bufferViewDefs.map((bufferViewDef) => buffers[bufferViewDef.buffer]);
 
     // Accessor .count and .componentType properties are inferred dynamically.
     const accessorDefs = json.accessors || [];
     const accessors = accessorDefs.map((accessorDef, index) => {
-      const accessor = container.createAccessor(accessorDef.name, bufferViews[accessorDef.bufferView]);
+      const buffer = bufferViewToBuffer[accessorDef.bufferView];
+      const accessor = container.createAccessor(accessorDef.name, buffer);
 
       if (accessorDef.sparse !== undefined) {
         // TODO(donmccurdy): Support accessorDef.sparse. Unpack this.

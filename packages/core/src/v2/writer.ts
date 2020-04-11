@@ -1,4 +1,4 @@
-import { Accessor, Buffer, BufferView, Element, Material, Node, Texture } from "../elements/index";
+import { Accessor, Buffer, Element, Material, Node, Texture } from "../elements/index";
 import { IBufferMap } from "../v1/container";
 import { Container } from "./container";
 
@@ -13,7 +13,6 @@ export class GLTFWriter {
     /* Index lookup. */
 
     const bufferIndexMap = new Map<Buffer, number>();
-    const bufferViewIndexMap = new Map<BufferView, number>();
     const accessorIndexMap = new Map<Accessor, number>();
     const materialIndexMap = new Map<Material, number>();
     const nodeIndexMap = new Map<Node, number>();
@@ -33,38 +32,38 @@ export class GLTFWriter {
 
     /* Buffer views. */
 
-    json.bufferViews = root.listBufferViews().map((bufferView, index) => {
-      const bufferViewDef = createElementDef(bufferView) as GLTF.IBufferView;
-      bufferViewDef.buffer = bufferIndexMap.get(bufferView.getBuffer());
+    // json.bufferViews = root.listBufferViews().map((bufferView, index) => {
+    //   const bufferViewDef = createElementDef(bufferView) as GLTF.IBufferView;
+    //   bufferViewDef.buffer = bufferIndexMap.get(bufferView.getBuffer());
 
-      // bufferViewDef.byteLength
-      // bufferViewDef.byteOffset
-      // bufferViewDef.byteStride
+    //   // bufferViewDef.byteLength
+    //   // bufferViewDef.byteOffset
+    //   // bufferViewDef.byteStride
 
-      bufferViewIndexMap.set(bufferView, index);
-      return bufferViewDef;
-    });
+    //   bufferViewIndexMap.set(bufferView, index);
+    //   return bufferViewDef;
+    // });
 
     /* Accessors. */
 
-    json.accessors = root.listAccessors().map((accessor, index) => {
-      const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
-      accessorDef.bufferView = bufferViewIndexMap.get(accessor.getBufferView());
+    // json.accessors = root.listAccessors().map((accessor, index) => {
+    //   const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+    //   accessorDef.bufferView = bufferViewIndexMap.get(accessor.getBufferView());
 
-      accessorDef.type = accessor.getType();
-      accessorDef.componentType = accessor.getComponentType();
-      accessorDef.count = accessor.getCount();
-      accessorDef.max = accessor.getMax();
-      accessorDef.min = accessor.getMin();
+    //   accessorDef.type = accessor.getType();
+    //   accessorDef.componentType = accessor.getComponentType();
+    //   accessorDef.count = accessor.getCount();
+    //   accessorDef.max = accessor.getMax();
+    //   accessorDef.min = accessor.getMin();
 
-      // accessorDef.byteOffset
+    //   // accessorDef.byteOffset
 
-      // TODO(donmccurdy): accessorDef.normalized
-      // TODO(donmccurdy): accessorDef.sparse
+    //   // TODO(donmccurdy): accessorDef.normalized
+    //   // TODO(donmccurdy): accessorDef.sparse
 
-      accessorIndexMap.set(accessor, index);
-      return accessorDef;
-    });
+    //   accessorIndexMap.set(accessor, index);
+    //   return accessorDef;
+    // });
 
     /**
      * WRITING BUFFER VIEWS
