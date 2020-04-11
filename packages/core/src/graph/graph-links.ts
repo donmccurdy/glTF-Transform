@@ -10,8 +10,11 @@ import { GraphNode } from "./graph-node";
  */
 export class Link<Left extends GraphNode, Right extends GraphNode> {
     private disposed: boolean = false;
-    private listeners: (() => void)[] = [];
-    constructor(private left: Left, private right: Right) {}
+    private readonly listeners: (() => void)[] = [];
+    constructor(private readonly name: string, private left: Left, private right: Right) {}
+
+    /** Name. */
+    getName(): string { return this.name; }
 
     /** Owner element. */
     getLeft(): Left { return this.left; }

@@ -201,13 +201,32 @@ class GLTFUtil {
     return out.buffer;
   }
 
+
+  /**
+   * Concatenates N ArrayBuffers.
+   */
+  static concat (buffers: ArrayBuffer[]): ArrayBuffer {
+    let totalByteLength = 0;
+    for (const buffer of buffers) {
+      totalByteLength += buffer.byteLength;
+    }
+
+    const result = new Uint8Array(totalByteLength);
+    let byteOffset = 0;
+
+    for (const buffer of buffers) {
+      result.set(new Uint8Array(buffer), byteOffset);
+      byteOffset += buffer.byteLength;
+    }
+
+    return result.buffer;
+  }
+
   /**
    * Pad buffer to the next 4-byte boundary.
    * https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
    */
-  static pad (arrayBuffer: ArrayBuffer, paddingByte: number): ArrayBuffer {
-
-    paddingByte = paddingByte || 0;
+  static pad (arrayBuffer: ArrayBuffer, paddingByte: number = 0): ArrayBuffer {
 
     var paddedLength = Math.ceil( arrayBuffer.byteLength / 4 ) * 4;
 
@@ -292,5 +311,6 @@ class GLTFUtil {
     return {nodes, edges};
   }
 }
+
 
 export { GLTFUtil };

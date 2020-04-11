@@ -1,9 +1,8 @@
-import { Texture, TextureInfo } from "./texture";
-import { Vector3, Vector4 } from "../math";
-
-import { Element } from "./element";
 import { GraphChild } from "../graph/index";
+import { Vector3, Vector4 } from "../math";
+import { Element } from "./element";
 import { TextureLink } from "./element-links";
+import { Texture, TextureInfo } from "./texture";
 
 export class Material extends Element {
     private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
@@ -53,11 +52,11 @@ export class Material extends Element {
     public getEmissiveTextureInfo(): TextureInfo { return this.emissiveTexture.textureInfo; }
 
     public setBaseColorTexture(texture: Texture): Material {
-        this.baseColorTexture = this.graph.linkTexture(this, texture);
+        this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
         return this;
     }
     public setEmissiveTexture(texture: Texture): Material {
-        this.emissiveTexture = this.graph.linkTexture(this, texture);
+        this.emissiveTexture = this.graph.linkTexture('emissiveTexture', this, texture);
         return this;
     }
 }

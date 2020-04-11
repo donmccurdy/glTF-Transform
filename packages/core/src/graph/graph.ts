@@ -49,12 +49,12 @@ export class Graph {
      * @param a Owner
      * @param b Resource
      */
-    public link(a: GraphNode, b: GraphNode | null): Link<GraphNode, GraphNode> {
+    public link(name: string, a: GraphNode, b: GraphNode | null): Link<GraphNode, GraphNode> {
         // If there's no resource, return a null link. Avoids a lot of boilerplate
         // in Element setters.
         if (!b) return null;
 
-        const link = new Link(a, b);
+        const link = new Link(name, a, b);
         this.registerLink(link);
         return link;
     }

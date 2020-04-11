@@ -1,8 +1,17 @@
-import { Accessor, Buffer, Element, Material, Node, Texture } from "../elements/index";
+import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Root, Texture } from "../elements/index";
+import { Link } from "../graph/index";
+import { GLTFUtil } from "../util";
+import { uuid } from "../uuid";
 import { IBufferMap } from "../v1/container";
 import { Container } from "./container";
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
+
+// TODO(donmccurdy): Default buffer currently named with empty string.
+const DEFAULT_BUFFER_URI = 'test-' + uuid() + '.bin';
+
+// TODO(donmccurdy): Not sure what this test error is:
+// (node:60004) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
 
 export class GLTFWriter {
   public static write(container: Container): {json: GLTF.IGLTF, resources: IBufferMap} {
@@ -15,77 +24,126 @@ export class GLTFWriter {
     const bufferIndexMap = new Map<Buffer, number>();
     const accessorIndexMap = new Map<Accessor, number>();
     const materialIndexMap = new Map<Material, number>();
+    const meshIndexMap = new Map<Mesh, number>();
     const nodeIndexMap = new Map<Node, number>();
     const textureIndexMap = new Map<Texture, number>();
 
-    /* Buffers. */
+    /* Link and data use pre-processing. */
 
-    json.buffers = root.listBuffers().map((buffer, index) => {
+    const accessorLinks = new Map<Element, Link<Element, Element>[]>();
+
+    // Gather all accessors, creating a map to look up their uses.
+    for (const link of container.getGraph().getLinks()) {
+      if (link.getLeft() === root) continue;
+
+      const child = link.getRight();
+
+      if (child instanceof Accessor) {
+        const uses = accessorLinks.get(child) || [];
+        uses.push(link as Link<Element, Element>);
+        accessorLinks.set(child, uses);
+      }
+    }
+
+    /* Buffers, buffer views, and accessors. */
+
+    json.accessors = [];
+    json.bufferViews = [];
+    json.buffers = root.listBuffers().map((buffer, bufferIndex) => {
       const bufferDef = createElementDef(buffer) as GLTF.IBuffer;
 
-      // bufferDef.byteLength
-      // bufferDef.uri
+      const attributeAccessors = new Set<Accessor>();
+      const indexAccessors = new Set<Accessor>();
+      const otherAccessors = new Set<Accessor>();
 
-      bufferIndexMap.set(buffer, index);
+      const bufferParents = container.getGraph()
+        .listParentElements(buffer)
+        .filter((element) => !(element instanceof Root)) as Element[];
+
+      // Categorize accessors by use.
+      for (const parent of bufferParents) {
+        if ((!(parent instanceof Accessor))) { // Texture
+          console.error('TODO:ERROR', parent);
+          throw new Error('Unimplemented buffer reference: ');
+        }
+
+        let isAttribute = false;
+        let isIndex = false;
+        let isOther = false;
+
+        const accessorRefs = accessorLinks.get(parent);
+        for (const link of accessorRefs) {
+          if (link instanceof AttributeLink) {
+            isAttribute = true;
+          } else if (link instanceof IndexLink) {
+            isIndex = true;
+          } else {
+            isOther = true;
+          }
+        }
+
+        if (isAttribute && !isIndex && !isOther) {
+          attributeAccessors.add(parent);
+        } else if (isIndex && !isAttribute && !isOther) {
+          indexAccessors.add(parent);
+        } else if (isOther && !isAttribute && !isIndex) {
+          otherAccessors.add(parent);
+        } else {
+          console.error('TODO:ERROR', accessorRefs);
+          throw new Error('Attribute or index accessors must be used only for that purpose.');
+        }
+      }
+
+      function writeBufferView(accessors: Accessor[], byteOffset: number, target: string): [number, ArrayBuffer[]] {
+        const accessorData: ArrayBuffer[] = [];
+        let innerByteOffset = 0;
+
+        for (const accessor of accessors) {
+          const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+          accessorDef.bufferView = json.bufferViews.length;
+          accessorDef.type = accessor.getType();
+          accessorDef.componentType = accessor.getComponentType();
+          accessorDef.count = accessor.getCount();
+          // accessorDef.max = accessor.getMax();
+          // accessorDef.min = accessor.getMin();
+          // TODO(donmccurdy): accessorDef.normalized
+          // TODO(donmccurdy): accessorDef.sparse
+
+          const data = GLTFUtil.pad(accessor.getArray().buffer);
+          accessorDef.byteOffset = innerByteOffset;
+
+          innerByteOffset += data.byteLength;
+          accessorData.push(data);
+
+          accessorIndexMap.set(accessor, json.accessors.length);
+          json.accessors.push(accessorDef);
+        }
+
+        const bufferViewData = GLTFUtil.concat(accessorData);
+        const bufferViewDef: GLTF.IBufferView = {
+          buffer: bufferIndex,
+          byteLength: bufferViewData.byteLength,
+          byteOffset: byteOffset,
+          // TODO(donmccurdy): byteStride: target === 'attribute' ?
+          // TODO(donmccurdy): .target
+        };
+        json.bufferViews.push(bufferViewDef);
+
+        return [innerByteOffset, accessorData];
+      }
+
+      // TODO(donmccurdy): Skip any of these that aren't needed.
+      const [indexByteLength, indexData] = writeBufferView(Array.from(indexAccessors), 0, 'index');
+      const [attributeByteLength, attributeData] = writeBufferView(Array.from(indexAccessors), indexByteLength, 'index');
+      const [otherByteLength, otherData] = writeBufferView(Array.from(otherAccessors), attributeByteLength, '');
+
+      bufferDef.uri = DEFAULT_BUFFER_URI;
+      bufferDef.byteLength = indexByteLength + attributeByteLength + otherByteLength;
+      resources[DEFAULT_BUFFER_URI] = GLTFUtil.concat([...indexData, ...attributeData, ...otherData]);
+
+      bufferIndexMap.set(buffer, bufferIndex);
       return bufferDef;
     });
-
-    /* Buffer views. */
-
-    // json.bufferViews = root.listBufferViews().map((bufferView, index) => {
-    //   const bufferViewDef = createElementDef(bufferView) as GLTF.IBufferView;
-    //   bufferViewDef.buffer = bufferIndexMap.get(bufferView.getBuffer());
-
-    //   // bufferViewDef.byteLength
-    //   // bufferViewDef.byteOffset
-    //   // bufferViewDef.byteStride
-
-    //   bufferViewIndexMap.set(bufferView, index);
-    //   return bufferViewDef;
-    // });
-
-    /* Accessors. */
-
-    // json.accessors = root.listAccessors().map((accessor, index) => {
-    //   const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
-    //   accessorDef.bufferView = bufferViewIndexMap.get(accessor.getBufferView());
-
-    //   accessorDef.type = accessor.getType();
-    //   accessorDef.componentType = accessor.getComponentType();
-    //   accessorDef.count = accessor.getCount();
-    //   accessorDef.max = accessor.getMax();
-    //   accessorDef.min = accessor.getMin();
-
-    //   // accessorDef.byteOffset
-
-    //   // TODO(donmccurdy): accessorDef.normalized
-    //   // TODO(donmccurdy): accessorDef.sparse
-
-    //   accessorIndexMap.set(accessor, index);
-    //   return accessorDef;
-    // });
-
-    /**
-     * WRITING BUFFER VIEWS
-     *
-     * Image:
-     * (1) 1 image = 1 Buffer View
-     *
-     * Other:
-     * (1) For each Buffer View
-     *   (2) Find all assigned Accessors
-     *     (3) Delegate to BufferViewLayoutStrategy [ SEQUENTIAL | INTERLEAVED | ... ]
-     *     (3.1a) If all indices, set target=ELEMENT_ARRAY_BUFFER. Interleaving disallowed.
-     *     (3.1b) If all attributes, set target=ARRAY_BUFFER. Interleaving is fine.
-     *     (3.1c) Else, target is not set. Interleaving is unnecessary.
-     *     (3.2) Apply normalization or sparse conversions to accessor data. Sparse for morph targets, maybe.
-     *
-     * Implementation Note: JavaScript client implementations should convert JSON-parsed floating-point
-     * doubles to single precision, when componentType is 5126 (FLOAT). This could be done with Math.fround
-     * function. Applies to accessor.min/max.
-     * 
-     * ... maybe just set up graph output, and see what gltfpack writes for a few models?
-     */
 
     /* Textures. */
 
@@ -96,6 +154,7 @@ export class GLTFWriter {
       materialDef.alphaMode = material.getAlphaMode();
       materialDef.alphaCutoff = material.getAlphaCutoff();
       materialDef.doubleSided = material.getDoubleSided();
+      materialDef.pbrMetallicRoughness = {};
       materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor().toArray();
       materialDef.emissiveFactor = material.getEmissiveFactor().toArray();
       // TODO(donmccurdy): materialDef.emissiveTexture
@@ -112,6 +171,33 @@ export class GLTFWriter {
 
     /* Meshes. */
 
+    json.meshes = root.listMeshes().map((mesh, index) => {
+      const meshDef = createElementDef(mesh) as GLTF.IMesh;
+      meshDef.primitives = mesh.listPrimitives().map((primitive) => {
+        const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
+        primitiveDef.material = materialIndexMap.get(primitive.getMaterial());
+        primitiveDef.mode = primitive.getMode();
+
+        if (primitive.getIndices()) {
+          primitiveDef.indices = accessorIndexMap.get(primitive.getIndices());
+        }
+
+        for (const semantic of primitive.listSemantics()) {
+          primitiveDef.attributes[semantic] = accessorIndexMap.get(primitive.getAttribute(semantic));
+        }
+
+        // TODO(donmccurdy): .targets
+        // TODO(donmccurdy): .targetNames
+
+        return primitiveDef;
+      });
+
+      // TODO(donmccurdy): meshDef.weights
+
+      meshIndexMap.set(mesh, index);
+      return meshDef;
+    });
+
     /* Nodes. */
 
     json.nodes = root.listNodes().map((node, index) => {
@@ -120,6 +206,14 @@ export class GLTFWriter {
       nodeDef.rotation = node.getRotation().toArray();
       nodeDef.scale = node.getScale().toArray();
 
+      if (node.getMesh()) {
+        nodeDef.mesh = meshIndexMap.get(node.getMesh());
+      }
+
+      // node.weights
+      // node.light
+      // node.camera
+
       nodeIndexMap.set(node, index);
       return nodeDef;
     });
@@ -127,14 +221,14 @@ export class GLTFWriter {
       if (node.listChildren().length === 0) return;
 
       const nodeDef = json.nodes[index];
-      nodeDef.children = node.listChildren().map(nodeIndexMap.get);
+      nodeDef.children = node.listChildren().map((node) => nodeIndexMap.get(node));
     });
 
     /* Scenes. */
 
     json.scenes = root.listScenes().map((scene) => {
       const sceneDef = createElementDef(scene) as GLTF.IScene;
-      sceneDef.nodes = scene.listNodes().map(nodeIndexMap.get);
+      sceneDef.nodes = scene.listNodes().map((node) => nodeIndexMap.get(node));
       return sceneDef;
     });
 

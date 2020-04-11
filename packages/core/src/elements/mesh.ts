@@ -1,18 +1,17 @@
-import { GraphChild, GraphChildList } from "../graph/index";
-
-import { Accessor } from "./accessor";
-import { AttributeLink } from "./element-links";
-import { Element } from "./element";
-import { Link } from "../graph/index";
-import { Material } from "./material";
 import { NOT_IMPLEMENTED } from "../constants";
+import { GraphChild, GraphChildList } from "../graph/index";
+import { Link } from "../graph/index";
+import { Accessor } from "./accessor";
+import { Element } from "./element";
+import { AttributeLink } from "./element-links";
+import { Material } from "./material";
 import { Root } from "./root";
 
 export class Mesh extends Element {
     @GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
     public addPrimitive(primitive: Primitive): Mesh {
-        return this.addGraphChild(this.primitives, this.graph.link(this, primitive) as Link<Root, Primitive>) as Mesh;
+        return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive) as Link<Root, Primitive>) as Mesh;
     }
 
     public removePrimitive(primitive: Primitive): Mesh {
@@ -41,7 +40,7 @@ export class Primitive extends Element {
         return this.indices ? this.indices.getRight() : null;
     }
     public setIndices(indices: Accessor): Primitive {
-        this.indices = this.graph.link(this, indices) as Link<Primitive, Accessor>;
+        this.indices = this.graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
         return this;
     }
     public getAttribute(semantic: string): Accessor {
@@ -49,13 +48,17 @@ export class Primitive extends Element {
         return link ? link.getRight() : null;
     }
     public setAttribute(semantic: string, accessor: Accessor): Primitive {
-        const link = this.graph.linkAttribute(this, accessor) as AttributeLink;
+        const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
         link.semantic = semantic;
         return this.addGraphChild(this.attributes, link) as Primitive;
     }
 
     public listAttributes(): Accessor[] {
         return this.attributes.map((link) => link.getRight());
+    }
+
+    public listSemantics(): string[] {
+        return this.attributes.map((link) => link.semantic);
     }
 
     public listTargets(): Accessor[][] {
@@ -66,7 +69,7 @@ export class Primitive extends Element {
      }
     public getMaterial(): Material { return this.material.getRight(); }
     public setMaterial(material: Material): Primitive {
-        this.material = this.graph.link(this, material) as Link<Primitive, Material>;
+        this.material = this.graph.link('material', this, material) as Link<Primitive, Material>;
         return this;
     }
     public getMode(): GLTF.MeshPrimitiveMode { return this.mode; }

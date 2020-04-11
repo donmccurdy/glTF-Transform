@@ -1,8 +1,8 @@
+import { GLTFUtil } from "./util";
 import { GLTFContainer, IBufferMap } from "./v1/container";
-
 import { Container } from "./v2/container";
 import { GLTFReader } from "./v2/reader";
-import { GLTFUtil } from "./util";
+import { GLTFWriter } from "./v2/writer";
 
 interface IO {
     read: (uri: string) => GLTFContainer|Promise<GLTFContainer>;
@@ -78,6 +78,19 @@ class NodeIO implements IO {
     write (uri: string, container: GLTFContainer): void {
         const isGLB = !!uri.match(/\.glb$/);
         isGLB ? this.writeGLB(uri, container) : this.writeGLTF(uri, container);
+    }
+
+    write_v2 (uri: string, container: Container): void {
+        const {json, resources} = GLTFWriter.write(container);
+        const {fs, path} = this;
+        const dir = path.dirname(uri);
+        fs.writeFileSync(uri, JSON.stringify(json, null, 2));
+        Object.keys(resources).forEach((resourceName) => {
+            const resource = new Buffer(resources[resourceName]);
+            fs.writeFileSync(path.join(dir, resourceName), resource);
+        });
+        // const isGLB = !!uri.match(/\.glb$/);
+        // isGLB ? this.writeGLB(uri, container) : this.writeGLTF(uri, container);
     }
 
     writeGLTF (uri: string, container: GLTFContainer, embedded?: boolean): void {
