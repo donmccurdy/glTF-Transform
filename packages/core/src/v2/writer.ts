@@ -1,7 +1,6 @@
-import { Accessor, Element, Material, Node, Texture } from "../elements/index";
-
-import { Container } from "./container";
+import { Accessor, Buffer, BufferView, Element, Material, Node, Texture } from "../elements/index";
 import { IBufferMap } from "../v1/container";
+import { Container } from "./container";
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
@@ -11,22 +10,83 @@ export class GLTFWriter {
     const json: GLTF.IGLTF = {asset: root.getAsset()};
     const resources = {} as IBufferMap;
 
-    /* Shared resources. */
+    /* Index lookup. */
 
-    // const bufferViews = [];
-    // const buffers = [];
-
+    const bufferIndexMap = new Map<Buffer, number>();
+    const bufferViewIndexMap = new Map<BufferView, number>();
     const accessorIndexMap = new Map<Accessor, number>();
     const materialIndexMap = new Map<Material, number>();
     const nodeIndexMap = new Map<Node, number>();
     const textureIndexMap = new Map<Texture, number>();
 
+    /* Buffers. */
+
+    json.buffers = root.listBuffers().map((buffer, index) => {
+      const bufferDef = createElementDef(buffer) as GLTF.IBuffer;
+
+      // bufferDef.byteLength
+      // bufferDef.uri
+
+      bufferIndexMap.set(buffer, index);
+      return bufferDef;
+    });
+
+    /* Buffer views. */
+
+    json.bufferViews = root.listBufferViews().map((bufferView, index) => {
+      const bufferViewDef = createElementDef(bufferView) as GLTF.IBufferView;
+      bufferViewDef.buffer = bufferIndexMap.get(bufferView.getBuffer());
+
+      // bufferViewDef.byteLength
+      // bufferViewDef.byteOffset
+      // bufferViewDef.byteStride
+
+      bufferViewIndexMap.set(bufferView, index);
+      return bufferViewDef;
+    });
+
     /* Accessors. */
 
-    // root.listAccessors()
-    //     .forEach((accessor) => {
-    //         // TODO(donmccurdy): Write.
-    //     });
+    json.accessors = root.listAccessors().map((accessor, index) => {
+      const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+      accessorDef.bufferView = bufferViewIndexMap.get(accessor.getBufferView());
+
+      accessorDef.type = accessor.getType();
+      accessorDef.componentType = accessor.getComponentType();
+      accessorDef.count = accessor.getCount();
+      accessorDef.max = accessor.getMax();
+      accessorDef.min = accessor.getMin();
+
+      // accessorDef.byteOffset
+
+      // TODO(donmccurdy): accessorDef.normalized
+      // TODO(donmccurdy): accessorDef.sparse
+
+      accessorIndexMap.set(accessor, index);
+      return accessorDef;
+    });
+
+    /**
+     * WRITING BUFFER VIEWS
+     *
+     * Image:
+     * (1) 1 image = 1 Buffer View
+     *
+     * Other:
+     * (1) For each Buffer View
+     *   (2) Find all assigned Accessors
+     *     (3) Delegate to BufferViewLayoutStrategy [ SEQUENTIAL | INTERLEAVED | ... ]
+     *     (3.1a) If all indices, set target=ELEMENT_ARRAY_BUFFER. Interleaving disallowed.
+     *     (3.1b) If all attributes, set target=ARRAY_BUFFER. Interleaving is fine.
+     *     (3.1c) Else, target is not set. Interleaving is unnecessary.
+     *     (3.2) Apply normalization or sparse conversions to accessor data. Sparse for morph targets, maybe.
+     *
+     * Implementation Note: JavaScript client implementations should convert JSON-parsed floating-point
+     * doubles to single precision, when componentType is 5126 (FLOAT). This could be done with Math.fround
+     * function. Applies to accessor.min/max.
+     * 
+     * ... maybe just set up graph output, and see what gltfpack writes for a few models?
+     */
 
     /* Textures. */
 

@@ -1,8 +1,10 @@
 import { AccessorComponentTypeData, AccessorTypeData } from './constants';
-import { GLTFContainer, IBufferMap, IContainer } from './v1/container';
+import { Element, Root, Scene } from './elements/index';
+import { Link } from './graph/index';
 import { ISize, getSizeJPEG, getSizePNG } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
-
+import { uuid } from './uuid';
+import { GLTFContainer, IBufferMap, IContainer } from './v1/container';
 import { Container } from './v2/container';
 
 interface IGLTFAnalysis {
@@ -246,6 +248,49 @@ class GLTFUtil {
     }
 
     return true;
+  }
+
+  static toGraph(container: Container): object {
+    const idMap = new Map<Element, string>();
+    const nodes = []; // id, size, x, y, label, color
+    const edges = []; // id, source, target
+
+    function createNode (element: Element) {
+      if (idMap.get(element)) return;
+
+      const id = uuid();
+      idMap.set(element, id);
+
+      nodes.push({
+        id: id,
+        size: 1,
+        label: `${element.constructor.name}: ${id} ${element.getName()}` // TODO(donmccurdy): names get obfuscated
+      });
+    }
+
+    const root = container.getRoot();
+    createNode(root);
+    root.listAccessors().forEach(createNode);
+    root.listBufferViews().forEach(createNode);
+    root.listBuffers().forEach(createNode);
+    root.listMaterials().forEach(createNode);
+    root.listMeshes().forEach(createNode);
+    root.listMeshes().forEach((mesh) => mesh.listPrimitives().forEach(createNode));
+    root.listNodes().forEach(createNode);
+    root.listScenes().forEach(createNode);
+    root.listTextures().forEach(createNode);
+
+    const graph = container.getGraph();
+    graph.getLinks().forEach((link: Link<Element, Element>) => {
+      const source = idMap.get(link.getLeft());
+      const target = idMap.get(link.getRight());
+      if ((link.getLeft() instanceof Root) && !(link.getRight() instanceof Scene)) {
+        return;
+      }
+      edges.push({id: uuid(), source, target}); // TODO(donmccurdy): labels would be nice
+    })
+
+    return {nodes, edges};
   }
 }
 

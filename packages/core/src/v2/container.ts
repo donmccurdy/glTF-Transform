@@ -8,6 +8,11 @@ export class Container {
     return this.root;
   }
 
+  // TODO(donmccurdy): Decide how/if to expose this.
+  public getGraph(): ElementGraph {
+    return this.graph;
+  }
+
   public clone(): Container {
     throw new Error('Not implemented.');
   }

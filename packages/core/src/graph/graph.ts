@@ -1,5 +1,5 @@
-import { GraphNode } from "./graph-node";
 import { Link } from "./graph-links";
+import { GraphNode } from "./graph-node";
 
 /**
  * A graph manages a network of {@link GraphElement} nodes, connected
@@ -7,6 +7,11 @@ import { Link } from "./graph-links";
  */
 export class Graph {
     private links: Link<GraphNode, GraphNode>[] = [];
+
+    // TODO(donmccurdy): Decide how/if to expose this.
+    public getLinks(): Link<GraphNode, GraphNode>[] {
+        return this.links;
+    }
 
     public listParentElements(element: GraphNode): GraphNode[] {
         // #optimize

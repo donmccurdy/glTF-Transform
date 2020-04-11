@@ -1,9 +1,8 @@
 import { AccessorComponentType, AccessorTypeData } from "../constants";
-import { Vector3, Vector4 } from "../math";
-
-import { Container } from "./container";
-import { IBufferMap } from "../v1/container";
 import { TypedArray } from "../constants";
+import { Vector3, Vector4 } from "../math";
+import { IBufferMap } from "../v1/container";
+import { Container } from "./container";
 
 export class GLTFReader {
   public static read(json: GLTF.IGLTF, resources: IBufferMap): Container {
@@ -175,6 +174,10 @@ export class GLTFReader {
 
       return node;
     });
+    nodeDefs.map((nodeDef, parentIndex) => {
+      const children = nodeDef.children || [];
+      children.forEach((childIndex) => nodes[parentIndex].addChild(nodes[childIndex]));
+    })
 
     const animationDefs = json.animations || [];
     const animations = animationDefs.map((animationDef) => {
@@ -188,9 +191,11 @@ export class GLTFReader {
     const scenes = sceneDefs.map((sceneDef) => {
       const scene = container.createScene(sceneDef.name);
 
-      (sceneDef.nodes || [])
-      .map((nodeIndex) => nodes[nodeIndex])
-      .forEach((node) => (scene.addNode(node)));
+      const children = sceneDef.nodes || [];
+
+      children
+        .map((nodeIndex) => nodes[nodeIndex])
+        .forEach((node) => (scene.addNode(node)));
 
       return scene;
     });
@@ -204,6 +209,9 @@ export class GLTFReader {
 * @param index
 */
 function getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap): TypedArray {
+  // TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
+  // https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
+
   const accessor = json.accessors[index];
   const bufferView = json.bufferViews[accessor.bufferView];
   const buffer = json.buffers[bufferView.buffer];
@@ -211,6 +219,8 @@ function getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap
 
   const itemSize = AccessorTypeData[accessor.type].size;
   const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
+
+  bufferView.byteStride
 
   switch (accessor.componentType) {
     case AccessorComponentType.FLOAT:
