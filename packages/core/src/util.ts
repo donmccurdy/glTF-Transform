@@ -271,7 +271,6 @@ class GLTFUtil {
     const root = container.getRoot();
     createNode(root);
     root.listAccessors().forEach(createNode);
-    root.listBufferViews().forEach(createNode);
     root.listBuffers().forEach(createNode);
     root.listMaterials().forEach(createNode);
     root.listMeshes().forEach(createNode);

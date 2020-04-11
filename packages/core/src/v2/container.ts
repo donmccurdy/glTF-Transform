@@ -1,4 +1,4 @@
-import { Accessor, Buffer, BufferView, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from "../elements/index";
+import { Accessor, Buffer, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from "../elements/index";
 
 export class Container {
   private graph: ElementGraph = new ElementGraph();
@@ -48,15 +48,10 @@ export class Container {
     this.root.addTexture(texture);
     return texture;
   }
-  createAccessor(name: string, bufferView: BufferView): Accessor {
-    const accessor = new Accessor(this.graph, name).setBufferView(bufferView);
+  createAccessor(name: string, buffer: Buffer): Accessor {
+    const accessor = new Accessor(this.graph, name).setBuffer(buffer);
     this.root.addAccessor(accessor);
     return accessor;
-  }
-  createBufferView(name: string, buffer: Buffer): BufferView {
-    const bufferView = new BufferView(this.graph, name).setBuffer(buffer);
-    this.root.addBufferView(bufferView);
-    return bufferView;
   }
   createBuffer(name: string): Buffer {
     const buffer = new Buffer(this.graph, name);

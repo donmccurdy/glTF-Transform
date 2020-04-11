@@ -1,14 +1,12 @@
 import { Element } from "./element";
-import { Link } from "../graph/index";
-import { Material } from "./material";
 
 export class Texture extends Element {
-    private buffer: ArrayBuffer = null;
+    private image: ArrayBuffer = null;
     private mimeType: GLTF.ImageMimeType = null;
 
-    public getBuffer(): ArrayBuffer { return this.buffer; }
-    public setBuffer(buffer: ArrayBuffer): Texture {
-        this.buffer = buffer;
+    public getImage(): ArrayBuffer { return this.image; }
+    public setImage(image: ArrayBuffer): Texture {
+        this.image = image;
         return this;
     }
 
