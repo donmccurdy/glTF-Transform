@@ -32,8 +32,9 @@ export class GLTFReader {
         throw new Error('Normalized accessors not yet implemented.');
       }
 
+      // TODO(donmccurdy): Just making a copy here, like a barbarian.
       accessor.setType(accessorDef.type);
-      accessor.setArray(getAccessorArray(index, json, resources));
+      accessor.setArray(getAccessorArray(index, json, resources).slice());
 
       return accessor;
     });

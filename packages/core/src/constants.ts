@@ -17,7 +17,7 @@ export const AccessorTypeData = {
     MAT3: {value: 'MAT3', size: 9},
     MAT4: {value: 'MAT4', size: 16},
 };
-  
+
 export const AccessorComponentType = {
     BYTE: 5120,
     UNSIGNED_BYTE: 5121,
