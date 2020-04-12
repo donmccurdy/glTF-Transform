@@ -228,7 +228,7 @@ class GLTFUtil {
    */
   static pad (arrayBuffer: ArrayBuffer, paddingByte: number = 0): ArrayBuffer {
 
-    var paddedLength = Math.ceil( arrayBuffer.byteLength / 4 ) * 4;
+    var paddedLength = this.padNumber( arrayBuffer.byteLength );
 
     if ( paddedLength !== arrayBuffer.byteLength ) {
 
@@ -250,6 +250,12 @@ class GLTFUtil {
     }
 
     return arrayBuffer;
+
+  }
+
+  static padNumber (v: number): number {
+
+    return Math.ceil( v / 4 ) * 4;
 
   }
 
