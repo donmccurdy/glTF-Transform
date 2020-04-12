@@ -1,0 +1,15 @@
+root = true
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.ts]
+indent_size = 2
+indent_style = tab
+quote_type = single
+
+[{*.json,*.md,*.yml}]
+indent_style = space
+indent_size = 2

@@ -8,19 +8,19 @@ import { GLTFContainer, IBufferMap, IContainer } from './v1/container';
 import { Container } from './v2/container';
 
 interface IGLTFAnalysis {
-  meshes: number,
-  textures: number,
-  materials: number,
-  animations: number,
-  primitives: number,
+  meshes: number;
+  textures: number;
+  materials: number;
+  animations: number;
+  primitives: number;
   dataUsage: {
-    geometry: number,
-    targets: number,
-    animation: number,
-    textures: number,
-    json: number
-  }
-};
+    geometry: number;
+    targets: number;
+    animation: number;
+    textures: number;
+    json: number;
+  };
+}
 
 /**
  * Utility class for glTF transforms.
@@ -31,7 +31,7 @@ class GLTFUtil {
    * @param json
    * @param files
    */
-  static fromGLTF(json: GLTF.IGLTF, resources: IBufferMap) {
+  static fromGLTF(json: GLTF.IGLTF, resources: IBufferMap): GLTFContainer {
     return new GLTFContainer(json, resources);
   }
 
@@ -71,7 +71,7 @@ class GLTFUtil {
    * Serializes a GLTFContainer to GLTF JSON and external files.
    * @param container
    */
-  static toGLTF(container: GLTFContainer): {json: Object, resources: IBufferMap} {
+  static toGLTF(container: GLTFContainer): {json: Record<string, any>; resources: IBufferMap} {
     const {json, resources} = container;
     return {json, resources};
   }
@@ -226,18 +226,18 @@ class GLTFUtil {
    * Pad buffer to the next 4-byte boundary.
    * https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
    */
-  static pad (arrayBuffer: ArrayBuffer, paddingByte: number = 0): ArrayBuffer {
+  static pad (arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
 
-    var paddedLength = this.padNumber( arrayBuffer.byteLength );
+    const paddedLength = this.padNumber( arrayBuffer.byteLength );
 
     if ( paddedLength !== arrayBuffer.byteLength ) {
 
-      var array = new Uint8Array( paddedLength );
+      const array = new Uint8Array( paddedLength );
       array.set( new Uint8Array( arrayBuffer ) );
 
       if ( paddingByte !== 0 ) {
 
-        for ( var i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
+        for ( let i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
 
           array[ i ] = paddingByte;
 
@@ -259,7 +259,7 @@ class GLTFUtil {
 
   }
 
-  static arrayBufferEquals(a: ArrayBuffer, b: ArrayBuffer) {
+  static arrayBufferEquals(a: ArrayBuffer, b: ArrayBuffer): boolean {
     if (a === b) return true;
 
     if (a.byteLength !== b.byteLength) return false;

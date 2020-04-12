@@ -11,7 +11,7 @@ const ID_LENGTH = 6;
 
 const previousIDs = new Set();
 
-const generateOne = function() {
+const generateOne = function(): string {
   let rtn = '';
   for (let i = 0; i < ID_LENGTH; i++) {
     rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
@@ -19,7 +19,7 @@ const generateOne = function() {
   return rtn;
 }
 
-export const uuid = function() {
+export const uuid = function(): string {
   for (let retries = 0; retries < UNIQUE_RETRIES; retries++) {
     const id = generateOne();
     if (!previousIDs.has(id)) return id;

@@ -8,11 +8,11 @@ import { GLTFUtil } from './util';
 import { GLTFContainer } from './v1/container';
 
 // TODO(donmccurdy): Exports are incomplete.
-export {
-    GLTFUtil, GLTFContainer,
-    NodeIO, WebIO,
-    Logger, LoggerVerbosity,
-    AccessorType, AccessorTypeData, AccessorComponentType, AccessorComponentTypeData, BufferViewTarget,
-    Graph,
-    Element, Root, Node, Mesh, Material
-};
+export { AccessorComponentType, AccessorComponentTypeData, AccessorType, AccessorTypeData, BufferViewTarget };
+export { Element };
+export { Material, Mesh, Node, Root };
+export { Graph };
+export { NodeIO, WebIO };
+export { Logger, LoggerVerbosity };
+export { GLTFUtil };
+export { GLTFContainer };
