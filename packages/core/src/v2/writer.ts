@@ -13,6 +13,8 @@ const DEFAULT_BUFFER_URI = 'test-' + uuid() + '.bin';
 // TODO(donmccurdy): Not sure what this test error is:
 // (node:60004) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
 
+// TODO(donmccurdy): Need Math.fround() everywhere. Maybe in clean() step?
+
 export class GLTFWriter {
   public static write(container: Container): {json: GLTF.IGLTF, resources: IBufferMap} {
     const root = container.getRoot();
@@ -63,6 +65,7 @@ export class GLTFWriter {
       // Categorize accessors by use.
       for (const parent of bufferParents) {
         if ((!(parent instanceof Accessor))) { // Texture
+          // TODO(donmccurdy): Remove.
           console.error('TODO:ERROR', parent);
           throw new Error('Unimplemented buffer reference: ');
         }
@@ -89,6 +92,7 @@ export class GLTFWriter {
         } else if (isOther && !isAttribute && !isIndex) {
           otherAccessors.add(parent);
         } else {
+          // TODO(donmccurdy): Remove.
           console.error('TODO:ERROR', accessorRefs);
           throw new Error('Attribute or index accessors must be used only for that purpose.');
         }
@@ -98,26 +102,33 @@ export class GLTFWriter {
         const accessorData: ArrayBuffer[] = [];
         let innerByteOffset = 0;
 
+        // TODO(donmccurdy): Remove.
+        console.log(target + ' -- list', accessors.map((a) => a.getArray()));
+
         for (const accessor of accessors) {
           const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+          accessorDef.name = target; // TODO(donmccurdy): Remove.
           accessorDef.bufferView = json.bufferViews.length;
           accessorDef.type = accessor.getType();
           accessorDef.componentType = accessor.getComponentType();
           accessorDef.count = accessor.getCount();
-          // accessorDef.max = accessor.getMax();
-          // accessorDef.min = accessor.getMin();
+          accessorDef.max = accessor.getMax();
+          accessorDef.min = accessor.getMin();
           // TODO(donmccurdy): accessorDef.normalized
           // TODO(donmccurdy): accessorDef.sparse
 
-          const data = GLTFUtil.pad(accessor.getArray().buffer);
+          // TODO(donmccurdy): Whyyyyy. Ok gotta trim more buffers, earlier.
+          const data = GLTFUtil.pad(accessor.getArray().slice().buffer);
           accessorDef.byteOffset = innerByteOffset;
-
           innerByteOffset += data.byteLength;
           accessorData.push(data);
 
           accessorIndexMap.set(accessor, json.accessors.length);
           json.accessors.push(accessorDef);
         }
+
+        // Skip unneeded buffer views.
+        if (!innerByteOffset) return [0, [new ArrayBuffer(0)]];
 
         const bufferViewData = GLTFUtil.concat(accessorData);
         const bufferViewDef: GLTF.IBufferView = {
@@ -132,9 +143,8 @@ export class GLTFWriter {
         return [innerByteOffset, accessorData];
       }
 
-      // TODO(donmccurdy): Skip any of these that aren't needed.
       const [indexByteLength, indexData] = writeBufferView(Array.from(indexAccessors), 0, 'index');
-      const [attributeByteLength, attributeData] = writeBufferView(Array.from(indexAccessors), indexByteLength, 'index');
+      const [attributeByteLength, attributeData] = writeBufferView(Array.from(attributeAccessors), indexByteLength, 'attribute');
       const [otherByteLength, otherData] = writeBufferView(Array.from(otherAccessors), attributeByteLength, '');
 
       bufferDef.uri = DEFAULT_BUFFER_URI;

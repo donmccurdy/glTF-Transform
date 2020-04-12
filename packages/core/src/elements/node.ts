@@ -6,9 +6,9 @@ import { Mesh } from "./mesh";
 import { Root } from "./root";
 
 export class Node extends Element {
-    private translation = new Vector3();
-    private rotation = new Vector4();
-    private scale = new Vector3();
+    private translation = new Vector3(0, 0, 0);
+    private rotation = new Vector4(0, 0, 0, 1);
+    private scale = new Vector3(1, 1, 1);
 
     @GraphChild private mesh: Link<Node, Mesh> = null;
     @GraphChildList private children: Link<Node, Node>[] = [];
