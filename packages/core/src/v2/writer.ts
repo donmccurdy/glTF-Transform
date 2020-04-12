@@ -14,8 +14,6 @@ const DEFAULT_BUFFER_URI = 'test.bin'; //'test-' + uuid() + '.bin';
 // TODO(donmccurdy): Not sure what this test error is:
 // (node:60004) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
 
-// TODO(donmccurdy): Need Math.fround() everywhere. Maybe in clean() step?
-
 export class GLTFWriter {
   public static write(container: Container): {json: GLTF.IGLTF, resources: IBufferMap} {
     const root = container.getRoot();
@@ -106,19 +104,25 @@ export class GLTFWriter {
       const buffers: ArrayBuffer[] = [];
       let bufferByteLength = 0;
 
-      const indexResult = concatAccessors(Array.from(indexAccessors), bufferIndex, bufferByteLength, BufferViewTarget.ELEMENT_ARRAY_BUFFER);
-      bufferByteLength += indexResult.byteLength;
-      buffers.push(...indexResult.buffers);
-
-      for (const primitiveAccessors of attributeAccessors.values()) {
-        const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
-        bufferByteLength += primitiveResult.byteLength;
-        buffers.push(...primitiveResult.buffers);
+      if (indexAccessors.size) {
+        const indexResult = concatAccessors(Array.from(indexAccessors), bufferIndex, bufferByteLength, BufferViewTarget.ELEMENT_ARRAY_BUFFER);
+        bufferByteLength += indexResult.byteLength;
+        buffers.push(...indexResult.buffers);
       }
 
-      const otherResult = concatAccessors(Array.from(otherAccessors), bufferIndex, bufferByteLength);
-      bufferByteLength += otherResult.byteLength;
-      buffers.push(...otherResult.buffers);
+      for (const primitiveAccessors of attributeAccessors.values()) {
+        if (primitiveAccessors.size) {
+          const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
+          bufferByteLength += primitiveResult.byteLength;
+          buffers.push(...primitiveResult.buffers);
+        }
+      }
+
+      if (otherAccessors.size) {
+        const otherResult = concatAccessors(Array.from(otherAccessors), bufferIndex, bufferByteLength);
+        bufferByteLength += otherResult.byteLength;
+        buffers.push(...otherResult.buffers);
+      }
 
       // Write buffer views to buffer.
 
@@ -224,18 +228,25 @@ export class GLTFWriter {
       buffers: ArrayBuffer[];
     }
 
+    /**
+     * Pack a group of accessors into a sequential buffer view. Appends accessor and buffer view
+     * definitions to the root JSON lists.
+     *
+     * @param accessors Accessors to be included.
+     * @param bufferIndex Buffer to write to.
+     * @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
+     * @param bufferViewTarget (Optional) target use of the buffer view.
+     */
     function concatAccessors(
         accessors: Accessor[],
         bufferIndex: number,
         bufferByteOffset: number,
         bufferViewTarget?: number): BufferViewResult {
 
-      // Skip unneeded buffer views.
-      if (accessors.length === 0) return {byteLength: 0, buffers: [new ArrayBuffer(0)]};
-
       const buffers: ArrayBuffer[] = [];
       let byteLength = 0;
 
+      // Create accessor definitions, determining size of final buffer view.
       for (const accessor of accessors) {
         const accessorDef = createAccessorDef(accessor);
         accessorDef.bufferView = json.bufferViews.length;
@@ -250,6 +261,7 @@ export class GLTFWriter {
         json.accessors.push(accessorDef);
       }
 
+      // Create buffer view definition.
       const bufferViewData = GLTFUtil.concat(buffers);
       const bufferViewDef: GLTF.IBufferView = {
         buffer: bufferIndex,
@@ -262,10 +274,27 @@ export class GLTFWriter {
       return {buffers, byteLength}
     }
 
-    function interleaveAccessors(accessors: Accessor[], bufferIndex: number, bufferByteOffset: number): BufferViewResult {
+    /**
+     * Pack a group of accessors into an interleaved buffer view. Appends accessor and buffer view
+     * definitions to the root JSON lists. Buffer view target is implicitly attribute data.
+     *
+     * References:
+     * - [Apple • Best Practices for Working with Vertex Data](https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
+     * - [Khronos • Vertex Specification Best Practices](https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices)
+     *
+     * @param accessors Accessors to be included.
+     * @param bufferIndex Buffer to write to.
+     * @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
+     */
+    function interleaveAccessors(
+        accessors: Accessor[],
+        bufferIndex: number,
+        bufferByteOffset: number): BufferViewResult {
+
       const vertexCount = accessors[0].getCount();
       let byteStride = 0;
 
+      // Create accessor definitions, determining size and stride of final buffer view.
       for (const accessor of accessors) {
         const accessorDef = createAccessorDef(accessor);
         accessorDef.bufferView = json.bufferViews.length;
@@ -279,10 +308,12 @@ export class GLTFWriter {
         json.accessors.push(accessorDef);
       }
 
+      // Allocate interleaved buffer view.
       const byteLength = vertexCount * byteStride;
       const buffer = new ArrayBuffer(byteLength);
       const view = new DataView(buffer);
 
+      // Write interleaved accessor data to the buffer view.
       for (let i = 0; i < vertexCount; i++) {
         let vertexByteOffset = 0;
         for (const accessor of accessors) {
@@ -320,6 +351,7 @@ export class GLTFWriter {
         }
       }
 
+      // Create buffer view definition.
       const bufferViewDef: GLTF.IBufferView = {
         buffer: bufferIndex,
         byteOffset: bufferByteOffset,

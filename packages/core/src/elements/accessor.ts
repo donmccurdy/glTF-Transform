@@ -51,7 +51,7 @@ export class Accessor extends Element {
 
         for (let i = 0; i < count * itemSize; i += itemSize) {
             for (let j = 0; j < itemSize; j++) {
-                min[j] = Math.min(min[j], this.array[i]);
+                min[j] = Math.min(min[j], this.array[i + j]);
             }
         }
 
@@ -65,7 +65,7 @@ export class Accessor extends Element {
 
         for (let i = 0; i < count * itemSize; i += itemSize) {
             for (let j = 0; j < itemSize; j++) {
-                max[j] = Math.max(max[j], this.array[i]);
+                max[j] = Math.max(max[j], this.array[i + j]);
             }
         }
 
