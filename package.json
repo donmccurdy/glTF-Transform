@@ -14,6 +14,7 @@
     "dist": "rollup -c",
     "watch": "rollup -c -w .",
     "test": "lerna run test --use-workspaces",
+    "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "npm run validate",
     "version": "npm run docs && git add -A API.md",
