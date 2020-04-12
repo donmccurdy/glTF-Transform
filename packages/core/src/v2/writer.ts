@@ -69,8 +69,6 @@ export class GLTFWriter {
       // Categorize accessors by use.
       for (const parent of bufferParents) {
         if ((!(parent instanceof Accessor))) { // Texture
-          // TODO(donmccurdy): Remove.
-          console.error('TODO:ERROR', parent);
           throw new Error('Unimplemented buffer reference: ');
         }
 
@@ -113,9 +111,7 @@ export class GLTFWriter {
       buffers.push(...indexResult.buffers);
 
       for (const primitiveAccessors of attributeAccessors.values()) {
-        // TODO(donmccurdy): Uncomment when concat() is working again.
-        // const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
-        const primitiveResult = concatAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength, BufferViewTarget.ARRAY_BUFFER);
+        const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
         bufferByteLength += primitiveResult.byteLength;
         buffers.push(...primitiveResult.buffers);
       }
@@ -254,10 +250,6 @@ export class GLTFWriter {
         json.accessors.push(accessorDef);
       }
 
-      // TODO(donmccurdy): the most elaborate way to log...
-      // console.log(accessors);
-      console.log(accessors.map(a=> a.getArray()));
-
       const bufferViewData = GLTFUtil.concat(buffers);
       const bufferViewDef: GLTF.IBufferView = {
         buffer: bufferIndex,
@@ -299,7 +291,7 @@ export class GLTFWriter {
           const componentType = accessor.getComponentType();
           const array = accessor.getArray();
           for (let j = 0; j < itemSize; j++) {
-            const viewByteOffset = vertexByteOffset + j * valueSize;
+            const viewByteOffset = i * byteStride + vertexByteOffset + j * valueSize;
             const value = array[i * itemSize + j];
             switch (componentType) {
               case GLTF.AccessorComponentType.FLOAT:

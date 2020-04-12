@@ -459,6 +459,10 @@ declare module GLTF {
      * The stride, in bytes
      */
     byteStride?: number;
+    /**
+     * The target that the GPU buffer should be bound to
+     */
+    target?: number;
   }
   /**
    * An orthographic camera containing properties to create an orthographic projection matrix
