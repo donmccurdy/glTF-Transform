@@ -45,11 +45,31 @@ export class Accessor extends Element {
     }
 
     public getMin(): number[] {
-        throw new Error('accessor.getMin() not implemented.');
+        const count = this.getCount();
+        const itemSize = this.getItemSize();
+        const min = new Array(itemSize).fill(Infinity);
+
+        for (let i = 0; i < count * itemSize; i += itemSize) {
+            for (let j = 0; j < itemSize; j++) {
+                min[j] = Math.min(min[j], this.array[i]);
+            }
+        }
+
+        return min;
     }
 
     public getMax(): number[] {
-        throw new Error('accessor.getMax() not implemented.');
+        const count = this.getCount();
+        const itemSize = this.getItemSize();
+        const max = new Array(itemSize).fill(-Infinity);
+
+        for (let i = 0; i < count * itemSize; i += itemSize) {
+            for (let j = 0; j < itemSize; j++) {
+                max[j] = Math.max(max[j], this.array[i]);
+            }
+        }
+
+        return max;
     }
 
     private getItemSize(): number {
