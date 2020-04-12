@@ -86,7 +86,7 @@ bufferView.buffer: Link<BufferView, Buffer>;
 // but, in fairness, my simpler current structure
 // will have some trouble maintaining separate image
 // fallbacks. I think I can live with that, though?
-texture.image: Link<Texture, Image>; 
+texture.image: Link<Texture, Image>;
 ```
 
 ## Editor domains
@@ -94,7 +94,7 @@ texture.image: Link<Texture, Image>;
 - ~~gltf.ist~~
 - ~~gltf.gallery~~
 - gltf.review (FBX Review)
-- gltf.report 
+- gltf.report
 - gltf.info
 - ~~gltf.help~~
 - ~~gltf.guide~~

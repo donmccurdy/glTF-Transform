@@ -28,9 +28,12 @@
     "@gltf-transform/prune": "file:packages/prune",
     "@gltf-transform/split": "file:packages/split",
     "@types/node": "^10.12.17",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
     "camelcase": "^5.0.0",
     "canvas": "^2.2.0",
     "documentation": "^9.3.0",
+    "eslint": "^6.8.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "2.8.0",
     "rollup": "^0.68.0",
@@ -39,8 +42,8 @@
     "rollup-plugin-typescript2": "^0.18.1",
     "source-map-support": "^0.5.9",
     "tape": "^4.9.1",
-    "tslib": "^1.9.3",
-    "typescript": "^3.2.2"
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
   },
   "dependencies": {}
 }

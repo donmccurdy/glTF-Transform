@@ -1,3 +1,3 @@
-import { Element } from "./element";
+import { Element } from './element';
 
 export class Buffer extends Element {}
