@@ -41,6 +41,10 @@ export const BufferViewTarget = {
     ELEMENT_ARRAY_BUFFER: 34963
 };
 
+export interface IBufferMap {
+	[s: string]: ArrayBuffer;
+}
+
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
 
 export const NOT_IMPLEMENTED = new Error('Not implemented.');

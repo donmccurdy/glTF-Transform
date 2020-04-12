@@ -1,4 +1,7 @@
-export function GraphChild (target: never, propertyKey: string): void {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+export function GraphChild (target: any, propertyKey: string): void {
 	Object.defineProperty(target, propertyKey, {
 		get: function () {
 			return this['_' + propertyKey];
@@ -28,4 +31,4 @@ export function GraphChild (target: never, propertyKey: string): void {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export function GraphChildList (): void {}
+export function GraphChildList (target: any, propertyKey: string): void {}

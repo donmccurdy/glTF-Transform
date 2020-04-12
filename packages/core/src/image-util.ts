@@ -1,6 +1,6 @@
 interface ISize {
-    width: number,
-    height: number,
+    width: number;
+    height: number;
 }
 
 ////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ function getSizeJPEG (buffer: Buffer): ISize {
     // Skip 4 chars, they are for signature
     buffer = buffer.slice(4);
 
-    var i, next;
+    let i, next;
     while (buffer.length) {
         // read length of the next block
         i = buffer.readUInt16BE(0);
@@ -52,11 +52,11 @@ function getSizeJPEG (buffer: Buffer): ISize {
 
 ////////////////////////////////////////////////////////
 
-var pngSignature = 'PNG\r\n\x1a\n';
-var pngImageHeaderChunkName = 'IHDR';
+const pngSignature = 'PNG\r\n\x1a\n';
+const pngImageHeaderChunkName = 'IHDR';
 
 // Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
-var pngFriedChunkName = 'CgBI';
+const pngFriedChunkName = 'CgBI';
 
 function getSizePNG (buffer: Buffer): ISize {
     if (buffer.toString('ascii', 12, 16) === pngFriedChunkName) {

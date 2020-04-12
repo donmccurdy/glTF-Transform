@@ -1,4 +1,4 @@
-import { Accessor, Buffer, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from '../elements/index';
+import { Accessor, Buffer, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from './elements/index';
 
 export class Container {
 	private graph: ElementGraph = new ElementGraph();

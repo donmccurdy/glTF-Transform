@@ -1,321 +1,340 @@
-import { AccessorComponentTypeData, AccessorTypeData } from './constants';
+import { AccessorComponentType, AccessorComponentTypeData, AccessorTypeData, IBufferMap, TypedArray } from './constants';
+import { Container } from './container';
 import { Element, Root, Scene } from './elements/index';
 import { Link } from './graph/index';
-import { ISize, getSizeJPEG, getSizePNG } from './image-util';
+// import { ISize, getSizeJPEG, getSizePNG } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
 import { uuid } from './uuid';
-import { GLTFContainer, IBufferMap, IContainer } from './v1/container';
-import { Container } from './v2/container';
 
 interface IGLTFAnalysis {
-  meshes: number;
-  textures: number;
-  materials: number;
-  animations: number;
-  primitives: number;
-  dataUsage: {
-    geometry: number;
-    targets: number;
-    animation: number;
-    textures: number;
-    json: number;
-  };
+	meshes: number;
+	textures: number;
+	materials: number;
+	animations: number;
+	primitives: number;
+	dataUsage: {
+		geometry: number;
+		targets: number;
+		animation: number;
+		textures: number;
+		json: number;
+	};
 }
 
 /**
- * Utility class for glTF transforms.
- */
+* Utility class for glTF transforms.
+*/
 class GLTFUtil {
-  /**
-   * Creates a GLTFContainer from the given JSON and files.
-   * @param json
-   * @param files
-   */
-  static fromGLTF(json: GLTF.IGLTF, resources: IBufferMap): GLTFContainer {
-    return new GLTFContainer(json, resources);
-  }
+	/**
+	* Creates a GLTFContainer from the given GLB binary.
+	* @param glb
+	*/
+	static fromGLB(glb: ArrayBuffer): {json: GLTF.IGLTF; resources: IBufferMap} {
+		// TODO(donmccurdy): Move this function to IO folder.
 
-  /**
-   * Creates a GLTFContainer from the given GLB binary.
-   * @param glb
-   */
-  static fromGLB(glb: ArrayBuffer): GLTFContainer {
-    // Decode and verify GLB header.
-    const header = new Uint32Array(glb, 0, 3);
-    if (header[0] !== 0x46546C67) {
-      throw new Error('Invalid glTF asset.');
-    } else if (header[1] !== 2) {
-      throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
-    }
+		// Decode and verify GLB header.
+		const header = new Uint32Array(glb, 0, 3);
+		if (header[0] !== 0x46546C67) {
+			throw new Error('Invalid glTF asset.');
+		} else if (header[1] !== 2) {
+			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
+		}
 
-    // Decode and verify chunk headers.
-    const jsonChunkHeader = new Uint32Array(glb, 12, 2);
-    const jsonByteOffset = 20;
-    const jsonByteLength = jsonChunkHeader[0];
-    const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
-    if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
-      throw new Error('Unexpected GLB layout.');
-    }
+		// Decode and verify chunk headers.
+		const jsonChunkHeader = new Uint32Array(glb, 12, 2);
+		const jsonByteOffset = 20;
+		const jsonByteLength = jsonChunkHeader[0];
+		const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
+		if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
+			throw new Error('Unexpected GLB layout.');
+		}
 
-    // Decode content.
-    const jsonText = this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
-    const json = JSON.parse(jsonText) as GLTF.IGLTF;
-    const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
-    const binaryByteLength = binaryChunkHeader[0];
-    const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
+		// Decode content.
+		const jsonText = this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
+		const json = JSON.parse(jsonText) as GLTF.IGLTF;
+		const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
+		const binaryByteLength = binaryChunkHeader[0];
+		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-    return new GLTFContainer(json, {'': binary} as IBufferMap);
-  }
+		return {json, resources: {'': binary} as IBufferMap};
+	}
 
-  /**
-   * Serializes a GLTFContainer to GLTF JSON and external files.
-   * @param container
-   */
-  static toGLTF(container: GLTFContainer): {json: Record<string, any>; resources: IBufferMap} {
-    const {json, resources} = container;
-    return {json, resources};
-  }
+	/**
+	* Serializes a GLTFContainer to a GLB binary.
+	* @param container
+	*/
+	static toGLB(json: GLTF.IGLTF, resources: IBufferMap): ArrayBuffer {
+		// TODO(donmccurdy): Move this function to IO folder.
+		// TODO(donmccurdy): At some stage the bufferDef needs to have its URI set or not set.
 
-  /**
-   * Serializes a GLTFContainer to a GLB binary.
-   * @param container
-   */
-  static toGLB(container: IContainer): ArrayBuffer {
-    // if (container instanceof GLTFContainer) {
-    //   container = PackedGLTFContainer.pack(container);
-    // }
+		if (Object.values(resources).length > 1) {
+			throw new Error('Writing to GLB requires exactly 1 buffer.');
+		}
 
-    const jsonText = JSON.stringify(container.json);
-    const jsonChunkData = this.pad( GLTFUtil.encodeText(jsonText), 0x20 );
-    const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
-    const jsonChunk = this.join(jsonChunkHeader, jsonChunkData);
+		const jsonText = JSON.stringify(json);
+		const jsonChunkData = this.pad( GLTFUtil.encodeText(jsonText), 0x20 );
+		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
+		const jsonChunk = this.join(jsonChunkHeader, jsonChunkData);
 
-    const binaryChunkData = this.pad( container.getBuffer(0), 0x00 );
-    const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
-    const binaryChunk = this.join(binaryChunkHeader, binaryChunkData);
+		const binaryChunkData = this.pad(Object.values(resources)[0], 0x00);
+		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
+		const binaryChunk = this.join(binaryChunkHeader, binaryChunkData);
 
-    const header = new Uint32Array([0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]).buffer;
-    return this.join(this.join(header, jsonChunk), binaryChunk);
-  }
+		const header = new Uint32Array([0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]).buffer;
+		return this.join(this.join(header, jsonChunk), binaryChunk);
+	}
 
-  /**
-   * Creates a buffer from a Data URI.
-   * @param dataURI
-   */
-  static createBufferFromDataURI(dataURI: string): ArrayBuffer {
-    if (typeof Buffer === 'undefined') {
-      // Browser.
-      const byteString = atob(dataURI.split(',')[1]);
-      const ia = new Uint8Array(byteString.length);
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      return ia.buffer;
-    } else {
-      // Node.js.
-      return new Buffer(dataURI.split(',')[1], 'base64').buffer;
-    }
-  }
+	/**
+	* Creates a buffer from a Data URI.
+	* @param dataURI
+	*/
+	static createBufferFromDataURI(dataURI: string): ArrayBuffer {
+		if (typeof Buffer === 'undefined') {
+			// Browser.
+			const byteString = atob(dataURI.split(',')[1]);
+			const ia = new Uint8Array(byteString.length);
+			for (let i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
+			}
+			return ia.buffer;
+		} else {
+			// Node.js.
+			return new Buffer(dataURI.split(',')[1], 'base64').buffer;
+		}
+	}
 
-  static createLogger(name: string, verbosity: LoggerVerbosity): Logger {
-    return new Logger(name, verbosity);
-  }
+	static createLogger(name: string, verbosity: LoggerVerbosity): Logger {
+		return new Logger(name, verbosity);
+	}
 
-  static encodeText(text: string): ArrayBuffer {
-    if (typeof TextEncoder !== 'undefined') {
-      return new TextEncoder().encode(text).buffer;
-    }
-    return this.trimBuffer(Buffer.from(text));
-  }
+	static encodeText(text: string): ArrayBuffer {
+		if (typeof TextEncoder !== 'undefined') {
+			return new TextEncoder().encode(text).buffer;
+		}
+		return this.trimBuffer(Buffer.from(text));
+	}
 
-  static decodeText(buffer: ArrayBuffer): string {
-    if (typeof TextDecoder !== 'undefined') {
-      return new TextDecoder().decode(buffer);
-    }
-    const a = Buffer.from(buffer) as any;
-    return a.toString('utf8');
-  }
+	static decodeText(buffer: ArrayBuffer): string {
+		if (typeof TextDecoder !== 'undefined') {
+			return new TextDecoder().decode(buffer);
+		}
+		const a = Buffer.from(buffer) as any;
+		return a.toString('utf8');
+	}
 
-  static trimBuffer(buffer: Buffer): ArrayBuffer {
-    const {byteOffset, byteLength} = buffer;
-    return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
-  }
+	static trimBuffer(buffer: Buffer): ArrayBuffer {
+		const {byteOffset, byteLength} = buffer;
+		return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
+	}
 
-  static analyze(container: Container): IGLTFAnalysis {
-    const root = container.getRoot();
+	static analyze(container: Container): IGLTFAnalysis {
+		const root = container.getRoot();
 
-    const report = {
-      meshes: root.listMeshes().length,
-      textures: root.listTextures().length,
-      materials: root.listMaterials().length,
-      animations: -1,
-      primitives: -1,
-      dataUsage: {
-        geometry: -1,
-        targets: -1,
-        animation: -1,
-        textures: -1,
-        json: -1
-      }
-    };
+		const report = {
+			meshes: root.listMeshes().length,
+			textures: root.listTextures().length,
+			materials: root.listMaterials().length,
+			animations: -1,
+			primitives: -1,
+			dataUsage: {
+				geometry: -1,
+				targets: -1,
+				animation: -1,
+				textures: -1,
+				json: -1
+			}
+		};
 
-    return report;
-  }
+		return report;
+	}
 
-  static getImageSize(container: GLTFContainer, index: number): ISize {
-    const image = container.json.images[index];
-    let isPNG;
-    if (image.mimeType) {
-      isPNG = image.mimeType === 'image/png';
-    } else {
-      isPNG = image.uri.match(/\.png$/);
-    }
-    const arrayBuffer = container.resolveURI(image.uri);
-    return isPNG
-      ? getSizePNG(Buffer.from(arrayBuffer))
-      : getSizeJPEG(Buffer.from(arrayBuffer));
-  }
+	// static getImageSize(container: GLTFContainer, index: number): ISize {
+	//   const image = container.json.images[index];
+	//   let isPNG;
+	//   if (image.mimeType) {
+	//     isPNG = image.mimeType === 'image/png';
+	//   } else {
+	//     isPNG = image.uri.match(/\.png$/);
+	//   }
+	//   const arrayBuffer = container.resolveURI(image.uri);
+	//   return isPNG
+	//     ? getSizePNG(Buffer.from(arrayBuffer))
+	//     : getSizeJPEG(Buffer.from(arrayBuffer));
+	// }
 
-  static getAccessorByteLength(accessor: GLTF.IAccessor): number {
-    const itemSize = AccessorTypeData[accessor.type].size;
-    const valueSize = AccessorComponentTypeData[accessor.componentType].size;
-    return itemSize * valueSize * accessor.count;
-  }
+	/**
+	* Returns the accessor for the given index, as a typed array.
+	* @param index
+	*/
+	static getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap): TypedArray {
+		// TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
+		// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
 
-  /**
-   * Removes segment from an arraybuffer, returning two arraybuffers: [original, removed].
-   */
-  static splice (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> {
-    const a1 = buffer.slice(0, begin);
-    const a2 = buffer.slice(begin + count);
-    const a = this.join(a1, a2);
-    const b = buffer.slice(begin, begin + count);
-    return [a, b];
-  }
+		const accessor = json.accessors[index];
+		const bufferView = json.bufferViews[accessor.bufferView];
+		const buffer = json.buffers[bufferView.buffer];
+		const resource = resources[buffer.uri];
 
-  /** Joins two ArrayBuffers. */
-  static join (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
-    const out = new Uint8Array(a.byteLength + b.byteLength);
-    out.set(new Uint8Array(a), 0);
-    out.set(new Uint8Array(b), a.byteLength);
-    return out.buffer;
-  }
+		const itemSize = AccessorTypeData[accessor.type].size;
+		const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
+
+		bufferView.byteStride
+
+		switch (accessor.componentType) {
+			case AccessorComponentType.FLOAT:
+			return new Float32Array(resource, start, accessor.count * itemSize);
+			case AccessorComponentType.UNSIGNED_INT:
+			return new Uint32Array(resource, start, accessor.count * itemSize);
+			case AccessorComponentType.UNSIGNED_SHORT:
+			return new Uint16Array(resource, start, accessor.count * itemSize);
+			case AccessorComponentType.UNSIGNED_BYTE:
+			return new Uint8Array(resource, start, accessor.count * itemSize);
+			default:
+			throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
+		}
+	}
+
+	static getAccessorByteLength(accessor: GLTF.IAccessor): number {
+		const itemSize = AccessorTypeData[accessor.type].size;
+		const valueSize = AccessorComponentTypeData[accessor.componentType].size;
+		return itemSize * valueSize * accessor.count;
+	}
+
+	/**
+	* Removes segment from an arraybuffer, returning two arraybuffers: [original, removed].
+	*/
+	static splice (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> {
+		const a1 = buffer.slice(0, begin);
+		const a2 = buffer.slice(begin + count);
+		const a = this.join(a1, a2);
+		const b = buffer.slice(begin, begin + count);
+		return [a, b];
+	}
+
+	/** Joins two ArrayBuffers. */
+	static join (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
+		const out = new Uint8Array(a.byteLength + b.byteLength);
+		out.set(new Uint8Array(a), 0);
+		out.set(new Uint8Array(b), a.byteLength);
+		return out.buffer;
+	}
 
 
-  /**
-   * Concatenates N ArrayBuffers.
-   */
-  static concat (buffers: ArrayBuffer[]): ArrayBuffer {
-    let totalByteLength = 0;
-    for (const buffer of buffers) {
-      totalByteLength += buffer.byteLength;
-    }
+	/**
+	* Concatenates N ArrayBuffers.
+	*/
+	static concat (buffers: ArrayBuffer[]): ArrayBuffer {
+		let totalByteLength = 0;
+		for (const buffer of buffers) {
+			totalByteLength += buffer.byteLength;
+		}
 
-    const result = new Uint8Array(totalByteLength);
-    let byteOffset = 0;
+		const result = new Uint8Array(totalByteLength);
+		let byteOffset = 0;
 
-    for (const buffer of buffers) {
-      result.set(new Uint8Array(buffer), byteOffset);
-      byteOffset += buffer.byteLength;
-    }
+		for (const buffer of buffers) {
+			result.set(new Uint8Array(buffer), byteOffset);
+			byteOffset += buffer.byteLength;
+		}
 
-    return result.buffer;
-  }
+		return result.buffer;
+	}
 
-  /**
-   * Pad buffer to the next 4-byte boundary.
-   * https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
-   */
-  static pad (arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
+	/**
+	* Pad buffer to the next 4-byte boundary.
+	* https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
+	*/
+	static pad (arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
 
-    const paddedLength = this.padNumber( arrayBuffer.byteLength );
+		const paddedLength = this.padNumber( arrayBuffer.byteLength );
 
-    if ( paddedLength !== arrayBuffer.byteLength ) {
+		if ( paddedLength !== arrayBuffer.byteLength ) {
 
-      const array = new Uint8Array( paddedLength );
-      array.set( new Uint8Array( arrayBuffer ) );
+			const array = new Uint8Array( paddedLength );
+			array.set( new Uint8Array( arrayBuffer ) );
 
-      if ( paddingByte !== 0 ) {
+			if ( paddingByte !== 0 ) {
 
-        for ( let i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
+				for ( let i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
 
-          array[ i ] = paddingByte;
+					array[ i ] = paddingByte;
 
-        }
+				}
 
-      }
+			}
 
-      return array.buffer;
+			return array.buffer;
 
-    }
+		}
 
-    return arrayBuffer;
+		return arrayBuffer;
 
-  }
+	}
 
-  static padNumber (v: number): number {
+	static padNumber (v: number): number {
 
-    return Math.ceil( v / 4 ) * 4;
+		return Math.ceil( v / 4 ) * 4;
 
-  }
+	}
 
-  static arrayBufferEquals(a: ArrayBuffer, b: ArrayBuffer): boolean {
-    if (a === b) return true;
+	static arrayBufferEquals(a: ArrayBuffer, b: ArrayBuffer): boolean {
+		if (a === b) return true;
 
-    if (a.byteLength !== b.byteLength) return false;
+		if (a.byteLength !== b.byteLength) return false;
 
-    const view1 = new DataView(a);
-    const view2 = new DataView(b);
+		const view1 = new DataView(a);
+		const view2 = new DataView(b);
 
-    let i = a.byteLength;
-    while (i--) {
-      if (view1.getUint8(i) !== view2.getUint8(i)) return false;
-    }
+		let i = a.byteLength;
+		while (i--) {
+			if (view1.getUint8(i) !== view2.getUint8(i)) return false;
+		}
 
-    return true;
-  }
+		return true;
+	}
 
-  static toGraph(container: Container): object {
-    const idMap = new Map<Element, string>();
-    const nodes = []; // id, size, x, y, label, color
-    const edges = []; // id, source, target
+	static toGraph(container: Container): object {
+		const idMap = new Map<Element, string>();
+		const nodes = []; // id, label, x, y, size, color
+		const edges = []; // id, label, source, target
 
-    function createNode (element: Element) {
-      if (idMap.get(element)) return;
+		function createNode (element: Element): void {
+			if (idMap.get(element)) return;
 
-      const id = uuid();
-      idMap.set(element, id);
+			const id = uuid();
+			idMap.set(element, id);
 
-      nodes.push({
-        id: id,
-        size: 1,
-        label: `${element.constructor.name}: ${id} ${element.getName()}` // TODO(donmccurdy): names get obfuscated
-      });
-    }
+			nodes.push({
+				id: id,
+				size: 1,
+				// TODO(donmccurdy): names get obfuscated
+				label: `${element.constructor.name}: ${id} ${element.getName()}`
+			});
+		}
 
-    const root = container.getRoot();
-    createNode(root);
-    root.listAccessors().forEach(createNode);
-    root.listBuffers().forEach(createNode);
-    root.listMaterials().forEach(createNode);
-    root.listMeshes().forEach(createNode);
-    root.listMeshes().forEach((mesh) => mesh.listPrimitives().forEach(createNode));
-    root.listNodes().forEach(createNode);
-    root.listScenes().forEach(createNode);
-    root.listTextures().forEach(createNode);
+		const root = container.getRoot();
+		createNode(root);
+		root.listAccessors().forEach(createNode);
+		root.listBuffers().forEach(createNode);
+		root.listMaterials().forEach(createNode);
+		root.listMeshes().forEach(createNode);
+		root.listMeshes().forEach((mesh) => mesh.listPrimitives().forEach(createNode));
+		root.listNodes().forEach(createNode);
+		root.listScenes().forEach(createNode);
+		root.listTextures().forEach(createNode);
 
-    const graph = container.getGraph();
-    graph.getLinks().forEach((link: Link<Element, Element>) => {
-      const source = idMap.get(link.getLeft());
-      const target = idMap.get(link.getRight());
-      if ((link.getLeft() instanceof Root) && !(link.getRight() instanceof Scene)) {
-        return;
-      }
-      edges.push({id: uuid(), source, target}); // TODO(donmccurdy): labels would be nice
-    })
+		const graph = container.getGraph();
+		graph.getLinks().forEach((link: Link<Element, Element>) => {
+			const source = idMap.get(link.getLeft());
+			const target = idMap.get(link.getRight());
+			if ((link.getLeft() instanceof Root) && !(link.getRight() instanceof Scene)) {
+				return;
+			}
+			edges.push({id: uuid(), label: link.getName(), source, target});
+		})
 
-    return {nodes, edges};
-  }
+		return {nodes, edges};
+	}
 }
 
 

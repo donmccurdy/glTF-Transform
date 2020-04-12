@@ -1,8 +1,7 @@
-import { AccessorComponentType, AccessorTypeData } from '../constants';
-import { TypedArray } from '../constants';
+import { IBufferMap } from '../constants';
+import { Container } from '../container';
 import { Vector3, Vector4 } from '../math';
-import { IBufferMap } from '../v1/container';
-import { Container } from './container';
+import { GLTFUtil } from '../util';
 
 export class GLTFReader {
 	public static read(json: GLTF.IGLTF, resources: IBufferMap): Container {
@@ -34,7 +33,7 @@ export class GLTFReader {
 
 			// TODO(donmccurdy): Just making a copy here, like a barbarian.
 			accessor.setType(accessorDef.type);
-			accessor.setArray(getAccessorArray(index, json, resources).slice());
+			accessor.setArray(GLTFUtil.getAccessorArray(index, json, resources).slice());
 
 			return accessor;
 		});
@@ -201,37 +200,5 @@ export class GLTFReader {
 		});
 
 		return container;
-	}
-}
-
-/**
-* Returns the accessor for the given index, as a typed array.
-* @param index
-*/
-function getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap): TypedArray {
-	// TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
-	// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
-
-	const accessor = json.accessors[index];
-	const bufferView = json.bufferViews[accessor.bufferView];
-	const buffer = json.buffers[bufferView.buffer];
-	const resource = resources[buffer.uri];
-
-	const itemSize = AccessorTypeData[accessor.type].size;
-	const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
-
-	bufferView.byteStride
-
-	switch (accessor.componentType) {
-		case AccessorComponentType.FLOAT:
-		return new Float32Array(resource, start, accessor.count * itemSize);
-		case AccessorComponentType.UNSIGNED_INT:
-		return new Uint32Array(resource, start, accessor.count * itemSize);
-		case AccessorComponentType.UNSIGNED_SHORT:
-		return new Uint16Array(resource, start, accessor.count * itemSize);
-		case AccessorComponentType.UNSIGNED_BYTE:
-		return new Uint8Array(resource, start, accessor.count * itemSize);
-		default:
-		throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
 	}
 }

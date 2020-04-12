@@ -1,10 +1,9 @@
-import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget } from '../constants';
+import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, IBufferMap } from '../constants';
+import { Container } from '../container';
 import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture } from '../elements/index';
 import { Link } from '../graph/index';
 import { GLTFUtil } from '../util';
 import { uuid } from '../uuid';
-import { IBufferMap } from '../v1/container';
-import { Container } from './container';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
