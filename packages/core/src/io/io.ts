@@ -1,8 +1,10 @@
-import { IBufferMap, NOT_IMPLEMENTED } from '../constants';
+import { AssertionError } from 'assert';
+import { GLB_BUFFER, NOT_IMPLEMENTED } from '../constants';
 import { Container } from '../container';
 import { GLTFUtil } from '../util';
+import { Asset } from './asset';
 import { GLTFReader } from './reader';
-import { GLTFWriter } from './writer';
+import { GLTFWriter, WriterOptions } from './writer';
 
 // TODO(donmccurdy): Writer should deal with resource packing and names.
 
@@ -17,14 +19,17 @@ import { GLTFWriter } from './writer';
  * - io.unpackGLB(ArrayBuffer)        → Container
  */
 abstract class PlatformIO {
-	/** Converts a {@link Container} to glTF-formatted JSON and a resource map. */
-	protected containerToResources (container: Container): {json: GLTF.IGLTF; resources: IBufferMap} {
-		return GLTFWriter.write(container);
+	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
+	protected assetToContainer (asset: Asset): Container {
+		return GLTFReader.read(asset);
 	}
 
-	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
-	protected resourcesToContainer (json: GLTF.IGLTF, resources: IBufferMap): Container {
-		return GLTFReader.read(json, resources);
+	/** Converts a {@link Container} to glTF-formatted JSON and a resource map. */
+	protected containerToAsset (container: Container, options: WriterOptions): Asset {
+		if (options.isGLB && container.getRoot().listBuffers().length !== 1) {
+			throw new Error('GLB must have exactly 1 buffer.');
+		}
+		return GLTFWriter.write(container, options);
 	}
 
 	/** Converts a GLB-formatted {@link ArrayBuffer} to a {@link Container}. */
@@ -55,19 +60,12 @@ abstract class PlatformIO {
 		const binaryByteLength = binaryChunkHeader[0];
 		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-		return this.resourcesToContainer(json, {'': binary} as IBufferMap);
+		return this.assetToContainer({json, resources: {[GLB_BUFFER]: binary}});
 	}
 
 	/** Converts a {@link Container} to a GLB-formatted {@link ArrayBuffer}. */
 	public packGLB(container: Container): ArrayBuffer {
-		const {json, resources} = this.containerToResources(container);
-
-		// TODO(donmccurdy): Writer should deal with resource packing and names.
-		if (Object.values(resources).length !== 1) {
-			throw new Error('Writing to GLB requires exactly 1 buffer.');
-		} else {
-			delete json.buffers[0].uri;
-		}
+		const {json, resources} = this.containerToAsset(container, {basename: '', isGLB: true});
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = GLTFUtil.pad( GLTFUtil.encodeText(jsonText), 0x20 );
@@ -114,23 +112,26 @@ class NodeIO extends PlatformIO {
 
 	private readGLTF (uri: string): Container {
 		const dir = this.path.dirname(uri);
-		const json: GLTF.IGLTF = JSON.parse(this.fs.readFileSync(uri, 'utf8'));
-		const resources = {} as IBufferMap;
-		const images = json.images || [];
-		const buffers = json.buffers || [];
+		const asset = {
+			json: JSON.parse(this.fs.readFileSync(uri, 'utf8')),
+			resources: {}
+		} as Asset;
+		const images = asset.json.images || [];
+		const buffers = asset.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
 			if (resource.uri && !resource.uri.match(/data:/)) {
 				const absURI = this.path.resolve(dir, resource.uri);
-				resources[resource.uri] = GLTFUtil.trimBuffer(this.fs.readFileSync(absURI));
+				asset.resources[resource.uri] = GLTFUtil.trimBuffer(this.fs.readFileSync(absURI));
 			} else {
 				throw new Error('Embedded resources not implemented.');
 			}
 		})
-		return GLTFReader.read(json, resources);
+		return GLTFReader.read(asset);
 	}
 
 	private writeGLTF (uri: string, container: Container): void {
-		const {json, resources} = GLTFWriter.write(container);
+		const writerOptions = {basename: GLTFUtil.basename(uri), isGLB: false};
+		const {json, resources} = GLTFWriter.write(container, writerOptions);
 		const {fs, path} = this;
 		const dir = path.dirname(uri);
 		fs.writeFileSync(uri, JSON.stringify(json, null, 2));

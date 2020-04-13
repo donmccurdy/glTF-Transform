@@ -1,4 +1,4 @@
-import { AccessorComponentType, AccessorComponentTypeData, AccessorTypeData, IBufferMap, NOT_IMPLEMENTED, TypedArray } from './constants';
+import { AccessorComponentType, AccessorComponentTypeData, AccessorTypeData, NOT_IMPLEMENTED, TypedArray } from './constants';
 import { Container } from './container';
 import { Element, Root, Scene } from './elements/index';
 import { Link } from './graph/index';
@@ -6,7 +6,7 @@ import { ISize } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
 import { uuid } from './uuid';
 
-interface IGLTFAnalysis {
+interface GLTFAnalysis {
 	meshes: number;
 	textures: number;
 	materials: number;
@@ -27,7 +27,7 @@ interface IGLTFAnalysis {
 class GLTFUtil {
 	static basename(path: string): string {
 		// https://stackoverflow.com/a/15270931/1314762
-		return path.split(/[\\/]/).pop();
+		return path.split(/[\\/]/).pop().split(/[.]/).shift();
 	}
 	/**
 	* Creates a buffer from a Data URI.
@@ -71,7 +71,7 @@ class GLTFUtil {
 		return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
 	}
 
-	static analyze(container: Container): IGLTFAnalysis {
+	static analyze(container: Container): GLTFAnalysis {
 		const root = container.getRoot();
 
 		const report = {
@@ -105,38 +105,6 @@ class GLTFUtil {
 		// return isPNG
 		//   ? getSizePNG(Buffer.from(arrayBuffer))
 		//   : getSizeJPEG(Buffer.from(arrayBuffer));
-	}
-
-	/**
-	* Returns the accessor for the given index, as a typed array.
-	* @param index
-	*/
-	static getAccessorArray(index: number, json: GLTF.IGLTF, resources: IBufferMap): TypedArray {
-		// TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
-		// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
-
-		const accessor = json.accessors[index];
-		const bufferView = json.bufferViews[accessor.bufferView];
-		const buffer = json.buffers[bufferView.buffer];
-		const resource = resources[buffer.uri];
-
-		const itemSize = AccessorTypeData[accessor.type].size;
-		const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
-
-		bufferView.byteStride
-
-		switch (accessor.componentType) {
-			case AccessorComponentType.FLOAT:
-			return new Float32Array(resource, start, accessor.count * itemSize);
-			case AccessorComponentType.UNSIGNED_INT:
-			return new Uint32Array(resource, start, accessor.count * itemSize);
-			case AccessorComponentType.UNSIGNED_SHORT:
-			return new Uint16Array(resource, start, accessor.count * itemSize);
-			case AccessorComponentType.UNSIGNED_BYTE:
-			return new Uint8Array(resource, start, accessor.count * itemSize);
-			default:
-			throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
-		}
 	}
 
 	static getAccessorByteLength(accessor: GLTF.IAccessor): number {

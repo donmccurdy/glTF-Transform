@@ -1,3 +1,4 @@
+// TODO(donmccurdy): Just 'SCALAR' | 'VEC2' | ... would be nicer.
 export const AccessorType = {
     SCALAR: 'SCALAR',
     VEC2: 'VEC2',
@@ -41,9 +42,7 @@ export const BufferViewTarget = {
     ELEMENT_ARRAY_BUFFER: 34963
 };
 
-export interface IBufferMap {
-	[s: string]: ArrayBuffer;
-}
+export const GLB_BUFFER = '__glb.bin';
 
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
 

@@ -43,10 +43,24 @@ test('@gltf-transform/core::io | write glb', t => {
 		const io = new NodeIO(fs, path);
 		const container = io.read(inputURI);
 
-		t.ok(container, `Read "${basepath}".`);
 		ensureDir(outputURI);
 		io.write(outputURI.replace('.gltf', '.glb'), container);
-		// TODO(donmccurdy): Test the output somehow.
+		t.ok(true, `Wrote "${basepath}".`); // TODO(donmccurdy): Test the output somehow.
+	});
+	t.end();
+});
+
+test('@gltf-transform/core::io | write gltf', t => {
+	glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+		const outputURI = path.join(__dirname, 'out', basepath);
+
+		const io = new NodeIO(fs, path);
+		const container = io.read(inputURI);
+
+		ensureDir(outputURI);
+		io.write(outputURI.replace('.glb', '.gltf'), container);
+		t.ok(true, `Wrote "${basepath}".`); // TODO(donmccurdy): Test the output somehow.
 	});
 	t.end();
 });
