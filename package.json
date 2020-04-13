@@ -13,7 +13,7 @@
     "lerna:clean": "lerna clean",
     "dist": "rollup -c",
     "watch": "rollup -c -w .",
-    "test": "lerna run test --use-workspaces",
+    "test": "tape packages/*/test/*.test.js | tap-spec",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "npm run validate",
