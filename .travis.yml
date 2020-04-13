@@ -4,7 +4,8 @@ os: osx
 # sudo: required
 # dist: trusty
 node_js:
-  - "13"
+  # Latest on https://github.com/stackgl/headless-gl/releases.
+  - "12"
 env:
   global:
     - CI=1
@@ -31,4 +32,4 @@ before_script:
   - npm run dist
 # omit 'ao' and 'atlas', as canvas functions don't work in CI.
 script:
-  - lerna run test --ignore @gltf-transform/ao --ignore @gltf-transform/atlas
+  - npm test
