@@ -5,8 +5,8 @@ end_of_line = lf
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.ts,*.js]
-indent_size = 2
+[{*.ts,*.js}]
+indent_size = 4
 indent_style = tab
 quote_type = single
 
