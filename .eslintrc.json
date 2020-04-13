@@ -23,6 +23,6 @@
   },
   "rules": {
     "quotes": ["warn", "single"],
-    "max-len": ["warn", {"code": 100, "tabWidth": 2, "ignoreUrls": true, "ignorePattern": "^import|^export"}]
+    "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}]
   }
 }
