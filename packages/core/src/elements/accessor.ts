@@ -29,15 +29,19 @@ export class Accessor extends Element {
 	public getComponentType(): GLTF.AccessorComponentType {
 		switch (this.array.constructor) {
 			case Float32Array:
-			return AccessorComponentType.FLOAT;
+				return AccessorComponentType.FLOAT;
 			case Uint32Array:
-			return AccessorComponentType.UNSIGNED_INT;
+				return AccessorComponentType.UNSIGNED_INT;
 			case Uint16Array:
-			return AccessorComponentType.UNSIGNED_SHORT;
+				return AccessorComponentType.UNSIGNED_SHORT;
 			case Uint8Array:
-			return AccessorComponentType.UNSIGNED_BYTE;
+				return AccessorComponentType.UNSIGNED_BYTE;
+			case Int16Array:
+				return AccessorComponentType.SHORT;
+			case Int8Array:
+				return AccessorComponentType.BYTE;
 			default:
-			throw new Error('Unknown accessor componentType.');
+				throw new Error('Unknown accessor componentType.');
 		}
 	}
 	public getCount(): number {

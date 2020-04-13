@@ -44,6 +44,6 @@ export const BufferViewTarget = {
 
 export const GLB_BUFFER = '__glb.bin';
 
-export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array;
+export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
 
 export const NOT_IMPLEMENTED = new Error('Not implemented.');
