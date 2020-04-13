@@ -7,7 +7,7 @@
   "module": "dist/gltf-transform-split.module.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "tape test/*.test.js | tap-spec"
   },
   "keywords": [
     "gltf",

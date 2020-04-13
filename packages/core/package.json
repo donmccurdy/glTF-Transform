@@ -5,7 +5,7 @@
   "description": "JavaScript and TypeScript utilities for processing glTF 3D models",
   "main": "dist/gltf-transform-core.js",
   "module": "dist/gltf-transform-core.module.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/core.d.ts",
   "scripts": {
     "test": "tape test/*.test.js | tap-spec"
   },
