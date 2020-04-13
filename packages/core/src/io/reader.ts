@@ -1,4 +1,4 @@
-import { AccessorComponentType, AccessorTypeData, TypedArray } from '../constants';
+import { AccessorComponentType, AccessorTypeData, GLB_BUFFER, TypedArray } from '../constants';
 import { Container } from '../container';
 import { Vector3, Vector4 } from '../math';
 import { GLTFUtil } from '../util';
@@ -16,22 +16,24 @@ function getAccessorArray(index: number, asset: Asset): TypedArray {
 	const accessor = json.accessors[index];
 	const bufferView = json.bufferViews[accessor.bufferView];
 	const buffer = json.buffers[bufferView.buffer];
-	const resource = resources[buffer.uri];
+	const resource = buffer.uri ? resources[buffer.uri] : resources[GLB_BUFFER];
 
 	const itemSize = AccessorTypeData[accessor.type].size;
 	const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
 
-	bufferView.byteStride
-
 	switch (accessor.componentType) {
 		case AccessorComponentType.FLOAT:
-		return new Float32Array(resource, start, accessor.count * itemSize);
+			return new Float32Array(resource, start, accessor.count * itemSize);
 		case AccessorComponentType.UNSIGNED_INT:
-		return new Uint32Array(resource, start, accessor.count * itemSize);
+			return new Uint32Array(resource, start, accessor.count * itemSize);
 		case AccessorComponentType.UNSIGNED_SHORT:
-		return new Uint16Array(resource, start, accessor.count * itemSize);
+			return new Uint16Array(resource, start, accessor.count * itemSize);
 		case AccessorComponentType.UNSIGNED_BYTE:
-		return new Uint8Array(resource, start, accessor.count * itemSize);
+			return new Uint8Array(resource, start, accessor.count * itemSize);
+		case AccessorComponentType.SHORT:
+			return new Int16Array(resource, start, accessor.count * itemSize);
+		case AccessorComponentType.BYTE:
+			return new Int8Array(resource, start, accessor.count * itemSize);
 		default:
 		throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
 	}
