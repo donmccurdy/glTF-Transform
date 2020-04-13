@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-007ec6.svg)](https://lerna.js.org/)
 
-JavaScript and TypeScript utilities for processing glTF 3D models.
+A glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.
 
 AGI's [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/) and
 Microsoft's [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit) are robust,
