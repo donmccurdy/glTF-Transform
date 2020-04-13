@@ -1,9 +1,4 @@
-import { Graph } from './graph';
-import { GraphChild, GraphChildList } from './graph-decorators';
-import { Link } from './graph-links';
-import { GraphNode } from './graph-node';
-
-export { Graph };
-export { GraphChild, GraphChildList };
-export { Link };
-export { GraphNode };
+export { Graph } from './graph';
+export { GraphChild, GraphChildList } from './graph-decorators';
+export { Link } from './graph-links';
+export { GraphNode } from './graph-node';
