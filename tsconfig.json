@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6",
     "declaration": true,
@@ -7,6 +8,5 @@
   },
   "files": [
     "typings/gltf.d.ts"
-  ],
-  "include": ["packages/*/src/**/*.ts"]
+  ]
 }
