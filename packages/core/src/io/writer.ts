@@ -1,14 +1,11 @@
-import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, IBufferMap } from '../constants';
+import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, GLB_BUFFER } from '../constants';
 import { Container } from '../container';
 import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture } from '../elements/index';
 import { Link } from '../graph/index';
 import { GLTFUtil } from '../util';
-import { uuid } from '../uuid';
+import { Asset } from './asset';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
-
-// TODO(donmccurdy): Default buffer currently named with empty string.
-const DEFAULT_BUFFER_URI = 'test.bin'; //'test-' + uuid() + '.bin';
 
 // TODO(donmccurdy): Not sure what this test error is:
 // (node:60004) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability
@@ -60,11 +57,16 @@ function clean(object): void {
 	}
 }
 
+export interface WriterOptions {
+	basename: string;
+	isGLB: boolean;
+}
+
 export class GLTFWriter {
-	public static write(container: Container): {json: GLTF.IGLTF; resources: IBufferMap} {
+	public static write(container: Container, options: WriterOptions): Asset {
 		const root = container.getRoot();
-		const json: GLTF.IGLTF = {asset: root.getAsset()};
-		const resources = {} as IBufferMap;
+		const asset = {json: {asset: root.getAsset()}, resources: {}} as Asset;
+		const json = asset.json;
 
 		/* Index lookup. */
 
@@ -304,11 +306,25 @@ export class GLTFWriter {
 				buffers.push(...otherResult.buffers);
 			}
 
+
+			// Assign buffer URI.
+
+			let uri: string;
+			if (options.isGLB) {
+				uri = GLB_BUFFER;
+			} else if (buffer.getURI()) {
+				uri = buffer.getURI();
+			} else if (root.listBuffers().length === 1) {
+				uri = `${options.basename}.bin`;
+			} else {
+				uri = `${options.basename}_${bufferIndex}.bin`;
+			}
+			if (!options.isGLB) bufferDef.uri = uri;
+
 			// Write buffer views to buffer.
 
-			bufferDef.uri = DEFAULT_BUFFER_URI;
 			bufferDef.byteLength = bufferByteLength;
-			resources[DEFAULT_BUFFER_URI] = GLTFUtil.concat(buffers);
+			asset.resources[uri] = GLTFUtil.concat(buffers);
 
 			bufferIndexMap.set(buffer, bufferIndex);
 			return bufferDef;
@@ -405,6 +421,6 @@ export class GLTFWriter {
 
 		clean(json);
 
-		return {json, resources};
+		return asset;
 	}
 }
