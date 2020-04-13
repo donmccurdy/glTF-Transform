@@ -1,29 +1,34 @@
 language: node_js
+os: osx
+# os: linux
+# sudo: required
+# dist: trusty
 node_js:
   - "13"
 env:
   global:
     - CI=1
 # headless-gl deps must be installed, not run.
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - xutils-dev
-    - libxi-dev
-    - libxxf86vm-dev
-    - x11proto-xf86vidmode-dev
-    - mesa-utils
-    - xvfb
-    - libgl1-mesa-dri
-    - libglapi-mesa
-    - libosmesa6
+# addons:
+#   apt:
+#     # sources:
+#     # - ubuntu-toolchain-r-test
+#     packages:
+#     # - xutils-dev
+#     # - libxi-dev
+#     # - libxxf86vm-dev
+#     # - x11proto-xf86vidmode-dev
+#     - mesa-utils
+#     - xvfb
+#     - libgl1-mesa-dri
+#     - libglapi-mesa
+#     - libosmesa6
 install:
   - npm i -g lerna
   - lerna bootstrap
 before_script:
+  # - export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
   - npm run dist
-# omit 'ao', as GPU functions don't work in CI.
+# omit 'ao' and 'atlas', as canvas functions don't work in CI.
 script:
   - lerna run test --ignore @gltf-transform/ao --ignore @gltf-transform/atlas
