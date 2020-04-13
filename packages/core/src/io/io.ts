@@ -4,17 +4,92 @@ import { GLTFUtil } from '../util';
 import { GLTFReader } from './reader';
 import { GLTFWriter } from './writer';
 
-interface PlatformIO {
-	read: (uri: string) => Container|Promise<Container>;
+// TODO(donmccurdy): Writer should deal with resource packing and names.
+
+/**
+ * Platform-specific I/O service.
+ *
+ * Usage:
+ *
+ * - io.read('model.glb')             → Container
+ * - io.write('model.glb', container) → void
+ * - io.packGLB(container)            → ArrayBuffer
+ * - io.unpackGLB(ArrayBuffer)        → Container
+ */
+abstract class PlatformIO {
+	/** Converts a {@link Container} to glTF-formatted JSON and a resource map. */
+	protected containerToResources (container: Container): {json: GLTF.IGLTF; resources: IBufferMap} {
+		return GLTFWriter.write(container);
+	}
+
+	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
+	protected resourcesToContainer (json: GLTF.IGLTF, resources: IBufferMap): Container {
+		return GLTFReader.read(json, resources);
+	}
+
+	/** Converts a GLB-formatted {@link ArrayBuffer} to a {@link Container}. */
+	public unpackGLB(glb: ArrayBuffer): Container {
+		// Decode and verify GLB header.
+		const header = new Uint32Array(glb, 0, 3);
+		if (header[0] !== 0x46546C67) {
+			throw new Error('Invalid glTF asset.');
+		} else if (header[1] !== 2) {
+			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
+		}
+
+		// Decode and verify chunk headers.
+		const jsonChunkHeader = new Uint32Array(glb, 12, 2);
+		const jsonByteOffset = 20;
+		const jsonByteLength = jsonChunkHeader[0];
+		const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
+		if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
+			throw new Error('Unexpected GLB layout.');
+		}
+
+		// Decode content.
+		const jsonText = GLTFUtil.decodeText(
+			glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength)
+		);
+		const json = JSON.parse(jsonText) as GLTF.IGLTF;
+		const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
+		const binaryByteLength = binaryChunkHeader[0];
+		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
+
+		return this.resourcesToContainer(json, {'': binary} as IBufferMap);
+	}
+
+	/** Converts a {@link Container} to a GLB-formatted {@link ArrayBuffer}. */
+	public packGLB(container: Container): ArrayBuffer {
+		const {json, resources} = this.containerToResources(container);
+
+		// TODO(donmccurdy): Writer should deal with resource packing and names.
+		if (Object.values(resources).length !== 1) {
+			throw new Error('Writing to GLB requires exactly 1 buffer.');
+		} else {
+			delete json.buffers[0].uri;
+		}
+
+		const jsonText = JSON.stringify(json);
+		const jsonChunkData = GLTFUtil.pad( GLTFUtil.encodeText(jsonText), 0x20 );
+		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
+		const jsonChunk = GLTFUtil.join(jsonChunkHeader, jsonChunkData);
+
+		const binaryChunkData = GLTFUtil.pad(Object.values(resources)[0], 0x00);
+		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
+		const binaryChunk = GLTFUtil.join(binaryChunkHeader, binaryChunkData);
+
+		const header = new Uint32Array([
+			0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength
+		]).buffer;
+
+		return GLTFUtil.concat([header, jsonChunk, binaryChunk]);
+	}
 }
 
-class NodeIO implements PlatformIO {
-	private fs: any;
-	private path: any;
-
-	constructor(fs, path) {
-		this.fs = fs;
-		this.path = path;
+class NodeIO extends PlatformIO {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	constructor(private readonly fs: any, private readonly path: any) {
+		super();
 	}
 
 	/* Public. */
@@ -34,8 +109,7 @@ class NodeIO implements PlatformIO {
 	private readGLB (uri: string): Container {
 		const buffer: Buffer = this.fs.readFileSync(uri);
 		const arrayBuffer = GLTFUtil.trimBuffer(buffer);
-		const {json, resources} = GLTFUtil.fromGLB(arrayBuffer);
-		return GLTFReader.read(json, resources);
+		return this.unpackGLB(arrayBuffer);
 	}
 
 	private readGLTF (uri: string): Container {
@@ -67,18 +141,14 @@ class NodeIO implements PlatformIO {
 	}
 
 	private writeGLB (uri: string, container: Container): void {
-		const {json, resources} = GLTFWriter.write(container);
-		const glbBuffer = GLTFUtil.toGLB(json, resources);
-		const buffer = Buffer.from(glbBuffer);
+		const buffer = Buffer.from(this.packGLB(container));
 		this.fs.writeFileSync(uri, buffer);
 	}
 }
 
-class WebIO implements PlatformIO {
-	private fetchConfig: RequestInit;
-
-	constructor(fetchConfig: RequestInit) {
-		this.fetchConfig = fetchConfig;
+class WebIO extends PlatformIO {
+	constructor(private readonly fetchConfig: RequestInit) {
+		super();
 	}
 
 	/* Public. */

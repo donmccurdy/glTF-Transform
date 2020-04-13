@@ -1,8 +1,8 @@
-import { AccessorComponentType, AccessorComponentTypeData, AccessorTypeData, IBufferMap, TypedArray } from './constants';
+import { AccessorComponentType, AccessorComponentTypeData, AccessorTypeData, IBufferMap, NOT_IMPLEMENTED, TypedArray } from './constants';
 import { Container } from './container';
 import { Element, Root, Scene } from './elements/index';
 import { Link } from './graph/index';
-// import { ISize, getSizeJPEG, getSizePNG } from './image-util';
+import { ISize } from './image-util';
 import { Logger, LoggerVerbosity } from './logger';
 import { uuid } from './uuid';
 
@@ -25,65 +25,10 @@ interface IGLTFAnalysis {
 * Utility class for glTF transforms.
 */
 class GLTFUtil {
-	/**
-	* Creates a GLTFContainer from the given GLB binary.
-	* @param glb
-	*/
-	static fromGLB(glb: ArrayBuffer): {json: GLTF.IGLTF; resources: IBufferMap} {
-		// TODO(donmccurdy): Move this function to IO folder.
-
-		// Decode and verify GLB header.
-		const header = new Uint32Array(glb, 0, 3);
-		if (header[0] !== 0x46546C67) {
-			throw new Error('Invalid glTF asset.');
-		} else if (header[1] !== 2) {
-			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
-		}
-
-		// Decode and verify chunk headers.
-		const jsonChunkHeader = new Uint32Array(glb, 12, 2);
-		const jsonByteOffset = 20;
-		const jsonByteLength = jsonChunkHeader[0];
-		const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
-		if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
-			throw new Error('Unexpected GLB layout.');
-		}
-
-		// Decode content.
-		const jsonText = this.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
-		const json = JSON.parse(jsonText) as GLTF.IGLTF;
-		const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
-		const binaryByteLength = binaryChunkHeader[0];
-		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
-
-		return {json, resources: {'': binary} as IBufferMap};
+	static basename(path: string): string {
+		// https://stackoverflow.com/a/15270931/1314762
+		return path.split(/[\\/]/).pop();
 	}
-
-	/**
-	* Serializes a GLTFContainer to a GLB binary.
-	* @param container
-	*/
-	static toGLB(json: GLTF.IGLTF, resources: IBufferMap): ArrayBuffer {
-		// TODO(donmccurdy): Move this function to IO folder.
-		// TODO(donmccurdy): At some stage the bufferDef needs to have its URI set or not set.
-
-		if (Object.values(resources).length > 1) {
-			throw new Error('Writing to GLB requires exactly 1 buffer.');
-		}
-
-		const jsonText = JSON.stringify(json);
-		const jsonChunkData = this.pad( GLTFUtil.encodeText(jsonText), 0x20 );
-		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
-		const jsonChunk = this.join(jsonChunkHeader, jsonChunkData);
-
-		const binaryChunkData = this.pad(Object.values(resources)[0], 0x00);
-		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
-		const binaryChunk = this.join(binaryChunkHeader, binaryChunkData);
-
-		const header = new Uint32Array([0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]).buffer;
-		return this.join(this.join(header, jsonChunk), binaryChunk);
-	}
-
 	/**
 	* Creates a buffer from a Data URI.
 	* @param dataURI
@@ -118,8 +63,7 @@ class GLTFUtil {
 		if (typeof TextDecoder !== 'undefined') {
 			return new TextDecoder().decode(buffer);
 		}
-		const a = Buffer.from(buffer) as any;
-		return a.toString('utf8');
+		return Buffer.from(buffer).toString('utf8');
 	}
 
 	static trimBuffer(buffer: Buffer): ArrayBuffer {
@@ -148,19 +92,20 @@ class GLTFUtil {
 		return report;
 	}
 
-	// static getImageSize(container: GLTFContainer, index: number): ISize {
-	//   const image = container.json.images[index];
-	//   let isPNG;
-	//   if (image.mimeType) {
-	//     isPNG = image.mimeType === 'image/png';
-	//   } else {
-	//     isPNG = image.uri.match(/\.png$/);
-	//   }
-	//   const arrayBuffer = container.resolveURI(image.uri);
-	//   return isPNG
-	//     ? getSizePNG(Buffer.from(arrayBuffer))
-	//     : getSizeJPEG(Buffer.from(arrayBuffer));
-	// }
+	static getImageSize(container: Container, index: number): ISize {
+		throw NOT_IMPLEMENTED;
+		// const image = container.json.images[index];
+		// let isPNG;
+		// if (image.mimeType) {
+		//   isPNG = image.mimeType === 'image/png';
+		// } else {
+		//   isPNG = image.uri.match(/\.png$/);
+		// }
+		// const arrayBuffer = container.resolveURI(image.uri);
+		// return isPNG
+		//   ? getSizePNG(Buffer.from(arrayBuffer))
+		//   : getSizeJPEG(Buffer.from(arrayBuffer));
+	}
 
 	/**
 	* Returns the accessor for the given index, as a typed array.
