@@ -42,43 +42,18 @@ new features. Most packages work both in Node.js and on the web.
 
 ### Programmatic
 
-See full [API documentation](API.md).
-
-```js
-import { GLTFUtil, GLTFContainer, NodeIO, WebIO } from '@gltf-transform/core';
-import { ao } from '@gltf-transform/ao';
-
-const io = new WebIO();
-const container = io.read( 'scene.gltf' );
-
-// analyze
-const analysis = GLTFUtil.analyze( container );
-
-// ambient occlusion
-ao( container, { samples: 1000 } );
-
-// serialize
-const glbBuffer = GLTFUtil.toGLB( container );
-```
+To be written.
 
 ### CLI
 
-```shell
-# help
-gltf-transform --help
+To be written.
 
-# analyze
-gltf-transform analyze input.glb
-
-# ambient occlusion
-gltf-transform ao --samples 1000 input.glb output.glb
-```
 ## Contributing
 
 This project consists of multiple NPM packages, managed in one repository with
 https://lerna.js.org/. All code, excluding Node.js-based tests, is written in TypeScript.
-I recommend using VSCode for linting and type information, which becomes very helpful
-when modifying glTF schema objects.
+I recommend using VSCode for linting and type information, which becomes especially helpful
+when dealing with glTF schema objects.
 
 After cloning the repository, run:
 
@@ -111,9 +86,26 @@ version of the CLI, run `npm link` within the `packages/cli` directory. Then
 In the event that dependencies get into a broken state, removing `package-lock.json` and
 reinstalling may resolve things.
 
-## Releasing
+### Pull requests
 
-> NOTE: Only the author can create new releases.
+Before adding new features or packages to the repository, please open an issue on GitHub to discuss
+your proposal. Some features may not fit the current scope of the project, or may be more than I am
+able to maintain long-term. Even if a feature does not end up in this repository, custom
+transform functions can be defined and used externally.
+
+New features should be compatible with both Node.js and Web, though exceptions may be possible in
+certain situations. To accomplish that, instances of [HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+or [headless-gl](https://github.com/stackgl/headless-gl) are passed into API functions by the user,
+rather than being created by the API directly.
+
+Runtime `dependencies` should be installed only to the sub-package in which they are needed. Any
+`devDependencies` are shared across all packages, and should be installed in the project root. Pull
+requests should omit any changes to `dist/*` artifacts. Changes including test coverage are
+strongly preferred.
+
+### Releasing
+
+> NOTE: Only the maintainer can create new releases.
 
 Currently Lerna [has trouble with 2FA OTPs](https://github.com/lerna/lerna/issues/1091). As a result,
 new packages need to be published manually before they can be included in a repo-wide release. Once
