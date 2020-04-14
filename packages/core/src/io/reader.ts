@@ -1,23 +1,72 @@
-import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray } from '../constants';
+import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, NOT_IMPLEMENTED, TypedArray } from '../constants';
 import { Container } from '../container';
 import { Vector3, Vector4 } from '../math';
-import { GLTFUtil } from '../util';
 import { Asset } from './asset';
 
-/**
-* Returns the accessor for the given index, as a typed array.
-* @param index
-*/
-function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
-	// TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
-	// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
-	const {json, resources} = asset;
+/** Returns the contents of an interleaved accessor, as a typed array. */
+function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
+	const bufferView = asset.json.bufferViews[accessorDef.bufferView];
+	const buffer = asset.json.buffers[bufferView.buffer];
+	const resource = buffer.uri ? asset.resources[buffer.uri] : asset.resources[GLB_BUFFER];
 
-	const bufferView = json.bufferViews[accessorDef.bufferView];
-	const buffer = json.buffers[bufferView.buffer];
-	const resource = buffer.uri ? resources[buffer.uri] : resources[GLB_BUFFER];
-
+	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const itemSize = AccessorTypeData[accessorDef.type].size;
+	const valueSize = TypedArray.BYTES_PER_ELEMENT;
+	const accessorByteOffset = accessorDef.byteOffset || 0;
+
+	const array = new TypedArray(accessorDef.count * itemSize);
+	const view = new DataView(resource, bufferView.byteOffset, bufferView.byteLength);
+	const byteStride = bufferView.byteStride;
+
+	for (let i = 0; i < accessorDef.count; i++) {
+		for (let j = 0; j < itemSize; j++) {
+			const byteOffset = accessorByteOffset + i * byteStride + j * valueSize;
+			let value: number;
+			switch (accessorDef.componentType) {
+				case AccessorComponentType.FLOAT:
+					value = view.getFloat32(byteOffset, true);
+					break;
+				case AccessorComponentType.UNSIGNED_INT:
+					value = view.getUint32(byteOffset, true);
+					break;
+				case AccessorComponentType.UNSIGNED_SHORT:
+					value = view.getUint16(byteOffset, true);
+					break;
+				case AccessorComponentType.UNSIGNED_BYTE:
+					value = view.getUint8(byteOffset);
+					break;
+				case AccessorComponentType.SHORT:
+					value = view.getInt16(byteOffset, true);
+					break;
+				case AccessorComponentType.BYTE:
+					value = view.getInt8(byteOffset);
+					break;
+				default:
+				throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
+			}
+			array[i * itemSize + j] = value;
+		}
+	}
+
+	return array;
+}
+
+/** Returns the contents of an accessor, as a typed array. */
+function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
+	const bufferView = asset.json.bufferViews[accessorDef.bufferView];
+	const buffer = asset.json.buffers[bufferView.buffer];
+	const resource = buffer.uri ? asset.resources[buffer.uri] : asset.resources[GLB_BUFFER];
+
+	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
+	const itemSize = AccessorTypeData[accessorDef.type].size;
+	const valueSize = TypedArray.BYTES_PER_ELEMENT;
+	const itemStride = itemSize * valueSize;
+
+	// Interleaved buffer view.
+	if (bufferView.byteStride !== undefined && bufferView.byteStride !==  itemStride) {
+		return getInterleavedArray(accessorDef, asset);
+	}
+
 	const start = (bufferView.byteOffset || 0) + (accessorDef.byteOffset || 0);
 
 	switch (accessorDef.componentType) {
@@ -34,10 +83,11 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
 		case AccessorComponentType.BYTE:
 			return new Int8Array(resource, start, accessorDef.count * itemSize);
 		default:
-		throw new Error(`Accessor componentType ${accessorDef.componentType} not implemented.`);
+			throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
 	}
 }
 
+/** Returns the contents of a sparse accessor, as a typed array. */
 function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const itemSize = AccessorTypeData[accessorDef.type].size;
@@ -74,7 +124,9 @@ export class GLTFReader {
 		const buffers = bufferDefs.map((bufferDef) => container.createBuffer(bufferDef.name));
 
 		const bufferViewDefs = json.bufferViews || [];
-		const bufferViewToBuffer = bufferViewDefs.map((bufferViewDef) => buffers[bufferViewDef.buffer]);
+		const bufferViewToBuffer = bufferViewDefs.map((bufferViewDef) => {
+			return buffers[bufferViewDef.buffer];
+		});
 
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
@@ -134,7 +186,9 @@ export class GLTFReader {
 			}
 
 			if (materialDef.pbrMetallicRoughness.baseColorFactor !== undefined) {
-				material.setBaseColorFactor(new Vector4(...materialDef.pbrMetallicRoughness.baseColorFactor));
+				material.setBaseColorFactor(
+					new Vector4(...materialDef.pbrMetallicRoughness.baseColorFactor)
+				);
 			}
 
 			if (materialDef.emissiveFactor !== undefined) {
@@ -143,8 +197,33 @@ export class GLTFReader {
 
 			if (materialDef.pbrMetallicRoughness.baseColorTexture !== undefined) {
 				const baseColorTextureInfo = materialDef.pbrMetallicRoughness.baseColorTexture;
+				const baseColorTextureSamplerIndex = json.textures[baseColorTextureInfo.index].sampler;
+
 				// TODO(donmccurdy): Need to store texCoord and possibly transform.
 				material.setBaseColorTexture(textures[baseColorTextureInfo.index]);
+
+				const textureInfo = material.getBaseColorTextureInfo();
+
+				if (baseColorTextureInfo.texCoord !== undefined) {
+					textureInfo.setTexCoord(baseColorTextureInfo.texCoord);
+				}
+
+				// TODO(donmccurdy): Move this to shared function.
+				if (baseColorTextureSamplerIndex !== undefined) {
+					const samplerDef = json.samplers[baseColorTextureSamplerIndex];
+					if (samplerDef.magFilter !== undefined) {
+						textureInfo.setMagFilter(samplerDef.magFilter);
+					}
+					if (samplerDef.minFilter !== undefined) {
+						textureInfo.setMinFilter(samplerDef.minFilter);
+					}
+					if (samplerDef.wrapS !== undefined) {
+						textureInfo.setWrapS(samplerDef.wrapS);
+					}
+					if (samplerDef.wrapT !== undefined) {
+						textureInfo.setWrapT(samplerDef.wrapT);
+					}
+				}
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {

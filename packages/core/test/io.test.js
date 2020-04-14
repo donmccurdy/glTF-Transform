@@ -123,9 +123,9 @@ test('@gltf-transform/core::io | interleaved accessors', t => {
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
 
-	t.deepEqual(arrays[0], [1, 2, 3, 4, 5], 'accessor 1, vec3');
-	t.deepEqual(arrays[1], [10, 20, 30, 40, 50], 'accessor 2, vec2');
-	t.deepEqual(arrays[2], [100, 200, 300, 400, 500], 'accessor 3, vec2');
+	t.deepEqual(arrays[0], [0, 1, 2, 3, 4, 5], 'accessor 1, vec3');
+	t.deepEqual(arrays[1], [10, 20, 40, 50], 'accessor 2, vec2');
+	t.deepEqual(arrays[2], [100, 200, 400, 500], 'accessor 3, vec2');
 	t.end();
 });
 
@@ -183,26 +183,3 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 
 	t.end();
 });
-
-// test('@gltf-transform/core::analyze', (t) => {
-//   const filename = path.join(__dirname, 'in', 'BoxVertexColors.glb');
-//   const container = new NodeIO(fs, path).read_v2(filename);
-//   const report = GLTFUtil.analyze(container);
-//   // TODO(donmccurdy): v2 analysis only partially implemented.
-//   t.deepEqual(report, {
-//     meshes: 1,
-//     textures: 0,
-//     images: 0,
-//     materials: 1,
-//     animations: 0,
-//     primitives: 1,
-//     dataUsage: {
-//       geometry: 1224,
-//       targets: 0,
-//       animation: 0,
-//       textures: 0,
-//       json: 1647
-//     }
-//   }, 'BoxVertexColors.glb -- analysis');
-//   t.end();
-// });
