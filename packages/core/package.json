@@ -2,7 +2,7 @@
   "name": "@gltf-transform/core",
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "A glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
+  "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
   "main": "dist/gltf-transform-core.js",
   "module": "dist/gltf-transform-core.module.js",
   "types": "dist/core.d.ts",

@@ -10,7 +10,7 @@
 [![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
 [![Coverage Status](https://coveralls.io/repos/github/donmccurdy/glTF-Transform/badge.svg?branch=master)](https://coveralls.io/github/donmccurdy/glTF-Transform?branch=master)
 
-A glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.
+glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.
 
 AGI's [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/) and
 Microsoft's [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit) are robust,
