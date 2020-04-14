@@ -1,5 +1,4 @@
 import fs from 'fs';
-import camelcase from 'camelcase';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
@@ -10,6 +9,8 @@ const PACKAGES = ['core', 'colorspace'];
 // if (process.env.CI) {
 //   PACKAGES = PACKAGES.filter((pkg) => pkg !== 'ao' && pkg !== 'atlas');
 // }
+
+const camelcase = (s) => s.replace(/-([a-z])/g, (g) =>  g[1].toUpperCase());
 
 // Ensure dist/ directories exist.
 PACKAGES.forEach((name) => {

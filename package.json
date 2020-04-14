@@ -7,20 +7,16 @@
     "packages/*"
   ],
   "scripts": {
-    "lerna:bootstrap": "lerna bootstrap",
-    "lerna:install": "lerna exec -- npm install",
-    "lerna:link": "lerna link",
-    "lerna:clean": "lerna clean",
     "dist": "rollup -c",
     "watch": "rollup -c -w .",
     "test": "tape packages/*/test/*.test.js | tap-spec",
-    "report": "nyc tape packages/*/test/*.test.js",
+    "coverage:local": "nyc --reporter=text-summary tape packages/*/test/*.test.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "npm run validate",
-    "version": "npm run docs && git add -A API.md",
-    "docs": "documentation build packages/core/dist/gltf-transform-core.js -f md > API.md"
+    "version": "npm run docs && git add -A docs",
+    "docs": "echo \"docs generation not implemented\" && exit 1"
   },
   "devDependencies": {
     "@gltf-transform/ao": "file:packages/ao",
@@ -33,10 +29,8 @@
     "@types/node": "^10.12.17",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
-    "camelcase": "^5.0.0",
     "canvas": "^2.2.0",
     "coveralls": "^3.0.11",
-    "documentation": "^9.3.0",
     "eslint": "^6.8.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "2.8.0",
