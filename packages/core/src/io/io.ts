@@ -1,21 +1,14 @@
-import { GLB_BUFFER, NOT_IMPLEMENTED } from '../constants';
+import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
 import { GLTFUtil } from '../util';
 import { Asset } from './asset';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
-// TODO(donmccurdy): Writer should deal with resource packing and names.
-
 /**
- * Platform-specific I/O service.
+ * Abstract I/O service.
  *
- * Usage:
- *
- * - io.read('model.glb')             → Container
- * - io.write('model.glb', container) → void
- * - io.packGLB(container)            → ArrayBuffer
- * - io.unpackGLB(ArrayBuffer)        → Container
+ * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
  */
 abstract class PlatformIO {
 	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
@@ -31,7 +24,7 @@ abstract class PlatformIO {
 		return GLTFWriter.write(container, options);
 	}
 
-	/** Converts a GLB-formatted {@link ArrayBuffer} to a {@link Container}. */
+	/** Converts a GLB-formatted ArrayBuffer to a {@link Container}. */
 	public unpackGLB(glb: ArrayBuffer): Container {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
@@ -62,7 +55,7 @@ abstract class PlatformIO {
 		return this.assetToContainer({json, resources: {[GLB_BUFFER]: binary}});
 	}
 
-	/** Converts a {@link Container} to a GLB-formatted {@link ArrayBuffer}. */
+	/** Converts a {@link Container} to a GLB-formatted ArrayBuffer. */
 	public packGLB(container: Container): ArrayBuffer {
 		const {json, resources} = this.containerToAsset(container, {basename: '', isGLB: true});
 
@@ -83,7 +76,33 @@ abstract class PlatformIO {
 	}
 }
 
+/**
+ * I/O service for Node.js.
+ *
+ * Usage:
+ *
+ * ```typescript
+ * const fs = require('fs');
+ * const path = require('path');
+ * const { WebIO } = require('@gltf-transform/core');
+ *
+ * const io = new NodeIO(fs, path);
+ *
+ * // Read.
+ * io.read('model.glb');             // → Container
+ * io.unpackGLB(ArrayBuffer);        // → Container
+ *
+ * // Write.
+ * io.write('model.glb', container); // → void
+ * io.packGLB(container);            // → ArrayBuffer
+ * ```
+ */
 class NodeIO extends PlatformIO {
+	/**
+	 * Constructs a new NodeIO service. Instances are reusable.
+	 * @param fs
+	 * @param path
+	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	constructor(private readonly fs: any, private readonly path: any) {
 		super();
@@ -91,11 +110,13 @@ class NodeIO extends PlatformIO {
 
 	/* Public. */
 
+	/** Loads a local path and returns a {@link Container} instance. */
 	public read (uri: string): Container {
 		const isGLB = !!uri.match(/\.glb$/);
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
 	}
 
+	/** Writes a {@link Container} instance to a local path. */
 	public write (uri: string, container: Container): void {
 		const isGLB = !!uri.match(/\.glb$/);
 		isGLB ? this.writeGLB(uri, container) : this.writeGLTF(uri, container);
@@ -146,13 +167,37 @@ class NodeIO extends PlatformIO {
 	}
 }
 
+/**
+ * I/O service for Web.
+ *
+ * Usage:
+ *
+ * ```typescript
+ * import { WebIO } from '@gltf-transform/core';
+ *
+ * const io = new WebIO({credentials: 'include'});
+ *
+ * // Read.
+ * const container = await io.read('model.glb'); // → Container
+ * const container = io.unpackGLB(ArrayBuffer);  // → Container
+ *
+ * // Write.
+ * const arrayBuffer = io.packGLB(container);    // → ArrayBuffer
+ * ```
+ */
 class WebIO extends PlatformIO {
+
+	/**
+	 * Constructs a new WebIO service. Instances are reusable.
+	 * @param fetchConfig Configuration object for Fetch API.
+	 */
 	constructor(private readonly fetchConfig: RequestInit) {
 		super();
 	}
 
 	/* Public. */
 
+	/** Loads a URI and returns a {@link Container} instance. */
 	public read (uri: string): Promise<Container> {
 		const isGLB = !!uri.match(/\.glb$/);
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
@@ -161,33 +206,30 @@ class WebIO extends PlatformIO {
 	/* Internal. */
 
 	private readGLTF (uri: string): Promise<Container> {
-		throw NOT_IMPLEMENTED;
-		// return fetch(uri, this.fetchConfig)
-		// .then((response) => response.json())
-		// .then((json: GLTF.IGLTF) => {
-		// 	const resources = {} as IBufferMap;
-		// 	const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
-		// 	.map((resource: GLTF.IBuffer|GLTF.IImage) => {
-		// 		if (resource.uri) {
-		// 			return fetch(resource.uri, this.fetchConfig)
-		// 			.then((response) => response.arrayBuffer())
-		// 			.then((arrayBuffer) => {
-		// 				resources[resource.uri] = arrayBuffer;
-		// 			});
-		// 		} else {
-		// 			throw new Error('Embedded resources not implemented.');
-		// 		}
-		// 	});
-		// 	return Promise.all(pendingResources)
-		// 	.then(() => GLTFUtil.fromGLTF(json, resources));
-		// });
+		const asset = {json: {}, resources: {}} as Asset;
+		return fetch(uri, this.fetchConfig)
+		.then((response) => response.json())
+		.then((json: GLTF.IGLTF) => {
+			asset.json = json;
+			const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
+			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
+				if (resource.uri) {
+					return fetch(resource.uri, this.fetchConfig)
+					.then((response) => response.arrayBuffer())
+					.then((arrayBuffer) => {
+						asset.resources[resource.uri] = arrayBuffer;
+					});
+				}
+			});
+			return Promise.all(pendingResources)
+			.then(() => this.assetToContainer(asset));
+		});
 	}
 
 	private readGLB (uri: string): Promise<Container> {
-		throw NOT_IMPLEMENTED;
-		// return fetch(uri, this.fetchConfig)
-		// .then((response) => response.arrayBuffer())
-		// .then((arrayBuffer) => GLTFUtil.fromGLB(arrayBuffer));
+		return fetch(uri, this.fetchConfig)
+			.then((response) => response.arrayBuffer())
+			.then((arrayBuffer) => this.unpackGLB(arrayBuffer));
 	}
 }
 
