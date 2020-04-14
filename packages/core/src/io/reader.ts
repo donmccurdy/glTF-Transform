@@ -1,8 +1,7 @@
 import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray } from '../constants';
 import { Container } from '../container';
 import { TextureInfo } from '../elements';
-import { Vector3, Vector4 } from '../math';
-import { GLTFUtil } from '../util';
+import { FileUtils, Vector3, Vector4 } from '../utils';
 import { Asset } from './asset';
 
 // eslint-disable-next-line max-len
@@ -205,7 +204,7 @@ export class GLTFReader {
 			if (imageDef.mimeType !== undefined) {
 				texture.setMimeType(imageDef.mimeType);
 			} else if (imageDef.uri) {
-				const extension = GLTFUtil.extension(imageDef.uri);
+				const extension = FileUtils.extension(imageDef.uri);
 				texture.setMimeType(extension === 'png' ? 'image/png' : 'image/jpeg');
 			}
 

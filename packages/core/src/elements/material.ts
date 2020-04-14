@@ -1,5 +1,5 @@
 import { GraphChild } from '../graph/index';
-import { Vector3, Vector4 } from '../math';
+import { Vector3, Vector4 } from '../utils/math';
 import { Element } from './element';
 import { TextureLink } from './element-links';
 import { Texture, TextureInfo } from './texture';

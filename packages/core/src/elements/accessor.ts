@@ -1,6 +1,6 @@
 import { AccessorComponentType, AccessorTypeData, TypedArray } from '../constants';
-import { GraphChild, Link } from '../graph/index';
-import { Vector2, Vector3, Vector4 } from '../math';
+import { GraphChild, Link } from '../graph';
+import { Vector2, Vector3, Vector4 } from '../utils';
 import { Buffer } from './buffer';
 import { Element } from './element';
 

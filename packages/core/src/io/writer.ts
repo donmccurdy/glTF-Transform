@@ -1,8 +1,8 @@
 import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture } from '../elements/index';
-import { Link } from '../graph/index';
-import { GLTFUtil } from '../util';
+import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture } from '../elements';
+import { Link } from '../graph';
+import { BufferUtils } from '../utils';
 import { Asset } from './asset';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -103,7 +103,7 @@ export class GLTFWriter {
 				accessorDef.bufferView = json.bufferViews.length;
 				// TODO(donmccurdy): accessorDef.sparse
 
-				const data = GLTFUtil.pad(accessor.getArray().buffer);
+				const data = BufferUtils.pad(accessor.getArray().buffer);
 				accessorDef.byteOffset = byteLength;
 				byteLength += data.byteLength;
 				buffers.push(data);
@@ -113,7 +113,7 @@ export class GLTFWriter {
 			}
 
 			// Create buffer view definition.
-			const bufferViewData = GLTFUtil.concat(buffers);
+			const bufferViewData = BufferUtils.concat(buffers);
 			const bufferViewDef: GLTF.IBufferView = {
 				buffer: bufferIndex,
 				byteOffset: bufferByteOffset,
@@ -149,7 +149,7 @@ export class GLTFWriter {
 
 				const itemSize = AccessorTypeData[accessor.getType()].size;
 				const valueSize = AccessorComponentTypeData[accessor.getComponentType()].size;
-				byteStride += GLTFUtil.padNumber(itemSize * valueSize);
+				byteStride += BufferUtils.padNumber(itemSize * valueSize);
 
 				accessorIndexMap.set(accessor, json.accessors.length);
 				json.accessors.push(accessorDef);
@@ -194,7 +194,7 @@ export class GLTFWriter {
 							throw new Error('Unexpected component type: ' + componentType);
 						}
 					}
-					vertexByteOffset += GLTFUtil.padNumber(itemSize * valueSize);
+					vertexByteOffset += BufferUtils.padNumber(itemSize * valueSize);
 				}
 			}
 
@@ -323,7 +323,7 @@ export class GLTFWriter {
 			// Write buffer views to buffer.
 
 			bufferDef.byteLength = bufferByteLength;
-			asset.resources[uri] = GLTFUtil.concat(buffers);
+			asset.resources[uri] = BufferUtils.concat(buffers);
 
 			bufferIndexMap.set(buffer, bufferIndex);
 			return bufferDef;

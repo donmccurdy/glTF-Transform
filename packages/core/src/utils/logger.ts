@@ -15,7 +15,7 @@ class Logger {
    * Logs at level INFO.
    * @param text
    */
-  info (text: string) {
+  info (text: string): void {
     if (this.verbosity <= LoggerVerbosity.INFO) {
       console.log(`${this.name}: ${text}`);
     }
@@ -25,7 +25,7 @@ class Logger {
    * Logs at level WARNING.
    * @param text
    */
-  warn (text: string) {
+  warn (text: string): void {
     if (this.verbosity <= LoggerVerbosity.WARNING) {
       console.warn(`${this.name}: ${text}`);
     }
@@ -35,7 +35,7 @@ class Logger {
    * Logs at level ERROR.
    * @param text
    */
-  error (text: string) {
+  error (text: string): void {
     if (this.verbosity <= LoggerVerbosity.ERROR) {
       console.error(`${this.name}: ${text}`);
     }

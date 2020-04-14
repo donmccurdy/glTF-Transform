@@ -1,6 +1,6 @@
 import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { GLTFUtil } from '../util';
+import { BufferUtils, FileUtils } from '../utils/';
 import { Asset } from './asset';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
@@ -44,7 +44,7 @@ abstract class PlatformIO {
 		}
 
 		// Decode content.
-		const jsonText = GLTFUtil.decodeText(
+		const jsonText = BufferUtils.decodeText(
 			glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength)
 		);
 		const json = JSON.parse(jsonText) as GLTF.IGLTF;
@@ -60,19 +60,19 @@ abstract class PlatformIO {
 		const {json, resources} = this.containerToAsset(container, {basename: '', isGLB: true});
 
 		const jsonText = JSON.stringify(json);
-		const jsonChunkData = GLTFUtil.pad( GLTFUtil.encodeText(jsonText), 0x20 );
+		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );
 		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
-		const jsonChunk = GLTFUtil.join(jsonChunkHeader, jsonChunkData);
+		const jsonChunk = BufferUtils.join(jsonChunkHeader, jsonChunkData);
 
-		const binaryChunkData = GLTFUtil.pad(Object.values(resources)[0], 0x00);
+		const binaryChunkData = BufferUtils.pad(Object.values(resources)[0], 0x00);
 		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
-		const binaryChunk = GLTFUtil.join(binaryChunkHeader, binaryChunkData);
+		const binaryChunk = BufferUtils.join(binaryChunkHeader, binaryChunkData);
 
 		const header = new Uint32Array([
 			0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength
 		]).buffer;
 
-		return GLTFUtil.concat([header, jsonChunk, binaryChunk]);
+		return BufferUtils.concat([header, jsonChunk, binaryChunk]);
 	}
 }
 
@@ -126,7 +126,7 @@ class NodeIO extends PlatformIO {
 
 	private readGLB (uri: string): Container {
 		const buffer: Buffer = this.fs.readFileSync(uri);
-		const arrayBuffer = GLTFUtil.trimBuffer(buffer);
+		const arrayBuffer = BufferUtils.trim(buffer);
 		return this.unpackGLB(arrayBuffer);
 	}
 
@@ -141,7 +141,7 @@ class NodeIO extends PlatformIO {
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
 			if (resource.uri && !resource.uri.match(/data:/)) {
 				const absURI = this.path.resolve(dir, resource.uri);
-				asset.resources[resource.uri] = GLTFUtil.trimBuffer(this.fs.readFileSync(absURI));
+				asset.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
 				throw new Error('Embedded resources not implemented.');
 			}
@@ -150,7 +150,7 @@ class NodeIO extends PlatformIO {
 	}
 
 	private writeGLTF (uri: string, container: Container): void {
-		const writerOptions = {basename: GLTFUtil.basename(uri), isGLB: false};
+		const writerOptions = {basename: FileUtils.basename(uri), isGLB: false};
 		const {json, resources} = GLTFWriter.write(container, writerOptions);
 		const {fs, path} = this;
 		const dir = path.dirname(uri);

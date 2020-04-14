@@ -1,3 +1,4 @@
+import { ImageUtils, Size } from '../utils';
 import { Element } from './element';
 
 export class Texture extends Element {
@@ -28,6 +29,18 @@ export class Texture extends Element {
 	public setURI(uri: string): Texture {
 		this.uri = uri;
 		return this;
+	}
+
+	public getSize(): Size {
+		let isPNG;
+		if (this.mimeType) {
+			isPNG = this.mimeType === 'image/png';
+		} else {
+			isPNG = this.uri.match(/\.png$/);
+		}
+		return isPNG
+			? ImageUtils.getSizePNG(Buffer.from(this.image))
+			: ImageUtils.getSizeJPEG(Buffer.from(this.image));
 	}
 }
 

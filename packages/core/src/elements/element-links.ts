@@ -1,4 +1,4 @@
-import { Link } from '../graph/index';
+import { Link } from '../graph';
 import { Accessor } from './accessor';
 import { Material } from './material';
 import { Primitive } from './mesh';

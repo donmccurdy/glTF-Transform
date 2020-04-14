@@ -1,4 +1,4 @@
-import { Graph } from '../graph/index';
+import { Graph } from '../graph';
 import { Accessor } from './accessor';
 import { AttributeLink, IndexLink, TextureLink } from './element-links';
 import { Material } from './material';

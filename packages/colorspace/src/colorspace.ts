@@ -1,6 +1,6 @@
-import { Accessor, Container, GLTFUtil, LoggerVerbosity, Primitive, Vector3 } from '@gltf-transform/core';
+import { Accessor, Container, CoreUtils, LoggerVerbosity, Primitive, Vector3 } from '@gltf-transform/core';
 
-const logger = GLTFUtil.createLogger('@gltf-transform/colorspace', LoggerVerbosity.INFO);
+const logger = CoreUtils.createLogger('@gltf-transform/colorspace', LoggerVerbosity.INFO);
 
 interface IColorspaceOptions {
     inputEncoding: string;

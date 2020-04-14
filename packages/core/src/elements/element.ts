@@ -1,5 +1,5 @@
 import { NOT_IMPLEMENTED } from '../constants';
-import { GraphNode } from '../graph/index';
+import { GraphNode } from '../graph';
 import { ElementGraph } from './element-graph';
 
 export abstract class Element extends GraphNode {

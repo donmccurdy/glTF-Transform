@@ -1,6 +1,6 @@
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
-import { Vector3, Vector4 } from '../math';
+import { Vector3, Vector4 } from '../utils/math';
 import { Element } from './element';
 import { Mesh } from './mesh';
 import { Root } from './root';
