@@ -1,8 +1,14 @@
 import { Element } from './element';
 
 export class Texture extends Element {
+	/** Raw image data for this texture. */
 	private image: ArrayBuffer = null;
-	private mimeType: GLTF.ImageMimeType = null;
+
+	/** Image MIME type. Required if URI is not set. */
+	private mimeType = '';
+
+	/** Image URI. Required if MIME type is not set. */
+	private uri = '';
 
 	public getImage(): ArrayBuffer { return this.image; }
 	public setImage(image: ArrayBuffer): Texture {
@@ -10,9 +16,17 @@ export class Texture extends Element {
 		return this;
 	}
 
-	public getMimeType(): GLTF.ImageMimeType { return this.mimeType; }
-	public setMimeType(mimeType: GLTF.ImageMimeType): Texture {
+	public getMimeType(): string { return this.mimeType; }
+	public setMimeType(mimeType: string): Texture {
 		this.mimeType = mimeType;
+		return this;
+	}
+
+	public getURI(): string {
+		return this.uri;
+	}
+	public setURI(uri: string): Texture {
+		this.uri = uri;
 		return this;
 	}
 }

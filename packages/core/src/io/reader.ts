@@ -1,13 +1,41 @@
-import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, NOT_IMPLEMENTED, TypedArray } from '../constants';
+import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray } from '../constants';
 import { Container } from '../container';
+import { TextureInfo } from '../elements';
 import { Vector3, Vector4 } from '../math';
+import { GLTFUtil } from '../util';
 import { Asset } from './asset';
+
+// eslint-disable-next-line max-len
+function setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo, asset: Asset): void {
+	if (textureInfoDef.texCoord !== undefined) {
+		textureInfo.setTexCoord(textureInfoDef.texCoord);
+	}
+
+	const textureDef = asset.json.textures[textureInfoDef.index];
+
+	if (textureDef.sampler === undefined) return;
+
+	const samplerDef = asset.json.samplers[textureDef.sampler];
+
+	if (samplerDef.magFilter !== undefined) {
+		textureInfo.setMagFilter(samplerDef.magFilter);
+	}
+	if (samplerDef.minFilter !== undefined) {
+		textureInfo.setMinFilter(samplerDef.minFilter);
+	}
+	if (samplerDef.wrapS !== undefined) {
+		textureInfo.setWrapS(samplerDef.wrapS);
+	}
+	if (samplerDef.wrapT !== undefined) {
+		textureInfo.setWrapT(samplerDef.wrapT);
+	}
+}
 
 /** Returns the contents of an interleaved accessor, as a typed array. */
 function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
-	const bufferView = asset.json.bufferViews[accessorDef.bufferView];
-	const buffer = asset.json.buffers[bufferView.buffer];
-	const resource = buffer.uri ? asset.resources[buffer.uri] : asset.resources[GLB_BUFFER];
+	const bufferViewDef = asset.json.bufferViews[accessorDef.bufferView];
+	const bufferDef = asset.json.buffers[bufferViewDef.buffer];
+	const resource = bufferDef.uri ? asset.resources[bufferDef.uri] : asset.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const itemSize = AccessorTypeData[accessorDef.type].size;
@@ -15,8 +43,8 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedAr
 	const accessorByteOffset = accessorDef.byteOffset || 0;
 
 	const array = new TypedArray(accessorDef.count * itemSize);
-	const view = new DataView(resource, bufferView.byteOffset, bufferView.byteLength);
-	const byteStride = bufferView.byteStride;
+	const view = new DataView(resource, bufferViewDef.byteOffset, bufferViewDef.byteLength);
+	const byteStride = bufferViewDef.byteStride;
 
 	for (let i = 0; i < accessorDef.count; i++) {
 		for (let j = 0; j < itemSize; j++) {
@@ -53,9 +81,9 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedAr
 
 /** Returns the contents of an accessor, as a typed array. */
 function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
-	const bufferView = asset.json.bufferViews[accessorDef.bufferView];
-	const buffer = asset.json.buffers[bufferView.buffer];
-	const resource = buffer.uri ? asset.resources[buffer.uri] : asset.resources[GLB_BUFFER];
+	const bufferViewDef = asset.json.bufferViews[accessorDef.bufferView];
+	const bufferDef = asset.json.buffers[bufferViewDef.buffer];
+	const resource = bufferDef.uri ? asset.resources[bufferDef.uri] : asset.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const itemSize = AccessorTypeData[accessorDef.type].size;
@@ -63,11 +91,11 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
 	const itemStride = itemSize * valueSize;
 
 	// Interleaved buffer view.
-	if (bufferView.byteStride !== undefined && bufferView.byteStride !==  itemStride) {
+	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  itemStride) {
 		return getInterleavedArray(accessorDef, asset);
 	}
 
-	const start = (bufferView.byteOffset || 0) + (accessorDef.byteOffset || 0);
+	const start = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
 
 	switch (accessorDef.componentType) {
 		case AccessorComponentType.FLOAT:
@@ -158,13 +186,28 @@ export class GLTFReader {
 		const textures = textureDefs.map((textureDef) => {
 			const texture = container.createTexture(textureDef.name);
 
-			// TODO(donmccurdy): textureDef.sampler
-			// TODO(donmccurdy): textureDef.source
+			const imageDef = json.images[textureDef.source];
 
-			// const imageDef = json.images[textureDef.source];
-			// TODO(donmccurdy): imageDef.bufferView
-			// TODO(donmccurdy): imageDef.mimeType
-			// TODO(donmccurdy): imageDef.uri
+			if (imageDef.bufferView !== undefined) {
+				const bufferViewDef = json.bufferViews[imageDef.bufferView];
+				const bufferDef = asset.json.buffers[bufferViewDef.buffer];
+				const bufferData = bufferDef.uri
+					? asset.resources[bufferDef.uri]
+					: asset.resources[GLB_BUFFER];
+				const byteOffset = bufferViewDef.byteOffset || 0;
+				const imageData = bufferData.slice(byteOffset, bufferViewDef.byteLength);
+				texture.setImage(imageData);
+			} else if (imageDef.uri !== undefined) {
+				texture.setImage(asset.resources[imageDef.uri]);
+				texture.setURI(imageDef.uri);
+			}
+
+			if (imageDef.mimeType !== undefined) {
+				texture.setMimeType(imageDef.mimeType);
+			} else if (imageDef.uri) {
+				const extension = GLTFUtil.extension(imageDef.uri);
+				texture.setMimeType(extension === 'png' ? 'image/png' : 'image/jpeg');
+			}
 
 			return texture;
 		});
@@ -172,6 +215,8 @@ export class GLTFReader {
 		const materialDefs = json.materials || [];
 		const materials = materialDefs.map((materialDef) => {
 			const material = container.createMaterial(materialDef.name);
+
+			// Program state & blending.
 
 			if (materialDef.alphaMode !== undefined) {
 				material.setAlphaMode(materialDef.alphaMode);
@@ -185,6 +230,8 @@ export class GLTFReader {
 				material.setDoubleSided(materialDef.doubleSided);
 			}
 
+			// Factors.
+
 			if (materialDef.pbrMetallicRoughness.baseColorFactor !== undefined) {
 				material.setBaseColorFactor(
 					new Vector4(...materialDef.pbrMetallicRoughness.baseColorFactor)
@@ -195,48 +242,51 @@ export class GLTFReader {
 				material.setEmissiveFactor(new Vector3(...materialDef.emissiveFactor));
 			}
 
+			if (materialDef.pbrMetallicRoughness.metallicFactor !== undefined) {
+				material.setMetallicFactor(materialDef.pbrMetallicRoughness.metallicFactor);
+			}
+
+			if (materialDef.pbrMetallicRoughness.roughnessFactor !== undefined) {
+				material.setRoughnessFactor(materialDef.pbrMetallicRoughness.roughnessFactor);
+			}
+
+			// Textures.
+
 			if (materialDef.pbrMetallicRoughness.baseColorTexture !== undefined) {
-				const baseColorTextureInfo = materialDef.pbrMetallicRoughness.baseColorTexture;
-				const baseColorTextureSamplerIndex = json.textures[baseColorTextureInfo.index].sampler;
-
-				// TODO(donmccurdy): Need to store texCoord and possibly transform.
-				material.setBaseColorTexture(textures[baseColorTextureInfo.index]);
-
-				const textureInfo = material.getBaseColorTextureInfo();
-
-				if (baseColorTextureInfo.texCoord !== undefined) {
-					textureInfo.setTexCoord(baseColorTextureInfo.texCoord);
-				}
-
-				// TODO(donmccurdy): Move this to shared function.
-				if (baseColorTextureSamplerIndex !== undefined) {
-					const samplerDef = json.samplers[baseColorTextureSamplerIndex];
-					if (samplerDef.magFilter !== undefined) {
-						textureInfo.setMagFilter(samplerDef.magFilter);
-					}
-					if (samplerDef.minFilter !== undefined) {
-						textureInfo.setMinFilter(samplerDef.minFilter);
-					}
-					if (samplerDef.wrapS !== undefined) {
-						textureInfo.setWrapS(samplerDef.wrapS);
-					}
-					if (samplerDef.wrapT !== undefined) {
-						textureInfo.setWrapT(samplerDef.wrapT);
-					}
-				}
+				const textureInfoDef = materialDef.pbrMetallicRoughness.baseColorTexture;
+				material.setBaseColorTexture(textures[textureInfoDef.index]);
+				setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef, asset);
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {
-				const emissiveTextureInfo = materialDef.emissiveTexture;
-				// TODO(donmccurdy): Need to store texCoord and possibly transform.
-				material.setEmissiveTexture(textures[emissiveTextureInfo.index]);
+				const textureInfoDef = materialDef.emissiveTexture;
+				material.setEmissiveTexture(textures[textureInfoDef.index]);
+				setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef, asset);
 			}
 
-			// TODO(donmccurdy): materialDef.normalTexture
-			// TODO(donmccurdy): materialDef.occlusionTexture
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.metallicFactor
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.roughnessFactor
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.metallicRoughnessTexture
+			if (materialDef.normalTexture !== undefined) {
+				const textureInfoDef = materialDef.normalTexture;
+				material.setNormalTexture(textures[textureInfoDef.index]);
+				setTextureInfo(material.getNormalTextureInfo(), textureInfoDef, asset);
+				if (materialDef.normalTexture.scale !== undefined) {
+					material.setNormalScale(materialDef.normalTexture.scale);
+				}
+			}
+
+			if (materialDef.occlusionTexture !== undefined) {
+				const textureInfoDef = materialDef.occlusionTexture;
+				material.setOcclusionTexture(textures[textureInfoDef.index]);
+				setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef, asset);
+				if (materialDef.occlusionTexture.strength !== undefined) {
+					material.setOcclusionStrength(materialDef.occlusionTexture.strength);
+				}
+			}
+
+			if (materialDef.pbrMetallicRoughness.metallicRoughnessTexture !== undefined) {
+				const textureInfoDef = materialDef.pbrMetallicRoughness.metallicRoughnessTexture;
+				material.setRoughnessMetallicTexture(textures[textureInfoDef.index]);
+				setTextureInfo(material.getRoughnessMetallicTextureInfo(), textureInfoDef, asset);
+			}
 
 			return material;
 		});
