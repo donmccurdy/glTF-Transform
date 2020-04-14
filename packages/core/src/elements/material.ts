@@ -4,6 +4,9 @@ import { Element } from './element';
 import { TextureLink } from './element-links';
 import { Texture, TextureInfo } from './texture';
 
+/**
+ * @category Elements
+ */
 export class Material extends Element {
 	private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
 	private alphaCutoff = 0.5;

@@ -1,13 +1,16 @@
 import { GraphNode } from './graph-node';
 
 /**
-* Represents a connection between two {@link Element} resources in a {@link Graph}.
-*
-* The left element is considered the owner, and the right element the resource. The
-* owner is responsible for being able find and remove a reference to a resource, given
-* that link. The resource does not hold a reference to the link or to the owner,
-* although that reverse lookup can be done on the graph.
-*/
+ * Represents a connection between two {@link Element} resources in a {@link Graph}.
+ *
+ * The left element is considered the owner, and the right element the resource. The
+ * owner is responsible for being able find and remove a reference to a resource, given
+ * that link. The resource does not hold a reference to the link or to the owner,
+ * although that reverse lookup can be done on the graph.
+ *
+ * @hidden
+ * @category Graph
+ */
 export class Link<Left extends GraphNode, Right extends GraphNode> {
 	private disposed = false;
 	private readonly listeners: (() => void)[] = [];

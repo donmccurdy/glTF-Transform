@@ -5,6 +5,7 @@ import { Material } from './material';
 import { Primitive } from './mesh';
 import { Texture } from './texture';
 
+/** @hidden */
 export class ElementGraph extends Graph {
 	public linkTexture(name: string, a: Material, b: Texture): TextureLink {
 		const link = new TextureLink(name, a, b);

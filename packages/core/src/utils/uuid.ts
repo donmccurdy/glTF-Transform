@@ -19,6 +19,11 @@ const generateOne = function(): string {
   return rtn;
 }
 
+/**
+ * Generates a short UUID string.
+ *
+ * @category Utilities
+ */
 export const uuid = function(): string {
   for (let retries = 0; retries < UNIQUE_RETRIES; retries++) {
     const id = generateOne();

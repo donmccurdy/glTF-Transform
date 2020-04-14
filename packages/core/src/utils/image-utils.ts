@@ -1,3 +1,8 @@
+/**
+ * Represents an image's size.
+ *
+ * @category Utilities
+ */
 interface Size {
     width: number;
     height: number;
@@ -31,7 +36,11 @@ function validateBuffer (buffer: Buffer, i: number): void {
 // Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
 const pngFriedChunkName = 'CgBI';
 
-/** Common utilities for working with image data. */
+/**
+ * Common utilities for working with image data.
+ *
+ * @category Utilities
+ */
 class ImageUtils {
 	/** Returns the {@link Size} of a PNG image. */
 	public static getSizeJPEG (buffer: Buffer): Size {

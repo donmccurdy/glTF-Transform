@@ -9,6 +9,8 @@ import { GLTFWriter, WriterOptions } from './writer';
  * Abstract I/O service.
  *
  * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
+ *
+ * @category I/O
  */
 abstract class PlatformIO {
 	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
@@ -96,6 +98,8 @@ abstract class PlatformIO {
  * io.write('model.glb', container); // → void
  * io.packGLB(container);            // → ArrayBuffer
  * ```
+ *
+ * @category I/O
  */
 class NodeIO extends PlatformIO {
 	/**
@@ -184,6 +188,8 @@ class NodeIO extends PlatformIO {
  * // Write.
  * const arrayBuffer = io.packGLB(container);    // → ArrayBuffer
  * ```
+ *
+ * @category I/O
  */
 class WebIO extends PlatformIO {
 

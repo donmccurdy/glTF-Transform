@@ -1,7 +1,12 @@
 import { Graph } from './graph';
 import { Link } from './graph-links';
 
-/** Represents a node in a {@link Graph}. */
+/**
+ * Represents a node in a {@link Graph}.
+ *
+ * @hidden
+ * @category Graph
+ */
 export abstract class GraphNode {
 	protected readonly graph: Graph;
 	private disposed = false;

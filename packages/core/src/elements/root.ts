@@ -8,6 +8,9 @@ import { Node } from './node';
 import { Scene } from './scene';
 import { Texture } from './texture';
 
+/**
+ * @category Elements
+ */
 export class Root extends Element {
 	private asset: GLTF.IAsset = {
 		generator: 'glTF-Transform v0.1', // TODO(donmccurdy): Autogenerate this.

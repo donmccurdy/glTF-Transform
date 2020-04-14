@@ -1,6 +1,11 @@
 import { Logger, LoggerVerbosity } from './logger';
 
-/** @internal */
+/**
+ * Core utilities.
+ *
+ * @hidden
+ * @category Utilities
+ * */
 export class CoreUtils {
 	/** @internal */
 	static createLogger(name: string, verbosity: LoggerVerbosity): Logger {

@@ -1,3 +1,4 @@
+/** @category Utilities */
 enum LoggerVerbosity {
   NONE = 3,
   ERROR = 2,
@@ -7,6 +8,8 @@ enum LoggerVerbosity {
 
 /**
  * Logger utility class.
+ *
+ * @category Utilities
  */
 class Logger {
   constructor (private name: string, private verbosity: LoggerVerbosity) {}

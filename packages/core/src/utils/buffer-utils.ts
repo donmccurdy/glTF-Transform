@@ -1,4 +1,8 @@
-/** Common utilities for working with ArrayBuffer and Buffer objects. */
+/**
+ * Common utilities for working with ArrayBuffer and Buffer objects.
+ *
+ * @category Utilities
+ */
 export class BufferUtils {
 	/** Creates an ArrayBuffer from a Data URI. */
 	static createBufferFromDataURI(dataURI: string): ArrayBuffer {

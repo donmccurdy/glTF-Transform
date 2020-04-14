@@ -7,6 +7,9 @@ import { AttributeLink } from './element-links';
 import { Material } from './material';
 import { Root } from './root';
 
+/**
+ * @category Elements
+ */
 export class Mesh extends Element {
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
@@ -23,6 +26,9 @@ export class Mesh extends Element {
 	}
 }
 
+/**
+ * @category Elements
+ */
 export class Primitive extends Element {
 	private mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
 	// TODO(donmccurdy): Kinda feeling like I want an accessors array and a semantics array.

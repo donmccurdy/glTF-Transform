@@ -2,9 +2,12 @@ import { Link } from './graph-links';
 import { GraphNode } from './graph-node';
 
 /**
-* A graph manages a network of {@link GraphElement} nodes, connected
-* by {@link @Link} edges.
-*/
+ * A graph manages a network of {@link GraphElement} nodes, connected
+ * by {@link @Link} edges.
+ *
+ * @hidden
+ * @category Graph
+ */
 export class Graph {
 	private links: Link<GraphNode, GraphNode>[] = [];
 

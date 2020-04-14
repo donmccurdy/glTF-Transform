@@ -1,6 +1,9 @@
 import { ImageUtils, Size } from '../utils';
 import { Element } from './element';
 
+/**
+ * @category Elements
+ */
 export class Texture extends Element {
 	/** Raw image data for this texture. */
 	private image: ArrayBuffer = null;
@@ -44,6 +47,9 @@ export class Texture extends Element {
 	}
 }
 
+/**
+ * @category Elements
+ */
 export class TextureInfo {
 	private texCoord = 0;
 	private magFilter: GLTF.TextureMagFilter = null;

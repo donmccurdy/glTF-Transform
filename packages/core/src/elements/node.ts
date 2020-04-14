@@ -5,6 +5,9 @@ import { Element } from './element';
 import { Mesh } from './mesh';
 import { Root } from './root';
 
+/**
+ * @category Elements
+ */
 export class Node extends Element {
 	private translation = new Vector3(0, 0, 0);
 	private rotation = new Vector4(0, 0, 0, 1);

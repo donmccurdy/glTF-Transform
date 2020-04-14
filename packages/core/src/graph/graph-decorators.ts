@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/**
+ * @hidden
+ * @category Graph
+ */
 export function GraphChild (target: any, propertyKey: string): void {
 	Object.defineProperty(target, propertyKey, {
 		get: function () {
@@ -30,5 +34,9 @@ export function GraphChild (target: any, propertyKey: string): void {
 	});
 }
 
+/**
+ * @hidden
+ * @category Graph
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function GraphChildList (target: any, propertyKey: string): void {}

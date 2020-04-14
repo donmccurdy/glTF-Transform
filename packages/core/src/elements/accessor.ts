@@ -4,6 +4,9 @@ import { Vector2, Vector3, Vector4 } from '../utils';
 import { Buffer } from './buffer';
 import { Element } from './element';
 
+/**
+ * @category Elements
+ */
 export class Accessor extends Element {
 	private array: TypedArray = null;
 	private type: GLTF.AccessorType = GLTF.AccessorType.SCALAR;

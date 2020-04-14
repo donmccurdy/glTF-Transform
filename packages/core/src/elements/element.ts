@@ -2,6 +2,9 @@ import { NOT_IMPLEMENTED } from '../constants';
 import { GraphNode } from '../graph';
 import { ElementGraph } from './element-graph';
 
+/**
+ * @category Elements
+ */
 export abstract class Element extends GraphNode {
 	protected readonly graph: ElementGraph;
 	protected name = '';

@@ -3,6 +3,9 @@ import { Element } from './element';
 import { Node } from './node';
 import { Root } from './root';
 
+/**
+ * @category Elements
+ */
 export class Scene extends Element {
 	@GraphChildList private nodes: Link<Scene, Node>[] = [];
 	public addNode(node: Node): Scene {
