@@ -1,4 +1,4 @@
-import { AccessorComponentType, AccessorTypeData, GLB_BUFFER, TypedArray } from '../constants';
+import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray } from '../constants';
 import { Container } from '../container';
 import { Vector3, Vector4 } from '../math';
 import { GLTFUtil } from '../util';
@@ -8,35 +8,61 @@ import { Asset } from './asset';
 * Returns the accessor for the given index, as a typed array.
 * @param index
 */
-function getAccessorArray(index: number, asset: Asset): TypedArray {
+function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	// TODO(donmccurdy): This is not at all robust. For a complete implementation, see:
 	// https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js#L1720
 	const {json, resources} = asset;
 
-	const accessor = json.accessors[index];
-	const bufferView = json.bufferViews[accessor.bufferView];
+	const bufferView = json.bufferViews[accessorDef.bufferView];
 	const buffer = json.buffers[bufferView.buffer];
 	const resource = buffer.uri ? resources[buffer.uri] : resources[GLB_BUFFER];
 
-	const itemSize = AccessorTypeData[accessor.type].size;
-	const start = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
+	const itemSize = AccessorTypeData[accessorDef.type].size;
+	const start = (bufferView.byteOffset || 0) + (accessorDef.byteOffset || 0);
 
-	switch (accessor.componentType) {
+	switch (accessorDef.componentType) {
 		case AccessorComponentType.FLOAT:
-			return new Float32Array(resource, start, accessor.count * itemSize);
+			return new Float32Array(resource, start, accessorDef.count * itemSize);
 		case AccessorComponentType.UNSIGNED_INT:
-			return new Uint32Array(resource, start, accessor.count * itemSize);
+			return new Uint32Array(resource, start, accessorDef.count * itemSize);
 		case AccessorComponentType.UNSIGNED_SHORT:
-			return new Uint16Array(resource, start, accessor.count * itemSize);
+			return new Uint16Array(resource, start, accessorDef.count * itemSize);
 		case AccessorComponentType.UNSIGNED_BYTE:
-			return new Uint8Array(resource, start, accessor.count * itemSize);
+			return new Uint8Array(resource, start, accessorDef.count * itemSize);
 		case AccessorComponentType.SHORT:
-			return new Int16Array(resource, start, accessor.count * itemSize);
+			return new Int16Array(resource, start, accessorDef.count * itemSize);
 		case AccessorComponentType.BYTE:
-			return new Int8Array(resource, start, accessor.count * itemSize);
+			return new Int8Array(resource, start, accessorDef.count * itemSize);
 		default:
-		throw new Error(`Accessor componentType ${accessor.componentType} not implemented.`);
+		throw new Error(`Accessor componentType ${accessorDef.componentType} not implemented.`);
 	}
+}
+
+function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
+	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
+	const itemSize = AccessorTypeData[accessorDef.type].size;
+
+	let array: TypedArray;
+	if (accessorDef.bufferView !== undefined) {
+		array = getAccessorArray(accessorDef, asset);
+	} else {
+		array = new TypedArray(accessorDef.count * itemSize);
+	}
+
+	const count = accessorDef.sparse.count;
+	const indicesDef = {...accessorDef, ...accessorDef.sparse.indices, count, type: 'SCALAR'};
+	const valuesDef = {...accessorDef, ...accessorDef.sparse.values, count};
+	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, asset);
+	const values = getAccessorArray(valuesDef, asset);
+
+	// Override indices given in the sparse data.
+	for (let i = 0; i < indicesDef.count; i++) {
+		for (let j = 0; j < itemSize; j++) {
+			array[indices[i] * itemSize + j] = values[i * itemSize + j];
+		}
+	}
+
+	return array;
 }
 
 export class GLTFReader {
@@ -52,14 +78,18 @@ export class GLTFReader {
 
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
-		const accessors = accessorDefs.map((accessorDef, index) => {
+		const accessors = accessorDefs.map((accessorDef) => {
 			const buffer = bufferViewToBuffer[accessorDef.bufferView];
 			const accessor = container.createAccessor(accessorDef.name, buffer);
+			accessor.setType(accessorDef.type);
+
+			let array: TypedArray;
 
 			if (accessorDef.sparse !== undefined) {
-				// TODO(donmccurdy): Support accessorDef.sparse. Unpack this.
-				// accessor.setSparse(accessorDef.sparse === true);
-				throw new Error('Sparse accessors not yet implemented.')
+				array = getSparseArray(accessorDef, asset);
+			} else {
+				// TODO(donmccurdy): Just making a copy here, like a barbarian.
+				array = getAccessorArray(accessorDef, asset).slice();
 			}
 
 			if (accessorDef.normalized !== undefined) {
@@ -68,10 +98,7 @@ export class GLTFReader {
 				throw new Error('Normalized accessors not yet implemented.');
 			}
 
-			// TODO(donmccurdy): Just making a copy here, like a barbarian.
-			accessor.setType(accessorDef.type);
-			accessor.setArray(getAccessorArray(index, asset).slice());
-
+			accessor.setArray(array);
 			return accessor;
 		});
 
