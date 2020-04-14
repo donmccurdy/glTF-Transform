@@ -4,7 +4,7 @@ const fs = require('fs');
 const test = require('tape');
 const glob = require('glob');
 const path = require('path');
-const { NodeIO } = require('../');
+const { Container, NodeIO } = require('../');
 
 function ensureDir(uri) {
 	const outdir = path.dirname(uri);
@@ -181,5 +181,20 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 	t.deepEquals(accessors[0].getXYZ(51), {x: 25, y: 50, z: 75}, 'sparse index 3');
 	t.deepEquals(accessors[0].getXYZ(52), {x: 0, y: 0, z: 0}, 'empty index 2');
 
+	t.end();
+});
+
+test('@gltf-transform/core::io | resource naming', t => {
+	const container = new Container();
+	container.createBuffer().setURI('mybuffer.bin');
+	container.createBuffer().setURI('');
+	container.createBuffer();
+
+	const io = new NodeIO(fs, path);
+	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});
+
+	t.ok('mybuffer.bin' in asset.resources, 'explicitly named buffer');
+	t.ok('basename_1.bin' in asset.resources, 'implicitly named buffer #1');
+	t.ok('basename_2.bin' in asset.resources, 'implicitly named buffer #2');
 	t.end();
 });
