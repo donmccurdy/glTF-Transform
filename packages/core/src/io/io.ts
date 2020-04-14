@@ -1,4 +1,3 @@
-import { AssertionError } from 'assert';
 import { GLB_BUFFER, NOT_IMPLEMENTED } from '../constants';
 import { Container } from '../container';
 import { GLTFUtil } from '../util';
@@ -20,12 +19,12 @@ import { GLTFWriter, WriterOptions } from './writer';
  */
 abstract class PlatformIO {
 	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
-	protected assetToContainer (asset: Asset): Container {
+	public assetToContainer (asset: Asset): Container {
 		return GLTFReader.read(asset);
 	}
 
 	/** Converts a {@link Container} to glTF-formatted JSON and a resource map. */
-	protected containerToAsset (container: Container, options: WriterOptions): Asset {
+	public containerToAsset (container: Container, options: WriterOptions): Asset {
 		if (options.isGLB && container.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
