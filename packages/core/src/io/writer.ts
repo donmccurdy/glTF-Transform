@@ -306,7 +306,6 @@ export class GLTFWriter {
 				buffers.push(...otherResult.buffers);
 			}
 
-
 			// Assign buffer URI.
 
 			let uri: string;
@@ -336,18 +335,29 @@ export class GLTFWriter {
 
 		json.materials = root.listMaterials().map((material, index) => {
 			const materialDef = createElementDef(material) as GLTF.IMaterial;
+
+			// Program state & blending.
+
 			materialDef.alphaMode = material.getAlphaMode();
-			materialDef.alphaCutoff = material.getAlphaCutoff();
+			if (material.getAlphaMode() === GLTF.MaterialAlphaMode.MASK) {
+				materialDef.alphaCutoff = material.getAlphaCutoff();
+			}
 			materialDef.doubleSided = material.getDoubleSided();
+
+			// Factors.
+
 			materialDef.pbrMetallicRoughness = {};
 			materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor().toArray();
 			materialDef.emissiveFactor = material.getEmissiveFactor().toArray();
+			materialDef.pbrMetallicRoughness.roughnessFactor = material.getRoughnessFactor();
+			materialDef.pbrMetallicRoughness.metallicFactor = material.getMetallicFactor();
+
+			// Textures.
+
 			// TODO(donmccurdy): materialDef.emissiveTexture
-			// TODO(donmccurdy): materialDef.normalTexture
-			// TODO(donmccurdy): materialDef.occlusionTexture
+			// TODO(donmccurdy): materialDef.normalTexture & scale
+			// TODO(donmccurdy): materialDef.occlusionTexture & strength
 			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.baseColorTexture
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.metallicFactor
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.roughnessFactor
 			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.metallicRoughnessTexture
 
 			materialIndexMap.set(material, index);
