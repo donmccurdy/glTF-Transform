@@ -1,6 +1,6 @@
 import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture } from '../elements';
+import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
 import { Link } from '../graph';
 import { BufferUtils } from '../utils';
 import { Asset } from './asset';
@@ -75,7 +75,11 @@ export class GLTFWriter {
 		const materialIndexMap = new Map<Material, number>();
 		const meshIndexMap = new Map<Mesh, number>();
 		const nodeIndexMap = new Map<Node, number>();
-		const textureIndexMap = new Map<Texture, number>();
+		const imageIndexMap = new Map<Texture, number>();
+		const textureIndexMap = new Map<string, number>(); // textureDef JSON -> index
+		const samplerIndexMap = new Map<string, number>(); // samplerDef JSON -> index
+
+		const imageData: ArrayBuffer[] = [];
 
 		/* Utilities. */
 
@@ -211,6 +215,41 @@ export class GLTFWriter {
 			return {byteLength, buffers: [buffer]};
 		}
 
+		/**
+		 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
+		 * possible, Texture and Sampler definitions are shared.
+		 */
+		function createTextureInfoDef(texture: Texture, textureInfo: TextureInfo): GLTF.ITextureInfo {
+			const samplerDef = {
+				magFilter: textureInfo.getMagFilter() || undefined,
+				minFilter: textureInfo.getMinFilter() || undefined,
+				wrapS: textureInfo.getWrapS(),
+				wrapT: textureInfo.getWrapT(),
+			} as GLTF.ISampler;
+
+			const samplerKey = JSON.stringify(samplerDef);
+			if (!samplerIndexMap.has(samplerKey)) {
+				samplerIndexMap.set(samplerKey, json.samplers.length);
+				json.samplers.push(samplerDef);
+			}
+
+			const textureDef = {
+				source: imageIndexMap.get(texture),
+				sampler: samplerIndexMap.get(samplerKey)
+			} as GLTF.ITexture;
+
+			const textureKey = JSON.stringify(textureDef);
+			if (!textureIndexMap.has(textureKey)) {
+				textureIndexMap.set(textureKey, json.textures.length);
+				json.textures.push(textureDef);
+			}
+
+			return {
+				index: textureIndexMap.get(textureKey),
+				texCoord: textureInfo.getTexCoord(),
+			} as GLTF.ITextureInfo;
+		}
+
 		/* Data use pre-processing. */
 
 		const accessorLinks = new Map<Accessor, Link<Element, Accessor>[]>();
@@ -228,10 +267,53 @@ export class GLTFWriter {
 			}
 		}
 
-		/* Buffers, buffer views, and accessors. */
-
 		json.accessors = [];
 		json.bufferViews = [];
+
+		/* Textures. */
+
+		// glTF-Transform's "Texture" elements correspond 1:1 with glTF "Image" properties, and
+		// with image files. The glTF file may contain more one texture per image, where images
+		// are reused with different sampler properties.
+		json.samplers = [];
+		json.textures = [];
+		json.images = root.listTextures().map((texture, textureIndex) => {
+			const imageDef = createElementDef(texture) as GLTF.IImage;
+
+			if (texture.getMimeType()) {
+				imageDef.mimeType = texture.getMimeType() as GLTF.ImageMimeType;
+			}
+
+			if (options.isGLB) {
+				imageData.push(texture.getImage());
+				imageDef.bufferView = json.bufferViews.length;
+				json.bufferViews.push({
+					buffer: 0,
+					byteOffset: -1, // determined while iterating buffers, below.
+					byteLength: texture.getImage().byteLength
+				});
+			} else {
+				// TODO(donmccurdy): Resolve unique image names in a function that can be shared
+				// with buffer names. And, perhaps, all other element names.
+				const extension = texture.getMimeType() === 'image/png' ? 'png' : 'jpeg';
+				let uri: string;
+				if (texture.getURI()) {
+					uri = texture.getURI();
+				} else if (root.listTextures().length === 1) {
+					uri = `${options.basename}.${extension}`;
+				} else {
+					uri = `${options.basename}_${textureIndex}.${extension}`;
+				}
+				imageDef.uri = uri;
+				asset.resources[uri] = texture.getImage();
+			}
+
+			imageIndexMap.set(texture, textureIndex);
+			return imageDef;
+		});
+
+		/* Buffers, buffer views, and accessors. */
+
 		json.buffers = root.listBuffers().map((buffer, bufferIndex) => {
 			const bufferDef = createElementDef(buffer) as GLTF.IBuffer;
 
@@ -306,6 +388,15 @@ export class GLTFWriter {
 				buffers.push(...otherResult.buffers);
 			}
 
+			// We only support embedded images in GLB, so we know there is only one buffer.
+			if (imageData.length) {
+				for (let i = 0; i < imageData.length; i++) {
+					json.bufferViews[json.images[i].bufferView].byteOffset = bufferByteLength;
+					bufferByteLength += imageData[i].byteLength;
+					buffers.push(imageData[i]);
+				}
+			}
+
 			// Assign buffer URI.
 
 			let uri: string;
@@ -328,8 +419,6 @@ export class GLTFWriter {
 			bufferIndexMap.set(buffer, bufferIndex);
 			return bufferDef;
 		});
-
-		/* Textures. */
 
 		/* Materials. */
 
@@ -354,11 +443,43 @@ export class GLTFWriter {
 
 			// Textures.
 
-			// TODO(donmccurdy): materialDef.emissiveTexture
-			// TODO(donmccurdy): materialDef.normalTexture & scale
-			// TODO(donmccurdy): materialDef.occlusionTexture & strength
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.baseColorTexture
-			// TODO(donmccurdy): materialDef.pbrMetallicRoughness.metallicRoughnessTexture
+			if (material.getBaseColorTexture()) {
+				const texture = material.getBaseColorTexture();
+				const textureInfo = material.getBaseColorTextureInfo();
+				materialDef.pbrMetallicRoughness.baseColorTexture = createTextureInfoDef(texture, textureInfo);
+			}
+
+			if (material.getEmissiveTexture()) {
+				const texture = material.getEmissiveTexture();
+				const textureInfo = material.getEmissiveTextureInfo();
+				materialDef.emissiveTexture = createTextureInfoDef(texture, textureInfo);
+			}
+
+			if (material.getNormalTexture()) {
+				const texture = material.getNormalTexture();
+				const textureInfo = material.getNormalTextureInfo();
+				const textureInfoDef = createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialNormalTextureInfo;
+				if (material.getNormalScale() !== 1) {
+					textureInfoDef.scale = material.getNormalScale();
+				}
+				materialDef.normalTexture = textureInfoDef;
+			}
+
+			if (material.getOcclusionTexture()) {
+				const texture = material.getOcclusionTexture();
+				const textureInfo = material.getOcclusionTextureInfo();
+				const textureInfoDef = createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialOcclusionTextureInfo;
+				if (material.getOcclusionStrength() !== 1) {
+					textureInfoDef.strength = material.getOcclusionStrength();
+				}
+				materialDef.occlusionTexture = textureInfoDef;
+			}
+
+			if (material.getMetallicRoughnessTexture()) {
+				const texture = material.getMetallicRoughnessTexture();
+				const textureInfo = material.getMetallicRoughnessTextureInfo();
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = createTextureInfoDef(texture, textureInfo);
+			}
 
 			materialIndexMap.set(material, index);
 			return materialDef;

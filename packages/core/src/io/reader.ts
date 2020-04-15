@@ -147,13 +147,23 @@ export class GLTFReader {
 		const {json} = asset;
 		const container = new Container();
 
+		if (json.asset.version !== '2.0') {
+			throw new Error(`Unsupported glTF version: "${json.asset.version}".`);
+		}
+
+		/** Buffers. */
+
 		const bufferDefs = json.buffers || [];
 		const buffers = bufferDefs.map((bufferDef) => container.createBuffer(bufferDef.name));
+
+		/** Buffer views. */
 
 		const bufferViewDefs = json.bufferViews || [];
 		const bufferViewToBuffer = bufferViewDefs.map((bufferViewDef) => {
 			return buffers[bufferViewDef.buffer];
 		});
+
+		/** Accessors. */
 
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
@@ -181,11 +191,15 @@ export class GLTFReader {
 			return accessor;
 		});
 
-		const textureDefs = json.textures || [];
-		const textures = textureDefs.map((textureDef) => {
-			const texture = container.createTexture(textureDef.name);
+		/** Textures. */
 
-			const imageDef = json.images[textureDef.source];
+		// glTF-Transform's "Texture" elements correspond 1:1 with glTF "Image" properties, and
+		// with image files. The glTF file may contain more one texture per image, where images
+		// are reused with different sampler properties.
+		const imageDefs = json.images || [];
+		const textureDefs = json.textures || [];
+		const textures = imageDefs.map((imageDef) => {
+			const texture = container.createTexture(imageDef.name);
 
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews[imageDef.bufferView];
@@ -211,6 +225,8 @@ export class GLTFReader {
 			return texture;
 		});
 
+		/** Materials. */
+
 		const materialDefs = json.materials || [];
 		const materials = materialDefs.map((materialDef) => {
 			const material = container.createMaterial(materialDef.name);
@@ -231,9 +247,11 @@ export class GLTFReader {
 
 			// Factors.
 
-			if (materialDef.pbrMetallicRoughness.baseColorFactor !== undefined) {
+			const pbrDef = materialDef.pbrMetallicRoughness || {};
+
+			if (pbrDef.baseColorFactor !== undefined) {
 				material.setBaseColorFactor(
-					new Vector4(...materialDef.pbrMetallicRoughness.baseColorFactor)
+					new Vector4(...pbrDef.baseColorFactor)
 				);
 			}
 
@@ -241,31 +259,34 @@ export class GLTFReader {
 				material.setEmissiveFactor(new Vector3(...materialDef.emissiveFactor));
 			}
 
-			if (materialDef.pbrMetallicRoughness.metallicFactor !== undefined) {
-				material.setMetallicFactor(materialDef.pbrMetallicRoughness.metallicFactor);
+			if (pbrDef.metallicFactor !== undefined) {
+				material.setMetallicFactor(pbrDef.metallicFactor);
 			}
 
-			if (materialDef.pbrMetallicRoughness.roughnessFactor !== undefined) {
-				material.setRoughnessFactor(materialDef.pbrMetallicRoughness.roughnessFactor);
+			if (pbrDef.roughnessFactor !== undefined) {
+				material.setRoughnessFactor(pbrDef.roughnessFactor);
 			}
 
 			// Textures.
 
-			if (materialDef.pbrMetallicRoughness.baseColorTexture !== undefined) {
-				const textureInfoDef = materialDef.pbrMetallicRoughness.baseColorTexture;
-				material.setBaseColorTexture(textures[textureInfoDef.index]);
+			if (pbrDef.baseColorTexture !== undefined) {
+				const textureInfoDef = pbrDef.baseColorTexture;
+				const texture = textures[textureDefs[textureInfoDef.index].source];
+				material.setBaseColorTexture(texture);
 				setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef, asset);
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {
 				const textureInfoDef = materialDef.emissiveTexture;
-				material.setEmissiveTexture(textures[textureInfoDef.index]);
+				const texture = textures[textureDefs[textureInfoDef.index].source];
+				material.setEmissiveTexture(texture);
 				setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef, asset);
 			}
 
 			if (materialDef.normalTexture !== undefined) {
 				const textureInfoDef = materialDef.normalTexture;
-				material.setNormalTexture(textures[textureInfoDef.index]);
+				const texture = textures[textureDefs[textureInfoDef.index].source];
+				material.setNormalTexture(texture);
 				setTextureInfo(material.getNormalTextureInfo(), textureInfoDef, asset);
 				if (materialDef.normalTexture.scale !== undefined) {
 					material.setNormalScale(materialDef.normalTexture.scale);
@@ -274,21 +295,25 @@ export class GLTFReader {
 
 			if (materialDef.occlusionTexture !== undefined) {
 				const textureInfoDef = materialDef.occlusionTexture;
-				material.setOcclusionTexture(textures[textureInfoDef.index]);
+				const texture = textures[textureDefs[textureInfoDef.index].source];
+				material.setOcclusionTexture(texture);
 				setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef, asset);
 				if (materialDef.occlusionTexture.strength !== undefined) {
 					material.setOcclusionStrength(materialDef.occlusionTexture.strength);
 				}
 			}
 
-			if (materialDef.pbrMetallicRoughness.metallicRoughnessTexture !== undefined) {
-				const textureInfoDef = materialDef.pbrMetallicRoughness.metallicRoughnessTexture;
-				material.setRoughnessMetallicTexture(textures[textureInfoDef.index]);
-				setTextureInfo(material.getRoughnessMetallicTextureInfo(), textureInfoDef, asset);
+			if (pbrDef.metallicRoughnessTexture !== undefined) {
+				const textureInfoDef = pbrDef.metallicRoughnessTexture;
+				const texture = textures[textureDefs[textureInfoDef.index].source];
+				material.setMetallicRoughnessTexture(texture);
+				setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef, asset);
 			}
 
 			return material;
 		});
+
+		/** Meshes. */
 
 		const meshDefs = json.meshes || [];
 		const meshes = meshDefs.map((meshDef) => {
@@ -323,6 +348,8 @@ export class GLTFReader {
 			return mesh;
 		});
 
+		/** Skins. */
+
 		const skinDefs = json.skins || [];
 		const skins = skinDefs.map((skinDef) => {
 			// TODO(donmccurdy): skinDef.inverseBindMatrices
@@ -332,6 +359,8 @@ export class GLTFReader {
 			return null;
 		});
 
+		/** Cameras. */
+
 		const cameraDefs = json.cameras || [];
 		const cameras = cameraDefs.map((cameraDef) => {
 			// TODO(donmccurdy): cameraDef.type
@@ -339,6 +368,8 @@ export class GLTFReader {
 			// TODO(donmccurdy): cameraDef.perspective
 			return null;
 		});
+
+		/** Nodes. */
 
 		const nodeDefs = json.nodes || [];
 		const nodes = nodeDefs.map((nodeDef) => {
@@ -370,6 +401,8 @@ export class GLTFReader {
 			children.forEach((childIndex) => nodes[parentIndex].addChild(nodes[childIndex]));
 		})
 
+		/** Animations. */
+
 		const animationDefs = json.animations || [];
 		const animations = animationDefs.map((animationDef) => {
 			// TODO(donmccurdy): animationDef.channels
@@ -377,6 +410,8 @@ export class GLTFReader {
 
 			return null;
 		});
+
+		/** Scenes. */
 
 		const sceneDefs = json.scenes || [];
 		const scenes = sceneDefs.map((sceneDef) => {

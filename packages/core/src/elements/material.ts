@@ -22,7 +22,7 @@ export class Material extends Element {
 	@GraphChild private emissiveTexture: TextureLink = null;
 	@GraphChild private normalTexture: TextureLink = null;
 	@GraphChild private occlusionTexture: TextureLink = null;
-	@GraphChild private roughnessMetallicTexture: TextureLink = null;
+	@GraphChild private metallicRoughnessTexture: TextureLink = null;
 
 	public getAlphaMode(): GLTF.MaterialAlphaMode { return this.alphaMode; }
 	public getAlphaCutoff(): number { return this.alphaCutoff; }
@@ -73,16 +73,27 @@ export class Material extends Element {
 		return this;
 	}
 
-	public getBaseColorTexture(): Texture { return this.baseColorTexture.getRight(); }
+	public getBaseColorTexture(): Texture {
+		return this.baseColorTexture ? this.baseColorTexture.getRight() : null;
+	}
+	public getEmissiveTexture(): Texture {
+		return this.emissiveTexture ? this.emissiveTexture.getRight() : null;
+	}
+	public getNormalTexture(): Texture {
+		return this.normalTexture ? this.normalTexture.getRight() : null;
+	}
+	public getOcclusionTexture(): Texture {
+		return this.occlusionTexture ? this.occlusionTexture.getRight() : null;
+	}
+	public getMetallicRoughnessTexture(): Texture {
+		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.getRight() : null;
+	}
+
 	public getBaseColorTextureInfo(): TextureInfo { return this.baseColorTexture.textureInfo; }
-	public getEmissiveTexture(): Texture { return this.emissiveTexture.getRight(); }
 	public getEmissiveTextureInfo(): TextureInfo { return this.emissiveTexture.textureInfo; }
-	public getNormalTexture(): Texture { return this.normalTexture.getRight(); }
 	public getNormalTextureInfo(): TextureInfo { return this.normalTexture.textureInfo; }
-	public getOcclusionTexture(): Texture { return this.occlusionTexture.getRight(); }
 	public getOcclusionTextureInfo(): TextureInfo { return this.occlusionTexture.textureInfo; }
-	public getRoughnessMetallicTexture(): Texture { return this.roughnessMetallicTexture.getRight(); }
-	public getRoughnessMetallicTextureInfo(): TextureInfo { return this.roughnessMetallicTexture.textureInfo; }
+	public getMetallicRoughnessTextureInfo(): TextureInfo { return this.metallicRoughnessTexture.textureInfo; }
 
 	public setBaseColorTexture(texture: Texture): Material {
 		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
@@ -100,8 +111,8 @@ export class Material extends Element {
 		this.occlusionTexture = this.graph.linkTexture('occlusionTexture', this, texture);
 		return this;
 	}
-	public setRoughnessMetallicTexture(texture: Texture): Material {
-		this.roughnessMetallicTexture = this.graph.linkTexture('roughnessMetallicTexture', this, texture);
+	public setMetallicRoughnessTexture(texture: Texture): Material {
+		this.metallicRoughnessTexture = this.graph.linkTexture('metallicRoughnessTexture', this, texture);
 		return this;
 	}
 }
