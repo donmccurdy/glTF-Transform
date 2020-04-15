@@ -16,7 +16,7 @@ export class BufferUtils {
 			return ia.buffer;
 		} else {
 			// Node.js.
-			return new Buffer(dataURI.split(',')[1], 'base64').buffer;
+			return Buffer.from(dataURI.split(',')[1], 'base64').buffer;
 		}
 	}
 

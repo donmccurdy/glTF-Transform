@@ -7,10 +7,6 @@ import { Asset } from './asset';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
-// TODO(donmccurdy): Not sure what this test error is:
-// (node:60004) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability
-// issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
-
 function createElementDef(element: Element): ElementDef {
 	const def = {} as ElementDef;
 	if (element.getName()) {

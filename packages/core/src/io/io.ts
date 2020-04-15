@@ -160,7 +160,7 @@ class NodeIO extends PlatformIO {
 		const dir = path.dirname(uri);
 		fs.writeFileSync(uri, JSON.stringify(json, null, 2));
 		Object.keys(resources).forEach((resourceName) => {
-			const resource = new Buffer(resources[resourceName]);
+			const resource = Buffer.from(resources[resourceName]);
 			fs.writeFileSync(path.join(dir, resourceName), resource);
 		});
 	}
