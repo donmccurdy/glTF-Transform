@@ -3,6 +3,7 @@ lerna-debug.log
 .rpt2_cache
 .nyc_output
 .vscode
+.coveralls.yml
 **/dist/*
 **/test/**/*-tmp.glb
 **/test/**/*-tmp.gltf
