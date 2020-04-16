@@ -147,7 +147,7 @@ class NodeIO extends PlatformIO {
 				const absURI = this.path.resolve(dir, resource.uri);
 				asset.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
-				throw new Error('Embedded resources not implemented.');
+				asset.resources[resource.uri] = BufferUtils.createBufferFromDataURI(resource.uri);
 			}
 		})
 		return GLTFReader.read(asset);

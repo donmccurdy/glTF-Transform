@@ -16,7 +16,9 @@ export class BufferUtils {
 			return ia.buffer;
 		} else {
 			// Node.js.
-			return Buffer.from(dataURI.split(',')[1], 'base64').buffer;
+			const data = dataURI.split(',')[1];
+			const isBase64 = dataURI.indexOf('base64') >= 0;
+			return this.trim(Buffer.from(data, isBase64 ? 'base64' : 'utf8'));
 		}
 	}
 
