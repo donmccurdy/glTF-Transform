@@ -11,11 +11,12 @@ test('@gltf-transform/split', t => {
 
   const io = new NodeIO(fs, path);
   const container = io.read(path.join(__dirname, 'in/TwoCubes.glb'));
-  t.equal(container.json.buffers.length, 1, 'initialized with one buffer');
+  t.equal(container.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 
   split(container, ['CubeA', 'CubeB']);
 
-  t.deepEqual(container.json.buffers, [
+  const asset = io.containerToAsset(container, {basename: 'split-test', isGLB: false});
+  t.deepEqual(asset.json.buffers, [
     { uri: 'CubeA.bin', byteLength: 324, name: 'CubeA' },
     { uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' }
   ], 'splits into two buffers');

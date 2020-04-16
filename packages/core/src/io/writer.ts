@@ -7,52 +7,6 @@ import { Asset } from './asset';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
-function createElementDef(element: Element): ElementDef {
-	const def = {} as ElementDef;
-	if (element.getName()) {
-		def.name = element.getName();
-	}
-	if (Object.keys(element.getExtras()).length > 0) {
-		def.extras = element.getExtras();
-	}
-	if (Object.keys(element.getExtensions()).length > 0) {
-		def.extras = element.getExtensions();
-	}
-	return def;
-}
-
-function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
-	const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
-	accessorDef.type = accessor.getType();
-	accessorDef.componentType = accessor.getComponentType();
-	accessorDef.count = accessor.getCount();
-	accessorDef.max = accessor.getMax();
-	accessorDef.min = accessor.getMin();
-	// TODO(donmccurdy): accessorDef.normalized
-	return accessorDef;
-}
-
-/**
-* Removes empty and null values from an object.
-* @param object
-*/
-function clean(object): void {
-	const unused: string[] = [];
-
-	for (const key in object) {
-		const value = object[key];
-		if (Array.isArray(value) && value.length === 0) {
-			unused.push(key);
-		} else if (value === null || value === '') {
-			unused.push(value);
-		}
-	}
-
-	for (const key of unused) {
-		delete object[key];
-	}
-}
-
 export interface WriterOptions {
 	basename: string;
 	isGLB: boolean;
@@ -66,7 +20,6 @@ export class GLTFWriter {
 
 		/* Index lookup. */
 
-		const bufferIndexMap = new Map<Buffer, number>();
 		const accessorIndexMap = new Map<Accessor, number>();
 		const materialIndexMap = new Map<Material, number>();
 		const meshIndexMap = new Map<Mesh, number>();
@@ -310,7 +263,8 @@ export class GLTFWriter {
 
 		/* Buffers, buffer views, and accessors. */
 
-		json.buffers = root.listBuffers().map((buffer, bufferIndex) => {
+		json.buffers = [];
+		root.listBuffers().forEach((buffer, bufferIndex) => {
 			const bufferDef = createElementDef(buffer) as GLTF.IBuffer;
 
 			// Attributes are grouped and interleaved in one buffer view per mesh primitive. Indices for
@@ -321,20 +275,21 @@ export class GLTFWriter {
 			const otherAccessors = new Set<Accessor>();
 
 			const bufferParents = container.getGraph()
-			.listParentElements(buffer)
-			.filter((element) => !(element instanceof Root)) as Element[];
+				.listParentElements(buffer)
+				.filter((element) => !(element instanceof Root)) as Element[];
 
 			// Categorize accessors by use.
 			for (const parent of bufferParents) {
-				if ((!(parent instanceof Accessor))) { // Texture
-					throw new Error('Unimplemented buffer reference: ');
+				if ((!(parent instanceof Accessor))) { // Not expected.
+					throw new Error('Unimplemented buffer reference: ' + parent);
 				}
 
 				let isAttribute = false;
 				let isIndex = false;
 				let isOther = false;
 
-				const accessorRefs = accessorLinks.get(parent);
+				const accessorRefs = accessorLinks.get(parent) || [];
+
 				for (const link of accessorRefs) {
 					if (link instanceof AttributeLink) {
 						isAttribute = true;
@@ -344,6 +299,9 @@ export class GLTFWriter {
 						isOther = true;
 					}
 				}
+
+				// If the Accessor isn't used at all, treat it as "other".
+				if (!isAttribute && !isIndex && !isOther) isOther = true;
 
 				if (isAttribute && !isIndex && !isOther) {
 					const primitive = accessorRefs[0].getLeft() as Primitive;
@@ -393,6 +351,8 @@ export class GLTFWriter {
 				}
 			}
 
+			if (!bufferByteLength) return;
+
 			// Assign buffer URI.
 
 			let uri: string;
@@ -412,8 +372,7 @@ export class GLTFWriter {
 			bufferDef.byteLength = bufferByteLength;
 			asset.resources[uri] = BufferUtils.concat(buffers);
 
-			bufferIndexMap.set(buffer, bufferIndex);
-			return bufferDef;
+			json.buffers.push(bufferDef);
 		});
 
 		/* Materials. */
@@ -549,5 +508,51 @@ export class GLTFWriter {
 		clean(json);
 
 		return asset;
+	}
+}
+
+function createElementDef(element: Element): ElementDef {
+	const def = {} as ElementDef;
+	if (element.getName()) {
+		def.name = element.getName();
+	}
+	if (Object.keys(element.getExtras()).length > 0) {
+		def.extras = element.getExtras();
+	}
+	if (Object.keys(element.getExtensions()).length > 0) {
+		def.extras = element.getExtensions();
+	}
+	return def;
+}
+
+function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
+	const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+	accessorDef.type = accessor.getType();
+	accessorDef.componentType = accessor.getComponentType();
+	accessorDef.count = accessor.getCount();
+	accessorDef.max = accessor.getMax();
+	accessorDef.min = accessor.getMin();
+	// TODO(donmccurdy): accessorDef.normalized
+	return accessorDef;
+}
+
+/**
+* Removes empty and null values from an object.
+* @param object
+*/
+function clean(object): void {
+	const unused: string[] = [];
+
+	for (const key in object) {
+		const value = object[key];
+		if (Array.isArray(value) && value.length === 0) {
+			unused.push(key);
+		} else if (value === null || value === '') {
+			unused.push(value);
+		}
+	}
+
+	for (const key of unused) {
+		delete object[key];
 	}
 }

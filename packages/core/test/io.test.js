@@ -188,16 +188,23 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 
 test('@gltf-transform/core::io | resource naming', t => {
 	const container = new Container();
-	container.createBuffer().setURI('mybuffer.bin');
-	container.createBuffer().setURI('');
-	container.createBuffer();
+	const buffer1 = container.createBuffer().setURI('mybuffer.bin');
+	const buffer2 = container.createBuffer().setURI('');
+	const buffer3 = container.createBuffer();
+	container.createBuffer().setURI('empty.bin');
+
+	// Empty buffers aren't written.
+	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer1);
+	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer2);
+	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
 
 	const io = new NodeIO(fs, path);
 	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});
 
-	t.ok('mybuffer.bin' in asset.resources, 'explicitly named buffer');
-	t.ok('basename_1.bin' in asset.resources, 'implicitly named buffer #1');
-	t.ok('basename_2.bin' in asset.resources, 'implicitly named buffer #2');
+	t.true('mybuffer.bin' in asset.resources, 'explicitly named buffer');
+	t.true('basename_1.bin' in asset.resources, 'implicitly named buffer #1');
+	t.true('basename_2.bin' in asset.resources, 'implicitly named buffer #2');
+	t.false('empty.bin' in asset.resources, 'empty buffer skipped');
 	t.end();
 });
 
