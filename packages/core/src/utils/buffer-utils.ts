@@ -43,25 +43,6 @@ export class BufferUtils {
 	}
 
 	/**
-	* Removes segment from an arraybuffer, returning two arraybuffers: [original, removed].
-	*/
-	static splice (buffer: ArrayBuffer, begin: number, count: number): Array<ArrayBuffer> {
-		const a1 = buffer.slice(0, begin);
-		const a2 = buffer.slice(begin + count);
-		const a = this.join(a1, a2);
-		const b = buffer.slice(begin, begin + count);
-		return [a, b];
-	}
-
-	/** Joins two ArrayBuffers. */
-	static join (a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
-		const out = new Uint8Array(a.byteLength + b.byteLength);
-		out.set(new Uint8Array(a), 0);
-		out.set(new Uint8Array(b), a.byteLength);
-		return out.buffer;
-	}
-
-	/**
 	* Concatenates N ArrayBuffers.
 	*/
 	static concat (buffers: ArrayBuffer[]): ArrayBuffer {

@@ -64,11 +64,11 @@ abstract class PlatformIO {
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );
 		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
-		const jsonChunk = BufferUtils.join(jsonChunkHeader, jsonChunkData);
+		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 
 		const binaryChunkData = BufferUtils.pad(Object.values(resources)[0], 0x00);
 		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
-		const binaryChunk = BufferUtils.join(binaryChunkHeader, binaryChunkData);
+		const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
 
 		const header = new Uint32Array([
 			0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength
