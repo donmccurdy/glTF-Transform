@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Prunes duplicate accessors",
-  "main": "dist/gltf-transform-prune.js",
-  "module": "dist/gltf-transform-prune.module.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
+  "main": "dist/prune.js",
+  "types": "dist/prune.d.ts",
   "keywords": [
     "gltf",
     "3d",

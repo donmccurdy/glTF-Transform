@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
-  "main": "dist/gltf-transform-core.js",
-  "module": "dist/gltf-transform-core.module.js",
+  "main": "dist/core.js",
   "types": "dist/core.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
   "keywords": [
     "gltf",
     "3d",
@@ -24,5 +20,6 @@
     "README.md",
     "package.json",
     "package-lock.json"
-  ]
+  ],
+  "devDependencies": {}
 }

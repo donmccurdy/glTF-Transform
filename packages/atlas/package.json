@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "description": "Merges small textures and materials, creating a basic texture atlas",
   "repository": "github:donmccurdy/glTF-Transform",
-  "main": "dist/gltf-transform-atlas.js",
-  "module": "dist/gltf-transform-atlas.module.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
+  "main": "dist/atlas.js",
+  "types": "dist/atlas.d.ts",
   "keywords": [
     "gltf",
     "3d",

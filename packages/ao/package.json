@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Bakes per-vertex ambient occlusion",
-  "main": "dist/gltf-transform-ao.js",
-  "module": "dist/gltf-transform-ao.module.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
+  "main": "dist/ao.js",
+  "types": "dist/ao.d.ts",
   "keywords": [
     "gltf",
     "3d",

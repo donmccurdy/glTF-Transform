@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Vertex color colorspace correction",
-  "main": "dist/gltf-transform-colorspace.js",
-  "module": "dist/gltf-transform-colorspace.module.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
+  "main": "dist/colorspace.js",
+  "types": "dist/colorspace.d.ts",
   "keywords": [
     "gltf",
     "3d",

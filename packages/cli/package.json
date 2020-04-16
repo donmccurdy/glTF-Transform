@@ -7,9 +7,6 @@
   "bin": {
     "gltf-transform": "src/cli.js"
   },
-  "scripts": {
-    "test": "node test/test.js"
-  },
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "bugs": {

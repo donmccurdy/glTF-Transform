@@ -24,5 +24,6 @@
   "rules": {
     "quotes": ["warn", "single"],
     "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}]
-  }
+  },
+  "ignorePatterns": ["**/*.js"]
 }

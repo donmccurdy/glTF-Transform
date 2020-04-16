@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Splits the binary payload of a glTF file",
-  "main": "dist/gltf-transform-split.js",
-  "module": "dist/gltf-transform-split.module.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
-  },
+  "main": "dist/split.js",
+  "types": "dist/split.d.ts",
   "keywords": [
     "gltf",
     "3d",
