@@ -45,7 +45,7 @@ test('@gltf-transform/core::io | write glb', t => {
 
 		ensureDir(outputURI);
 		io.write(outputURI.replace('.gltf', '.glb'), container);
-		t.ok(true, `Wrote "${basepath}".`); // TODO(donmccurdy): Test the output somehow.
+		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 	});
 	t.end();
 });
@@ -60,7 +60,7 @@ test('@gltf-transform/core::io | write gltf', t => {
 
 		ensureDir(outputURI);
 		io.write(outputURI.replace('.glb', '.gltf'), container);
-		t.ok(true, `Wrote "${basepath}".`); // TODO(donmccurdy): Test the output somehow.
+		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 	});
 	t.end();
 });
@@ -90,21 +90,21 @@ test('@gltf-transform/core::io | interleaved accessors', t => {
 				bufferView: 0,
 				byteOffset: 0,
 				type: 'VEC3',
-				componentType: 5123, // TODO(donmccurdy): enum
+				componentType: 5123, // TODO(cleanup): enum
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 6,
 				type: 'VEC2',
-				componentType: 5123, // TODO(donmccurdy): enum
+				componentType: 5123, // TODO(cleanup): enum
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 10,
 				type: 'VEC2',
-				componentType: 5123, // TODO(donmccurdy): enum
+				componentType: 5123, // TODO(cleanup): enum
 			},
 		],
 		bufferViews: [
@@ -142,7 +142,7 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 			{
 				count: 100,
 				type: 'VEC3',
-				componentType: 5126, // TODO(donmccurdy): enum
+				componentType: 5126, // TODO(cleanup): enum
 				sparse: {
 					count: 3,
 					indices: {
@@ -269,7 +269,7 @@ test('@gltf-transform/core::io | write textures', t => {
 	container.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
-		.setWrapS(33071); // TODO(donmccurdy) enum
+		.setWrapS(33071); // TODO(cleanup) enum
 
 	const io = new NodeIO(fs, path);
 	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});

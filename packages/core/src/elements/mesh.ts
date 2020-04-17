@@ -31,7 +31,7 @@ export class Mesh extends Element {
  */
 export class Primitive extends Element {
 	private mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
-	// TODO(donmccurdy): Kinda feeling like I want an accessors array and a semantics array.
+	// TODO(cleanup): Kinda feeling like I want an accessors array and a semantics array.
 	// private attributeSemantics: {[key: string]: number} = {};
 	// private targetSemantics: {[key: string]: number}[] = [];
 	// private targets: AttributeMap[] = [];

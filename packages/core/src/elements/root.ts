@@ -13,7 +13,7 @@ import { Texture } from './texture';
  */
 export class Root extends Element {
 	private asset: GLTF.IAsset = {
-		generator: 'glTF-Transform v0.1', // TODO(donmccurdy): Autogenerate this.
+		generator: 'glTF-Transform v0.1', // TODO(cleanup): Autogenerate this.
 		version: '2.0'
 	};
 

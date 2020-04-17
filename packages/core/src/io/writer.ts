@@ -54,7 +54,7 @@ export class GLTFWriter {
 			for (const accessor of accessors) {
 				const accessorDef = createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews.length;
-				// TODO(donmccurdy): accessorDef.sparse
+				// TODO(feat): accessorDef.sparse
 
 				const data = BufferUtils.pad(accessor.getArray().buffer);
 				accessorDef.byteOffset = byteLength;
@@ -242,7 +242,7 @@ export class GLTFWriter {
 					byteLength: texture.getImage().byteLength
 				});
 			} else {
-				// TODO(donmccurdy): Resolve unique image names in a function that can be shared
+				// TODO(cleanup): Resolve unique image names in a function that can be shared
 				// with buffer names. And, perhaps, all other element names.
 				const extension = texture.getMimeType() === 'image/png' ? 'png' : 'jpeg';
 				let uri: string;
@@ -457,13 +457,13 @@ export class GLTFWriter {
 					primitiveDef.attributes[semantic] = accessorIndexMap.get(primitive.getAttribute(semantic));
 				}
 
-				// TODO(donmccurdy): .targets
-				// TODO(donmccurdy): .targetNames
+				// TODO(feat): .targets
+				// TODO(feat): .targetNames
 
 				return primitiveDef;
 			});
 
-			// TODO(donmccurdy): meshDef.weights
+			// TODO(feat): meshDef.weights
 
 			meshIndexMap.set(mesh, index);
 			return meshDef;

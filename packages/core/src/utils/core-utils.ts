@@ -30,7 +30,7 @@ export class CoreUtils {
 	// 		nodes.push({
 	// 			id: id,
 	// 			size: 1,
-	// 			// TODO(donmccurdy): names get obfuscated
+	// 			// TODO(cleanup): names get obfuscated
 	// 			label: `${element.constructor.name}: ${id} ${element.getName()}`
 	// 		});
 	// 	}

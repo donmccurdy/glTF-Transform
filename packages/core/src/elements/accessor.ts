@@ -6,7 +6,7 @@ import { Element } from './element';
 // Vector pool.
 const _vector = [];
 
-// TODO(donmccurdy): Having second thoughts here. Don't like dealing with ArrayTarget everywhere,
+// TODO(cleanup): Having second thoughts here. Don't like dealing with ArrayTarget everywhere,
 // would rather just have number[] consistently. More factors in Material class, Animation, etc.
 // But am I going to regret that when I need to implement a math-heavy transform?
 //

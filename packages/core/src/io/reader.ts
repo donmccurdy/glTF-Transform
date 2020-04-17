@@ -39,7 +39,7 @@ export class GLTFReader {
 			if (accessorDef.sparse !== undefined) {
 				array = getSparseArray(accessorDef, asset);
 			} else {
-				// TODO(donmccurdy): Just making a copy here, like a barbarian.
+				// TODO(cleanup): Just making a copy here, like a barbarian.
 				array = getAccessorArray(accessorDef, asset).slice();
 			}
 
@@ -196,12 +196,12 @@ export class GLTFReader {
 					primitive.setIndices(accessors[primitiveDef.indices]);
 				}
 
-				// TODO(donmccurdy): primitiveDef.targets
+				// TODO(feat): primitiveDef.targets
 
 				mesh.addPrimitive(primitive);
 			})
 
-			// TODO(donmccurdy): meshDef.weights
+			// TODO(feat): meshDef.weights
 
 			return mesh;
 		});
@@ -210,9 +210,9 @@ export class GLTFReader {
 
 		const skinDefs = json.skins || [];
 		const skins = skinDefs.map((skinDef) => {
-			// TODO(donmccurdy): skinDef.inverseBindMatrices
-			// TODO(donmccurdy): skinDef.joints
-			// TODO(donmccurdy): skinDef.skeleton
+			// TODO(feat): skinDef.inverseBindMatrices
+			// TODO(feat): skinDef.joints
+			// TODO(feat): skinDef.skeleton
 
 			return null;
 		});
@@ -221,9 +221,9 @@ export class GLTFReader {
 
 		const cameraDefs = json.cameras || [];
 		const cameras = cameraDefs.map((cameraDef) => {
-			// TODO(donmccurdy): cameraDef.type
-			// TODO(donmccurdy): cameraDef.orthographic
-			// TODO(donmccurdy): cameraDef.perspective
+			// TODO(feat): cameraDef.type
+			// TODO(feat): cameraDef.orthographic
+			// TODO(feat): cameraDef.perspective
 			return null;
 		});
 
@@ -247,10 +247,10 @@ export class GLTFReader {
 				node.setScale(nodeDef.scale as vec3);
 			}
 
-			// TODO(donmccurdy): nodeDef.matrix
-			// TODO(donmccurdy): nodeDef.camera
-			// TODO(donmccurdy): nodeDef.skin
-			// TODO(donmccurdy): nodeDef.weights
+			// TODO(feat): nodeDef.matrix
+			// TODO(feat): nodeDef.camera
+			// TODO(feat): nodeDef.skin
+			// TODO(feat): nodeDef.weights
 
 			return node;
 		});
@@ -263,8 +263,8 @@ export class GLTFReader {
 
 		const animationDefs = json.animations || [];
 		const animations = animationDefs.map((animationDef) => {
-			// TODO(donmccurdy): animationDef.channels
-			// TODO(donmccurdy): animationDef.samplers
+			// TODO(feat): animationDef.channels
+			// TODO(feat): animationDef.samplers
 
 			return null;
 		});

@@ -8,7 +8,7 @@ export class Container {
 		return this.root;
 	}
 
-	// TODO(donmccurdy): Decide how/if to expose this.
+	// TODO(cleanup): Decide how/if to expose this.
 	public getGraph(): ElementGraph {
 		return this.graph;
 	}

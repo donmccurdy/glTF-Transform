@@ -9,10 +9,10 @@ export abstract class Element extends GraphNode {
 	protected readonly graph: ElementGraph;
 	protected name = '';
 
-	// TODO(donmccurdy): Extras should be Elements.
+	// TODO(feat): Extras should be Elements.
 	protected extras: object = {};
 
-	// TODO(donmccurdy): Extensions should be Elements.
+	// TODO(feat): Extensions should be Elements.
 	protected extensions: object = {};
 
 	constructor(graph: ElementGraph, name = '') {

@@ -11,7 +11,7 @@ export type vec2 = [number, number];
 export type vec3 = [number, number, number];
 export type vec4 = [number, number, number, number];
 
-// TODO(donmccurdy): Just 'SCALAR' | 'VEC2' | ... would be nicer.
+// TODO(cleanup): Just 'SCALAR' | 'VEC2' | ... would be nicer.
 export const AccessorType = {
 	SCALAR: 'SCALAR',
 	VEC2: 'VEC2',
