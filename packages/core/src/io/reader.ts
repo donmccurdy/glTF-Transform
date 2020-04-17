@@ -1,7 +1,7 @@
-import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray } from '../constants';
+import { AccessorComponentType, AccessorTypeData, ComponentTypeToTypedArray, GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Container } from '../container';
 import { TextureInfo } from '../elements';
-import { FileUtils, Vector3, Vector4 } from '../utils';
+import { FileUtils } from '../utils';
 import { Asset } from './asset';
 
 export class GLTFReader {
@@ -44,9 +44,7 @@ export class GLTFReader {
 			}
 
 			if (accessorDef.normalized !== undefined) {
-				// TODO(donmccurdy): Support accessorDef.normalized. Unpack this?
-				// accessor.setNormalized(accessorDef.normalized === true);
-				throw new Error('Normalized accessors not yet implemented.');
+				accessor.setNormalized(accessorDef.normalized);
 			}
 
 			accessor.setArray(array);
@@ -112,13 +110,11 @@ export class GLTFReader {
 			const pbrDef = materialDef.pbrMetallicRoughness || {};
 
 			if (pbrDef.baseColorFactor !== undefined) {
-				material.setBaseColorFactor(
-					new Vector4(...pbrDef.baseColorFactor)
-				);
+				material.setBaseColorFactor(pbrDef.baseColorFactor as vec4);
 			}
 
 			if (materialDef.emissiveFactor !== undefined) {
-				material.setEmissiveFactor(new Vector3(...materialDef.emissiveFactor));
+				material.setEmissiveFactor(materialDef.emissiveFactor as vec3);
 			}
 
 			if (pbrDef.metallicFactor !== undefined) {
@@ -240,15 +236,15 @@ export class GLTFReader {
 			if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
 
 			if (nodeDef.translation !== undefined) {
-				node.setTranslation(new Vector3(...nodeDef.translation));
+				node.setTranslation(nodeDef.translation as vec3);
 			}
 
 			if (nodeDef.rotation !== undefined) {
-				node.setRotation(new Vector4(...nodeDef.rotation));
+				node.setRotation(nodeDef.rotation as vec4);
 			}
 
 			if (nodeDef.scale !== undefined) {
-				node.setScale(new Vector3(...nodeDef.scale));
+				node.setScale(nodeDef.scale as vec3);
 			}
 
 			// TODO(donmccurdy): nodeDef.matrix

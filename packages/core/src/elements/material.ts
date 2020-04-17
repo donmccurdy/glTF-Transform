@@ -1,5 +1,5 @@
+import { vec3, vec4 } from '../constants';
 import { GraphChild } from '../graph/index';
-import { Vector3, Vector4 } from '../utils/math';
 import { Element } from './element';
 import { TextureLink } from './element-links';
 import { Texture, TextureInfo } from './texture';
@@ -11,8 +11,8 @@ export class Material extends Element {
 	private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
 	private alphaCutoff = 0.5;
 	private doubleSided = false;
-	private baseColorFactor: Vector4 = new Vector4(1, 1, 1, 1);
-	private emissiveFactor: Vector3 = new Vector3(0, 0, 0);
+	private baseColorFactor: vec4 = [1, 1, 1, 1];
+	private emissiveFactor: vec3 = [0, 0, 0];
 	private normalScale = 1;
 	private occlusionStrength = 1;
 	private roughnessFactor = 1;
@@ -41,18 +41,18 @@ export class Material extends Element {
 		return this;
 	}
 
-	public getBaseColorFactor(): Vector4 { return this.baseColorFactor; }
-	public getEmissiveFactor(): Vector3 { return this.emissiveFactor; }
+	public getBaseColorFactor(): vec4 { return this.baseColorFactor; }
+	public getEmissiveFactor(): vec3 { return this.emissiveFactor; }
 	public getNormalScale(): number { return this. normalScale; }
 	public getOcclusionStrength(): number { return this.occlusionStrength; }
 	public getRoughnessFactor(): number { return this.roughnessFactor; }
 	public getMetallicFactor(): number { return this.metallicFactor; }
 
-	public setBaseColorFactor(baseColorFactor: Vector4): Material {
+	public setBaseColorFactor(baseColorFactor: vec4): Material {
 		this.baseColorFactor = baseColorFactor;
 		return this;
 	}
-	public setEmissiveFactor(emissiveFactor: Vector3): Material {
+	public setEmissiveFactor(emissiveFactor: vec3): Material {
 		this.emissiveFactor = emissiveFactor;
 		return this;
 	}

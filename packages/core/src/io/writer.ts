@@ -391,8 +391,8 @@ export class GLTFWriter {
 			// Factors.
 
 			materialDef.pbrMetallicRoughness = {};
-			materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor().toArray();
-			materialDef.emissiveFactor = material.getEmissiveFactor().toArray();
+			materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor();
+			materialDef.emissiveFactor = material.getEmissiveFactor();
 			materialDef.pbrMetallicRoughness.roughnessFactor = material.getRoughnessFactor();
 			materialDef.pbrMetallicRoughness.metallicFactor = material.getMetallicFactor();
 
@@ -473,9 +473,9 @@ export class GLTFWriter {
 
 		json.nodes = root.listNodes().map((node, index) => {
 			const nodeDef = createElementDef(node) as GLTF.INode;
-			nodeDef.translation = node.getTranslation().toArray();
-			nodeDef.rotation = node.getRotation().toArray();
-			nodeDef.scale = node.getScale().toArray();
+			nodeDef.translation = node.getTranslation();
+			nodeDef.rotation = node.getRotation();
+			nodeDef.scale = node.getScale();
 
 			if (node.getMesh()) {
 				nodeDef.mesh = meshIndexMap.get(node.getMesh());
@@ -530,9 +530,9 @@ function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
 	accessorDef.type = accessor.getType();
 	accessorDef.componentType = accessor.getComponentType();
 	accessorDef.count = accessor.getCount();
-	accessorDef.max = accessor.getMax();
-	accessorDef.min = accessor.getMin();
-	// TODO(donmccurdy): accessorDef.normalized
+	accessor.getMax((accessorDef.max = []));
+	accessor.getMin((accessorDef.min = []));
+	accessorDef.normalized = accessor.getNormalized();
 	return accessorDef;
 }
 

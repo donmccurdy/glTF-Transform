@@ -1,4 +1,4 @@
-import { Accessor, Container, CoreUtils, LoggerVerbosity, Primitive, Vector3 } from '@gltf-transform/core';
+import { Accessor, Container, CoreUtils, LoggerVerbosity, Primitive } from '@gltf-transform/core';
 
 const logger = CoreUtils.createLogger('@gltf-transform/colorspace', LoggerVerbosity.INFO);
 
@@ -33,17 +33,17 @@ export function colorspace (container: Container, options: IColorspaceOptions): 
 	}
 
 	function updatePrimitive(primitive: Primitive): void {
-		const color = new Vector3();
+		const color = [];
 		let attribute: Accessor;
 		for (let i = 0; (attribute = primitive.getAttribute(`COLOR_${i}`)); i++) {
 			if (converted.has(attribute)) continue;
 
 			for (let j = 0; j < attribute.getCount(); j++) {
-				attribute.getXYZ(j, color);
-				color.x = sRGBToLinear(color.x);
-				color.y = sRGBToLinear(color.y);
-				color.z = sRGBToLinear(color.z);
-				attribute.setXYZ(j, color);
+				attribute.getValue(j, color);
+				color[0] = sRGBToLinear(color[0]);
+				color[1] = sRGBToLinear(color[1]);
+				color[2] = sRGBToLinear(color[2]);
+				attribute.setValue(j, color);
 			}
 
 			converted.add(attribute);

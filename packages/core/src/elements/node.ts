@@ -1,6 +1,6 @@
+import { vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
-import { Vector3, Vector4 } from '../utils/math';
 import { Element } from './element';
 import { Mesh } from './mesh';
 import { Root } from './root';
@@ -9,32 +9,33 @@ import { Root } from './root';
  * @category Elements
  */
 export class Node extends Element {
-	private translation = new Vector3(0, 0, 0);
-	private rotation = new Vector4(0, 0, 0, 1);
-	private scale = new Vector3(1, 1, 1);
+	private translation: vec3 = [0, 0, 0];
+	private rotation: vec4 = [0, 0, 0, 1];
+	private scale: vec3 = [1, 1, 1];
 
 	@GraphChild private mesh: Link<Node, Mesh> = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
 
-	public getTranslation(): Vector3 { return this.translation; }
-	public getRotation(): Vector3 { return this.rotation; }
-	public getScale(): Vector3 { return this.scale; }
+	public getTranslation(): vec3 { return this.translation; }
+	public getRotation(): vec4 { return this.rotation; }
+	public getScale(): vec3 { return this.scale; }
 
-	public setTranslation(translation: Vector3): Node {
+	public setTranslation(translation: vec3): Node {
 		this.translation = translation;
 		return this;
 	}
-	public setRotation(rotation: Vector4): Node {
+	public setRotation(rotation: vec4): Node {
 		this.rotation = rotation;
 		return this;
 	}
-	public setScale(scale: Vector3): Node {
+	public setScale(scale: vec3): Node {
 		this.scale = scale;
 		return this;
 	}
 
 	public addChild(child: Node): Node {
-		return this.addGraphChild(this.children, this.graph.link('child', this, child) as Link<Root, Node>) as Node;
+		const link = this.graph.link('child', this, child) as Link<Root, Node>;
+		return this.addGraphChild(this.children, link) as Node;
 	}
 	public removeChild(child: Node): Node {
 		return this.removeGraphChild(this.children, child) as Node;

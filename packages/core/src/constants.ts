@@ -1,3 +1,16 @@
+/**
+ * Interface allowing Accessor setter/getter methods to be used interchangeably with gl-matrix
+ * arrays or with three.js math objects' fromArray/toArray methods.
+ */
+export interface ArrayProxy {
+	fromArray(array: number[]): ArrayProxy;
+	toArray(array: number[]): number[];
+}
+
+export type vec2 = [number, number];
+export type vec3 = [number, number, number];
+export type vec4 = [number, number, number, number];
+
 // TODO(donmccurdy): Just 'SCALAR' | 'VEC2' | ... would be nicer.
 export const AccessorType = {
 	SCALAR: 'SCALAR',
