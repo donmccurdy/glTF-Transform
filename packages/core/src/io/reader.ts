@@ -77,7 +77,8 @@ export class GLTFReader {
 					? asset.resources[bufferDef.uri]
 					: asset.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
-				const imageData = bufferData.slice(byteOffset, bufferViewDef.byteLength);
+				const byteLength = bufferViewDef.byteLength;
+				const imageData = bufferData.slice(byteOffset, byteOffset + byteLength);
 				texture.setImage(imageData);
 			} else if (imageDef.uri !== undefined) {
 				texture.setImage(asset.resources[imageDef.uri]);
