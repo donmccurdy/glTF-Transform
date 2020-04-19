@@ -17,21 +17,21 @@ export class Graph {
 	}
 
 	public listParentElements(element: GraphNode): GraphNode[] {
-		// #optimize
+		// TODO(optimize)
 		return this.links
 		.filter((link) => link.getRight() === element)
 		.map((link) => link.getLeft());
 	}
 
 	public listChildElements(element: GraphNode): GraphNode[] {
-		// #optimize
+		// TODO(optimize)
 		return this.links
 		.filter((link) => link.getLeft() === element)
 		.map((link) => link.getRight());
 	}
 
 	public disconnectChildElements(element: GraphNode): Graph {
-		// #optimize
+		// TODO(optimize)
 		this.links
 		.filter((link) => link.getLeft() === element)
 		.forEach((link) => link.dispose());
@@ -39,7 +39,7 @@ export class Graph {
 	}
 
 	public disconnectParentElements(element: GraphNode): Graph {
-		// #optimize
+		// TODO(optimize)
 		this.links
 		.filter((link) => link.getRight() === element)
 		.forEach((link) => link.dispose());
