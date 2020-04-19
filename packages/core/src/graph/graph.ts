@@ -11,7 +11,6 @@ import { GraphNode } from './graph-node';
 export class Graph {
 	private links: Link<GraphNode, GraphNode>[] = [];
 
-	// TODO(cleanup): Decide how/if to expose this.
 	public getLinks(): Link<GraphNode, GraphNode>[] {
 		return this.links;
 	}

@@ -1,3 +1,4 @@
+import { VERSION } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { Buffer } from './buffer';
@@ -13,7 +14,7 @@ import { Texture } from './texture';
  */
 export class Root extends Element {
 	private asset: GLTF.IAsset = {
-		generator: 'glTF-Transform v0.1', // TODO(cleanup): Autogenerate this.
+		generator: `glTF-Transform ${VERSION}`,
 		version: '2.0'
 	};
 

@@ -19,7 +19,7 @@
     "coverage:report": "npm run dist:test && nyc report --reporter=text-lcov | coveralls && npm run clean",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
-    "preversion": "npm run validate",
+    "preversion": "npm run test && npm run dist",
     "version": "npm run docs && git add -A docs",
     "docs": "echo \"docs generation not implemented\" && exit 1"
   },

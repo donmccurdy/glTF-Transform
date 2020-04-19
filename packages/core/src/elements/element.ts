@@ -39,7 +39,7 @@ export abstract class Element extends GraphNode {
 	}
 
 	/**
-	* Makes a copy of this element with no inbound links, and with cloned outbound links.
+	* Makes a copy of this element, referencing the same resources (not copies) as the original.
 	*/
 	public clone(): Element {
 		throw NOT_IMPLEMENTED;
@@ -51,5 +51,14 @@ export abstract class Element extends GraphNode {
 	*/
 	public equals(element: Element): boolean {
 		throw NOT_IMPLEMENTED;
+	}
+
+	/**
+	 * Returns a list of all resources that hold a reference to this object. For example, a
+	 * material may hold references to various textures, but a texture does not hold references
+	 * to the materials that use it.
+	 */
+	public listParents(): Element[] {
+		return this.graph.listParentElements(this) as Element[];
 	}
 }

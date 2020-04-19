@@ -1,3 +1,5 @@
+export const VERSION = 'v0.2';
+
 /**
  * Interface allowing Accessor setter/getter methods to be used interchangeably with gl-matrix
  * arrays or with three.js math objects' fromArray/toArray methods. For example, THREE.Vector2,
