@@ -14,15 +14,15 @@ export abstract class GraphNode {
 		this.graph = graph;
 	}
 
-	/** Returns true if the element has been permanently removed from the graph. */
+	/** Returns true if the node has been permanently removed from the graph. */
 	public isDisposed(): boolean { return this.disposed; }
 
 	/**
-	* Removes both inbound references to and outbound references from this element.
+	* Removes both inbound references to and outbound references from this node.
 	*/
 	public dispose(): void {
-		this.graph.disconnectChildElements(this);
-		this.graph.disconnectParentElements(this);
+		this.graph.disconnectChildren(this);
+		this.graph.disconnectParents(this);
 		this.disposed = true;
 	}
 
@@ -30,7 +30,7 @@ export abstract class GraphNode {
 	* Removes all inbound references to this element. Subclasses do not override this method.
 	*/
 	public detach(): GraphNode {
-		this.graph.disconnectParentElements(this);
+		this.graph.disconnectParents(this);
 		return this;
 	}
 
@@ -51,10 +51,10 @@ export abstract class GraphNode {
 	}
 
 	/**
-	* Removes a {@link GraphElement} from a {@link @GraphChildList}.
+	* Removes a {@link GraphNode} from a {@link @GraphChildList}.
 	*/
 	protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): GraphNode {
-		const pruned = links.filter((link) => link.getRight() === child);
+		const pruned = links.filter((link) => link.getChild() === child);
 		pruned.forEach((link) => link.dispose());
 		return this;
 	}

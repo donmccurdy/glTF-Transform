@@ -1,11 +1,11 @@
 import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
 import { Link } from '../graph';
+import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo } from '../properties';
 import { BufferUtils } from '../utils';
 import { Asset } from './asset';
 
-type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
+type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
 const BufferViewTarget = {
 	ARRAY_BUFFER: 34962,
@@ -211,17 +211,17 @@ export class GLTFWriter {
 
 		/* Data use pre-processing. */
 
-		const accessorLinks = new Map<Accessor, Link<Element, Accessor>[]>();
+		const accessorLinks = new Map<Accessor, Link<Property, Accessor>[]>();
 
 		// Gather all accessors, creating a map to look up their uses.
 		for (const link of container.getGraph().getLinks()) {
-			if (link.getLeft() === root) continue;
+			if (link.getParent() === root) continue;
 
-			const child = link.getRight();
+			const child = link.getChild();
 
 			if (child instanceof Accessor) {
 				const uses = accessorLinks.get(child) || [];
-				uses.push(link as Link<Element, Accessor>);
+				uses.push(link as Link<Property, Accessor>);
 				accessorLinks.set(child, uses);
 			}
 		}
@@ -231,13 +231,13 @@ export class GLTFWriter {
 
 		/* Textures. */
 
-		// glTF-Transform's "Texture" elements correspond 1:1 with glTF "Image" properties, and
+		// glTF-Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
 		// with image files. The glTF file may contain more one texture per image, where images
 		// are reused with different sampler properties.
 		json.samplers = [];
 		json.textures = [];
 		json.images = root.listTextures().map((texture, textureIndex) => {
-			const imageDef = createElementDef(texture) as GLTF.IImage;
+			const imageDef = createPropertyDef(texture) as GLTF.IImage;
 
 			if (texture.getMimeType()) {
 				imageDef.mimeType = texture.getMimeType() as GLTF.ImageMimeType;
@@ -265,7 +265,7 @@ export class GLTFWriter {
 
 		json.buffers = [];
 		root.listBuffers().forEach((buffer, bufferIndex) => {
-			const bufferDef = createElementDef(buffer) as GLTF.IBuffer;
+			const bufferDef = createPropertyDef(buffer) as GLTF.IBuffer;
 
 			// Attributes are grouped and interleaved in one buffer view per mesh primitive. Indices for
 			// all primitives are grouped into a single buffer view. Everything else goes into a
@@ -274,9 +274,8 @@ export class GLTFWriter {
 			const indexAccessors = new Set<Accessor>();
 			const otherAccessors = new Set<Accessor>();
 
-			const bufferParents = container.getGraph()
-				.listParentElements(buffer)
-				.filter((element) => !(element instanceof Root)) as Element[];
+			const bufferParents = buffer.listParents()
+				.filter((property) => !(property instanceof Root)) as Property[];
 
 			// Categorize accessors by use.
 			for (const parent of bufferParents) {
@@ -304,7 +303,7 @@ export class GLTFWriter {
 				if (!isAttribute && !isIndex && !isOther) isOther = true;
 
 				if (isAttribute && !isIndex && !isOther) {
-					const primitive = accessorRefs[0].getLeft() as Primitive;
+					const primitive = accessorRefs[0].getParent() as Primitive;
 					const primitiveAccessors = attributeAccessors.get(primitive) || new Set<Accessor>();
 					primitiveAccessors.add(parent);
 					attributeAccessors.set(primitive, primitiveAccessors);
@@ -374,7 +373,7 @@ export class GLTFWriter {
 		/* Materials. */
 
 		json.materials = root.listMaterials().map((material, index) => {
-			const materialDef = createElementDef(material) as GLTF.IMaterial;
+			const materialDef = createPropertyDef(material) as GLTF.IMaterial;
 
 			// Program state & blending.
 
@@ -439,7 +438,7 @@ export class GLTFWriter {
 		/* Meshes. */
 
 		json.meshes = root.listMeshes().map((mesh, index) => {
-			const meshDef = createElementDef(mesh) as GLTF.IMesh;
+			const meshDef = createPropertyDef(mesh) as GLTF.IMesh;
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
 				primitiveDef.material = materialIndexMap.get(primitive.getMaterial());
@@ -468,7 +467,7 @@ export class GLTFWriter {
 		/* Nodes. */
 
 		json.nodes = root.listNodes().map((node, index) => {
-			const nodeDef = createElementDef(node) as GLTF.INode;
+			const nodeDef = createPropertyDef(node) as GLTF.INode;
 			nodeDef.translation = node.getTranslation();
 			nodeDef.rotation = node.getRotation();
 			nodeDef.scale = node.getScale();
@@ -494,7 +493,7 @@ export class GLTFWriter {
 		/* Scenes. */
 
 		json.scenes = root.listScenes().map((scene) => {
-			const sceneDef = createElementDef(scene) as GLTF.IScene;
+			const sceneDef = createPropertyDef(scene) as GLTF.IScene;
 			sceneDef.nodes = scene.listNodes().map((node) => nodeIndexMap.get(node));
 			return sceneDef;
 		});
@@ -507,22 +506,22 @@ export class GLTFWriter {
 	}
 }
 
-function createElementDef(element: Element): ElementDef {
-	const def = {} as ElementDef;
-	if (element.getName()) {
-		def.name = element.getName();
+function createPropertyDef(property: Property): PropertyDef {
+	const def = {} as PropertyDef;
+	if (property.getName()) {
+		def.name = property.getName();
 	}
-	if (Object.keys(element.getExtras()).length > 0) {
-		def.extras = element.getExtras();
+	if (Object.keys(property.getExtras()).length > 0) {
+		def.extras = property.getExtras();
 	}
-	if (Object.keys(element.getExtensions()).length > 0) {
-		def.extras = element.getExtensions();
+	if (Object.keys(property.getExtensions()).length > 0) {
+		def.extras = property.getExtensions();
 	}
 	return def;
 }
 
 function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
-	const accessorDef = createElementDef(accessor) as GLTF.IAccessor;
+	const accessorDef = createPropertyDef(accessor) as GLTF.IAccessor;
 	accessorDef.type = accessor.getType();
 	accessorDef.componentType = accessor.getComponentType();
 	accessorDef.count = accessor.getCount();

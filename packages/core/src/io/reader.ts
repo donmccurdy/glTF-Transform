@@ -1,6 +1,6 @@
 import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Container } from '../container';
-import { Accessor, TextureInfo } from '../elements';
+import { Accessor, TextureInfo } from '../properties';
 import { FileUtils } from '../utils';
 import { Asset } from './asset';
 
@@ -62,7 +62,7 @@ export class GLTFReader {
 
 		/** Textures. */
 
-		// glTF-Transform's "Texture" elements correspond 1:1 with glTF "Image" properties, and
+		// glTF-Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
 		// with image files. The glTF file may contain more one texture per image, where images
 		// are reused with different sampler properties.
 		const imageDefs = json.images || [];

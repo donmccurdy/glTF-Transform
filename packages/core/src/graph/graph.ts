@@ -2,7 +2,7 @@ import { Link } from './graph-links';
 import { GraphNode } from './graph-node';
 
 /**
- * A graph manages a network of {@link GraphElement} nodes, connected
+ * A graph manages a network of {@link GraphNode} nodes, connected
  * by {@link @Link} edges.
  *
  * @hidden
@@ -15,45 +15,44 @@ export class Graph {
 		return this.links;
 	}
 
-	public listParentElements(element: GraphNode): GraphNode[] {
+	public listParents(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
 		return this.links
-		.filter((link) => link.getRight() === element)
-		.map((link) => link.getLeft());
+		.filter((link) => link.getChild() === node)
+		.map((link) => link.getParent());
 	}
 
-	public listChildElements(element: GraphNode): GraphNode[] {
+	public listChildren(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
 		return this.links
-		.filter((link) => link.getLeft() === element)
-		.map((link) => link.getRight());
+		.filter((link) => link.getParent() === node)
+		.map((link) => link.getChild());
 	}
 
-	public disconnectChildElements(element: GraphNode): Graph {
+	public disconnectChildren(node: GraphNode): Graph {
 		// TODO(optimize)
 		this.links
-		.filter((link) => link.getLeft() === element)
+		.filter((link) => link.getParent() === node)
 		.forEach((link) => link.dispose());
 		return this;
 	}
 
-	public disconnectParentElements(element: GraphNode): Graph {
+	public disconnectParents(node: GraphNode): Graph {
 		// TODO(optimize)
 		this.links
-		.filter((link) => link.getRight() === element)
+		.filter((link) => link.getChild() === node)
 		.forEach((link) => link.dispose());
 		return this;
 	}
 
 	/**
-	* Creates a link between two {@link GraphElement} instances. Link is returned
+	* Creates a link between two {@link GraphNode} instances. Link is returned
 	* for the caller to store.
 	* @param a Owner
 	* @param b Resource
 	*/
 	public link(name: string, a: GraphNode, b: GraphNode | null): Link<GraphNode, GraphNode> {
-		// If there's no resource, return a null link. Avoids a lot of boilerplate
-		// in Element setters.
+		// If there's no resource, return a null link. Avoids a lot of boilerplate in node setters.
 		if (!b) return null;
 
 		const link = new Link(name, a, b);

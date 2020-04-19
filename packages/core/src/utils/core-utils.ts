@@ -17,21 +17,21 @@ export class CoreUtils {
 	//
 	// /** @internal */
 	// static toGraph(container: Container): object {
-	// 	const idMap = new Map<Element, string>();
+	// 	const idMap = new Map<Property, string>();
 	// 	const nodes = []; // id, label, x, y, size, color
 	// 	const edges = []; // id, label, source, target
 
-	// 	function createNode (element: Element): void {
-	// 		if (idMap.get(element)) return;
+	// 	function createNode (property: Property): void {
+	// 		if (idMap.get(property)) return;
 
 	// 		const id = uuid();
-	// 		idMap.set(element, id);
+	// 		idMap.set(property, id);
 
 	// 		nodes.push({
 	// 			id: id,
 	// 			size: 1,
 	// 			// TODO(cleanup): names get obfuscated
-	// 			label: `${element.constructor.name}: ${id} ${element.getName()}`
+	// 			label: `${property.constructor.name}: ${id} ${property.getName()}`
 	// 		});
 	// 	}
 
@@ -47,7 +47,7 @@ export class CoreUtils {
 	// 	root.listTextures().forEach(createNode);
 
 	// 	const graph = container.getGraph();
-	// 	graph.getLinks().forEach((link: Link<Element, Element>) => {
+	// 	graph.getLinks().forEach((link: Link<Property, Property>) => {
 	// 		const source = idMap.get(link.getLeft());
 	// 		const target = idMap.get(link.getRight());
 	// 		if ((link.getLeft() instanceof Root) && !(link.getRight() instanceof Scene)) {

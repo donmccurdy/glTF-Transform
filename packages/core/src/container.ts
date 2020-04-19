@@ -1,11 +1,11 @@
-import { Accessor, Buffer, ElementGraph, Material, Mesh, Node, Primitive, Root, Scene, Texture } from './elements/index';
+import { Accessor, Buffer, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Texture } from './properties/index';
 
 /**
  * Represents a glTF asset, and the dependencies among its resources. New resources (e.g. a
  * {@link Mesh} or {@link Material}) are created by calling factory methods on the container.
  */
 export class Container {
-	private graph: ElementGraph = new ElementGraph();
+	private graph: PropertyGraph = new PropertyGraph();
 	private root: Root = new Root(this.graph);
 
 	/** Returns the {@link Root} glTF instance. */
@@ -18,7 +18,7 @@ export class Container {
 	 *
 	 * @hidden
 	 */
-	public getGraph(): ElementGraph {
+	public getGraph(): PropertyGraph {
 		return this.graph;
 	}
 
@@ -27,7 +27,7 @@ export class Container {
 		throw new Error('Not implemented.');
 	}
 
-	/* Element factory methods. */
+	/* Property factory methods. */
 
 	/** Creates a new {@link Scene} attached to this container's {@link Root}. */
 	createScene(name: string): Scene {
