@@ -25,7 +25,6 @@
   },
   "devDependencies": {
     "@gltf-transform/ao": "file:packages/ao",
-    "@gltf-transform/atlas": "file:packages/atlas",
     "@gltf-transform/cli": "file:packages/cli",
     "@gltf-transform/colorspace": "file:packages/colorspace",
     "@gltf-transform/core": "file:packages/core",
@@ -34,7 +33,7 @@
     "@types/node": "^10.12.17",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
-    "canvas": "^2.2.0",
+    "canvas": "^2.6.1",
     "coveralls": "^3.0.11",
     "eslint": "^6.8.0",
     "gltf-validator": "^2.0.0-dev.2.7",

@@ -84,7 +84,8 @@ version of the CLI, run `npm link` within the `packages/cli` directory. Then
 `gltf-transform -h` will use local code instead of any global installation.
 
 In the event that dependencies get into a broken state, removing `package-lock.json` and
-reinstalling may resolve things.
+reinstalling may resolve things. I recommend compiling with Node.js v12.x, which is the
+latest version with a prebuilt binary for `gl` as of April 2020.
 
 ### Pull requests
 
