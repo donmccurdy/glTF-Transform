@@ -4,7 +4,7 @@ const fs = require('fs');
 const test = require('tape');
 const glob = require('glob');
 const path = require('path');
-const { Container, NodeIO } = require('../');
+const { Accessor, Container, NodeIO, TextureInfo } = require('../');
 
 function ensureDir(uri) {
 	const outdir = path.dirname(uri);
@@ -89,22 +89,22 @@ test('@gltf-transform/core::io | interleaved accessors', t => {
 				count: 2,
 				bufferView: 0,
 				byteOffset: 0,
-				type: 'VEC3',
-				componentType: 5123, // TODO(cleanup): enum
+				type: Accessor.Type.VEC3,
+				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 6,
-				type: 'VEC2',
-				componentType: 5123, // TODO(cleanup): enum
+				type: Accessor.Type.VEC2,
+				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 10,
-				type: 'VEC2',
-				componentType: 5123, // TODO(cleanup): enum
+				type: Accessor.Type.VEC2,
+				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
 			},
 		],
 		bufferViews: [
@@ -141,13 +141,13 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 		accessors: [
 			{
 				count: 100,
-				type: 'VEC3',
-				componentType: 5126, // TODO(cleanup): enum
+				type: Accessor.Type.VEC3,
+				componentType: Accessor.ComponentType.FLOAT,
 				sparse: {
 					count: 3,
 					indices: {
 						bufferView: 0,
-						componentType: 5123
+						componentType: Accessor.ComponentType.UNSIGNED_SHORT
 					},
 					values: {
 						bufferView: 1
@@ -269,7 +269,7 @@ test('@gltf-transform/core::io | write textures', t => {
 	container.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
-		.setWrapS(33071); // TODO(cleanup) enum
+		.setWrapS(TextureInfo.CLAMP_TO_EDGE);
 
 	const io = new NodeIO(fs, path);
 	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});

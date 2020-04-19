@@ -57,6 +57,26 @@ export class TextureInfo {
 	private wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
 	private wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
 
+	public static TextureWrapMode = {
+		CLAMP_TO_EDGE: GLTF.TextureWrapMode.CLAMP_TO_EDGE,
+		MIRRORED_REPEAT: GLTF.TextureWrapMode.MIRRORED_REPEAT,
+		REPEAT: GLTF.TextureWrapMode.REPEAT,
+	}
+
+	public static TextureMagFilter = {
+		NEAREST: GLTF.TextureMagFilter.NEAREST,
+		LINEAR: GLTF.TextureMagFilter.LINEAR,
+	}
+
+	public static TextureMinFilter = {
+		NEAREST: GLTF.TextureMinFilter.NEAREST,
+		LINEAR: GLTF.TextureMinFilter.LINEAR,
+		NEAREST_MIPMAP_NEAREST: GLTF.TextureMinFilter.NEAREST_MIPMAP_NEAREST,
+		LINEAR_MIPMAP_NEAREST: GLTF.TextureMinFilter.LINEAR_MIPMAP_NEAREST,
+		NEAREST_MIPMAP_LINEAR: GLTF.TextureMinFilter.NEAREST_MIPMAP_LINEAR,
+		LINEAR_MIPMAP_LINEAR: GLTF.TextureMinFilter.LINEAR_MIPMAP_LINEAR,
+	}
+
 	public getTexCoord(): number { return this.texCoord; }
 	public setTexCoord(texCoord: number): TextureInfo {
 		this.texCoord = texCoord;

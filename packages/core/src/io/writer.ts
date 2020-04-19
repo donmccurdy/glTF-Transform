@@ -1,11 +1,16 @@
-import { AccessorComponentTypeData, AccessorTypeData, BufferViewTarget, GLB_BUFFER } from '../constants';
+import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
+import { Accessor, AttributeLink, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
 import { Link } from '../graph';
 import { BufferUtils } from '../utils';
 import { Asset } from './asset';
 
 type ElementDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
+
+const BufferViewTarget = {
+	ARRAY_BUFFER: 34962,
+	ELEMENT_ARRAY_BUFFER: 34963
+};
 
 export interface WriterOptions {
 	basename: string;
@@ -100,8 +105,8 @@ export class GLTFWriter {
 				accessorDef.bufferView = json.bufferViews.length;
 				accessorDef.byteOffset = byteStride;
 
-				const itemSize = AccessorTypeData[accessor.getType()].size;
-				const valueSize = AccessorComponentTypeData[accessor.getComponentType()].size;
+				const itemSize = accessor.getItemSize();
+				const valueSize = accessor.getComponentSize();
 				byteStride += BufferUtils.padNumber(itemSize * valueSize);
 
 				accessorIndexMap.set(accessor, json.accessors.length);
@@ -117,8 +122,8 @@ export class GLTFWriter {
 			for (let i = 0; i < vertexCount; i++) {
 				let vertexByteOffset = 0;
 				for (const accessor of accessors) {
-					const itemSize = AccessorTypeData[accessor.getType()].size;
-					const valueSize = AccessorComponentTypeData[accessor.getComponentType()].size;
+					const itemSize = accessor.getItemSize();
+					const valueSize = accessor.getComponentSize();
 					const componentType = accessor.getComponentType();
 					const array = accessor.getArray();
 					for (let j = 0; j < itemSize; j++) {
