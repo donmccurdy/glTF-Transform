@@ -1,75 +1,73 @@
-export const NOT_IMPLEMENTED = true;
+import { Accessor, BufferUtils, Container, Logger, LoggerVerbosity } from '@gltf-transform/core';
 
-// import { GLTFContainer, GLTFUtil, LoggerVerbosity, BufferViewTarget } from '@gltf-transform/core';
+const prune = function (container: Container): void {
+	const logger = new Logger('@gltf-transform/prune', LoggerVerbosity.INFO);
 
-// const prune = function (container: GLTFContainer): GLTFContainer {
-//   const json = container.json;
-//   const logger = GLTFUtil.createLogger('@gltf-transform/prune', LoggerVerbosity.INFO);
+	// Find all accessors used for mesh data.
+	const indicesAccessors: Set<Accessor> = new Set();
+	const attributeAccessors: Set<Accessor> = new Set();
 
-//   // Find all accessors used for mesh data.
-//   let meshAccessorIndices = [];
-//   json.meshes.forEach((mesh) => {
-//     mesh.primitives.forEach((primitive) => {
-//       for (const semantic in primitive.attributes) {
-//         meshAccessorIndices.push(primitive.attributes[semantic]);
-//       }
-//       if (primitive.indices) {
-//         meshAccessorIndices.push(primitive.indices);
-//       }
-//     })
-//   });
+	const meshes = container.getRoot().listMeshes();
+	meshes.forEach((mesh) => {
+		mesh.listPrimitives().forEach((primitive) => {
+			primitive.listAttributes().forEach((accessor) => (attributeAccessors.add(accessor)));
+			if (primitive.getIndices()) {
+				indicesAccessors.add(primitive.getIndices());
+			}
+		})
+	});
 
-//   meshAccessorIndices = Array.from(new Set(meshAccessorIndices)); // dedupe
-//   meshAccessorIndices.sort((a, b) => a > b ? 1 : -1); // sort ascending
+	// Find duplicate mesh accessors.
+	function detectDuplicates(accessors: Accessor[]): Map<Accessor, Accessor> {
+		const duplicateAccessors: Map<Accessor, Accessor> = new Map();
 
-//   // Find duplicate mesh accessors.
-//   const duplicateAccessors = new Map();
-//   for (let i = 0; i < meshAccessorIndices.length; i++) {
-//     if (duplicateAccessors.has(i)) continue;
-//     const iAccessor = container.json.accessors[i];
-//     const iAccessorData = container.getAccessorArray(i).slice().buffer;
-//     for (let j = i + 1; j < meshAccessorIndices.length; j++) {
-//       if (duplicateAccessors.has(j)) continue;
-//       const jAccessor = container.json.accessors[j];
-//       const jAccessorData = container.getAccessorArray(j).slice().buffer;
-//       if (iAccessor.type !== jAccessor.type) continue;
-//       if (iAccessor.componentType !== jAccessor.componentType) continue;
-//       if (iAccessor.count !== jAccessor.count) continue;
-//       if (iAccessor.normalized !== jAccessor.normalized) continue;
-//       if (GLTFUtil.arrayBufferEquals(iAccessorData, jAccessorData)) {
-//         duplicateAccessors.set(j, i);
-//       }
-//     }
-//   }
-//   logger.info(`Duplicates: ${Array.from(duplicateAccessors).length} of ${json.accessors.length}.`);
+		for (let i = 0; i < accessors.length; i++) {
+			const a = accessors[i];
+			const aData = a.getArray().slice().buffer;
 
-//   // Replace accessor references.
-//   json.meshes.forEach((mesh) => {
-//     mesh.primitives.forEach((primitive) => {
-//       for (const semantic in primitive.attributes) {
-//         const index = primitive.attributes[semantic];
-//         if (duplicateAccessors.has(index)) {
-//           primitive.attributes[semantic] = duplicateAccessors.get(index);
-//         }
-//       }
-//       if (primitive.indices && duplicateAccessors.has(primitive.indices)) {
-//         primitive.indices = duplicateAccessors.get(primitive.indices);
-//       }
-//     });
-//   });
+			if (duplicateAccessors.has(a)) continue;
 
-//   // Clean up.
-//   const removedAccessors = Array.from(duplicateAccessors).map(([dup, _]) => dup);
-//   removedAccessors.sort((a, b) => a > b ? -1 : 1); // sort descending
-//   removedAccessors.forEach((index) => GLTFUtil.removeAccessor(container, index));
-//   for (let i = container.json.bufferViews.length - 1; i >= 0; i--) {
-//     const bufferView = container.json.bufferViews[i];
-//     if (bufferView.byteLength === 0) {
-//       GLTFUtil.removeBufferView(container, i);
-//     }
-//   }
+			for (let j = 0; j < accessors.length; j++) {
+				const b = accessors[j];
 
-//   return container;
-// }
+				if (a === b) continue;
+				if (duplicateAccessors.has(b)) continue;
 
-// export { prune };
+				if (a.getType() !== b.getType()) continue;
+				if (a.getComponentType() !== b.getComponentType()) continue;
+				if (a.getCount() !== b.getCount()) continue;
+				if (a.getNormalized() !== b.getNormalized()) continue;
+				if (BufferUtils.equals(aData, b.getArray().slice().buffer)) {
+					duplicateAccessors.set(b, a);
+				}
+			}
+		}
+
+		return duplicateAccessors;
+	}
+
+	const duplicateIndices = detectDuplicates(Array.from(indicesAccessors));
+	logger.info(`Duplicate indices: ${duplicateIndices.size} of ${indicesAccessors.size}.`);
+
+	const duplicateAttributes = detectDuplicates(Array.from(attributeAccessors));
+	logger.info(`Duplicate attributes: ${duplicateAttributes.size} of ${attributeAccessors.size}.`);
+
+	// Dissolve duplicates.
+	meshes.forEach((mesh) => {
+		mesh.listPrimitives().forEach((primitive) => {
+			primitive.listAttributes().forEach((accessor) => {
+				if (duplicateAttributes.has(accessor)) {
+					primitive.swap(accessor, duplicateAttributes.get(accessor));
+				}
+			});
+			const indices = primitive.getIndices();
+			if (indices && duplicateIndices.has(indices)) {
+				primitive.swap(indices, duplicateIndices.get(indices));
+			}
+		})
+	});
+	Array.from(duplicateIndices.keys()).forEach((indices) => indices.dispose());
+	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
+}
+
+export { prune };

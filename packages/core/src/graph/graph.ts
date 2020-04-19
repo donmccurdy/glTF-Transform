@@ -18,30 +18,30 @@ export class Graph {
 	public listParents(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
 		return this.links
-		.filter((link) => link.getChild() === node)
-		.map((link) => link.getParent());
+			.filter((link) => link.getChild() === node)
+			.map((link) => link.getParent());
 	}
 
 	public listChildren(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
 		return this.links
-		.filter((link) => link.getParent() === node)
-		.map((link) => link.getChild());
+			.filter((link) => link.getParent() === node)
+			.map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: GraphNode): Graph {
 		// TODO(optimize)
 		this.links
-		.filter((link) => link.getParent() === node)
-		.forEach((link) => link.dispose());
+			.filter((link) => link.getParent() === node)
+			.forEach((link) => link.dispose());
 		return this;
 	}
 
 	public disconnectParents(node: GraphNode): Graph {
 		// TODO(optimize)
 		this.links
-		.filter((link) => link.getChild() === node)
-		.forEach((link) => link.dispose());
+			.filter((link) => link.getChild() === node)
+			.forEach((link) => link.dispose());
 		return this;
 	}
 

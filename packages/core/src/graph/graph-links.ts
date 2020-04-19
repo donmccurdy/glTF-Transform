@@ -14,7 +14,10 @@ import { GraphNode } from './graph-node';
 export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	private disposed = false;
 	private readonly listeners: (() => void)[] = [];
-	constructor(private readonly name: string, private parent: Parent, private child: Child) {}
+	constructor(
+		private readonly name: string,
+		private readonly parent: Parent,
+		private child: Child) {}
 
 	/** Name. */
 	getName(): string { return this.name; }
@@ -24,6 +27,12 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 
 	/** Resource node. */
 	getChild(): Child { return this.child; }
+
+	/** Sets the child node. */
+	setChild(child: Child): Link<Parent, Child> {
+		this.child = child;
+		return this;
+	}
 
 	/** Destroys a (currently intact) link, updating both the graph and the owner. */
 	dispose(): void {
