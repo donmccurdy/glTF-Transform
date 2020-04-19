@@ -48,7 +48,7 @@ export class GLTFReader {
 			if (accessorDef.sparse !== undefined) {
 				array = getSparseArray(accessorDef, asset);
 			} else {
-				// TODO(cleanup): Just making a copy here, like a barbarian.
+				// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
 				array = getAccessorArray(accessorDef, asset).slice();
 			}
 
@@ -414,7 +414,8 @@ function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 
 	let array: TypedArray;
 	if (accessorDef.bufferView !== undefined) {
-		array = getAccessorArray(accessorDef, asset);
+		// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
+		array = getAccessorArray(accessorDef, asset).slice();
 	} else {
 		array = new TypedArray(accessorDef.count * itemSize);
 	}

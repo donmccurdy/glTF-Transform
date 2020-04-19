@@ -1,6 +1,6 @@
 import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { Accessor, AttributeLink, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
+import { Accessor, AttributeLink, Buffer, Element, IndexLink, Material, Mesh, Node, Primitive, Root, Texture, TextureInfo } from '../elements';
 import { Link } from '../graph';
 import { BufferUtils } from '../utils';
 import { Asset } from './asset';
@@ -23,7 +23,12 @@ export class GLTFWriter {
 		const asset = {json: {asset: root.getAsset()}, resources: {}} as Asset;
 		const json = asset.json;
 
-		/* Index lookup. */
+		const numBuffers = root.listBuffers().length;
+		const numImages = root.listTextures().length;
+		const bufferURIGenerator = new UniqueURIGenerator(numBuffers> 1, options.basename);
+		const imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
+
+		/* Lookup tables. */
 
 		const accessorIndexMap = new Map<Accessor, number>();
 		const materialIndexMap = new Map<Material, number>();
@@ -131,25 +136,25 @@ export class GLTFWriter {
 						const value = array[i * itemSize + j];
 						switch (componentType) {
 							case GLTF.AccessorComponentType.FLOAT:
-							view.setFloat32(viewByteOffset, value, true);
-							break;
+								view.setFloat32(viewByteOffset, value, true);
+								break;
 							case GLTF.AccessorComponentType.BYTE:
-							view.setInt8(viewByteOffset, value);
-							break;
+								view.setInt8(viewByteOffset, value);
+								break;
 							case GLTF.AccessorComponentType.SHORT:
-							view.setInt16(viewByteOffset, value, true);
-							break;
+								view.setInt16(viewByteOffset, value, true);
+								break;
 							case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-							view.setUint8(viewByteOffset, value);
-							break;
+								view.setUint8(viewByteOffset, value);
+								break;
 							case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-							view.setUint16(viewByteOffset, value, true);
-							break;
+								view.setUint16(viewByteOffset, value, true);
+								break;
 							case GLTF.AccessorComponentType.UNSIGNED_INT:
-							view.setUint32(viewByteOffset, value, true);
-							break;
+								view.setUint32(viewByteOffset, value, true);
+								break;
 							default:
-							throw new Error('Unexpected component type: ' + componentType);
+								throw new Error('Unexpected component type: ' + componentType);
 						}
 					}
 					vertexByteOffset += BufferUtils.padNumber(itemSize * valueSize);
@@ -247,19 +252,9 @@ export class GLTFWriter {
 					byteLength: texture.getImage().byteLength
 				});
 			} else {
-				// TODO(cleanup): Resolve unique image names in a function that can be shared
-				// with buffer names. And, perhaps, all other element names.
 				const extension = texture.getMimeType() === 'image/png' ? 'png' : 'jpeg';
-				let uri: string;
-				if (texture.getURI()) {
-					uri = texture.getURI();
-				} else if (root.listTextures().length === 1) {
-					uri = `${options.basename}.${extension}`;
-				} else {
-					uri = `${options.basename}_${textureIndex}.${extension}`;
-				}
-				imageDef.uri = uri;
-				asset.resources[uri] = texture.getImage();
+				imageDef.uri = imageURIGenerator.createURI(texture, extension);
+				asset.resources[imageDef.uri] = texture.getImage();
 			}
 
 			imageIndexMap.set(texture, textureIndex);
@@ -363,14 +358,10 @@ export class GLTFWriter {
 			let uri: string;
 			if (options.isGLB) {
 				uri = GLB_BUFFER;
-			} else if (buffer.getURI()) {
-				uri = buffer.getURI();
-			} else if (root.listBuffers().length === 1) {
-				uri = `${options.basename}.bin`;
 			} else {
-				uri = `${options.basename}_${bufferIndex}.bin`;
+				uri = bufferURIGenerator.createURI(buffer, 'bin');
+				bufferDef.uri = uri;
 			}
-			if (!options.isGLB) bufferDef.uri = uri;
 
 			// Write buffer views to buffer.
 
@@ -559,5 +550,23 @@ function clean(object): void {
 
 	for (const key of unused) {
 		delete object[key];
+	}
+}
+
+class UniqueURIGenerator {
+	private counter = 1;
+
+	constructor (
+		private readonly multiple: boolean,
+		private readonly basename: string) {}
+
+	public createURI(object: Texture | Buffer, extension: string): string {
+		if (object.getURI()) {
+			return object.getURI();
+		} else if (!this.multiple) {
+			return `${this.basename}.${extension}`;
+		} else {
+			return `${this.basename}_${this.counter++}.${extension}`;
+		}
 	}
 }
