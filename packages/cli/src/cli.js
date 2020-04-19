@@ -6,9 +6,9 @@ const gl = require('gl');
 const { createCanvas, Image } = require('canvas');
 const program = require('caporal');
 const { version } = require('../package.json');
-const { GLTFUtil, NodeIO } = require('@gltf-transform/core');
+const { NodeIO } = require('@gltf-transform/core');
 const { ao } = require('@gltf-transform/ao');
-const { atlas } = require('@gltf-transform/atlas');
+// const { atlas } = require('@gltf-transform/atlas');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
@@ -23,8 +23,16 @@ program
     .command('analyze', 'Analyzes a model\'s contents')
     .argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
     .action(({input}, options, logger) => {
-        const container = io.read(input);
-        const analysis = GLTFUtil.analyze(container);
+		const container = io.read(input);
+		const root = container.getRoot();
+        const analysis = {
+			nodes: root.listNodes().length,
+			meshes: root.listMeshes().length,
+			materials: root.listMaterials().length,
+			textures: root.listTextures().length,
+			accessors: root.listAccessors().length,
+			buffers: root.listBuffers().length,
+		};
         logger.info(JSON.stringify(analysis, null, 2));
     });
 
@@ -42,21 +50,21 @@ program
     });
 
 // ATLAS
-program
-    .command('atlas', 'Creates a texture atlas with simple rectangular packing')
-    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-    .argument('<output>', 'Path to write output')
-    .option('--size [size]', 'Atlas size', program.INT)
-    .option('--bake [bakeUVs]', 'If set, bakes transformed UVs to meshes. '
-        + 'Otherwise, adds UV transforms to each material.', program.BOOL)
-    .action(({input, output}, {size, bake}, logger) => {
-        const container = io.read(input);
-        atlas(container, {size, bake, createCanvas, createImage: () => new Image()}).then(() => {
-            io.write(output, container);
-        }).catch((e) => {
-            logger.error(e);
-        });
-    });
+// program
+//     .command('atlas', 'Creates a texture atlas with simple rectangular packing')
+//     .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+//     .argument('<output>', 'Path to write output')
+//     .option('--size [size]', 'Atlas size', program.INT)
+//     .option('--bake [bakeUVs]', 'If set, bakes transformed UVs to meshes. '
+//         + 'Otherwise, adds UV transforms to each material.', program.BOOL)
+//     .action(({input, output}, {size, bake}, logger) => {
+//         const container = io.read(input);
+//         atlas(container, {size, bake, createCanvas, createImage: () => new Image()}).then(() => {
+//             io.write(output, container);
+//         }).catch((e) => {
+//             logger.error(e);
+//         });
+//     });
 
 // COLORSPACE
 program
@@ -92,8 +100,6 @@ program
         split(container, meshes);
         io.write(output, container);
     });
-
-// PACK:TODO
 
 program
     .parse(process.argv);

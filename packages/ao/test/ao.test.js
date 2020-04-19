@@ -26,7 +26,5 @@ test('@gltf-transform/ao', t => {
 	t.ok(primitive.getAttribute('TEXCOORD_1'), 'adds TEXCOORD_1');
 	t.equals(root.listTextures().length, 2, 'adds texture')
 
-	io.write(path.join(__dirname, 'knight.gltf'), container);
-
 	t.end();
 });
