@@ -34,6 +34,16 @@ program
 			buffers: root.listBuffers().length,
 		};
         logger.info(JSON.stringify(analysis, null, 2));
+	});
+
+// REPACK
+program
+    .command('repack', 'Rewrites the model with minimal changes')
+	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<output>', 'Path to write output')
+    .action(({input, output}, options, logger) => {
+		const container = io.read(input);
+		io.write(output, container);
     });
 
 // AMBIENT OCCLUSION

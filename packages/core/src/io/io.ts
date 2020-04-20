@@ -1,6 +1,6 @@
 import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
-import { BufferUtils, FileUtils } from '../utils/';
+import { BufferUtils, FileUtils, uuid } from '../utils/';
 import { Asset } from './asset';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
@@ -147,7 +147,10 @@ class NodeIO extends PlatformIO {
 				const absURI = this.path.resolve(dir, resource.uri);
 				asset.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
-				asset.resources[resource.uri] = BufferUtils.createBufferFromDataURI(resource.uri);
+				// Rewrite Data URIs to something short and unique.
+				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
+				asset.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
+				resource.uri = resourceUUID;
 			}
 		})
 		return GLTFReader.read(asset);

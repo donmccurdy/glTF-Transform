@@ -25,7 +25,13 @@ export class GLTFReader {
 		/** Buffers. */
 
 		const bufferDefs = json.buffers || [];
-		const buffers = bufferDefs.map((bufferDef) => container.createBuffer(bufferDef.name));
+		const buffers = bufferDefs.map((bufferDef) => {
+			const buffer = container.createBuffer(bufferDef.name);
+			if (bufferDef.uri && bufferDef.uri.indexOf('__') !== 0) {
+				buffer.setURI(bufferDef.uri);
+			}
+			return buffer;
+		});
 
 		/** Buffer views. */
 
@@ -82,7 +88,9 @@ export class GLTFReader {
 				texture.setImage(imageData);
 			} else if (imageDef.uri !== undefined) {
 				texture.setImage(asset.resources[imageDef.uri]);
-				texture.setURI(imageDef.uri);
+				if (imageDef.uri.indexOf('__') !== 0) {
+					texture.setURI(imageDef.uri);
+				}
 			}
 
 			if (imageDef.mimeType !== undefined) {

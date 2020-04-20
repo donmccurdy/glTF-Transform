@@ -12,6 +12,14 @@ export class FileUtils {
 
 	/** Extracts the extension from a path, e.g. "folder/model.glb" -> "glb". */
 	static extension(path: string): string {
-		return path.split(/[\\/]/).pop().split(/[.]/).pop();
+		if (path.indexOf('data:') !== 0) {
+			return path.split(/[\\/]/).pop().split(/[.]/).pop();
+		} else if (path.indexOf('data:image/png') === 0) {
+			return 'png';
+		} else if (path.indexOf('data:image/jpeg') === 0) {
+			return 'jpeg';
+		} else {
+			return 'bin';
+		}
 	}
 }
