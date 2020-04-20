@@ -327,7 +327,7 @@ export class GLTFWriter {
 				buffers.push(...indexResult.buffers);
 			}
 
-			for (const primitiveAccessors of attributeAccessors.values()) {
+			for (const primitiveAccessors of Array.from(attributeAccessors.values())) {
 				if (primitiveAccessors.size) {
 					const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
 					bufferByteLength += primitiveResult.byteLength;

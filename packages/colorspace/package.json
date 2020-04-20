@@ -4,7 +4,13 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Vertex color colorspace correction",
   "main": "dist/colorspace.js",
+  "module": "dist/colorspace.module.js",
+  "source": "src/colorspace.ts",
   "types": "dist/colorspace.d.ts",
+  "scripts": {
+    "dist": "microbundle",
+    "watch": "microbundle watch"
+  },
   "keywords": [
     "gltf",
     "3d",

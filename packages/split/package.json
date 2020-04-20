@@ -4,7 +4,13 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Splits the binary payload of a glTF file",
   "main": "dist/split.js",
+  "module": "dist/split.module.js",
+  "source": "src/split.ts",
   "types": "dist/split.d.ts",
+  "scripts": {
+    "dist": "microbundle",
+    "watch": "microbundle watch"
+  },
   "keywords": [
     "gltf",
     "3d",

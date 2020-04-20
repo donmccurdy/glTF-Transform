@@ -4,7 +4,14 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
   "main": "dist/core.js",
+  "module": "dist/core.module.js",
+  "source": "src/core.ts",
   "types": "dist/core.d.ts",
+  "scripts": {
+    "dist": "microbundle",
+    "watch": "microbundle watch",
+    "watch:debug": "microbundle watch --no-compress"
+  },
   "keywords": [
     "gltf",
     "3d",

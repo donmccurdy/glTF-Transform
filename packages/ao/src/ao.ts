@@ -1,8 +1,10 @@
-import * as geoao from 'geo-ambient-occlusion';
-import * as REGL from 'regl';
+import * as geoaoNamespace from 'geo-ambient-occlusion';
+import * as reglNamespace from 'regl';
 import { Container, Logger, LoggerVerbosity, Primitive } from '@gltf-transform/core';
 
 const logger = new Logger('@gltf-transform/ao', LoggerVerbosity.INFO);
+const geoao = geoaoNamespace['default'] as Function;
+const REGL = reglNamespace['default'] as Function;
 
 interface GLFactory {
 	(w: number, h: number): WebGLRenderingContext;

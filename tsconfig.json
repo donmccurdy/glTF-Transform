@@ -8,10 +8,14 @@
     "lib": ["es6", "dom"],
     "target": "es6",
     "declaration": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "typings",
+      "node_modules/@types"
+    ]
   },
   "files": [
     "typings/gltf.d.ts"
   ],
-  "include": ["packages/{core,colorspace}/src/**/*.ts"]
+  "include": ["packages/*/src/**/*.ts"]
 }
