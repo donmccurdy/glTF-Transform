@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dist": "lerna run dist --parallel",
+    "dist": "lerna run dist",
     "watch": "lerna run watch --parallel",
     "watch:debug": "lerna run watch:debug --parallel",
     "clean": "rm -rf packages/*/dist/**",
