@@ -21,5 +21,8 @@ test('@gltf-transform/split', t => {
     { uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' }
   ], 'splits into two buffers');
 
+  const bufferReferences = asset.json.bufferViews.map((b) => b.buffer);
+  t.deepEquals(bufferReferences, [0,0,1,1], 'creates four buffer views');
+
   t.end();
 });

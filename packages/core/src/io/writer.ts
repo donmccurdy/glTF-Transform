@@ -2,7 +2,7 @@ import { GLB_BUFFER } from '../constants';
 import { Container } from '../container';
 import { Link } from '../graph';
 import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo } from '../properties';
-import { BufferUtils } from '../utils';
+import { BufferUtils, Logger, LoggerVerbosity } from '../utils';
 import { Asset } from './asset';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -22,6 +22,8 @@ export class GLTFWriter {
 		const root = container.getRoot();
 		const asset = {json: {asset: root.getAsset()}, resources: {}} as Asset;
 		const json = asset.json;
+
+		const logger = new Logger('@gltf-transform/core', LoggerVerbosity.WARNING);
 
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
@@ -264,7 +266,7 @@ export class GLTFWriter {
 		/* Buffers, buffer views, and accessors. */
 
 		json.buffers = [];
-		root.listBuffers().forEach((buffer, bufferIndex) => {
+		root.listBuffers().forEach((buffer) => {
 			const bufferDef = createPropertyDef(buffer) as GLTF.IBuffer;
 
 			// Attributes are grouped and interleaved in one buffer view per mesh primitive. Indices for
@@ -319,6 +321,7 @@ export class GLTFWriter {
 			// Write accessor groups to buffer views.
 
 			const buffers: ArrayBuffer[] = [];
+			const bufferIndex = json.buffers.length;
 			let bufferByteLength = 0;
 
 			if (indexAccessors.size) {
@@ -350,7 +353,10 @@ export class GLTFWriter {
 				}
 			}
 
-			if (!bufferByteLength) return;
+			if (!bufferByteLength) {
+				logger.warn(`Skipping empty buffer, "${buffer.getName()}".`);
+				return;
+			}
 
 			// Assign buffer URI.
 
