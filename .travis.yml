@@ -1,16 +1,10 @@
 language: node_js
-# Better headless-gl support on macOS.
-os: osx
+os: osx # Better `headless-gl` support on macOS.
 node_js:
-  # Latest prebuilt binary from https://github.com/stackgl/headless-gl/releases.
-  - "12"
+  - "12" # Latest prebuilt binary for `headless-gl`
 env:
   global:
     - CI=1
-#     - YARN_VERSION="1.9.2" # Broken workspace symlinks on 1.22.
-# before_install:
-#   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
-#   - export PATH="$HOME/.yarn/bin:$PATH"
 before_script:
   - yarn run dist
 script:

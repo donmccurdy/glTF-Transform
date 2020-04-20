@@ -57,19 +57,15 @@ when dealing with glTF schema objects.
 After cloning the repository, run:
 
 ```
-npm install && npm install -g lerna
-lerna bootstrap
+yarn install
 ```
 
-The command `lerna bootstrap` will install dependencies into each package, and will then
-link them together. If you make changes to a package's dependencies (e.g. run
-`npm install <anything>`) you will need to run `lerna link` re-create the symlinks.
-
-To build and test all code, run:
+The project relies on yarn workspaces and will not build with npm. To build and test all code,
+run:
 
 ```
-npm run dist
-npm run test
+yarn run dist
+yarn test
 ```
 
 To run an arbitrary command across all packages:
@@ -78,13 +74,9 @@ To run an arbitrary command across all packages:
 lerna exec -- <command>
 ```
 
-While working, use `npm run watch` to watch and rebuild code after changes. To use a local
-version of the CLI, run `npm link` within the `packages/cli` directory. Then
+While working, use `yarn run watch` to watch and rebuild code after changes. To use a local
+version of the CLI, run `yarn link` within the `packages/cli` directory. Then
 `gltf-transform -h` will use local code instead of any global installation.
-
-In the event that dependencies get into a broken state, removing `package-lock.json` and
-reinstalling may resolve things. I recommend compiling with Node.js v12.x, which is the
-latest version with a prebuilt binary for `gl` as of April 2020.
 
 ### Pull requests
 
@@ -99,6 +91,9 @@ or [headless-gl](https://github.com/stackgl/headless-gl) are passed into API fun
 rather than being created by the API directly.
 
 ### Dependencies
+
+I recommend compiling with Node.js v12.x, which is the latest version with a prebuilt binary for
+`gl` as of April 2020.
 
 Runtime `dependencies` should be installed only to the sub-package in which they are needed. Any
 `devDependencies` are shared across all packages, and should be installed in the project root. Pull
