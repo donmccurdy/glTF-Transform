@@ -3,9 +3,6 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "repository": "github:donmccurdy/glTF-Transform",
   "license": "MIT",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "dist": "lerna exec --ignore cli \"tsc\"",
     "dist:test": "lerna exec --ignore cli \"tsc --module commonjs\"",

@@ -98,6 +98,8 @@ certain situations. To accomplish that, instances of [HTMLCanvasElement](https:/
 or [headless-gl](https://github.com/stackgl/headless-gl) are passed into API functions by the user,
 rather than being created by the API directly.
 
+### Dependencies
+
 Runtime `dependencies` should be installed only to the sub-package in which they are needed. Any
 `devDependencies` are shared across all packages, and should be installed in the project root. Pull
 requests should omit any changes to `dist/*` artifacts. Changes including test coverage are
