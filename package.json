@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "gltf-transform",
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "repository": "github:donmccurdy/glTF-Transform",
   "license": "MIT",
@@ -35,13 +36,12 @@
     "eslint": "^6.8.0",
     "gl": "^4.5.0",
     "gltf-validator": "^2.0.0-dev.2.7",
-    "lerna": "2.8.0",
+    "lerna": "^3.20.2",
     "nyc": "^15.0.1",
     "source-map-support": "^0.5.9",
     "tap-spec": "^5.0.0",
     "tape": "^4.9.1",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"
-  },
-  "dependencies": {}
+  }
 }
