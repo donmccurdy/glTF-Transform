@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": "./packages",
+    "paths": {
+      "@gltf-transform/*": ["*/src"]
+    },
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6",
