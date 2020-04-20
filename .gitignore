@@ -7,6 +7,5 @@ lerna-debug.log
 **/dist/*
 **/test/**/*-tmp.glb
 **/test/**/*-tmp.gltf
-packages/*/package-lock.json
 packages/*/test/out/*
 !packages/*/test/out/**/.gitkeep

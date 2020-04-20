@@ -8,7 +8,7 @@ env:
   global:
     - CI=1
 install:
-  - npm install --global lerna
+  - npm install --global lerna@2.8
   - lerna bootstrap
 before_script:
   - npm run dist
