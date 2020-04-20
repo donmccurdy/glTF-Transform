@@ -10,7 +10,6 @@ env:
 install:
   - npm i -g lerna
   - lerna bootstrap
-  - lerna link
 before_script:
   - npm run dist
 script:

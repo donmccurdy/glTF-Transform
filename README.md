@@ -59,7 +59,6 @@ After cloning the repository, run:
 ```
 npm install && npm install -g lerna
 lerna bootstrap
-lerna link
 ```
 
 The command `lerna bootstrap` will install dependencies into each package, and will then

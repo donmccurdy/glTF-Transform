@@ -36,6 +36,7 @@
     "canvas": "^2.6.1",
     "coveralls": "^3.0.11",
     "eslint": "^6.8.0",
+    "gl": "^4.5.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "2.8.0",
     "nyc": "^15.0.1",

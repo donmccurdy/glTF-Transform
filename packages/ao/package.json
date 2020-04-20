@@ -14,9 +14,6 @@
   ],
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
-  "devDependencies": {
-    "gl": "^4.5.0"
-  },
   "dependencies": {
     "@gltf-transform/core": "^0.1.0",
     "geo-ambient-occlusion": "^3.0.2",
