@@ -8,7 +8,6 @@ env:
   global:
     - CI=1
 install:
-  - npm install
   - npm install --global lerna
   - lerna bootstrap
 before_script:
