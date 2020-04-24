@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+<style>
+html, body { margin: 0; }
+header {
+    width: 630px;
+    margin: 30px auto;
+}
+h1 {
+    font-family: Roboto;
+    font-weight: 400;
+    text-align: center;
+}
+.container {
+    width: 630px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-auto-rows: 300px;
+    grid-gap: 30px;
+}
+model-viewer {
+    width: 300px;
+    height: 300px;
+    border: 1px dashed #ccc;
+}
+</style>
+<header>
+    <h1>Round trip tests</h1>
+</header>
+<main class="container">
+</main>
+<script>
+    /**
+     * Generates side-by-side <model-viewer/> comparisons for each of the
+     * supported sample models.
+     */
+
+    const containerEl = document.querySelector('.container');
+    fetch('./out/model-index.json')
+        .then((response) => response.json())
+        .then((index) => {
+            index.forEach((asset) => {
+                Object.entries(asset.variants).forEach(([variant, filename]) => {
+                    const el = document.createElement('model-viewer');
+
+                    el.setAttribute('src', `./out/${asset.name}/${variant}/${filename}`);
+                    el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
+                    containerEl.appendChild(el.cloneNode());
+
+                    el.setAttribute('src', `./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.transformed.glb')}`);
+                    el.alt = el.title = `${asset.name} / ${variant} / ${filename} (TRANSFORMED)`;
+                    containerEl.appendChild(el);
+                });
+            });
+        })
+</script>

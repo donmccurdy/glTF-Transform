@@ -6,8 +6,8 @@ node_modules
 .nyc_output
 .vscode
 .coveralls.yml
-packages/*/test/out/*
-!packages/*/test/out/**/.gitkeep
+**/out/*
+!**/out/.gitkeep
 packages/**/dist/*
 packages/**/.rts2_cache_cjs
 packages/**/.rts2_cache_es
