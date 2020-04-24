@@ -1,12 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const {execSync} = require('child_process');
-const {SOURCE, TARGET, VARIANTS, INDEX} = require('./constants.js');
+const {SOURCE, TARGET, VARIANTS, SKIPLIST} = require('./constants.js');
 
 /**
  * Cleans the `out/` directory, then makes fresh copies of all supported sample
  * model files, in their original/unmodified forms.
  */
+
+const INDEX = require(path.join(SOURCE, 'model-index.json'))
+	.filter((asset) => !SKIPLIST.has(asset.name));
 
 INDEX.forEach((asset) => {
 	cleanDir(path.join(TARGET, asset.name));

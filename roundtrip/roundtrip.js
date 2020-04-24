@@ -1,12 +1,14 @@
 const path = require('path');
 const {execSync} = require('child_process');
-const {SOURCE, TARGET, VARIANTS, INDEX} = require('./constants.js');
+const {SOURCE, TARGET, VARIANTS} = require('./constants.js');
 
 /**
  * Generates a copy of each sample model using `gltf-transform repack`. Does
  * not apply any meaningful edits to the files: this is intended to be a
  * lossless round trip test.
  */
+
+const INDEX = require(path.join(TARGET, 'model-index.json'))
 
 INDEX.forEach((asset, assetIndex) => {
 

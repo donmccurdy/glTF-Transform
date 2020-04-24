@@ -1,10 +1,27 @@
 const path = require('path');
 
-/** Constants used in round trip scripts. */
+/**
+ * Constants used in round trip scripts.
+ */
+
+/** Source directory, referencing glTF-Sample-Models. */
 
 const SOURCE = path.resolve(__dirname, '../../glTF-Sample-Models/2.0/');
-const TARGET = path.resolve(__dirname, './out');
-const VARIANTS = new Set(['glTF']);
-const INDEX = require(path.join(SOURCE, 'model-index.json'));
 
-module.exports = {SOURCE, TARGET, VARIANTS, INDEX};
+/** Output directory for generated roundtrip assets. */
+const TARGET = path.resolve(__dirname, './out');
+
+/** Supported variants. */
+const VARIANTS = new Set(['glTF', 'glTF-Binary', 'glTF-Embedded']);
+
+/**
+ * Assets to skip.
+ *
+ * Rationale:
+ * - AnimatedTriangle: Roundtrip writes GLB; this model relies on two buffers.
+ * - SimpleMorph: ""
+ * - SpecGlossVsMetalRough: ""
+ */
+const SKIPLIST = new Set(['AnimatedTriangle', 'SimpleMorph', 'SpecGlossVsMetalRough']);
+
+module.exports = {SOURCE, TARGET, VARIANTS, SKIPLIST};
