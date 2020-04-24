@@ -1,3 +1,4 @@
+import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Container } from '../container';
 import { Accessor, TextureInfo } from '../properties';
@@ -265,7 +266,12 @@ export class GLTFReader {
 				node.setScale(nodeDef.scale as vec3);
 			}
 
-			// TODO(feat): nodeDef.matrix
+			if (nodeDef.matrix !== undefined) {
+				node.setTranslation(getTranslation([], nodeDef.matrix) as vec3);
+				node.setRotation(getRotation([], nodeDef.matrix) as vec4);
+				node.setScale(getScaling([], nodeDef.matrix) as vec3);
+			}
+
 			// TODO(feat): nodeDef.camera
 			// TODO(feat): nodeDef.skin
 			// TODO(feat): nodeDef.weights

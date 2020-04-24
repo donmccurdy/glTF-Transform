@@ -28,5 +28,8 @@
     "package.json",
     "package-lock.json"
   ],
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "gl-matrix": "^3.3.0"
+  }
 }
