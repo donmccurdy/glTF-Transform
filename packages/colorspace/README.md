@@ -9,8 +9,7 @@ if you find an error, edit the source file (likely index.ts), and re-run
 [![License](https://img.shields.io/npm/l/@gltf-transform/core.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
 [![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
 
-> This module is part of the [glTF-Transform project](https://github.com/donmccurdy/glTF-Transform), where you can create PRs and
-issues.
+Part of the [glTF-Transform](https://github.com/donmccurdy/glTF-Transform) project.
 
 ## Installation
 
