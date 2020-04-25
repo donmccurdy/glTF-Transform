@@ -13,6 +13,7 @@
     "watch:debug": "lerna run watch:debug --parallel",
     "clean": "rm -rf packages/*/dist/**",
     "test": "tape packages/*/test/*.test.js | tap-spec",
+    "test:browser": "browserify packages/core/test/{io,graph,uuid,container}.test.js | tape-run | tap-spec",
     "coverage": "nyc --reporter=text tape packages/*/test/*.test.js",
     "coverage:report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",
@@ -25,6 +26,7 @@
     "@types/node": "^10.12.17",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "browserify": "^16.5.1",
     "canvas": "^2.6.1",
     "coveralls": "^3.0.11",
     "eslint": "^6.8.0",
@@ -36,6 +38,7 @@
     "source-map-support": "^0.5.9",
     "tap-spec": "^5.0.0",
     "tape": "^4.9.1",
+    "tape-run": "^7.0.0",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"
   }
