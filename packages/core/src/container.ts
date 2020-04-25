@@ -1,5 +1,7 @@
 import { Accessor, Buffer, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Texture } from './properties/index';
 
+type Transform = (container: Container) => void;
+
 /**
  * Represents a glTF asset, and the dependencies among its resources. New resources (e.g. a
  * {@link Mesh} or {@link Material}) are created by calling factory methods on the container.
@@ -22,12 +24,41 @@ export class Container {
 		return this.graph;
 	}
 
-	/** Clones this container and its graph, copying all resources within it. */
+	/**
+	 * Clones this container and its graph, copying all resources within it.
+	 *
+	 * Usage:
+	 *
+	 * ```ts
+	 * container.transform(
+	 * 	ao({samples: 500}),
+	 * 	prune()
+	 * );
+	 * ```
+	 *
+	 * @hidden
+	 */
 	public clone(): Container {
 		throw new Error('Not implemented.');
 	}
 
-	/* Property factory methods. */
+	/**
+	 * Applies a series of modifications to this container. Each transformation is synchronous,
+	 * takes the {@link Container} as input, and returns nothing. Transforms are applied in the
+	 * order given, which may affect the final result.
+	 *
+	 * @param transforms List of synchronous transformation functions to apply.
+	 */
+	public transform(...transforms: Transform[]): Container {
+		for (const transform of transforms) {
+			transform(this);
+		}
+		return this;
+	}
+
+	/**********************************************************************************************
+	 * Property factory methods.
+	 */
 
 	/** Creates a new {@link Scene} attached to this container's {@link Root}. */
 	createScene(name: string): Scene {
