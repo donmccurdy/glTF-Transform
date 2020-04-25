@@ -11,13 +11,13 @@ test('@gltf-transform/core::image-utils', t => {
 	ctx = canvas.getContext("2d");
 	ctx.fillStyle = "#222222";
 	buffer = canvas.toBuffer("image/png");
-	t.deepEquals(ImageUtils.getSizePNG(buffer), {width: 100, height: 50}, 'gets PNG size');
+	t.deepEquals(ImageUtils.getSizePNG(buffer), [100, 50], 'gets PNG size');
 
 	canvas = createCanvas(16, 32);
 	ctx = canvas.getContext("2d");
 	ctx.fillStyle = "#222222";
 	buffer = canvas.toBuffer("image/jpeg");
-	t.deepEquals(ImageUtils.getSizeJPEG(buffer), {width: 16, height: 32}, 'gets JPEG size');
+	t.deepEquals(ImageUtils.getSizeJPEG(buffer), [16, 32], 'gets JPEG size');
 
 	t.end();
 });

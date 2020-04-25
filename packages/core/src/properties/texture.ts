@@ -1,4 +1,5 @@
-import { ImageUtils, Size } from '../utils';
+import { vec2 } from '../constants';
+import { ImageUtils } from '../utils';
 import { Property } from './property';
 
 /**
@@ -34,7 +35,7 @@ export class Texture extends Property {
 		return this;
 	}
 
-	public getSize(): Size {
+	public getSize(): vec2 {
 		let isPNG;
 		if (this.mimeType) {
 			isPNG = this.mimeType === 'image/png';

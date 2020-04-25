@@ -1,40 +1,16 @@
 /**
  * Represents an image's size.
  *
+ * PNG signature: 'PNG\r\n\x1a\n'
+ * PNG image header chunk name: 'IHDR'
+ *
  * @category Utilities
  */
-interface Size {
-    width: number;
-    height: number;
-}
 
-////////////////////////////////////////////////////////
-
-function extractSize (buffer: Buffer, i: number): Size {
-    return {
-        'height' : buffer.readUInt16BE(i),
-        'width' : buffer.readUInt16BE(i + 2)
-    };
-}
-
-function validateBuffer (buffer: Buffer, i: number): void {
-    // index should be within buffer limits
-    if (i > buffer.length) {
-        throw new TypeError('Corrupt JPG, exceeded buffer limits');
-    }
-    // Every JPEG block must begin with a 0xFF
-    if (buffer[i] !== 0xFF) {
-        throw new TypeError('Invalid JPG, marker table corrupted');
-    }
-}
-
-////////////////////////////////////////////////////////
-
-// const pngSignature = 'PNG\r\n\x1a\n';
-// const pngImageHeaderChunkName = 'IHDR';
+import { vec2 } from '../constants';
 
 // Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
-const pngFriedChunkName = 'CgBI';
+const PNG_FRIED_CHUNK_NAME = 'CgBI';
 
 /**
  * Common utilities for working with image data.
@@ -42,8 +18,8 @@ const pngFriedChunkName = 'CgBI';
  * @category Utilities
  */
 class ImageUtils {
-	/** Returns the {@link Size} of a PNG image. */
-	public static getSizeJPEG (buffer: Buffer): Size {
+	/** Returns the size of a PNG image. */
+	public static getSizeJPEG (buffer: Buffer): vec2 {
 		// Skip 4 chars, they are for signature
 		buffer = buffer.slice(4);
 
@@ -60,7 +36,7 @@ class ImageUtils {
 			// 0xFFC2 is progressive(SOF2)
 			next = buffer[i + 1];
 			if (next === 0xC0 || next === 0xC1 || next === 0xC2) {
-				return extractSize(buffer, i + 5);
+				return [buffer.readUInt16BE(i + 7), buffer.readUInt16BE(i + 5)]
 			}
 
 			// move to the next block
@@ -70,19 +46,24 @@ class ImageUtils {
 		throw new TypeError('Invalid JPG, no size found');
 	}
 
-	/** Returns the {@link Size} of a PNG image. */
-	public static getSizePNG (buffer: Buffer): Size {
-		if (buffer.toString('ascii', 12, 16) === pngFriedChunkName) {
-			return {
-				width: buffer.readUInt32BE(32),
-				height: buffer.readUInt32BE(36)
-			};
+	/** Returns the size of a PNG image. */
+	public static getSizePNG (buffer: Buffer): vec2 {
+		if (buffer.toString('ascii', 12, 16) === PNG_FRIED_CHUNK_NAME) {
+			return [buffer.readUInt32BE(32), buffer.readUInt32BE(36)];
 		}
-		return {
-			width: buffer.readUInt32BE(16),
-			height: buffer.readUInt32BE(20)
-		};
+		return [buffer.readUInt32BE(16), buffer.readUInt32BE(20)];
 	}
 }
 
-export { ImageUtils, Size };
+function validateBuffer (buffer: Buffer, i: number): void {
+    // index should be within buffer limits
+    if (i > buffer.length) {
+        throw new TypeError('Corrupt JPG, exceeded buffer limits');
+    }
+    // Every JPEG block must begin with a 0xFF
+    if (buffer[i] !== 0xFF) {
+        throw new TypeError('Invalid JPG, marker table corrupted');
+    }
+}
+
+export { ImageUtils };
