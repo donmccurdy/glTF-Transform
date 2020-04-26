@@ -539,9 +539,10 @@ function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
 }
 
 /**
-* Removes empty and null values from an object.
-* @param object
-*/
+ * Removes empty and null values from an object.
+ * @param object
+ * @hidden
+ */
 function clean(object): void {
 	const unused: string[] = [];
 

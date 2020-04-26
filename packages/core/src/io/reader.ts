@@ -339,7 +339,10 @@ function setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureI
 	}
 }
 
-/** Returns the contents of an interleaved accessor, as a typed array. */
+/**
+ * Returns the contents of an interleaved accessor, as a typed array.
+ * @hidden
+ */
 function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	const bufferViewDef = asset.json.bufferViews[accessorDef.bufferView];
 	const bufferDef = asset.json.buffers[bufferViewDef.buffer];
@@ -387,7 +390,10 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedAr
 	return array;
 }
 
-/** Returns the contents of an accessor, as a typed array. */
+/**
+ * Returns the contents of an accessor, as a typed array.
+ * @hidden
+ */
 function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	const bufferViewDef = asset.json.bufferViews[accessorDef.bufferView];
 	const bufferDef = asset.json.buffers[bufferViewDef.buffer];
@@ -423,7 +429,10 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
 	}
 }
 
-/** Returns the contents of a sparse accessor, as a typed array. */
+/**
+ * Returns the contents of a sparse accessor, as a typed array.
+ * @hidden
+ */
 function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const itemSize = Accessor.getItemSize(accessorDef.type);
