@@ -1,16 +1,12 @@
-/**
- * Represents an image's size.
- *
- * PNG signature: 'PNG\r\n\x1a\n'
- * PNG image header chunk name: 'IHDR'
- *
- * @category Utilities
- */
-
 import { vec2 } from '../constants';
 
 // Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
 const PNG_FRIED_CHUNK_NAME = 'CgBI';
+
+/*
+ * PNG signature: 'PNG\r\n\x1a\n'
+ * PNG image header chunk name: 'IHDR'
+ */
 
 /**
  * Common utilities for working with image data.

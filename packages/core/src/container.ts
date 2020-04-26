@@ -4,8 +4,15 @@ import { Logger } from './utils';
 export type Transform = (container: Container) => void;
 
 /**
- * Represents a glTF asset, and the dependencies among its resources. New resources (e.g. a
- * {@link Mesh} or {@link Material}) are created by calling factory methods on the container.
+ * Wraps a glTF asset, and tracks the dependencies among its resources.
+ *
+ * A new resource {@link Property} (e.g. a {@link Mesh} or {@link Material}) is created by calling
+ * factory methods on the container, `container.create*(name)`. Resources are destroyed by calling
+ * {@link Property.dispose}().
+ *
+ * Reference:
+ * - [glTF → Basics](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#gltf-basics)
+ * - [glTF → Concepts](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#concepts)
  */
 export class Container {
 	private graph: PropertyGraph = new PropertyGraph();

@@ -66,7 +66,8 @@ export class BufferUtils {
 
 	/**
 	* Pads an ArrayBuffer to the next 4-byte boundary.
-	* https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment
+	*
+	* Reference: [glTF → Data Alignment](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment)
 	*/
 	static pad (arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
 
