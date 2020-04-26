@@ -24,7 +24,8 @@
   "rules": {
     "quotes": ["warn", "single"],
     "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}],
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "newline-per-chained-call": [2, {"ignoreChainWithDepth": 3}]
   },
   "ignorePatterns": ["**/*.js"]
 }

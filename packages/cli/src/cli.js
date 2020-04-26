@@ -15,15 +15,15 @@ const { prune } = require('@gltf-transform/prune');
 const io = new NodeIO(fs, path);
 
 program
-    .version(version);
+	.version(version);
 
 // ANALYZE
 program
-    .command('analyze', 'Analyzes a model\'s contents')
-    .argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
-    .action(({input}, options, logger) => {
+	.command('analyze', 'Analyzes a model\'s contents')
+	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.action(({input}, options, logger) => {
 		const root = io.read(input).getRoot();
-        const analysis = {
+		const analysis = {
 			accessors: root.listAccessors().length,
 			buffers: root.listBuffers().length,
 			materials: root.listMaterials().length,
@@ -31,71 +31,71 @@ program
 			nodes: root.listNodes().length,
 			textures: root.listTextures().length,
 		};
-        console.log(util.inspect(analysis, {colors: true, sorted: true}));
+		console.log(util.inspect(analysis, {colors: true, sorted: true}));
 	});
 
 // REPACK
 program
-    .command('repack', 'Rewrites the model with minimal changes')
+	.command('repack', 'Rewrites the model with minimal changes')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
-    .action(({input, output}, options, logger) => {
+	.action(({input, output}, options, logger) => {
 		const container = io.read(input).setLogger(logger);
 		io.write(output, container);
-    });
+	});
 
 // AMBIENT OCCLUSION
 program
-    .command('ao', 'Bakes per-vertex ambient occlusion')
-    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-    .argument('<output>', 'Path to write output')
-    .option('--resolution <n>', 'AO resolution', program.INT, 512)
-    .option('--samples <n>', 'Number of samples', program.INT, 500)
-    .action(({input, output}, {resolution, samples}, logger) => {
+	.command('ao', 'Bakes per-vertex ambient occlusion')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--resolution <n>', 'AO resolution', program.INT, 512)
+	.option('--samples <n>', 'Number of samples', program.INT, 500)
+	.action(({input, output}, {resolution, samples}, logger) => {
 		const container = io.read(input)
 			.setLogger(logger)
 			.transform(ao({gl, resolution, samples}));
-        io.write(output, container);
-    });
+		io.write(output, container);
+	});
 
 // COLORSPACE
 program
-    .command('colorspace', 'Colorspace correction for vertex colors')
-    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-    .argument('<output>', 'Path to write output')
-    .option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', program.STRING)
-    .action(({input, output}, {inputEncoding}, logger) => {
+	.command('colorspace', 'Colorspace correction for vertex colors')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', program.STRING)
+	.action(({input, output}, {inputEncoding}, logger) => {
 		const container = io.read(input)
 			.setLogger(logger)
 			.transform(colorspace({inputEncoding}));
-        io.write(output, container);
-    });
+		io.write(output, container);
+	});
 
 // PRUNE
 program
-    .command('prune', 'Prunes duplicate binary resources')
-    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.command('prune', 'Prunes duplicate binary resources')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--accessors <accessors>', 'Prune duplicate accessors', program.BOOL, true, false)
 	.option('--textures <textures>', 'Prune duplicate textures', program.BOOL, true, false)
-    .action(({input, output}, {accessors, textures}, logger) => {
+	.action(({input, output}, {accessors, textures}, logger) => {
 		const container = io.read(input)
 			.setLogger(logger)
 			.transform(prune({accessors, textures}));
-        io.write(output, container);
-    });
+		io.write(output, container);
+	});
 
 // SPLIT
 program
-    .command('split', 'Splits buffers so that separate meshes can be stored in separate .bin files')
-    .argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-    .argument('<output>', 'Path to write output')
-    .option('--meshes <meshes>', 'Mesh names', program.LIST, [], true)
-    .action(({input, output}, {meshes}, logger) => {
+	.command('split', 'Splits buffers so that separate meshes can be stored in separate .bin files')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--meshes <meshes>', 'Mesh names', program.LIST, [], true)
+	.action(({input, output}, {meshes}, logger) => {
 		const container = io.read(input)
 			.setLogger(logger)
 			.transform(split({meshes}));
-        io.write(output, container);
+		io.write(output, container);
 	});
 
 // CHAIN
@@ -112,4 +112,4 @@ program
 // 	});
 
 program
-    .parse(process.argv);
+	.parse(process.argv);
