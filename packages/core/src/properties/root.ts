@@ -1,4 +1,4 @@
-import { NOT_IMPLEMENTED, VERSION } from '../constants';
+import { NotImplementedError, VERSION } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { Buffer } from './buffer';
@@ -20,7 +20,9 @@ import { Texture } from './texture';
  * calling {@link Property.dispose}() on the resource. Any properties that have been created but
  * not disposed will be included when calling the various `root.list*()` methods.
  *
- * A container's root cannot be removed, and no other root may be created.
+ * A container's root cannot be removed, and no other root may be created. Unlike other
+ * {@link Property} types, the `.dispose()`, `.detach()` methods have no useful function on a
+ * Root property.
  *
  * Usage:
  *
@@ -50,19 +52,6 @@ export class Root extends Property {
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
 	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
 	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
-
-	/** @hidden */
-	public dispose(): void {
-		throw NOT_IMPLEMENTED;
-	}
-
-	/** @hidden */
-	public detach(): Root {
-		throw NOT_IMPLEMENTED;
-	}
-
-	/** @hidden */
-	public isDisposed(): false { return false; }
 
 	/**
 	 * Returns the `asset` object, which specifies the target glTF version of the asset. Additional

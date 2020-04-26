@@ -1,4 +1,4 @@
-import { NOT_IMPLEMENTED } from '../constants';
+import { NotImplementedError } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
 import { Accessor } from './accessor';
@@ -63,10 +63,10 @@ export class Primitive extends Property {
 	}
 
 	public listTargets(): Accessor[][] {
-		throw NOT_IMPLEMENTED;
+		throw new NotImplementedError();
 	}
 	public listTargetNames(): string[] {
-		throw NOT_IMPLEMENTED;
+		throw new NotImplementedError();
 	}
 	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
 	public setMaterial(material: Material): Primitive {
