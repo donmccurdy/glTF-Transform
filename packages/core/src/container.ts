@@ -4,11 +4,31 @@ import { Logger } from './utils';
 export type Transform = (container: Container) => void;
 
 /**
- * Wraps a glTF asset, and tracks the dependencies among its resources.
+ * Wraps a glTF asset and its resources for easier modification.
  *
  * A new resource {@link Property} (e.g. a {@link Mesh} or {@link Material}) is created by calling
  * factory methods on the container, `container.create*(name)`. Resources are destroyed by calling
  * {@link Property.dispose}().
+ *
+ * ```ts
+ * const texture1 = container.createTexture('myTexture')
+ * 	.setImage(arrayBuffer)
+ * 	.setMimeType('image/png');
+ * const texture2 = container.createTexture('myTexture2')
+ * 	.setImage(arrayBuffer)
+ * 	.setMimeType('image/png');
+ *
+ * container.getRoot().listTextures(); // → [texture x 2]
+ *
+ * container
+ * 	.transform(
+ * 		prune({textures: true}),
+ * 		ao({samples: 500}),
+ * 		split({meshes: ['Cog', 'Wheel']})
+ * 	);
+ *
+ * container.getRoot().listTextures(); // → [texture x 1]
+ * ```
  *
  * Reference:
  * - [glTF → Basics](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#gltf-basics)
@@ -56,16 +76,6 @@ export class Container {
 
 	/**
 	 * Clones this container and its graph, copying all resources within it.
-	 *
-	 * Usage:
-	 *
-	 * ```ts
-	 * container.transform(
-	 * 	ao({samples: 500}),
-	 * 	prune()
-	 * );
-	 * ```
-	 *
 	 * @hidden
 	 */
 	public clone(): Container {
@@ -76,6 +86,15 @@ export class Container {
 	 * Applies a series of modifications to this container. Each transformation is synchronous,
 	 * takes the {@link Container} as input, and returns nothing. Transforms are applied in the
 	 * order given, which may affect the final result.
+	 *
+	 * Usage:
+	 *
+	 * ```ts
+	 * container.transform(
+	 * 	ao({samples: 500}),
+	 * 	prune()
+	 * );
+	 * ```
 	 *
 	 * @param transforms List of synchronous transformation functions to apply.
 	 */
