@@ -14,6 +14,7 @@ const ComponentTypeToTypedArray = {
 	'5126': Float32Array,
 };
 
+/** @hidden */
 export class GLTFReader {
 	public static read(asset: Asset): Container {
 		const {json} = asset;

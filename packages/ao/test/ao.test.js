@@ -20,7 +20,7 @@ test('@gltf-transform/ao', t => {
 	t.notOk(primitive.getAttribute('TEXCOORD_1'), 'begins without TEXCOORD_1');
 	t.equals(root.listTextures().length, 1, 'begins with one texture')
 
-	ao(container, {gl});
+	ao({gl})(container);
 
 	t.ok(material.getOcclusionTexture(), 'adds occlusionTexture');
 	t.ok(primitive.getAttribute('TEXCOORD_1'), 'adds TEXCOORD_1');

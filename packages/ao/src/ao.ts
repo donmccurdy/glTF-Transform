@@ -1,8 +1,8 @@
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
-import { Container, Logger, LoggerVerbosity, Primitive } from '@gltf-transform/core';
+import { Container, Primitive, Transform } from '@gltf-transform/core';
 
-const logger = new Logger('@gltf-transform/ao', LoggerVerbosity.INFO);
+const NAME = '@gltf-transform/ao';
 const geoao = geoaoNamespace['default'] as Function;
 const REGL = reglNamespace['default'] as Function;
 
@@ -10,13 +10,13 @@ interface GLFactory {
 	(w: number, h: number): WebGLRenderingContext;
 }
 
-interface IOcclusionOptions {
+interface AOOptions {
 	gl?: GLFactory;
 	resolution: number;
 	samples: number;
 }
 
-const DEFAULT_OPTIONS: IOcclusionOptions = {
+const DEFAULT_OPTIONS: AOOptions = {
 	resolution: 512,
 	samples: 500,
 };
@@ -30,73 +30,79 @@ const TEXTURE_DATA = new Uint8Array([
 	3, 254, 243, 176, 75, 70, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
 ]).buffer;
 
-function ao (container: Container, options: IOcclusionOptions): void {
+export function ao (options: AOOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
-	const {resolution, samples} = options;
-	logger.info(`Resolution: ${resolution}; Samples: ${samples}`);
 
-	const primitives = new Set<Primitive>();
-	container.getRoot().listMeshes().forEach((mesh) => {
-		mesh.listPrimitives().forEach((primitive) => (primitives.add(primitive)));
-	});
+	return (container: Container): void => {
 
-	if (primitives.size === 0) {
-		logger.warn('No primitives found.');
-		return;
-	}
+		const logger = container.getLogger();
+		const {resolution, samples} = options;
 
-	const texture = container.createTexture('occlusion')
-	.setImage(TEXTURE_DATA)
-	.setMimeType(TEXTURE_MIME_TYPE);
+		logger.debug(`${NAME}: resolution = ${resolution}; samples = ${samples}`);
 
-	let regl;
-	if (options.gl) {
-		const gl = options.gl(resolution, resolution);
-		gl.getExtension('OES_texture_float');
-		gl.getExtension('OES_element_index_uint');
-		regl = REGL({gl, extensions: ['OES_texture_float', 'OES_element_index_uint']});
-	}
+		const primitives = new Set<Primitive>();
+		container.getRoot().listMeshes().forEach((mesh) => {
+			mesh.listPrimitives().forEach((primitive) => (primitives.add(primitive)));
+		});
 
-	// TODO: Implement baking such that primitives affect other primitives, and respect
-	// world transforms.
-	Array.from(primitives).forEach((primitive, index) => {
-		logger.info(`Baking primitive ${index} / ${primitives.size}.`);
-
-		if (primitive.getMaterial().getOcclusionTexture()) {
-			// TODO: Duplicate the material if needed.
-			logger.error('Primitive already has AO. Is it sharing a material? Skipping.');
+		if (primitives.size === 0) {
+			logger.warn(`${NAME}: No primitives found.`);
+			logger.debug(`${NAME}: Complete.`);
 			return;
 		}
 
-		// Bake vertex AO.
-		const position = primitive.getAttribute('POSITION').getArray();
-		const cells = primitive.getIndices() ? primitive.getIndices().getArray() : undefined;
-		const aoSampler = geoao(position, {cells, resolution, regl});
-		for (let i = 0; i < samples; i++) aoSampler.sample();
-		const ao = aoSampler.report();
-		aoSampler.dispose();
+		const texture = container.createTexture('occlusion')
+		.setImage(TEXTURE_DATA)
+		.setMimeType(TEXTURE_MIME_TYPE);
 
-		// Write UV set and add AO map.
-		const numVertices = ao.length;
-		const uv2Data = new Float32Array(numVertices * 2);
-		for (let i = 0; i < numVertices; i++) {
-			uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
+		let regl;
+		if (options.gl) {
+			const gl = options.gl(resolution, resolution);
+			gl.getExtension('OES_texture_float');
+			gl.getExtension('OES_element_index_uint');
+			regl = REGL({gl, extensions: ['OES_texture_float', 'OES_element_index_uint']});
 		}
 
-		const buffer = container.getRoot().listBuffers()[0] || container.createBuffer('');
-		const uv2 = container.createAccessor('uv2', buffer)
-		.setArray(uv2Data)
-		.setType(GLTF.AccessorType.VEC2);
+		// TODO: Implement baking such that primitives affect other primitives, and respect
+		// world transforms.
+		Array.from(primitives).forEach((primitive, index) => {
+			logger.debug(`${NAME}: Baking primitive ${index} / ${primitives.size}.`);
 
-		primitive.setAttribute('TEXCOORD_1', uv2);
-		if (!primitive.getAttribute['TEXCOORD_0']) {
-			primitive.setAttribute('TEXCOORD_0', uv2);
-		}
+			if (primitive.getMaterial().getOcclusionTexture()) {
+				// TODO: Duplicate the material if needed.
+				logger.warn(`${NAME}: Primitive already has AO. Is it sharing a material? Skipping.`);
+				return;
+			}
 
-		primitive.getMaterial().setOcclusionTexture(texture);
-	});
+			// Bake vertex AO.
+			const position = primitive.getAttribute('POSITION').getArray();
+			const cells = primitive.getIndices() ? primitive.getIndices().getArray() : undefined;
+			const aoSampler = geoao(position, {cells, resolution, regl});
+			for (let i = 0; i < samples; i++) aoSampler.sample();
+			const ao = aoSampler.report();
+			aoSampler.dispose();
 
-	logger.info('Finished baking per-vertex occlusion.');
+			// Write UV set and add AO map.
+			const numVertices = ao.length;
+			const uv2Data = new Float32Array(numVertices * 2);
+			for (let i = 0; i < numVertices; i++) {
+				uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
+			}
+
+			const buffer = container.getRoot().listBuffers()[0] || container.createBuffer('');
+			const uv2 = container.createAccessor('uv2', buffer)
+			.setArray(uv2Data)
+			.setType(GLTF.AccessorType.VEC2);
+
+			primitive.setAttribute('TEXCOORD_1', uv2);
+			if (!primitive.getAttribute['TEXCOORD_0']) {
+				primitive.setAttribute('TEXCOORD_0', uv2);
+			}
+
+			primitive.getMaterial().setOcclusionTexture(texture);
+		});
+
+		logger.debug(`${NAME}: Complete.`);
+	};
+
 }
-
-export { ao };

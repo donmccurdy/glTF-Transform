@@ -22,7 +22,7 @@ export class BufferUtils {
 		}
 	}
 
-	/** Encodes text to an ArrayBuffer. Platform-agnostic. */
+	/** Encodes text to an ArrayBuffer. */
 	static encodeText(text: string): ArrayBuffer {
 		if (typeof TextEncoder !== 'undefined') {
 			return new TextEncoder().encode(text).buffer;
@@ -30,7 +30,7 @@ export class BufferUtils {
 		return this.trim(Buffer.from(text));
 	}
 
-	/** Decodes an ArrayBuffer to text. Platform-agnostic. */
+	/** Decodes an ArrayBuffer to text. */
 	static decodeText(buffer: ArrayBuffer): string {
 		if (typeof TextDecoder !== 'undefined') {
 			return new TextDecoder().decode(buffer);
@@ -38,7 +38,7 @@ export class BufferUtils {
 		return Buffer.from(buffer).toString('utf8');
 	}
 
-	/** Copies an ArrayBuffer from a Buffer, keeping only the needed data. */
+	/** Copies an ArrayBuffer from a Buffer's content. */
 	static trim(buffer: Buffer): ArrayBuffer {
 		const {byteOffset, byteLength} = buffer;
 		return buffer.buffer.slice(byteOffset, byteOffset + byteLength);

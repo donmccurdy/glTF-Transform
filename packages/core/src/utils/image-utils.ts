@@ -18,7 +18,7 @@ const PNG_FRIED_CHUNK_NAME = 'CgBI';
  * @category Utilities
  */
 class ImageUtils {
-	/** Returns the size of a PNG image. */
+	/** Returns the size of a JPEG image. */
 	public static getSizeJPEG (buffer: Buffer): vec2 {
 		// Skip 4 chars, they are for signature
 		buffer = buffer.slice(4);

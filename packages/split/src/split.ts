@@ -1,26 +1,51 @@
-import { Container, Logger, LoggerVerbosity } from '@gltf-transform/core';
+import { Container, Transform } from '@gltf-transform/core';
 
-const split = function (container: Container, meshes: Array<string>): void {
+const NAME = '@gltf-transform/split';
 
-	const logger = new Logger('@gltf-transform/split', LoggerVerbosity.INFO);
-
-	container.getRoot().listMeshes()
-		.forEach((mesh) => {
-			if (!mesh.getName() || !meshes.includes(mesh.getName())) return;
-
-			logger.info(`📦  ${mesh.getName()}`);
-			const buffer = container.createBuffer(mesh.getName())
-				.setURI(`${mesh.getName()}.bin`);
-
-			mesh.listPrimitives()
-				.forEach((primitive) => {
-					if (primitive.getIndices()) {
-						primitive.getIndices().setBuffer(buffer);
-					}
-					primitive.listAttributes()
-						.forEach((attribute) => attribute.setBuffer(buffer));
-				})
-		});
+interface SplitOptions {
+	meshes: Array<string>;
 }
+
+const DEFAULT_OPTIONS: SplitOptions =  {
+	meshes: []
+};
+
+const split = (options: SplitOptions): Transform => {
+
+	options = {...DEFAULT_OPTIONS, ...options};
+
+	return (container: Container): void => {
+
+		const logger = container.getLogger();
+
+		container.getRoot().listMeshes()
+			.forEach((mesh, meshIndex) => {
+				if (!mesh.getName() || !options.meshes.includes(mesh.getName())) {
+					logger.debug(`${NAME}: Skipping mesh at index ${meshIndex} with name "${mesh.getName()}".`);
+					return;
+				}
+
+				logger.debug(`${NAME}: Creating buffer for mesh "${mesh.getName()}".`);
+
+				const buffer = container.createBuffer(mesh.getName())
+					.setURI(`${mesh.getName()}.bin`);
+
+				mesh.listPrimitives()
+					.forEach((primitive) => {
+						if (primitive.getIndices()) {
+							primitive.getIndices().setBuffer(buffer);
+						}
+						primitive.listAttributes()
+							.forEach((attribute) => attribute.setBuffer(buffer));
+					})
+			});
+
+		logger.debug(`${NAME}: Complete.`);
+	};
+
+}
+
+
+
 
 export { split };

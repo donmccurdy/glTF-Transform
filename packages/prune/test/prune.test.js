@@ -13,7 +13,11 @@ test('@gltf-transform/prune | accessors', t => {
   const container = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
   t.equal(container.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
-  prune(container);
+  prune({accessors: false})(container);
+
+  t.equal(container.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
+
+  prune()(container);
 
   t.equal(container.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
   t.end();
@@ -32,7 +36,11 @@ test('@gltf-transform/prune | textures', t => {
 
 	t.equal(container.getRoot().listTextures().length, 2, 'begins with duplicate textures');
 
-	prune(container);
+	prune({textures: false})(container);
+
+	t.equal(container.getRoot().listTextures().length, 2, 'has no effect when disabled');
+
+	prune()(container);
 
 	t.equal(container.getRoot().listTextures().length, 1, 'prunes duplicate textures');
 	t.end();

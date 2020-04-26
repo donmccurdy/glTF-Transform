@@ -4,16 +4,21 @@ const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 
-const { NodeIO } = require ('@gltf-transform/core');
+const { Logger, NodeIO } = require ('@gltf-transform/core');
 const { split } = require('../');
 
 test('@gltf-transform/split', t => {
 
   const io = new NodeIO(fs, path);
-  const container = io.read(path.join(__dirname, 'in/TwoCubes.glb'));
+  const container = io.read(path.join(__dirname, 'in/TwoCubes.glb'))
+	.setLogger(new Logger(Logger.Verbosity.SILENT));
   t.equal(container.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 
-  split(container, ['CubeA', 'CubeB']);
+  split()(container);
+
+  t.equal(container.getRoot().listBuffers().length, 1, 'has no effect when disabled');
+
+  split({meshes: ['CubeA', 'CubeB']})(container);
 
   const asset = io.containerToAsset(container, {basename: 'split-test', isGLB: false});
   t.deepEqual(asset.json.buffers, [

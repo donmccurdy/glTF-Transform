@@ -1,4 +1,8 @@
+/** Current version of the package. */
 export const VERSION = 'v0.2';
+
+/** @hidden */
+export const NAME = '@gltf-transform/core';
 
 /**
  * Interface allowing Accessor setter/getter methods to be used interchangeably with gl-matrix

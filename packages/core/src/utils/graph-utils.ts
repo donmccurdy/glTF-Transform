@@ -1,17 +1,10 @@
-import { Logger, LoggerVerbosity } from './logger';
-
 /**
- * Core utilities.
+ * Graph utilities.
  *
- * @hidden
  * @category Utilities
+ * @hidden
  * */
-export class CoreUtils {
-	/** @internal */
-	static createLogger(name: string, verbosity: LoggerVerbosity): Logger {
-		return new Logger(name, verbosity);
-	}
-
+export class GraphUtils {
 	// Disabled to figure out core dependencies. Should probably be in a
 	// separate package.
 	//

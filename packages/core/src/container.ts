@@ -1,6 +1,7 @@
 import { Accessor, Buffer, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Texture } from './properties/index';
+import { Logger } from './utils';
 
-type Transform = (container: Container) => void;
+export type Transform = (container: Container) => void;
 
 /**
  * Represents a glTF asset, and the dependencies among its resources. New resources (e.g. a
@@ -9,8 +10,9 @@ type Transform = (container: Container) => void;
 export class Container {
 	private graph: PropertyGraph = new PropertyGraph();
 	private root: Root = new Root(this.graph);
+	private logger = new Logger(Logger.Verbosity.INFO);
 
-	/** Returns the {@link Root} glTF instance. */
+	/** Returns the glTF {@link Root} property. */
 	public getRoot(): Root {
 		return this.root;
 	}
@@ -22,6 +24,27 @@ export class Container {
 	 */
 	public getGraph(): PropertyGraph {
 		return this.graph;
+	}
+
+	/** Returns the {@link Logger} instance used for any operations performed on this container. */
+	public getLogger(): Logger {
+		return this.logger;
+	}
+
+	/**
+	 * Overrides the {@link Logger} instance used for any operations performed on this container.
+	 *
+	 * Usage:
+	 *
+	 * ```ts
+	 * container
+	 * 	.setLogger(new Logger(Logger.Verbosity.SILENT))
+	 * 	.transform(split(), ao({samples: 50}));
+	 * ```
+	 */
+	public setLogger(logger: Logger): Container {
+		this.logger = logger;
+		return this;
 	}
 
 	/**
@@ -83,7 +106,7 @@ export class Container {
 
 	/**
 	 * Creates a new {@link Primitive}. Primitives must be attached to a {@link Mesh}
-	 * for use and export.
+	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createPrimitive(): Primitive {
 		const primitive = new Primitive(this.graph);

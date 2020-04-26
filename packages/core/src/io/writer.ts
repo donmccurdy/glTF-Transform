@@ -1,8 +1,8 @@
-import { GLB_BUFFER } from '../constants';
+import { GLB_BUFFER, NAME } from '../constants';
 import { Container } from '../container';
 import { Link } from '../graph';
 import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo } from '../properties';
-import { BufferUtils, Logger, LoggerVerbosity } from '../utils';
+import { BufferUtils } from '../utils';
 import { Asset } from './asset';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -17,13 +17,14 @@ export interface WriterOptions {
 	isGLB: boolean;
 }
 
+/** @hidden */
 export class GLTFWriter {
 	public static write(container: Container, options: WriterOptions): Asset {
 		const root = container.getRoot();
 		const asset = {json: {asset: root.getAsset()}, resources: {}} as Asset;
 		const json = asset.json;
 
-		const logger = new Logger('@gltf-transform/core', LoggerVerbosity.WARNING);
+		const logger = container.getLogger();
 
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
@@ -354,7 +355,7 @@ export class GLTFWriter {
 			}
 
 			if (!bufferByteLength) {
-				logger.warn(`Skipping empty buffer, "${buffer.getName()}".`);
+				logger.warn(`${NAME}: Skipping empty buffer, "${buffer.getName()}".`);
 				return;
 			}
 

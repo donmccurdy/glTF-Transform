@@ -15,12 +15,10 @@
   "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
     "@gltf-transform/ao": "^0.1.0",
-    "@gltf-transform/atlas": "^0.1.0",
     "@gltf-transform/colorspace": "^0.1.0",
     "@gltf-transform/core": "^0.1.0",
     "@gltf-transform/prune": "^0.1.0",
     "@gltf-transform/split": "^0.1.0",
-    "canvas": "^2.6.1",
     "caporal": "^1.3.0",
     "gl": "^4.5.0"
   },

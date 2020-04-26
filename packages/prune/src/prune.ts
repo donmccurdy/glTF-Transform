@@ -1,9 +1,29 @@
-import { Accessor, BufferUtils, Container, Logger, LoggerVerbosity, Material, Texture } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Container, Logger, Material, Texture, Transform } from '@gltf-transform/core';
 
-const prune = function (container: Container): void {
-	const logger = new Logger('@gltf-transform/prune', LoggerVerbosity.INFO);
-	pruneAccessors(logger, container);
-	pruneImages(logger, container);
+const NAME = '@gltf-transform/prune';
+
+interface PruneOptions {
+	accessors: boolean;
+	textures: boolean;
+}
+
+const DEFAULT_OPTIONS: PruneOptions = {
+	accessors: true,
+	textures: true
+};
+
+export const prune = function (options: PruneOptions): Transform {
+	options = {...DEFAULT_OPTIONS, ...options};
+
+	return (container: Container): void =>  {
+		const logger = container.getLogger();
+
+		if (options.accessors !== false) pruneAccessors(logger, container);
+		if (options.textures !== false) pruneImages(logger, container);
+
+		logger.debug(`${NAME}: Complete.`);
+	};
+
 }
 
 function pruneAccessors(logger: Logger, container: Container): void {
@@ -51,10 +71,10 @@ function pruneAccessors(logger: Logger, container: Container): void {
 	}
 
 	const duplicateIndices = detectDuplicates(Array.from(indicesAccessors));
-	logger.info(`Duplicate indices: ${duplicateIndices.size} of ${indicesAccessors.size}.`);
+	logger.debug(`${NAME}: Found ${duplicateIndices.size} duplicates of ${indicesAccessors.size} indices.`);
 
 	const duplicateAttributes = detectDuplicates(Array.from(attributeAccessors));
-	logger.info(`Duplicate attributes: ${duplicateAttributes.size} of ${attributeAccessors.size}.`);
+	logger.debug(`${NAME}: Found ${duplicateAttributes.size} duplicates of ${attributeAccessors.size} attributes.`);
 
 	// Dissolve duplicates.
 	meshes.forEach((mesh) => {
@@ -102,6 +122,8 @@ function pruneImages(logger: Logger, container: Container): void {
 		}
 	}
 
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates of ${root.listTextures().length} textures.`);
+
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
 			// Skip Root.
@@ -110,5 +132,3 @@ function pruneImages(logger: Logger, container: Container): void {
 		src.dispose();
 	});
 }
-
-export { prune };

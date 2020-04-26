@@ -1,49 +1,59 @@
-/** @category Utilities */
-enum LoggerVerbosity {
-  NONE = 3,
-  ERROR = 2,
-  WARNING = 1,
-  INFO = 0,
-}
-
 /**
  * Logger utility class.
  *
  * @category Utilities
  */
 class Logger {
-  constructor (private name: string, private verbosity: LoggerVerbosity) {}
+	/**
+	 * Log verbosity thresholds.
+	 */
+	static Verbosity = {
+		/** No events are logged. */
+		SILENT: 4,
 
-  /**
-   * Logs at level INFO.
-   * @param text
-   */
-  info (text: string): void {
-    if (this.verbosity <= LoggerVerbosity.INFO) {
-      console.log(`${this.name}: ${text}`);
-    }
-  }
+		/** Only error events are logged. */
+		ERROR: 3,
 
-  /**
-   * Logs at level WARNING.
-   * @param text
-   */
-  warn (text: string): void {
-    if (this.verbosity <= LoggerVerbosity.WARNING) {
-      console.warn(`${this.name}: ${text}`);
-    }
-  }
+		/** Only error and warn events are logged. */
+		WARN: 2,
 
-  /**
-   * Logs at level ERROR.
-   * @param text
-   */
-  error (text: string): void {
-    if (this.verbosity <= LoggerVerbosity.ERROR) {
-      console.error(`${this.name}: ${text}`);
-    }
-  }
+		/** Only error, warn, and info events are logged. (DEFAULT) */
+		INFO: 1,
 
+		/** All events are logged. */
+		DEBUG: 0,
+	}
+
+	/** Constructs a new Logger instance. */
+	constructor (private readonly verbosity: number) {}
+
+	/** Logs an event at level {@link Logger.Verbosity.DEBUG}. */
+	debug (text: string): void {
+		if (this.verbosity <= Logger.Verbosity.DEBUG) {
+			console.debug(text);
+		}
+	}
+
+	/** Logs an event at level {@link Logger.Verbosity.INFO}. */
+	info (text: string): void {
+		if (this.verbosity <= Logger.Verbosity.INFO) {
+			console.info(text);
+		}
+	}
+
+	/** Logs an event at level {@link Logger.Verbosity.WARN}. */
+	warn (text: string): void {
+		if (this.verbosity <= Logger.Verbosity.WARN) {
+			console.warn(text);
+		}
+	}
+
+	/** Logs an event at level {@link Logger.Verbosity.ERROR}. */
+	error (text: string): void {
+		if (this.verbosity <= Logger.Verbosity.ERROR) {
+			console.error(text);
+		}
+	}
 }
 
-export { Logger, LoggerVerbosity };
+export { Logger };

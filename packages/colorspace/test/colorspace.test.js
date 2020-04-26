@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 
 const { Container } = require('@gltf-transform/core');
@@ -30,7 +28,7 @@ test('@gltf-transform/colorspace', t => {
 	primitive2
 		.setAttribute('COLOR_0', accessor1)
 
-	colorspace(container, {inputEncoding: 'sRGB'});
+	colorspace({inputEncoding: 'sRGB'})(container);
 
 	let actual;
 
