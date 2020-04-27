@@ -1,7 +1,7 @@
 import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Container } from '../container';
-import { Accessor, TextureInfo } from '../properties';
+import { Accessor, TextureInfo, TextureSampler } from '../properties';
 import { FileUtils } from '../utils';
 import { Asset } from './asset';
 
@@ -151,21 +151,24 @@ export class GLTFReader {
 				const textureInfoDef = pbrDef.baseColorTexture;
 				const texture = textures[textureDefs[textureInfoDef.index].source];
 				material.setBaseColorTexture(texture);
-				setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef, asset);
+				setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef);
+				setTextureSampler(material.getBaseColorTextureSampler(), textureInfoDef, asset);
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {
 				const textureInfoDef = materialDef.emissiveTexture;
 				const texture = textures[textureDefs[textureInfoDef.index].source];
 				material.setEmissiveTexture(texture);
-				setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef, asset);
+				setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef);
+				setTextureSampler(material.getEmissiveTextureSampler(), textureInfoDef, asset);
 			}
 
 			if (materialDef.normalTexture !== undefined) {
 				const textureInfoDef = materialDef.normalTexture;
 				const texture = textures[textureDefs[textureInfoDef.index].source];
 				material.setNormalTexture(texture);
-				setTextureInfo(material.getNormalTextureInfo(), textureInfoDef, asset);
+				setTextureInfo(material.getNormalTextureInfo(), textureInfoDef);
+				setTextureSampler(material.getNormalTextureSampler(), textureInfoDef, asset);
 				if (materialDef.normalTexture.scale !== undefined) {
 					material.setNormalScale(materialDef.normalTexture.scale);
 				}
@@ -175,7 +178,8 @@ export class GLTFReader {
 				const textureInfoDef = materialDef.occlusionTexture;
 				const texture = textures[textureDefs[textureInfoDef.index].source];
 				material.setOcclusionTexture(texture);
-				setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef, asset);
+				setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef);
+				setTextureSampler(material.getOcclusionTextureSampler(), textureInfoDef, asset);
 				if (materialDef.occlusionTexture.strength !== undefined) {
 					material.setOcclusionStrength(materialDef.occlusionTexture.strength);
 				}
@@ -185,7 +189,8 @@ export class GLTFReader {
 				const textureInfoDef = pbrDef.metallicRoughnessTexture;
 				const texture = textures[textureDefs[textureInfoDef.index].source];
 				material.setMetallicRoughnessTexture(texture);
-				setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef, asset);
+				setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef);
+				setTextureSampler(material.getMetallicRoughnessTextureSampler(), textureInfoDef, asset);
 			}
 
 			return material;
@@ -314,11 +319,14 @@ export class GLTFReader {
 }
 
 // eslint-disable-next-line max-len
-function setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo, asset: Asset): void {
+function setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo): void {
 	if (textureInfoDef.texCoord !== undefined) {
 		textureInfo.setTexCoord(textureInfoDef.texCoord);
 	}
+}
 
+// eslint-disable-next-line max-len
+function setTextureSampler(textureSampler: TextureSampler, textureInfoDef: GLTF.ITextureInfo, asset: Asset): void {
 	const textureDef = asset.json.textures[textureInfoDef.index];
 
 	if (textureDef.sampler === undefined) return;
@@ -326,16 +334,16 @@ function setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureI
 	const samplerDef = asset.json.samplers[textureDef.sampler];
 
 	if (samplerDef.magFilter !== undefined) {
-		textureInfo.setMagFilter(samplerDef.magFilter);
+		textureSampler.setMagFilter(samplerDef.magFilter);
 	}
 	if (samplerDef.minFilter !== undefined) {
-		textureInfo.setMinFilter(samplerDef.minFilter);
+		textureSampler.setMinFilter(samplerDef.minFilter);
 	}
 	if (samplerDef.wrapS !== undefined) {
-		textureInfo.setWrapS(samplerDef.wrapS);
+		textureSampler.setWrapS(samplerDef.wrapS);
 	}
 	if (samplerDef.wrapT !== undefined) {
-		textureInfo.setWrapT(samplerDef.wrapT);
+		textureSampler.setWrapT(samplerDef.wrapT);
 	}
 }
 

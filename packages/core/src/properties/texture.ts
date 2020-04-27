@@ -12,8 +12,8 @@ import { Property } from './property';
  * glTF file with N `image` properties, and the minimum number of `texture` properties necessary
  * for the materials that use it.
  *
- * For properties associated with a particular _use_ of a texture, as in glTF's `TextureInfo` and
- * `Sampler` properties, see {@link TextureInfo}.
+ * For properties associated with a particular _use_ of a texture, see {@link TextureInfo} and
+ * {@link TextureSampler}.
  *
  * Reference:
  * - [glTF → Textures](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#textures)
@@ -31,14 +31,9 @@ export class Texture extends Property {
 	/** Image URI. Required if MIME type is not set. */
 	private uri = '';
 
-	/** Returns the raw image data for this texture. */
-	public getImage(): ArrayBuffer { return this.image; }
-
-	/** Sets the raw image data for this texture. */
-	public setImage(image: ArrayBuffer): Texture {
-		this.image = image;
-		return this;
-	}
+	/**********************************************************************************************
+	 * MIME type / format.
+	 */
 
 	/** Returns the MIME type for this texture ('image/jpeg' or 'image/png'). */
 	public getMimeType(): string { return this.mimeType; }
@@ -52,6 +47,10 @@ export class Texture extends Property {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * URI / filename.
+	 */
+
 	/** Returns the URI (e.g. 'path/to/file.png') for this texture. */
 	public getURI(): string {
 		return this.uri;
@@ -63,6 +62,19 @@ export class Texture extends Property {
 	 */
 	public setURI(uri: string): Texture {
 		this.uri = uri;
+		return this;
+	}
+
+	/**********************************************************************************************
+	 * Image data.
+	 */
+
+	/** Returns the raw image data for this texture. */
+	public getImage(): ArrayBuffer { return this.image; }
+
+	/** Sets the raw image data for this texture. */
+	public setImage(image: ArrayBuffer): Texture {
+		this.image = image;
 		return this;
 	}
 
@@ -83,17 +95,39 @@ export class Texture extends Property {
 /**
  * Settings associated with a particular use of a {@link Texture}.
  *
- * Different materials may reuse the same texture but with different texture coordinate or UV wrap
- * settings. This property is a combination of glTF's `TextureInfo` and `Sampler` properties.
+ * Different materials may reuse the same texture but with different texture coordinates. For other
+ * settings affecting application of a texture, see {@link TextureSampler}.
  *
  * References:
  * - [glTF → Texture Info](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-textureinfo)
- * - [glTF → Samplers](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#samplers)
  *
  * @category Properties
  */
 export class TextureInfo {
 	private texCoord = 0;
+
+	/** Returns the texture coordinate (UV set) index for the texture. */
+	public getTexCoord(): number { return this.texCoord; }
+
+	/** Sets the texture coordinate (UV set) index for the texture. */
+	public setTexCoord(texCoord: number): TextureInfo {
+		this.texCoord = texCoord;
+		return this;
+	}
+}
+
+/**
+ * Settings associated with a particular use of a {@link Texture}.
+ *
+ * Different materials may reuse the same texture but with different texture coordinates. For other
+ * settings affecting application of a texture, see {@link TextureInfo}.
+ *
+ * References:
+ * - [glTF → Samplers](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#samplers)
+ *
+ * @category Properties
+ */
+export class TextureSampler {
 	private magFilter: GLTF.TextureMagFilter = null;
 	private minFilter: GLTF.TextureMinFilter = null;
 	private wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
@@ -122,20 +156,15 @@ export class TextureInfo {
 		LINEAR_MIPMAP_LINEAR: GLTF.TextureMinFilter.LINEAR_MIPMAP_LINEAR,
 	}
 
-	/** Returns the texture coordinate (UV set) index for the texture. */
-	public getTexCoord(): number { return this.texCoord; }
-
-	/** Sets the texture coordinate (UV set) index for the texture. */
-	public setTexCoord(texCoord: number): TextureInfo {
-		this.texCoord = texCoord;
-		return this;
-	}
+	/**********************************************************************************************
+	 * Min/mag filter.
+	 */
 
 	/** Returns the magnification filter applied to the texture. */
 	public getMagFilter(): GLTF.TextureMagFilter { return this.magFilter; }
 
 	/** Sets the magnification filter applied to the texture. */
-	public setMagFilter(magFilter: GLTF.TextureMagFilter): TextureInfo {
+	public setMagFilter(magFilter: GLTF.TextureMagFilter): TextureSampler {
 		this.magFilter = magFilter;
 		return this;
 	}
@@ -144,16 +173,20 @@ export class TextureInfo {
 	public getMinFilter(): GLTF.TextureMinFilter { return this.minFilter; }
 
 	/** Returns the minification filter applied to the texture. */
-	public setMinFilter(minFilter: GLTF.TextureMinFilter): TextureInfo {
+	public setMinFilter(minFilter: GLTF.TextureMinFilter): TextureSampler {
 		this.minFilter = minFilter;
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * UV wrapping.
+	 */
 
 	/** Returns the S (U) wrapping mode for UVs used by the texture. */
 	public getWrapS(): GLTF.TextureWrapMode { return this.wrapS; }
 
 	/** Sets the S (U) wrapping mode for UVs used by the texture. */
-	public setWrapS(wrapS: GLTF.TextureWrapMode): TextureInfo {
+	public setWrapS(wrapS: GLTF.TextureWrapMode): TextureSampler {
 		this.wrapS = wrapS;
 		return this;
 	}
@@ -162,7 +195,7 @@ export class TextureInfo {
 	public getWrapT(): GLTF.TextureWrapMode { return this.wrapT; }
 
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
-	public setWrapT(wrapT: GLTF.TextureWrapMode): TextureInfo {
+	public setWrapT(wrapT: GLTF.TextureWrapMode): TextureSampler {
 		this.wrapT = wrapT;
 		return this;
 	}

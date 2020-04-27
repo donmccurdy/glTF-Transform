@@ -1,7 +1,7 @@
 import { GLB_BUFFER, NAME } from '../constants';
 import { Container } from '../container';
 import { Link } from '../graph';
-import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo } from '../properties';
+import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo, TextureSampler } from '../properties';
 import { BufferUtils } from '../utils';
 import { Asset } from './asset';
 
@@ -181,12 +181,12 @@ export class GLTFWriter {
 		 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
 		 * possible, Texture and Sampler definitions are shared.
 		 */
-		function createTextureInfoDef(texture: Texture, textureInfo: TextureInfo): GLTF.ITextureInfo {
+		function createTextureInfoDef(texture: Texture, textureInfo: TextureInfo, textureSampler: TextureSampler): GLTF.ITextureInfo {
 			const samplerDef = {
-				magFilter: textureInfo.getMagFilter() || undefined,
-				minFilter: textureInfo.getMinFilter() || undefined,
-				wrapS: textureInfo.getWrapS(),
-				wrapT: textureInfo.getWrapT(),
+				magFilter: textureSampler.getMagFilter() || undefined,
+				minFilter: textureSampler.getMinFilter() || undefined,
+				wrapS: textureSampler.getWrapS(),
+				wrapT: textureSampler.getWrapT(),
 			} as GLTF.ISampler;
 
 			const samplerKey = JSON.stringify(samplerDef);
@@ -403,19 +403,22 @@ export class GLTFWriter {
 			if (material.getBaseColorTexture()) {
 				const texture = material.getBaseColorTexture();
 				const textureInfo = material.getBaseColorTextureInfo();
-				materialDef.pbrMetallicRoughness.baseColorTexture = createTextureInfoDef(texture, textureInfo);
+				const textureSampler = material.getBaseColorTextureSampler();
+				materialDef.pbrMetallicRoughness.baseColorTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
 			if (material.getEmissiveTexture()) {
 				const texture = material.getEmissiveTexture();
 				const textureInfo = material.getEmissiveTextureInfo();
-				materialDef.emissiveTexture = createTextureInfoDef(texture, textureInfo);
+				const textureSampler = material.getEmissiveTextureSampler();
+				materialDef.emissiveTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
 			if (material.getNormalTexture()) {
 				const texture = material.getNormalTexture();
 				const textureInfo = material.getNormalTextureInfo();
-				const textureInfoDef = createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialNormalTextureInfo;
+				const textureSampler = material.getNormalTextureSampler();
+				const textureInfoDef = createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
 				}
@@ -425,7 +428,8 @@ export class GLTFWriter {
 			if (material.getOcclusionTexture()) {
 				const texture = material.getOcclusionTexture();
 				const textureInfo = material.getOcclusionTextureInfo();
-				const textureInfoDef = createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialOcclusionTextureInfo;
+				const textureSampler = material.getOcclusionTextureSampler();
+				const textureInfoDef = createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
 				}
@@ -435,7 +439,8 @@ export class GLTFWriter {
 			if (material.getMetallicRoughnessTexture()) {
 				const texture = material.getMetallicRoughnessTexture();
 				const textureInfo = material.getMetallicRoughnessTextureInfo();
-				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = createTextureInfoDef(texture, textureInfo);
+				const textureSampler = material.getMetallicRoughnessTextureSampler();
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
 			materialIndexMap.set(material, index);
