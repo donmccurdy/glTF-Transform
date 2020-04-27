@@ -92,15 +92,6 @@ export abstract class Property extends GraphNode {
 	}
 
 	/**
-	 * Returns true if the given property is equivalent to this one. Equivalency requires that all
-	 * outbound links reference the same properties. Inbound links are not considered.
-	 * @hidden
-	 */
-	public equals(property: Property): boolean {
-		throw new NotImplementedError();
-	}
-
-	/**
 	 * Returns a list of all properties that hold a reference to this property. For example, a
 	 * material may hold references to various textures, but a texture does not hold references
 	 * to the materials that use it.
