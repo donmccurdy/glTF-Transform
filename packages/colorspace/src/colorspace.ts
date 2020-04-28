@@ -43,11 +43,11 @@ export function colorspace (options: ColorspaceOptions): Transform {
 				if (converted.has(attribute)) continue;
 
 				for (let j = 0; j < attribute.getCount(); j++) {
-					attribute.getValue(j, color);
+					attribute.getElement(j, color);
 					color[0] = sRGBToLinear(color[0]);
 					color[1] = sRGBToLinear(color[1]);
 					color[2] = sRGBToLinear(color[2]);
-					attribute.setValue(j, color);
+					attribute.setElement(j, color);
 				}
 
 				converted.add(attribute);

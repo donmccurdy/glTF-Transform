@@ -357,17 +357,17 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedAr
 	const resource = bufferDef.uri ? asset.resources[bufferDef.uri] : asset.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
-	const itemSize = Accessor.getItemSize(accessorDef.type);
-	const valueSize = TypedArray.BYTES_PER_ELEMENT;
+	const elementSize = Accessor.getElementSize(accessorDef.type);
+	const componentSize = TypedArray.BYTES_PER_ELEMENT;
 	const accessorByteOffset = accessorDef.byteOffset || 0;
 
-	const array = new TypedArray(accessorDef.count * itemSize);
+	const array = new TypedArray(accessorDef.count * elementSize);
 	const view = new DataView(resource, bufferViewDef.byteOffset, bufferViewDef.byteLength);
 	const byteStride = bufferViewDef.byteStride;
 
 	for (let i = 0; i < accessorDef.count; i++) {
-		for (let j = 0; j < itemSize; j++) {
-			const byteOffset = accessorByteOffset + i * byteStride + j * valueSize;
+		for (let j = 0; j < elementSize; j++) {
+			const byteOffset = accessorByteOffset + i * byteStride + j * componentSize;
 			let value: number;
 			switch (accessorDef.componentType) {
 				case GLTF.AccessorComponentType.FLOAT:
@@ -391,7 +391,7 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedAr
 				default:
 				throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
 			}
-			array[i * itemSize + j] = value;
+			array[i * elementSize + j] = value;
 		}
 	}
 
@@ -408,12 +408,12 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
 	const resource = bufferDef.uri ? asset.resources[bufferDef.uri] : asset.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
-	const itemSize = Accessor.getItemSize(accessorDef.type);
-	const valueSize = TypedArray.BYTES_PER_ELEMENT;
-	const itemStride = itemSize * valueSize;
+	const elementSize = Accessor.getElementSize(accessorDef.type);
+	const componentSize = TypedArray.BYTES_PER_ELEMENT;
+	const elementStride = elementSize * componentSize;
 
 	// Interleaved buffer view.
-	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  itemStride) {
+	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  elementStride) {
 		return getInterleavedArray(accessorDef, asset);
 	}
 
@@ -421,17 +421,17 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
 
 	switch (accessorDef.componentType) {
 		case GLTF.AccessorComponentType.FLOAT:
-			return new Float32Array(resource, start, accessorDef.count * itemSize);
+			return new Float32Array(resource, start, accessorDef.count * elementSize);
 		case GLTF.AccessorComponentType.UNSIGNED_INT:
-			return new Uint32Array(resource, start, accessorDef.count * itemSize);
+			return new Uint32Array(resource, start, accessorDef.count * elementSize);
 		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-			return new Uint16Array(resource, start, accessorDef.count * itemSize);
+			return new Uint16Array(resource, start, accessorDef.count * elementSize);
 		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-			return new Uint8Array(resource, start, accessorDef.count * itemSize);
+			return new Uint8Array(resource, start, accessorDef.count * elementSize);
 		case GLTF.AccessorComponentType.SHORT:
-			return new Int16Array(resource, start, accessorDef.count * itemSize);
+			return new Int16Array(resource, start, accessorDef.count * elementSize);
 		case GLTF.AccessorComponentType.BYTE:
-			return new Int8Array(resource, start, accessorDef.count * itemSize);
+			return new Int8Array(resource, start, accessorDef.count * elementSize);
 		default:
 			throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
 	}
@@ -443,14 +443,14 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray
  */
 function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
-	const itemSize = Accessor.getItemSize(accessorDef.type);
+	const elementSize = Accessor.getElementSize(accessorDef.type);
 
 	let array: TypedArray;
 	if (accessorDef.bufferView !== undefined) {
 		// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
 		array = getAccessorArray(accessorDef, asset).slice();
 	} else {
-		array = new TypedArray(accessorDef.count * itemSize);
+		array = new TypedArray(accessorDef.count * elementSize);
 	}
 
 	const count = accessorDef.sparse.count;
@@ -461,8 +461,8 @@ function getSparseArray(accessorDef: GLTF.IAccessor, asset: Asset): TypedArray {
 
 	// Override indices given in the sparse data.
 	for (let i = 0; i < indicesDef.count; i++) {
-		for (let j = 0; j < itemSize; j++) {
-			array[indices[i] * itemSize + j] = values[i * itemSize + j];
+		for (let j = 0; j < elementSize; j++) {
+			array[indices[i] * elementSize + j] = values[i * elementSize + j];
 		}
 	}
 

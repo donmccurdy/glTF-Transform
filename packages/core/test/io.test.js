@@ -198,11 +198,11 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 
 	const actual = [];
 	t.equals(accessors.length, 1, 'found one sparse accessor');
-	t.deepEquals(accessors[0].getValue(0, actual) && actual, [0, 0, 0], 'empty index 1');
-	t.deepEquals(accessors[0].getValue(10, actual) && actual, [1, 2, 3], 'sparse index 1');
-	t.deepEquals(accessors[0].getValue(50, actual) && actual, [10, 12, 14], 'sparse index 2');
-	t.deepEquals(accessors[0].getValue(51, actual) && actual, [25, 50, 75], 'sparse index 3');
-	t.deepEquals(accessors[0].getValue(52, actual) && actual, [0, 0, 0], 'empty index 2');
+	t.deepEquals(accessors[0].getElement(0, actual) && actual, [0, 0, 0], 'empty index 1');
+	t.deepEquals(accessors[0].getElement(10, actual) && actual, [1, 2, 3], 'sparse index 1');
+	t.deepEquals(accessors[0].getElement(50, actual) && actual, [10, 12, 14], 'sparse index 2');
+	t.deepEquals(accessors[0].getElement(51, actual) && actual, [25, 50, 75], 'sparse index 3');
+	t.deepEquals(accessors[0].getElement(52, actual) && actual, [0, 0, 0], 'empty index 2');
 
 	t.end();
 });

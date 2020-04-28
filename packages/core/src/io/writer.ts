@@ -113,9 +113,9 @@ export class GLTFWriter {
 				accessorDef.bufferView = json.bufferViews.length;
 				accessorDef.byteOffset = byteStride;
 
-				const itemSize = accessor.getItemSize();
-				const valueSize = accessor.getComponentSize();
-				byteStride += BufferUtils.padNumber(itemSize * valueSize);
+				const elementSize = accessor.getElementSize();
+				const componentSize = accessor.getComponentSize();
+				byteStride += BufferUtils.padNumber(elementSize * componentSize);
 
 				accessorIndexMap.set(accessor, json.accessors.length);
 				json.accessors.push(accessorDef);
@@ -130,13 +130,13 @@ export class GLTFWriter {
 			for (let i = 0; i < vertexCount; i++) {
 				let vertexByteOffset = 0;
 				for (const accessor of accessors) {
-					const itemSize = accessor.getItemSize();
-					const valueSize = accessor.getComponentSize();
+					const elementSize = accessor.getElementSize();
+					const componentSize = accessor.getComponentSize();
 					const componentType = accessor.getComponentType();
 					const array = accessor.getArray();
-					for (let j = 0; j < itemSize; j++) {
-						const viewByteOffset = i * byteStride + vertexByteOffset + j * valueSize;
-						const value = array[i * itemSize + j];
+					for (let j = 0; j < elementSize; j++) {
+						const viewByteOffset = i * byteStride + vertexByteOffset + j * componentSize;
+						const value = array[i * elementSize + j];
 						switch (componentType) {
 							case GLTF.AccessorComponentType.FLOAT:
 								view.setFloat32(viewByteOffset, value, true);
@@ -160,7 +160,7 @@ export class GLTFWriter {
 								throw new Error('Unexpected component type: ' + componentType);
 						}
 					}
-					vertexByteOffset += BufferUtils.padNumber(itemSize * valueSize);
+					vertexByteOffset += BufferUtils.padNumber(elementSize * componentSize);
 				}
 			}
 
