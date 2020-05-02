@@ -26,15 +26,16 @@ export type Transform = (doc: Document) => void;
  * 	.setImage(arrayBuffer)
  * 	.setMimeType('image/png');
  *
+ * // Document containing duplicate copies of the same texture.
  * doc.getRoot().listTextures(); // → [texture x 2]
  *
- * doc
- * 	.transform(
- * 		prune({textures: true}),
- * 		ao({samples: 500}),
- * 		split({meshes: ['Cog', 'Wheel']})
- * 	);
+ * doc.transform(
+ * 	prune({textures: true}),
+ * 	ao({samples: 500}),
+ * 	split({meshes: ['Cog', 'Wheel']})
+ * );
  *
+ * // Document with duplicate textures removed.
  * doc.getRoot().listTextures(); // → [texture x 1]
  * ```
  *
@@ -164,7 +165,10 @@ export class Document {
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */
-	createAccessor(name: string, buffer: Buffer): Accessor {
+	createAccessor(name: string, buffer: Buffer = null): Accessor {
+		if (!buffer) {
+			buffer = this.getRoot().listBuffers()[0];
+		}
 		const accessor = new Accessor(this.graph, name).setBuffer(buffer);
 		this.root.addAccessor(accessor);
 		return accessor;
