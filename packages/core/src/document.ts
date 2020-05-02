@@ -8,9 +8,15 @@ export type Transform = (doc: Document) => void;
  *
  * *Wraps a glTF asset and its resources for easier modification.*
  *
+ * Documents manage glTF assets and the relationships among dependencies. The document wrapper
+ * allow tools to read and write changes without dealing with array indices, which are likely to
+ * change over the course of a file modification. An internal graph structure allows any property
+ * in the glTF file to maintain references to its dependencies, and makes it easy to determine
+ * where a particular property dependency is being used. For example, finding a list of materials
+ * that use a particular texture is as simple as calling {@link Texture.listParents}().
+ *
  * A new resource {@link Property} (e.g. a {@link Mesh} or {@link Material}) is created by calling
- * factory methods on the document, `doc.create*(name)`. Resources are destroyed by calling
- * {@link Property.dispose}().
+ * 'create' methods on the document. Resources are destroyed by calling {@link Property.dispose}().
  *
  * ```ts
  * const texture1 = doc.createTexture('myTexture')
