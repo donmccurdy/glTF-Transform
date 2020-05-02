@@ -20,7 +20,7 @@
     "validate": "scripts/validate.js",
     "preversion": "npm run test && npm run dist",
     "version": "npm run docs && git add -A docs",
-    "docs": "cd packages/core && typedoc --out ../../docs/dist/ --excludeNotDocumented --theme ../../docs/theme --mode file --readme ../../docs/INDEX.md --includes ../../docs"
+    "docs": "cd packages/core && typedoc --out ../../docs/dist/ --excludeNotDocumented --theme ../../docs/theme --mode file --readme ../../docs/INDEX.md --includes ../../docs && cd ../../ && mv docs/dist/modules/* docs/dist/"
   },
   "devDependencies": {
     "@types/node": "^10.12.17",

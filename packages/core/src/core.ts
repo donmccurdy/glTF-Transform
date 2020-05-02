@@ -7,3 +7,18 @@ export { BufferUtils, FileUtils, ImageUtils, Logger, uuid } from './utils/';
 // Improved gl-matrix performance in modern web browsers.
 import {glMatrix} from 'gl-matrix';
 glMatrix.setMatrixArrayType(Array);
+
+/** [[include:CONCEPTS.md]] */
+namespace Concepts {};
+
+/** [[include:INSTALLATION.md]] */
+namespace Installation {};
+
+/** [[include:TRANSFORMS.md]] */
+namespace Transforms {};
+
+/** [[include:SCRIPTING.md]] */
+namespace Scripting {};
+
+/** [[include:CONTRIBUTING.md]] */
+namespace Contributing {};
