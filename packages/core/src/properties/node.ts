@@ -22,7 +22,7 @@ import { Root } from './root';
  * Usage:
  *
  * ```ts
- * const node = container.createNode('myNode')
+ * const node = doc.createNode('myNode')
  * 	.setMesh(mesh)
  * 	.setTranslation([0, 0, 0])
  * 	.addChild(otherNode);

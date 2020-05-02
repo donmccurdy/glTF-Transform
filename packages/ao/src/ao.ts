@@ -1,6 +1,6 @@
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
-import { Container, Primitive, Transform } from '@gltf-transform/core';
+import { Document, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = '@gltf-transform/ao';
 const geoao = geoaoNamespace['default'] as Function;
@@ -33,15 +33,15 @@ const TEXTURE_DATA = new Uint8Array([
 export function ao (options: AOOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
-	return (container: Container): void => {
+	return (doc: Document): void => {
 
-		const logger = container.getLogger();
+		const logger = doc.getLogger();
 		const {resolution, samples} = options;
 
 		logger.debug(`${NAME}: resolution = ${resolution}; samples = ${samples}`);
 
 		const primitives = new Set<Primitive>();
-		container.getRoot().listMeshes().forEach((mesh) => {
+		doc.getRoot().listMeshes().forEach((mesh) => {
 			mesh.listPrimitives().forEach((primitive) => (primitives.add(primitive)));
 		});
 
@@ -51,7 +51,7 @@ export function ao (options: AOOptions): Transform {
 			return;
 		}
 
-		const texture = container.createTexture('occlusion')
+		const texture = doc.createTexture('occlusion')
 		.setImage(TEXTURE_DATA)
 		.setMimeType(TEXTURE_MIME_TYPE);
 
@@ -89,8 +89,8 @@ export function ao (options: AOOptions): Transform {
 				uv2Data[i * 2] = uv2Data[i * 2 + 1] = 1 - ao[i];
 			}
 
-			const buffer = container.getRoot().listBuffers()[0] || container.createBuffer('');
-			const uv2 = container.createAccessor('uv2', buffer)
+			const buffer = doc.getRoot().listBuffers()[0] || doc.createBuffer('');
+			const uv2 = doc.createAccessor('uv2', buffer)
 			.setArray(uv2Data)
 			.setType(GLTF.AccessorType.VEC2);
 

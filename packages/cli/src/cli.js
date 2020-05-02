@@ -40,8 +40,8 @@ program
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
 	.action(({input, output}, options, logger) => {
-		const container = io.read(input).setLogger(logger);
-		io.write(output, container);
+		const doc = io.read(input).setLogger(logger);
+		io.write(output, doc);
 	});
 
 // AMBIENT OCCLUSION
@@ -52,10 +52,10 @@ program
 	.option('--resolution <n>', 'AO resolution', program.INT, 512)
 	.option('--samples <n>', 'Number of samples', program.INT, 500)
 	.action(({input, output}, {resolution, samples}, logger) => {
-		const container = io.read(input)
+		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(ao({gl, resolution, samples}));
-		io.write(output, container);
+		io.write(output, doc);
 	});
 
 // COLORSPACE
@@ -65,10 +65,10 @@ program
 	.argument('<output>', 'Path to write output')
 	.option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', program.STRING)
 	.action(({input, output}, {inputEncoding}, logger) => {
-		const container = io.read(input)
+		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(colorspace({inputEncoding}));
-		io.write(output, container);
+		io.write(output, doc);
 	});
 
 // PRUNE
@@ -79,10 +79,10 @@ program
 	.option('--accessors <accessors>', 'Prune duplicate accessors', program.BOOL, true, false)
 	.option('--textures <textures>', 'Prune duplicate textures', program.BOOL, true, false)
 	.action(({input, output}, {accessors, textures}, logger) => {
-		const container = io.read(input)
+		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(prune({accessors, textures}));
-		io.write(output, container);
+		io.write(output, doc);
 	});
 
 // SPLIT
@@ -92,10 +92,10 @@ program
 	.argument('<output>', 'Path to write output')
 	.option('--meshes <meshes>', 'Mesh names', program.LIST, [], true)
 	.action(({input, output}, {meshes}, logger) => {
-		const container = io.read(input)
+		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(split({meshes}));
-		io.write(output, container);
+		io.write(output, doc);
 	});
 
 // CHAIN
@@ -105,10 +105,10 @@ program
 // 	.argument('<output>', 'Path to write output')
 // 	.option('--transforms <transforms>', 'Transforms to apply, as comma-separated strings: "split [options]","..."', program.LIST, [], true)
 // 	.action(({input, output}, {transforms}, logger) => {
-// 		const container = io.read(input)
+// 		const doc = io.read(input)
 // 			.setLogger(logger);
 // 		logger.info(input, output, transforms);
-// 		io.write(output, container);
+// 		io.write(output, doc);
 // 	});
 
 program

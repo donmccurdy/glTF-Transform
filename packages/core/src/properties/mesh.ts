@@ -27,10 +27,10 @@ import { Root } from './root';
  * Usage:
  *
  * ```ts
- * const primitive = container.createPrimitive()
+ * const primitive = doc.createPrimitive()
  * 	.setAttribute('POSITION', positionAccessor)
  * 	.setAttribute('TEXCOORD_0', uvAccessor);
- * const mesh = container.createMesh('myMesh')
+ * const mesh = doc.createMesh('myMesh')
  * 	.addPrimitive(primitive);
  * node.setMesh(mesh);
  * ```
@@ -79,7 +79,7 @@ export class Mesh extends Property {
  * Usage:
  *
  * ```ts
- * const primitive = container.createPrimitive()
+ * const primitive = doc.createPrimitive()
  * 	.setAttribute('POSITION', positionAccessor)
  * 	.setAttribute('TEXCOORD_0', uvAccessor)
  * 	.setMaterial(material);

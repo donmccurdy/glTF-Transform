@@ -1,9 +1,9 @@
 import { GLB_BUFFER, NAME } from '../constants';
-import { Container } from '../container';
+import { Document } from '../document';
 import { Link } from '../graph';
+import { NativeDocument } from '../native-document';
 import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo, TextureSampler } from '../properties';
 import { BufferUtils } from '../utils';
-import { Asset } from './asset';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
@@ -19,12 +19,12 @@ export interface WriterOptions {
 
 /** @hidden */
 export class GLTFWriter {
-	public static write(container: Container, options: WriterOptions): Asset {
-		const root = container.getRoot();
-		const asset = {json: {asset: root.getAsset()}, resources: {}} as Asset;
-		const json = asset.json;
+	public static write(doc: Document, options: WriterOptions): NativeDocument {
+		const root = doc.getRoot();
+		const nativeDoc = {json: {asset: root.getAsset()}, resources: {}} as NativeDocument;
+		const json = nativeDoc.json;
 
-		const logger = container.getLogger();
+		const logger = doc.getLogger();
 
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
@@ -217,7 +217,7 @@ export class GLTFWriter {
 		const accessorLinks = new Map<Accessor, Link<Property, Accessor>[]>();
 
 		// Gather all accessors, creating a map to look up their uses.
-		for (const link of container.getGraph().getLinks()) {
+		for (const link of doc.getGraph().getLinks()) {
 			if (link.getParent() === root) continue;
 
 			const child = link.getChild();
@@ -257,7 +257,7 @@ export class GLTFWriter {
 			} else {
 				const extension = texture.getMimeType() === 'image/png' ? 'png' : 'jpeg';
 				imageDef.uri = imageURIGenerator.createURI(texture, extension);
-				asset.resources[imageDef.uri] = texture.getImage();
+				nativeDoc.resources[imageDef.uri] = texture.getImage();
 			}
 
 			imageIndexMap.set(texture, textureIndex);
@@ -372,7 +372,7 @@ export class GLTFWriter {
 			// Write buffer views to buffer.
 
 			bufferDef.byteLength = bufferByteLength;
-			asset.resources[uri] = BufferUtils.concat(buffers);
+			nativeDoc.resources[uri] = BufferUtils.concat(buffers);
 
 			json.buffers.push(bufferDef);
 		});
@@ -514,7 +514,7 @@ export class GLTFWriter {
 
 		clean(json);
 
-		return asset;
+		return nativeDoc;
 	}
 }
 

@@ -8,9 +8,9 @@ import { Property } from './property';
  * *Texture, or images, referenced by {@link Material} properties.*
  *
  * Textures in glTF-Transform are a combination of glTF's `texture` and `image` properties, and
- * should be unique within a container, such that no other texture contains the same
+ * should be unique within a document, such that no other texture contains the same
  * {@link getImage}() data. Where duplicates may already exist, the `prune({textures: true})`
- * transform can remove them. A {@link Container} with N texture properties will be exported to a
+ * transform can remove them. A {@link Document} with N texture properties will be exported to a
  * glTF file with N `image` properties, and the minimum number of `texture` properties necessary
  * for the materials that use it.
  *

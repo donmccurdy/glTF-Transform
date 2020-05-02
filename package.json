@@ -13,7 +13,7 @@
     "watch:debug": "lerna run watch:debug --parallel",
     "clean": "rm -rf packages/*/dist/**",
     "test": "tape packages/*/test/*.test.js | tap-spec",
-    "test:browser": "browserify packages/core/test/{io,graph,uuid,container}.test.js | tape-run | tap-spec",
+    "test:browser": "browserify packages/core/test/{io,graph,uuid,document}.test.js | tape-run | tap-spec",
     "coverage": "nyc --reporter=text tape packages/*/test/*.test.js",
     "coverage:report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",

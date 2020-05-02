@@ -25,7 +25,7 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
  * Usage:
  *
  * ```
- * const material = container.createElement('myMaterial')
+ * const material = doc.createMaterial('myMaterial')
  * 	.setBaseColorFactor([1, 0.5, 0.5, 1]) // RGBA
  * 	.setOcclusionTexture(aoTexture)
  * 	.setOcclusionStrength(0.5);

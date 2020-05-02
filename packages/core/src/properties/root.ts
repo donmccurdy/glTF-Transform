@@ -18,20 +18,20 @@ import { Texture } from './texture';
  * indirectly) by the root. Metadata about the asset's license, generator, and glTF specification
  * version are stored in the asset, accessible with {@link .getAsset}().
  *
- * Properties are added to the root with factory methods on its {@link Container}, and removed by
+ * Properties are added to the root with factory methods on its {@link Document}, and removed by
  * calling {@link Property.dispose}() on the resource. Any properties that have been created but
  * not disposed will be included when calling the various `root.list*()` methods.
  *
- * A container's root cannot be removed, and no other root may be created. Unlike other
+ * A document's root cannot be removed, and no other root may be created. Unlike other
  * {@link Property} types, the `.dispose()`, `.detach()` methods have no useful function on a
  * Root property.
  *
  * Usage:
  *
  * ```ts
- * const root = container.getRoot();
- * const scene = container.createScene('myScene');
- * const node = container.createNode('myNode');
+ * const root = document.getRoot();
+ * const scene = document.createScene('myScene');
+ * const node = document.createNode('myNode');
  * scene.addNode(node);
  *
  * console.log(root.listScenes()); // → [scene x 1]

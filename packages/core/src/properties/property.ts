@@ -9,27 +9,27 @@ import { PropertyGraph } from './property-graph';
  *
  * For example, each material and texture is a property, with material properties holding
  * references to the textures. All properties are created with factory methods on the
- * {@link Container} in which they should be constructed. Properties are destroyed by calling
+ * {@link Document} in which they should be constructed. Properties are destroyed by calling
  * {@link dispose}().
  *
  * Usage:
  *
  * ```ts
- * const texture = container.createTexture('myTexture');
- * container.listTextures(); // → [texture x 1]
+ * const texture = doc.createTexture('myTexture');
+ * doc.listTextures(); // → [texture x 1]
  *
  * // Attach a texture to a material.
  * material.setBaseColorTexture(texture);
  * material.getBaseColortexture(); // → texture
  *
- * // Detaching a texture removes any references to it, except from the container.
+ * // Detaching a texture removes any references to it, except from the doc.
  * texture.detach();
  * material.getBaseColortexture(); // → null
- * container.listTextures(); // → [texture x 1]
+ * doc.listTextures(); // → [texture x 1]
  *
  * // Disposing a texture removes all references to it, and its own references.
  * texture.dispose();
- * container.listTextures(); // → []
+ * doc.listTextures(); // → []
  * ```
  *
  * Reference:

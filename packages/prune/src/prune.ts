@@ -1,4 +1,4 @@
-import { Accessor, BufferUtils, Container, Logger, Material, Texture, Transform } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Document, Logger, Material, Texture, Transform } from '@gltf-transform/core';
 
 const NAME = '@gltf-transform/prune';
 
@@ -15,23 +15,23 @@ const DEFAULT_OPTIONS: PruneOptions = {
 export const prune = function (options: PruneOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
-	return (container: Container): void =>  {
-		const logger = container.getLogger();
+	return (doc: Document): void =>  {
+		const logger = doc.getLogger();
 
-		if (options.accessors !== false) pruneAccessors(logger, container);
-		if (options.textures !== false) pruneImages(logger, container);
+		if (options.accessors !== false) pruneAccessors(logger, doc);
+		if (options.textures !== false) pruneImages(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
 
 }
 
-function pruneAccessors(logger: Logger, container: Container): void {
+function pruneAccessors(logger: Logger, doc: Document): void {
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
 	const attributeAccessors: Set<Accessor> = new Set();
 
-	const meshes = container.getRoot().listMeshes();
+	const meshes = doc.getRoot().listMeshes();
 	meshes.forEach((mesh) => {
 		mesh.listPrimitives().forEach((primitive) => {
 			primitive.listAttributes().forEach((accessor) => (attributeAccessors.add(accessor)));
@@ -94,8 +94,8 @@ function pruneAccessors(logger: Logger, container: Container): void {
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
 }
 
-function pruneImages(logger: Logger, container: Container): void {
-	const root = container.getRoot();
+function pruneImages(logger: Logger, doc: Document): void {
+	const root = doc.getRoot();
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
 

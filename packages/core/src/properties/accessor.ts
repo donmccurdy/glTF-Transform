@@ -46,10 +46,10 @@ import { Property } from './property';
  * Usage:
  *
  * ```typescript
- * const accessor = container.createAccessor('myData')
+ * const accessor = doc.createAccessor('myData')
  * 	.setArray(new Float32Array([1,2,3,4,5,6,7,8,9,10,11,12]))
  * 	.setType('VEC3')
- * 	.setBuffer(container.listBuffers()[0]);
+ * 	.setBuffer(doc.listBuffers()[0]);
  *
  * accessor.getCount();        // → 4
  * accessor.getElementSize();  // → 3

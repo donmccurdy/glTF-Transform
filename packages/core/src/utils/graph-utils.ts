@@ -9,7 +9,7 @@ export class GraphUtils {
 	// separate package.
 	//
 	// /** @internal */
-	// static toGraph(container: Container): object {
+	// static toGraph(doc: Document): object {
 	// 	const idMap = new Map<Property, string>();
 	// 	const nodes = []; // id, label, x, y, size, color
 	// 	const edges = []; // id, label, source, target
@@ -28,7 +28,7 @@ export class GraphUtils {
 	// 		});
 	// 	}
 
-	// 	const root = container.getRoot();
+	// 	const root = doc.getRoot();
 	// 	createNode(root);
 	// 	root.listAccessors().forEach(createNode);
 	// 	root.listBuffers().forEach(createNode);
@@ -39,7 +39,7 @@ export class GraphUtils {
 	// 	root.listScenes().forEach(createNode);
 	// 	root.listTextures().forEach(createNode);
 
-	// 	const graph = container.getGraph();
+	// 	const graph = doc.getGraph();
 	// 	graph.getLinks().forEach((link: Link<Property, Property>) => {
 	// 		const source = idMap.get(link.getLeft());
 	// 		const target = idMap.get(link.getRight());

@@ -1,7 +1,7 @@
 import { GLB_BUFFER } from '../constants';
-import { Container } from '../container';
+import { Document } from '../document';
+import { NativeDocument } from '../native-document';
 import { BufferUtils, FileUtils, uuid } from '../utils/';
-import { Asset } from './asset';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
@@ -15,21 +15,21 @@ import { GLTFWriter, WriterOptions } from './writer';
  * @category I/O
  */
 abstract class PlatformIO {
-	/** Converts glTF-formatted JSON and a resource map to a {@link Container}. */
-	public assetToContainer (asset: Asset): Container {
-		return GLTFReader.read(asset);
+	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
+	public createDocument (nativeDoc: NativeDocument): Document {
+		return GLTFReader.read(nativeDoc);
 	}
 
-	/** Converts a {@link Container} to glTF-formatted JSON and a resource map. */
-	public containerToAsset (container: Container, options: WriterOptions): Asset {
-		if (options.isGLB && container.getRoot().listBuffers().length !== 1) {
+	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
+	public createNativeDocument (doc: Document, options: WriterOptions): NativeDocument {
+		if (options.isGLB && doc.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
-		return GLTFWriter.write(container, options);
+		return GLTFWriter.write(doc, options);
 	}
 
-	/** Converts a GLB-formatted ArrayBuffer to a {@link Container}. */
-	public unpackGLB(glb: ArrayBuffer): Container {
+	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
+	public unpackGLB(glb: ArrayBuffer): Document {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
 		if (header[0] !== 0x46546C67) {
@@ -56,12 +56,12 @@ abstract class PlatformIO {
 		const binaryByteLength = binaryChunkHeader[0];
 		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-		return this.assetToContainer({json, resources: {[GLB_BUFFER]: binary}});
+		return this.createDocument({json, resources: {[GLB_BUFFER]: binary}});
 	}
 
-	/** Converts a {@link Container} to a GLB-formatted ArrayBuffer. */
-	public packGLB(container: Container): ArrayBuffer {
-		const {json, resources} = this.containerToAsset(container, {basename: '', isGLB: true});
+	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
+	public packGLB(doc: Document): ArrayBuffer {
+		const {json, resources} = this.createNativeDocument(doc, {basename: '', isGLB: true});
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );
@@ -95,12 +95,12 @@ abstract class PlatformIO {
  * const io = new NodeIO(fs, path);
  *
  * // Read.
- * io.read('model.glb');             // → Container
- * io.unpackGLB(ArrayBuffer);        // → Container
+ * io.read('model.glb');             // → Document
+ * io.unpackGLB(ArrayBuffer);        // → Document
  *
  * // Write.
- * io.write('model.glb', container); // → void
- * io.packGLB(container);            // → ArrayBuffer
+ * io.write('model.glb', doc); // → void
+ * io.packGLB(doc);            // → ArrayBuffer
  * ```
  *
  * @category I/O
@@ -118,51 +118,51 @@ class NodeIO extends PlatformIO {
 
 	/* Public. */
 
-	/** Loads a local path and returns a {@link Container} instance. */
-	public read (uri: string): Container {
+	/** Loads a local path and returns a {@link Document} instance. */
+	public read (uri: string): Document {
 		const isGLB = !!uri.match(/\.glb$/);
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
 	}
 
-	/** Writes a {@link Container} instance to a local path. */
-	public write (uri: string, container: Container): void {
+	/** Writes a {@link Document} instance to a local path. */
+	public write (uri: string, doc: Document): void {
 		const isGLB = !!uri.match(/\.glb$/);
-		isGLB ? this.writeGLB(uri, container) : this.writeGLTF(uri, container);
+		isGLB ? this.writeGLB(uri, doc) : this.writeGLTF(uri, doc);
 	}
 
 	/* Internal. */
 
-	private readGLB (uri: string): Container {
+	private readGLB (uri: string): Document {
 		const buffer: Buffer = this.fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
 		return this.unpackGLB(arrayBuffer);
 	}
 
-	private readGLTF (uri: string): Container {
+	private readGLTF (uri: string): Document {
 		const dir = this.path.dirname(uri);
-		const asset = {
+		const nativeDoc = {
 			json: JSON.parse(this.fs.readFileSync(uri, 'utf8')),
 			resources: {}
-		} as Asset;
-		const images = asset.json.images || [];
-		const buffers = asset.json.buffers || [];
+		} as NativeDocument;
+		const images = nativeDoc.json.images || [];
+		const buffers = nativeDoc.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
 			if (resource.uri && !resource.uri.match(/data:/)) {
 				const absURI = this.path.resolve(dir, resource.uri);
-				asset.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
+				nativeDoc.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
 				// Rewrite Data URIs to something short and unique.
 				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
-				asset.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
+				nativeDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
 				resource.uri = resourceUUID;
 			}
 		})
-		return GLTFReader.read(asset);
+		return GLTFReader.read(nativeDoc);
 	}
 
-	private writeGLTF (uri: string, container: Container): void {
+	private writeGLTF (uri: string, doc: Document): void {
 		const writerOptions = {basename: FileUtils.basename(uri), isGLB: false};
-		const {json, resources} = GLTFWriter.write(container, writerOptions);
+		const {json, resources} = GLTFWriter.write(doc, writerOptions);
 		const {fs, path} = this;
 		const dir = path.dirname(uri);
 		fs.writeFileSync(uri, JSON.stringify(json, null, 2));
@@ -172,8 +172,8 @@ class NodeIO extends PlatformIO {
 		});
 	}
 
-	private writeGLB (uri: string, container: Container): void {
-		const buffer = Buffer.from(this.packGLB(container));
+	private writeGLB (uri: string, doc: Document): void {
+		const buffer = Buffer.from(this.packGLB(doc));
 		this.fs.writeFileSync(uri, buffer);
 	}
 }
@@ -191,11 +191,11 @@ class NodeIO extends PlatformIO {
  * const io = new WebIO({credentials: 'include'});
  *
  * // Read.
- * const container = await io.read('model.glb'); // → Container
- * const container = io.unpackGLB(ArrayBuffer);  // → Container
+ * const doc = await io.read('model.glb'); // → Document
+ * const doc = io.unpackGLB(ArrayBuffer);  // → Document
  *
  * // Write.
- * const arrayBuffer = io.packGLB(container);    // → ArrayBuffer
+ * const arrayBuffer = io.packGLB(doc);    // → ArrayBuffer
  * ```
  *
  * @category I/O
@@ -212,36 +212,36 @@ class WebIO extends PlatformIO {
 
 	/* Public. */
 
-	/** Loads a URI and returns a {@link Container} instance. */
-	public read (uri: string): Promise<Container> {
+	/** Loads a URI and returns a {@link Document} instance. */
+	public read (uri: string): Promise<Document> {
 		const isGLB = !!uri.match(/\.glb$/);
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
 	}
 
 	/* Internal. */
 
-	private readGLTF (uri: string): Promise<Container> {
-		const asset = {json: {}, resources: {}} as Asset;
+	private readGLTF (uri: string): Promise<Document> {
+		const nativeDoc = {json: {}, resources: {}} as NativeDocument;
 		return fetch(uri, this.fetchConfig)
 		.then((response) => response.json())
 		.then((json: GLTF.IGLTF) => {
-			asset.json = json;
+			nativeDoc.json = json;
 			const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
 				if (resource.uri) {
 					return fetch(resource.uri, this.fetchConfig)
 					.then((response) => response.arrayBuffer())
 					.then((arrayBuffer) => {
-						asset.resources[resource.uri] = arrayBuffer;
+						nativeDoc.resources[resource.uri] = arrayBuffer;
 					});
 				}
 			});
 			return Promise.all(pendingResources)
-			.then(() => this.assetToContainer(asset));
+			.then(() => this.createDocument(nativeDoc));
 		});
 	}
 
-	private readGLB (uri: string): Promise<Container> {
+	private readGLB (uri: string): Promise<Document> {
 		return fetch(uri, this.fetchConfig)
 			.then((response) => response.arrayBuffer())
 			.then((arrayBuffer) => this.unpackGLB(arrayBuffer));

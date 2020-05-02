@@ -3,7 +3,7 @@ require('source-map-support').install();
 const IS_NODEJS = typeof window === 'undefined';
 
 const test = require('tape');
-const { Accessor, Container, NodeIO, TextureInfo, WebIO } = require('../');
+const { Accessor, Document, NodeIO, TextureInfo, WebIO } = require('../');
 
 let fs, glob, path;
 if (IS_NODEJS) {
@@ -24,8 +24,8 @@ test('@gltf-transform/core::io | web', {skip: IS_NODEJS}, t => {
 	t.equals(!!io, true, 'Creates WebIO');
 
 	io.readGLB(SAMPLE_GLB)
-		.then((container) => {
-			t.equals(container.getRoot().listBuffers().length, 1, 'reads a GLB with Fetch API');
+		.then((doc) => {
+			t.equals(doc.getRoot().listBuffers().length, 1, 'reads a GLB with Fetch API');
 		})
 		.catch((e) => (t.fail(e)))
 		.finally(() => (t.end()));
@@ -36,9 +36,9 @@ test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 
 		const io = new NodeIO(fs, path);
-		const container = io.read(inputURI);
+		const doc = io.read(inputURI);
 
-		t.ok(container, `Read "${basepath}".`)
+		t.ok(doc, `Read "${basepath}".`)
 	});
 	t.end();
 });
@@ -48,9 +48,9 @@ test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 
 		const io = new NodeIO(fs, path);
-		const container = io.read(inputURI);
+		const doc = io.read(inputURI);
 
-		t.ok(container, `Read "${basepath}".`)
+		t.ok(doc, `Read "${basepath}".`)
 	});
 	t.end();
 });
@@ -61,10 +61,10 @@ test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
 		const outputURI = path.join(__dirname, 'out', basepath);
 
 		const io = new NodeIO(fs, path);
-		const container = io.read(inputURI);
+		const doc = io.read(inputURI);
 
 		ensureDir(outputURI);
-		io.write(outputURI.replace('.gltf', '.glb'), container);
+		io.write(outputURI.replace('.gltf', '.glb'), doc);
 		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 	});
 	t.end();
@@ -76,10 +76,10 @@ test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
 		const outputURI = path.join(__dirname, 'out', basepath);
 
 		const io = new NodeIO(fs, path);
-		const container = io.read(inputURI);
+		const doc = io.read(inputURI);
 
 		ensureDir(outputURI);
-		io.write(outputURI.replace('.glb', '.gltf'), container);
+		io.write(outputURI.replace('.glb', '.gltf'), doc);
 		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 	});
 	t.end();
@@ -139,8 +139,8 @@ test('@gltf-transform/core::io | interleaved accessors', t => {
 	};
 
 	const io = new NodeIO(fs, path);
-	const container = io.assetToContainer({json, resources});
-	const arrays = container.getRoot()
+	const doc = io.createDocument({json, resources});
+	const arrays = doc.getRoot()
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
 
@@ -192,8 +192,8 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 	};
 
 	const io = new NodeIO(fs, path);
-	const container = io.assetToContainer({json, resources});
-	const accessors = container.getRoot()
+	const doc = io.createDocument({json, resources});
+	const accessors = doc.getRoot()
 		.listAccessors();
 
 	const actual = [];
@@ -208,29 +208,29 @@ test('@gltf-transform/core::io | sparse accessors', t => {
 });
 
 test('@gltf-transform/core::io | resource naming', t => {
-	const container = new Container();
-	const buffer1 = container.createBuffer().setURI('mybuffer.bin');
-	const buffer2 = container.createBuffer().setURI('');
-	const buffer3 = container.createBuffer();
-	container.createBuffer().setURI('empty.bin');
+	const doc = new Document();
+	const buffer1 = doc.createBuffer().setURI('mybuffer.bin');
+	const buffer2 = doc.createBuffer().setURI('');
+	const buffer3 = doc.createBuffer();
+	doc.createBuffer().setURI('empty.bin');
 
 	// Empty buffers aren't written.
-	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer1);
-	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer2);
-	container.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
+	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer1);
+	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer2);
+	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
 
 	const io = new NodeIO(fs, path);
-	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});
+	const nativeDoc = io.createNativeDocument(doc, {basename: 'basename', isGLB: false});
 
-	t.true('mybuffer.bin' in asset.resources, 'explicitly named buffer');
-	t.true('basename_1.bin' in asset.resources, 'implicitly named buffer #1');
-	t.true('basename_2.bin' in asset.resources, 'implicitly named buffer #2');
-	t.false('empty.bin' in asset.resources, 'empty buffer skipped');
+	t.true('mybuffer.bin' in nativeDoc.resources, 'explicitly named buffer');
+	t.true('basename_1.bin' in nativeDoc.resources, 'implicitly named buffer #1');
+	t.true('basename_2.bin' in nativeDoc.resources, 'implicitly named buffer #2');
+	t.false('empty.bin' in nativeDoc.resources, 'empty buffer skipped');
 	t.end();
 });
 
 test('@gltf-transform/core::io | read textures', t => {
-	const asset = {
+	const nativeDoc = {
 		json: {
 			asset: {version: '2.0'},
 			textures: [
@@ -257,8 +257,8 @@ test('@gltf-transform/core::io | read textures', t => {
 	};
 
 	const io = new NodeIO(fs, path);
-	const container = io.assetToContainer(asset);
-	const root = container.getRoot();
+	const doc = io.createDocument(nativeDoc);
+	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
 
@@ -274,31 +274,31 @@ test('@gltf-transform/core::io | read textures', t => {
 });
 
 test('@gltf-transform/core::io | write textures', t => {
-	const container = new Container();
+	const doc = new Document();
 	const image1 = new ArrayBuffer(1);
 	const image2 = new ArrayBuffer(2);
-	const texture1 = container.createTexture('tex1')
+	const texture1 = doc.createTexture('tex1')
 		.setImage(image1)
 		.setURI('tex1.png');
-	const texture2 = container.createTexture('tex2')
+	const texture2 = doc.createTexture('tex2')
 		.setImage(image2)
 		.setMimeType('image/jpeg');
-	container.createMaterial('mat1')
+	doc.createMaterial('mat1')
 		.setBaseColorTexture(texture1)
 		.setNormalTexture(texture2);
-	container.createMaterial('mat2')
+	doc.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureSampler()
 		.setWrapS(TextureInfo.CLAMP_TO_EDGE);
 
 	const io = new NodeIO(fs, path);
-	const asset = io.containerToAsset(container, {basename: 'basename', isGLB: false});
+	const nativeDoc = io.createNativeDocument(doc, {basename: 'basename', isGLB: false});
 
-	t.false('basename.bin' in asset.resources, 'external image resources');
-	t.true('tex1.png' in asset.resources, 'writes tex1.png');
-	t.true('basename_1.jpeg' in asset.resources, 'writes default-named jpeg');
-	t.equals(asset.json.images.length, 2, 'reuses images');
-	t.equals(asset.json.textures.length, 3, 'writes three textures');
-	t.equals(asset.json.samplers.length, 2, 'reuses samplers');
+	t.false('basename.bin' in nativeDoc.resources, 'external image resources');
+	t.true('tex1.png' in nativeDoc.resources, 'writes tex1.png');
+	t.true('basename_1.jpeg' in nativeDoc.resources, 'writes default-named jpeg');
+	t.equals(nativeDoc.json.images.length, 2, 'reuses images');
+	t.equals(nativeDoc.json.textures.length, 3, 'writes three textures');
+	t.equals(nativeDoc.json.samplers.length, 2, 'reuses samplers');
 	t.end();
 });

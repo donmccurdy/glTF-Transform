@@ -1,4 +1,4 @@
-import { Container, Transform } from '@gltf-transform/core';
+import { Document, Transform } from '@gltf-transform/core';
 
 const NAME = '@gltf-transform/split';
 
@@ -14,11 +14,11 @@ const split = (options: SplitOptions): Transform => {
 
 	options = {...DEFAULT_OPTIONS, ...options};
 
-	return (container: Container): void => {
+	return (doc: Document): void => {
 
-		const logger = container.getLogger();
+		const logger = doc.getLogger();
 
-		container.getRoot().listMeshes()
+		doc.getRoot().listMeshes()
 			.forEach((mesh, meshIndex) => {
 				if (!mesh.getName() || !options.meshes.includes(mesh.getName())) {
 					logger.debug(`${NAME}: Skipping mesh at index ${meshIndex} with name "${mesh.getName()}".`);
@@ -27,7 +27,7 @@ const split = (options: SplitOptions): Transform => {
 
 				logger.debug(`${NAME}: Creating buffer for mesh "${mesh.getName()}".`);
 
-				const buffer = container.createBuffer(mesh.getName())
+				const buffer = doc.createBuffer(mesh.getName())
 					.setURI(`${mesh.getName()}.bin`);
 
 				mesh.listPrimitives()

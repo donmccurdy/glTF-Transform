@@ -26,9 +26,9 @@ import { Property } from './property';
  *
  * ```ts
  * // Create two buffers with custom filenames.
- * const buffer1 = container.createBuffer('buffer1')
+ * const buffer1 = doc.createBuffer('buffer1')
  * 	.setURI('part1.bin');
- * const buffer2 = container.createBuffer('buffer2')
+ * const buffer2 = doc.createBuffer('buffer2')
  * 	.setURI('part2.bin');
  *
  * // Assign the attributes of two meshes to different buffers. If the meshes
@@ -45,7 +45,7 @@ import { Property } from './property';
  *
  * // Write to disk. Each mesh's binary data will be in a separate binary file;
  * // any remaining accessors will be in a third (default) buffer.
- * new NodeIO().write('scene.gltf', container);
+ * new NodeIO().write('scene.gltf', doc);
  * // → scene.gltf, part1.bin, part2.bin
  * ```
  *

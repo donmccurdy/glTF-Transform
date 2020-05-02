@@ -11,8 +11,8 @@ const { ao } = require('../');
 
 test('@gltf-transform/ao', t => {
 	const io = new NodeIO(fs, path);
-	const container = io.read(path.join(__dirname, 'in/chr_knight.glb'));
-	const root = container.getRoot();
+	const doc = io.read(path.join(__dirname, 'in/chr_knight.glb'));
+	const root = doc.getRoot();
 	const primitive = root.listMeshes()[0].listPrimitives()[0];
 	const material = primitive.getMaterial();
 
@@ -20,7 +20,7 @@ test('@gltf-transform/ao', t => {
 	t.notOk(primitive.getAttribute('TEXCOORD_1'), 'begins without TEXCOORD_1');
 	t.equals(root.listTextures().length, 1, 'begins with one texture')
 
-	ao({gl})(container);
+	ao({gl})(doc);
 
 	t.ok(material.getOcclusionTexture(), 'adds occlusionTexture');
 	t.ok(primitive.getAttribute('TEXCOORD_1'), 'adds TEXCOORD_1');

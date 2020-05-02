@@ -1,4 +1,4 @@
-import { Accessor, Container, Primitive, Transform } from '@gltf-transform/core';
+import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = '@gltf-transform/colorspace';
 
@@ -8,9 +8,9 @@ interface ColorspaceOptions {
 
 export function colorspace (options: ColorspaceOptions): Transform {
 
-	return (container: Container): void => {
+	return (doc: Document): void => {
 
-		const logger = container.getLogger();
+		const logger = doc.getLogger();
 
 		if (options.inputEncoding === 'linear') {
 			logger.info(`${NAME}: Vertex colors already linear. Skipping conversion.`);
@@ -54,7 +54,7 @@ export function colorspace (options: ColorspaceOptions): Transform {
 			}
 		}
 
-		container.getRoot()
+		doc.getRoot()
 			.listMeshes()
 			.forEach((mesh) => mesh.listPrimitives().forEach(updatePrimitive));
 

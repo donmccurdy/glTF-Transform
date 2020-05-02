@@ -2,23 +2,23 @@ require('source-map-support').install();
 
 const test = require('tape');
 
-const { Container } = require('@gltf-transform/core');
+const { Document } = require('@gltf-transform/core');
 const { colorspace } = require('../');
 
 test('@gltf-transform/colorspace', t => {
 	const input = [ 0.25882352941176473, 0.5215686274509804, 0.9568627450980393 ]; // sRGB
 	const expected = [ 0.054480276435339814, 0.23455058215026167, 0.9046611743890203 ]; // linear
 
-	const container = new Container();
-	const mesh = container.createMesh('test-mesh');
+	const doc = new Document();
+	const mesh = doc.createMesh('test-mesh');
 
-	const primitive1 = container.createPrimitive();
-	const primitive2 = container.createPrimitive();
+	const primitive1 = doc.createPrimitive();
+	const primitive2 = doc.createPrimitive();
 	mesh.addPrimitive(primitive1);
 	mesh.addPrimitive(primitive2);
 
-	const accessor1 = container.createAccessor('#1');
-	const accessor2 = container.createAccessor('#2');
+	const accessor1 = doc.createAccessor('#1');
+	const accessor2 = doc.createAccessor('#2');
 	accessor1.setType('VEC3').setArray(new Float32Array([...input, ...input]))
 	accessor2.setType('VEC4').setArray(new Float32Array([...input, 0.5]));
 
@@ -28,7 +28,7 @@ test('@gltf-transform/colorspace', t => {
 	primitive2
 		.setAttribute('COLOR_0', accessor1)
 
-	colorspace({inputEncoding: 'sRGB'})(container);
+	colorspace({inputEncoding: 'sRGB'})(doc);
 
 	let actual;
 

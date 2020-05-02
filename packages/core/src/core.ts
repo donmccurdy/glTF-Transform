@@ -1,4 +1,4 @@
-export { Container, Transform } from './container';
+export { Document, Transform } from './document';
 export { Accessor, Buffer, Property, Material, Mesh, Node, Primitive, Root, Scene, Texture, TextureInfo, TextureSampler } from './properties';
 export { Graph } from './graph/';
 export { NodeIO, WebIO } from './io/';

@@ -1,3 +1,3 @@
 export { NodeIO, WebIO } from './io';
-export { Asset } from './asset';
+export { NativeDocument as Asset } from '../native-document';
 export { WriterOptions } from './writer';
