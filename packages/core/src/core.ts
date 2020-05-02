@@ -11,9 +11,6 @@ glMatrix.setMatrixArrayType(Array);
 /** [[include:CONCEPTS.md]] */
 namespace Concepts {};
 
-/** [[include:INSTALLATION.md]] */
-namespace Installation {};
-
 /** [[include:TRANSFORMS.md]] */
 namespace Transforms {};
 
