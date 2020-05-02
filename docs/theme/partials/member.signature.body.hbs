@@ -1,0 +1,10 @@
+{{> comment}}
+
+{{#unless hideSources}}
+    {{> member.sources}}
+{{/unless}}
+
+{{#if typeParameters}}
+    <h4 class="tsd-type-parameters-title">Type parameters</h4>
+    {{> typeParameters}}
+{{/if}}
