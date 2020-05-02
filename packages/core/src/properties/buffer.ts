@@ -33,15 +33,15 @@ import { Property } from './property';
  *
  * // Assign the attributes of two meshes to different buffers. If the meshes
  * // had indices or morph target attributes, you would also want to relocate
- * // those accessors (not shown below).
+ * // those accessors.
  * mesh1
  * 	.listPrimitives()
  * 	.forEach((primitive) => primitive.listAttributes()
- * 		.setBuffer(buffer1));
+ * 		.forEach((attribute) => attribute.setBuffer(buffer1)));
  * mesh2
  * 	.listPrimitives()
  * 	.forEach((primitive) => primitive.listAttributes()
- * 		.setBuffer(buffer1));
+ * 		.forEach((attribute) => attribute.setBuffer(buffer2)));
  *
  * // Write to disk. Each mesh's binary data will be in a separate binary file;
  * // any remaining accessors will be in a third (default) buffer.
