@@ -1753,7 +1753,7 @@ body {
 }
 
 .tsd-navigation h4 {
-    margin-bottom: 0.5em;
+    margin-bottom: .5em;
 }
 
 .tsd-navigation.secondary ul li a {
@@ -1769,19 +1769,28 @@ body {
 }
 
 pre {
-    padding: 2em;
+    padding: 20px;
 }
 
 .tsd-signature {
     color: #4da6ff;
 }
 
+html.minimal .tsd-generator,
+.tsd-panel > .tsd-signatures .tsd-signature.tsd-kind-icon {
+    padding-left: 20px;
+}
+
 .tsd-select .tsd-select-label,
 .tsd-widget {
-    opacity: 0.8;
+    opacity: .8;
 }
 
 .tsd-select.active .tsd-select-label,
 .tsd-widget:hover {
     opacity: 1;
+}
+
+.nav-shield img {
+    padding: 0 1em;
 }

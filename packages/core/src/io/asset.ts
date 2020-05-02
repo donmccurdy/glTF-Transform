@@ -1,5 +1,7 @@
 /**
- * A raw glTF asset, with its JSON and binary resources.
+ * # Asset
+ *
+ * *A raw glTF asset, with its JSON and binary resources.*
  *
  * An Asset is a complete glTF model, with no helper functions for easy modification. In typical
  * usage, you should not have to deal with an Asset object: glTF files are loaded with the

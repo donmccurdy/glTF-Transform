@@ -18,13 +18,16 @@ import { PropertyGraph } from './property-graph';
  * const texture = container.createTexture('myTexture');
  * container.listTextures(); // → [texture x 1]
  *
+ * // Attach a texture to a material.
  * material.setBaseColorTexture(texture);
  * material.getBaseColortexture(); // → texture
  *
+ * // Detaching a texture removes any references to it, except from the container.
  * texture.detach();
  * material.getBaseColortexture(); // → null
  * container.listTextures(); // → [texture x 1]
  *
+ * // Disposing a texture removes all references to it, and its own references.
  * texture.dispose();
  * container.listTextures(); // → []
  * ```
