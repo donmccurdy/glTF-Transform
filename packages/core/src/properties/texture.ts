@@ -3,7 +3,9 @@ import { ImageUtils } from '../utils';
 import { Property } from './property';
 
 /**
- * Texture, or images, referenced by {@link Material} properties.
+ * # Texture
+ *
+ * *Texture, or images, referenced by {@link Material} properties.*
  *
  * Textures in glTF-Transform are a combination of glTF's `texture` and `image` properties, and
  * should be unique within a container, such that no other texture contains the same
@@ -93,7 +95,9 @@ export class Texture extends Property {
 }
 
 /**
- * Settings associated with a particular use of a {@link Texture}.
+ * # TextureInfo
+ *
+ * *Settings associated with a particular use of a {@link Texture}.*
  *
  * Different materials may reuse the same texture but with different texture coordinates. For other
  * settings affecting application of a texture, see {@link TextureSampler}.
@@ -117,7 +121,9 @@ export class TextureInfo {
 }
 
 /**
- * Settings associated with a particular use of a {@link Texture}.
+ * # TextureSampler
+ *
+ * *Settings associated with a particular use of a {@link Texture}.*
  *
  * Different materials may reuse the same texture but with different texture coordinates. For other
  * settings affecting application of a texture, see {@link TextureInfo}.

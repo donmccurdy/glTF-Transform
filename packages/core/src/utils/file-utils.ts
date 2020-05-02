@@ -1,5 +1,7 @@
 /**
- * Utility class for working with file systems and URI paths.
+ * # FileUtils
+ *
+ * *Utility class for working with file systems and URI paths.*
  *
  * @category Utilities
  */

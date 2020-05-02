@@ -4,7 +4,9 @@ import { Buffer } from './buffer';
 import { Property } from './property';
 
 /**
- * Accessors store lists of numeric, vector, or matrix elements in a typed array.
+ * # Accessor
+ *
+ * *Accessors store lists of numeric, vector, or matrix elements in a typed array.*
  *
  * All large data for {@link Mesh}, {@link Skin}, and {@link Animation} properties is stored in
  * {@link Accessor}s, organized into one or more {@link Buffer}s. Each accessor provides data in

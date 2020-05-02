@@ -4,7 +4,9 @@ import { Property } from './property';
 import { Root } from './root';
 
 /**
- * Scenes represent a set of visual objects to render.
+ * # Scene
+ *
+ * *Scenes represent a set of visual objects to render.*
  *
  * Typically a glTF file contains only a single scene, although more are allowed and useful in some
  * cases. No particular meaning is associated with additional scenes, except as defined by the

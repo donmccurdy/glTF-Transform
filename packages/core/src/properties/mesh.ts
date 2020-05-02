@@ -8,8 +8,10 @@ import { AttributeLink } from './property-links';
 import { Root } from './root';
 
 /**
- * Meshes define reusable geometry (triangles, lines, or points) and are instantiated by
- * {@link Node}s.
+ * # Mesh
+ *
+ * *Meshes define reusable geometry (triangles, lines, or points) and are instantiated by
+ * {@link Node}s.*
  *
  * Each draw call required to render a mesh is represented as a {@link Primitive}. Meshes typically
  * have only a single {@link Primitive}, but may have more for various reasons. A mesh manages only
@@ -60,7 +62,9 @@ export class Mesh extends Property {
 }
 
 /**
- * Primitives are individual GPU draw calls comprising a {@link Mesh}.
+ * # Primitive
+ *
+ * *Primitives are individual GPU draw calls comprising a {@link Mesh}.*
  *
  * Meshes typically have only a single Primitive, although various cases may require more. Each
  * primitive may be assigned vertex attributes, morph target attributes, and a material. Any of

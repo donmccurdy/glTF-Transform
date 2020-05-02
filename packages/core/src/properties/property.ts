@@ -3,7 +3,9 @@ import { GraphNode } from '../graph';
 import { PropertyGraph } from './property-graph';
 
 /**
- * Properties represent distinct resources in a glTF asset, referenced by other properties.
+ * # Property
+ *
+ * *Properties represent distinct resources in a glTF asset, referenced by other properties.*
  *
  * For example, each material and texture is a property, with material properties holding
  * references to the textures. All properties are created with factory methods on the

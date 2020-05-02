@@ -1,7 +1,9 @@
 import { Property } from './property';
 
 /**
- * Buffers are the low-level storage units for binary data in a glTF asset.
+ * # Buffer
+ *
+ * *Buffers are low-level storage units for binary data.*
  *
  * glTF 2.0 has three concepts relevant to binary storage: accessors, buffer views, and buffers.
  * In glTF-Transform, an {@link Accessor} is referenced by any property that requires numeric typed

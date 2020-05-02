@@ -4,7 +4,9 @@ import { Logger } from './utils';
 export type Transform = (container: Container) => void;
 
 /**
- * Wraps a glTF asset and its resources for easier modification.
+ * # Container
+ *
+ * *Wraps a glTF asset and its resources for easier modification.*
  *
  * A new resource {@link Property} (e.g. a {@link Mesh} or {@link Material}) is created by calling
  * factory methods on the container, `container.create*(name)`. Resources are destroyed by calling

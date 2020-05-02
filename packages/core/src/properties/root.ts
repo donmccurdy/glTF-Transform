@@ -10,7 +10,9 @@ import { Scene } from './scene';
 import { Texture } from './texture';
 
 /**
- * Root property of a glTF asset.
+ * # Root
+ *
+ * *Root property of a glTF asset.*
  *
  * Any properties to be exported with a particular asset must be referenced (directly or
  * indirectly) by the root. Metadata about the asset's license, generator, and glTF specification

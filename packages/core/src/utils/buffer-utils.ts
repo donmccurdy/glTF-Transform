@@ -1,5 +1,7 @@
 /**
- * Common utilities for working with ArrayBuffer and Buffer objects.
+ * # BufferUtils
+ *
+ * *Common utilities for working with ArrayBuffer and Buffer objects.*
  *
  * @category Utilities
  */

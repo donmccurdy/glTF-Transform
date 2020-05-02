@@ -9,7 +9,9 @@ const PNG_FRIED_CHUNK_NAME = 'CgBI';
  */
 
 /**
- * Common utilities for working with image data.
+ * # ImageUtils
+ *
+ * *Common utilities for working with image data.*
  *
  * @category Utilities
  */

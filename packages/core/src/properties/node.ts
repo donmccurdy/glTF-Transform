@@ -6,7 +6,9 @@ import { Property } from './property';
 import { Root } from './root';
 
 /**
- * Nodes are the objects that comprise a {@link Scene}.
+ * # Node
+ *
+ * *Nodes are the objects that comprise a {@link Scene}.*
  *
  * Each node may have one or more children, and a transform (position, rotation, and scale) that
  * applies to all of its descendants. A node may also reference (or "instantiate") other resources

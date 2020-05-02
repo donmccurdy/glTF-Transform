@@ -5,7 +5,9 @@ import { TextureLink } from './property-links';
 import { Texture, TextureInfo, TextureSampler } from './texture';
 
 /**
- * Materials describe a surface's appearance and response to light.
+ * # Material
+ *
+ * *Materials describe a surface's appearance and response to light.*
  *
  * Each {@link Primitive} within a {@link Mesh} may be assigned a single Material. The number of
  * GPU draw calls typically increases with both the numbers of Primitives and of Materials in an

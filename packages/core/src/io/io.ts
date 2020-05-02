@@ -6,7 +6,9 @@ import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
 /**
- * Abstract I/O service.
+ * # PlatformIO
+ *
+ * *Abstract I/O service.*
  *
  * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
  *
@@ -79,7 +81,9 @@ abstract class PlatformIO {
 }
 
 /**
- * I/O service for Node.js.
+ * # NodeIO
+ *
+ * *I/O service for Node.js.*
  *
  * Usage:
  *
@@ -175,7 +179,9 @@ class NodeIO extends PlatformIO {
 }
 
 /**
- * I/O service for Web.
+ * # WebIO
+ *
+ * *I/O service for Web.*
  *
  * Usage:
  *

@@ -1,5 +1,7 @@
 /**
- * Logger utility class.
+ * # Logger
+ *
+ * *Logger utility class.*
  *
  * @category Utilities
  */
