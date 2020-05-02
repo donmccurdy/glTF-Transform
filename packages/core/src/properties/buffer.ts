@@ -56,6 +56,7 @@ import { Property } from './property';
  * @category Properties
  */
 export class Buffer extends Property {
+	public readonly propertyType = 'Buffer';
 
 	/** URI (or filename) of the buffer. */
 	private uri: string;

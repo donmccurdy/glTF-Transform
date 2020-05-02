@@ -37,11 +37,13 @@ export class Graph {
 		return this;
 	}
 
-	public disconnectParents(node: GraphNode): Graph {
+	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): Graph {
 		// TODO(optimize)
-		this.links
-			.filter((link) => link.getChild() === node)
-			.forEach((link) => link.dispose());
+		let links = this.links.filter((link) => link.getChild() === node);
+		if (filter) {
+			links = links.filter((link) => filter(link.getParent()));
+		}
+		links.forEach((link) => link.dispose());
 		return this;
 	}
 

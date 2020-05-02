@@ -38,6 +38,9 @@ import { PropertyGraph } from './property-graph';
  * @category Properties
  */
 export abstract class Property extends GraphNode {
+	/** Property type. */
+	public readonly propertyType: string;
+
 	protected readonly graph: PropertyGraph;
 	protected name = '';
 
@@ -94,6 +97,12 @@ export abstract class Property extends GraphNode {
 	 */
 	public clone(): Property {
 		throw new NotImplementedError();
+	}
+
+	public detach(): GraphNode {
+		// Detaching should keep properties in the same Document, and attached to its root.
+		this.graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
+		return this;
 	}
 
 	/**

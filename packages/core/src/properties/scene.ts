@@ -20,6 +20,8 @@ import { Root } from './root';
  * @category Properties
  */
 export class Scene extends Property {
+	public readonly propertyType = 'Scene';
+
 	@GraphChildList private nodes: Link<Scene, Node>[] = [];
 
 	/** Adds a {@link Node} to the scene. */

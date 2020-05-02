@@ -42,6 +42,8 @@ import { Texture } from './texture';
  * @category Properties
  */
 export class Root extends Property {
+	public readonly propertyType = 'Root';
+
 	private readonly asset: GLTF.IAsset = {
 		generator: `glTF-Transform ${VERSION}`,
 		version: '2.0'

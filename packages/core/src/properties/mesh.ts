@@ -41,6 +41,7 @@ import { Root } from './root';
  * @category Properties
  */
 export class Mesh extends Property {
+	public readonly propertyType = 'Mesh';
 
 	/** Primitive GPU draw call list. */
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
@@ -93,6 +94,7 @@ export class Mesh extends Property {
  * @category Properties
  */
 export class Primitive extends Property {
+	public readonly propertyType = 'Primitive';
 
 	/** GPU draw mode. */
 	private mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;

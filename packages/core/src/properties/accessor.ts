@@ -79,6 +79,8 @@ import { Property } from './property';
  * @category Properties
  */
 export class Accessor extends Property {
+	public readonly propertyType = 'Accessor';
+
 	/** Raw data of the accessor. */
 	private array: TypedArray = null;
 

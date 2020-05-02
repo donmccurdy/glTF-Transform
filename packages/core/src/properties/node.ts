@@ -34,6 +34,7 @@ import { Root } from './root';
  * @category Properties
  */
 export class Node extends Property {
+	public readonly propertyType = 'Node';
 	private translation: vec3 = [0, 0, 0];
 	private rotation: vec4 = [0, 0, 0, 1];
 	private scale: vec3 = [1, 1, 1];

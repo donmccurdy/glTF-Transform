@@ -37,6 +37,8 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
  * @category Properties
  */
 export class Material extends Property {
+	public readonly propertyType = 'Material';
+
 	/** Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
 	private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
 

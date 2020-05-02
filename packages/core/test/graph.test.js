@@ -10,7 +10,9 @@ test('@gltf-transform/core::graph | link management', t => {
 	const b = new Node(graph);
 
 	root.addNode(a).addNode(b);
+	a.addChild(b);
 	t.deepEqual(root.listNodes(), [a, b], 'Added two nodes.');
+	t.deepEqual(a.listChildren(), [b], 'Added a child');
 
 	root.removeNode(a);
 	t.deepEqual(root.listNodes(), [b], 'Removed a node.');
@@ -26,8 +28,11 @@ test('@gltf-transform/core::graph | link management', t => {
 	root.removeNode(b).removeNode(b).removeNode(b);
 	t.deepEqual(root.listNodes(), [a], 'Removed a non-present node repeatedly.');
 
+	// Detaching does not affect the root, disposing does.
 	a.detach();
-	t.deepEqual(root.listNodes(), [], 'Detached a node.');
+	t.deepEqual(root.listNodes(), [a], 'Detached a node.');
+	a.dispose();
+	t.deepEqual(root.listNodes(), [], 'Disposed a node.');
 
 	root.addNode(b);
 	root.dispose();

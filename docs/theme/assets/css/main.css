@@ -1777,6 +1777,7 @@ pre {
 }
 
 html.minimal .tsd-generator,
+.tsd-panel > .tsd-signature.tsd-kind-icon,
 .tsd-panel > .tsd-signatures .tsd-signature.tsd-kind-icon {
     padding-left: 20px;
 }

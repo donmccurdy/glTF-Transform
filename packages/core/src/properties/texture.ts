@@ -24,6 +24,8 @@ import { Property } from './property';
  * @category Properties
  */
 export class Texture extends Property {
+	public readonly propertyType = 'Texture';
+
 	/** Raw image data for this texture. */
 	private image: ArrayBuffer = null;
 
@@ -108,6 +110,8 @@ export class Texture extends Property {
  * @category Properties
  */
 export class TextureInfo {
+	public readonly propertyType = 'TextureInfo';
+
 	private texCoord = 0;
 
 	/** Returns the texture coordinate (UV set) index for the texture. */
@@ -134,6 +138,8 @@ export class TextureInfo {
  * @category Properties
  */
 export class TextureSampler {
+	public readonly propertyType = 'TextureSampler';
+
 	private magFilter: GLTF.TextureMagFilter = null;
 	private minFilter: GLTF.TextureMinFilter = null;
 	private wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
