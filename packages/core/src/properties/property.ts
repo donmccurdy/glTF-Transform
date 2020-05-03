@@ -99,7 +99,7 @@ export abstract class Property extends GraphNode {
 		throw new NotImplementedError();
 	}
 
-	public detach(): GraphNode {
+	public detach(): this {
 		// Detaching should keep properties in the same Document, and attached to its root.
 		this.graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
 		return this;

@@ -37,8 +37,9 @@ able to maintain long-term. Even if a feature does not end up in this repository
 transform functions can be defined and used externally.
 
 New features should be compatible with both Node.js and Web, though exceptions may be possible in
-certain situations. To accomplish that, instances of [HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
-or [headless-gl](https://github.com/stackgl/headless-gl) are passed into API functions by the user,
+certain situations. To accomplish that, any platform-specific resources (like instances of
+[HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) or
+[headless-gl](https://github.com/stackgl/headless-gl)) are passed into API functions by the user,
 rather than being created by the API directly.
 
 ### Dependencies
@@ -46,8 +47,8 @@ rather than being created by the API directly.
 I recommend compiling with Node.js v12.x, which is the latest version with a prebuilt binary for
 `gl` as of April 2020.
 
-Runtime `dependencies` should be installed only to the sub-package in which they are needed. Any
-`devDependencies` are shared across all packages, and should be installed in the project root. Pull
+Runtime dependencies should be installed only to the sub-package in which they are needed. Any
+devDependencies are shared across all packages, and should be installed in the project root. Pull
 requests should omit any changes to `dist/*` artifacts. Changes including test coverage are
 strongly preferred.
 

@@ -33,7 +33,7 @@ export abstract class GraphNode {
 	 * considered 'detached': it may hold references to child resources, but nothing holds
 	 * references to it. A detached object may be re-attached.
 	 */
-	public detach(): GraphNode {
+	public detach(): this {
 		this.graph.disconnectParents(this);
 		return this;
 	}
@@ -45,7 +45,7 @@ export abstract class GraphNode {
 	 * @hidden This method works imperfectly with Root, Scene, and Node properties, which may
 	 * already hold equivalent links to the replacement object.
 	 */
-	public swap(old: GraphNode, replacement: GraphNode): GraphNode {
+	public swap(old: GraphNode, replacement: GraphNode): this {
 		this.graph.getLinks()
 			.filter((link) => link.getParent() === this && link.getChild() === old)
 			.forEach((link) => (link.setChild(replacement)));
@@ -60,7 +60,7 @@ export abstract class GraphNode {
 	 *
 	 * @hidden
 	 */
-	protected addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): GraphNode {
+	protected addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): this {
 		links.push(link);
 		link.onDispose(() => {
 			const remaining = links.filter((l) => l !== link);
@@ -75,7 +75,7 @@ export abstract class GraphNode {
 	 *
 	 * @hidden
 	 */
-	protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): GraphNode {
+	protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): this {
 		const pruned = links.filter((link) => link.getChild() === child);
 		pruned.forEach((link) => link.dispose());
 		return this;
