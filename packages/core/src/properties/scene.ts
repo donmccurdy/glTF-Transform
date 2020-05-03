@@ -25,13 +25,13 @@ export class Scene extends Property {
 	@GraphChildList private nodes: Link<Scene, Node>[] = [];
 
 	/** Adds a {@link Node} to the scene. */
-	public addNode(node: Node): Scene {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>) as Scene;
+	public addNode(node: Node): this {
+		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>);
 	}
 
 	/** Removes a {@link Node} from the scene. */
-	public removeNode(node: Node): Scene {
-		return this.removeGraphChild(this.nodes, node) as Scene;
+	public removeNode(node: Node): this {
+		return this.removeGraphChild(this.nodes, node);
 	}
 
 	/** Lists all {@link Node}s in the scene. */

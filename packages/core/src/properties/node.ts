@@ -52,32 +52,32 @@ export class Node extends Property {
 	public getScale(): vec3 { return this.scale; }
 
 	/** Sets the translation (position) of this node in local space. */
-	public setTranslation(translation: vec3): Node {
+	public setTranslation(translation: vec3): this {
 		this.translation = translation;
 		return this;
 	}
 
 	/** Sets the rotation (quaternion) of this node in local space. */
-	public setRotation(rotation: vec4): Node {
+	public setRotation(rotation: vec4): this {
 		this.rotation = rotation;
 		return this;
 	}
 
 	/** Sets the scale of this node in local space. */
-	public setScale(scale: vec3): Node {
+	public setScale(scale: vec3): this {
 		this.scale = scale;
 		return this;
 	}
 
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
-	public addChild(child: Node): Node {
+	public addChild(child: Node): this {
 		const link = this.graph.link('child', this, child) as Link<Root, Node>;
-		return this.addGraphChild(this.children, link) as Node;
+		return this.addGraphChild(this.children, link);
 	}
 
 	/** Removes a node from this node's child node list. */
-	public removeChild(child: Node): Node {
-		return this.removeGraphChild(this.children, child) as Node;
+	public removeChild(child: Node): this {
+		return this.removeGraphChild(this.children, child);
 	}
 
 	/** Lists all child nodes of this node. */
@@ -92,7 +92,7 @@ export class Node extends Property {
 	 * Sets a {@link Mesh} to be instantiate at this node. A single mesh may be instatiated by
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
-	public setMesh(mesh: Mesh): Node {
+	public setMesh(mesh: Mesh): this {
 		this.mesh = this.graph.link('mesh', this, mesh) as Link<Node, Mesh>;
 		return this;
 	}

@@ -105,7 +105,7 @@ export class Material extends Property {
 	public getDoubleSided(): boolean { return this.doubleSided; }
 
 	/** Sets whether to render both sides of triangles. May impact performance. */
-	public setDoubleSided(doubleSided: boolean): Material {
+	public setDoubleSided(doubleSided: boolean): this {
 		this.doubleSided = doubleSided;
 		return this;
 	}
@@ -138,7 +138,7 @@ export class Material extends Property {
 	public getAlphaMode(): GLTF.MaterialAlphaMode { return this.alphaMode; }
 
 	/** Sets the mode of the material's alpha channels. See {@link getAlphaMode} for details. */
-	public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): Material {
+	public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): this {
 		this.alphaMode = alphaMode;
 		return this;
 	}
@@ -147,7 +147,7 @@ export class Material extends Property {
 	public getAlphaCutoff(): number { return this.alphaCutoff; }
 
 	/** Sets the visibility threshold; applied only when `.alphaMode='MASK'`. */
-	public setAlphaCutoff(alphaCutoff: number): Material {
+	public setAlphaCutoff(alphaCutoff: number): this {
 		this.alphaCutoff = alphaCutoff;
 		return this;
 	}
@@ -160,7 +160,7 @@ export class Material extends Property {
 	public getBaseColorFactor(): vec4 { return this.baseColorFactor; }
 
 	/** Sets the base color / albedo; linear multiplier. See {@link getBaseColorTexture}. */
-	public setBaseColorFactor(baseColorFactor: vec4): Material {
+	public setBaseColorFactor(baseColorFactor: vec4): this {
 		this.baseColorFactor = baseColorFactor;
 		return this;
 	}
@@ -196,7 +196,7 @@ export class Material extends Property {
 	}
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
-	public setBaseColorTexture(texture: Texture): Material {
+	public setBaseColorTexture(texture: Texture): this {
 		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
 		return this;
 	}
@@ -209,7 +209,7 @@ export class Material extends Property {
 	public getEmissiveFactor(): vec3 { return this.emissiveFactor; }
 
 	/** Sets the emissive color; linear multiplier. See {@link getEmissiveTexture}. */
-	public setEmissiveFactor(emissiveFactor: vec3): Material {
+	public setEmissiveFactor(emissiveFactor: vec3): this {
 		this.emissiveFactor = emissiveFactor;
 		return this;
 	}
@@ -244,7 +244,7 @@ export class Material extends Property {
 	}
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
-	public setEmissiveTexture(texture: Texture): Material {
+	public setEmissiveTexture(texture: Texture): this {
 		this.emissiveTexture = this.graph.linkTexture('emissiveTexture', this, texture);
 		return this;
 	}
@@ -257,7 +257,7 @@ export class Material extends Property {
 	public getNormalScale(): number { return this. normalScale; }
 
 	/** Sets normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
-	public setNormalScale(normalScale: number): Material {
+	public setNormalScale(normalScale: number): this {
 		this.normalScale = normalScale;
 		return this;
 	}
@@ -295,7 +295,7 @@ export class Material extends Property {
 	}
 
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
-	public setNormalTexture(texture: Texture): Material {
+	public setNormalTexture(texture: Texture): this {
 		this.normalTexture = this.graph.linkTexture('normalTexture', this, texture);
 		return this;
 	}
@@ -308,7 +308,7 @@ export class Material extends Property {
 	public getOcclusionStrength(): number { return this.occlusionStrength; }
 
 	/** Sets (ambient) occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
-	public setOcclusionStrength(occlusionStrength: number): Material {
+	public setOcclusionStrength(occlusionStrength: number): this {
 		this.occlusionStrength = occlusionStrength;
 		return this;
 	}
@@ -346,7 +346,7 @@ export class Material extends Property {
 	}
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
-	public setOcclusionTexture(texture: Texture): Material {
+	public setOcclusionTexture(texture: Texture): this {
 		this.occlusionTexture = this.graph.linkTexture('occlusionTexture', this, texture);
 		return this;
 	}
@@ -365,7 +365,7 @@ export class Material extends Property {
 	 * Sets roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public setRoughnessFactor(roughnessFactor: number): Material {
+	public setRoughnessFactor(roughnessFactor: number): this {
 		this.roughnessFactor = roughnessFactor;
 		return this;
 	}
@@ -380,7 +380,7 @@ export class Material extends Property {
 	 * Sets metallic factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public setMetallicFactor(metallicFactor: number): Material {
+	public setMetallicFactor(metallicFactor: number): this {
 		this.metallicFactor = metallicFactor;
 		return this;
 	}
@@ -415,7 +415,7 @@ export class Material extends Property {
 	}
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
-	public setMetallicRoughnessTexture(texture: Texture): Material {
+	public setMetallicRoughnessTexture(texture: Texture): this {
 		this.metallicRoughnessTexture = this.graph.linkTexture('metallicRoughnessTexture', this, texture);
 		return this;
 	}

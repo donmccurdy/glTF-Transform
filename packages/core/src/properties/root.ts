@@ -69,16 +69,16 @@ export class Root extends Property {
 	 * Adds a new {@link Scene} to the root list.
 	 * @hidden
 	 */
-	public addScene(scene: Scene): Root {
-		return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene) as Link<Root, Scene>) as Root;
+	public addScene(scene: Scene): this {
+		return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene) as Link<Root, Scene>);
 	}
 
 	/**
 	 * Removes a {@link Scene} from the root list.
 	 * @hidden
 	 */
-	public removeScene(scene: Scene): Root {
-		return this.removeGraphChild(this.scenes, scene) as Root;
+	public removeScene(scene: Scene): this {
+		return this.removeGraphChild(this.scenes, scene);
 	}
 
 	/** Lists all {@link Scene} properties associated with this root. */
@@ -90,16 +90,16 @@ export class Root extends Property {
 	 * Adds a new {@link Node} to the root list.
 	 * @hidden
 	 */
-	public addNode(node: Node): Root {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>) as Root;
+	public addNode(node: Node): this {
+		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>);
 	}
 
 	/**
 	 * Removes a {@link Node} from the root list.
 	 * @hidden
 	 */
-	public removeNode(node: Node): Root {
-		return this.removeGraphChild(this.nodes, node) as Root;
+	public removeNode(node: Node): this {
+		return this.removeGraphChild(this.nodes, node);
 	}
 
 	/** Lists all {@link Node} properties associated with this root. */
@@ -111,16 +111,16 @@ export class Root extends Property {
 	 * Adds a new {@link Mesh} to the root list.
 	 * @hidden
 	 */
-	public addMesh(mesh: Mesh): Root {
-		return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh) as Link<Root, Mesh>) as Root;
+	public addMesh(mesh: Mesh): this {
+		return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh) as Link<Root, Mesh>);
 	}
 
 	/**
 	 * Removes a {@link Mesh} from the root list.
 	 * @hidden
 	 */
-	public removeMesh(mesh: Mesh): Root {
-		return this.removeGraphChild(this.meshes, mesh) as Root;
+	public removeMesh(mesh: Mesh): this {
+		return this.removeGraphChild(this.meshes, mesh);
 	}
 
 	/** Lists all {@link Mesh} properties associated with this root. */
@@ -132,16 +132,16 @@ export class Root extends Property {
 	 * Adds a new {@link Material} to the root list.
 	 * @hidden
 	 */
-	public addMaterial(material: Material): Root {
-		return this.addGraphChild(this.materials, this.graph.link('material', this, material) as Link<Root, Material>) as Root;
+	public addMaterial(material: Material): this {
+		return this.addGraphChild(this.materials, this.graph.link('material', this, material) as Link<Root, Material>);
 	}
 
 	/**
 	 * Removes a {@link Material} from the root list.
 	 * @hidden
 	 */
-	public removeMaterial(material: Material): Root {
-		return this.removeGraphChild(this.materials, material) as Root;
+	public removeMaterial(material: Material): this {
+		return this.removeGraphChild(this.materials, material);
 	}
 
 	/** Lists all {@link Material} properties associated with this root. */
@@ -153,16 +153,16 @@ export class Root extends Property {
 	 * Adds a new {@link Texture} to the root list.
 	 * @hidden
 	 */
-	public addTexture(texture: Texture): Root {
-		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture) as Link<Root, Texture>) as Root;
+	public addTexture(texture: Texture): this {
+		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture) as Link<Root, Texture>);
 	}
 
 	/**
 	 * Removes a {@link Texture} from the root list.
 	 * @hidden
 	 */
-	public removeTexture(texture: Texture): Root {
-		return this.removeGraphChild(this.textures, texture) as Root;
+	public removeTexture(texture: Texture): this {
+		return this.removeGraphChild(this.textures, texture);
 	}
 
 	/** Lists all {@link Texture} properties associated with this root. */
@@ -174,16 +174,16 @@ export class Root extends Property {
 	 * Adds a new {@link Accessor} to the root list.
 	 * @hidden
 	 */
-	public addAccessor(accessor: Accessor): Root {
-		return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor) as Link<Root, Accessor>) as Root;
+	public addAccessor(accessor: Accessor): this {
+		return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor) as Link<Root, Accessor>);
 	}
 
 	/**
 	 * Removes an {@link Accessor} from the root list.
 	 * @hidden
 	 */
-	public removeAccessor(accessor: Accessor): Root {
-		return this.removeGraphChild(this.accessors, accessor) as Root;
+	public removeAccessor(accessor: Accessor): this {
+		return this.removeGraphChild(this.accessors, accessor);
 	}
 
 	/** Lists all {@link Accessor} properties associated with this root. */
@@ -195,16 +195,16 @@ export class Root extends Property {
 	 * Adds a new {@link Buffer} to the root list.
 	 * @hidden
 	 */
-	public addBuffer(buffer: Buffer): Root {
-		return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer) as Link<Root, Buffer>) as Root;
+	public addBuffer(buffer: Buffer): this {
+		return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer) as Link<Root, Buffer>);
 	}
 
 	/**
 	 * Removes a {@link Buffer} from the root list.
 	 * @hidden
 	 */
-	public removeBuffer(buffer: Buffer): Root {
-		return this.removeGraphChild(this.buffers, buffer) as Root;
+	public removeBuffer(buffer: Buffer): this {
+		return this.removeGraphChild(this.buffers, buffer);
 	}
 
 	/** Lists all {@link Buffer} properties associated with this root. */

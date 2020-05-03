@@ -81,7 +81,7 @@ export class Buffer extends Property {
 	 *
 	 * Buffers commonly use the extension `.bin`, though this is not required.
 	 */
-	public setURI(uri: string): Buffer {
+	public setURI(uri: string): this {
 		this.uri = uri;
 		return this;
 	}

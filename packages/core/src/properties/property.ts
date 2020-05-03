@@ -68,7 +68,7 @@ export abstract class Property extends GraphNode {
 	 * encouraged, and non-unique names will be overwritten in some tools. For custom data about
 	 * a property, prefer to use Extras.
 	 */
-	public setName(name: string): Property {
+	public setName(name: string): this {
 		this.name = name;
 		return this;
 	}
@@ -77,7 +77,7 @@ export abstract class Property extends GraphNode {
 	public getExtras(): object { return this.extras; }
 
 	/** @hidden */
-	public setExtras(extras: object): Property {
+	public setExtras(extras: object): this {
 		this.extras = extras;
 		return this;
 	}
@@ -86,7 +86,7 @@ export abstract class Property extends GraphNode {
 	public getExtensions(): object { return this.extensions; }
 
 	/** @hidden */
-	public setExtensions(extensions: object): Property {
+	public setExtensions(extensions: object): this {
 		this.extensions = extensions;
 		return this;
 	}

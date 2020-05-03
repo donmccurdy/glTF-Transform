@@ -270,7 +270,7 @@ export class Accessor extends Property {
 	 * This property is defined only for accessors that contain vertex attributes or animation
 	 * output data.
 	 */
-	public setNormalized(normalized: boolean): Accessor {
+	public setNormalized(normalized: boolean): this {
 		this.normalized = normalized;
 
 		if (normalized) {
@@ -301,7 +301,7 @@ export class Accessor extends Property {
 	 * Assigns the scalar element value at the given index, accounting for normalization if
 	 * applicable.
 	 */
-	public setScalar(index: number, x: number): Accessor {
+	public setScalar(index: number, x: number): this {
 		this.array[index * this.getElementSize()] = this.in(x);
 		return this;
 	}
@@ -322,7 +322,7 @@ export class Accessor extends Property {
 	 * Assigns the vector or matrix element value at the given index, accounting for normalization
 	 * if applicable.
 	 */
-	public setElement(index: number, value: number[]): Accessor {
+	public setElement(index: number, value: number[]): this {
 		const elementSize = this.getElementSize();
 		for (let i = 0; i < elementSize; i++) {
 			this.array[index * elementSize + i] = this.in(value[i]);
@@ -338,7 +338,7 @@ export class Accessor extends Property {
 	public getBuffer(): Buffer { return this.buffer.getChild(); }
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
-	public setBuffer(buffer: Buffer): Accessor {
+	public setBuffer(buffer: Buffer): this {
 		this.buffer = this.graph.link('buffer', this, buffer) as Link<Accessor, Buffer>;
 		return this;
 	}
@@ -347,7 +347,7 @@ export class Accessor extends Property {
 	public getArray(): TypedArray { return this.array; }
 
 	/** Assigns the raw typed array underlying this accessor. */
-	public setArray(array: TypedArray): Accessor {
+	public setArray(array: TypedArray): this {
 		this.componentType = arrayToComponentType(array);
 		this.array = array;
 		return this;

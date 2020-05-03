@@ -29,7 +29,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	getChild(): Child { return this.child; }
 
 	/** Sets the child node. */
-	setChild(child: Child): Link<Parent, Child> {
+	setChild(child: Child): this {
 		this.child = child;
 		return this;
 	}
@@ -43,7 +43,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	}
 
 	/** Registers a listener to be invoked if this link is destroyed. */
-	onDispose(fn: () => void): Link<Parent, Child> {
+	onDispose(fn: () => void): this {
 		this.listeners.push(fn);
 		return this;
 	}

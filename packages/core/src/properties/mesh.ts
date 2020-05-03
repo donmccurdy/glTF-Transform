@@ -47,13 +47,13 @@ export class Mesh extends Property {
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
-	public addPrimitive(primitive: Primitive): Mesh {
-		return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive) as Link<Root, Primitive>) as Mesh;
+	public addPrimitive(primitive: Primitive): this {
+		return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive));
 	}
 
 	/** Removes a {@link Primitive} from the mesh's draw call list. */
-	public removePrimitive(primitive: Primitive): Mesh {
-		return this.removeGraphChild(this.primitives, primitive) as Mesh;
+	public removePrimitive(primitive: Primitive): this {
+		return this.removeGraphChild(this.primitives, primitive);
 	}
 
 	/** Lists {@link Primitive} draw calls of the mesh. */
@@ -120,7 +120,7 @@ export class Primitive extends Property {
 	 * each set of three indices define a triangle. The front face has a counter-clockwise (CCW)
 	 * winding order.
 	 */
-	public setIndices(indices: Accessor): Primitive {
+	public setIndices(indices: Accessor): this {
 		this.indices = this.graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
 		return this;
 	}
@@ -135,10 +135,10 @@ export class Primitive extends Property {
 	 * Sets a vertex attribute to an {@link Accessor}. All attributes must have the same vertex
 	 * count.
 	 */
-	public setAttribute(semantic: string, accessor: Accessor): Primitive {
+	public setAttribute(semantic: string, accessor: Accessor): this {
 		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
-		return this.addGraphChild(this.attributes, link) as Primitive;
+		return this.addGraphChild(this.attributes, link);
 	}
 
 	/**
@@ -173,7 +173,7 @@ export class Primitive extends Property {
 	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
 
 	/** Sets the material used to render the primitive. */
-	public setMaterial(material: Material): Primitive {
+	public setMaterial(material: Material): this {
 		this.material = this.graph.link('material', this, material) as Link<Primitive, Material>;
 		return this;
 	}
@@ -192,7 +192,7 @@ export class Primitive extends Property {
 	 * Reference:
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
-	public setMode(mode: GLTF.MeshPrimitiveMode): Primitive {
+	public setMode(mode: GLTF.MeshPrimitiveMode): this {
 		this.mode = mode;
 		return this;
 	}

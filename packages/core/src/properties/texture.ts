@@ -46,7 +46,7 @@ export class Texture extends Property {
 	 * Sets the MIME type for this texture ('image/jpeg' or 'image/png'). If the texture does not
 	 * have a URI, a MIME type is required for correct export.
 	 */
-	public setMimeType(mimeType: string): Texture {
+	public setMimeType(mimeType: string): this {
 		this.mimeType = mimeType;
 		return this;
 	}
@@ -64,7 +64,7 @@ export class Texture extends Property {
 	 * Sets the URI (e.g. 'path/to/file.png') for this texture. If the texture does not have a MIME
 	 * type, a URI is required for correct export.
 	 */
-	public setURI(uri: string): Texture {
+	public setURI(uri: string): this {
 		this.uri = uri;
 		return this;
 	}
@@ -77,7 +77,7 @@ export class Texture extends Property {
 	public getImage(): ArrayBuffer { return this.image; }
 
 	/** Sets the raw image data for this texture. */
-	public setImage(image: ArrayBuffer): Texture {
+	public setImage(image: ArrayBuffer): this {
 		this.image = image;
 		return this;
 	}
@@ -118,7 +118,7 @@ export class TextureInfo {
 	public getTexCoord(): number { return this.texCoord; }
 
 	/** Sets the texture coordinate (UV set) index for the texture. */
-	public setTexCoord(texCoord: number): TextureInfo {
+	public setTexCoord(texCoord: number): this {
 		this.texCoord = texCoord;
 		return this;
 	}
@@ -176,7 +176,7 @@ export class TextureSampler {
 	public getMagFilter(): GLTF.TextureMagFilter { return this.magFilter; }
 
 	/** Sets the magnification filter applied to the texture. */
-	public setMagFilter(magFilter: GLTF.TextureMagFilter): TextureSampler {
+	public setMagFilter(magFilter: GLTF.TextureMagFilter): this {
 		this.magFilter = magFilter;
 		return this;
 	}
@@ -185,7 +185,7 @@ export class TextureSampler {
 	public getMinFilter(): GLTF.TextureMinFilter { return this.minFilter; }
 
 	/** Returns the minification filter applied to the texture. */
-	public setMinFilter(minFilter: GLTF.TextureMinFilter): TextureSampler {
+	public setMinFilter(minFilter: GLTF.TextureMinFilter): this {
 		this.minFilter = minFilter;
 		return this;
 	}
@@ -198,7 +198,7 @@ export class TextureSampler {
 	public getWrapS(): GLTF.TextureWrapMode { return this.wrapS; }
 
 	/** Sets the S (U) wrapping mode for UVs used by the texture. */
-	public setWrapS(wrapS: GLTF.TextureWrapMode): TextureSampler {
+	public setWrapS(wrapS: GLTF.TextureWrapMode): this {
 		this.wrapS = wrapS;
 		return this;
 	}
@@ -207,7 +207,7 @@ export class TextureSampler {
 	public getWrapT(): GLTF.TextureWrapMode { return this.wrapT; }
 
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
-	public setWrapT(wrapT: GLTF.TextureWrapMode): TextureSampler {
+	public setWrapT(wrapT: GLTF.TextureWrapMode): this {
 		this.wrapT = wrapT;
 		return this;
 	}

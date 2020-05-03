@@ -29,7 +29,7 @@ export class Graph {
 			.map((link) => link.getChild());
 	}
 
-	public disconnectChildren(node: GraphNode): Graph {
+	public disconnectChildren(node: GraphNode): this {
 		// TODO(optimize)
 		this.links
 			.filter((link) => link.getParent() === node)
@@ -37,7 +37,7 @@ export class Graph {
 		return this;
 	}
 
-	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): Graph {
+	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
 		// TODO(optimize)
 		let links = this.links.filter((link) => link.getChild() === node);
 		if (filter) {
@@ -74,7 +74,7 @@ export class Graph {
 	* of removing a link is {@link link.dispose()}.
 	* @param link
 	*/
-	private unlink(link: Link<GraphNode, GraphNode>): Graph {
+	private unlink(link: Link<GraphNode, GraphNode>): this {
 		this.links = this.links.filter((l) => l !== link);
 		return this;
 	}
