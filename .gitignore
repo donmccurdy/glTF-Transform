@@ -13,3 +13,5 @@ packages/**/.rts2_cache_cjs
 packages/**/.rts2_cache_es
 packages/**/.rts2_cache_umd
 docs/dist/**
+
+.now
