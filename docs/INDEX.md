@@ -22,10 +22,12 @@ glTF-Transform is modular, and can be used in several ways:
 
 To learn how glTF-Transform works, or for an introduction to the glTF format, see [Concepts](/concepts.html). To get started with installation, or to begin using the scripting API or commandline interface, see [Scripting & CLI](/scripting.html). If you're interested in contributing to or customizing the project, see [Contributing](/contributing.html).
 
-## Alternatives
+## Alternatives and related projects
 
 Several existing projects provide complementary functionality to that of glTF-Transform:
 
 - [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/), by AGI, can pack and unpack variations of the glTF format (which glTF-Transform also does) and can apply Draco compression to mesh geometry (which glTF-Transform currently does not, in order to remain portable across both Node.js and Web). While glTF-Pipeline also offers APIs to develop custom pipelines, those APIs are currently less expressive than glTF-Transform's. Because glTF-Pipeline is nearly lossless, it is a good option for applying Draco compression to models produced by glTF-Tranform. glTF-Pipeline does not run in web browsers.
 - [meshoptimizer / gltfpack](https://github.com/zeux/meshoptimizer), by [@zeux](https://github.com/zeux), is an excellent tool for optimizing glTF files, and offers far better performance tuning than anything I'll ever write. It is not, however, a general-purpose SDK, and is best used for final optimizations to models produced by glTF-Transform and other tools. gltfpack does not run in web browsers.
+- [Gestaltor](https://gestaltor.io/), by UX3D, is the only visual editor dedicated to inspection and editing of glTF files. If you like the 1:1 parity of glTF features that glTF-Transform provides, but need a visual editor, Gestaltor is a good choice.
 - [cgltf](https://github.com/jkuhlmann/cgltf), by [@jkuhlmann](https://github.com/jkuhlmann), and [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit), by Microsoft, provide native SDKs for glTF. If JavaScript/TypeScript don't fit your needs, try these.
+- [Blender](https://www.blender.org/) offers a Python API in addition to its better-known UI. I rely on Blender for many projects, although I've only occasionally worked with its Python API.
