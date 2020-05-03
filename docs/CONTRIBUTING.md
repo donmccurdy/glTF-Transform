@@ -1,27 +1,27 @@
 # Contributing
 
 This project consists of multiple NPM packages, managed in one repository with
-https://lerna.js.org/. All code, excluding Node.js-based tests, is written in TypeScript.
+[Lerna](https://lerna.js.org/). All code, excluding Node.js-based tests, is written in TypeScript.
 I recommend using VSCode for linting and type information, which becomes especially helpful
 when dealing with glTF schema objects.
 
 After cloning the repository, run:
 
-```
+```shell
 yarn install
 ```
 
-The project relies on yarn workspaces and will not build with npm. To build and test all code,
+The project relies on [Yarn workspaces](https://classic.yarnpkg.com/docs/workspaces/) and will not build with npm. To build and test all code,
 run:
 
-```
+```shell
 yarn run dist
 yarn test
 ```
 
 To run an arbitrary command across all packages:
 
-```
+```shell
 lerna exec -- <command>
 ```
 

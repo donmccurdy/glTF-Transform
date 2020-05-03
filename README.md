@@ -10,49 +10,26 @@
 [![Build Status](https://travis-ci.com/donmccurdy/glTF-Transform.svg?branch=master)](https://travis-ci.com/donmccurdy/glTF-Transform)
 [![Coverage Status](https://coveralls.io/repos/github/donmccurdy/glTF-Transform/badge.svg?branch=master)](https://coveralls.io/github/donmccurdy/glTF-Transform?branch=master)
 
-glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.
+*glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.*
 
-AGI's [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/) and
-Microsoft's [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit) are robust,
-well-maintained tools for production workflows — I fully recommend using them for
-the features the offer. However, neither covers the "long tail" of small, niche
-changes to a glTF model: adjusting a material parameter, adding extensions, and so
-on. For those situations, *this framework provides a better alternative to starting
-from scratch, or modifying a library not designed with modularity in mind, for users
-who need to write or reuse a custom transformation.*
+<!-- NOTICE: This section is duplicated in docs/INDEX.md. Please keep them in sync. -->
 
-glTF-Transform offers [CLI](#cli) and [programmatic](#programmatic) access to a library
-of [packages](#packages), along with reusable utilities for extending the framework with
-new features. Most packages work both in Node.js and on the web.
+glTF-Transform supports reading, editing, and writing 3D models in glTF 2.0 format. Unlike 3D modeling tools — which are ideal for artistic changes to geometry, materials, and animation — glTF-Transform provides fast, reproducible, and lossless control of the low-level details in 3D model. These traits make it a good choice for bundling, splitting, or optimizing an existing model. It can also be used to apply quick fixes for common issues, to build a model procedurally, or to easily develop custom extensions on top of the glTF format. Because the core SDK is compatible with both Node.js and Web, glTF-Transform may be used to develop offline workflows and web applications alike.
 
-## Packages
+glTF-Transform is modular, and can be used in several ways:
 
-| package                           | compatibility | description                                                                                                                                                                     |
-|-----------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [core](packages/core)             | Node.js, Web  | Core framework utilities.                                                                                                                                                       |
-| [cli](packages/cli)               | Node.js       | Commandline interface to Node.js-compatible packages.                                                                                                                           |
-| ---                               |               |                                                                                                                                                                                 |
-| [ao](packages/ao)                 | Node.js, Web  | Bakes per-vertex ambient occlusion. Cheaper but lower-quality than AO baked with a UV map. Powered by [geo-ambient-occlusion](https://github.com/wwwtyro/geo-ambient-occlusion) |
-| [colorspace](packages/colorspace) | Node.js, Web  | Vertex color colorspace correction.                                                                                                                                             |
-| [prune](packages/prune)           | Node.js, Web  | Prunes duplicate accessors (and more, eventually). Based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).                            |
-| [split](packages/split)           | Node.js, Web  | Splits the binary payload of a glTF file so separate mesh data is in separate .bin files.                                                                                       |
+- `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
+- `@gltf-transform/cli`: Command-line interface to apply any available transform to a glTF file.
+- `@gltf-transform/*`: Growing collection of transforms, written using the core API, that modify glTF files.
 
-## Concepts
+To get started, head over to the [documentation]().
 
-To be written.
+Several existing projects provide complementary functionality to that of glTF-Transform:
 
-## Installation
+- [glTF-Pipeline](https://github.com/AnalyticalGraphicsInc/gltf-pipeline/), by AGI, can pack and unpack variations of the glTF format (which glTF-Transform also does) and can apply Draco compression to mesh geometry (which glTF-Transform currently does not, in order to remain portable across both Node.js and Web). While glTF-Pipeline also offers APIs to develop custom pipelines, those APIs are currently less expressive than glTF-Transform's. Because glTF-Pipeline is nearly lossless, it is a good option for applying Draco compression to models produced by glTF-Tranform. glTF-Pipeline does not run in web browsers.
+- [meshoptimizer / gltfpack](https://github.com/zeux/meshoptimizer), by [@zeux](https://github.com/zeux), is an excellent tool for optimizing glTF files, and offers far better performance tuning than anything I'll ever write. It is not, however, a general-purpose SDK, and is best used for final optimizations to models produced by glTF-Transform and other tools. gltfpack does not run in web browsers.
+- [cgltf](https://github.com/jkuhlmann/cgltf), by [@jkuhlmann](https://github.com/jkuhlmann), and [glTF-Toolkit](https://github.com/Microsoft/glTF-Toolkit), by Microsoft, provide native SDKs for glTF. If JavaScript/TypeScript don't fit your needs, try these.
 
-To be written.
+## License
 
-## Transforms & CLI
-
-To be written.
-
-## Scripting
-
-To be written.
-
-## Contributing
-
-To be written.
+MIT License.
