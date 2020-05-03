@@ -24,7 +24,7 @@ import { PropertyGraph } from './property-graph';
  *
  * // Detaching a texture removes any references to it, except from the doc.
  * texture.detach();
- * material.getBaseColortexture(); // → null
+ * material.getBaseColorTexture(); // → null
  * doc.listTextures(); // → [texture x 1]
  *
  * // Disposing a texture removes all references to it, and its own references.

@@ -19,6 +19,10 @@ export type Transform = (doc: Document) => void;
  * 'create' methods on the document. Resources are destroyed by calling {@link Property.dispose}().
  *
  * ```ts
+ * import { Document } from '@gltf-transform/core';
+ *
+ * const doc = new Document();
+ *
  * const texture1 = doc.createTexture('myTexture')
  * 	.setImage(arrayBuffer)
  * 	.setMimeType('image/png');
@@ -31,8 +35,7 @@ export type Transform = (doc: Document) => void;
  *
  * doc.transform(
  * 	prune({textures: true}),
- * 	ao({samples: 500}),
- * 	split({meshes: ['Cog', 'Wheel']})
+ * 	// ...
  * );
  *
  * // Document with duplicate textures removed.
