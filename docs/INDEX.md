@@ -20,28 +20,22 @@ glTF-Transform is modular, and can be used in several ways:
 
 ## Getting started
 
-To learn how glTF-Transform works, or for an introduction to the glTF format, see [Concepts](/concepts.html). To get started with installation, or to begin using the scripting API or commandline interface, see [Scripting & CLI](/scripting.html). If you're interested in contributing to or customizing the project, see [Contributing](/contributing.html).
+To learn how glTF-Transform works, or for an introduction to the glTF format, see [Concepts](/concepts.html). To get started, see [Installation](/scripting.html#installation) or [Scripting & CLI](/scripting.html#scripting). If you're interested in contributing to or customizing the project, see [Contributing](/contributing.html).
 
 ## Limitations
 
-While the aim of this project is to support the complete glTF 2.0 format and most official extensions, several important features are missing at this stage. Support for all glTF 2.0 core features is planned for the 0.3 release. Support for the listed extensions is planned on a rolling basis. Extensions not listed below will be considered on a case-by-case basis, but are not currently planned.
+While the aim of this project is to support the complete glTF 2.0 format and most official extensions, several important features are missing at this stage. Support for all glTF 2.0 core features will be included in the 0.3 release. Support for most Khronos extensions is planned on a rolling basis after that.
 
-**Core:**
+**Missing core features:**
 
 - Cameras
 - Animation
 - Morph targets
 - Skinning
 
-**Extensions:**
+**Supported extensions:**
 
-- KHR_lights_punctual
-- KHR_materials_pbrSpecularGlossiness
-- KHR_materials_unlit
-- KHR_materials_clearcoat
-- KHR_mesh_quantization
-- KHR_texture_transform
-- Custom extensions
+None
 
 ## Alternatives and related projects
 
