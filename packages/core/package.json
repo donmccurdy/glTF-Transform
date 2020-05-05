@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
   "main": "dist/core.js",
@@ -28,7 +28,6 @@
     "package.json",
     "package-lock.json"
   ],
-  "devDependencies": {},
   "dependencies": {
     "gl-matrix": "^3.3.0"
   },
