@@ -19,7 +19,7 @@
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "npm run test && npm run dist",
-    "version": "npm run docs && git add -A docs",
+    "postversion": "git push && git push --tags && yarn run docs:deploy",
     "docs": "cd packages/core && typedoc --out ../../docs/dist/ --excludeNotDocumented --theme ../../docs/theme --mode file --readme ../../docs/INDEX.md --includes ../../docs && cd ../../ && mv docs/dist/modules/* docs/dist/",
     "docs:deploy": "yarn run docs && now --prod"
   },
