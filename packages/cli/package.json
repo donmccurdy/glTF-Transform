@@ -27,5 +27,6 @@
     "README.md",
     "package.json",
     "package-lock.json"
-  ]
+  ],
+  "gitHead": "16389dd42919d314d61571ed22f58af8af86e08d"
 }
