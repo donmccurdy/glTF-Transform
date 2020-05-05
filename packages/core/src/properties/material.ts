@@ -40,37 +40,37 @@ export class Material extends Property {
 	public readonly propertyType = 'Material';
 
 	/** Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
-	private alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
+	private _alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
 
 	/** Visibility threshold. Applied only when `.alphaMode='MASK'`. */
-	private alphaCutoff = 0.5;
+	private _alphaCutoff = 0.5;
 
 	/** When true, both sides of each triangle are rendered. May decrease performance. */
-	private doubleSided = false;
+	private _doubleSided = false;
 
 	/** Base color / albedo; linear multiplier. */
-	private baseColorFactor: vec4 = [1, 1, 1, 1];
+	private _baseColorFactor: vec4 = [1, 1, 1, 1];
 
 	/** Emissive color; linear multiplier. */
-	private emissiveFactor: vec3 = [0, 0, 0];
+	private _emissiveFactor: vec3 = [0, 0, 0];
 
 	/** Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
-	private normalScale = 1;
+	private _normalScale = 1;
 
 	/** (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionMap`. */
-	private occlusionStrength = 1;
+	private _occlusionStrength = 1;
 
 	/**
 	 * Roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`.
 	 */
-	private roughnessFactor = 1;
+	private _roughnessFactor = 1;
 
 	/**
 	 * Metallic factor; linear multiplier. Affects metallic channel of
 	 * `metallicRoughnessTexture`.
 	 */
-	private metallicFactor = 1;
+	private _metallicFactor = 1;
 
 	/** Base color / albedo texture. */
 	@GraphChild private baseColorTexture: TextureLink = null;
@@ -102,11 +102,11 @@ export class Material extends Property {
 	 */
 
 	/** Returns true when both sides of triangles should be rendered. May impact performance. */
-	public getDoubleSided(): boolean { return this.doubleSided; }
+	public getDoubleSided(): boolean { return this._doubleSided; }
 
 	/** Sets whether to render both sides of triangles. May impact performance. */
 	public setDoubleSided(doubleSided: boolean): this {
-		this.doubleSided = doubleSided;
+		this._doubleSided = doubleSided;
 		return this;
 	}
 
@@ -135,20 +135,20 @@ export class Material extends Property {
 	 * Reference:
 	 * - [glTF → material.alphaMode](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialalphamode)
 	 */
-	public getAlphaMode(): GLTF.MaterialAlphaMode { return this.alphaMode; }
+	public getAlphaMode(): GLTF.MaterialAlphaMode { return this._alphaMode; }
 
 	/** Sets the mode of the material's alpha channels. See {@link getAlphaMode} for details. */
 	public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): this {
-		this.alphaMode = alphaMode;
+		this._alphaMode = alphaMode;
 		return this;
 	}
 
 	/** Returns the visibility threshold; applied only when `.alphaMode='MASK'`. */
-	public getAlphaCutoff(): number { return this.alphaCutoff; }
+	public getAlphaCutoff(): number { return this._alphaCutoff; }
 
 	/** Sets the visibility threshold; applied only when `.alphaMode='MASK'`. */
 	public setAlphaCutoff(alphaCutoff: number): this {
-		this.alphaCutoff = alphaCutoff;
+		this._alphaCutoff = alphaCutoff;
 		return this;
 	}
 
@@ -157,11 +157,11 @@ export class Material extends Property {
 	 */
 
 	/** Base color / albedo; linear multiplier. See {@link getBaseColorTexture}. */
-	public getBaseColorFactor(): vec4 { return this.baseColorFactor; }
+	public getBaseColorFactor(): vec4 { return this._baseColorFactor; }
 
 	/** Sets the base color / albedo; linear multiplier. See {@link getBaseColorTexture}. */
 	public setBaseColorFactor(baseColorFactor: vec4): this {
-		this.baseColorFactor = baseColorFactor;
+		this._baseColorFactor = baseColorFactor;
 		return this;
 	}
 
@@ -206,11 +206,11 @@ export class Material extends Property {
 	 */
 
 	/** Emissive color; linear multiplier. See {@link getEmissiveTexture}. */
-	public getEmissiveFactor(): vec3 { return this.emissiveFactor; }
+	public getEmissiveFactor(): vec3 { return this._emissiveFactor; }
 
 	/** Sets the emissive color; linear multiplier. See {@link getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
-		this.emissiveFactor = emissiveFactor;
+		this._emissiveFactor = emissiveFactor;
 		return this;
 	}
 
@@ -254,11 +254,11 @@ export class Material extends Property {
 	 */
 
 	/** Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
-	public getNormalScale(): number { return this. normalScale; }
+	public getNormalScale(): number { return this. _normalScale; }
 
 	/** Sets normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
 	public setNormalScale(normalScale: number): this {
-		this.normalScale = normalScale;
+		this._normalScale = normalScale;
 		return this;
 	}
 
@@ -305,11 +305,11 @@ export class Material extends Property {
 	 */
 
 	/** (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
-	public getOcclusionStrength(): number { return this.occlusionStrength; }
+	public getOcclusionStrength(): number { return this._occlusionStrength; }
 
 	/** Sets (ambient) occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
 	public setOcclusionStrength(occlusionStrength: number): this {
-		this.occlusionStrength = occlusionStrength;
+		this._occlusionStrength = occlusionStrength;
 		return this;
 	}
 
@@ -359,14 +359,14 @@ export class Material extends Property {
 	 * Roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public getRoughnessFactor(): number { return this.roughnessFactor; }
+	public getRoughnessFactor(): number { return this._roughnessFactor; }
 
 	/**
 	 * Sets roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
 	public setRoughnessFactor(roughnessFactor: number): this {
-		this.roughnessFactor = roughnessFactor;
+		this._roughnessFactor = roughnessFactor;
 		return this;
 	}
 
@@ -374,14 +374,14 @@ export class Material extends Property {
 	 * Metallic factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public getMetallicFactor(): number { return this.metallicFactor; }
+	public getMetallicFactor(): number { return this._metallicFactor; }
 
 	/**
 	 * Sets metallic factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
 	public setMetallicFactor(metallicFactor: number): this {
-		this.metallicFactor = metallicFactor;
+		this._metallicFactor = metallicFactor;
 		return this;
 	}
 

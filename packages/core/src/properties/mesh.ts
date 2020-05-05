@@ -44,21 +44,21 @@ export class Mesh extends Property {
 	public readonly propertyType = 'Mesh';
 
 	/** Primitive GPU draw call list. */
-	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
+	@GraphChildList private _primitives: Link<Mesh, Primitive>[] = [];
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
 	public addPrimitive(primitive: Primitive): this {
-		return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive));
+		return this.addGraphChild(this._primitives, this.graph.link('primitive', this, primitive));
 	}
 
 	/** Removes a {@link Primitive} from the mesh's draw call list. */
 	public removePrimitive(primitive: Primitive): this {
-		return this.removeGraphChild(this.primitives, primitive);
+		return this.removeGraphChild(this._primitives, primitive);
 	}
 
 	/** Lists {@link Primitive} draw calls of the mesh. */
 	public listPrimitives(): Primitive[] {
-		return this.primitives.map((p) => p.getChild());
+		return this._primitives.map((p) => p.getChild());
 	}
 }
 
@@ -97,22 +97,22 @@ export class Primitive extends Property {
 	public readonly propertyType = 'Primitive';
 
 	/** GPU draw mode. */
-	private mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
+	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
 
 	/** Indices of vertices in the vertex list to be drawn. */
-	@GraphChild private indices: Link<Primitive, Accessor> = null;
+	@GraphChild private _indices: Link<Primitive, Accessor> = null;
 
 	/** Vertex attributes. */
-	@GraphChildList private attributes: AttributeLink[] = [];
+	@GraphChildList private _attributes: AttributeLink[] = [];
 
 	// @GraphChildList private targets: AttributeLink[][] = [];
 
 	/** Material used to render the primitive. */
-	@GraphChild private material: Link<Primitive, Material> = null;
+	@GraphChild private _material: Link<Primitive, Material> = null;
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
 	public getIndices(): Accessor {
-		return this.indices ? this.indices.getChild() : null;
+		return this._indices ? this._indices.getChild() : null;
 	}
 
 	/**
@@ -121,13 +121,13 @@ export class Primitive extends Property {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor): this {
-		this.indices = this.graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
+		this._indices = this.graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
 		return this;
 	}
 
 	/** Returns a vertex attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor {
-		const link = this.attributes.find((link) => link.semantic === semantic);
+		const link = this._attributes.find((link) => link.semantic === semantic);
 		return link ? link.getChild() : null;
 	}
 
@@ -138,7 +138,7 @@ export class Primitive extends Property {
 	public setAttribute(semantic: string, accessor: Accessor): this {
 		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
-		return this.addGraphChild(this.attributes, link);
+		return this.addGraphChild(this._attributes, link);
 	}
 
 	/**
@@ -147,7 +147,7 @@ export class Primitive extends Property {
 	 * uvAccessor]`. Order will be consistent with the order returned by {@link .listSemantics}().
 	 */
 	public listAttributes(): Accessor[] {
-		return this.attributes.map((link) => link.getChild());
+		return this._attributes.map((link) => link.getChild());
 	}
 
 	/**
@@ -156,7 +156,7 @@ export class Primitive extends Property {
 	 * consistent with the order returned by {@link .listAttributes}().
 	 */
 	public listSemantics(): string[] {
-		return this.attributes.map((link) => link.semantic);
+		return this._attributes.map((link) => link.semantic);
 	}
 
 	/** @hidden */
@@ -170,11 +170,11 @@ export class Primitive extends Property {
 	}
 
 	/** Returns the material used to render the primitive. */
-	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
+	public getMaterial(): Material { return this._material ? this._material.getChild() : null; }
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material): this {
-		this.material = this.graph.link('material', this, material) as Link<Primitive, Material>;
+		this._material = this.graph.link('material', this, material) as Link<Primitive, Material>;
 		return this;
 	}
 
@@ -184,7 +184,7 @@ export class Primitive extends Property {
 	 * Reference:
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
-	public getMode(): GLTF.MeshPrimitiveMode { return this.mode; }
+	public getMode(): GLTF.MeshPrimitiveMode { return this._mode; }
 
 	/**
 	 * Sets the GPU draw mode (`TRIANGLES`, `LINES`, `POINTS`...) as a WebGL enum value.
@@ -193,7 +193,7 @@ export class Primitive extends Property {
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
 	public setMode(mode: GLTF.MeshPrimitiveMode): this {
-		this.mode = mode;
+		this._mode = mode;
 		return this;
 	}
 }

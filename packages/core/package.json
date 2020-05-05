@@ -31,5 +31,8 @@
   "devDependencies": {},
   "dependencies": {
     "gl-matrix": "^3.3.0"
+  },
+  "mangle": {
+    "regex": "^_"
   }
 }
