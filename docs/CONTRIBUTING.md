@@ -61,5 +61,5 @@ new packages need to be published manually before they can be included in a repo
 that is done, normal releases should use:
 
 ```shell
-NPM_CONFIG_OTP=123456 lerna publish <version> --force-publish=*
+lerna publish <VERSION> --force-publish "*" --otp <OTP>
 ```
