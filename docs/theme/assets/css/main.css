@@ -1801,7 +1801,7 @@ html.minimal .tsd-generator,
     html.minimal .tsd-navigation {
         display: block;
         top: 0;
-        left: -300px;
+        left: -305px; /* Additional 5px for box-shadow blur. */
         max-height: none;
         padding-top: 40px;
         background: #fff;
