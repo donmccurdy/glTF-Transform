@@ -34,7 +34,7 @@
     "gl": "^4.5.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "^3.20.2",
-    "microbundle": "^0.11.0",
+    "microbundle": "^0.12.0",
     "nyc": "^15.0.1",
     "source-map-support": "^0.5.9",
     "tap-spec": "^5.0.0",
