@@ -1796,3 +1796,24 @@ html.minimal .tsd-generator,
     content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
     margin: 0 3px 0 5px;
 }
+
+@media (max-width: 900px) {
+    html.minimal .tsd-navigation {
+        display: block;
+        top: 0;
+        left: -300px;
+        max-height: none;
+        padding-top: 40px;
+        background: #fff;
+        box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.16);
+        transition: left 0.2s ease;
+    }
+
+    html.minimal .toggle-nav .tsd-navigation {
+        left: 0;
+    }
+
+    #tsd-filter {
+        display: none;
+    }
+}

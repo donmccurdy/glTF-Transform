@@ -9,30 +9,43 @@
                     <div id="tsd-filter">
                         <a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
                         <div class="tsd-filter-group">
-                            <div class="tsd-select" id="tsd-filter-visibility">
-                                <span class="tsd-select-label">All</span>
-                                <ul class="tsd-select-list">
-                                    <li data-value="public">Public</li>
-                                    <li data-value="protected">Public/Protected</li>
-                                    <li data-value="private" class="selected">All</li>
-                                </ul>
-                            </div>
-
                             <input type="checkbox" id="tsd-filter-inherited" checked />
                             <label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-
-                            {{#unless settings.excludeExternals}}
-                                <input type="checkbox" id="tsd-filter-externals" checked />
-                                <label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-                            {{/unless}}
-
-                            <input type="checkbox" id="tsd-filter-only-exported" />
-                            <label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
                         </div>
                     </div>
-                    <a href="#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
+                    <a href="javascript:;" id="tsd-menu" class="tsd-widget menu no-caption">Menu</a>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        (function () {
+            const bodyEl = document.body;
+
+            // Show/hide navigation sidebar (mobile).
+            const menuEl = document.querySelector('#tsd-menu');
+            menuEl.addEventListener('click', function () {
+                if (bodyEl.classList.contains('toggle-nav')) {
+                    bodyEl.classList.remove('toggle-nav');
+                } else {
+                    bodyEl.classList.add('toggle-nav');
+                }
+            })
+
+            // Show/hide inherited members.
+            if (location.href.includes('classes')) {
+                const inheritedInputEl = document.querySelector('#tsd-filter-inherited');
+                inheritedInputEl.addEventListener('change', function () {
+                    if (inheritedInputEl.checked) {
+                        bodyEl.classList.remove('toggle-inherited');
+                    } else {
+                        bodyEl.classList.add('toggle-inherited');
+                    }
+                });
+            } else {
+                const filterEl = document.querySelector('#tsd-filter');
+                filterEl.style.display = 'none';
+            }
+        }())
+    </script>
 </header>
