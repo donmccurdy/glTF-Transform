@@ -26,7 +26,7 @@ export class Scene extends Property {
 
 	/** Adds a {@link Node} to the scene. */
 	public addNode(node: Node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>);
+		return this.addGraphChild(this.nodes, this._graph.link('node', this, node) as Link<Root, Node>);
 	}
 
 	/** Removes a {@link Node} from the scene. */

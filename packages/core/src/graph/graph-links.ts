@@ -12,42 +12,42 @@ import { GraphNode } from './graph-node';
  * @category Graph
  */
 export class Link<Parent extends GraphNode, Child extends GraphNode> {
-	private disposed = false;
-	private readonly listeners: (() => void)[] = [];
+	private _disposed = false;
+	private readonly _listeners: (() => void)[] = [];
 	constructor(
-		private readonly name: string,
-		private readonly parent: Parent,
-		private child: Child) {}
+		private readonly _name: string,
+		private readonly _parent: Parent,
+		private _child: Child) {}
 
 	/** Name. */
-	getName(): string { return this.name; }
+	getName(): string { return this._name; }
 
 	/** Owner node. */
-	getParent(): Parent { return this.parent; }
+	getParent(): Parent { return this._parent; }
 
 	/** Resource node. */
-	getChild(): Child { return this.child; }
+	getChild(): Child { return this._child; }
 
 	/** Sets the child node. */
 	setChild(child: Child): this {
-		this.child = child;
+		this._child = child;
 		return this;
 	}
 
 	/** Destroys a (currently intact) link, updating both the graph and the owner. */
 	dispose(): void {
-		if (this.disposed) return;
-		this.disposed = true;
-		this.listeners.forEach((fn) => fn());
-		this.listeners.length = 0;
+		if (this._disposed) return;
+		this._disposed = true;
+		this._listeners.forEach((fn) => fn());
+		this._listeners.length = 0;
 	}
 
 	/** Registers a listener to be invoked if this link is destroyed. */
 	onDispose(fn: () => void): this {
-		this.listeners.push(fn);
+		this._listeners.push(fn);
 		return this;
 	}
 
 	/** Whether this link has been destroyed. */
-	isDisposed(): boolean { return this.disposed; }
+	isDisposed(): boolean { return this._disposed; }
 }

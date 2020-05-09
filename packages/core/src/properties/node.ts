@@ -35,43 +35,43 @@ import { Root } from './root';
  */
 export class Node extends Property {
 	public readonly propertyType = 'Node';
-	private translation: vec3 = [0, 0, 0];
-	private rotation: vec4 = [0, 0, 0, 1];
-	private scale: vec3 = [1, 1, 1];
+	private _translation: vec3 = [0, 0, 0];
+	private _rotation: vec4 = [0, 0, 0, 1];
+	private _scale: vec3 = [1, 1, 1];
 
 	@GraphChild private mesh: Link<Node, Mesh> = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
 
 	/** Returns the translation (position) of this node in local space. */
-	public getTranslation(): vec3 { return this.translation; }
+	public getTranslation(): vec3 { return this._translation; }
 
 	/** Returns the rotation (quaternion) of this node in local space. */
-	public getRotation(): vec4 { return this.rotation; }
+	public getRotation(): vec4 { return this._rotation; }
 
 	/** Returns the scale of this node in local space. */
-	public getScale(): vec3 { return this.scale; }
+	public getScale(): vec3 { return this._scale; }
 
 	/** Sets the translation (position) of this node in local space. */
 	public setTranslation(translation: vec3): this {
-		this.translation = translation;
+		this._translation = translation;
 		return this;
 	}
 
 	/** Sets the rotation (quaternion) of this node in local space. */
 	public setRotation(rotation: vec4): this {
-		this.rotation = rotation;
+		this._rotation = rotation;
 		return this;
 	}
 
 	/** Sets the scale of this node in local space. */
 	public setScale(scale: vec3): this {
-		this.scale = scale;
+		this._scale = scale;
 		return this;
 	}
 
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
 	public addChild(child: Node): this {
-		const link = this.graph.link('child', this, child) as Link<Root, Node>;
+		const link = this._graph.link('child', this, child) as Link<Root, Node>;
 		return this.addGraphChild(this.children, link);
 	}
 
@@ -93,7 +93,7 @@ export class Node extends Property {
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
 	public setMesh(mesh: Mesh): this {
-		this.mesh = this.graph.link('mesh', this, mesh) as Link<Node, Mesh>;
+		this.mesh = this._graph.link('mesh', this, mesh) as Link<Node, Mesh>;
 		return this;
 	}
 }

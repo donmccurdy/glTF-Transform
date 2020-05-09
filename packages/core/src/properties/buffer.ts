@@ -59,7 +59,7 @@ export class Buffer extends Property {
 	public readonly propertyType = 'Buffer';
 
 	/** URI (or filename) of the buffer. */
-	private uri: string;
+	private _uri: string;
 
 	/**
 	 * Returns the URI (or filename) of this buffer (e.g. 'myBuffer.bin'). URIs are strongly
@@ -70,7 +70,7 @@ export class Buffer extends Property {
 	 * Buffers commonly use the extension `.bin`, though this is not required.
 	 */
 	public getURI(): string {
-		return this.uri;
+		return this._uri;
 	}
 
 	/**
@@ -82,7 +82,7 @@ export class Buffer extends Property {
 	 * Buffers commonly use the extension `.bin`, though this is not required.
 	 */
 	public setURI(uri: string): this {
-		this.uri = uri;
+		this._uri = uri;
 		return this;
 	}
 }

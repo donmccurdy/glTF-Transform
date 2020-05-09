@@ -44,21 +44,21 @@ export class Mesh extends Property {
 	public readonly propertyType = 'Mesh';
 
 	/** Primitive GPU draw call list. */
-	@GraphChildList private _primitives: Link<Mesh, Primitive>[] = [];
+	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
 	public addPrimitive(primitive: Primitive): this {
-		return this.addGraphChild(this._primitives, this.graph.link('primitive', this, primitive));
+		return this.addGraphChild(this.primitives, this._graph.link('primitive', this, primitive));
 	}
 
 	/** Removes a {@link Primitive} from the mesh's draw call list. */
 	public removePrimitive(primitive: Primitive): this {
-		return this.removeGraphChild(this._primitives, primitive);
+		return this.removeGraphChild(this.primitives, primitive);
 	}
 
 	/** Lists {@link Primitive} draw calls of the mesh. */
 	public listPrimitives(): Primitive[] {
-		return this._primitives.map((p) => p.getChild());
+		return this.primitives.map((p) => p.getChild());
 	}
 }
 
@@ -121,7 +121,7 @@ export class Primitive extends Property {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor): this {
-		this._indices = this.graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
+		this._indices = this._graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
 		return this;
 	}
 
@@ -136,7 +136,7 @@ export class Primitive extends Property {
 	 * count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor): this {
-		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		const link = this._graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
 		return this.addGraphChild(this._attributes, link);
 	}
@@ -174,7 +174,7 @@ export class Primitive extends Property {
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material): this {
-		this._material = this.graph.link('material', this, material) as Link<Primitive, Material>;
+		this._material = this._graph.link('material', this, material) as Link<Primitive, Material>;
 		return this;
 	}
 

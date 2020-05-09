@@ -9,29 +9,29 @@ import { GraphNode } from './graph-node';
  * @category Graph
  */
 export class Graph {
-	private links: Link<GraphNode, GraphNode>[] = [];
+	private _links: Link<GraphNode, GraphNode>[] = [];
 
 	public getLinks(): Link<GraphNode, GraphNode>[] {
-		return this.links;
+		return this._links;
 	}
 
 	public listParents(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
-		return this.links
+		return this._links
 			.filter((link) => link.getChild() === node)
 			.map((link) => link.getParent());
 	}
 
 	public listChildren(node: GraphNode): GraphNode[] {
 		// TODO(optimize)
-		return this.links
+		return this._links
 			.filter((link) => link.getParent() === node)
 			.map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: GraphNode): this {
 		// TODO(optimize)
-		this.links
+		this._links
 			.filter((link) => link.getParent() === node)
 			.forEach((link) => link.dispose());
 		return this;
@@ -39,7 +39,7 @@ export class Graph {
 
 	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
 		// TODO(optimize)
-		let links = this.links.filter((link) => link.getChild() === node);
+		let links = this._links.filter((link) => link.getChild() === node);
 		if (filter) {
 			links = links.filter((link) => filter(link.getParent()));
 		}
@@ -63,7 +63,7 @@ export class Graph {
 	}
 
 	protected registerLink(link: Link<GraphNode, GraphNode>): Link<GraphNode, GraphNode> {
-		this.links.push(link);
+		this._links.push(link);
 		link.onDispose(() => this.unlink(link));
 		return link;
 	}
@@ -75,7 +75,7 @@ export class Graph {
 	* @param link
 	*/
 	private unlink(link: Link<GraphNode, GraphNode>): this {
-		this.links = this.links.filter((l) => l !== link);
+		this._links = this._links.filter((l) => l !== link);
 		return this;
 	}
 }

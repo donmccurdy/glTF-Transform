@@ -8,14 +8,14 @@ import { Link } from './graph-links';
  * @category Graph
  */
 export abstract class GraphNode {
-	protected readonly graph: Graph;
-	private disposed = false;
+	protected readonly _graph: Graph;
+	private _disposed = false;
 	constructor(graph: Graph) {
-		this.graph = graph;
+		this._graph = graph;
 	}
 
 	/** Returns true if the node has been permanently removed from the graph. */
-	public isDisposed(): boolean { return this.disposed; }
+	public isDisposed(): boolean { return this._disposed; }
 
 	/**
 	 * Removes both inbound references to and outbound references from this object. At the end
@@ -23,9 +23,9 @@ export abstract class GraphNode {
 	 * disposed object is not reusable.
 	 */
 	public dispose(): void {
-		this.graph.disconnectChildren(this);
-		this.graph.disconnectParents(this);
-		this.disposed = true;
+		this._graph.disconnectChildren(this);
+		this._graph.disconnectParents(this);
+		this._disposed = true;
 	}
 
 	/**
@@ -34,7 +34,7 @@ export abstract class GraphNode {
 	 * references to it. A detached object may be re-attached.
 	 */
 	public detach(): this {
-		this.graph.disconnectParents(this);
+		this._graph.disconnectParents(this);
 		return this;
 	}
 
@@ -46,7 +46,7 @@ export abstract class GraphNode {
 	 * already hold equivalent links to the replacement object.
 	 */
 	public swap(old: GraphNode, replacement: GraphNode): this {
-		this.graph.getLinks()
+		this._graph.getLinks()
 			.filter((link) => link.getParent() === this && link.getChild() === old)
 			.forEach((link) => (link.setChild(replacement)));
 		return this;
@@ -89,6 +89,6 @@ export abstract class GraphNode {
 	 * @hidden
 	 */
 	protected listGraphParents(): GraphNode[] {
-		return this.graph.listParents(this) as GraphNode[];
+		return this._graph.listParents(this) as GraphNode[];
 	}
 }

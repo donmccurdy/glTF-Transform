@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+const DECORATOR_PREFIX = '__';
+
 /**
  * @hidden
  * @category Graph
@@ -8,10 +10,10 @@
 export function GraphChild (target: any, propertyKey: string): void {
 	Object.defineProperty(target, propertyKey, {
 		get: function () {
-			return this['_' + propertyKey];
+			return this[DECORATOR_PREFIX + propertyKey];
 		},
 		set: function (value) {
-			const link = this['_' + propertyKey];
+			const link = this[DECORATOR_PREFIX + propertyKey];
 
 			if (link && !Array.isArray(link)) {
 				// console.log('[GraphChild] Disposing link: ' + propertyKey, link, value);
@@ -23,12 +25,12 @@ export function GraphChild (target: any, propertyKey: string): void {
 				// method handles the events for arrays of Links.
 				value.onDispose(() => {
 					// console.log('[GraphChild] Unassigning link: ' + propertyKey, link);
-					this['_' + propertyKey] = null;
+					this[DECORATOR_PREFIX + propertyKey] = null;
 				});
 			}
 
 			// if (value) console.log('[GraphChild] Assigning link: ' + propertyKey, value);
-			this['_' + propertyKey] = value;
+			this[DECORATOR_PREFIX + propertyKey] = value;
 		},
 		enumerable: true
 	});

@@ -41,19 +41,19 @@ export abstract class Property extends GraphNode {
 	/** Property type. */
 	public readonly propertyType: string;
 
-	protected readonly graph: PropertyGraph;
-	protected name = '';
+	protected readonly _graph: PropertyGraph;
+	protected _name = '';
 
 	// TODO(feat): Extras should be Properties.
-	protected extras: object = {};
+	protected _extras: object = {};
 
 	// TODO(feat): Extensions should be Properties.
-	protected extensions: object = {};
+	protected _extensions: object = {};
 
 	/** @hidden */
 	constructor(graph: PropertyGraph, name = '') {
 		super(graph);
-		this.name = name;
+		this._name = name;
 	}
 
 	/**
@@ -61,7 +61,7 @@ export abstract class Property extends GraphNode {
 	 * encouraged, and non-unique names will be overwritten in some tools. For custom data about
 	 * a property, prefer to use Extras.
 	 */
-	public getName(): string { return this.name; }
+	public getName(): string { return this._name; }
 
 	/**
 	 * Sets the name of this property. While names are not required to be unique, this is
@@ -69,25 +69,25 @@ export abstract class Property extends GraphNode {
 	 * a property, prefer to use Extras.
 	 */
 	public setName(name: string): this {
-		this.name = name;
+		this._name = name;
 		return this;
 	}
 
 	/** @hidden */
-	public getExtras(): object { return this.extras; }
+	public getExtras(): object { return this._extras; }
 
 	/** @hidden */
 	public setExtras(extras: object): this {
-		this.extras = extras;
+		this._extras = extras;
 		return this;
 	}
 
 	/** @hidden */
-	public getExtensions(): object { return this.extensions; }
+	public getExtensions(): object { return this._extensions; }
 
 	/** @hidden */
 	public setExtensions(extensions: object): this {
-		this.extensions = extensions;
+		this._extensions = extensions;
 		return this;
 	}
 
@@ -101,7 +101,7 @@ export abstract class Property extends GraphNode {
 
 	public detach(): this {
 		// Detaching should keep properties in the same Document, and attached to its root.
-		this.graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
+		this._graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
 		return this;
 	}
 

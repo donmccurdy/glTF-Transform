@@ -140,10 +140,10 @@ export class TextureInfo {
 export class TextureSampler {
 	public readonly propertyType = 'TextureSampler';
 
-	private magFilter: GLTF.TextureMagFilter = null;
-	private minFilter: GLTF.TextureMinFilter = null;
-	private wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
-	private wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
+	private _magFilter: GLTF.TextureMagFilter = null;
+	private _minFilter: GLTF.TextureMinFilter = null;
+	private _wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
+	private _wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
 
 	/** UV wrapping mode. Values correspond to WebGL enums. */
 	public static TextureWrapMode = {
@@ -173,20 +173,20 @@ export class TextureSampler {
 	 */
 
 	/** Returns the magnification filter applied to the texture. */
-	public getMagFilter(): GLTF.TextureMagFilter { return this.magFilter; }
+	public getMagFilter(): GLTF.TextureMagFilter { return this._magFilter; }
 
 	/** Sets the magnification filter applied to the texture. */
 	public setMagFilter(magFilter: GLTF.TextureMagFilter): this {
-		this.magFilter = magFilter;
+		this._magFilter = magFilter;
 		return this;
 	}
 
 	/** Sets the minification filter applied to the texture. */
-	public getMinFilter(): GLTF.TextureMinFilter { return this.minFilter; }
+	public getMinFilter(): GLTF.TextureMinFilter { return this._minFilter; }
 
 	/** Returns the minification filter applied to the texture. */
 	public setMinFilter(minFilter: GLTF.TextureMinFilter): this {
-		this.minFilter = minFilter;
+		this._minFilter = minFilter;
 		return this;
 	}
 
@@ -195,20 +195,20 @@ export class TextureSampler {
 	 */
 
 	/** Returns the S (U) wrapping mode for UVs used by the texture. */
-	public getWrapS(): GLTF.TextureWrapMode { return this.wrapS; }
+	public getWrapS(): GLTF.TextureWrapMode { return this._wrapS; }
 
 	/** Sets the S (U) wrapping mode for UVs used by the texture. */
 	public setWrapS(wrapS: GLTF.TextureWrapMode): this {
-		this.wrapS = wrapS;
+		this._wrapS = wrapS;
 		return this;
 	}
 
 	/** Returns the T (V) wrapping mode for UVs used by the texture. */
-	public getWrapT(): GLTF.TextureWrapMode { return this.wrapT; }
+	public getWrapT(): GLTF.TextureWrapMode { return this._wrapT; }
 
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
 	public setWrapT(wrapT: GLTF.TextureWrapMode): this {
-		this.wrapT = wrapT;
+		this._wrapT = wrapT;
 		return this;
 	}
 }

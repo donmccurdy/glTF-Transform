@@ -44,7 +44,7 @@ import { Texture } from './texture';
 export class Root extends Property {
 	public readonly propertyType = 'Root';
 
-	private readonly asset: GLTF.IAsset = {
+	private readonly _asset: GLTF.IAsset = {
 		generator: `glTF-Transform ${VERSION}`,
 		version: '2.0'
 	};
@@ -63,14 +63,14 @@ export class Root extends Property {
 	 *
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
-	public getAsset(): GLTF.IAsset { return this.asset; }
+	public getAsset(): GLTF.IAsset { return this._asset; }
 
 	/**
 	 * Adds a new {@link Scene} to the root list.
 	 * @hidden
 	 */
 	public addScene(scene: Scene): this {
-		return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene) as Link<Root, Scene>);
+		return this.addGraphChild(this.scenes, this._graph.link('scene', this, scene) as Link<Root, Scene>);
 	}
 
 	/**
@@ -91,7 +91,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addNode(node: Node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node) as Link<Root, Node>);
+		return this.addGraphChild(this.nodes, this._graph.link('node', this, node) as Link<Root, Node>);
 	}
 
 	/**
@@ -112,7 +112,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addMesh(mesh: Mesh): this {
-		return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh) as Link<Root, Mesh>);
+		return this.addGraphChild(this.meshes, this._graph.link('mesh', this, mesh) as Link<Root, Mesh>);
 	}
 
 	/**
@@ -133,7 +133,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addMaterial(material: Material): this {
-		return this.addGraphChild(this.materials, this.graph.link('material', this, material) as Link<Root, Material>);
+		return this.addGraphChild(this.materials, this._graph.link('material', this, material) as Link<Root, Material>);
 	}
 
 	/**
@@ -154,7 +154,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addTexture(texture: Texture): this {
-		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture) as Link<Root, Texture>);
+		return this.addGraphChild(this.textures, this._graph.link('texture', this, texture) as Link<Root, Texture>);
 	}
 
 	/**
@@ -175,7 +175,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addAccessor(accessor: Accessor): this {
-		return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor) as Link<Root, Accessor>);
+		return this.addGraphChild(this.accessors, this._graph.link('accessor', this, accessor) as Link<Root, Accessor>);
 	}
 
 	/**
@@ -196,7 +196,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public addBuffer(buffer: Buffer): this {
-		return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer) as Link<Root, Buffer>);
+		return this.addGraphChild(this.buffers, this._graph.link('buffer', this, buffer) as Link<Root, Buffer>);
 	}
 
 	/**
