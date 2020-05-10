@@ -1797,6 +1797,14 @@ html.minimal .tsd-generator,
     margin: 0 3px 0 5px;
 }
 
+blockquote {
+  border-left: 6px solid #ccc;
+  padding-left: 1em;
+  margin-left: 0;
+  color: #606060;
+  font-style: italic;
+}
+
 @media (max-width: 900px) {
     html.minimal .tsd-navigation {
         display: block;
