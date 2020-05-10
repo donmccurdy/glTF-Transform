@@ -164,6 +164,20 @@ export class Accessor extends Property {
 	 * returned by this method will reflect the minimum accounting for {@link .normalized}
 	 * state.
 	 */
+	public getMinNormalized(target: number[]): number[] {
+		const elementSize = this.getElementSize();
+
+		this.getMin(target);
+
+		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
+
+		return target;
+	}
+
+	/**
+	 * Minimum value of each component in this attribute. Values returned by this method do not
+	 * reflect normalization: use {@link .getMinNormalized} in that case.
+	 */
 	public getMin(target: number[]): number[] {
 		const count = this.getCount();
 		const elementSize = this.getElementSize();
@@ -176,8 +190,6 @@ export class Accessor extends Property {
 			}
 		}
 
-		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
-
 		return target;
 	}
 
@@ -185,6 +197,20 @@ export class Accessor extends Property {
 	 * Maximum value of each component in this attribute. Unlike in a final glTF file, values
 	 * returned by this method will reflect the minimum accounting for {@link .normalized}
 	 * state.
+	 */
+	public getMaxNormalized(target: number[]): number[] {
+		const elementSize = this.getElementSize();
+
+		this.getMax(target);
+
+		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
+
+		return target;
+	}
+
+	/**
+	 * Maximum value of each component in this attribute. Values returned by this method do not
+	 * reflect normalization: use {@link .getMinNormalized} in that case.
 	 */
 	public getMax(target: number[]): number[] {
 		const count = this.getCount();
@@ -197,8 +223,6 @@ export class Accessor extends Property {
 				target[j] = Math.max(target[j], this._array[i + j]);
 			}
 		}
-
-		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
 
 		return target;
 	}
