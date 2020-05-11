@@ -1805,6 +1805,15 @@ blockquote {
   font-style: italic;
 }
 
+html.minimal .tsd-generator {
+    text-align: center;
+    padding-left: 0;
+}
+
+.tsd-generator img {
+    max-width: 40%;
+}
+
 @media (max-width: 900px) {
     html.minimal .tsd-navigation {
         display: block;
@@ -1822,6 +1831,19 @@ blockquote {
     }
 
     #tsd-filter {
+        display: none;
+    }
+
+    .tsd-generator img {
+        max-width: 60%;
+    }
+
+    .tsd-generator .line {
+        display: block;
+        line-height: 2em;
+    }
+
+    .tsd-generator .divider {
         display: none;
     }
 }
