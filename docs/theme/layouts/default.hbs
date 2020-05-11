@@ -4,18 +4,18 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>{{#ifCond model.name '===' project.name}}{{else}}{{model.name}} | {{/ifCond}}{{project.name}}</title>
-	<meta name="description" content="Documentation for {{project.name}}">
+	<meta name="description" content="{{#ifCond model.name '===' project.name}}glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{else}}Documentation for {{model.name}} in {{project.name}}, a glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{/ifCond}}">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="referrer" content="no-referrer-when-downgrade" />
 
 	<meta property="og:site_name" content="glTF-Transform" />
 	<meta property="og:title" content="{{#ifCond model.name '===' project.name}}{{else}}{{model.name}} | {{/ifCond}}{{project.name}}" />
-	<meta property="og:description" content="{{#ifCond model.name '===' project.name}}glTF 2.0 SDK for JavaScript, TypeScript, and Node.js{{else}}Documentation of {{model.name}} in {{project.name}}, a glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{/ifCond}}" />
+	<meta property="og:description" content="{{#ifCond model.name '===' project.name}}glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{else}}Documentation for {{model.name}} in {{project.name}}, a glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{/ifCond}}" />
 	<meta property="og:url" content="https://gltf-transform.donmccurdy.com/{{url}}" />
 
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:title" content="{{#ifCond model.name '===' project.name}}{{else}}{{model.name}} | {{/ifCond}}{{project.name}}" />
-	<meta name="twitter:description" content="{{#ifCond model.name '===' project.name}}glTF 2.0 SDK for JavaScript, TypeScript, and Node.js{{else}}Documentation of {{model.name}} in {{project.name}}, a glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{/ifCond}}" />
+	<meta name="twitter:description" content="{{#ifCond model.name '===' project.name}}glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{else}}Documentation for {{model.name}} in {{project.name}}, a glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.{{/ifCond}}" />
 	<meta name="twitter:url" content="https://gltf-transform.donmccurdy.com/{{url}}" />
 	<meta name="twitter:label1" content="Written by" />
 	<meta name="twitter:data1" content="Don McCurdy" />
