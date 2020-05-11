@@ -21,6 +21,10 @@ glTF-Transform is modular, and can be used in several ways:
 
 To get started, head over to the [documentation](https://gltf-transform.donmccurdy.com).
 
+<p align="center">
+<img src="https://gltf-transform.donmccurdy.com/media/kicker.jpg" alt="Function symbol, f(📦) → 📦, where the argument and output are a box labeled 'glTF'." width="40%">
+</p>
+
 ## License
 
-MIT License.
+Copyright 2020, MIT License.
