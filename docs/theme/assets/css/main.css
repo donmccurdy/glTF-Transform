@@ -1770,6 +1770,8 @@ body {
 
 pre {
     padding: 20px;
+    white-space: pre;
+    overflow: auto;
 }
 
 .tsd-signature {
