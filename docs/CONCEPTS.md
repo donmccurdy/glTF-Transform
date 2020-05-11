@@ -87,12 +87,10 @@ const prevArray = accessor.getArray();
 const nextArray = new Float32Array(prevArray.length + 3 * 100);
 nextArray.set(prevArray);
 
-// Most internal glTF properies are handled automatically when changing the
-// array. In some cases (when setting uint- or int-typed arrays) you will
-// need to pay attention to the glTF schema's allowed component types, and
-// normalize your data where necessary. The KHR_mesh_quantization extension
-// provides additional flexibility on data types.
+// Assign the modified array.
 accessor.setArray(nextArray);
 ```
+
+Most internal glTF properies are handled automatically when changing the array. In some cases (when setting uint- or int-typed arrays) you will need to pay attention to the glTF schema's allowed component types, and normalize your data where necessary. The KHR_mesh_quantization extension provides additional flexibility on data types.
 
 For a deeper look at the glTF-Transform API, refer to the documentation for the {@link Document} class and its associated {@link Property} types.
