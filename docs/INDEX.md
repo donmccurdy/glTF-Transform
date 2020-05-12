@@ -28,7 +28,6 @@ While the aim of this project is to support the complete glTF 2.0 format and mos
 
 **Missing core features:**
 
-- Cameras
 - Animation
 - Morph targets
 - Skinning

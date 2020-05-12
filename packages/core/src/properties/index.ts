@@ -1,5 +1,6 @@
 export * from './accessor';
 export * from './buffer';
+export * from './camera';
 export * from './property';
 export * from './property-graph';
 export * from './property-links';

@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
-import { Accessor, AttributeLink, Buffer, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo, TextureSampler } from '../properties';
 import { BufferUtils } from '../utils';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -34,6 +34,7 @@ export class GLTFWriter {
 		/* Lookup tables. */
 
 		const accessorIndexMap = new Map<Accessor, number>();
+		const cameraIndexMap = new Map<Camera, number>();
 		const materialIndexMap = new Map<Material, number>();
 		const meshIndexMap = new Map<Mesh, number>();
 		const nodeIndexMap = new Map<Node, number>();
@@ -476,6 +477,31 @@ export class GLTFWriter {
 			return meshDef;
 		});
 
+		/** Cameras. */
+
+		json.cameras = root.listCameras().map((camera, index) => {
+			const cameraDef = createPropertyDef(camera) as GLTF.ICamera;
+			cameraDef.type = camera.getType();
+			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
+				cameraDef.perspective = {
+					znear: camera.getZNear(),
+					zfar: camera.getZFar(),
+					yfov: camera.getYFov(),
+					aspectRatio: camera.getAspectRatio(),
+				};
+			} else {
+				cameraDef.orthographic = {
+					znear: camera.getZNear(),
+					zfar: camera.getZFar(),
+					xmag: camera.getXMag(),
+					ymag: camera.getYMag(),
+				};
+			}
+
+			cameraIndexMap.set(camera, index);
+			return cameraDef;
+		});
+
 		/* Nodes. */
 
 		json.nodes = root.listNodes().map((node, index) => {
@@ -488,9 +514,11 @@ export class GLTFWriter {
 				nodeDef.mesh = meshIndexMap.get(node.getMesh());
 			}
 
+			if (node.getCamera()) {
+				nodeDef.camera = cameraIndexMap.get(node.getCamera());
+			}
+
 			// node.weights
-			// node.light
-			// node.camera
 
 			nodeIndexMap.set(node, index);
 			return nodeDef;

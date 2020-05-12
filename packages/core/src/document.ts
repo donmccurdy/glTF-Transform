@@ -1,4 +1,4 @@
-import { Accessor, Buffer, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Texture } from './properties/index';
+import { Accessor, Buffer, Camera, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Texture } from './properties/index';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -136,6 +136,13 @@ export class Document {
 		const node = new Node(this.graph, name);
 		this.root.addNode(node);
 		return node;
+	}
+
+	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
+	createCamera(name: string): Camera {
+		const camera = new Camera(this.graph, name);
+		this.root.addCamera(camera);
+		return camera;
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
