@@ -16,7 +16,7 @@ glTF-Transform is modular, and can be used in several ways:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
 - `@gltf-transform/cli`: Command-line interface to apply any available transform to a glTF file.
-- `@gltf-transform/*`: Growing collection of transforms, written using the core API, that modify glTF files.
+- `@gltf-transform/*`: Collection of [transforms](/scripting.html#transforms), written using the core API, that modify glTF files.
 
 ## Getting started
 
