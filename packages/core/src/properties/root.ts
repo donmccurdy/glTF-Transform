@@ -1,7 +1,8 @@
-import { NotImplementedError, VERSION } from '../constants';
+import { VERSION } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { Buffer } from './buffer';
+import { Camera } from './camera';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
@@ -51,6 +52,7 @@ export class Root extends Property {
 
 	@GraphChildList private scenes: Link<Root, Scene>[] = [];
 	@GraphChildList private nodes: Link<Root, Node>[] = [];
+	@GraphChildList private cameras: Link<Root, Camera>[] = [];
 	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
 	@GraphChildList private materials: Link<Root, Material>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
@@ -64,6 +66,10 @@ export class Root extends Property {
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
 	public getAsset(): GLTF.IAsset { return this._asset; }
+
+	/**********************************************************************************************
+	 * Scenes.
+	 */
 
 	/**
 	 * Adds a new {@link Scene} to the root list.
@@ -86,6 +92,10 @@ export class Root extends Property {
 		return this.scenes.map((p) => p.getChild());
 	}
 
+	/**********************************************************************************************
+	 * Nodes.
+	 */
+
 	/**
 	 * Adds a new {@link Node} to the root list.
 	 * @hidden
@@ -106,6 +116,35 @@ export class Root extends Property {
 	public listNodes(): Node[] {
 		return this.nodes.map((p) => p.getChild());
 	}
+
+	/**********************************************************************************************
+	 * Cameras.
+	 */
+
+	/**
+	 * Adds a new {@link Camera} to the root list.
+	 * @hidden
+	 */
+	public addCamera(camera: Camera): this {
+		return this.addGraphChild(this.cameras, this._graph.link('camera', this, camera) as Link<Root, Camera>);
+	}
+
+	/**
+	 * Removes a {@link Camera} from the root list.
+	 * @hidden
+	 */
+	public removeCamera(camera: Camera): this {
+		return this.removeGraphChild(this.cameras, camera);
+	}
+
+	/** Lists all {@link Camera} properties associated with this root. */
+	public listCameras(): Camera[] {
+		return this.cameras.map((p) => p.getChild());
+	}
+
+	/**********************************************************************************************
+	 * Meshes.
+	 */
 
 	/**
 	 * Adds a new {@link Mesh} to the root list.
@@ -128,6 +167,10 @@ export class Root extends Property {
 		return this.meshes.map((p) => p.getChild());
 	}
 
+	/**********************************************************************************************
+	 * Materials.
+	 */
+
 	/**
 	 * Adds a new {@link Material} to the root list.
 	 * @hidden
@@ -148,6 +191,10 @@ export class Root extends Property {
 	public listMaterials(): Material[] {
 		return this.materials.map((p) => p.getChild());
 	}
+
+	/**********************************************************************************************
+	 * Textures.
+	 */
 
 	/**
 	 * Adds a new {@link Texture} to the root list.
@@ -170,6 +217,10 @@ export class Root extends Property {
 		return this.textures.map((p) => p.getChild());
 	}
 
+	/**********************************************************************************************
+	 * Accessors.
+	 */
+
 	/**
 	 * Adds a new {@link Accessor} to the root list.
 	 * @hidden
@@ -190,6 +241,10 @@ export class Root extends Property {
 	public listAccessors(): Accessor[] {
 		return this.accessors.map((p) => p.getChild());
 	}
+
+	/**********************************************************************************************
+	 * Buffers.
+	 */
 
 	/**
 	 * Adds a new {@link Buffer} to the root list.

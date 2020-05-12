@@ -246,10 +246,21 @@ export class GLTFReader {
 
 		const cameraDefs = json.cameras || [];
 		const cameras = cameraDefs.map((cameraDef) => {
-			// TODO(feat): cameraDef.type
-			// TODO(feat): cameraDef.orthographic
-			// TODO(feat): cameraDef.perspective
-			return null;
+			const camera = doc.createCamera(cameraDef.name).setType(cameraDef.type);
+			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
+				camera
+					.setZNear(cameraDef.perspective.znear)
+					.setZFar(cameraDef.perspective.zfar)
+					.setYFov(cameraDef.perspective.yfov)
+					.setAspectRatio(cameraDef.perspective.aspectRatio);
+			} else {
+				camera
+					.setZNear(cameraDef.orthographic.znear)
+					.setZFar(cameraDef.orthographic.zfar)
+					.setXMag(cameraDef.orthographic.xmag)
+					.setYMag(cameraDef.orthographic.ymag);
+			}
+			return camera;
 		});
 
 		/** Nodes. */
@@ -259,6 +270,8 @@ export class GLTFReader {
 			const node = doc.createNode(nodeDef.name);
 
 			if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
+
+			if (nodeDef.camera !== undefined) node.setCamera(cameras[nodeDef.camera]);
 
 			if (nodeDef.translation !== undefined) {
 				node.setTranslation(nodeDef.translation as vec3);
@@ -278,7 +291,6 @@ export class GLTFReader {
 				node.setScale(getScaling([], nodeDef.matrix) as vec3);
 			}
 
-			// TODO(feat): nodeDef.camera
 			// TODO(feat): nodeDef.skin
 			// TODO(feat): nodeDef.weights
 

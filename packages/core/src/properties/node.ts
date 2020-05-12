@@ -1,6 +1,7 @@
 import { vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
+import { Camera } from './camera';
 import { Mesh } from './mesh';
 import { Property } from './property';
 import { Root } from './root';
@@ -39,6 +40,7 @@ export class Node extends Property {
 	private _rotation: vec4 = [0, 0, 0, 1];
 	private _scale: vec3 = [1, 1, 1];
 
+	@GraphChild private camera: Link<Node, Camera> = null;
 	@GraphChild private mesh: Link<Node, Mesh> = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
 
@@ -89,11 +91,20 @@ export class Node extends Property {
 	public getMesh(): Mesh { return this.mesh ? this.mesh.getChild() : null; }
 
 	/**
-	 * Sets a {@link Mesh} to be instantiate at this node. A single mesh may be instatiated by
+	 * Sets a {@link Mesh} to be instantiated at this node. A single mesh may be instatiated by
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
 	public setMesh(mesh: Mesh): this {
 		this.mesh = this._graph.link('mesh', this, mesh) as Link<Node, Mesh>;
+		return this;
+	}
+
+	/** Returns the {@link Camera}, if any, instantiated at this node. */
+	public getCamera(): Camera { return this.camera ? this.camera.getChild() : null; }
+
+	/** Sets a {@link Camera} to be instantiated at this node. */
+	public setCamera(camera: Camera): this {
+		this.camera = this._graph.link('camera', this, camera) as Link<Node, Camera>;
 		return this;
 	}
 }
