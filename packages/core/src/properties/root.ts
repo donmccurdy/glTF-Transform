@@ -8,6 +8,7 @@ import { Mesh } from './mesh';
 import { Node } from './node';
 import { Property } from './property';
 import { Scene } from './scene';
+import { Skin } from './skin';
 import { Texture } from './texture';
 
 /**
@@ -53,6 +54,7 @@ export class Root extends Property {
 	@GraphChildList private scenes: Link<Root, Scene>[] = [];
 	@GraphChildList private nodes: Link<Root, Node>[] = [];
 	@GraphChildList private cameras: Link<Root, Camera>[] = [];
+	@GraphChildList private skins: Link<Root, Skin>[] = [];
 	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
 	@GraphChildList private materials: Link<Root, Material>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
@@ -140,6 +142,31 @@ export class Root extends Property {
 	/** Lists all {@link Camera} properties associated with this root. */
 	public listCameras(): Camera[] {
 		return this.cameras.map((p) => p.getChild());
+	}
+
+	/**********************************************************************************************
+	 * Skins.
+	 */
+
+	/**
+	 * Adds a new {@link Skin} to the root list.
+	 * @hidden
+	 */
+	public addSkin(skin: Skin): this {
+		return this.addGraphChild(this.skins, this._graph.link('skin', this, skin) as Link<Root, Skin>);
+	}
+
+	/**
+	 * Removes a {@link Skin} from the root list.
+	 * @hidden
+	 */
+	public removeSkin(skin: Skin): this {
+		return this.removeGraphChild(this.skins, skin);
+	}
+
+	/** Lists all {@link Skin} properties associated with this root. */
+	public listSkins(): Skin[] {
+		return this.skins.map((p) => p.getChild());
 	}
 
 	/**********************************************************************************************

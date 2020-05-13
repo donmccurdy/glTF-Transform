@@ -23,6 +23,9 @@ import { Property } from './property';
  * node.setCamera(camera);
  * ```
  *
+ * References:
+ * - [glTF → Cameras](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#cameras)
+ *
  * @category Properties
  */
 export class Camera extends Property {

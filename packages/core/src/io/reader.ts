@@ -231,17 +231,6 @@ export class GLTFReader {
 			return mesh;
 		});
 
-		/** Skins. */
-
-		const skinDefs = json.skins || [];
-		const skins = skinDefs.map((skinDef) => {
-			// TODO(feat): skinDef.inverseBindMatrices
-			// TODO(feat): skinDef.joints
-			// TODO(feat): skinDef.skeleton
-
-			return null;
-		});
-
 		/** Cameras. */
 
 		const cameraDefs = json.cameras || [];
@@ -269,10 +258,6 @@ export class GLTFReader {
 		const nodes = nodeDefs.map((nodeDef) => {
 			const node = doc.createNode(nodeDef.name);
 
-			if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
-
-			if (nodeDef.camera !== undefined) node.setCamera(cameras[nodeDef.camera]);
-
 			if (nodeDef.translation !== undefined) {
 				node.setTranslation(nodeDef.translation as vec3);
 			}
@@ -291,14 +276,47 @@ export class GLTFReader {
 				node.setScale(getScaling([], nodeDef.matrix) as vec3);
 			}
 
-			// TODO(feat): nodeDef.skin
+			// Attachments (mesh, camera, skin) defined later in reading process.
+
 			// TODO(feat): nodeDef.weights
 
 			return node;
 		});
-		nodeDefs.map((nodeDef, parentIndex) => {
+
+		/** Skins. */
+
+		const skinDefs = json.skins || [];
+		const skins = skinDefs.map((skinDef) => {
+			const skin = doc.createSkin(skinDef.name);
+
+			if (skinDef.inverseBindMatrices !== undefined) {
+				skin.setInverseBindMatrices(accessors[skinDef.inverseBindMatrices]);
+			}
+
+			if (skinDef.skeleton !== undefined) {
+				skin.setSkeleton(nodes[skinDef.skeleton]);
+			}
+
+			for (const nodeIndex of skinDef.joints) {
+				skin.addJoint(nodes[nodeIndex]);
+			}
+
+			return skin;
+		});
+
+		/** Node attachments. */
+
+		nodeDefs.map((nodeDef, nodeIndex) => {
+			const node = nodes[nodeIndex];
+
 			const children = nodeDef.children || [];
-			children.forEach((childIndex) => nodes[parentIndex].addChild(nodes[childIndex]));
+			children.forEach((childIndex) => node.addChild(nodes[childIndex]));
+
+			if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
+
+			if (nodeDef.camera !== undefined) node.setCamera(cameras[nodeDef.camera]);
+
+			if (nodeDef.skin !== undefined) node.setSkin(skins[nodeDef.skin]);
 		})
 
 		/** Animations. */
