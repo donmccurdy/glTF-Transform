@@ -9,4 +9,5 @@ export * from './mesh';
 export * from './node';
 export * from './root';
 export * from './scene';
+export * from './skin';
 export * from './texture';

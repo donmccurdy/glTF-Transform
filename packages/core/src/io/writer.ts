@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
-import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 import { BufferUtils } from '../utils';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -35,6 +35,7 @@ export class GLTFWriter {
 
 		const accessorIndexMap = new Map<Accessor, number>();
 		const cameraIndexMap = new Map<Camera, number>();
+		const skinIndexMap = new Map<Skin, number>();
 		const materialIndexMap = new Map<Material, number>();
 		const meshIndexMap = new Map<Mesh, number>();
 		const nodeIndexMap = new Map<Node, number>();
@@ -510,6 +511,40 @@ export class GLTFWriter {
 			nodeDef.rotation = node.getRotation();
 			nodeDef.scale = node.getScale();
 
+			// TODO(feat): node.weights
+
+			// Attachments (mesh, camera, skin) defined later in writing process.
+
+			nodeIndexMap.set(node, index);
+			return nodeDef;
+		});
+
+		/** Skins. */
+
+		json.skins = root.listSkins().map((skin, index) => {
+			const skinDef = createPropertyDef(skin) as GLTF.ISkin;
+
+			if (skin.getInverseBindMatrices()) {
+				skinDef.inverseBindMatrices = accessorIndexMap.get(skin.getInverseBindMatrices());
+			}
+
+			if (skin.getSkeleton()) {
+				skinDef.skeleton = nodeIndexMap.get(skin.getSkeleton());
+			}
+
+			skinDef.joints = skin.listJoints().map((joint) => nodeIndexMap.get(joint));
+
+			skinIndexMap.set(skin, index);
+			return skinDef;
+		});
+
+		/** Node attachments. */
+
+		root.listNodes().forEach((node, index) => {
+			if (node.listChildren().length === 0) return;
+
+			const nodeDef = json.nodes[index];
+
 			if (node.getMesh()) {
 				nodeDef.mesh = meshIndexMap.get(node.getMesh());
 			}
@@ -518,15 +553,10 @@ export class GLTFWriter {
 				nodeDef.camera = cameraIndexMap.get(node.getCamera());
 			}
 
-			// node.weights
+			if (node.getSkin()) {
+				nodeDef.skin = skinIndexMap.get(node.getSkin());
+			}
 
-			nodeIndexMap.set(node, index);
-			return nodeDef;
-		});
-		root.listNodes().forEach((node, index) => {
-			if (node.listChildren().length === 0) return;
-
-			const nodeDef = json.nodes[index];
 			nodeDef.children = node.listChildren().map((node) => nodeIndexMap.get(node));
 		});
 

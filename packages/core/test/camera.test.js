@@ -24,7 +24,7 @@ test('@gltf-transform/core::camera', t => {
 
 	const io = new NodeIO(fs, path);
 
-	var options = {basename: 'cameraTest'};
+	const options = {basename: 'cameraTest'};
 	const nativeDoc = io.createNativeDocument(io.createDocument(io.createNativeDocument(doc, options)), options);
 
 	t.deepEqual(nativeDoc.json.cameras[0], {
@@ -36,7 +36,7 @@ test('@gltf-transform/core::camera', t => {
 			yfov: Math.PI / 5,
 			aspectRatio: .5,
 		}
-	});
+	}, 'perspective camera');
 
 	t.deepEqual(nativeDoc.json.cameras[1], {
 		name: 'o',
@@ -47,7 +47,7 @@ test('@gltf-transform/core::camera', t => {
 			xmag: 50,
 			ymag: 25,
 		}
-	});
+	}, 'orthographic camera');
 
 	t.end();
 });

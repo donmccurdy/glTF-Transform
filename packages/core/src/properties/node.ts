@@ -5,6 +5,7 @@ import { Camera } from './camera';
 import { Mesh } from './mesh';
 import { Property } from './property';
 import { Root } from './root';
+import { Skin } from './skin';
 
 /**
  * # Node
@@ -42,6 +43,7 @@ export class Node extends Property {
 
 	@GraphChild private camera: Link<Node, Camera> = null;
 	@GraphChild private mesh: Link<Node, Mesh> = null;
+	@GraphChild private skin: Link<Node, Skin> = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
 
 	/** Returns the translation (position) of this node in local space. */
@@ -105,6 +107,15 @@ export class Node extends Property {
 	/** Sets a {@link Camera} to be instantiated at this node. */
 	public setCamera(camera: Camera): this {
 		this.camera = this._graph.link('camera', this, camera) as Link<Node, Camera>;
+		return this;
+	}
+
+	/** Returns the {@link Skin}, if any, instantiated at this node. */
+	public getSkin(): Skin { return this.skin ? this.skin.getChild() : null; }
+
+	/** Sets a {@link Skin} to be instantiated at this node. */
+	public setSkin(skin: Skin): this {
+		this.skin = this._graph.link('skin', this, skin) as Link<Node, Skin>;
 		return this;
 	}
 }
