@@ -1,6 +1,7 @@
 import { VERSION } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
+import { Animation } from './animation';
 import { Buffer } from './buffer';
 import { Camera } from './camera';
 import { Material } from './material';
@@ -58,6 +59,7 @@ export class Root extends Property {
 	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
 	@GraphChildList private materials: Link<Root, Material>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
+	@GraphChildList private animations: Link<Root, Animation>[] = [];
 	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
 	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
 
@@ -243,6 +245,32 @@ export class Root extends Property {
 	public listTextures(): Texture[] {
 		return this.textures.map((p) => p.getChild());
 	}
+
+	/**********************************************************************************************
+	 * Animations.
+	 */
+
+	/**
+	 * Adds a new {@link Animation} to the root list.
+	 * @hidden
+	 */
+	public addAnimation(animation: Animation): this {
+		return this.addGraphChild(this.animations, this._graph.link('animation', this, animation) as Link<Root, Animation>);
+	}
+
+	/**
+	 * Removes a {@link Animation} from the root list.
+	 * @hidden
+	 */
+	public removeAnimation(animation: Animation): this {
+		return this.removeGraphChild(this.animations, animation);
+	}
+
+	/** Lists all {@link Animation} properties associated with this root. */
+	public listAnimations(): Animation[] {
+		return this.animations.map((p) => p.getChild());
+	}
+
 
 	/**********************************************************************************************
 	 * Accessors.

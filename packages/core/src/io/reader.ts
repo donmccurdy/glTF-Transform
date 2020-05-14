@@ -323,10 +323,28 @@ export class GLTFReader {
 
 		const animationDefs = json.animations || [];
 		const animations = animationDefs.map((animationDef) => {
-			// TODO(feat): animationDef.channels
-			// TODO(feat): animationDef.samplers
+			const animation = doc.createAnimation(animationDef.name);
 
-			return null;
+			const samplerDefs = animationDef.samplers || [];
+			const samplers = samplerDefs.map((samplerDef) => {
+				const sampler = doc.createAnimationSampler()
+					.setInput(accessors[samplerDef.input])
+					.setOutput(accessors[samplerDef.output])
+					.setInterpolation(samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR);
+				animation.addSampler(sampler);
+				return sampler;
+			})
+
+			const channels = animationDef.channels || [];
+			channels.forEach((channelDef) => {
+				const channel = doc.createAnimationChannel()
+					.setSampler(samplers[channelDef.sampler])
+					.setTargetNode(nodes[channelDef.target.node])
+					.setTargetPath(channelDef.target.path);
+				animation.addChannel(channel);
+			});
+
+			return animation;
 		});
 
 		/** Scenes. */

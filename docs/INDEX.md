@@ -28,7 +28,6 @@ While the aim of this project is to support the complete glTF 2.0 format and mos
 
 **Missing core features:**
 
-- Animation
 - Morph targets
 
 **Supported extensions:**

@@ -1,4 +1,4 @@
-import { Accessor, Buffer, Camera, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
+import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -180,6 +180,29 @@ export class Document {
 		const texture = new Texture(this.graph, name);
 		this.root.addTexture(texture);
 		return texture;
+	}
+
+	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
+	createAnimation(name: string): Animation {
+		const animation = new Animation(this.graph, name);
+		this.root.addAnimation(animation);
+		return animation;
+	}
+
+	/**
+	 * Creates a new {@link AnimationChannel}. Channels must be attached to an {@link Animation}
+	 * for use and export; they are not otherwise associated with a {@link Root}.
+	 */
+	createAnimationChannel(): AnimationChannel {
+		return new AnimationChannel(this.graph);
+	}
+
+	/**
+	 * Creates a new {@link AnimationSampler}. Samplers must be attached to an {@link Animation}
+	 * for use and export; they are not otherwise associated with a {@link Root}.
+	 */
+	createAnimationSampler(): AnimationSampler {
+		return new AnimationSampler(this.graph);
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */
