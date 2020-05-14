@@ -15,9 +15,11 @@ import { Property } from './property';
  * @category Properties
  */
 export class Skin extends Property {
-	@GraphChild skeleton: Link<Skin, Node> = null;
-	@GraphChild inverseBindMatrices: Link<Skin, Accessor> = null;
-	@GraphChildList joints: Link<Skin, Node>[] = [];
+	public readonly propertyType = 'Skin';
+
+	@GraphChild private skeleton: Link<Skin, Node> = null;
+	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> = null;
+	@GraphChildList private joints: Link<Skin, Node>[] = [];
 
 	/**
 	 * {@link Node} used as a skeleton root. The node must be the closest common root of the joints

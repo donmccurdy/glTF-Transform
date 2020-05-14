@@ -29,6 +29,7 @@ import { Property } from './property';
  * @category Properties
  */
 export class Camera extends Property {
+	public readonly propertyType = 'Camera';
 
 	// Common.
 

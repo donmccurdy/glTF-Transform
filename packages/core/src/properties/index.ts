@@ -1,4 +1,5 @@
 export * from './accessor';
+export * from './animation';
 export * from './buffer';
 export * from './camera';
 export * from './property';

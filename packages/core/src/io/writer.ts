@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
-import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Primitive, Property, Root, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 import { BufferUtils } from '../utils';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -541,8 +541,6 @@ export class GLTFWriter {
 		/** Node attachments. */
 
 		root.listNodes().forEach((node, index) => {
-			if (node.listChildren().length === 0) return;
-
 			const nodeDef = json.nodes[index];
 
 			if (node.getMesh()) {
@@ -557,7 +555,40 @@ export class GLTFWriter {
 				nodeDef.skin = skinIndexMap.get(node.getSkin());
 			}
 
-			nodeDef.children = node.listChildren().map((node) => nodeIndexMap.get(node));
+			if (node.listChildren().length > 0) {
+				nodeDef.children = node.listChildren().map((node) => nodeIndexMap.get(node));
+			}
+		});
+
+		/** Animations. */
+
+		json.animations = root.listAnimations().map((animation) => {
+			const animationDef = createPropertyDef(animation) as GLTF.IAnimation;
+
+			const samplerIndexMap: Map<AnimationSampler, number> = new Map();
+
+			animationDef.samplers = animation.listSamplers()
+				.map((sampler, samplerIndex) => {
+					const samplerDef = createPropertyDef(sampler) as GLTF.IAnimationSampler;
+					samplerDef.input = accessorIndexMap.get(sampler.getInput());
+					samplerDef.output = accessorIndexMap.get(sampler.getOutput());
+					samplerDef.interpolation = sampler.getInterpolation();
+					samplerIndexMap.set(sampler, samplerIndex);
+					return samplerDef;
+				})
+
+			animationDef.channels = animation.listChannels()
+				.map((channel) => {
+					const channelDef = createPropertyDef(channel) as GLTF.IAnimationChannel;
+					channelDef.sampler = samplerIndexMap.get(channel.getSampler());
+					channelDef.target = {
+						node: nodeIndexMap.get(channel.getTargetNode()),
+						path: channel.getTargetPath(),
+					};
+					return channelDef;
+				})
+
+			return animationDef;
 		});
 
 		/* Scenes. */
