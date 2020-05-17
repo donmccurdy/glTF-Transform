@@ -45,6 +45,7 @@ model-viewer {
                     const el = document.createElement('model-viewer');
 
                     el.setAttribute('src', `./out/${asset.name}/${variant}/${filename}`);
+                    el.setAttribute('autoplay', '');
                     el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
                     containerEl.appendChild(el.cloneNode());
 
