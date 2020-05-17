@@ -40,6 +40,7 @@ export class Node extends Property {
 	private _translation: vec3 = [0, 0, 0];
 	private _rotation: vec4 = [0, 0, 0, 1];
 	private _scale: vec3 = [1, 1, 1];
+	private _weights: number[] = [];
 
 	@GraphChild private camera: Link<Node, Camera> = null;
 	@GraphChild private mesh: Link<Node, Mesh> = null;
@@ -116,6 +117,23 @@ export class Node extends Property {
 	/** Sets a {@link Skin} to be instantiated at this node. */
 	public setSkin(skin: Skin): this {
 		this.skin = this._graph.link('skin', this, skin) as Link<Node, Skin>;
+		return this;
+	}
+
+	/**
+	 * Initial weights of each {@link PrimitiveTarget} for the mesh instance at this node.
+	 * Most engines only support 4-8 active morph targets at a time.
+	 */
+	public getWeights(): number[] {
+		return this._weights;
+	}
+
+	/**
+	 * Initial weights of each {@link PrimitiveTarget} for the mesh instance at this node.
+	 * Most engines only support 4-8 active morph targets at a time.
+	 */
+	public setWeights(weights: number[]): this {
+		this._weights = weights;
 		return this;
 	}
 }

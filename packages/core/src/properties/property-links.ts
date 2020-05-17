@@ -1,7 +1,7 @@
 import { Link } from '../graph';
 import { Accessor } from './accessor';
 import { Material } from './material';
-import { Primitive } from './mesh';
+import { Primitive, PrimitiveTarget } from './mesh';
 import { Texture, TextureInfo, TextureSampler } from './texture';
 
 /** @hidden */
@@ -11,7 +11,7 @@ export class TextureLink extends Link<Material, Texture> {
 }
 
 /** @hidden */
-export class AttributeLink extends Link<Primitive, Accessor> {
+export class AttributeLink extends Link<Primitive|PrimitiveTarget, Accessor> {
 	public semantic = '';
 }
 

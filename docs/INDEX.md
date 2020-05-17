@@ -24,11 +24,7 @@ To learn how glTF-Transform works, or for an introduction to the glTF format, se
 
 ## Limitations
 
-While the aim of this project is to support the complete glTF 2.0 format and most official extensions, several important features are missing at this stage. Support for all glTF 2.0 core features will be included in the 0.3 release. Support for most Khronos extensions is planned on a rolling basis after that.
-
-**Missing core features:**
-
-- Morph targets
+glTF-Transform supports the complete glTF 2.0 core format. However, support for extensions is currently missing. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does aim to enable you to effectively build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [Contributing guidelines](/contributing.html).
 
 **Supported extensions:**
 

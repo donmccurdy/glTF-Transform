@@ -1,4 +1,4 @@
-import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
+import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PrimitiveTarget, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -164,8 +164,15 @@ export class Document {
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createPrimitive(): Primitive {
-		const primitive = new Primitive(this.graph);
-		return primitive;
+		return new Primitive(this.graph);
+	}
+
+	/**
+	 * Creates a new {@link PrimitiveTarget}, or morph target. Targets must be attached to a
+	 * {@link Primitive} for use and export; they are not otherwise associated with a {@link Root}.
+	 */
+	createPrimitiveTarget(name: string): PrimitiveTarget {
+		return new PrimitiveTarget(this.graph, name);
 	}
 
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
