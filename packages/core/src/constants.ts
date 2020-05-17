@@ -2,7 +2,7 @@
  * Current version of the package.
  * @hidden
  */
-export const VERSION = 'v0.2';
+export const VERSION = 'v0.3';
 
 /** @hidden */
 export const NAME = '@gltf-transform/core';
