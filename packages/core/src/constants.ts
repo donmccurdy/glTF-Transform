@@ -1,8 +1,11 @@
+// Injected at compile time, from $npm_package_version.
+declare const PACKAGE_VERSION: string;
+
 /**
  * Current version of the package.
  * @hidden
  */
-export const VERSION = 'v0.3';
+export const VERSION = `v${PACKAGE_VERSION}`;
 
 /** @hidden */
 export const NAME = '@gltf-transform/core';
