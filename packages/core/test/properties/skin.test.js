@@ -3,7 +3,7 @@ require('source-map-support').install();
 const fs = require('fs');
 const path = require('path');
 const test = require('tape');
-const { Document, NodeIO } = require('../');
+const { Document, NodeIO } = require('../../');
 
 test('@gltf-transform/core::skin', t => {
 	const doc = new Document();

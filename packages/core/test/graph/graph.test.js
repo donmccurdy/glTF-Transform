@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 const test = require('tape');
-const { Root, Graph, Node } = require('../');
+const { Root, Graph, Node } = require('../../');
 
 test('@gltf-transform/core::graph | link management', t => {
 	const graph = new Graph();
