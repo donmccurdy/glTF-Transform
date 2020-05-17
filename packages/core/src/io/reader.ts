@@ -202,6 +202,10 @@ export class GLTFReader {
 		const meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 
+			if (meshDef.weights !== undefined) {
+				mesh.setWeights(meshDef.weights);
+			}
+
 			meshDef.primitives.forEach((primitiveDef) => {
 				const primitive = doc.createPrimitive();
 
@@ -221,12 +225,21 @@ export class GLTFReader {
 					primitive.setIndices(accessors[primitiveDef.indices]);
 				}
 
-				// TODO(feat): primitiveDef.targets
+				const targetNames = meshDef.extras && meshDef.extras.targetNames || [];
+				const targetDefs = primitiveDef.targets || [];
+				targetDefs.forEach((targetDef, targetIndex) => {
+					const targetName = targetNames[targetIndex] || targetIndex.toString();
+					const target = doc.createPrimitiveTarget(targetName);
+
+					for (const [semantic, accessorIndex] of Object.entries(targetDef)) {
+						target.setAttribute(semantic, accessors[accessorIndex]);
+					}
+
+					primitive.addTarget(target);
+				});
 
 				mesh.addPrimitive(primitive);
 			})
-
-			// TODO(feat): meshDef.weights
 
 			return mesh;
 		});
@@ -276,9 +289,11 @@ export class GLTFReader {
 				node.setScale(getScaling([], nodeDef.matrix) as vec3);
 			}
 
-			// Attachments (mesh, camera, skin) defined later in reading process.
+			if (nodeDef.weights !== undefined) {
+				node.setWeights(nodeDef.weights);
+			}
 
-			// TODO(feat): nodeDef.weights
+			// Attachments (mesh, camera, skin) defined later in reading process.
 
 			return node;
 		});

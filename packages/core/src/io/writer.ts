@@ -453,6 +453,9 @@ export class GLTFWriter {
 
 		json.meshes = root.listMeshes().map((mesh, index) => {
 			const meshDef = createPropertyDef(mesh) as GLTF.IMesh;
+
+			let targetNames: string[];
+
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
 				primitiveDef.material = materialIndexMap.get(primitive.getMaterial());
@@ -466,13 +469,32 @@ export class GLTFWriter {
 					primitiveDef.attributes[semantic] = accessorIndexMap.get(primitive.getAttribute(semantic));
 				}
 
-				// TODO(feat): .targets
-				// TODO(feat): .targetNames
+				for (const target of primitive.listTargets()) {
+					const targetDef = {};
+
+					for (const semantic of target.listSemantics()) {
+						targetDef[semantic] = accessorIndexMap.get(target.getAttribute(semantic));
+					}
+
+					primitiveDef.targets = primitiveDef.targets || [];
+					primitiveDef.targets.push(targetDef);
+				}
+
+				if (primitive.listTargets().length && !targetNames) {
+					targetNames = primitive.listTargets().map((target) => target.getName());
+				}
 
 				return primitiveDef;
 			});
 
-			// TODO(feat): meshDef.weights
+			if (mesh.getWeights().length) {
+				meshDef.weights = mesh.getWeights();
+			}
+
+			if (targetNames) {
+				meshDef.extras = meshDef.extras || {};
+				meshDef.extras.targetNames = targetNames;
+			}
 
 			meshIndexMap.set(mesh, index);
 			return meshDef;
@@ -511,7 +533,9 @@ export class GLTFWriter {
 			nodeDef.rotation = node.getRotation();
 			nodeDef.scale = node.getScale();
 
-			// TODO(feat): node.weights
+			if (node.getWeights().length) {
+				nodeDef.weights = node.getWeights();
+			}
 
 			// Attachments (mesh, camera, skin) defined later in writing process.
 

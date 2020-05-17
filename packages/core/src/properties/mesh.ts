@@ -1,11 +1,9 @@
-import { NotImplementedError } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { Material } from './material';
 import { Property } from './property';
 import { AttributeLink } from './property-links';
-import { Root } from './root';
 
 /**
  * # Mesh
@@ -43,6 +41,8 @@ import { Root } from './root';
 export class Mesh extends Property {
 	public readonly propertyType = 'Mesh';
 
+	private _weights: number[] = [];
+
 	/** Primitive GPU draw call list. */
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
@@ -60,6 +60,25 @@ export class Mesh extends Property {
 	public listPrimitives(): Primitive[] {
 		return this.primitives.map((p) => p.getChild());
 	}
+
+	/**
+	 * Initial weights of each {@link PrimitiveTarget} on this mesh. Each {@link Primitive} must
+	 * have the same number of targets. Most engines only support 4-8 active morph targets at a
+	 * time.
+	 */
+	public getWeights(): number[] {
+		return this._weights;
+	}
+
+	/**
+	 * Initial weights of each {@link PrimitiveTarget} on this mesh. Each {@link Primitive} must
+	 * have the same number of targets. Most engines only support 4-8 active morph targets at a
+	 * time.
+	 */
+	public setWeights(weights: number[]): this {
+		this._weights = weights;
+		return this;
+	}
 }
 
 /**
@@ -76,6 +95,9 @@ export class Mesh extends Property {
  * behavior is necessary (like raycasting or collisions) prefer to assign each primitive to a
  * different mesh. The number of GPU draw calls is typically not unaffected by grouping or
  * ungrouping primitives to a mesh.
+ *
+ * Each primitive may optionally be deformed by one or more morph targets, stored in
+ * {@link PrimitiveTargets}.
  *
  * Usage:
  *
@@ -100,19 +122,20 @@ export class Primitive extends Property {
 	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
 
 	/** Indices of vertices in the vertex list to be drawn. */
-	@GraphChild private _indices: Link<Primitive, Accessor> = null;
+	@GraphChild private indices: Link<Primitive, Accessor> = null;
 
 	/** Vertex attributes. */
-	@GraphChildList private _attributes: AttributeLink[] = [];
+	@GraphChildList private attributes: AttributeLink[] = [];
 
-	// @GraphChildList private targets: AttributeLink[][] = [];
+	/** Morph targets. */
+	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
 
 	/** Material used to render the primitive. */
-	@GraphChild private _material: Link<Primitive, Material> = null;
+	@GraphChild private material: Link<Primitive, Material> = null;
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
 	public getIndices(): Accessor {
-		return this._indices ? this._indices.getChild() : null;
+		return this.indices ? this.indices.getChild() : null;
 	}
 
 	/**
@@ -121,13 +144,13 @@ export class Primitive extends Property {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor): this {
-		this._indices = this._graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
+		this.indices = this._graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
 		return this;
 	}
 
 	/** Returns a vertex attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor {
-		const link = this._attributes.find((link) => link.semantic === semantic);
+		const link = this.attributes.find((link) => link.semantic === semantic);
 		return link ? link.getChild() : null;
 	}
 
@@ -136,9 +159,17 @@ export class Primitive extends Property {
 	 * count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor): this {
+		// Remove previous attribute.
+		const prevAccessor = this.getAttribute(semantic);
+		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
+
+		// Stop if deleting the attribute.
+		if (!accessor) return this;
+
+		// Add next attribute.
 		const link = this._graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
-		return this.addGraphChild(this._attributes, link);
+		return this.addGraphChild(this.attributes, link);
 	}
 
 	/**
@@ -147,7 +178,7 @@ export class Primitive extends Property {
 	 * uvAccessor]`. Order will be consistent with the order returned by {@link .listSemantics}().
 	 */
 	public listAttributes(): Accessor[] {
-		return this._attributes.map((link) => link.getChild());
+		return this.attributes.map((link) => link.getChild());
 	}
 
 	/**
@@ -156,25 +187,15 @@ export class Primitive extends Property {
 	 * consistent with the order returned by {@link .listAttributes}().
 	 */
 	public listSemantics(): string[] {
-		return this._attributes.map((link) => link.semantic);
-	}
-
-	/** @hidden */
-	public listTargets(): Accessor[][] {
-		throw new NotImplementedError();
-	}
-
-	/** @hidden */
-	public listTargetNames(): string[] {
-		throw new NotImplementedError();
+		return this.attributes.map((link) => link.semantic);
 	}
 
 	/** Returns the material used to render the primitive. */
-	public getMaterial(): Material { return this._material ? this._material.getChild() : null; }
+	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material): this {
-		this._material = this._graph.link('material', this, material) as Link<Primitive, Material>;
+		this.material = this._graph.link('material', this, material) as Link<Primitive, Material>;
 		return this;
 	}
 
@@ -195,5 +216,88 @@ export class Primitive extends Property {
 	public setMode(mode: GLTF.MeshPrimitiveMode): this {
 		this._mode = mode;
 		return this;
+	}
+
+	/** Lists all morph targets associated with the primitive. */
+	public listTargets(): PrimitiveTarget[] {
+		return this.targets.map((link) => link.getChild());
+	}
+
+	/**
+	 * Adds a morph target to the primitive. All primitives in the same mesh must have the same
+	 * number of targets.
+	 */
+	public addTarget(target: PrimitiveTarget): this {
+		this.addGraphChild(this.targets, this._graph.link('target', this, target));
+		return this;
+	}
+
+	/**
+	 * Removes a morph target from the primitive. All primitives in the same mesh must have the same
+	 * number of targets.
+	 */
+	public removeTarget(target: PrimitiveTarget): this {
+		return this.removeGraphChild(this.targets, target);
+	}
+}
+
+/**
+ * # PrimitiveTarget
+ *
+ * *Morph target or shape key used to deform one {@link Primitive} in a {@link Mesh}.*
+ *
+ * A PrimitiveTarget contains a `POSITION` attribute (and optionally `NORMAL` and `TANGENT`) that
+ * can additively deform the base attributes on a {@link Mesh} {@link Primitive}. Vertex values
+ * of `0, 0, 0` in the target will have no effect, whereas a value of `0, 1, 0` would offset that
+ * vertex in the base geometry by y+=1. Morph targets can be fully or partially applied: their
+ * default state is controlled by {@link Mesh.getWeights}, which can also be overridden for a
+ * particular instantiation of a {@link Mesh}, using {@link Node.getWeights}.
+ *
+ * Reference:
+ * - [glTF → Morph Targets](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#morph-targets)
+ */
+export class PrimitiveTarget extends Property {
+	public readonly propertyType = 'PrimitiveTarget';
+
+	/** Vertex attributes. */
+	@GraphChildList private attributes: AttributeLink[] = [];
+
+	/** Returns a morph target vertex attribute as an {@link Accessor}. */
+	public getAttribute(semantic: string): Accessor {
+		const link = this.attributes.find((link) => link.semantic === semantic);
+		return link ? link.getChild() : null;
+	}
+
+	/**
+	 * Sets a morph target vertex attribute to an {@link Accessor}.
+	 */
+	public setAttribute(semantic: string, accessor: Accessor): this {
+		// Remove previous attribute.
+		const prevAccessor = this.getAttribute(semantic);
+		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
+
+		// Stop if deleting the attribute.
+		if (!accessor) return this;
+
+		// Add next attribute.
+		const link = this._graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		link.semantic = semantic;
+		return this.addGraphChild(this.attributes, link);
+	}
+
+	/**
+	 * Lists all morph target vertex attribute {@link Accessor}s associated. Order will be
+	 * consistent with the order returned by {@link .listSemantics}().
+	 */
+	public listAttributes(): Accessor[] {
+		return this.attributes.map((link) => link.getChild());
+	}
+
+	/**
+	 * Lists all morph target vertex attribute semantics associated. Order will be
+	 * consistent with the order returned by {@link .listAttributes}().
+	 */
+	public listSemantics(): string[] {
+		return this.attributes.map((link) => link.semantic);
 	}
 }
