@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 const test = require('tape');
-const { uuid } = require('../');
+const { uuid } = require('../../');
 
 test('@gltf-transform/core::uuid', t => {
 	const set = new Set();

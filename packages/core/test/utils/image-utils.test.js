@@ -1,10 +1,12 @@
 require('source-map-support').install();
 
+const IS_NODEJS = typeof window === 'undefined';
+
 const test = require('tape');
 const { createCanvas } = require('canvas');
-const { ImageUtils } = require('../');
+const { ImageUtils } = require('../../');
 
-test('@gltf-transform/core::image-utils', t => {
+test('@gltf-transform/core::image-utils', {skip: !IS_NODEJS}, t => {
 	let canvas, ctx, buffer;
 
 	canvas = createCanvas(100, 50);
