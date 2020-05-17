@@ -96,8 +96,8 @@ export class Mesh extends Property {
  * different mesh. The number of GPU draw calls is typically not unaffected by grouping or
  * ungrouping primitives to a mesh.
  *
- * Each primitive may optionally be deformed by one or more morph targets, stored in
- * {@link PrimitiveTargets}.
+ * Each primitive may optionally be deformed by one or more morph targets, stored in a
+ * {@link PrimitiveTarget}.
  *
  * Usage:
  *
