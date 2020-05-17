@@ -17,7 +17,11 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	constructor(
 		private readonly _name: string,
 		private readonly _parent: Parent,
-		private _child: Child) {}
+		private _child: Child) {
+		if (!_parent.canLink(_child)) {
+			throw new Error('Cannot link disconnected graphs/documents.');
+		}
+	}
 
 	/** Name. */
 	getName(): string { return this._name; }

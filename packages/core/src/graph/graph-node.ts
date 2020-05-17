@@ -14,6 +14,17 @@ export abstract class GraphNode {
 		this._graph = graph;
 	}
 
+	/**
+	 * Returns true if links between this and the given node are allowed. Validates only that the
+	 * objects are both {@link GraphNode} instances and on the same graph, not that they are
+	 * semantically compatible.
+	 *
+	 * @hidden
+	 */
+	public canLink(other: GraphNode): boolean {
+		return this._graph === other._graph;
+	}
+
 	/** Returns true if the node has been permanently removed from the graph. */
 	public isDisposed(): boolean { return this._disposed; }
 

@@ -41,3 +41,20 @@ test('@gltf-transform/core::graph | link management', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::graph | prevents cross-graph linking', t => {
+	const graphA = new Graph();
+	const graphB = new Graph();
+
+	const rootA = new Root(graphA);
+	const rootB = new Root(graphB);
+
+	const nodeA = new Node(graphA);
+	const nodeB = new Node(graphB);
+
+	rootA.addNode(nodeA);
+
+	t.throws(() => rootB.addNode(nodeA), 'prevents linking node from another graph, used');
+	t.throws(() => rootA.addNode(nodeB), 'prevents linking node from another graph, unused');
+	t.end();
+});
