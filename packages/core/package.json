@@ -7,6 +7,7 @@
   "module": "dist/core.modern.js",
   "source": "src/core.ts",
   "types": "dist/core.d.ts",
+  "sideEffects": false,
   "scripts": {
     "dist": "microbundle --format modern,umd",
     "watch": "microbundle watch --format modern,umd",
