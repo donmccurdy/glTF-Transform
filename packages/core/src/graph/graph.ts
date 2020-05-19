@@ -53,7 +53,7 @@ export class Graph {
 	* @param a Owner
 	* @param b Resource
 	*/
-	public link(name: string, a: GraphNode, b: GraphNode | null): Link<GraphNode, GraphNode> {
+	public link<A extends GraphNode, B extends GraphNode>(name: string, a: A, b: B): Link<A, B> {
 		// If there's no resource, return a null link. Avoids a lot of boilerplate in node setters.
 		if (!b) return null;
 

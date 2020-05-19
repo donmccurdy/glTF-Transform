@@ -144,7 +144,7 @@ export class Primitive extends Property {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor): this {
-		this.indices = this._graph.linkIndex('index', this, indices) as Link<Primitive, Accessor>;
+		this.indices = this._graph.linkIndex('index', this, indices);
 		return this;
 	}
 
@@ -195,7 +195,7 @@ export class Primitive extends Property {
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material): this {
-		this.material = this._graph.link('material', this, material) as Link<Primitive, Material>;
+		this.material = this._graph.link('material', this, material);
 		return this;
 	}
 

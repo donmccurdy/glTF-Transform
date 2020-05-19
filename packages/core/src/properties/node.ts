@@ -76,7 +76,7 @@ export class Node extends Property {
 
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
 	public addChild(child: Node): this {
-		const link = this._graph.link('child', this, child) as Link<Root, Node>;
+		const link = this._graph.link('child', this, child);
 		return this.addGraphChild(this.children, link);
 	}
 
@@ -98,7 +98,7 @@ export class Node extends Property {
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
 	public setMesh(mesh: Mesh): this {
-		this.mesh = this._graph.link('mesh', this, mesh) as Link<Node, Mesh>;
+		this.mesh = this._graph.link('mesh', this, mesh);
 		return this;
 	}
 
@@ -107,7 +107,7 @@ export class Node extends Property {
 
 	/** Sets a {@link Camera} to be instantiated at this node. */
 	public setCamera(camera: Camera): this {
-		this.camera = this._graph.link('camera', this, camera) as Link<Node, Camera>;
+		this.camera = this._graph.link('camera', this, camera);
 		return this;
 	}
 
@@ -116,7 +116,7 @@ export class Node extends Property {
 
 	/** Sets a {@link Skin} to be instantiated at this node. */
 	public setSkin(skin: Skin): this {
-		this.skin = this._graph.link('skin', this, skin) as Link<Node, Skin>;
+		this.skin = this._graph.link('skin', this, skin);
 		return this;
 	}
 

@@ -363,7 +363,7 @@ export class Accessor extends Property {
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
 	public setBuffer(buffer: Buffer): this {
-		this.buffer = this._graph.link('buffer', this, buffer) as Link<Accessor, Buffer>;
+		this.buffer = this._graph.link('buffer', this, buffer);
 		return this;
 	}
 
