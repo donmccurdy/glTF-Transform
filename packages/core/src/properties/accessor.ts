@@ -186,7 +186,10 @@ export class Accessor extends Property {
 
 		for (let i = 0; i < count * elementSize; i += elementSize) {
 			for (let j = 0; j < elementSize; j++) {
-				target[j] = Math.min(target[j], this._array[i + j]);
+				const value = this._array[i + j];
+				if (Number.isFinite(value)) {
+					target[j] = Math.min(target[j], value);
+				}
 			}
 		}
 
@@ -220,7 +223,10 @@ export class Accessor extends Property {
 
 		for (let i = 0; i < count * elementSize; i += elementSize) {
 			for (let j = 0; j < elementSize; j++) {
-				target[j] = Math.max(target[j], this._array[i + j]);
+				const value = this._array[i + j];
+				if (Number.isFinite(value)) {
+					target[j] = Math.max(target[j], value);
+				}
 			}
 		}
 

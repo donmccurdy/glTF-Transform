@@ -3,7 +3,7 @@ require('source-map-support').install();
 const fs = require('fs');
 const path = require('path');
 const test = require('tape');
-const { Accessor, NodeIO } = require('../../');
+const { Accessor, Document, NodeIO } = require('../../');
 
 test('@gltf-transform/core::accessor | interleaved', t => {
 	const resources = {'test.bin': new Uint16Array([
@@ -124,5 +124,21 @@ test('@gltf-transform/core::accessor | sparse', t => {
 	t.deepEquals(accessors[0].getElement(51, actual) && actual, [25, 50, 75], 'sparse index 3');
 	t.deepEquals(accessors[0].getElement(52, actual) && actual, [0, 0, 0], 'empty index 2');
 
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | minmax', t => {
+	const doc = new Document();
+	const accessor = doc.createAccessor()
+		.setArray(new Float32Array([
+			0, 0, 0,
+			Infinity, NaN, -Infinity,
+			1, 0, -1,
+			0, 0, -3,
+		]))
+		.setType('VEC3');
+
+	t.deepEqual(accessor.getMin([]), [0, 0, -3], 'computes min, ignoring infinite and NaN');
+	t.deepEqual(accessor.getMax([]), [1, 0, 0], 'computes max, ignoring infinite and NaN');
 	t.end();
 });
