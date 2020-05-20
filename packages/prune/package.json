@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/prune",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Prunes duplicate accessors",
   "main": "dist/prune.js",
@@ -21,7 +21,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.3.2"
+    "@gltf-transform/core": "^0.3.3"
   },
   "files": [
     "dist/",
