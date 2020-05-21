@@ -71,10 +71,3 @@ export const GLB_BUFFER = '__glb.bin';
  * @hidden
  */
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
-
-/** @hidden */
-export class NotImplementedError extends Error {
-	constructor () {
-		super('@gltf-transform/core: Not implemented.');
-	}
-}

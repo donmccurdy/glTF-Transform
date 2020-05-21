@@ -1,4 +1,3 @@
-import { NotImplementedError } from '../constants';
 import { GraphNode } from '../graph';
 import { PropertyGraph } from './property-graph';
 
@@ -96,7 +95,7 @@ export abstract class Property extends GraphNode {
 	 * @hidden
 	 */
 	public clone(): Property {
-		throw new NotImplementedError();
+		throw new Error('Not implemented.');
 	}
 
 	public detach(): this {

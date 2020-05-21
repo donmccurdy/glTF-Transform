@@ -5,6 +5,80 @@ const path = require('path');
 const test = require('tape');
 const { Accessor, Document, NodeIO } = require('../../');
 
+test('@gltf-transform/core::accessor | getScalar/setScalar', t => {
+	const accessor = new Document().createAccessor()
+		.setArray(new Float32Array([1, 2, 3, 4, 6]))
+		.setType('SCALAR');
+
+	accessor.setScalar(2, 500);
+	t.equal(accessor.getScalar(1), 2, 'getScalar');
+	t.equal(accessor.getScalar(2), 500, 'getScalar');
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | getElement/setElement', t => {
+	const accessor = new Document().createAccessor()
+		.setArray(new Float32Array([1, 2, 3, 4, 6, 7]))
+		.setType('VEC2');
+
+	accessor.setElement(2, [300, 400]);
+	t.deepEqual(accessor.getElement(1, []), [3, 4], 'getElement');
+	t.deepEqual(accessor.getElement(2, []), [300, 400], 'getElement');
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | normalized', t => {
+	const accessor = new Document().createAccessor()
+		.setArray(new Uint8Array([128, 255]))
+		.setNormalized(true)
+		.setType('SCALAR');
+
+	t.deepEqual(accessor.getMin([])[0].toFixed(2), '128.00', 'getMin');
+	t.deepLooseEqual(accessor.getMinNormalized([])[0].toFixed(2), '0.50', 'getMinNormalized');
+	t.deepEqual(accessor.getMax([])[0].toFixed(2), '255.00', 'getMax');
+	t.deepLooseEqual(accessor.getMaxNormalized([])[0].toFixed(2), '1.00', 'getMaxNormalized');
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | getComponentType', t => {
+	const accessor = new Document().createAccessor();
+
+	t.equal(accessor.setArray(new Float32Array()).getComponentType(), Accessor.ComponentType.FLOAT, 'float');
+	t.equal(accessor.setArray(new Uint32Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_INT, 'uint32');
+	t.equal(accessor.setArray(new Uint16Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_SHORT, 'uint16');
+	t.equal(accessor.setArray(new Uint8Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_BYTE, 'uint8');
+	t.equal(accessor.setArray(new Int16Array()).getComponentType(), Accessor.ComponentType.SHORT, 'int16');
+	t.equal(accessor.setArray(new Int8Array()).getComponentType(), Accessor.ComponentType.BYTE, 'int8');
+	t.throws(() => accessor.setArray(new Int32Array()).getComponentType(), 'int32 (throws)');
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | getComponentSize', t => {
+	const accessor = new Document().createAccessor();
+
+	t.equal(accessor.setArray(new Float32Array()).getComponentSize(), Float32Array.BYTES_PER_ELEMENT, 'float');
+	t.equal(accessor.setArray(new Uint32Array()).getComponentSize(), Uint32Array.BYTES_PER_ELEMENT, 'uint32');
+	t.equal(accessor.setArray(new Uint16Array()).getComponentSize(), Uint16Array.BYTES_PER_ELEMENT, 'uint16');
+	t.equal(accessor.setArray(new Uint8Array()).getComponentSize(), Uint8Array.BYTES_PER_ELEMENT, 'uint8');
+	t.equal(accessor.setArray(new Int16Array()).getComponentSize(), Int16Array.BYTES_PER_ELEMENT, 'int16');
+	t.equal(accessor.setArray(new Int8Array()).getComponentSize(), Int8Array.BYTES_PER_ELEMENT, 'int8');
+	t.throws(() => accessor.setArray(new Int32Array()).getComponentSize(), 'int32 (throws)');
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | getElementSize', t => {
+	const accessor = new Document().createAccessor();
+
+	t.equal(accessor.setType('SCALAR').getElementSize(), 1, 'scalar');
+	t.equal(accessor.setType('VEC2').getElementSize(), 2, 'vec2');
+	t.equal(accessor.setType('VEC3').getElementSize(), 3, 'vec3');
+	t.equal(accessor.setType('VEC4').getElementSize(), 4, 'vec4');
+	t.equal(accessor.setType('MAT3').getElementSize(), 9, 'mat3');
+	t.equal(accessor.setType('MAT4').getElementSize(), 16, 'mat4');
+	t.throws(() => accessor.setType('VEC5').getElementSize(), 'vec5 (throws)')
+	t.end();
+});
+
 test('@gltf-transform/core::accessor | interleaved', t => {
 	const resources = {'test.bin': new Uint16Array([
 		// vertex 1
