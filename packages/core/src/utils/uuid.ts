@@ -25,8 +25,10 @@ const generateOne = function(): string {
  */
 export const uuid = function(): string {
   for (let retries = 0; retries < UNIQUE_RETRIES; retries++) {
-    const id = generateOne();
-    if (!previousIDs.has(id)) return id;
+	const id = generateOne();
+	if (!previousIDs.has(id)) {
+		previousIDs.add(id);
+		return id;
+	}
   }
-  return '';
 };
