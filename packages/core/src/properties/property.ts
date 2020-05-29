@@ -1,4 +1,5 @@
-import { GraphNode } from '../graph';
+import { GraphChildList, GraphNode, Link } from '../graph';
+import { ExtensionProperty } from './extension-property';
 import { PropertyGraph } from './property-graph';
 
 /**
@@ -38,7 +39,7 @@ import { PropertyGraph } from './property-graph';
  */
 export abstract class Property extends GraphNode {
 	/** Property type. */
-	public readonly propertyType: string;
+	public abstract readonly propertyType: string;
 
 	protected readonly _graph: PropertyGraph;
 	protected _name = '';
@@ -46,8 +47,7 @@ export abstract class Property extends GraphNode {
 	// TODO(feat): Extras should be Properties.
 	protected _extras: object = {};
 
-	// TODO(feat): Extensions should be Properties.
-	protected _extensions: object = {};
+	@GraphChildList protected extensions: Link<Property, ExtensionProperty>[] = [];
 
 	/** @hidden */
 	constructor(graph: PropertyGraph, name = '') {
@@ -82,12 +82,26 @@ export abstract class Property extends GraphNode {
 	}
 
 	/** @hidden */
-	public getExtensions(): object { return this._extensions; }
+	public getExtension(name: string): ExtensionProperty {
+		const link = this.extensions.find((link) => link.getChild().extensionName === name);
+		return link ? link.getChild() : null;
+	}
 
 	/** @hidden */
-	public setExtensions(extensions: object): this {
-		this._extensions = extensions;
-		return this;
+	public setExtension(name: string, extension: ExtensionProperty): this {
+		// Remove previous extension.
+		const prevExtension = this.getExtension(name);
+		if (prevExtension) this.removeGraphChild(this.extensions, prevExtension);
+
+		// Stop if deleting the extension.
+		if (!extension) return this;
+
+		// Add next extension.
+		return this.addGraphChild(this.extensions, this._graph.link(name, this, extension));
+	}
+
+	public listExtensions(): ExtensionProperty[] {
+		return this.extensions.map((link) => link.getChild());
 	}
 
 	/**

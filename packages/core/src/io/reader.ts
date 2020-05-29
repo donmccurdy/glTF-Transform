@@ -1,8 +1,9 @@
 import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
+import { Extension } from '../extension';
 import { NativeDocument } from '../native-document';
-import { Accessor, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 import { FileUtils } from '../utils';
 
 const ComponentTypeToTypedArray = {
@@ -14,9 +15,28 @@ const ComponentTypeToTypedArray = {
 	'5126': Float32Array,
 };
 
+export interface ReaderContext {
+	nativeDocument: NativeDocument;
+	buffers: Buffer[];
+	bufferViewBuffers: Buffer[];
+	accessors: Accessor[];
+	textures: Texture[];
+	materials: Material[];
+	meshes: Mesh[];
+	cameras: Camera[];
+	nodes: Node[];
+	skins: Skin[];
+	animations: Animation[];
+	scenes: Scene[];
+}
+
+export interface ReaderOptions {
+	extensions: (typeof Extension)[];
+}
+
 /** @hidden */
 export class GLTFReader {
-	public static read(nativeDoc: NativeDocument): Document {
+	public static read(nativeDoc: NativeDocument, options: ReaderOptions): Document {
 		const {json} = nativeDoc;
 		const doc = new Document();
 
@@ -24,10 +44,26 @@ export class GLTFReader {
 			throw new Error(`Unsupported glTF version: "${json.asset.version}".`);
 		}
 
+		const context = {
+			document: doc,
+			nativeDocument: nativeDoc,
+			buffers: [],
+			bufferViewBuffers: [],
+			accessors: [],
+			textures: [],
+			materials: [],
+			meshes: [],
+			cameras: [],
+			nodes: [],
+			skins: [],
+			animations: [],
+			scenes: [],
+		} as ReaderContext;
+
 		/** Buffers. */
 
 		const bufferDefs = json.buffers || [];
-		const buffers = bufferDefs.map((bufferDef) => {
+		context.buffers = bufferDefs.map((bufferDef) => {
 			const buffer = doc.createBuffer(bufferDef.name);
 			if (bufferDef.uri && bufferDef.uri.indexOf('__') !== 0) {
 				buffer.setURI(bufferDef.uri);
@@ -38,16 +74,16 @@ export class GLTFReader {
 		/** Buffer views. */
 
 		const bufferViewDefs = json.bufferViews || [];
-		const bufferViewToBuffer = bufferViewDefs.map((bufferViewDef) => {
-			return buffers[bufferViewDef.buffer];
+		context.bufferViewBuffers = bufferViewDefs.map((bufferViewDef) => {
+			return context.buffers[bufferViewDef.buffer];
 		});
 
 		/** Accessors. */
 
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
-		const accessors = accessorDefs.map((accessorDef) => {
-			const buffer = bufferViewToBuffer[accessorDef.bufferView];
+		context.accessors = accessorDefs.map((accessorDef) => {
+			const buffer = context.bufferViewBuffers[accessorDef.bufferView];
 			const accessor = doc.createAccessor(accessorDef.name, buffer);
 			accessor.setType(accessorDef.type);
 
@@ -75,7 +111,7 @@ export class GLTFReader {
 		// are reused with different sampler properties.
 		const imageDefs = json.images || [];
 		const textureDefs = json.textures || [];
-		const textures = imageDefs.map((imageDef) => {
+		context.textures = imageDefs.map((imageDef) => {
 			const texture = doc.createTexture(imageDef.name);
 
 			if (imageDef.bufferView !== undefined) {
@@ -108,7 +144,7 @@ export class GLTFReader {
 		/** Materials. */
 
 		const materialDefs = json.materials || [];
-		const materials = materialDefs.map((materialDef) => {
+		context.materials = materialDefs.map((materialDef) => {
 			const material = doc.createMaterial(materialDef.name);
 
 			// Program state & blending.
@@ -149,7 +185,7 @@ export class GLTFReader {
 
 			if (pbrDef.baseColorTexture !== undefined) {
 				const textureInfoDef = pbrDef.baseColorTexture;
-				const texture = textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setBaseColorTexture(texture);
 				setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef);
 				setTextureSampler(material.getBaseColorTextureSampler(), textureInfoDef, nativeDoc);
@@ -157,7 +193,7 @@ export class GLTFReader {
 
 			if (materialDef.emissiveTexture !== undefined) {
 				const textureInfoDef = materialDef.emissiveTexture;
-				const texture = textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setEmissiveTexture(texture);
 				setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef);
 				setTextureSampler(material.getEmissiveTextureSampler(), textureInfoDef, nativeDoc);
@@ -165,7 +201,7 @@ export class GLTFReader {
 
 			if (materialDef.normalTexture !== undefined) {
 				const textureInfoDef = materialDef.normalTexture;
-				const texture = textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setNormalTexture(texture);
 				setTextureInfo(material.getNormalTextureInfo(), textureInfoDef);
 				setTextureSampler(material.getNormalTextureSampler(), textureInfoDef, nativeDoc);
@@ -176,7 +212,7 @@ export class GLTFReader {
 
 			if (materialDef.occlusionTexture !== undefined) {
 				const textureInfoDef = materialDef.occlusionTexture;
-				const texture = textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setOcclusionTexture(texture);
 				setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef);
 				setTextureSampler(material.getOcclusionTextureSampler(), textureInfoDef, nativeDoc);
@@ -187,7 +223,7 @@ export class GLTFReader {
 
 			if (pbrDef.metallicRoughnessTexture !== undefined) {
 				const textureInfoDef = pbrDef.metallicRoughnessTexture;
-				const texture = textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setMetallicRoughnessTexture(texture);
 				setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef);
 				setTextureSampler(material.getMetallicRoughnessTextureSampler(), textureInfoDef, nativeDoc);
@@ -199,7 +235,7 @@ export class GLTFReader {
 		/** Meshes. */
 
 		const meshDefs = json.meshes || [];
-		const meshes = meshDefs.map((meshDef) => {
+		context.meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 
 			if (meshDef.weights !== undefined) {
@@ -210,7 +246,7 @@ export class GLTFReader {
 				const primitive = doc.createPrimitive();
 
 				if (primitiveDef.material !== undefined) {
-					primitive.setMaterial(materials[primitiveDef.material]);
+					primitive.setMaterial(context.materials[primitiveDef.material]);
 				}
 
 				if (primitiveDef.mode !== undefined) {
@@ -218,11 +254,11 @@ export class GLTFReader {
 				}
 
 				for (const [semantic, index] of Object.entries(primitiveDef.attributes || {})) {
-					primitive.setAttribute(semantic, accessors[index]);
+					primitive.setAttribute(semantic, context.accessors[index]);
 				}
 
 				if (primitiveDef.indices !== undefined) {
-					primitive.setIndices(accessors[primitiveDef.indices]);
+					primitive.setIndices(context.accessors[primitiveDef.indices]);
 				}
 
 				const targetNames = meshDef.extras && meshDef.extras.targetNames || [];
@@ -232,7 +268,7 @@ export class GLTFReader {
 					const target = doc.createPrimitiveTarget(targetName);
 
 					for (const [semantic, accessorIndex] of Object.entries(targetDef)) {
-						target.setAttribute(semantic, accessors[accessorIndex]);
+						target.setAttribute(semantic, context.accessors[accessorIndex]);
 					}
 
 					primitive.addTarget(target);
@@ -247,7 +283,7 @@ export class GLTFReader {
 		/** Cameras. */
 
 		const cameraDefs = json.cameras || [];
-		const cameras = cameraDefs.map((cameraDef) => {
+		context.cameras = cameraDefs.map((cameraDef) => {
 			const camera = doc.createCamera(cameraDef.name).setType(cameraDef.type);
 			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
 				camera
@@ -268,7 +304,7 @@ export class GLTFReader {
 		/** Nodes. */
 
 		const nodeDefs = json.nodes || [];
-		const nodes = nodeDefs.map((nodeDef) => {
+		context.nodes = nodeDefs.map((nodeDef) => {
 			const node = doc.createNode(nodeDef.name);
 
 			if (nodeDef.translation !== undefined) {
@@ -301,19 +337,19 @@ export class GLTFReader {
 		/** Skins. */
 
 		const skinDefs = json.skins || [];
-		const skins = skinDefs.map((skinDef) => {
+		context.skins = skinDefs.map((skinDef) => {
 			const skin = doc.createSkin(skinDef.name);
 
 			if (skinDef.inverseBindMatrices !== undefined) {
-				skin.setInverseBindMatrices(accessors[skinDef.inverseBindMatrices]);
+				skin.setInverseBindMatrices(context.accessors[skinDef.inverseBindMatrices]);
 			}
 
 			if (skinDef.skeleton !== undefined) {
-				skin.setSkeleton(nodes[skinDef.skeleton]);
+				skin.setSkeleton(context.nodes[skinDef.skeleton]);
 			}
 
 			for (const nodeIndex of skinDef.joints) {
-				skin.addJoint(nodes[nodeIndex]);
+				skin.addJoint(context.nodes[nodeIndex]);
 			}
 
 			return skin;
@@ -322,29 +358,29 @@ export class GLTFReader {
 		/** Node attachments. */
 
 		nodeDefs.map((nodeDef, nodeIndex) => {
-			const node = nodes[nodeIndex];
+			const node = context.nodes[nodeIndex];
 
 			const children = nodeDef.children || [];
-			children.forEach((childIndex) => node.addChild(nodes[childIndex]));
+			children.forEach((childIndex) => node.addChild(context.nodes[childIndex]));
 
-			if (nodeDef.mesh !== undefined) node.setMesh(meshes[nodeDef.mesh]);
+			if (nodeDef.mesh !== undefined) node.setMesh(context.meshes[nodeDef.mesh]);
 
-			if (nodeDef.camera !== undefined) node.setCamera(cameras[nodeDef.camera]);
+			if (nodeDef.camera !== undefined) node.setCamera(context.cameras[nodeDef.camera]);
 
-			if (nodeDef.skin !== undefined) node.setSkin(skins[nodeDef.skin]);
+			if (nodeDef.skin !== undefined) node.setSkin(context.skins[nodeDef.skin]);
 		})
 
 		/** Animations. */
 
 		const animationDefs = json.animations || [];
-		const animations = animationDefs.map((animationDef) => {
+		context.animations = animationDefs.map((animationDef) => {
 			const animation = doc.createAnimation(animationDef.name);
 
 			const samplerDefs = animationDef.samplers || [];
 			const samplers = samplerDefs.map((samplerDef) => {
 				const sampler = doc.createAnimationSampler()
-					.setInput(accessors[samplerDef.input])
-					.setOutput(accessors[samplerDef.output])
+					.setInput(context.accessors[samplerDef.input])
+					.setOutput(context.accessors[samplerDef.output])
 					.setInterpolation(samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR);
 				animation.addSampler(sampler);
 				return sampler;
@@ -354,7 +390,7 @@ export class GLTFReader {
 			channels.forEach((channelDef) => {
 				const channel = doc.createAnimationChannel()
 					.setSampler(samplers[channelDef.sampler])
-					.setTargetNode(nodes[channelDef.target.node])
+					.setTargetNode(context.nodes[channelDef.target.node])
 					.setTargetPath(channelDef.target.path);
 				animation.addChannel(channel);
 			});
@@ -365,17 +401,26 @@ export class GLTFReader {
 		/** Scenes. */
 
 		const sceneDefs = json.scenes || [];
-		const scenes = sceneDefs.map((sceneDef) => {
+		context.scenes = sceneDefs.map((sceneDef) => {
 			const scene = doc.createScene(sceneDef.name);
 
 			const children = sceneDef.nodes || [];
 
 			children
-			.map((nodeIndex) => nodes[nodeIndex])
+			.map((nodeIndex) => context.nodes[nodeIndex])
 			.forEach((node) => (scene.addNode(node)));
 
 			return scene;
 		});
+
+		/** Extensions. */
+
+		for (const Extension of options.extensions) {
+			if (json.extensionsUsed.includes(Extension.EXTENSION_NAME)) {
+				const ExtensionImpl = Extension as unknown as new (doc: Document) => Extension;
+				new ExtensionImpl(doc).read(context);
+			}
+		}
 
 		return doc;
 	}

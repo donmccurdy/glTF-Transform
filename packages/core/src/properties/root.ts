@@ -1,4 +1,5 @@
 import { VERSION } from '../constants';
+import { Extension } from '../extension';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
@@ -52,6 +53,8 @@ export class Root extends Property {
 		version: '2.0'
 	};
 
+	private readonly _extensions: Set<Extension> = new Set();
+
 	@GraphChildList private scenes: Link<Root, Scene>[] = [];
 	@GraphChildList private nodes: Link<Root, Node>[] = [];
 	@GraphChildList private cameras: Link<Root, Camera>[] = [];
@@ -70,6 +73,34 @@ export class Root extends Property {
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
 	public getAsset(): GLTF.IAsset { return this._asset; }
+
+	/**********************************************************************************************
+	 * Extensions.
+	 */
+
+	/** @hidden */
+	public addExtension(extension: Extension): this {
+		if (this._extensions.has(extension)) {
+			throw new Error(`Extension "${extension.extensionName}" is already enabled.`);
+		}
+		this._extensions.add(extension);
+		return this;
+	}
+
+	/** @hidden */
+	public removeExtension(extension: Extension): this {
+		this._extensions.delete(extension);
+		return this;
+	}
+
+	public listExtensionsUsed(): Extension[] {
+		return Array.from(this._extensions);
+	}
+
+	public listExtensionsRequired(): Extension[] {
+		return Array.from(this._extensions)
+			.filter((extension) => extension.isRequired());
+	}
 
 	/**********************************************************************************************
 	 * Scenes.

@@ -31,19 +31,9 @@ export class GLTFWriter {
 		const bufferURIGenerator = new UniqueURIGenerator(numBuffers> 1, options.basename);
 		const imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
 
-		/* Lookup tables. */
+		/* Writer context. */
 
-		const accessorIndexMap = new Map<Accessor, number>();
-		const cameraIndexMap = new Map<Camera, number>();
-		const skinIndexMap = new Map<Skin, number>();
-		const materialIndexMap = new Map<Material, number>();
-		const meshIndexMap = new Map<Mesh, number>();
-		const nodeIndexMap = new Map<Node, number>();
-		const imageIndexMap = new Map<Texture, number>();
-		const textureIndexMap = new Map<string, number>(); // textureDef JSON -> index
-		const samplerIndexMap = new Map<string, number>(); // samplerDef JSON -> index
-
-		const imageData: ArrayBuffer[] = [];
+		const context = new WriterContext(nativeDoc);
 
 		/* Utilities. */
 
@@ -67,7 +57,7 @@ export class GLTFWriter {
 
 			// Create accessor definitions, determining size of final buffer view.
 			for (const accessor of accessors) {
-				const accessorDef = createAccessorDef(accessor);
+				const accessorDef = context.createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews.length;
 				// TODO(feat): accessorDef.sparse
 
@@ -76,7 +66,7 @@ export class GLTFWriter {
 				byteLength += data.byteLength;
 				buffers.push(data);
 
-				accessorIndexMap.set(accessor, json.accessors.length);
+				context.accessorIndexMap.set(accessor, json.accessors.length);
 				json.accessors.push(accessorDef);
 			}
 
@@ -111,7 +101,7 @@ export class GLTFWriter {
 
 			// Create accessor definitions, determining size and stride of final buffer view.
 			for (const accessor of accessors) {
-				const accessorDef = createAccessorDef(accessor);
+				const accessorDef = context.createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews.length;
 				accessorDef.byteOffset = byteStride;
 
@@ -119,7 +109,7 @@ export class GLTFWriter {
 				const componentSize = accessor.getComponentSize();
 				byteStride += BufferUtils.padNumber(elementSize * componentSize);
 
-				accessorIndexMap.set(accessor, json.accessors.length);
+				context.accessorIndexMap.set(accessor, json.accessors.length);
 				json.accessors.push(accessorDef);
 			}
 
@@ -179,41 +169,6 @@ export class GLTFWriter {
 			return {byteLength, buffers: [buffer]};
 		}
 
-		/**
-		 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
-		 * possible, Texture and Sampler definitions are shared.
-		 */
-		function createTextureInfoDef(texture: Texture, textureInfo: TextureInfo, textureSampler: TextureSampler): GLTF.ITextureInfo {
-			const samplerDef = {
-				magFilter: textureSampler.getMagFilter() || undefined,
-				minFilter: textureSampler.getMinFilter() || undefined,
-				wrapS: textureSampler.getWrapS(),
-				wrapT: textureSampler.getWrapT(),
-			} as GLTF.ISampler;
-
-			const samplerKey = JSON.stringify(samplerDef);
-			if (!samplerIndexMap.has(samplerKey)) {
-				samplerIndexMap.set(samplerKey, json.samplers.length);
-				json.samplers.push(samplerDef);
-			}
-
-			const textureDef = {
-				source: imageIndexMap.get(texture),
-				sampler: samplerIndexMap.get(samplerKey)
-			} as GLTF.ITexture;
-
-			const textureKey = JSON.stringify(textureDef);
-			if (!textureIndexMap.has(textureKey)) {
-				textureIndexMap.set(textureKey, json.textures.length);
-				json.textures.push(textureDef);
-			}
-
-			return {
-				index: textureIndexMap.get(textureKey),
-				texCoord: textureInfo.getTexCoord(),
-			} as GLTF.ITextureInfo;
-		}
-
 		/* Data use pre-processing. */
 
 		const accessorLinks = new Map<Accessor, Link<Property, Accessor>[]>();
@@ -242,14 +197,14 @@ export class GLTFWriter {
 		json.samplers = [];
 		json.textures = [];
 		json.images = root.listTextures().map((texture, textureIndex) => {
-			const imageDef = createPropertyDef(texture) as GLTF.IImage;
+			const imageDef = context.createPropertyDef(texture) as GLTF.IImage;
 
 			if (texture.getMimeType()) {
 				imageDef.mimeType = texture.getMimeType() as GLTF.ImageMimeType;
 			}
 
 			if (options.isGLB) {
-				imageData.push(texture.getImage());
+				context.imageData.push(texture.getImage());
 				imageDef.bufferView = json.bufferViews.length;
 				json.bufferViews.push({
 					buffer: 0,
@@ -262,7 +217,7 @@ export class GLTFWriter {
 				nativeDoc.resources[imageDef.uri] = texture.getImage();
 			}
 
-			imageIndexMap.set(texture, textureIndex);
+			context.imageIndexMap.set(texture, textureIndex);
 			return imageDef;
 		});
 
@@ -270,7 +225,7 @@ export class GLTFWriter {
 
 		json.buffers = [];
 		root.listBuffers().forEach((buffer) => {
-			const bufferDef = createPropertyDef(buffer) as GLTF.IBuffer;
+			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
 
 			// Attributes are grouped and interleaved in one buffer view per mesh primitive. Indices for
 			// all primitives are grouped into a single buffer view. Everything else goes into a
@@ -348,11 +303,11 @@ export class GLTFWriter {
 			}
 
 			// We only support embedded images in GLB, so we know there is only one buffer.
-			if (imageData.length) {
-				for (let i = 0; i < imageData.length; i++) {
+			if (context.imageData.length) {
+				for (let i = 0; i < context.imageData.length; i++) {
 					json.bufferViews[json.images[i].bufferView].byteOffset = bufferByteLength;
-					bufferByteLength += imageData[i].byteLength;
-					buffers.push(imageData[i]);
+					bufferByteLength += context.imageData[i].byteLength;
+					buffers.push(context.imageData[i]);
 				}
 			}
 
@@ -382,7 +337,7 @@ export class GLTFWriter {
 		/* Materials. */
 
 		json.materials = root.listMaterials().map((material, index) => {
-			const materialDef = createPropertyDef(material) as GLTF.IMaterial;
+			const materialDef = context.createPropertyDef(material) as GLTF.IMaterial;
 
 			// Program state & blending.
 
@@ -406,21 +361,21 @@ export class GLTFWriter {
 				const texture = material.getBaseColorTexture();
 				const textureInfo = material.getBaseColorTextureInfo();
 				const textureSampler = material.getBaseColorTextureSampler();
-				materialDef.pbrMetallicRoughness.baseColorTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.pbrMetallicRoughness.baseColorTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
 			if (material.getEmissiveTexture()) {
 				const texture = material.getEmissiveTexture();
 				const textureInfo = material.getEmissiveTextureInfo();
 				const textureSampler = material.getEmissiveTextureSampler();
-				materialDef.emissiveTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.emissiveTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
 			if (material.getNormalTexture()) {
 				const texture = material.getNormalTexture();
 				const textureInfo = material.getNormalTextureInfo();
 				const textureSampler = material.getNormalTextureSampler();
-				const textureInfoDef = createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialNormalTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
 				}
@@ -431,7 +386,7 @@ export class GLTFWriter {
 				const texture = material.getOcclusionTexture();
 				const textureInfo = material.getOcclusionTextureInfo();
 				const textureSampler = material.getOcclusionTextureSampler();
-				const textureInfoDef = createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialOcclusionTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
 				}
@@ -442,38 +397,38 @@ export class GLTFWriter {
 				const texture = material.getMetallicRoughnessTexture();
 				const textureInfo = material.getMetallicRoughnessTextureInfo();
 				const textureSampler = material.getMetallicRoughnessTextureSampler();
-				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
 			}
 
-			materialIndexMap.set(material, index);
+			context.materialIndexMap.set(material, index);
 			return materialDef;
 		});
 
 		/* Meshes. */
 
 		json.meshes = root.listMeshes().map((mesh, index) => {
-			const meshDef = createPropertyDef(mesh) as GLTF.IMesh;
+			const meshDef = context.createPropertyDef(mesh) as GLTF.IMesh;
 
 			let targetNames: string[];
 
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
-				primitiveDef.material = materialIndexMap.get(primitive.getMaterial());
+				primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
 				primitiveDef.mode = primitive.getMode();
 
 				if (primitive.getIndices()) {
-					primitiveDef.indices = accessorIndexMap.get(primitive.getIndices());
+					primitiveDef.indices = context.accessorIndexMap.get(primitive.getIndices());
 				}
 
 				for (const semantic of primitive.listSemantics()) {
-					primitiveDef.attributes[semantic] = accessorIndexMap.get(primitive.getAttribute(semantic));
+					primitiveDef.attributes[semantic] = context.accessorIndexMap.get(primitive.getAttribute(semantic));
 				}
 
 				for (const target of primitive.listTargets()) {
 					const targetDef = {};
 
 					for (const semantic of target.listSemantics()) {
-						targetDef[semantic] = accessorIndexMap.get(target.getAttribute(semantic));
+						targetDef[semantic] = context.accessorIndexMap.get(target.getAttribute(semantic));
 					}
 
 					primitiveDef.targets = primitiveDef.targets || [];
@@ -496,14 +451,14 @@ export class GLTFWriter {
 				meshDef.extras.targetNames = targetNames;
 			}
 
-			meshIndexMap.set(mesh, index);
+			context.meshIndexMap.set(mesh, index);
 			return meshDef;
 		});
 
 		/** Cameras. */
 
 		json.cameras = root.listCameras().map((camera, index) => {
-			const cameraDef = createPropertyDef(camera) as GLTF.ICamera;
+			const cameraDef = context.createPropertyDef(camera) as GLTF.ICamera;
 			cameraDef.type = camera.getType();
 			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
 				cameraDef.perspective = {
@@ -521,14 +476,14 @@ export class GLTFWriter {
 				};
 			}
 
-			cameraIndexMap.set(camera, index);
+			context.cameraIndexMap.set(camera, index);
 			return cameraDef;
 		});
 
 		/* Nodes. */
 
 		json.nodes = root.listNodes().map((node, index) => {
-			const nodeDef = createPropertyDef(node) as GLTF.INode;
+			const nodeDef = context.createPropertyDef(node) as GLTF.INode;
 			nodeDef.translation = node.getTranslation();
 			nodeDef.rotation = node.getRotation();
 			nodeDef.scale = node.getScale();
@@ -539,26 +494,26 @@ export class GLTFWriter {
 
 			// Attachments (mesh, camera, skin) defined later in writing process.
 
-			nodeIndexMap.set(node, index);
+			context.nodeIndexMap.set(node, index);
 			return nodeDef;
 		});
 
 		/** Skins. */
 
 		json.skins = root.listSkins().map((skin, index) => {
-			const skinDef = createPropertyDef(skin) as GLTF.ISkin;
+			const skinDef = context.createPropertyDef(skin) as GLTF.ISkin;
 
 			if (skin.getInverseBindMatrices()) {
-				skinDef.inverseBindMatrices = accessorIndexMap.get(skin.getInverseBindMatrices());
+				skinDef.inverseBindMatrices = context.accessorIndexMap.get(skin.getInverseBindMatrices());
 			}
 
 			if (skin.getSkeleton()) {
-				skinDef.skeleton = nodeIndexMap.get(skin.getSkeleton());
+				skinDef.skeleton = context.nodeIndexMap.get(skin.getSkeleton());
 			}
 
-			skinDef.joints = skin.listJoints().map((joint) => nodeIndexMap.get(joint));
+			skinDef.joints = skin.listJoints().map((joint) => context.nodeIndexMap.get(joint));
 
-			skinIndexMap.set(skin, index);
+			context.skinIndexMap.set(skin, index);
 			return skinDef;
 		});
 
@@ -568,34 +523,34 @@ export class GLTFWriter {
 			const nodeDef = json.nodes[index];
 
 			if (node.getMesh()) {
-				nodeDef.mesh = meshIndexMap.get(node.getMesh());
+				nodeDef.mesh = context.meshIndexMap.get(node.getMesh());
 			}
 
 			if (node.getCamera()) {
-				nodeDef.camera = cameraIndexMap.get(node.getCamera());
+				nodeDef.camera = context.cameraIndexMap.get(node.getCamera());
 			}
 
 			if (node.getSkin()) {
-				nodeDef.skin = skinIndexMap.get(node.getSkin());
+				nodeDef.skin = context.skinIndexMap.get(node.getSkin());
 			}
 
 			if (node.listChildren().length > 0) {
-				nodeDef.children = node.listChildren().map((node) => nodeIndexMap.get(node));
+				nodeDef.children = node.listChildren().map((node) => context.nodeIndexMap.get(node));
 			}
 		});
 
 		/** Animations. */
 
 		json.animations = root.listAnimations().map((animation) => {
-			const animationDef = createPropertyDef(animation) as GLTF.IAnimation;
+			const animationDef = context.createPropertyDef(animation) as GLTF.IAnimation;
 
 			const samplerIndexMap: Map<AnimationSampler, number> = new Map();
 
 			animationDef.samplers = animation.listSamplers()
 				.map((sampler, samplerIndex) => {
-					const samplerDef = createPropertyDef(sampler) as GLTF.IAnimationSampler;
-					samplerDef.input = accessorIndexMap.get(sampler.getInput());
-					samplerDef.output = accessorIndexMap.get(sampler.getOutput());
+					const samplerDef = context.createPropertyDef(sampler) as GLTF.IAnimationSampler;
+					samplerDef.input = context.accessorIndexMap.get(sampler.getInput());
+					samplerDef.output = context.accessorIndexMap.get(sampler.getOutput());
 					samplerDef.interpolation = sampler.getInterpolation();
 					samplerIndexMap.set(sampler, samplerIndex);
 					return samplerDef;
@@ -603,10 +558,10 @@ export class GLTFWriter {
 
 			animationDef.channels = animation.listChannels()
 				.map((channel) => {
-					const channelDef = createPropertyDef(channel) as GLTF.IAnimationChannel;
+					const channelDef = context.createPropertyDef(channel) as GLTF.IAnimationChannel;
 					channelDef.sampler = samplerIndexMap.get(channel.getSampler());
 					channelDef.target = {
-						node: nodeIndexMap.get(channel.getTargetNode()),
+						node: context.nodeIndexMap.get(channel.getTargetNode()),
 						path: channel.getTargetPath(),
 					};
 					return channelDef;
@@ -618,10 +573,14 @@ export class GLTFWriter {
 		/* Scenes. */
 
 		json.scenes = root.listScenes().map((scene) => {
-			const sceneDef = createPropertyDef(scene) as GLTF.IScene;
-			sceneDef.nodes = scene.listNodes().map((node) => nodeIndexMap.get(node));
+			const sceneDef = context.createPropertyDef(scene) as GLTF.IScene;
+			sceneDef.nodes = scene.listNodes().map((node) => context.nodeIndexMap.get(node));
 			return sceneDef;
 		});
+
+		/* Extensions. */
+
+		root.listExtensionsUsed().map((extension) => extension.write(context));
 
 		//
 
@@ -629,31 +588,6 @@ export class GLTFWriter {
 
 		return nativeDoc;
 	}
-}
-
-function createPropertyDef(property: Property): PropertyDef {
-	const def = {} as PropertyDef;
-	if (property.getName()) {
-		def.name = property.getName();
-	}
-	if (Object.keys(property.getExtras()).length > 0) {
-		def.extras = property.getExtras();
-	}
-	if (Object.keys(property.getExtensions()).length > 0) {
-		def.extras = property.getExtensions();
-	}
-	return def;
-}
-
-function createAccessorDef(accessor: Accessor): GLTF.IAccessor {
-	const accessorDef = createPropertyDef(accessor) as GLTF.IAccessor;
-	accessorDef.type = accessor.getType();
-	accessorDef.componentType = accessor.getComponentType();
-	accessorDef.count = accessor.getCount();
-	accessor.getMax((accessorDef.max = []));
-	accessor.getMin((accessorDef.min = []));
-	accessorDef.normalized = accessor.getNormalized();
-	return accessorDef;
 }
 
 /**
@@ -675,6 +609,80 @@ function clean(object): void {
 
 	for (const key of unused) {
 		delete object[key];
+	}
+}
+
+/** @hidden */
+export class WriterContext {
+	public readonly accessorIndexMap = new Map<Accessor, number>();
+	public readonly cameraIndexMap = new Map<Camera, number>();
+	public readonly skinIndexMap = new Map<Skin, number>();
+	public readonly materialIndexMap = new Map<Material, number>();
+	public readonly meshIndexMap = new Map<Mesh, number>();
+	public readonly nodeIndexMap = new Map<Node, number>();
+	public readonly imageIndexMap = new Map<Texture, number>();
+	public readonly textureDefIndexMap = new Map<string, number>(); // textureDef JSON -> index
+	public readonly samplerDefIndexMap = new Map<string, number>(); // samplerDef JSON -> index
+
+	public readonly imageData: ArrayBuffer[] = [];
+
+	constructor (public readonly nativeDocument: NativeDocument) {}
+
+	/**
+	 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
+	 * possible, Texture and Sampler definitions are shared.
+	 */
+	public createTextureInfoDef(texture: Texture, textureInfo: TextureInfo, textureSampler: TextureSampler): GLTF.ITextureInfo {
+		const samplerDef = {
+			magFilter: textureSampler.getMagFilter() || undefined,
+			minFilter: textureSampler.getMinFilter() || undefined,
+			wrapS: textureSampler.getWrapS(),
+			wrapT: textureSampler.getWrapT(),
+		} as GLTF.ISampler;
+
+		const samplerKey = JSON.stringify(samplerDef);
+		if (!this.samplerDefIndexMap.has(samplerKey)) {
+			this.samplerDefIndexMap.set(samplerKey, this.nativeDocument.json.samplers.length);
+			this.nativeDocument.json.samplers.push(samplerDef);
+		}
+
+		const textureDef = {
+			source: this.imageIndexMap.get(texture),
+			sampler: this.samplerDefIndexMap.get(samplerKey)
+		} as GLTF.ITexture;
+
+		const textureKey = JSON.stringify(textureDef);
+		if (!this.textureDefIndexMap.has(textureKey)) {
+			this.textureDefIndexMap.set(textureKey, this.nativeDocument.json.textures.length);
+			this.nativeDocument.json.textures.push(textureDef);
+		}
+
+		return {
+			index: this.textureDefIndexMap.get(textureKey),
+			texCoord: textureInfo.getTexCoord(),
+		} as GLTF.ITextureInfo;
+	}
+
+	public createPropertyDef(property: Property): PropertyDef {
+		const def = {} as PropertyDef;
+		if (property.getName()) {
+			def.name = property.getName();
+		}
+		if (Object.keys(property.getExtras()).length > 0) {
+			def.extras = property.getExtras();
+		}
+		return def;
+	}
+
+	public createAccessorDef(accessor: Accessor): GLTF.IAccessor {
+		const accessorDef = this.createPropertyDef(accessor) as GLTF.IAccessor;
+		accessorDef.type = accessor.getType();
+		accessorDef.componentType = accessor.getComponentType();
+		accessorDef.count = accessor.getCount();
+		accessor.getMax((accessorDef.max = []));
+		accessor.getMin((accessorDef.min = []));
+		accessorDef.normalized = accessor.getNormalized();
+		return accessorDef;
 	}
 }
 

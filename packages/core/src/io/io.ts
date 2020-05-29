@@ -1,5 +1,6 @@
 import { GLB_BUFFER } from '../constants';
 import { Document } from '../document';
+import { Extension } from '../extension';
 import { NativeDocument } from '../native-document';
 import { BufferUtils, FileUtils, uuid } from '../utils/';
 import { GLTFReader } from './reader';
@@ -15,9 +16,18 @@ import { GLTFWriter, WriterOptions } from './writer';
  * @category I/O
  */
 abstract class PlatformIO {
+
+	protected _extensions: typeof Extension[] = [];
+
+	/** Registers extensions, enabling I/O class to read and write glTF assets requiring them. */
+	public registerExtensions(extensions: typeof Extension[]): this {
+		this._extensions.push(...extensions);
+		return this;
+	}
+
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public createDocument (nativeDoc: NativeDocument): Document {
-		return GLTFReader.read(nativeDoc);
+		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
@@ -157,7 +167,7 @@ class NodeIO extends PlatformIO {
 				resource.uri = resourceUUID;
 			}
 		})
-		return GLTFReader.read(nativeDoc);
+		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
 	}
 
 	private writeGLTF (uri: string, doc: Document): void {
