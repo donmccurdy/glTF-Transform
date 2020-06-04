@@ -90,7 +90,7 @@ abstract class PlatformIO {
  * ```typescript
  * const fs = require('fs');
  * const path = require('path');
- * const { WebIO } = require('@gltf-transform/core');
+ * const { NodeIO } = require('@gltf-transform/core');
  *
  * const io = new NodeIO(fs, path);
  *
