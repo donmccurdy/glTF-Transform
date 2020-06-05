@@ -580,7 +580,9 @@ export class GLTFWriter {
 
 		/* Extensions. */
 
-		root.listExtensionsUsed().map((extension) => extension.write(context));
+		json.extensionsUsed = root.listExtensionsUsed().map((ext) => ext.extensionName);
+		json.extensionsRequired = root.listExtensionsRequired().map((ext) => ext.extensionName);
+		root.listExtensionsUsed().forEach((extension) => extension.write(context));
 
 		//
 

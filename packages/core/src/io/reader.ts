@@ -415,10 +415,14 @@ export class GLTFReader {
 
 		/** Extensions. */
 
+		const extensionsUsed = json.extensionsUsed || [];
+		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
-			if (json.extensionsUsed.includes(Extension.EXTENSION_NAME)) {
+			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
 				const ExtensionImpl = Extension as unknown as new (doc: Document) => Extension;
-				new ExtensionImpl(doc).read(context);
+				new ExtensionImpl(doc)
+					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME))
+					.read(context);
 			}
 		}
 

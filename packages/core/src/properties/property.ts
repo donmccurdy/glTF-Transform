@@ -82,26 +82,34 @@ export abstract class Property extends GraphNode {
 	}
 
 	/** @hidden */
-	public getExtension(name: string): ExtensionProperty {
+	public getExtension<Ext extends ExtensionProperty>(extension: string | {new(): Ext; EXTENSION_NAME: string}): ExtensionProperty {
+		const name = this._toExtensionName(extension);
 		const link = this.extensions.find((link) => link.getChild().extensionName === name);
 		return link ? link.getChild() : null;
 	}
 
 	/** @hidden */
-	public setExtension(name: string, extension: ExtensionProperty): this {
+	public setExtension<Ext extends ExtensionProperty>(extension: string | {new(): Ext; EXTENSION_NAME: string}, extensionProperty: ExtensionProperty): this {
+		const name = this._toExtensionName(extension);
+
 		// Remove previous extension.
 		const prevExtension = this.getExtension(name);
 		if (prevExtension) this.removeGraphChild(this.extensions, prevExtension);
 
 		// Stop if deleting the extension.
-		if (!extension) return this;
+		if (!extensionProperty) return this;
 
 		// Add next extension.
-		return this.addGraphChild(this.extensions, this._graph.link(name, this, extension));
+		return this.addGraphChild(this.extensions, this._graph.link(name, this, extensionProperty));
 	}
 
 	public listExtensions(): ExtensionProperty[] {
 		return this.extensions.map((link) => link.getChild());
+	}
+
+	private _toExtensionName<Ext extends ExtensionProperty>(extension: string | {new(): Ext; EXTENSION_NAME: string}): string {
+		if (typeof extension === 'string') return extension;
+		return extension.EXTENSION_NAME;
 	}
 
 	/**

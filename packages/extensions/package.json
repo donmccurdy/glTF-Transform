@@ -1,0 +1,32 @@
+{
+  "name": "@gltf-transform/extensions",
+  "version": "0.3.3",
+  "repository": "github:donmccurdy/glTF-Transform",
+  "description": "Adds extension support to @gltf-transform/core",
+  "main": "dist/extensions.js",
+  "module": "dist/extensions.module.js",
+  "source": "src/extensions.ts",
+  "types": "dist/extensions.d.ts",
+  "scripts": {
+    "dist": "microbundle",
+    "watch": "microbundle watch"
+  },
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@gltf-transform/core": "^0.3.3"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "package.json"
+  ]
+}
