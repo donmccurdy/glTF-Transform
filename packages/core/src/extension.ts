@@ -10,7 +10,7 @@ export abstract class Extension implements ExtensionPropertyOwner {
 	private _required = false;
 	private _properties: Set<ExtensionProperty> = new Set();
 
-	constructor (private readonly _doc: Document) {
+	constructor (protected readonly _doc: Document) {
 		_doc.getRoot().addExtension(this);
 	}
 
@@ -42,20 +42,6 @@ export abstract class Extension implements ExtensionPropertyOwner {
 		return this;
 	}
 
-	public read(readerContext: ReaderContext): this {
-		const {extensionsRequired} = readerContext.nativeDocument.json;
-		this.setRequired(extensionsRequired.includes(this.extensionName));
-		return this;
-	}
-
-	public write(writerContext: WriterContext): this {
-		const {json} = writerContext.nativeDocument;
-		json.extensionsUsed = json.extensionsUsed || [];
-		json.extensionsUsed.push(this.extensionName);
-		if (this.isRequired()) {
-			json.extensionsRequired = json.extensionsRequired || [];
-			json.extensionsRequired.push(this.extensionName);
-		}
-		return this;
-	}
+	public abstract read(readerContext: ReaderContext): this;
+	public abstract write(writerContext: WriterContext): this;
 }

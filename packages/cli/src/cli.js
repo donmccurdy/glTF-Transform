@@ -7,12 +7,13 @@ const gl = require('gl');
 const program = require('caporal');
 const { version } = require('../package.json');
 const { NodeIO } = require('@gltf-transform/core');
+const { KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
 const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
 
-const io = new NodeIO(fs, path);
+const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
 program
 	.version(version);

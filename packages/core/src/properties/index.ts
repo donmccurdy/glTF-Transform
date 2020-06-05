@@ -2,6 +2,7 @@ export * from './accessor';
 export * from './animation';
 export * from './buffer';
 export * from './camera';
+export * from './extension-property';
 export * from './property';
 export * from './property-graph';
 export * from './property-links';

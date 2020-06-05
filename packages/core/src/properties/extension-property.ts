@@ -8,6 +8,7 @@ export interface ExtensionPropertyOwner {
 
 export abstract class ExtensionProperty extends Property {
 	public abstract readonly extensionName: string;
+	public static EXTENSION_NAME: string;
 
 	constructor(graph: PropertyGraph, private readonly extension: ExtensionPropertyOwner) {
 		super(graph);
