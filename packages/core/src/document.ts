@@ -125,6 +125,10 @@ export class Document {
 	 * Extension factory method.
 	 */
 
+	/**
+	 * Creates a new {@link Extension}, for the extension type of the given constructor. If the
+	 * extension is already enabled for this Document, the previous Extension reference is reused.
+	 */
 	createExtension(ctor: ExtensionConstructor): Extension {
 		const prevExtension = this.getRoot().listExtensionsUsed()
 			.find((ext) => ext.extensionName === ctor.EXTENSION_NAME);

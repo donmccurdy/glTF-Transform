@@ -55,6 +55,10 @@ export abstract class Property extends GraphNode {
 		this._name = name;
 	}
 
+	/**********************************************************************************************
+	 * Name.
+	 */
+
 	/**
 	 * Returns the name of this property. While names are not required to be unique, this is
 	 * encouraged, and non-unique names will be overwritten in some tools. For custom data about
@@ -72,6 +76,10 @@ export abstract class Property extends GraphNode {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * Extras.
+	 */
+
 	/** @hidden */
 	public getExtras(): object { return this._extras; }
 
@@ -81,12 +89,26 @@ export abstract class Property extends GraphNode {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * Extensions.
+	 */
+
+	/**
+	 * Returns the {@link ExtensionProperty} of the given type attached to this Property, if any.
+	 * The ExtensionProperty constructor is used as the lookup token, allowing better type-checking
+	 * in TypeScript environments. *Not available on {@link Root} properties.*
+	 */
 	public getExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>): Prop {
 		const name = ctor.EXTENSION_NAME;
 		const link = this.extensions.find((link) => link.getChild().extensionName === name);
 		return link ? link.getChild() as Prop : null;
 	}
 
+	/**
+	 * Attaches the given {@link ExtensionProperty} to this Property. For a given extension, only
+	 * one ExtensionProperty may be attached to any one Property at a time. *Not available on
+	 * {@link Root} properties.*
+	 */
 	public setExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>, extensionProperty: Prop): this {
 		// Remove previous extension.
 		const prevExtension = this.getExtension(ctor);
@@ -96,13 +118,21 @@ export abstract class Property extends GraphNode {
 		if (!extensionProperty) return this;
 
 		// Add next extension.
-		const name = ctor.EXTENSION_NAME;
+		const name = extensionProperty.extensionName;
 		return this.addGraphChild(this.extensions, this._graph.link(name, this, extensionProperty));
 	}
 
+	/**
+	 * Lists all {@link ExtensionProperty} instances attached to this Property. *Not available on
+	 * {@link Root} properties.*
+	 */
 	public listExtensions(): ExtensionProperty[] {
 		return this.extensions.map((link) => link.getChild());
 	}
+
+	/**********************************************************************************************
+	 * Graph state.
+	 */
 
 	/**
 	 * Makes a copy of this property, referencing the same resources (not copies) as the original.
