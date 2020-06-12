@@ -1,3 +1,4 @@
+import { deprecate } from 'util';
 import { VERSION } from '../constants';
 import { Extension } from '../extension';
 import { GraphChildList, Link } from '../graph/index';
@@ -5,6 +6,7 @@ import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';
 import { Camera } from './camera';
+import { ExtensionProperty, ExtensionPropertyConstructor } from './extension-property';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
@@ -100,6 +102,37 @@ export class Root extends Property {
 	public listExtensionsRequired(): Extension[] {
 		return Array.from(this._extensions)
 			.filter((extension) => extension.isRequired());
+	}
+
+	/**********************************************************************************************
+	 * Property overrides.
+	 */
+
+	/**
+	 * @override
+	 * @hidden
+	 * @deprecated
+	 */
+	public listExtensions(): ExtensionProperty[] {
+		throw new Error('Root is not extensible. Use `listExtensionsUsed()`, instead.')
+	}
+
+	/**
+	 * @override
+	 * @hidden
+	 * @deprecated
+	 */
+	public getExtension<Prop extends ExtensionProperty>(): Prop {
+		throw new Error('Root is not extensible.');
+	}
+
+	/**
+	 * @override
+	 * @hidden
+	 * @deprecated
+	 */
+	public setExtension(): this {
+		throw new Error('Root is not extensible.');
 	}
 
 	/**********************************************************************************************
