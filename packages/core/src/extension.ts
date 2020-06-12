@@ -1,9 +1,9 @@
 import { Document } from './document';
 import { ReaderContext } from './io/reader';
 import { WriterContext } from './io/writer';
-import { ExtensionProperty, ExtensionPropertyOwner } from './properties/extension-property';
+import { ExtensionProperty, ExtensionPropertyParent } from './properties/extension-property';
 
-export abstract class Extension implements ExtensionPropertyOwner {
+export abstract class Extension implements ExtensionPropertyParent {
 	public static EXTENSION_NAME: string;
 	public readonly extensionName: string;
 

@@ -3,8 +3,9 @@ import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { NativeDocument } from '../native-document';
-import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, TextureInfo, TextureSampler } from '../properties';
 import { FileUtils } from '../utils';
+import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
 	'5120': Int8Array,
@@ -14,21 +15,6 @@ const ComponentTypeToTypedArray = {
 	'5125': Uint32Array,
 	'5126': Float32Array,
 };
-
-export interface ReaderContext {
-	nativeDocument: NativeDocument;
-	buffers: Buffer[];
-	bufferViewBuffers: Buffer[];
-	accessors: Accessor[];
-	textures: Texture[];
-	materials: Material[];
-	meshes: Mesh[];
-	cameras: Camera[];
-	nodes: Node[];
-	skins: Skin[];
-	animations: Animation[];
-	scenes: Scene[];
-}
 
 export interface ReaderOptions {
 	extensions: (typeof Extension)[];
@@ -44,21 +30,9 @@ export class GLTFReader {
 			throw new Error(`Unsupported glTF version: "${json.asset.version}".`);
 		}
 
-		const context = {
-			document: doc,
-			nativeDocument: nativeDoc,
-			buffers: [],
-			bufferViewBuffers: [],
-			accessors: [],
-			textures: [],
-			materials: [],
-			meshes: [],
-			cameras: [],
-			nodes: [],
-			skins: [],
-			animations: [],
-			scenes: [],
-		} as ReaderContext;
+		/* Reader context. */
+
+		const context = new ReaderContext();
 
 		/** Buffers. */
 
