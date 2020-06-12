@@ -1,3 +1,4 @@
+import { Extension, ExtensionConstructor } from './extension';
 import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PrimitiveTarget, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
 import { Logger } from './utils';
 
@@ -118,6 +119,16 @@ export class Document {
 			transform(this);
 		}
 		return this;
+	}
+
+	/**********************************************************************************************
+	 * Extension factory method.
+	 */
+
+	createExtension(ctor: ExtensionConstructor): Extension {
+		const prevExtension = this.getRoot().listExtensionsUsed()
+			.find((ext) => ext.extensionName === ctor.EXTENSION_NAME);
+		return prevExtension || new ctor(this);
 	}
 
 	/**********************************************************************************************

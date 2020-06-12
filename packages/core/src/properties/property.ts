@@ -81,14 +81,12 @@ export abstract class Property extends GraphNode {
 		return this;
 	}
 
-	/** @hidden */
 	public getExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>): Prop {
 		const name = ctor.EXTENSION_NAME;
 		const link = this.extensions.find((link) => link.getChild().extensionName === name);
 		return link ? link.getChild() as Prop : null;
 	}
 
-	/** @hidden */
 	public setExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>, extensionProperty: Prop): this {
 		// Remove previous extension.
 		const prevExtension = this.getExtension(ctor);
