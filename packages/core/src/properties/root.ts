@@ -81,7 +81,7 @@ export class Root extends Property {
 	 */
 
 	/** @hidden */
-	public addExtension(extension: Extension): this {
+	public enableExtension(extension: Extension): this {
 		if (this._extensions.has(extension)) {
 			throw new Error(`Extension "${extension.extensionName}" is already enabled.`);
 		}
@@ -90,7 +90,7 @@ export class Root extends Property {
 	}
 
 	/** @hidden */
-	public removeExtension(extension: Extension): this {
+	public disableExtension(extension: Extension): this {
 		this._extensions.delete(extension);
 		return this;
 	}

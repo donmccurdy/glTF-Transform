@@ -8,6 +8,24 @@ import { ExtensionProperty, ExtensionPropertyParent } from './properties/extensi
  */
 export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAME: string};
 
+/**
+ * # Extension
+ *
+ * *Description*
+ *
+ * Long description...
+ *
+ * Usage:
+ *
+ * ```ts
+ * ```
+ *
+ * Reference:
+ * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
+ * - [glTF Extension Registry](https://github.com/KhronosGroup/glTF/blob/master/extensions)
+ *
+ * @category Extensions
+ */
 export abstract class Extension implements ExtensionPropertyParent {
 	public static EXTENSION_NAME: string;
 	public readonly extensionName: string;
@@ -17,11 +35,11 @@ export abstract class Extension implements ExtensionPropertyParent {
 
 	/** @hidden */
 	constructor (protected readonly _doc: Document) {
-		_doc.getRoot().addExtension(this);
+		_doc.getRoot().enableExtension(this);
 	}
 
 	public dispose(): void {
-		this._doc.getRoot().removeExtension(this);
+		this._doc.getRoot().disableExtension(this);
 		for (const property of this._properties) {
 			property.dispose();
 		}
