@@ -1,7 +1,6 @@
 import { Document } from './document';
-import { ReaderContext } from './io/reader';
-import { WriterContext } from './io/writer';
-import { ExtensionProperty, ExtensionPropertyParent } from './properties/extension-property';
+import { ReaderContext, WriterContext } from './io';
+import { ExtensionProperty, ExtensionPropertyParent } from './properties';
 
 /**
  * Type alias allowing Extension constructors to be used as tokens for type checking.

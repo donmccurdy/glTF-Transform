@@ -1,7 +1,7 @@
 import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
-import { Extension } from '../extension';
+import { Extension, ExtensionConstructor } from '../extension';
 import { NativeDocument } from '../native-document';
 import { Accessor, TextureInfo, TextureSampler } from '../properties';
 import { FileUtils } from '../utils';
@@ -393,8 +393,7 @@ export class GLTFReader {
 		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				const ExtensionImpl = Extension as unknown as new (doc: Document) => Extension;
-				doc.createExtension(ExtensionImpl)
+				doc.createExtension(Extension as ExtensionConstructor)
 					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME))
 					.read(context);
 			}
