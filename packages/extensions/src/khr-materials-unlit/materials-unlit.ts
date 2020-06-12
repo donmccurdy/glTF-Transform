@@ -16,7 +16,7 @@ export class MaterialsUnlit extends Extension {
 		const materialDefs = context.nativeDocument.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
-				context.materials[materialIndex].setExtension(NAME, this.createUnlit());
+				context.materials[materialIndex].setExtension(Unlit, this.createUnlit());
 			}
 		});
 
@@ -29,7 +29,7 @@ export class MaterialsUnlit extends Extension {
 		this._doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				if (material.getExtension(NAME)) {
+				if (material.getExtension(Unlit)) {
 					const materialIndex = context.materialIndexMap.get(material);
 					const materialDef = nativeDoc.json.materials[materialIndex];
 					materialDef.extensions = materialDef.extensions || {};

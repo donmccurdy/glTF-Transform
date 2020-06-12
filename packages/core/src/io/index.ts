@@ -1,3 +1,5 @@
 export { NodeIO, WebIO } from './io';
-export { ReaderOptions, ReaderContext } from './reader';
-export { WriterOptions, WriterContext } from './writer';
+export { ReaderOptions } from './reader';
+export { WriterOptions } from './writer';
+export { ReaderContext } from './reader-context';
+export { WriterContext } from './writer-context';

@@ -10,7 +10,7 @@ export interface ExtensionPropertyParent {
  * Type alias allowing ExtensionProperty constructors to be used as tokens when calling
  * property.getExtension(...) or property.setExtension(...), enabling type checking.
  */
-export type ExtensionPropertyConstructor<Prop> = {new(): Prop; EXTENSION_NAME: string};
+export type ExtensionPropertyConstructor<Prop> = {new(graph: PropertyGraph, extension: ExtensionPropertyParent): Prop; EXTENSION_NAME: string};
 
 export abstract class ExtensionProperty extends Property {
 	public abstract readonly extensionName: string;
