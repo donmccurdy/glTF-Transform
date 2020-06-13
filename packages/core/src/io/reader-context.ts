@@ -7,16 +7,17 @@ import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin,
  * consistent with the glTF file.
  */
 export class ReaderContext {
-	nativeDocument: NativeDocument;
-	buffers: Buffer[] = [];
-	bufferViewBuffers: Buffer[] = [];
-	accessors: Accessor[] = [];
-	textures: Texture[] = [];
-	materials: Material[] = [];
-	meshes: Mesh[] = [];
-	cameras: Camera[] = [];
-	nodes: Node[] = [];
-	skins: Skin[] = [];
-	animations: Animation[] = [];
-	scenes: Scene[] = [];
+	public buffers: Buffer[] = [];
+	public bufferViewBuffers: Buffer[] = [];
+	public accessors: Accessor[] = [];
+	public textures: Texture[] = [];
+	public materials: Material[] = [];
+	public meshes: Mesh[] = [];
+	public cameras: Camera[] = [];
+	public nodes: Node[] = [];
+	public skins: Skin[] = [];
+	public animations: Animation[] = [];
+	public scenes: Scene[] = [];
+
+	constructor (public readonly nativeDocument: NativeDocument) {}
 }
