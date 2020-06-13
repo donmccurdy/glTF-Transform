@@ -71,11 +71,28 @@ test('@gltf-transform/core::extension | property', t => {
 
 	t.equal(node.getExtension(Gizmo), null, 'getExtension() → null (1)');
 
+	// Add ExtensionProperty.
+
 	node.setExtension(Gizmo, gizmo);
 	t.equal(node.getExtension(Gizmo), gizmo, 'getExtension() → gizmo');
+	t.deepEqual(node.listExtensions(), [gizmo], 'listExtensions() → [gizmo x1]');
+
+	// Remove ExtensionProperty.
 
 	node.setExtension(Gizmo, null);
 	t.equal(node.getExtension(Gizmo), null, 'getExtension() → null (2)');
+
+	// Dispose ExtensionProperty.
+
+	node.setExtension(Gizmo, gizmo);
+	gizmo.dispose();
+	t.equal(node.getExtension(Gizmo), null, 'getExtension() → null (3)');
+
+	// Dispose Extension.
+
+	node.setExtension(Gizmo, extension.createGizmo());
+	extension.dispose();
+	t.equal(node.getExtension(Gizmo), null, 'getExtension() → null (4)');
 
 	t.end();
 });
