@@ -1,7 +1,7 @@
 import { TypedArray } from '../constants';
 import { GraphChild, Link } from '../graph';
 import { Buffer } from './buffer';
-import { Property } from './property';
+import { ExtensibleProperty } from './extensible-property';
 
 /**
  * # Accessor
@@ -78,7 +78,7 @@ import { Property } from './property';
  *
  * @category Properties
  */
-export class Accessor extends Property {
+export class Accessor extends ExtensibleProperty {
 	public readonly propertyType = 'Accessor';
 
 	/** Raw data of the accessor. */

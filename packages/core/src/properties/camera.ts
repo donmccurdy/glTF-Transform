@@ -1,4 +1,4 @@
-import { Property } from './property';
+import { ExtensibleProperty } from './extensible-property';
 
 /**
  * # Camera
@@ -28,7 +28,7 @@ import { Property } from './property';
  *
  * @category Properties
  */
-export class Camera extends Property {
+export class Camera extends ExtensibleProperty {
 	public readonly propertyType = 'Camera';
 
 	// Common.

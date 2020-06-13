@@ -34,11 +34,11 @@ export abstract class Extension implements ExtensionPropertyParent {
 
 	/** @hidden */
 	constructor (protected readonly _doc: Document) {
-		_doc.getRoot().enableExtension(this);
+		_doc.getRoot()._enableExtension(this);
 	}
 
 	public dispose(): void {
-		this._doc.getRoot().disableExtension(this);
+		this._doc.getRoot()._disableExtension(this);
 		for (const property of this._properties) {
 			property.dispose();
 		}

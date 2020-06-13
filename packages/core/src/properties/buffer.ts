@@ -1,4 +1,4 @@
-import { Property } from './property';
+import { ExtensibleProperty } from './extensible-property';
 
 /**
  * # Buffer
@@ -55,7 +55,7 @@ import { Property } from './property';
  *
  * @category Properties
  */
-export class Buffer extends Property {
+export class Buffer extends ExtensibleProperty {
 	public readonly propertyType = 'Buffer';
 
 	/** URI (or filename) of the buffer. */

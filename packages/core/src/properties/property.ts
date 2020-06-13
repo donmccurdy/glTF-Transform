@@ -1,5 +1,4 @@
-import { GraphChildList, GraphNode, Link } from '../graph';
-import { ExtensionProperty, ExtensionPropertyConstructor } from './extension-property';
+import { GraphNode } from '../graph';
 import { PropertyGraph } from './property-graph';
 
 /**
@@ -47,8 +46,6 @@ export abstract class Property extends GraphNode {
 	// TODO(feat): Extras should be Properties.
 	protected _extras: object = {};
 
-	@GraphChildList protected extensions: Link<Property, ExtensionProperty>[] = [];
-
 	/** @hidden */
 	constructor(graph: PropertyGraph, name = '') {
 		super(graph);
@@ -87,47 +84,6 @@ export abstract class Property extends GraphNode {
 	public setExtras(extras: object): this {
 		this._extras = extras;
 		return this;
-	}
-
-	/**********************************************************************************************
-	 * Extensions.
-	 */
-
-	/**
-	 * Returns the {@link ExtensionProperty} of the given type attached to this Property, if any.
-	 * The ExtensionProperty constructor is used as the lookup token, allowing better type-checking
-	 * in TypeScript environments. *Not available on {@link Root} properties.*
-	 */
-	public getExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>): Prop {
-		const name = ctor.EXTENSION_NAME;
-		const link = this.extensions.find((link) => link.getChild().extensionName === name);
-		return link ? link.getChild() as Prop : null;
-	}
-
-	/**
-	 * Attaches the given {@link ExtensionProperty} to this Property. For a given extension, only
-	 * one ExtensionProperty may be attached to any one Property at a time. *Not available on
-	 * {@link Root} properties.*
-	 */
-	public setExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>, extensionProperty: Prop): this {
-		// Remove previous extension.
-		const prevExtension = this.getExtension(ctor);
-		if (prevExtension) this.removeGraphChild(this.extensions, prevExtension);
-
-		// Stop if deleting the extension.
-		if (!extensionProperty) return this;
-
-		// Add next extension.
-		const name = extensionProperty.extensionName;
-		return this.addGraphChild(this.extensions, this._graph.link(name, this, extensionProperty));
-	}
-
-	/**
-	 * Lists all {@link ExtensionProperty} instances attached to this Property. *Not available on
-	 * {@link Root} properties.*
-	 */
-	public listExtensions(): ExtensionProperty[] {
-		return this.extensions.map((link) => link.getChild());
 	}
 
 	/**********************************************************************************************

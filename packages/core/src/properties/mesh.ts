@@ -1,6 +1,7 @@
 import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
 import { Accessor } from './accessor';
+import { ExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { Property } from './property';
 import { AttributeLink } from './property-links';
@@ -38,7 +39,7 @@ import { AttributeLink } from './property-links';
  *
  * @category Properties
  */
-export class Mesh extends Property {
+export class Mesh extends ExtensibleProperty {
 	public readonly propertyType = 'Mesh';
 
 	private _weights: number[] = [];

@@ -1,6 +1,6 @@
 import { vec2 } from '../constants';
 import { ImageUtils } from '../utils';
-import { Property } from './property';
+import { ExtensibleProperty } from './extensible-property';
 
 /**
  * # Texture
@@ -23,7 +23,7 @@ import { Property } from './property';
  *
  * @category Properties
  */
-export class Texture extends Property {
+export class Texture extends ExtensibleProperty {
 	public readonly propertyType = 'Texture';
 
 	/** Raw image data for this texture. */

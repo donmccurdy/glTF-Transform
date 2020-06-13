@@ -1,18 +1,38 @@
 require('source-map-support').install();
 
 const test = require('tape');
-const { Root, Graph, Node } = require('../../');
+const { Graph, Property } = require('../../');
+
+/**
+ * Simple test implementation of GraphNode.
+ */
+class TestNode extends Property {
+	constructor(graph) {
+		super(graph);
+		this.graph = graph;
+		this.nodes = [];
+	}
+	addNode(node) {
+		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
+	}
+	removeNode(node) {
+		return this.removeGraphChild(this.nodes, node);
+	}
+	listNodes() {
+		return this.nodes.map((link) => link.getChild());
+	}
+}
 
 test('@gltf-transform/core::graph | link management', t => {
 	const graph = new Graph();
-	const root = new Root(graph);
-	const a = new Node(graph);
-	const b = new Node(graph);
+	const root = new TestNode(graph);
+	const a = new TestNode(graph);
+	const b = new TestNode(graph);
 
 	root.addNode(a).addNode(b);
-	a.addChild(b);
+	a.addNode(b);
 	t.deepEqual(root.listNodes(), [a, b], 'Added two nodes.');
-	t.deepEqual(a.listChildren(), [b], 'Added a child');
+	t.deepEqual(a.listNodes(), [b], 'Added a child');
 
 	root.removeNode(a);
 	t.deepEqual(root.listNodes(), [b], 'Removed a node.');
@@ -28,9 +48,12 @@ test('@gltf-transform/core::graph | link management', t => {
 	root.removeNode(b).removeNode(b).removeNode(b);
 	t.deepEqual(root.listNodes(), [a], 'Removed a non-present node repeatedly.');
 
-	// Detaching does not affect the root, disposing does.
+	// Detach.
 	a.detach();
-	t.deepEqual(root.listNodes(), [a], 'Detached a node.');
+	t.deepEqual(root.listNodes(), [], 'Detached a node.');
+
+	// Dispose.
+	root.addNode(a);
 	a.dispose();
 	t.deepEqual(root.listNodes(), [], 'Disposed a node.');
 
@@ -46,11 +69,11 @@ test('@gltf-transform/core::graph | prevents cross-graph linking', t => {
 	const graphA = new Graph();
 	const graphB = new Graph();
 
-	const rootA = new Root(graphA);
-	const rootB = new Root(graphB);
+	const rootA = new TestNode(graphA);
+	const rootB = new TestNode(graphB);
 
-	const nodeA = new Node(graphA);
-	const nodeB = new Node(graphB);
+	const nodeA = new TestNode(graphA);
+	const nodeB = new TestNode(graphB);
 
 	rootA.addNode(nodeA);
 
