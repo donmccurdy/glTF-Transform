@@ -7,8 +7,8 @@ import { Property } from './property';
  *
  * *A {@link Property} that can have {@link ExtensionProperty} instances attached.*
  *
- * Most properties — exceptions include {@link Root} and {@link ExtensionProperty} — are
- * extensible. See the {@link Extension} documentation for information about how to use extensions.
+ * Most properties — excluding {@link Root} and {@link ExtensionProperty} — are extensible. See the
+ * {@link Extension} documentation for information about how to use extensions.
  *
  * @category Properties
  */
