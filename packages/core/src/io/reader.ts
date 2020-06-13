@@ -32,7 +32,7 @@ export class GLTFReader {
 
 		/* Reader context. */
 
-		const context = new ReaderContext();
+		const context = new ReaderContext(nativeDoc);
 
 		/** Buffers. */
 

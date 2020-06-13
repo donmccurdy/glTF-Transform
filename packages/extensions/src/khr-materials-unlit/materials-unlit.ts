@@ -9,7 +9,7 @@ export class MaterialsUnlit extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	public createUnlit(): Unlit {
-		return new Unlit(this._doc.getGraph(), this);
+		return new Unlit(this.doc.getGraph(), this);
 	}
 
 	public read(context: ReaderContext): this {
@@ -26,7 +26,7 @@ export class MaterialsUnlit extends Extension {
 	public write(context: WriterContext): this {
 		const nativeDoc = context.nativeDocument;
 
-		this._doc.getRoot()
+		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				if (material.getExtension(Unlit)) {

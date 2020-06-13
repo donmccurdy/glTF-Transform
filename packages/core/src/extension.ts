@@ -63,13 +63,13 @@ export abstract class Extension implements ExtensionPropertyParent {
 	private _properties: Set<ExtensionProperty> = new Set();
 
 	/** @hidden */
-	constructor (protected readonly _doc: Document) {
-		_doc.getRoot()._enableExtension(this);
+	constructor (protected readonly doc: Document) {
+		doc.getRoot()._enableExtension(this);
 	}
 
 	/** Disables and removes the extension from the Document. */
 	public dispose(): void {
-		this._doc.getRoot()._disableExtension(this);
+		this.doc.getRoot()._disableExtension(this);
 		for (const property of this._properties) {
 			property.dispose();
 		}
@@ -99,13 +99,13 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 
 	/** @hidden */
-	addExtensionProperty(property: ExtensionProperty): this {
+	public addExtensionProperty(property: ExtensionProperty): this {
 		this._properties.add(property);
 		return this;
 	}
 
 	/** @hidden */
-	removeExtensionProperty(property: ExtensionProperty): this {
+	public removeExtensionProperty(property: ExtensionProperty): this {
 		this._properties.delete(property);
 		return this;
 	}

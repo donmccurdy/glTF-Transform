@@ -45,13 +45,13 @@ export abstract class ExtensionProperty extends Property {
 	public abstract readonly extensionName: string;
 	public static EXTENSION_NAME: string;
 
-	constructor(graph: PropertyGraph, private readonly extension: ExtensionPropertyParent) {
+	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
-		extension.addExtensionProperty(this);
+		this._extension.addExtensionProperty(this);
 	}
 
-	dispose(): void {
-		this.extension.removeExtensionProperty(this);
+	public dispose(): void {
+		this._extension.removeExtensionProperty(this);
 		super.dispose();
 	}
 }
