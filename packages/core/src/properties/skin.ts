@@ -1,7 +1,7 @@
 import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
+import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
-import { Property } from './property';
 
 /**
  * # Skin
@@ -14,7 +14,7 @@ import { Property } from './property';
  *
  * @category Properties
  */
-export class Skin extends Property {
+export class Skin extends ExtensibleProperty {
 	public readonly propertyType = 'Skin';
 
 	@GraphChild private skeleton: Link<Skin, Node> = null;

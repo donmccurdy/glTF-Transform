@@ -1,6 +1,6 @@
 import { vec3, vec4 } from '../constants';
 import { GraphChild } from '../graph/index';
-import { Property } from './property';
+import { ExtensibleProperty } from './extensible-property';
 import { TextureLink } from './property-links';
 import { Texture, TextureInfo, TextureSampler } from './texture';
 
@@ -36,7 +36,7 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
  *
  * @category Properties
  */
-export class Material extends Property {
+export class Material extends ExtensibleProperty {
 	public readonly propertyType = 'Material';
 
 	/** Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */

@@ -2,9 +2,8 @@ import { vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
 import { Camera } from './camera';
+import { ExtensibleProperty } from './extensible-property';
 import { Mesh } from './mesh';
-import { Property } from './property';
-import { Root } from './root';
 import { Skin } from './skin';
 
 /**
@@ -35,7 +34,7 @@ import { Skin } from './skin';
  *
  * @category Properties
  */
-export class Node extends Property {
+export class Node extends ExtensibleProperty {
 	public readonly propertyType = 'Node';
 	private _translation: vec3 = [0, 0, 0];
 	private _rotation: vec4 = [0, 0, 0, 1];

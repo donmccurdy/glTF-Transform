@@ -1,5 +1,6 @@
 import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
+import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
 import { Property } from './property';
 
@@ -39,7 +40,7 @@ import { Property } from './property';
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class Animation extends Property {
+export class Animation extends ExtensibleProperty {
 	public readonly propertyType = 'Animation';
 	@GraphChildList private channels: Link<Animation, AnimationChannel>[] = [];
 	@GraphChildList private samplers: Link<Animation, AnimationSampler>[] = [];

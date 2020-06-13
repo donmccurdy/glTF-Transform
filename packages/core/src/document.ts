@@ -142,35 +142,35 @@ export class Document {
 	/** Creates a new {@link Scene} attached to this document's {@link Root}. */
 	createScene(name: string): Scene {
 		const scene = new Scene(this.graph, name);
-		this.root.addScene(scene);
+		this.root._addScene(scene);
 		return scene;
 	}
 
 	/** Creates a new {@link Node} attached to this document's {@link Root}. */
 	createNode(name: string): Node {
 		const node = new Node(this.graph, name);
-		this.root.addNode(node);
+		this.root._addNode(node);
 		return node;
 	}
 
 	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
 	createCamera(name: string): Camera {
 		const camera = new Camera(this.graph, name);
-		this.root.addCamera(camera);
+		this.root._addCamera(camera);
 		return camera;
 	}
 
 	/** Creates a new {@link Skin} attached to this document's {@link Root}. */
 	createSkin(name: string): Skin {
 		const skin = new Skin(this.graph, name);
-		this.root.addSkin(skin);
+		this.root._addSkin(skin);
 		return skin;
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
 	createMesh(name: string): Mesh {
 		const mesh = new Mesh(this.graph, name);
-		this.root.addMesh(mesh);
+		this.root._addMesh(mesh);
 		return mesh;
 	}
 
@@ -193,21 +193,21 @@ export class Document {
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
 	createMaterial(name: string): Material {
 		const material = new Material(this.graph, name);
-		this.root.addMaterial(material);
+		this.root._addMaterial(material);
 		return material;
 	}
 
 	/** Creates a new {@link Texture} attached to this document's {@link Root}. */
 	createTexture(name: string): Texture {
 		const texture = new Texture(this.graph, name);
-		this.root.addTexture(texture);
+		this.root._addTexture(texture);
 		return texture;
 	}
 
 	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
 	createAnimation(name: string): Animation {
 		const animation = new Animation(this.graph, name);
-		this.root.addAnimation(animation);
+		this.root._addAnimation(animation);
 		return animation;
 	}
 
@@ -233,14 +233,14 @@ export class Document {
 			buffer = this.getRoot().listBuffers()[0];
 		}
 		const accessor = new Accessor(this.graph, name).setBuffer(buffer);
-		this.root.addAccessor(accessor);
+		this.root._addAccessor(accessor);
 		return accessor;
 	}
 
 	/** Creates a new {@link Buffer} attached to this document's {@link Root}. */
 	createBuffer(name: string): Buffer {
 		const buffer = new Buffer(this.graph, name);
-		this.root.addBuffer(buffer);
+		this.root._addBuffer(buffer);
 		return buffer;
 	}
 }
