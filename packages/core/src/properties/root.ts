@@ -78,10 +78,12 @@ export class Root extends Property {
 	 * Extensions.
 	 */
 
+	/** Lists all {@link Extension} properties enabled for this root. */
 	public listExtensionsUsed(): Extension[] {
 		return Array.from(this._extensions);
 	}
 
+	/** Lists all {@link Extension} properties enabled and required for this root. */
 	public listExtensionsRequired(): Extension[] {
 		return this.listExtensionsUsed().filter((extension) => extension.isRequired());
 	}
