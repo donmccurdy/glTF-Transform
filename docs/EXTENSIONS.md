@@ -159,6 +159,7 @@ node.setExtension(Gizmo, null);
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
+- [KHR_texture_basisu](#khr_texture_basisu)
 
 ### KHR_materials_clearcoat
 

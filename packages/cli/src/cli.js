@@ -12,9 +12,11 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
+
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
+const { toktx, Mode, TOKTX_DEFAULTS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -125,7 +127,6 @@ program
 		io.write(args.output, doc);
 	});
 
-
 // UNLIT
 program
 	.command('unlit', '✨ Converts materials to an unlit model')
@@ -184,6 +185,38 @@ program
 				fs.writeFileSync(fileName, outBuffer);
 				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 			});
+	});
+
+// KTX
+program
+	.command('ktx', '⏩ Compress textures with KTX + Basis Universal')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option(
+		'--mode <mode>',
+		'Basis Universal compression mode ["etc1s" = low quality, "uastc" = high quality]',
+		[Mode.ETC1S, Mode.UASTC], Mode.ETC1S
+	)
+	.option(
+		'--quality <quality>',
+		'Quality level, where higher levels mean larger files [0 – 1]',
+		program.FLOAT, TOKTX_DEFAULTS.quality
+	)
+	.option(
+		'--zstd <zstd>',
+		'ZSTD compression level (UASTC only) [1 – 20, 0 = Off]',
+		program.FLOAT, 0
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to compress (glob expression)',
+		program.STRING, "*"
+	)
+	.action(({input, output}, options, logger) => {
+		const doc = io.read(input)
+			.setLogger(logger)
+			.transform(toktx(options));
+		io.write(output, doc);
 	});
 
 program.disableGlobalOption('--silent');
