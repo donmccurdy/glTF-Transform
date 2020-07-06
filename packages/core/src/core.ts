@@ -11,5 +11,8 @@ namespace Concepts {};
 /** [[include:SCRIPTING.md]] */
 namespace Scripting {};
 
+/** [[include:EXTENSIONS.md]] */
+namespace Extensions {};
+
 /** [[include:CONTRIBUTING.md]] */
 namespace Contributing {};

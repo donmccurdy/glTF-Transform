@@ -4,6 +4,7 @@ import { Unlit } from './unlit';
 
 const NAME = KHR_MATERIALS_UNLIT;
 
+/** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsUnlit extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;

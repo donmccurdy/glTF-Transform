@@ -26,7 +26,7 @@ export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAM
  * references to {@link Texture}, {@link Accessor}, and other resources will be managed
  * automatically, even by scripts or transforms written without prior knowledge of the extension.
  *
- * An extension is added to a Document by calling `{@link Document.createExtension}` with the
+ * An extension is added to a Document by calling {@link Document.createExtension} with the
  * extension constructor. The extension object may then be used to construct
  * {@link ExtensionProperty} instances, which are attached to properties throughout the Document
  * as prescribed by the extension itself.
@@ -47,7 +47,7 @@ export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAM
  * node.setExtension(Gizmo, null);
  * ```
  *
- * For more information on available extensions and their usage, see `@gltf-transform/extensions`.
+ * For more information on available extensions and their usage, see [Extensions](/extensions).
  *
  * Reference:
  * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
