@@ -38,6 +38,8 @@ export type ExtensionPropertyConstructor<Prop> = {new(graph: PropertyGraph, exte
  * const light = node.getExtension(Light);
  * ```
  *
+ * For more information on available extensions and their usage, see [Extensions](/extensions).
+ *
  * Reference:
  * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
  */

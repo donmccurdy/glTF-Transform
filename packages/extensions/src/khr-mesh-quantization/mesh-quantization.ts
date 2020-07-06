@@ -3,6 +3,7 @@ import { KHR_MESH_QUANTIZATION } from '../constants';
 
 const NAME = KHR_MESH_QUANTIZATION;
 
+/** Documentation in {@link EXTENSIONS.md}. */
 export class MeshQuantization extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;

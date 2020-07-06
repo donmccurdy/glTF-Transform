@@ -32,7 +32,6 @@ const io = new WebIO().registerExtensions(KHRONOS_EXTENSIONS);
 const document = await io.read('/model.glb');
 ```
 
-## Supported extensions
+## API
 
-- `KHR_materials_unlit`
-- `KHR_mesh_quantization`
+Full documentation, and a list of supported extensions, in [Extensions](https://gltf-transform.donmccurdy.com/extensions/).
