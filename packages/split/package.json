@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/split",
-  "version": "0.3.3",
+  "version": "0.4.0-alpha.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Splits the binary payload of a glTF file",
   "main": "dist/split.js",
@@ -21,7 +21,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.3.3"
+    "@gltf-transform/core": "^0.4.0-alpha.0"
   },
   "files": [
     "dist/",
