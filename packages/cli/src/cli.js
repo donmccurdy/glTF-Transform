@@ -7,7 +7,7 @@ const gl = require('gl');
 const program = require('caporal');
 const { version } = require('../package.json');
 const { NodeIO } = require('@gltf-transform/core');
-const { KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
+const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
 const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
@@ -96,6 +96,23 @@ program
 		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(split({meshes}));
+		io.write(output, doc);
+	});
+
+// UNLIT
+program
+	.command('unlit', 'Converts materials to an unlit, shadeless model')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.action(({input, output}, _, logger) => {
+		const doc = io.read(input).setLogger(logger);
+
+		const unlitExtension = doc.createExtension(MaterialsUnlit);
+		const unlit = unlitExtension.createUnlit();
+		doc.getRoot().listMaterials().forEach((material) => {
+			material.setExtension(Unlit, unlit);
+		});
+
 		io.write(output, doc);
 	});
 

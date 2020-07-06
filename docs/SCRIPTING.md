@@ -84,6 +84,7 @@ COMMANDS
   colorspace <input> <output>      Colorspace correction for vertex colors
   prune <input> <output>           Prunes duplicate binary resources
   split <input> <output>           Splits buffers, putting meshes in separate .bin files
+  unlit <input> <output>           Converts materials to an unlit, shadeless model
   help <command>                   Display help for a specific command
 
 GLOBAL OPTIONS
