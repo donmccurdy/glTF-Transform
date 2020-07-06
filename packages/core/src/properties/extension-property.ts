@@ -1,3 +1,4 @@
+import { ExtensibleProperty } from './extensible-property';
 import { Property } from './property';
 import { PropertyGraph } from './property-graph';
 
@@ -44,8 +45,11 @@ export type ExtensionPropertyConstructor<Prop> = {new(graph: PropertyGraph, exte
  * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
  */
 export abstract class ExtensionProperty extends Property {
-	public abstract readonly extensionName: string;
 	public static EXTENSION_NAME: string;
+	public abstract readonly extensionName: string;
+
+	/** List of supported {@link Property} types. */
+	public abstract readonly parentTypes: string[];
 
 	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
@@ -55,5 +59,12 @@ export abstract class ExtensionProperty extends Property {
 	public dispose(): void {
 		this._extension.removeExtensionProperty(this);
 		super.dispose();
+	}
+
+	/** @hidden */
+	public _validateParent(parent: ExtensibleProperty): void {
+		if (!this.parentTypes.includes(parent.propertyType)) {
+			throw new Error(`Parent "${parent.propertyType}" invalid for child "${this.propertyType}".`);
+		}
 	}
 }

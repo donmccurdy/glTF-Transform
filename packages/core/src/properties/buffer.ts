@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { ExtensibleProperty } from './extensible-property';
 
 /**
@@ -56,7 +57,7 @@ import { ExtensibleProperty } from './extensible-property';
  * @category Properties
  */
 export class Buffer extends ExtensibleProperty {
-	public readonly propertyType = 'Buffer';
+	public readonly propertyType = PropertyType.BUFFER;
 
 	/** URI (or filename) of the buffer. */
 	private _uri: string;

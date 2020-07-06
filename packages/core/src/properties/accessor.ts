@@ -1,4 +1,4 @@
-import { TypedArray } from '../constants';
+import { PropertyType, TypedArray } from '../constants';
 import { GraphChild, Link } from '../graph';
 import { Buffer } from './buffer';
 import { ExtensibleProperty } from './extensible-property';
@@ -79,7 +79,7 @@ import { ExtensibleProperty } from './extensible-property';
  * @category Properties
  */
 export class Accessor extends ExtensibleProperty {
-	public readonly propertyType = 'Accessor';
+	public readonly propertyType = PropertyType.ACCESSOR;
 
 	/** Raw data of the accessor. */
 	private _array: TypedArray = null;

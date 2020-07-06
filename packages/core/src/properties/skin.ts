@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
@@ -15,7 +16,7 @@ import { Node } from './node';
  * @category Properties
  */
 export class Skin extends ExtensibleProperty {
-	public readonly propertyType = 'Skin';
+	public readonly propertyType = PropertyType.SKIN;
 
 	@GraphChild private skeleton: Link<Skin, Node> = null;
 	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> = null;

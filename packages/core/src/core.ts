@@ -4,6 +4,7 @@ export { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera
 export { Graph } from './graph/';
 export { NodeIO, WebIO, ReaderContext, WriterContext } from './io/';
 export { BufferUtils, FileUtils, ImageUtils, Logger, uuid } from './utils/';
+export { PropertyType } from './constants';
 
 /** [[include:CONCEPTS.md]] */
 namespace Concepts {};

@@ -1,4 +1,4 @@
-import { VERSION } from '../constants';
+import { PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
 import { GraphChildList, Link } from '../graph/index';
 import { Accessor } from './accessor';
@@ -46,7 +46,7 @@ import { Texture } from './texture';
  * @category Properties
  */
 export class Root extends Property {
-	public readonly propertyType = 'Root';
+	public readonly propertyType = PropertyType.ROOT;
 
 	private readonly _asset: GLTF.IAsset = {
 		generator: `glTF-Transform ${VERSION}`,
