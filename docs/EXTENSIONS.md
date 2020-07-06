@@ -81,6 +81,31 @@ attached.
 For further details on the general Extension API, see {@link Extension} and
 {@link ExtensionProperty}.
 
+## KHR_materials_clearcoat
+
+*Specification: [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/)*
+
+The `KHR_materials_clearcoat` extension defines a clear coating that can be layered on top of an
+existing glTF material definition. A clear coat is a common technique used in Physically-Based
+Rendering to represent a protective layer applied to a base material.
+
+The `MaterialsClearcoat` class provides a single {@link ExtensionProperty} type, `Clearcoat`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const clearcoatExtension = document.createExtension(MaterialsClearcoat);
+
+// Create an Clearcoat property.
+const clearcoat = clearcoatExtension.createClearcoat()
+  .setClearcoatFactor(1.0);
+
+// Attach the property to a material.
+material.setExtension(Clearcoat, clearcoat);
+```
+
 ## KHR_materials_unlit
 
 *Specification: [KHR_materials_unlit](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_unlit/)*

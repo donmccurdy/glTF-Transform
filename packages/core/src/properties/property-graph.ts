@@ -1,5 +1,6 @@
 import { Graph } from '../graph';
 import { Accessor } from './accessor';
+import { ExtensionProperty } from './extension-property';
 import { Material } from './material';
 import { Primitive, PrimitiveTarget } from './mesh';
 import { AttributeLink, IndexLink, TextureLink } from './property-links';
@@ -7,7 +8,7 @@ import { Texture } from './texture';
 
 /** @hidden */
 export class PropertyGraph extends Graph {
-	public linkTexture(name: string, a: Material, b: Texture): TextureLink {
+	public linkTexture(name: string, a: Material | ExtensionProperty, b: Texture): TextureLink {
 		if (!b) return null;
 		const link = new TextureLink(name, a, b);
 		this.registerLink(link);
