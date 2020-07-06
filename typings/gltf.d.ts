@@ -118,19 +118,6 @@ declare module GLTF {
     ORTHOGRAPHIC = "orthographic",
   }
   /**
-   * The mime-type of the image
-   */
-  const enum ImageMimeType {
-    /**
-     * JPEG Mime-type
-     */
-    JPEG = "image/jpeg",
-    /**
-     * PNG Mime-type
-     */
-    PNG = "image/png",
-  }
-  /**
    * The alpha rendering mode of the material
    */
   const enum MaterialAlphaMode {
@@ -536,7 +523,7 @@ declare module GLTF {
     /**
      * The image's MIME type
      */
-    mimeType?: ImageMimeType;
+    mimeType?: string;
     /**
      * The index of the bufferView that contains the image. Use this instead of the image's uri property
      */

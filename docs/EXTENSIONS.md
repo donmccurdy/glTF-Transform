@@ -4,6 +4,7 @@
 
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
+- [KHR_texture_basisu](#khr_texture_basisu)
 
 ## Installation
 
