@@ -24,11 +24,12 @@ To learn how glTF-Transform works, or for an introduction to the glTF format, se
 
 ## Limitations
 
-glTF-Transform supports the complete glTF 2.0 core format. However, support for extensions is currently missing. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does aim to enable you to effectively build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [Contributing guidelines](/contributing.html).
+glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [Contributing guidelines](/contributing.html). To learn more about
 
 **Supported extensions:**
 
-None
+- [KHR_materials_unlit](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_unlit/)
+- [KHR_mesh_quantization](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_mesh_quantization/)
 
 ## Alternatives and related projects
 
