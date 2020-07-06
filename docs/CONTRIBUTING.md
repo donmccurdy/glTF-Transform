@@ -56,10 +56,17 @@ strongly preferred.
 
 > NOTE: Only the maintainer can create new releases.
 
-Currently Lerna [has trouble with 2FA OTPs](https://github.com/lerna/lerna/issues/1091). As a result,
-new packages need to be published manually before they can be included in a repo-wide release. Once
-that is done, normal releases should use:
+All packages are published together. To create a standard release:
 
 ```shell
-lerna publish <VERSION> --force-publish "*" --otp <OTP>
+lerna publish [ patch | minor | major ] --force-publish "*" --otp <OTP>
 ```
+
+To create an alpha release:
+
+```shell
+lerna publish prerelease --dist-tag alpha --force-publish "*" --otp <OTP>
+```
+
+If a release contains a new package, `-- --access public` must be appended. Lerna has historically
+been [finicky with 2FA OTPs](https://github.com/lerna/lerna/issues/1091).
