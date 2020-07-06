@@ -5,7 +5,7 @@ import { Clearcoat } from './clearcoat';
 const NAME = KHR_MATERIALS_CLEARCOAT;
 
 /** Documentation in {@link EXTENSIONS.md}. */
-export class MaterialsUnlit extends Extension {
+export class MaterialsClearcoat extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
