@@ -2,6 +2,7 @@
 
 ## Supported extensions
 
+- [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
 
@@ -98,7 +99,7 @@ import { MaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
 // Create an Extension attached to the Document.
 const clearcoatExtension = document.createExtension(MaterialsClearcoat);
 
-// Create an Clearcoat property.
+// Create a Clearcoat property.
 const clearcoat = clearcoatExtension.createClearcoat()
   .setClearcoatFactor(1.0);
 
