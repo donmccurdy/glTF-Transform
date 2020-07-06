@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
@@ -19,7 +20,7 @@ import { Node } from './node';
  * @category Properties
  */
 export class Scene extends ExtensibleProperty {
-	public readonly propertyType = 'Scene';
+	public readonly propertyType = PropertyType.SCENE;
 
 	@GraphChildList private nodes: Link<Scene, Node>[] = [];
 

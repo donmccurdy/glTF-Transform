@@ -3,7 +3,7 @@ require('source-map-support').install();
 const fs = require('fs');
 const path = require('path');
 const test = require('tape');
-const { Document, Extension, ExtensionProperty, NodeIO } = require('../');
+const { Document, Extension, ExtensionProperty, NodeIO, PropertyType } = require('../');
 
 const EXTENSION_NAME = 'TEST_node_gizmo';
 
@@ -40,6 +40,8 @@ class Gizmo extends ExtensionProperty {
 	constructor(graph, extension) {
 		super(graph, extension);
 		this.extensionName = EXTENSION_NAME;
+		this.propertyType = 'Gizmo';
+		this.parentTypes = [PropertyType.NODE];
 	}
 }
 

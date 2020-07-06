@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
 import { Accessor } from './accessor';
@@ -40,7 +41,7 @@ import { AttributeLink } from './property-links';
  * @category Properties
  */
 export class Mesh extends ExtensibleProperty {
-	public readonly propertyType = 'Mesh';
+	public readonly propertyType = PropertyType.MESH;
 
 	private _weights: number[] = [];
 
@@ -117,7 +118,7 @@ export class Mesh extends ExtensibleProperty {
  * @category Properties
  */
 export class Primitive extends Property {
-	public readonly propertyType = 'Primitive';
+	public readonly propertyType = PropertyType.PRIMITIVE;
 
 	/** GPU draw mode. */
 	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
@@ -258,7 +259,7 @@ export class Primitive extends Property {
  * - [glTF → Morph Targets](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#morph-targets)
  */
 export class PrimitiveTarget extends Property {
-	public readonly propertyType = 'PrimitiveTarget';
+	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
 	/** Vertex attributes. */
 	@GraphChildList private attributes: AttributeLink[] = [];

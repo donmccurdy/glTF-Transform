@@ -1,4 +1,4 @@
-import { vec3, vec4 } from '../constants';
+import { PropertyType, vec3, vec4 } from '../constants';
 import { GraphChild } from '../graph/index';
 import { ExtensibleProperty } from './extensible-property';
 import { TextureLink } from './property-links';
@@ -37,7 +37,7 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
  * @category Properties
  */
 export class Material extends ExtensibleProperty {
-	public readonly propertyType = 'Material';
+	public readonly propertyType = PropertyType.MATERIAL;
 
 	/** Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
 	private _alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;

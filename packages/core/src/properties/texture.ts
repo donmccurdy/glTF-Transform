@@ -1,4 +1,4 @@
-import { vec2 } from '../constants';
+import { PropertyType, vec2 } from '../constants';
 import { ImageUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 
@@ -24,7 +24,7 @@ import { ExtensibleProperty } from './extensible-property';
  * @category Properties
  */
 export class Texture extends ExtensibleProperty {
-	public readonly propertyType = 'Texture';
+	public readonly propertyType = PropertyType.TEXTURE;
 
 	/** Raw image data for this texture. */
 	private image: ArrayBuffer = null;
@@ -110,7 +110,7 @@ export class Texture extends ExtensibleProperty {
  * @category Properties
  */
 export class TextureInfo {
-	public readonly propertyType = 'TextureInfo';
+	public readonly propertyType = PropertyType.TEXTURE_INFO;
 
 	private texCoord = 0;
 
@@ -138,7 +138,7 @@ export class TextureInfo {
  * @category Properties
  */
 export class TextureSampler {
-	public readonly propertyType = 'TextureSampler';
+	public readonly propertyType = PropertyType.TEXTURE_SAMPLER;
 
 	private _magFilter: GLTF.TextureMagFilter = null;
 	private _minFilter: GLTF.TextureMinFilter = null;

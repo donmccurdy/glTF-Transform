@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
@@ -41,7 +42,7 @@ import { Property } from './property';
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class Animation extends ExtensibleProperty {
-	public readonly propertyType = 'Animation';
+	public readonly propertyType = PropertyType.ANIMATION;
 	@GraphChildList private channels: Link<Animation, AnimationChannel>[] = [];
 	@GraphChildList private samplers: Link<Animation, AnimationSampler>[] = [];
 
@@ -107,7 +108,7 @@ export class Animation extends ExtensibleProperty {
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class AnimationChannel extends Property {
-	public readonly propertyType = 'AnimationChannel';
+	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
 	private _targetPath: GLTF.AnimationChannelTargetPath = null;
 	@GraphChild private targetNode: Link<AnimationChannel, Node> = null;
 	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> = null;
@@ -199,7 +200,7 @@ export class AnimationChannel extends Property {
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class AnimationSampler extends Property {
-	public readonly propertyType = 'AnimationChannel';
+	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
 	private _interpolation: GLTF.AnimationSamplerInterpolation = GLTF.AnimationSamplerInterpolation.LINEAR;
 

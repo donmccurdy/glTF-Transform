@@ -1,4 +1,4 @@
-import { vec3, vec4 } from '../constants';
+import { PropertyType, vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
 import { Camera } from './camera';
@@ -35,7 +35,7 @@ import { Skin } from './skin';
  * @category Properties
  */
 export class Node extends ExtensibleProperty {
-	public readonly propertyType = 'Node';
+	public readonly propertyType = PropertyType.NODE;
 	private _translation: vec3 = [0, 0, 0];
 	private _rotation: vec4 = [0, 0, 0, 1];
 	private _scale: vec3 = [1, 1, 1];

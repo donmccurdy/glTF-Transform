@@ -71,3 +71,24 @@ export const GLB_BUFFER = '__glb.bin';
  * @hidden
  */
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
+
+/** String IDs for core {@link Property} types. */
+export enum PropertyType {
+	ACCESSOR = 'Accessor',
+	ANIMATION = 'Animation',
+	ANIMATION_CHANNEL = 'AnimationChannel',
+	ANIMATION_SAMPLER = 'AnimationSampler',
+	BUFFER = 'Buffer',
+	CAMERA = 'Camera',
+	MATERIAL = 'Material',
+	MESH = 'Mesh',
+	PRIMITIVE = 'Primitive',
+	PRIMITIVE_TARGET = 'PrimitiveTarget',
+	NODE = 'Node',
+	ROOT = 'Root',
+	SCENE = 'Scene',
+	SKIN = 'Skin',
+	TEXTURE = 'Texture',
+	TEXTURE_INFO = 'TextureInfo',
+	TEXTURE_SAMPLER = 'TextureSampler',
+}

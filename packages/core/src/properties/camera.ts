@@ -1,3 +1,4 @@
+import { PropertyType } from '../constants';
 import { ExtensibleProperty } from './extensible-property';
 
 /**
@@ -29,7 +30,7 @@ import { ExtensibleProperty } from './extensible-property';
  * @category Properties
  */
 export class Camera extends ExtensibleProperty {
-	public readonly propertyType = 'Camera';
+	public readonly propertyType = PropertyType.CAMERA;
 
 	// Common.
 
