@@ -12,7 +12,7 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
-const { toktx, Mode, TOKTX_OPTIONS } = require('./toktx');
+const { toktx, Mode, TOKTX_DEFAULTS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -108,12 +108,12 @@ program
 	.option(
 		'--mode <mode>',
 		'Basis Universal compression mode ["etc1s" = low quality, "uastc" = high quality]',
-		['etc1s', 'uastc'], 'etc1s'
+		[Mode.ETC1S, Mode.UASTC], Mode.ETC1S
 	)
 	.option(
 		'--quality <quality>',
 		'Quality level, where higher levels mean larger files [0 – 1]',
-		program.FLOAT, TOKTX_OPTIONS.quality
+		program.FLOAT, TOKTX_DEFAULTS.quality
 	)
 	.option(
 		'--zstd <zstd>',
@@ -121,9 +121,9 @@ program
 		program.FLOAT, 0
 	)
 	.option(
-		'--maps <maps>',
-		'Texture slots to compress. ["*", "normal"]',
-		["*", "normal"], "*"
+		'--slots <slots>',
+		'Texture slots to compress (glob expression)',
+		program.STRING, "*"
 	)
 	.action(({input, output}, options, logger) => {
 		const doc = io.read(input)

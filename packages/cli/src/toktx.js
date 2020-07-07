@@ -1,5 +1,6 @@
 const fs = require('fs');
 const tmp = require('tmp');
+const minimatch = require('minimatch');
 const { spawnSync } = require('child_process');
 const { BufferUtils, ImageUtils, FileUtils, PropertyType } = require('@gltf-transform/core');
 const { TextureBasisu } = require('@gltf-transform/extensions');
@@ -9,44 +10,51 @@ const Mode = {
 	UASTC: 'uastc',
 };
 
-const TOKTX_OPTIONS = {
+const TOKTX_DEFAULTS = {
 	mode: Mode.ETC1S,
 	quality: 0.5,
 	zstd: 0,
-	maps: '*',
+	slots: '*',
 };
 
 tmp.setGracefulCleanup();
 
 const toktx = function (options) {
-	options = {...TOKTX_OPTIONS, ...options};
+	options = {...TOKTX_DEFAULTS, ...options};
 
 	return (doc) =>  {
 		const logger = doc.getLogger();
 
-		logger.debug(`KTX Settings: ${JSON.stringify(options)}`);
-
 		doc.createExtension(TextureBasisu);
+
 		doc.getRoot()
 			.listTextures()
-			.filter((texture) => texture.getMimeType() !== 'image/ktx2')
-			.filter((texture) => filterMaps(texture, options.maps))
 			.forEach((texture, textureIndex) => {
+				const slots = getTextureSlots(doc, texture);
+				const textureLabel = texture.getURI()
+					|| texture.getName()
+					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
+				logger.debug(`Texture ${textureLabel} (${slots.join(', ')})`);
+
+				// Exclude textures that don't match the 'slots' glob, or are already KTX.
+				if (texture.getMimeType() === 'image/ktx2') {
+					logger.debug('• Skipping, already KTX.');
+					return;
+				} else if (options.slots !== '*' && !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
+					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`)
+					return;
+				}
+
 				const inExtension = texture.getURI()
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
 				const inPath = tmp.tmpNameSync({postfix: '.' + inExtension});
 				const outPath = tmp.tmpNameSync({postfix: '.ktx2'});
 
-				const textureLabel = texture.getURI()
-					|| texture.getName()
-					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
-				logger.debug(`Compressing ${textureLabel}`);
-
 				const inBytes = texture.getImage().byteLength;
 				fs.writeFileSync(inPath, Buffer.from(texture.getImage()));
 
-				const params = [...createParams(texture, options), outPath, inPath];
+				const params = [...createParams(slots, options), outPath, inPath];
 				logger.debug(`• toktx ${params.join(' ')}`);
 
 				// Run `toktx` CLI tool.
@@ -66,26 +74,14 @@ const toktx = function (options) {
 	};
 }
 
-function filterMaps (texture, glob) {
-	if (glob === '*') {
-		return true;
-	} else if (glob === 'normal') {
-		return isNormalMap(texture);
-	}
-	throw new Error(`Unsupported pattern, "${glob}".`);
+function getTextureSlots (doc, texture) {
+	return doc.getGraph().getLinks()
+		.filter((link) => link.getChild() === texture)
+		.map((link) => link.getName())
+		.filter((slot) => slot !== 'texture')
 }
 
-function isNormalMap (texture) {
-	return !!texture.listParents()
-		.find((property) => {
-			if (property.propertyType !== PropertyType.MATERIAL) {
-				return false;
-			}
-			return property.getNormalTexture() === texture;
-		});
-}
-
-function createParams (texture, options) {
+function createParams (slots, options) {
 	const params = ['--genmipmap'];
 
 	if (options.mode === Mode.UASTC) {
@@ -95,7 +91,10 @@ function createParams (texture, options) {
 		params.push('--bcmp');
 		params.push('--clevel', Math.round(mlerp(0, 1, 5, options.quality)));
 		params.push('--qlevel', Math.round(lerp(1, 255, options.quality)));
-		if (isNormalMap(texture)) params.push('--linear', '--normal_map');
+
+		if (slots.find((slot) => minimatch(slot, '*normal*', {nocase: true}))) {
+			params.push('--linear', '--normal_map');
+		}
 	}
 
 	return params;
@@ -113,4 +112,4 @@ function mlerp(v0, v1, v2, t) {
 	return lerp(v0, v1, t * 2);
 }
 
-module.exports = {toktx, Mode, TOKTX_OPTIONS};
+module.exports = {toktx, Mode, TOKTX_DEFAULTS};
