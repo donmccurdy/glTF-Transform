@@ -72,7 +72,7 @@ test('@gltf-transform/core::texture | write', t => {
 
 	t.false('basename.bin' in nativeDoc.resources, 'external image resources');
 	t.true('tex1.png' in nativeDoc.resources, 'writes tex1.png');
-	t.true('basename_1.jpeg' in nativeDoc.resources, 'writes default-named jpeg');
+	t.true('basename_1.jpg' in nativeDoc.resources, 'writes default-named jpeg');
 	t.equals(nativeDoc.json.images.length, 2, 'reuses images');
 	t.equals(nativeDoc.json.textures.length, 3, 'writes three textures');
 	t.equals(nativeDoc.json.samplers.length, 2, 'reuses samplers');

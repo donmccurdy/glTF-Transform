@@ -4,7 +4,7 @@ const package = require('../package.json');
 const source = fs.readFileSync(__dirname + '/../src/cli.js', 'utf8');
 
 const actualDeps = new Set(Object.keys(package.dependencies));
-const ignoredDeps = new Set(['fs', 'path', 'util', '../package.json']);
+const ignoredDeps = new Set(['fs', 'path', 'util', '../package.json', './toktx']);
 const expectedDeps = source.match(/require\('(.*)'\);/g)
 	.map((line) => line.match(/require\('(.*)'\);/)[1])
 	.filter((dep) => !ignoredDeps.has(dep));

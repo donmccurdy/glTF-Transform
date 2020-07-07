@@ -12,7 +12,7 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
-const { toktx, TOKTX_OPTIONS } = require('./toktx');
+const { toktx, Mode, TOKTX_OPTIONS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -100,25 +100,35 @@ program
 		io.write(output, doc);
 	});
 
-// TOKTX
+// KTX
 program
-	.command('toktx', 'Compresses textures with KTX + Basis Universal')
+	.command('ktx', 'Compresses textures with KTX + Basis Universal')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option(
-		'--clevel <clevel>',
-		'Compression level. Higher values are slower to create, but give higher quality. 0 – 5.',
-		program.INT, TOKTX_OPTIONS.clevel
+		'--mode <mode>',
+		'Basis Universal compression mode ["etc1s" = low quality, "uastc" = high quality]',
+		['etc1s', 'uastc'], 'etc1s'
 	)
 	.option(
-		'--qlevel <qlevel>',
-		'Quality level. Higher values result in larger files but higher quality. 1 - 255.',
-		program.INT, TOKTX_OPTIONS.qlevel
+		'--quality <quality>',
+		'Quality level, where higher levels mean larger files [0 – 1]',
+		program.FLOAT, TOKTX_OPTIONS.quality
 	)
-	.action(({input, output}, {clevel, qlevel}, logger) => {
+	.option(
+		'--zstd <zstd>',
+		'ZSTD compression level (UASTC only) [1 – 20, 0 = Off]',
+		program.FLOAT, 0
+	)
+	.option(
+		'--maps <maps>',
+		'Texture slots to compress. ["*", "normal"]',
+		["*", "normal"], "*"
+	)
+	.action(({input, output}, options, logger) => {
 		const doc = io.read(input)
 			.setLogger(logger)
-			.transform(toktx({clevel, qlevel}));
+			.transform(toktx(options));
 		io.write(output, doc);
 	});
 
