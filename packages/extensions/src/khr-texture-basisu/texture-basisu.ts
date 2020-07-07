@@ -9,7 +9,8 @@ export class TextureBasisu extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	read(_: ReaderContext): this {
-		return this;
+		// TODO(feat): May need ReaderContext to be able to 'resolve' texture->image references?
+		throw new Error('Not implemented.');
 	}
 
 	write(context: WriterContext): this {

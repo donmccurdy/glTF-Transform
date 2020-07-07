@@ -12,6 +12,7 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
+const { toktx, TOKTX_OPTIONS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -96,6 +97,28 @@ program
 		const doc = io.read(input)
 			.setLogger(logger)
 			.transform(split({meshes}));
+		io.write(output, doc);
+	});
+
+// TOKTX
+program
+	.command('toktx', 'Compresses textures with KTX + Basis Universal')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option(
+		'--clevel <clevel>',
+		'Compression level. Higher values are slower to create, but give higher quality. 0 – 5.',
+		program.INT, TOKTX_OPTIONS.clevel
+	)
+	.option(
+		'--qlevel <qlevel>',
+		'Quality level. Higher values result in larger files but higher quality. 1 - 255.',
+		program.INT, TOKTX_OPTIONS.qlevel
+	)
+	.action(({input, output}, {clevel, qlevel}, logger) => {
+		const doc = io.read(input)
+			.setLogger(logger)
+			.transform(toktx({clevel, qlevel}));
 		io.write(output, doc);
 	});
 
