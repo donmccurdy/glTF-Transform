@@ -1,6 +1,5 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_TEXTURE_BASISU } from '../constants';
-import { Basisu } from './basisu';
 
 const NAME = KHR_TEXTURE_BASISU;
 
@@ -19,11 +18,15 @@ export class TextureBasisu extends Extension {
 		this.doc.getRoot()
 			.listTextures()
 			.forEach((texture) => {
-				if (texture.getExtension(Basisu)) {
-					const imageDef = nativeDoc.json.images[context.imageIndexMap.get(texture)];
-					imageDef.extensions = imageDef.extensions || {};
-					imageDef.extensions[NAME] = {};
-					//context.createImageData()
+				if (texture.getMimeType() === 'image/ktx2') {
+					const imageIndex = context.imageIndexMap.get(texture);
+					nativeDoc.json.textures.forEach((textureDef) => {
+						if (textureDef.source === imageIndex) {
+							textureDef.extensions = textureDef.extensions || {}
+							textureDef.extensions[NAME] = {source: textureDef.source};
+							delete textureDef.source;
+						}
+					});
 				}
 			});
 

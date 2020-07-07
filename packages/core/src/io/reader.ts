@@ -4,7 +4,7 @@ import { Document } from '../document';
 import { Extension, ExtensionConstructor } from '../extension';
 import { NativeDocument } from '../native-document';
 import { Accessor, TextureInfo, TextureSampler } from '../properties';
-import { FileUtils } from '../utils';
+import { FileUtils, ImageUtils } from '../utils';
 import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
@@ -109,7 +109,7 @@ export class GLTFReader {
 				texture.setMimeType(imageDef.mimeType);
 			} else if (imageDef.uri) {
 				const extension = FileUtils.extension(imageDef.uri);
-				texture.setMimeType(extension === 'png' ? 'image/png' : 'image/jpeg');
+				texture.setMimeType(ImageUtils.extensionToMimeType(extension));
 			}
 
 			return texture;

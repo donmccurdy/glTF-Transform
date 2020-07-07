@@ -1,6 +1,6 @@
 import { NativeDocument } from '../native-document';
 import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
-import { Logger } from '../utils';
+import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -87,7 +87,7 @@ export class WriterContext {
 		return accessorDef;
 	}
 
-	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture, extension: string): void {
+	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
 		if (this.options.isGLB) {
 			this.imageData.push(data);
 			imageDef.bufferView = this.nativeDocument.json.bufferViews.length;
@@ -97,12 +97,12 @@ export class WriterContext {
 				byteLength: data.byteLength
 			});
 		} else {
+			const extension = ImageUtils.mimeTypeToExtension(texture.getMimeType());
 			imageDef.uri = this.imageURIGenerator.createURI(texture, extension);
 			this.nativeDocument.resources[imageDef.uri] = data;
 		}
 	}
 }
-
 
 export class UniqueURIGenerator {
 	private counter = 1;

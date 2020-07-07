@@ -201,12 +201,7 @@ export class GLTFWriter {
 			}
 
 			if (texture.getImage()) {
-				context.createImageData(
-					imageDef,
-					texture.getImage(),
-					texture,
-					texture.getMimeType() === 'image/png' ? 'png' : 'jpeg'
-				);
+				context.createImageData(imageDef, texture.getImage(), texture);
 			}
 
 			context.imageIndexMap.set(texture, textureIndex);
