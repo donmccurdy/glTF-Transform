@@ -112,7 +112,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addScene(scene: Scene): this {
-		return this.addGraphChild(this.scenes, this._graph.link('scene', this, scene));
+		return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene));
 	}
 
 	/** Lists all {@link Scene} properties associated with this root. */
@@ -129,7 +129,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addNode(node: Node): this {
-		return this.addGraphChild(this.nodes, this._graph.link('node', this, node));
+		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
 	}
 
 	/** Lists all {@link Node} properties associated with this root. */
@@ -146,7 +146,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addCamera(camera: Camera): this {
-		return this.addGraphChild(this.cameras, this._graph.link('camera', this, camera));
+		return this.addGraphChild(this.cameras, this.graph.link('camera', this, camera));
 	}
 
 	/** Lists all {@link Camera} properties associated with this root. */
@@ -163,7 +163,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addSkin(skin: Skin): this {
-		return this.addGraphChild(this.skins, this._graph.link('skin', this, skin));
+		return this.addGraphChild(this.skins, this.graph.link('skin', this, skin));
 	}
 
 	/** Lists all {@link Skin} properties associated with this root. */
@@ -180,7 +180,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addMesh(mesh: Mesh): this {
-		return this.addGraphChild(this.meshes, this._graph.link('mesh', this, mesh));
+		return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh));
 	}
 
 	/** Lists all {@link Mesh} properties associated with this root. */
@@ -197,7 +197,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addMaterial(material: Material): this {
-		return this.addGraphChild(this.materials, this._graph.link('material', this, material));
+		return this.addGraphChild(this.materials, this.graph.link('material', this, material));
 	}
 
 	/** Lists all {@link Material} properties associated with this root. */
@@ -214,7 +214,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addTexture(texture: Texture): this {
-		return this.addGraphChild(this.textures, this._graph.link('texture', this, texture));
+		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture));
 	}
 
 
@@ -232,7 +232,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addAnimation(animation: Animation): this {
-		return this.addGraphChild(this.animations, this._graph.link('animation', this, animation));
+		return this.addGraphChild(this.animations, this.graph.link('animation', this, animation));
 	}
 
 	/** Lists all {@link Animation} properties associated with this root. */
@@ -250,7 +250,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addAccessor(accessor: Accessor): this {
-		return this.addGraphChild(this.accessors, this._graph.link('accessor', this, accessor));
+		return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor));
 	}
 
 	/** Lists all {@link Accessor} properties associated with this root. */
@@ -267,7 +267,7 @@ export class Root extends Property {
 	 * @hidden
 	 */
 	public _addBuffer(buffer: Buffer): this {
-		return this.addGraphChild(this.buffers, this._graph.link('buffer', this, buffer));
+		return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer));
 	}
 
 	/** Lists all {@link Buffer} properties associated with this root. */

@@ -48,7 +48,7 @@ export class Animation extends ExtensibleProperty {
 
 	/** Adds an {@link AnimationChannel} to this Animation. */
 	public addChannel(channel: AnimationChannel): this {
-		const link = this._graph.link('channel', this, channel);
+		const link = this.graph.link('channel', this, channel);
 		return this.addGraphChild(this.channels, link);
 	}
 
@@ -64,7 +64,7 @@ export class Animation extends ExtensibleProperty {
 
 	/** Adds an {@link AnimationSampler} to this Animation. */
 	public addSampler(sampler: AnimationSampler): this {
-		const link = this._graph.link('sampler', this, sampler);
+		const link = this.graph.link('sampler', this, sampler);
 		return this.addGraphChild(this.samplers, link);
 	}
 
@@ -137,7 +137,7 @@ export class AnimationChannel extends Property {
 
 	/** Target {@link Node} animated by the channel. */
 	public setTargetNode(targetNode: Node): this {
-		this.targetNode = this._graph.link('target.node', this, targetNode);
+		this.targetNode = this.graph.link('target.node', this, targetNode);
 		return this;
 	}
 
@@ -154,7 +154,7 @@ export class AnimationChannel extends Property {
 	 * {@link Animation}.
 	 */
 	public setSampler(sampler: AnimationSampler): this {
-		this.sampler = this._graph.link('sampler', this, sampler);
+		this.sampler = this.graph.link('sampler', this, sampler);
 		return this;
 	}
 }
@@ -225,7 +225,7 @@ export class AnimationSampler extends Property {
 
 	/** Times for each keyframe, in seconds. */
 	public setInput(input: Accessor): this {
-		this.input = this._graph.link('input', this, input);
+		this.input = this.graph.link('input', this, input);
 		return this;
 	}
 
@@ -242,7 +242,7 @@ export class AnimationSampler extends Property {
 	 * tangents.
 	 */
 	public setOutput(output: Accessor): this {
-		this.output = this._graph.link('output', this, output);
+		this.output = this.graph.link('output', this, output);
 		return this;
 	}
 }
