@@ -56,7 +56,7 @@ export class Clearcoat extends ExtensionProperty {
 
 	/** Sets clearcoat texture. See {@link getClearcoatTexture}. */
 	public setClearcoatTexture(texture: Texture): this {
-		this.clearcoatTexture = this._graph.linkTexture('clearcoatTexture', this, texture);
+		this.clearcoatTexture = this.graph.linkTexture('clearcoatTexture', this, texture);
 		return this;
 	}
 
@@ -99,7 +99,7 @@ export class Clearcoat extends ExtensionProperty {
 
 	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
 	public setClearcoatRoughnessTexture(texture: Texture): this {
-		this.clearcoatRoughnessTexture = this._graph.linkTexture('clearcoatRoughnessTexture', this, texture);
+		this.clearcoatRoughnessTexture = this.graph.linkTexture('clearcoatRoughnessTexture', this, texture);
 		return this;
 	}
 
@@ -141,7 +141,7 @@ export class Clearcoat extends ExtensionProperty {
 
 	/** Sets clearcoat normal texture. See {@link getClearcoatNormalTexture}. */
 	public setClearcoatNormalTexture(texture: Texture): this {
-		this.clearcoatNormalTexture = this._graph.linkTexture('clearcoatNormalTexture', this, texture);
+		this.clearcoatNormalTexture = this.graph.linkTexture('clearcoatNormalTexture', this, texture);
 		return this;
 	}
 }

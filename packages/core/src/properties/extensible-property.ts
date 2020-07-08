@@ -42,7 +42,7 @@ export abstract class ExtensibleProperty extends Property {
 		// Add next extension.
 		extensionProperty._validateParent(this);
 		const name = extensionProperty.extensionName;
-		return this.addGraphChild(this.extensions, this._graph.link(name, this, extensionProperty));
+		return this.addGraphChild(this.extensions, this.graph.link(name, this, extensionProperty));
 	}
 
 	/**

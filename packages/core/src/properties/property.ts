@@ -40,11 +40,11 @@ export abstract class Property extends GraphNode {
 	/** Property type. */
 	public abstract readonly propertyType: string;
 
-	protected readonly _graph: PropertyGraph;
-	protected _name = '';
+	protected readonly graph: PropertyGraph;
 
 	// TODO(feat): Extras should be Properties.
-	protected _extras: object = {};
+	private _extras: object = {};
+	private _name = '';
 
 	/** @hidden */
 	constructor(graph: PropertyGraph, name = '') {
@@ -100,7 +100,7 @@ export abstract class Property extends GraphNode {
 
 	public detach(): this {
 		// Detaching should keep properties in the same Document, and attached to its root.
-		this._graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
+		this.graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
 		return this;
 	}
 

@@ -369,7 +369,7 @@ export class Accessor extends ExtensibleProperty {
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
 	public setBuffer(buffer: Buffer): this {
-		this.buffer = this._graph.link('buffer', this, buffer);
+		this.buffer = this.graph.link('buffer', this, buffer);
 		return this;
 	}
 

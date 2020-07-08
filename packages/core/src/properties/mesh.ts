@@ -50,7 +50,7 @@ export class Mesh extends ExtensibleProperty {
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
 	public addPrimitive(primitive: Primitive): this {
-		return this.addGraphChild(this.primitives, this._graph.link('primitive', this, primitive));
+		return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive));
 	}
 
 	/** Removes a {@link Primitive} from the mesh's draw call list. */
@@ -146,7 +146,7 @@ export class Primitive extends Property {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor): this {
-		this.indices = this._graph.linkIndex('index', this, indices);
+		this.indices = this.graph.linkIndex('index', this, indices);
 		return this;
 	}
 
@@ -169,7 +169,7 @@ export class Primitive extends Property {
 		if (!accessor) return this;
 
 		// Add next attribute.
-		const link = this._graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
 		return this.addGraphChild(this.attributes, link);
 	}
@@ -197,7 +197,7 @@ export class Primitive extends Property {
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material): this {
-		this.material = this._graph.link('material', this, material);
+		this.material = this.graph.link('material', this, material);
 		return this;
 	}
 
@@ -230,7 +230,7 @@ export class Primitive extends Property {
 	 * number of targets.
 	 */
 	public addTarget(target: PrimitiveTarget): this {
-		this.addGraphChild(this.targets, this._graph.link('target', this, target));
+		this.addGraphChild(this.targets, this.graph.link('target', this, target));
 		return this;
 	}
 
@@ -282,7 +282,7 @@ export class PrimitiveTarget extends Property {
 		if (!accessor) return this;
 
 		// Add next attribute.
-		const link = this._graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
 		link.semantic = semantic;
 		return this.addGraphChild(this.attributes, link);
 	}

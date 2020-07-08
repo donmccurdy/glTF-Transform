@@ -35,7 +35,7 @@ export class Skin extends ExtensibleProperty {
 	 * hierarchy or a direct or indirect parent node of the closest common root.
 	 */
 	public setSkeleton(skeleton: Node): this {
-		this.skeleton = this._graph.link('skeleton', this, skeleton);
+		this.skeleton = this.graph.link('skeleton', this, skeleton);
 		return this;
 	}
 
@@ -54,13 +54,13 @@ export class Skin extends ExtensibleProperty {
 	 * pre-applied.
 	 */
 	public setInverseBindMatrices(inverseBindMatrices: Accessor): this {
-		this.inverseBindMatrices = this._graph.link('inverseBindMatrices', this, inverseBindMatrices);
+		this.inverseBindMatrices = this.graph.link('inverseBindMatrices', this, inverseBindMatrices);
 		return this;
 	}
 
 	/** Adds a joint {@link Node} to this {@link Skin}. */
 	public addJoint(joint: Node): this {
-		const link = this._graph.link('joint', this, joint);
+		const link = this.graph.link('joint', this, joint);
 		return this.addGraphChild(this.joints, link);
 	}
 

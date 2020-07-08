@@ -197,7 +197,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture): this {
-		this.baseColorTexture = this._graph.linkTexture('baseColorTexture', this, texture);
+		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
 		return this;
 	}
 
@@ -245,7 +245,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture): this {
-		this.emissiveTexture = this._graph.linkTexture('emissiveTexture', this, texture);
+		this.emissiveTexture = this.graph.linkTexture('emissiveTexture', this, texture);
 		return this;
 	}
 
@@ -296,7 +296,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
 	public setNormalTexture(texture: Texture): this {
-		this.normalTexture = this._graph.linkTexture('normalTexture', this, texture);
+		this.normalTexture = this.graph.linkTexture('normalTexture', this, texture);
 		return this;
 	}
 
@@ -347,7 +347,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
 	public setOcclusionTexture(texture: Texture): this {
-		this.occlusionTexture = this._graph.linkTexture('occlusionTexture', this, texture);
+		this.occlusionTexture = this.graph.linkTexture('occlusionTexture', this, texture);
 		return this;
 	}
 
@@ -416,7 +416,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
 	public setMetallicRoughnessTexture(texture: Texture): this {
-		this.metallicRoughnessTexture = this._graph.linkTexture('metallicRoughnessTexture', this, texture);
+		this.metallicRoughnessTexture = this.graph.linkTexture('metallicRoughnessTexture', this, texture);
 		return this;
 	}
 }
