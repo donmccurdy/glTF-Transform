@@ -8,7 +8,7 @@ const { MaterialsClearcoat, Clearcoat } = require('../');
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
-test('@gltf-transform/extensions::materials-clearcroat', t => {
+test('@gltf-transform/extensions::materials-clearcoat', t => {
 	const doc = new Document();
 	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat()
