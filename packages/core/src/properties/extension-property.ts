@@ -21,23 +21,10 @@ export type ExtensionPropertyConstructor<Prop> = {new(graph: PropertyGraph, exte
  * *Base class for all {@link Property} types that can be attached by an {@link Extension}.*
  *
  * After an {@link Extension} is attached to a glTF {@link Document}, the Extension may be used to
- * construct ExtensionProperty instances, to be referenced throughout the document as needed. For
- * example, the `KHR_lights_punctual` Extension defines a `Light` ExtensionProperty, which can be
- * referenced by {@link Node} Properties in the Document.
- *
- * Usage:
- *
- * ```ts
- * import { LightsPunctual, Light } from '@gltf-transform/extensions';
- *
- * const lightsExtension = doc.createExtension(LightsPunctual);
- *
- * // Attach an ExtensionProperty.
- * node.setExtension(Light, lightsExtension.createLight().setType('point'));
- *
- * // Look up an ExtensionProperty by using its constructor as a key.
- * const light = node.getExtension(Light);
- * ```
+ * construct ExtensionProperty instances, to be referenced throughout the document as prescribed by
+ * the Extension. For example, the `KHR_materials_clearcoat` Extension defines a `Clearcoat`
+ * ExtensionProperty, which is referenced by {@link Material} Properties in the Document, and may
+ * contain references to {@link Texture} properties of its own.
  *
  * For more information on available extensions and their usage, see [Extensions](/extensions).
  *

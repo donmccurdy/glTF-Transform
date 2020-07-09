@@ -14,38 +14,13 @@ export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAM
  * *Base class for all Extensions.*
  *
  * Extensions enhance a glTF {@link Document} with additional features and schema, beyond the core
- * glTF specification. For example, extensions to Material properties might include additional
- * textures or scalar properties affecting the Material's appearance in a specific way.
- *
- * Common extensions may be imported from the `@gltf-transform/extensions` package, or custom
- * extensions may be created by extending this base class. No extensions are included in the
- * default `@gltf-transform/core` package, in order to (1) minimize the code size, and (2) ensure
- * that any extension can be implemented in isolation.
- *
- * Because extensions rely on the same underlying graph structure as the core specification,
- * references to {@link Texture}, {@link Accessor}, and other resources will be managed
- * automatically, even by scripts or transforms written without prior knowledge of the extension.
+ * glTF specification. Common extensions may be imported from the `@gltf-transform/extensions`
+ * package, or custom extensions may be created by extending this base class.
  *
  * An extension is added to a Document by calling {@link Document.createExtension} with the
  * extension constructor. The extension object may then be used to construct
  * {@link ExtensionProperty} instances, which are attached to properties throughout the Document
  * as prescribed by the extension itself.
- *
- * Usage:
- *
- * ```ts
- * import { Gizmo, GizmoExtension } from './gizmo-extension';
- *
- * const gizmoExtension = doc.createExtension(GizmoExtension)
- * 	.setRequired(true);
- *
- * const gizmo = gizmoExtension.createGizmo();
- *
- * node.setExtension(Gizmo, gizmo);
- * node.getExtension(Gizmo); // → gizmo
- * node.listExtensions(); // → [gizmo x1]
- * node.setExtension(Gizmo, null);
- * ```
  *
  * For more information on available extensions and their usage, see [Extensions](/extensions).
  *
