@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const gl = require('gl');
+const { gzip } = require('node-gzip');
 const { program } = require('@caporal/core');
 const { version } = require('../package.json');
 const { NodeIO } = require('@gltf-transform/core');
@@ -12,6 +13,7 @@ const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
 const { list } = require('./list');
+const { formatBytes } = require('./util');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -149,6 +151,23 @@ program
 		});
 
 		io.write(args.output, doc);
+	});
+
+// GZIP
+program
+	.command('gzip', 'Compress a file (.gltf, .glb, or .bin) with gzip')
+	.help('Compress a file (.gltf, .glb, or .bin) with gzip')
+	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.action(({args, logger}) => {
+		const inBuffer = fs.readFileSync(args.input);
+		return gzip(inBuffer)
+			.then((outBuffer) => {
+				const fileName = args.input + '.gz';
+				const inSize = formatBytes(inBuffer.byteLength);
+				const outSize = formatBytes(outBuffer.byteLength);
+				fs.writeFileSync(fileName, outBuffer);
+				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
+			});
 	});
 
 program.disableGlobalOption('--silent');
