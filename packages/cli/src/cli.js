@@ -73,7 +73,7 @@ program
 	.action(({args, options, logger}) => {
 		const doc = io.read(args.input)
 			.setLogger(logger)
-			.transform(ao(options));
+			.transform(ao({...options, gl}));
 		io.write(args.output, doc);
 	});
 
@@ -154,4 +154,10 @@ program
 program.disableGlobalOption('--silent');
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
-program.run();
+
+// Don't invoke run() in a test environment.
+if (require.main === module) {
+	program.run();
+}
+
+module.exports = program;

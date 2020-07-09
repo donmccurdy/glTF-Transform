@@ -30,5 +30,8 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "409abd1d5f6c00cd8a3252e8673a7bcad170bd11"
+  "gitHead": "409abd1d5f6c00cd8a3252e8673a7bcad170bd11",
+  "devDependencies": {
+    "tmp": "^0.2.1"
+  }
 }
