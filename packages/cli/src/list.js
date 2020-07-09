@@ -1,22 +1,6 @@
 const Table = require('cli-table');
 const { ImageUtils } = require('@gltf-transform/core');
 
-function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-
-function formatParagraph(str) {
-	return str.match(/.{1,80}(\s|$)/g).join('\n');
-}
-
 function list (type, doc) {
 	const logger = doc.getLogger();
 
@@ -26,6 +10,7 @@ function list (type, doc) {
 		case 'meshes': result = listMeshes(doc); break;
 		case 'textures': result = listTextures(doc); break;
 		case 'extensions': result = listExtensions(doc); break;
+		case 'animations': result = listAnimations(doc); break;
 		default:
 			throw new Error('Not implemented.');
 	}
@@ -81,6 +66,11 @@ function listTextures (doc) {
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
+		const slots = doc.getGraph().getLinks()
+			.filter((link) => link.getChild() === texture)
+			.map((link) => link.getName())
+			.filter((name) => name !== 'texture');
+
 		// TODO: This requires a Buffer, currently?
 		// const dims = '';
 		// if (texture.getMimeType() === 'image/png') {
@@ -93,6 +83,7 @@ function listTextures (doc) {
 			index,
 			texture.getName(),
 			texture.getURI(),
+			Array.from(new Set(slots)).join(', '),
 			references,
 			texture.getMimeType(),
 			formatBytes(texture.getImage().byteLength)
@@ -101,9 +92,49 @@ function listTextures (doc) {
 
 	return {
 		rows,
-		head: ['index', 'name', 'uri', 'references', 'mimeType', 'size'],
+		head: ['index', 'name', 'uri', 'slots', 'references', 'mimeType', 'size'],
 		warnings: [],
 	};
+}
+
+/** List animations. */
+function listAnimations (doc) {
+	const rows = doc.getRoot().listAnimations().map((anim, index) => {
+		let minTime = Infinity;
+		let maxTime = -Infinity;
+		anim.listSamplers().forEach((sampler) => {
+			minTime = Math.min(minTime, sampler.getInput().getMin([])[0]);
+			maxTime = Math.max(maxTime, sampler.getInput().getMax([])[0]);
+		});
+
+		let size = 0;
+		const accessors = new Set();
+		anim.listSamplers().forEach((sampler) => {
+			accessors.add(sampler.getInput());
+			accessors.add(sampler.getOutput());
+		});
+		Array.from(accessors)
+			.map((accessor) => accessor.getArray().byteLength)
+			.forEach((byteLength) => (size += byteLength));
+
+		return [
+			index,
+			anim.getName(),
+			anim.listChannels().length,
+			anim.listSamplers().length,
+			(maxTime - minTime).toFixed(3) + 's',
+			formatBytes(size),
+		]
+	});
+
+	return {
+		rows,
+		head: ['index', 'name', 'channels', 'samplers', 'duration', 'size'],
+		warnings: [
+			'NOTICE: Estimated animation sizes may overestimate total sizes if multiple animations'
+			+ ' are sharing the same accessors.'
+		],
+	}
 }
 
 /** List extensions. */
@@ -121,6 +152,24 @@ function listExtensions (doc) {
 		head: ['name', 'required'],
 		warnings: [],
 	};
+}
+
+// Utilities.
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function formatParagraph(str) {
+	return str.match(/.{1,80}(\s|$)/g).join('\n');
 }
 
 module.exports = {list};

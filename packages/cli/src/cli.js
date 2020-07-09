@@ -32,7 +32,10 @@ program
 // LIST
 program
 	.command('list', 'List a model\'s resources of a given type')
-	.argument('<type>', 'Property type ("meshes", "textures", or "extensions")', ['meshes', 'textures', 'extensions'])
+	.argument(
+		'<type>', 'Property type ("animations", "extensions", "meshes", "textures")',
+		['animations', 'extensions', 'meshes', 'textures']
+	)
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({type, input}, _, logger) => {
 		list(type, io.read(input).setLogger(logger));
@@ -81,7 +84,7 @@ program
 
 // SPLIT
 program
-	.command('split', 'Splits buffers so that separate meshes can be stored in separate .bin files')
+	.command('split', 'Splits mesh data into separate .bin files')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--meshes <meshes>', 'Mesh names', program.LIST, [], true)
