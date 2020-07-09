@@ -12,6 +12,7 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
+const { list } = require('./list');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -43,6 +44,15 @@ program
 	.action(({input, output}, options, logger) => {
 		const doc = io.read(input).setLogger(logger);
 		io.write(output, doc);
+	});
+
+// LIST
+program
+	.command('list', 'List a model\'s resources of a given type')
+	.argument('<type>', 'Property type ("meshes", "textures", or "extensions")', ['meshes', 'textures', 'extensions'])
+	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.action(({type, input}, _, logger) => {
+		list(type, io.read(input).setLogger(logger));
 	});
 
 // AMBIENT OCCLUSION
