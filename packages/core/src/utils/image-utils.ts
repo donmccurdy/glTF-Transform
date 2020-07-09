@@ -51,6 +51,16 @@ class ImageUtils {
 		}
 		return [buffer.readUInt32BE(16), buffer.readUInt32BE(20)];
 	}
+
+	public static mimeTypeToExtension(mimeType: string): string {
+		if (mimeType === 'image/jpeg') return 'jpg';
+		return mimeType.split('/').pop();
+	}
+
+	public static extensionToMimeType(extension: string): string {
+		if (extension === 'jpg') return 'image/jpeg';
+		return `image/${extension}`;
+	}
 }
 
 function validateBuffer (buffer: Buffer, i: number): void {

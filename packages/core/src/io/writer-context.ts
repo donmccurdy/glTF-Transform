@@ -1,5 +1,7 @@
 import { NativeDocument } from '../native-document';
-import { Accessor, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { ImageUtils, Logger } from '../utils';
+import { WriterOptions } from './writer';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 
@@ -22,7 +24,11 @@ export class WriterContext {
 
 	public readonly imageData: ArrayBuffer[] = [];
 
-	constructor (public readonly nativeDocument: NativeDocument) {}
+	public bufferURIGenerator: UniqueURIGenerator;
+	public imageURIGenerator: UniqueURIGenerator;
+	public logger: Logger;
+
+	constructor (public readonly nativeDocument: NativeDocument, public readonly options: WriterOptions) {}
 
 	/**
 	 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
@@ -79,5 +85,39 @@ export class WriterContext {
 		accessor.getMin((accessorDef.min = []));
 		accessorDef.normalized = accessor.getNormalized();
 		return accessorDef;
+	}
+
+	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
+		if (this.options.isGLB) {
+			this.imageData.push(data);
+			imageDef.bufferView = this.nativeDocument.json.bufferViews.length;
+			this.nativeDocument.json.bufferViews.push({
+				buffer: 0,
+				byteOffset: -1, // determined while iterating buffers, in Writer.ts.
+				byteLength: data.byteLength
+			});
+		} else {
+			const extension = ImageUtils.mimeTypeToExtension(texture.getMimeType());
+			imageDef.uri = this.imageURIGenerator.createURI(texture, extension);
+			this.nativeDocument.resources[imageDef.uri] = data;
+		}
+	}
+}
+
+export class UniqueURIGenerator {
+	private counter = 1;
+
+	constructor (
+		private readonly multiple: boolean,
+		private readonly basename: string) {}
+
+	public createURI(object: Texture | Buffer, extension: string): string {
+		if (object.getURI()) {
+			return object.getURI();
+		} else if (!this.multiple) {
+			return `${this.basename}.${extension}`;
+		} else {
+			return `${this.basename}_${this.counter++}.${extension}`;
+		}
 	}
 }

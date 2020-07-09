@@ -2,9 +2,9 @@ import { GLB_BUFFER, NAME } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
-import { Accessor, AnimationSampler, AttributeLink, Buffer, IndexLink, Primitive, Property, Root, Texture } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, Property, Root } from '../properties';
 import { BufferUtils } from '../utils';
-import { WriterContext } from './writer-context';
+import { UniqueURIGenerator, WriterContext } from './writer-context';
 
 const BufferViewTarget = {
 	ARRAY_BUFFER: 34962,
@@ -23,16 +23,14 @@ export class GLTFWriter {
 		const nativeDoc = {json: {asset: root.getAsset()}, resources: {}} as NativeDocument;
 		const json = nativeDoc.json;
 
-		const logger = doc.getLogger();
-
-		const numBuffers = root.listBuffers().length;
-		const numImages = root.listTextures().length;
-		const bufferURIGenerator = new UniqueURIGenerator(numBuffers> 1, options.basename);
-		const imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
-
 		/* Writer context. */
 
-		const context = new WriterContext(nativeDoc);
+		const context = new WriterContext(nativeDoc, options);
+		const numBuffers = root.listBuffers().length;
+		const numImages = root.listTextures().length;
+		context.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
+		context.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
+		context.logger = doc.getLogger();
 
 		/* Utilities. */
 
@@ -199,21 +197,11 @@ export class GLTFWriter {
 			const imageDef = context.createPropertyDef(texture) as GLTF.IImage;
 
 			if (texture.getMimeType()) {
-				imageDef.mimeType = texture.getMimeType() as GLTF.ImageMimeType;
+				imageDef.mimeType = texture.getMimeType();
 			}
 
-			if (options.isGLB) {
-				context.imageData.push(texture.getImage());
-				imageDef.bufferView = json.bufferViews.length;
-				json.bufferViews.push({
-					buffer: 0,
-					byteOffset: -1, // determined while iterating buffers, below.
-					byteLength: texture.getImage().byteLength
-				});
-			} else {
-				const extension = texture.getMimeType() === 'image/png' ? 'png' : 'jpeg';
-				imageDef.uri = imageURIGenerator.createURI(texture, extension);
-				nativeDoc.resources[imageDef.uri] = texture.getImage();
+			if (texture.getImage()) {
+				context.createImageData(imageDef, texture.getImage(), texture);
 			}
 
 			context.imageIndexMap.set(texture, textureIndex);
@@ -311,7 +299,7 @@ export class GLTFWriter {
 			}
 
 			if (!bufferByteLength) {
-				logger.warn(`${NAME}: Skipping empty buffer, "${buffer.getName()}".`);
+				context.logger.warn(`${NAME}: Skipping empty buffer, "${buffer.getName()}".`);
 				return;
 			}
 
@@ -321,7 +309,7 @@ export class GLTFWriter {
 			if (options.isGLB) {
 				uri = GLB_BUFFER;
 			} else {
-				uri = bufferURIGenerator.createURI(buffer, 'bin');
+				uri = context.bufferURIGenerator.createURI(buffer, 'bin');
 				bufferDef.uri = uri;
 			}
 
@@ -610,23 +598,5 @@ function clean(object): void {
 
 	for (const key of unused) {
 		delete object[key];
-	}
-}
-
-class UniqueURIGenerator {
-	private counter = 1;
-
-	constructor (
-		private readonly multiple: boolean,
-		private readonly basename: string) {}
-
-	public createURI(object: Texture | Buffer, extension: string): string {
-		if (object.getURI()) {
-			return object.getURI();
-		} else if (!this.multiple) {
-			return `${this.basename}.${extension}`;
-		} else {
-			return `${this.basename}_${this.counter++}.${extension}`;
-		}
 	}
 }
