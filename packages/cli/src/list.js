@@ -4,7 +4,7 @@ const { ImageUtils } = require('@gltf-transform/core');
 function list (type, doc) {
 	const logger = doc.getLogger();
 
-	logger.info(formatHeader(type));
+	console.log(formatHeader(type));
 
 	let result;
 
@@ -20,17 +20,16 @@ function list (type, doc) {
 	const {head, rows, warnings} = result;
 
 	if (rows.length === 0) {
-		logger.info(`No ${type} found.`);
-		logger.info('\n');
+		console.log(`No ${type} found.\n`);
 		return;
 	}
 
 	const table = new Table({head});
 	table.push(...rows);
 
-	logger.info(table.toString());
-	warnings.forEach((warning) => logger.info(formatParagraph(warning)));
-	logger.info('\n');
+	console.log(table.toString());
+	warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
+	console.log('\n');
 }
 
 /** List meshes. */
@@ -58,7 +57,7 @@ function listMeshes (doc) {
 		rows,
 		head: ['index', 'name', 'references', 'size'],
 		warnings: [
-			'NOTICE: Estimated mesh sizes do not include morph targets, and may overestimate'
+			'Estimated mesh sizes do not include morph targets, and may overestimate'
 			+ ' total sizes if multiple meshes are sharing the same accessors.'
 		],
 	};
@@ -136,7 +135,7 @@ function listAnimations (doc) {
 		rows,
 		head: ['index', 'name', 'channels', 'samplers', 'duration', 'size'],
 		warnings: [
-			'NOTICE: Estimated animation sizes may overestimate total sizes if multiple animations'
+			'Estimated animation sizes may overestimate total sizes if multiple animations'
 			+ ' are sharing the same accessors.'
 		],
 	}
@@ -179,8 +178,8 @@ function formatParagraph(str) {
 
 function formatHeader(title) {
 	return ''
-		+ '\n' + title.toUpperCase()
-		+ '\n────────────────────────────────────────────';
+		+ '\n ' + title.toUpperCase()
+		+ '\n ────────────────────────────────────────────';
 }
 
 module.exports = {list};
