@@ -16,7 +16,8 @@ const { list } = require('./list');
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
 program
-	.version(version);
+	.version(version)
+	.description('Commandline interface for the glTF-Transform SDK.');
 
 // REPACK
 program
