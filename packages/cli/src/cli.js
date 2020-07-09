@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
 const gl = require('gl');
 const program = require('caporal');
 const { version } = require('../package.json');
@@ -18,23 +17,6 @@ const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
 program
 	.version(version);
-
-// ANALYZE
-program
-	.command('analyze', 'Analyzes a model\'s contents')
-	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.action(({input}, options, logger) => {
-		const root = io.read(input).getRoot();
-		const analysis = {
-			accessors: root.listAccessors().length,
-			buffers: root.listBuffers().length,
-			materials: root.listMaterials().length,
-			meshes: root.listMeshes().length,
-			nodes: root.listNodes().length,
-			textures: root.listTextures().length,
-		};
-		console.log(util.inspect(analysis, {colors: true, sorted: true}));
-	});
 
 // REPACK
 program
