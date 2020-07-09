@@ -4,6 +4,8 @@ const { ImageUtils } = require('@gltf-transform/core');
 function list (type, doc) {
 	const logger = doc.getLogger();
 
+	logger.info(formatHeader(type));
+
 	let result;
 
 	switch (type) {
@@ -18,14 +20,17 @@ function list (type, doc) {
 	const {head, rows, warnings} = result;
 
 	if (rows.length === 0) {
-		logger.warn(`No ${type} found.`);
+		logger.info(`No ${type} found.`);
+		logger.info('\n');
 		return;
 	}
 
 	const table = new Table({head});
 	table.push(...rows);
+
 	logger.info(table.toString());
-	warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
+	warnings.forEach((warning) => logger.info(formatParagraph(warning)));
+	logger.info('\n');
 }
 
 /** List meshes. */
@@ -170,6 +175,12 @@ function formatBytes(bytes, decimals = 2) {
 
 function formatParagraph(str) {
 	return str.match(/.{1,80}(\s|$)/g).join('\n');
+}
+
+function formatHeader(title) {
+	return ''
+		+ '\n' + title.toUpperCase()
+		+ '\n────────────────────────────────────────────';
 }
 
 module.exports = {list};

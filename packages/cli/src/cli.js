@@ -15,18 +15,21 @@ const { list } = require('./list');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
+
 program
 	.version(version)
 	.description('Commandline interface for the glTF-Transform SDK.');
 
-// REPACK
+// INSPECT
 program
-	.command('repack', 'Rewrites the model with minimal changes')
+	.command('inspect', 'Inspect the contents of the model')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.argument('<output>', 'Path to write output')
-	.action(({input, output}, options, logger) => {
+	.action(({input}, _, logger) => {
 		const doc = io.read(input).setLogger(logger);
-		io.write(output, doc);
+		list('extensions', doc);
+		list('animations', doc);
+		list('meshes', doc);
+		list('textures', doc);
 	});
 
 // LIST
@@ -39,6 +42,16 @@ program
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({type, input}, _, logger) => {
 		list(type, io.read(input).setLogger(logger));
+	});
+
+// REPACK
+program
+	.command('repack', 'Rewrites the model with minimal changes')
+	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<output>', 'Path to write output')
+	.action(({input, output}, options, logger) => {
+		const doc = io.read(input).setLogger(logger);
+		io.write(output, doc);
 	});
 
 // AMBIENT OCCLUSION
