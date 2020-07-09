@@ -4,12 +4,12 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Bakes per-vertex ambient occlusion",
   "main": "dist/ao.js",
-  "module": "dist/ao.module.js",
+  "module": "dist/ao.modern.js",
   "source": "src/ao.ts",
   "types": "dist/ao.d.ts",
   "scripts": {
-    "dist": "microbundle",
-    "watch": "microbundle watch"
+    "dist": "microbundle --format modern,cjs",
+    "watch": "microbundle watch --format modern,cjs"
   },
   "keywords": [
     "gltf",

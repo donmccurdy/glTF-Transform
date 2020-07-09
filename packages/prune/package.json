@@ -4,12 +4,12 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Prunes duplicate accessors",
   "main": "dist/prune.js",
-  "module": "dist/prune.module.js",
+  "module": "dist/prune.modern.js",
   "source": "src/prune.ts",
   "types": "dist/prune.d.ts",
   "scripts": {
-    "dist": "microbundle",
-    "watch": "microbundle watch"
+    "dist": "microbundle --format modern,cjs",
+    "watch": "microbundle watch --format modern,cjs"
   },
   "keywords": [
     "gltf",

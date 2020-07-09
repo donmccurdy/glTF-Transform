@@ -4,12 +4,12 @@
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Adds extension support to @gltf-transform/core",
   "main": "dist/extensions.js",
-  "module": "dist/extensions.module.js",
+  "module": "dist/extensions.modern.js",
   "source": "src/extensions.ts",
   "types": "dist/extensions.d.ts",
   "scripts": {
-    "dist": "microbundle",
-    "watch": "microbundle watch"
+    "dist": "microbundle --format modern,cjs",
+    "watch": "microbundle watch --format modern,cjs"
   },
   "keywords": [
     "gltf",

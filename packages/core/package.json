@@ -3,15 +3,15 @@
   "version": "0.4.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
-  "main": "dist/core.umd.js",
+  "main": "dist/core.js",
   "module": "dist/core.modern.js",
   "source": "src/core.ts",
   "types": "dist/core.d.ts",
   "sideEffects": false,
   "scripts": {
-    "dist": "microbundle --format modern,umd --define PACKAGE_VERSION=$npm_package_version",
-    "watch": "microbundle watch --format modern,umd --define PACKAGE_VERSION=$npm_package_version",
-    "watch:debug": "microbundle watch --no-compress --format modern,umd --define PACKAGE_VERSION=$npm_package_version"
+    "dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+    "watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+    "watch:debug": "microbundle watch --no-compress --format modern,cjs --define PACKAGE_VERSION=$npm_package_version"
   },
   "keywords": [
     "gltf",
