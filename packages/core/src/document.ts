@@ -1,5 +1,5 @@
 import { Extension, ExtensionConstructor } from './extension';
-import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PrimitiveTarget, PropertyGraph, Root, Scene, Skin, Texture } from './properties/index';
+import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -92,10 +92,42 @@ export class Document {
 
 	/**
 	 * Clones this document and its graph, copying all resources within it.
-	 * @hidden
 	 */
 	public clone(): Document {
-		throw new Error('Not implemented.');
+		const other = new Document();
+		const visited = new Set<Property>();
+		const propertyMap = new Map<Property, Property>();
+		const resolve = (p: Property): Property => propertyMap.get(p);
+
+		// 1. Attach extensions.
+		for (const extension of this.getRoot().listExtensionsUsed()) {
+			other.createExtension(extension.constructor as ExtensionConstructor)
+				.setRequired(extension.isRequired());
+		}
+
+		// 2. Preconfigure the Root.
+		visited.add(this.root);
+		propertyMap.set(this.root, other.root);
+
+		// 3. Create stub classes for every Property in this Document.
+		for (const link of this.graph.getLinks()) {
+			for (const property of [link.getParent() as Property, link.getChild() as Property]) {
+				if (!visited.has(property)) {
+					// TODO(bug): ExtensionProperty needs a second parameter. Need .cloneShallow()?
+					const PropertyClass = property.constructor as new(g: PropertyGraph) => Property;
+					propertyMap.set(property as Property, new PropertyClass(other.graph));
+					visited.add(property);
+				}
+			}
+		}
+
+		// 4. Assemble the links between Properties.
+		for (const thisProp of visited) {
+			const otherProp = propertyMap.get(thisProp);
+			otherProp.copy(thisProp, resolve);
+		}
+
+		return other;
 	}
 
 	/**
