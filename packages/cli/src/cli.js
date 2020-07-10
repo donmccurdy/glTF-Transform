@@ -56,12 +56,29 @@ program
 
 // REPACK
 program
-	.command('repack', '📦 Rewrites the model with minimal changes')
-	.help('Rewrites the model with minimal changes.')
+	.command('copy', '📦 Copies the model with minimal changes')
+	.help('Copies the model with minimal changes.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
 	.action(({args, logger}) => {
 		const doc = io.read(args.input).setLogger(logger);
+		io.write(args.output, doc);
+	});
+
+// SPLIT
+program
+	.command('split', '📦 Splits mesh data into separate .bin files')
+	.help('Splits mesh data into separate .bin files.')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--meshes <meshes>', 'Mesh names', {
+		validator: program.LIST,
+		required: true,
+	})
+	.action(({args, options, logger}) => {
+		const doc = io.read(args.input)
+			.setLogger(logger)
+			.transform(split(options));
 		io.write(args.output, doc);
 	});
 
@@ -151,27 +168,6 @@ program
 			.transform(prune(options));
 		io.write(args.output, doc);
 	});
-
-// SPLIT
-program
-	.command('split', '⏩ Splits mesh data into separate .bin files')
-	.help('Splits mesh data into separate .bin files.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
-	.option('--meshes <meshes>', 'Mesh names', {
-		validator: program.LIST,
-		required: true,
-	})
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
-			.setLogger(logger)
-			.transform(split(options));
-		io.write(args.output, doc);
-	});
-
-/**********************************************************************************************
- * COMPRESS
- */
 
 // GZIP
 program

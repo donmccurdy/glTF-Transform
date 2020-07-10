@@ -19,7 +19,7 @@ test('@gltf-transform/cli', t => {
 	io.writeGLB(input, doc);
 
 	cli
-		.exec(['repack', input, output])
+		.exec(['copy', input, output])
 		.then(() => {
 			const doc2 = io.readGLB(output);
 			t.ok(doc2, 'roundtrip document');
