@@ -3,7 +3,7 @@ import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension, ExtensionConstructor } from '../extension';
 import { NativeDocument } from '../native-document';
-import { Accessor, TextureInfo, TextureSampler } from '../properties';
+import { Accessor } from '../properties';
 import { FileUtils, ImageUtils } from '../utils';
 import { ReaderContext } from './reader-context';
 
@@ -27,7 +27,16 @@ export class GLTFReader {
 		const doc = new Document();
 
 		if (json.asset.version !== '2.0') {
-			throw new Error(`Unsupported glTF version: "${json.asset.version}".`);
+			throw new Error(`Unsupported glTF version, "${json.asset.version}".`);
+		}
+
+		if (json.extensionsRequired) {
+			for (const extensionName of json.extensionsRequired) {
+				if (!options.extensions.find(
+						(extension) => extension.EXTENSION_NAME === extensionName)) {
+					throw new Error(`Missing required extension, "${extensionName}".`);
+				}
+			}
 		}
 
 		doc.getRoot().getAsset().generator = nativeDoc.json.asset.generator;
