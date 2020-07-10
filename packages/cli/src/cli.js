@@ -23,9 +23,13 @@ program
 	.version(version)
 	.description('Commandline interface for the glTF-Transform SDK.');
 
+/**********************************************************************************************
+ * GENERAL
+ */
+
 // INSPECT
 program
-	.command('inspect', 'Inspect the contents of the model')
+	.command('inspect', '🔎 Inspect the contents of the model')
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
@@ -35,7 +39,7 @@ program
 
 // VALIDATE
 program
-	.command('validate', 'Validate the model against the official glTF validator')
+	.command('validate', '🔎 Validate the model against the glTF spec')
 	.help('Validate the model with official glTF validator.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.option('--limit <limit>', 'Limit number of issues to display', {
@@ -52,7 +56,7 @@ program
 
 // REPACK
 program
-	.command('repack', 'Rewrites the model with minimal changes')
+	.command('repack', '📦 Rewrites the model with minimal changes')
 	.help('Rewrites the model with minimal changes.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
@@ -61,9 +65,13 @@ program
 		io.write(args.output, doc);
 	});
 
+/**********************************************************************************************
+ * MODIFY
+ */
+
 // AMBIENT OCCLUSION
 program
-	.command('ao', 'Bakes per-vertex ambient occlusion')
+	.command('ao', '✨ Bakes per-vertex ambient occlusion')
 	.help('Bakes per-vertex ambient occlusion.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -84,7 +92,7 @@ program
 
 // COLORSPACE
 program
-	.command('colorspace', 'Colorspace correction for vertex colors')
+	.command('colorspace', '✨ Colorspace correction for vertex colors')
 	.help('Colorspace correction for vertex colors.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -99,9 +107,32 @@ program
 		io.write(args.output, doc);
 	});
 
+
+// UNLIT
+program
+	.command('unlit', '✨ Converts materials to a unlit model')
+	.help('Converts materials to an unlit, shadeless model.')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.action(({args, logger}) => {
+		const doc = io.read(args.input).setLogger(logger);
+
+		const unlitExtension = doc.createExtension(MaterialsUnlit);
+		const unlit = unlitExtension.createUnlit();
+		doc.getRoot().listMaterials().forEach((material) => {
+			material.setExtension(Unlit, unlit);
+		});
+
+		io.write(args.output, doc);
+	});
+
+/**********************************************************************************************
+ * OPTIMIZE
+ */
+
 // PRUNE
 program
-	.command('prune', 'Prunes duplicate binary resources')
+	.command('prune', '⏩ Prunes duplicate binary resources')
 	.help('Prunes duplicate binary resources.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -123,7 +154,7 @@ program
 
 // SPLIT
 program
-	.command('split', 'Splits mesh data into separate .bin files')
+	.command('split', '⏩ Splits mesh data into separate .bin files')
 	.help('Splits mesh data into separate .bin files.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -138,28 +169,14 @@ program
 		io.write(args.output, doc);
 	});
 
-// UNLIT
-program
-	.command('unlit', 'Converts materials to an unlit, shadeless model')
-	.help('Converts materials to an unlit, shadeless model.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
-	.action(({args, logger}) => {
-		const doc = io.read(args.input).setLogger(logger);
-
-		const unlitExtension = doc.createExtension(MaterialsUnlit);
-		const unlit = unlitExtension.createUnlit();
-		doc.getRoot().listMaterials().forEach((material) => {
-			material.setExtension(Unlit, unlit);
-		});
-
-		io.write(args.output, doc);
-	});
+/**********************************************************************************************
+ * COMPRESS
+ */
 
 // GZIP
 program
-	.command('gzip', 'Compress a file (.gltf, .glb, or .bin) with gzip')
-	.help('Compress a file (.gltf, .glb, or .bin) with gzip.')
+	.command('gzip', '⏩ Compress .gltf/.glb/.bin with gzip')
+	.help('Compress .gltf/.glb/.bin with gzip.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
 		const inBuffer = fs.readFileSync(args.input);
