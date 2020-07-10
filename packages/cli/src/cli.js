@@ -65,10 +65,10 @@ program
 		io.write(args.output, doc);
 	});
 
-// SPLIT
+// PARTITION
 program
-	.command('split', '📦 Splits mesh data into separate .bin files')
-	.help('Splits mesh data into separate .bin files.')
+	.command('partition', '📦 Partitions mesh data into separate .bin files')
+	.help('Partitions mesh data into separate .bin files.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--meshes <meshes>', 'Mesh names', {
