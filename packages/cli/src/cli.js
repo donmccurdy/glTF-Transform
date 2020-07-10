@@ -111,6 +111,7 @@ program
 program
 	.command('colorspace', '✨ Colorspace correction for vertex colors')
 	.help('Colorspace correction for vertex colors.')
+	.hide()
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', {
@@ -149,18 +150,17 @@ program
 
 // PRUNE
 program
-	.command('prune', '⏩ Prunes duplicate binary resources')
-	.help('Prunes duplicate binary resources.')
+	.command('dedup', '⏩ Deduplicates accessors and textures')
+	.help('Deduplicates accessors and textures.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
-	.option('--accessors <accessors>', 'Prune duplicate accessors', {
+	.option('--accessors <accessors>', 'Remove duplicate accessors', {
 		validator: program.BOOL,
 		default: true,
 	})
-	.option('--textures <textures>', 'Prune duplicate textures', {
+	.option('--textures <textures>', 'Remove duplicate textures', {
 		validator: program.BOOL,
 		default: true,
-		required: false
 	})
 	.action(({args, options, logger}) => {
 		const doc = io.read(args.input)
