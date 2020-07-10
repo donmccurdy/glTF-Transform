@@ -1,6 +1,9 @@
 import { GraphNode } from '../graph';
 import { PropertyGraph } from './property-graph';
 
+export type PropertyResolver<T extends Property> = (p: T) => T;
+export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
+
 /**
  * # Property
  *
@@ -95,7 +98,7 @@ export abstract class Property extends GraphNode {
 	 */
 	public clone(): this {
 		const PropertyClass = this.constructor as new(g: PropertyGraph) => this;
-		return new PropertyClass(this.graph).copy(this);
+		return new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 	}
 
 	/**
@@ -104,7 +107,7 @@ export abstract class Property extends GraphNode {
 	 * @param other Property to copy references from.
 	 * @param resolve Function to resolve each Property being transferred. Default is identity.
 	 */
-	public copy(other: this, resolve = (p: Property): Property => p): this {
+	public copy(other: this, resolve: PropertyResolver<Property>): this {
 		this._name = other._name;
 		this._extras = JSON.parse(JSON.stringify(other._extras));
 		return this;

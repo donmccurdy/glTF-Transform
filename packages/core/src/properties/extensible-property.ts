@@ -1,6 +1,7 @@
+import { ExtensionConstructor } from '../extension';
 import { GraphChildList, Link } from '../graph';
 import { ExtensionProperty, ExtensionPropertyConstructor } from './extension-property';
-import { Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 
 /**
  * # ExtensibleProperty
@@ -14,6 +15,18 @@ import { Property } from './property';
  */
 export abstract class ExtensibleProperty extends Property {
 	@GraphChildList protected extensions: Link<Property, ExtensionProperty>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.clearGraphChildList(this.extensions);
+		other.extensions.forEach((link) => {
+			const extension = link.getChild();
+			this.setExtension(extension.constructor as ExtensionPropertyConstructor<typeof extension>, extension);
+		})
+
+		return this;
+	}
 
 	/**
 	 * Returns the {@link ExtensionProperty} of the given type attached to this Property, if any.

@@ -1,6 +1,7 @@
 import { PropertyType, vec2 } from '../constants';
 import { ImageUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # Texture
@@ -34,6 +35,16 @@ export class Texture extends ExtensibleProperty {
 
 	/** Image URI. Required if MIME type is not set. */
 	private uri = '';
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.image = other.image.slice(0);
+		this.mimeType = other.mimeType;
+		this.uri = other.uri;
+
+		return this;
+	}
 
 	/**********************************************************************************************
 	 * MIME type / format.
@@ -114,6 +125,11 @@ export class TextureInfo {
 
 	private texCoord = 0;
 
+	public copy(other: this): this {
+		this.texCoord = other.texCoord;
+		return this;
+	}
+
 	/** Returns the texture coordinate (UV set) index for the texture. */
 	public getTexCoord(): number { return this.texCoord; }
 
@@ -144,6 +160,14 @@ export class TextureSampler {
 	private _minFilter: GLTF.TextureMinFilter = null;
 	private _wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
 	private _wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
+
+	public copy(other: this): this {
+		this._magFilter = other._magFilter;
+		this._minFilter = other._minFilter;
+		this._wrapS = other._wrapS;
+		this._wrapT = other._wrapT;
+		return this;
+	}
 
 	/** UV wrapping mode. Values correspond to WebGL enums. */
 	public static TextureWrapMode = {

@@ -4,6 +4,7 @@ import { Link } from '../graph/graph-links';
 import { Camera } from './camera';
 import { ExtensibleProperty } from './extensible-property';
 import { Mesh } from './mesh';
+import { COPY_IDENTITY } from './property';
 import { Skin } from './skin';
 
 /**
@@ -45,6 +46,24 @@ export class Node extends ExtensibleProperty {
 	@GraphChild private mesh: Link<Node, Mesh> = null;
 	@GraphChild private skin: Link<Node, Skin> = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._translation = [...other._translation] as vec3;
+		this._rotation = [...other._rotation] as vec4;
+		this._scale = [...other._scale] as vec3;
+		this._weights = [...other._weights];
+
+		if (other.camera) this.setCamera(resolve(other.camera.getChild()));
+		if (other.mesh) this.setMesh(resolve(other.mesh.getChild()));
+		if (other.skin) this.setSkin(resolve(other.skin.getChild()));
+
+		this.clearGraphChildList(this.children);
+		other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** Returns the translation (position) of this node in local space. */
 	public getTranslation(): vec3 { return this._translation; }

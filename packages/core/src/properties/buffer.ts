@@ -1,5 +1,6 @@
 import { PropertyType } from '../constants';
 import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # Buffer
@@ -61,6 +62,14 @@ export class Buffer extends ExtensibleProperty {
 
 	/** URI (or filename) of the buffer. */
 	private _uri: string;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._uri = other._uri;
+
+		return this;
+	}
 
 	/**
 	 * Returns the URI (or filename) of this buffer (e.g. 'myBuffer.bin'). URIs are strongly
