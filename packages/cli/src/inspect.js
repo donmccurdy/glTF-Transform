@@ -2,35 +2,41 @@ const Table = require('cli-table');
 const { ImageUtils } = require('@gltf-transform/core');
 const { formatBytes, formatHeader, formatParagraph } = require('./util');
 
-function list (type, doc) {
+function inspect (doc) {
 	const logger = doc.getLogger();
 
-	console.log(formatHeader(type));
+	const table = new Table();
+	table.push(
+		{generator: doc.getRoot().getAsset().generator},
+		{version: doc.getRoot().getAsset().version},
+		{extensionsUsed: doc.getRoot().listExtensionsUsed().join(', ') || 'none'},
+		{extensionsRequired: doc.getRoot().listExtensionsRequired().join(', ') || 'none'},
+	);
+	console.log(formatHeader('info'));
+	console.log(table.toString() + '\n');
 
-	let result;
+	for (const type of ['meshes', 'textures', 'animations']) {
+		let result;
+		switch (type) {
+			case 'meshes': result = listMeshes(doc); break;
+			case 'textures': result = listTextures(doc); break;
+			case 'animations': result = listAnimations(doc); break;
+		}
+		const {head, rows, warnings} = result;
 
-	switch (type) {
-		case 'meshes': result = listMeshes(doc); break;
-		case 'textures': result = listTextures(doc); break;
-		case 'extensions': result = listExtensions(doc); break;
-		case 'animations': result = listAnimations(doc); break;
-		default:
-			throw new Error('Not implemented.');
+		console.log(formatHeader(type));
+		if (rows.length === 0) {
+			console.log(`No ${type} found.\n`);
+			return;
+		}
+
+		const table = new Table({head});
+		table.push(...rows);
+
+		console.log(table.toString());
+		warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
+		console.log('\n');
 	}
-
-	const {head, rows, warnings} = result;
-
-	if (rows.length === 0) {
-		console.log(`No ${type} found.\n`);
-		return;
-	}
-
-	const table = new Table({head});
-	table.push(...rows);
-
-	console.log(table.toString());
-	warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
-	console.log('\n');
 }
 
 /** List meshes. */
@@ -142,21 +148,4 @@ function listAnimations (doc) {
 	}
 }
 
-/** List extensions. */
-function listExtensions (doc) {
-	const required = new Set(doc.getRoot().listExtensionsRequired().map((e) => e.extensionName));
-	const rows = doc.getRoot().listExtensionsUsed().map((extension) => {
-		return [
-			extension.extensionName,
-			required.has(extension) ? 'x' : ''
-		];
-	});
-
-	return {
-		rows,
-		head: ['name', 'required'],
-		warnings: [],
-	};
-}
-
-module.exports = {list};
+module.exports = {inspect};

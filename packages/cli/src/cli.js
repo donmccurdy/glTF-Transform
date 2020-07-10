@@ -12,7 +12,8 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
-const { list } = require('./list');
+const { inspect } = require('./inspect');
+const { validate } = require('./validate');
 const { formatBytes } = require('./util');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
@@ -29,22 +30,24 @@ program
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
 		const doc = io.read(args.input).setLogger(logger);
-		list('extensions', doc);
-		list('animations', doc);
-		list('meshes', doc);
-		list('textures', doc);
+		inspect(doc);
 	});
 
-// LIST
+// VALIDATE
 program
-	.command('list', 'List a model\'s resources of a given type')
-	.help('List a model\'s resources of a given type.')
-	.argument('<type>', 'Property type to list', {
-		validator: ['animations', 'extensions', 'meshes', 'textures']
-	})
+	.command('validate', 'Validate the model against the official glTF validator')
+	.help('Validate the model with official glTF validator.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.action(({args, logger}) => {
-		list(type, io.read(args.input).setLogger(logger));
+	.option('--limit <limit>', 'Limit number of issues to display', {
+		validator: program.NUMERIC,
+		default: Infinity,
+	})
+	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
+		validator: program.ARRAY,
+		default: Infinity,
+	})
+	.action(({args, options, logger}) => {
+		validate(args.input, options, logger);
 	});
 
 // REPACK
@@ -156,7 +159,7 @@ program
 // GZIP
 program
 	.command('gzip', 'Compress a file (.gltf, .glb, or .bin) with gzip')
-	.help('Compress a file (.gltf, .glb, or .bin) with gzip')
+	.help('Compress a file (.gltf, .glb, or .bin) with gzip.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
 		const inBuffer = fs.readFileSync(args.input);

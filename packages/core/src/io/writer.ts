@@ -1,4 +1,4 @@
-import { GLB_BUFFER, NAME } from '../constants';
+import { GLB_BUFFER, NAME, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
@@ -22,6 +22,7 @@ export class GLTFWriter {
 		const root = doc.getRoot();
 		const nativeDoc = {json: {asset: root.getAsset()}, resources: {}} as NativeDocument;
 		const json = nativeDoc.json;
+		json.asset.generator = `glTF-Transform ${VERSION}`;
 
 		/* Writer context. */
 

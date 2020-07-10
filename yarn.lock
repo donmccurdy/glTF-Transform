@@ -4979,7 +4979,7 @@ glsl-tokenizer@^2.0.2:
   dependencies:
     through2 "^0.6.3"
 
-gltf-validator@^2.0.0-dev.2.7:
+gltf-validator@^2.0.0-dev.2.7, gltf-validator@^2.0.0-dev.3.2:
   version "2.0.0-dev.3.2"
   resolved "https://registry.yarnpkg.com/gltf-validator/-/gltf-validator-2.0.0-dev.3.2.tgz#37fe4ccd8011be7e0bebd5fe4afa88c6b9e080eb"
   integrity sha512-gdG28HR+nDF00b8XkUl/Vxua4Cndc7v1nK4RO3G7JBAm7TiEnCQWETMYRgJR+0BfBt3dWWKsnJXGC+WjaILVmQ==

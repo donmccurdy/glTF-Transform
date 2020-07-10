@@ -30,6 +30,8 @@ export class GLTFReader {
 			throw new Error(`Unsupported glTF version: "${json.asset.version}".`);
 		}
 
+		doc.getRoot().getAsset().generator = nativeDoc.json.asset.generator;
+
 		/* Reader context. */
 
 		const context = new ReaderContext(nativeDoc);
