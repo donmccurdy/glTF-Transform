@@ -91,11 +91,23 @@ export abstract class Property extends GraphNode {
 	 */
 
 	/**
-	 * Makes a copy of this property, referencing the same resources (not copies) as the original.
-	 * @hidden
+	 * Makes a copy of this property, with the same resources (by reference) as the original.
 	 */
-	public clone(): Property {
-		throw new Error('Not implemented.');
+	public clone(): this {
+		const PropertyClass = this.constructor as new(g: PropertyGraph) => this;
+		return new PropertyClass(this.graph).copy(this);
+	}
+
+	/**
+	 * Copies all data from another property to this one. Child properties are copied by reference,
+	 * unless a 'resolve' function is given to override that.
+	 * @param other Property to copy references from.
+	 * @param resolve Function to resolve each Property being transferred. Default is identity.
+	 */
+	public copy(other: this, resolve = (p: Property): Property => p): this {
+		this._name = other._name;
+		this._extras = JSON.parse(JSON.stringify(other._extras));
+		return this;
 	}
 
 	public detach(): this {

@@ -55,16 +55,41 @@ export class Root extends Property {
 
 	private readonly _extensions: Set<Extension> = new Set();
 
-	@GraphChildList private scenes: Link<Root, Scene>[] = [];
-	@GraphChildList private nodes: Link<Root, Node>[] = [];
-	@GraphChildList private cameras: Link<Root, Camera>[] = [];
-	@GraphChildList private skins: Link<Root, Skin>[] = [];
-	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
-	@GraphChildList private materials: Link<Root, Material>[] = [];
-	@GraphChildList private textures: Link<Root, Texture>[] = [];
-	@GraphChildList private animations: Link<Root, Animation>[] = [];
 	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
+	@GraphChildList private animations: Link<Root, Animation>[] = [];
 	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
+	@GraphChildList private cameras: Link<Root, Camera>[] = [];
+	@GraphChildList private materials: Link<Root, Material>[] = [];
+	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
+	@GraphChildList private nodes: Link<Root, Node>[] = [];
+	@GraphChildList private scenes: Link<Root, Scene>[] = [];
+	@GraphChildList private skins: Link<Root, Skin>[] = [];
+	@GraphChildList private textures: Link<Root, Texture>[] = [];
+
+	public clone(): this {
+		throw new Error('Root cannot be cloned.');
+	}
+
+	public copy(other: this, resolve = null): this {
+		super.copy(other, resolve);
+
+		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
+		// the Document during cloning.
+		if (!resolve) throw new Error('Root cannot be copied.');
+
+		Object.assign(this._asset, other._asset);
+		this.copyGraphChildList('accessor', other.accessors, this.accessors, resolve);
+		this.copyGraphChildList('animation', other.animations, this.animations, resolve);
+		this.copyGraphChildList('buffer', other.buffers, this.buffers, resolve);
+		this.copyGraphChildList('camera', other.cameras, this.cameras, resolve);
+		this.copyGraphChildList('material', other.materials, this.materials, resolve);
+		this.copyGraphChildList('mesh', other.meshes, this.meshes, resolve);
+		this.copyGraphChildList('node', other.nodes, this.nodes, resolve);
+		this.copyGraphChildList('scene', other.scenes, this.scenes, resolve);
+		this.copyGraphChildList('skin', other.skins, this.skins, resolve);
+		this.copyGraphChildList('texture', other.textures, this.textures, resolve);
+		return this;
+	}
 
 	/**
 	 * Returns the `asset` object, which specifies the target glTF version of the asset. Additional

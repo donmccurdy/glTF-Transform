@@ -16,3 +16,18 @@ test('@gltf-transform/core::document | transform', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::document | clone', t => {
+	const doc1 = new Document();
+	doc1.createMaterial('MyMaterial');
+	doc1.createScene('MyScene');
+
+	const doc2 = doc1.clone();
+
+	t.equal(doc2.getRoot().listScenes()[0].getName(), 'MyScene', 'transfers scene')
+	t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'transfers material')
+	t.notEqual(doc2.getRoot().listScenes()[0], doc1.getRoot().listScenes()[0], 'does not reference old scene');
+	t.notEqual(doc2.getRoot().listMaterials()[0], doc1.getRoot().listMaterials()[0], 'does not reference old material');
+
+	t.end();
+});

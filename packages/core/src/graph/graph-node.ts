@@ -92,6 +92,21 @@ export abstract class GraphNode {
 		return this;
 	}
 
+	/** @hidden */
+	protected clearGraphChildList(links: Link<GraphNode, GraphNode>[]): this {
+		while (links.length > 0) links[0].dispose();
+		return this;
+	}
+
+	/** @hidden */
+	protected copyGraphChildList(name: string, source: Link<GraphNode, GraphNode>[], target: Link<GraphNode, GraphNode>[], resolve = (p: GraphNode): GraphNode => p): this {
+		this.clearGraphChildList(target);
+		for (const link of source) {
+			this.addGraphChild(target, this.graph.link(name, this, resolve(link.getChild())));
+		}
+		return this;
+	}
+
 	/**
 	 * Returns a list of all nodes that hold a reference to this node.
 	 *
