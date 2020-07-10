@@ -90,44 +90,45 @@ export class Document {
 		return this;
 	}
 
-	/**
-	 * Clones this document and its graph, copying all resources within it.
-	 */
+	/** Clones this Document, copying all resources within it. */
 	public clone(): Document {
-		const other = new Document();
-		const visited = new Set<Property>();
-		const propertyMap = new Map<Property, Property>();
-		const resolve = (p: Property): Property => propertyMap.get(p);
+		return new Document().merge(this);
+	}
 
+	/** Merges the content of another Document into this one, without affecting the original. */
+	public merge(other: Document): this {
 		// 1. Attach extensions.
-		for (const extension of this.getRoot().listExtensionsUsed()) {
-			other.createExtension(extension.constructor as ExtensionConstructor)
-				.setRequired(extension.isRequired());
+		for (const otherExtension of other.getRoot().listExtensionsUsed()) {
+			const thisExtension = other.createExtension(otherExtension.constructor as ExtensionConstructor);
+			if (otherExtension.isRequired()) thisExtension.setRequired(true);
 		}
 
-		// 2. Preconfigure the Root.
-		visited.add(this.root);
-		propertyMap.set(this.root, other.root);
+		// 2. Preconfigure the Root and merge history.
+		const visited = new Set<Property>();
+		const propertyMap = new Map<Property, Property>();
+		visited.add(other.root);
+		propertyMap.set(other.root, this.root);
 
-		// 3. Create stub classes for every Property in this Document.
-		for (const link of this.graph.getLinks()) {
+		// 3. Create stub classes for every Property in other Document.
+		for (const link of other.graph.getLinks()) {
 			for (const property of [link.getParent() as Property, link.getChild() as Property]) {
 				if (!visited.has(property)) {
 					// TODO(bug): ExtensionProperty needs a second parameter. Need .cloneShallow()?
 					const PropertyClass = property.constructor as new(g: PropertyGraph) => Property;
-					propertyMap.set(property as Property, new PropertyClass(other.graph));
+					propertyMap.set(property as Property, new PropertyClass(this.graph));
 					visited.add(property);
 				}
 			}
 		}
 
 		// 4. Assemble the links between Properties.
-		for (const thisProp of visited) {
-			const otherProp = propertyMap.get(thisProp);
-			otherProp.copy(thisProp, resolve);
+		const resolve = (p: Property): Property => propertyMap.get(p);
+		for (const otherProp of visited) {
+			const thisProp = propertyMap.get(otherProp);
+			thisProp.copy(otherProp, resolve);
 		}
 
-		return other;
+		return this;
 	}
 
 	/**

@@ -74,21 +74,11 @@ export class Root extends Property {
 		super.copy(other, resolve);
 
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
-		// the Document during cloning.
+		// the Document during cloning. The Root, and only the Root, should avoid calling
+		// .clearGraphChildList() while copying to avoid overwriting existing links during a merge.
 		if (!resolve) throw new Error('Root cannot be copied.');
 
 		Object.assign(this._asset, other._asset);
-
-		this.clearGraphChildList(this.accessors);
-		this.clearGraphChildList(this.animations);
-		this.clearGraphChildList(this.buffers);
-		this.clearGraphChildList(this.cameras);
-		this.clearGraphChildList(this.materials);
-		this.clearGraphChildList(this.meshes);
-		this.clearGraphChildList(this.nodes);
-		this.clearGraphChildList(this.scenes);
-		this.clearGraphChildList(this.skins);
-		this.clearGraphChildList(this.textures);
 
 		other.accessors.forEach((link) => this._addAccessor(resolve(link.getChild())));
 		other.animations.forEach((link) => this._addAnimation(resolve(link.getChild())));
