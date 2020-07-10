@@ -2,6 +2,7 @@ import { PropertyType } from '../constants';
 import { GraphChildList, Link } from '../graph/index';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # Scene
@@ -23,6 +24,15 @@ export class Scene extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.SCENE;
 
 	@GraphChildList private nodes: Link<Scene, Node>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.clearGraphChildList(this.nodes);
+		other.nodes.forEach((link) => this.addNode(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** Adds a {@link Node} to the scene. */
 	public addNode(node: Node): this {

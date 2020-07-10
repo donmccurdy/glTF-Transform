@@ -3,7 +3,7 @@ import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
-import { Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 
 /**
  * # Animation
@@ -206,6 +206,17 @@ export class AnimationSampler extends Property {
 
 	@GraphChild private input: Link<AnimationSampler, Accessor> = null;
 	@GraphChild private output: Link<AnimationSampler, Accessor> = null;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._interpolation = other._interpolation;
+
+		if (other.input) this.setInput(resolve(other.input.getChild()));
+		if (other.output) this.setOutput(resolve(other.output.getChild()));
+
+		return this;
+	}
 
 	/** Interpolation mode: `STEP`, `LINEAR`, or `CUBICSPLINE`. */
 	public getInterpolation(): GLTF.AnimationSamplerInterpolation {

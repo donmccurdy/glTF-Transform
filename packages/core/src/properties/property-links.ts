@@ -9,12 +9,23 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
 export class TextureLink extends Link<Material|ExtensionProperty, Texture> {
 	public textureInfo = new TextureInfo();
 	public sampler = new TextureSampler();
+	public copy (other: this): this {
+		this.textureInfo.copy(other.textureInfo);
+		this.sampler.copy(other.sampler);
+		return this;
+	}
 }
 
 /** @hidden */
 export class AttributeLink extends Link<Primitive|PrimitiveTarget, Accessor> {
 	public semantic = '';
+	public copy (other: this): this {
+		this.semantic = other.semantic;
+		return this;
+	}
 }
 
 /** @hidden */
-export class IndexLink extends Link<Primitive, Accessor> {}
+export class IndexLink extends Link<Primitive, Accessor> {
+	public copy (other: this): this { return this; }
+}

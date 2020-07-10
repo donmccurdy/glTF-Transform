@@ -8,7 +8,7 @@ import { Camera } from './camera';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
-import { Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
@@ -70,7 +70,7 @@ export class Root extends Property {
 		throw new Error('Root cannot be cloned.');
 	}
 
-	public copy(other: this, resolve = null): this {
+	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by

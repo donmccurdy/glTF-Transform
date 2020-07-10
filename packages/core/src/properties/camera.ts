@@ -1,5 +1,6 @@
 import { PropertyType } from '../constants';
 import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # Camera
@@ -47,6 +48,20 @@ export class Camera extends ExtensibleProperty {
 
 	private _xmag: number;
 	private _ymag: number;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._type = other._type;
+		this._znear = other._znear;
+		this._zfar = other._zfar;
+		this._aspectRatio = other._aspectRatio;
+		this._yfov = other._yfov;
+		this._xmag = other._xmag;
+		this._ymag = other._ymag;
+
+		return this;
+	}
 
 	/**********************************************************************************************
 	 * Common.

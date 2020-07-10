@@ -1,6 +1,7 @@
 import { PropertyType, vec3, vec4 } from '../constants';
 import { GraphChild } from '../graph/index';
 import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
 import { Texture, TextureInfo, TextureSampler } from './texture';
 
@@ -96,6 +97,43 @@ export class Material extends ExtensibleProperty {
 	 * `occlusionTexture`, optionally.
 	*/
 	@GraphChild private metallicRoughnessTexture: TextureLink = null;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._alphaMode = other._alphaMode;
+		this._alphaCutoff = other._alphaCutoff;
+		this._doubleSided = other._doubleSided;
+		this._baseColorFactor = [...other._baseColorFactor] as vec4;
+		this._emissiveFactor = [...other._emissiveFactor] as vec3;
+		this._normalScale = other._normalScale;
+		this._occlusionStrength = other._occlusionStrength;
+		this._roughnessFactor = other._roughnessFactor;
+		this._metallicFactor = other._metallicFactor;
+
+		if (other.baseColorTexture) {
+			this.setBaseColorTexture(resolve(other.baseColorTexture.getChild()));
+			this.baseColorTexture.copy(other.baseColorTexture);
+		}
+		if (other.emissiveTexture) {
+			this.setEmissiveTexture(resolve(other.emissiveTexture.getChild()));
+			this.emissiveTexture.copy(other.emissiveTexture);
+		}
+		if (other.normalTexture) {
+			this.setNormalTexture(resolve(other.normalTexture.getChild()));
+			this.normalTexture.copy(other.normalTexture);
+		}
+		if (other.occlusionTexture) {
+			this.setOcclusionTexture(resolve(other.occlusionTexture.getChild()));
+			this.occlusionTexture.copy(other.occlusionTexture);
+		}
+		if (other.metallicRoughnessTexture) {
+			this.setMetallicRoughnessTexture(resolve(other.metallicRoughnessTexture.getChild()));
+			this.metallicRoughnessTexture.copy(other.metallicRoughnessTexture);
+		}
+
+		return this;
+	}
 
 	/**********************************************************************************************
 	 * Double-sided / culling.

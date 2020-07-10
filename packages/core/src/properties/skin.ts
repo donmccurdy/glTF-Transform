@@ -3,6 +3,7 @@ import { GraphChild, GraphChildList, Link } from '../graph';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # Skin
@@ -21,6 +22,18 @@ export class Skin extends ExtensibleProperty {
 	@GraphChild private skeleton: Link<Skin, Node> = null;
 	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> = null;
 	@GraphChildList private joints: Link<Skin, Node>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		if (other.skeleton) this.setSkeleton(resolve(other.skeleton.getChild()));
+		if (other.inverseBindMatrices) this.setInverseBindMatrices(resolve(other.inverseBindMatrices.getChild()));
+
+		this.clearGraphChildList(this.joints);
+		other.joints.forEach((link) => this.addJoint(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/**
 	 * {@link Node} used as a skeleton root. The node must be the closest common root of the joints

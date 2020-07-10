@@ -4,7 +4,7 @@ import { Link } from '../graph/index';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Material } from './material';
-import { Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 import { AttributeLink } from './property-links';
 
 /**
@@ -47,6 +47,17 @@ export class Mesh extends ExtensibleProperty {
 
 	/** Primitive GPU draw call list. */
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._weights = [...other._weights];
+
+		this.clearGraphChildList(this.primitives);
+		other.primitives.forEach((link) => this.addPrimitive(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
 	public addPrimitive(primitive: Primitive): this {
@@ -123,17 +134,29 @@ export class Primitive extends Property {
 	/** GPU draw mode. */
 	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
 
-	/** Indices of vertices in the vertex list to be drawn. */
+	@GraphChild private material: Link<Primitive, Material> = null;
 	@GraphChild private indices: Link<Primitive, Accessor> = null;
-
-	/** Vertex attributes. */
 	@GraphChildList private attributes: AttributeLink[] = [];
-
-	/** Morph targets. */
 	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
 
-	/** Material used to render the primitive. */
-	@GraphChild private material: Link<Primitive, Material> = null;
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._mode = other._mode;
+
+		if (other.indices) this.setIndices(resolve(other.indices.getChild()));
+		if (other.material) this.setMaterial(resolve(other.material.getChild()));
+
+		this.clearGraphChildList(this.attributes);
+		other.listSemantics().forEach((semantic) => {
+			this.setAttribute(semantic, resolve(other.getAttribute(semantic)));
+		});
+
+		this.clearGraphChildList(this.targets);
+		other.targets.forEach((link) => this.addTarget(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
 	public getIndices(): Accessor {
@@ -263,6 +286,17 @@ export class PrimitiveTarget extends Property {
 
 	/** Vertex attributes. */
 	@GraphChildList private attributes: AttributeLink[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.clearGraphChildList(this.attributes);
+		other.listSemantics().forEach((semantic) => {
+			this.setAttribute(semantic, resolve(other.getAttribute(semantic)));
+		});
+
+		return this;
+	}
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor {
