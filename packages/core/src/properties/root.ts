@@ -78,16 +78,29 @@ export class Root extends Property {
 		if (!resolve) throw new Error('Root cannot be copied.');
 
 		Object.assign(this._asset, other._asset);
-		this.copyGraphChildList('accessor', other.accessors, this.accessors, resolve);
-		this.copyGraphChildList('animation', other.animations, this.animations, resolve);
-		this.copyGraphChildList('buffer', other.buffers, this.buffers, resolve);
-		this.copyGraphChildList('camera', other.cameras, this.cameras, resolve);
-		this.copyGraphChildList('material', other.materials, this.materials, resolve);
-		this.copyGraphChildList('mesh', other.meshes, this.meshes, resolve);
-		this.copyGraphChildList('node', other.nodes, this.nodes, resolve);
-		this.copyGraphChildList('scene', other.scenes, this.scenes, resolve);
-		this.copyGraphChildList('skin', other.skins, this.skins, resolve);
-		this.copyGraphChildList('texture', other.textures, this.textures, resolve);
+
+		this.clearGraphChildList(this.accessors);
+		this.clearGraphChildList(this.animations);
+		this.clearGraphChildList(this.buffers);
+		this.clearGraphChildList(this.cameras);
+		this.clearGraphChildList(this.materials);
+		this.clearGraphChildList(this.meshes);
+		this.clearGraphChildList(this.nodes);
+		this.clearGraphChildList(this.scenes);
+		this.clearGraphChildList(this.skins);
+		this.clearGraphChildList(this.textures);
+
+		other.accessors.forEach((link) => this._addAccessor(resolve(link.getChild())));
+		other.animations.forEach((link) => this._addAnimation(resolve(link.getChild())));
+		other.buffers.forEach((link) => this._addBuffer(resolve(link.getChild())));
+		other.cameras.forEach((link) => this._addCamera(resolve(link.getChild())));
+		other.materials.forEach((link) => this._addMaterial(resolve(link.getChild())));
+		other.meshes.forEach((link) => this._addMesh(resolve(link.getChild())));
+		other.nodes.forEach((link) => this._addNode(resolve(link.getChild())));
+		other.scenes.forEach((link) => this._addScene(resolve(link.getChild())));
+		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
+		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
+
 		return this;
 	}
 

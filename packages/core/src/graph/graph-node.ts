@@ -82,7 +82,7 @@ export abstract class GraphNode {
 	}
 
 	/**
-	 * Removes a {@link GraphNode} from a {@link @GraphChildList}.
+	 * Removes a {@link GraphNode} from a {@link GraphChildList}.
 	 *
 	 * @hidden
 	 */
@@ -92,18 +92,13 @@ export abstract class GraphNode {
 		return this;
 	}
 
-	/** @hidden */
+	/**
+	 * Removes all {@link GraphNode}s from a {@link GraphChildList}.
+	 *
+	 * @hidden
+	 */
 	protected clearGraphChildList(links: Link<GraphNode, GraphNode>[]): this {
 		while (links.length > 0) links[0].dispose();
-		return this;
-	}
-
-	/** @hidden */
-	protected copyGraphChildList(name: string, source: Link<GraphNode, GraphNode>[], target: Link<GraphNode, GraphNode>[], resolve = (p: GraphNode): GraphNode => p): this {
-		this.clearGraphChildList(target);
-		for (const link of source) {
-			this.addGraphChild(target, this.graph.link(name, this, resolve(link.getChild())));
-		}
 		return this;
 	}
 
