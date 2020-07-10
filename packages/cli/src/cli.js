@@ -110,7 +110,7 @@ program
 
 // UNLIT
 program
-	.command('unlit', '✨ Converts materials to a unlit model')
+	.command('unlit', '✨ Converts materials to an unlit model')
 	.help('Converts materials to an unlit, shadeless model.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
