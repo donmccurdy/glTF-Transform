@@ -54,7 +54,7 @@ program
 		validate(args.input, options, logger);
 	});
 
-// REPACK
+// COPY
 program
 	.command('copy', '📦 Copies the model with minimal changes')
 	.help('Copies the model with minimal changes.')
@@ -63,6 +63,19 @@ program
 	.action(({args, logger}) => {
 		const doc = io.read(args.input).setLogger(logger);
 		io.write(args.output, doc);
+	});
+
+program
+	.command('merge', '📦 Merges two models into one')
+	.help('Merges two models into one.')
+	.argument('<a>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<b>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<output>', 'Path to write output')
+	.action(({args, logger}) => {
+		const a = io.read(args.a).setLogger(logger);
+		const b = io.read(args.b).setLogger(logger);
+		// TODO(bug): Need more graceful way to deal with 1-buffer GLB requirement.
+		io.write(args.output, a.merge(b));
 	});
 
 // PARTITION

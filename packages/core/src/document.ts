@@ -1,5 +1,5 @@
 import { Extension, ExtensionConstructor } from './extension';
-import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
+import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -98,9 +98,11 @@ export class Document {
 	/** Merges the content of another Document into this one, without affecting the original. */
 	public merge(other: Document): this {
 		// 1. Attach extensions.
+		const thisExtensions: {[key: string]: Extension} = {};
 		for (const otherExtension of other.getRoot().listExtensionsUsed()) {
-			const thisExtension = other.createExtension(otherExtension.constructor as ExtensionConstructor);
+			const thisExtension = this.createExtension(otherExtension.constructor as ExtensionConstructor);
 			if (otherExtension.isRequired()) thisExtension.setRequired(true);
+			thisExtensions[thisExtension.extensionName] = thisExtension;
 		}
 
 		// 2. Preconfigure the Root and merge history.
@@ -111,12 +113,14 @@ export class Document {
 
 		// 3. Create stub classes for every Property in other Document.
 		for (const link of other.graph.getLinks()) {
-			for (const property of [link.getParent() as Property, link.getChild() as Property]) {
-				if (!visited.has(property)) {
-					// TODO(bug): ExtensionProperty needs a second parameter. Need .cloneShallow()?
-					const PropertyClass = property.constructor as new(g: PropertyGraph) => Property;
-					propertyMap.set(property as Property, new PropertyClass(this.graph));
-					visited.add(property);
+			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
+				if (!visited.has(thisProp)) {
+					const PropertyClass = thisProp.constructor as new(g: PropertyGraph, e?: Extension) => Property;
+					const otherProp = thisProp instanceof ExtensionProperty
+						? new PropertyClass(this.graph, thisExtensions[thisProp.extensionName])
+						: new PropertyClass(this.graph);
+					propertyMap.set(thisProp as Property, otherProp);
+					visited.add(thisProp);
 				}
 			}
 		}
@@ -133,7 +137,7 @@ export class Document {
 
 	/**
 	 * Applies a series of modifications to this document. Each transformation is synchronous,
-	 * takes the {@link Documen} as input, and returns nothing. Transforms are applied in the
+	 * takes the {@link Document} as input, and returns nothing. Transforms are applied in the
 	 * order given, which may affect the final result.
 	 *
 	 * Usage:
