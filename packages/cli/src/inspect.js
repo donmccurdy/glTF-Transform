@@ -1,5 +1,5 @@
 const Table = require('cli-table');
-const { ImageUtils } = require('@gltf-transform/core');
+const { Texture } = require('@gltf-transform/core');
 const { formatBytes, formatHeader, formatParagraph } = require('./util');
 
 function inspect (doc) {
@@ -15,10 +15,12 @@ function inspect (doc) {
 	console.log(formatHeader('info'));
 	console.log(table.toString() + '\n');
 
-	for (const type of ['meshes', 'textures', 'animations']) {
+	for (const type of ['scenes', 'meshes', 'materials', 'textures', 'animations']) {
 		let result;
 		switch (type) {
+			case 'scenes': result = listScenes(doc); break;
 			case 'meshes': result = listMeshes(doc); break;
+			case 'materials': result = listMaterials(doc); break;
 			case 'textures': result = listTextures(doc); break;
 			case 'animations': result = listAnimations(doc); break;
 		}
@@ -39,10 +41,28 @@ function inspect (doc) {
 	}
 }
 
+/** List scenes. */
+function listScenes (doc) {
+	const rows = doc.getRoot().listScenes().map((scene, index) => {
+		const root = scene.listNodes()[0];
+		return [
+			index,
+			scene.getName(),
+			root ? root.getName() : '',
+		];
+	});
+
+	return {
+		rows,
+		head: ['index', 'name', 'rootName'],
+		warnings: [],
+	};
+}
+
 /** List meshes. */
 function listMeshes (doc) {
 	const rows = doc.getRoot().listMeshes().map((mesh, index) => {
-		const references = mesh.listParents()
+		const instances = mesh.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 		let size = 0;
@@ -55,14 +75,14 @@ function listMeshes (doc) {
 		return [
 			index,
 			mesh.getName(),
-			references,
+			instances,
 			formatBytes(size)
 		];
 	});
 
 	return {
 		rows,
-		head: ['index', 'name', 'references', 'size'],
+		head: ['index', 'name', 'instances', 'size'],
 		warnings: [
 			'Estimated mesh sizes do not include morph targets, and may overestimate'
 			+ ' total sizes if multiple meshes are sharing the same accessors.'
@@ -70,10 +90,37 @@ function listMeshes (doc) {
 	};
 }
 
+/** List materials. */
+function listMaterials (doc) {
+	const rows = doc.getRoot().listMaterials().map((material, index) => {
+		const instances = material.listParents()
+			.filter((parent) => parent.propertyType !== 'Root')
+			.length;
+
+		const slots = doc.getGraph().getLinks()
+			.filter((link) => link.getParent() === material && link.getChild() instanceof Texture)
+			.map((link) => link.getName());
+
+		return [
+			index,
+			material.getName(),
+			instances,
+			slots.join(', '),
+			material.getAlphaMode(),
+		];
+	});
+
+	return {
+		rows,
+		head: ['index', 'name', 'instances', 'textures', 'alphaMode'],
+		warnings: [],
+	};
+}
+
 /** List textures. */
 function listTextures (doc) {
 	const rows = doc.getRoot().listTextures().map((texture, index) => {
-		const references = texture.listParents()
+		const instances = texture.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
@@ -95,7 +142,7 @@ function listTextures (doc) {
 			texture.getName(),
 			texture.getURI(),
 			Array.from(new Set(slots)).join(', '),
-			references,
+			instances,
 			texture.getMimeType(),
 			formatBytes(texture.getImage().byteLength)
 		]
@@ -103,7 +150,7 @@ function listTextures (doc) {
 
 	return {
 		rows,
-		head: ['index', 'name', 'uri', 'slots', 'references', 'mimeType', 'size'],
+		head: ['index', 'name', 'uri', 'slots', 'instances', 'mimeType', 'size'],
 		warnings: [],
 	};
 }
