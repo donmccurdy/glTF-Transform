@@ -154,3 +154,55 @@ test('@gltf-transform/core::material | texture linking', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::material | copy', t => {
+	const doc = new Document();
+	const tex = doc.createTexture('MyTex');
+	const mat = doc.createMaterial('MyMat')
+		.setAlphaMode('BLEND')
+		.setAlphaCutoff(0.5)
+		.setBaseColorFactor([1, 0, 1, 0.5])
+		.setBaseColorTexture(tex)
+		.setMetallicFactor(0)
+		.setRoughnessFactor(0.9)
+		.setMetallicRoughnessTexture(tex)
+		.setNormalScale(0.9)
+		.setNormalTexture(tex)
+		.setOcclusionStrength(1.5)
+		.setOcclusionTexture(tex)
+		.setEmissiveFactor([2, 2, 2])
+		.setEmissiveTexture(tex);
+	mat.getBaseColorTextureInfo().setTexCoord(2);
+	mat.getBaseColorTextureSampler()
+		.setMagFilter(1)
+		.setMinFilter(2)
+		.setWrapS(3)
+		.setWrapT(4);
+
+	const mat2 = doc.createMaterial().copy(mat);
+
+	t.equal(mat2.getName(), 'MyMat', 'copy name');
+	t.equal(mat2.getAlphaMode(), 'BLEND', 'copy AlphaMode');
+	t.equal(mat2.getAlphaCutoff(), 0.5, 'copy AlphaCutoff');
+	t.deepEqual(mat2.getBaseColorFactor(), [1, 0, 1, 0.5], 'copy BaseColorFactor');
+	t.equal(mat2.getBaseColorTexture(), tex, 'copy BaseColorTexture');
+	t.equal(mat2.getMetallicFactor(), 0, 'copy MetallicFactor');
+	t.equal(mat2.getRoughnessFactor(), 0.9, 'copy RoughnessFactor');
+	t.equal(mat2.getMetallicRoughnessTexture(), tex, 'copy MetallicRoughnessTexture');
+	t.equal(mat2.getNormalScale(), 0.9, 'copy NormalScale');
+	t.equal(mat2.getNormalTexture(), tex, 'copy NormalTexture');
+	t.equal(mat2.getOcclusionStrength(), 1.5, 'copy OcclusionStrength');
+	t.equal(mat2.getOcclusionTexture(), tex, 'copy OcclusionTexture');
+	t.deepEqual(mat2.getEmissiveFactor(), [2, 2, 2], 'copy EmissiveFactor');
+	t.equal(mat2.getEmissiveTexture(), tex, 'copy EmissiveTexture');
+
+	t.equal(mat2.getBaseColorTextureInfo().getTexCoord(), 2, 'copy texCoord');
+
+	const sampler = mat2.getBaseColorTextureSampler();
+	t.equal(sampler.getMagFilter(), 1, 'magFilter');
+	t.equal(sampler.getMinFilter(), 2, 'minFilter');
+	t.equal(sampler.getWrapS(), 3, 'wrapS');
+	t.equal(sampler.getWrapT(), 4, 'wrapT');
+
+	t.end();
+});

@@ -78,3 +78,19 @@ test('@gltf-transform/core::texture | write', t => {
 	t.equals(nativeDoc.json.samplers.length, 2, 'reuses samplers');
 	t.end();
 });
+
+test('@gltf-transform/core::texture | copy', t => {
+	const doc = new Document();
+	const tex = doc.createTexture('MyTexture')
+		.setImage(new ArrayBuffer(2))
+		.setMimeType('image/gif')
+		.setURI('path/to/image.gif');
+
+	const tex2 = doc.createTexture().copy(tex);
+	t.equals(tex2.getName(), 'MyTexture', 'copy name');
+	t.deepEqual(tex2.getImage(), tex.getImage(), 'copy image');
+	t.equals(tex2.getMimeType(), 'image/gif', 'copy mimeType');
+	t.equals(tex2.getURI(), 'path/to/image.gif', 'copy URI');
+
+	t.end();
+});
