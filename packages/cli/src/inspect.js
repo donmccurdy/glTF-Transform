@@ -107,12 +107,13 @@ function listMaterials (doc) {
 			instances,
 			slots.join(', '),
 			material.getAlphaMode(),
+			material.getDoubleSided() ? 'x' : '',
 		];
 	});
 
 	return {
 		rows,
-		head: ['index', 'name', 'instances', 'textures', 'alphaMode'],
+		head: ['index', 'name', 'instances', 'textures', 'alphaMode', 'doubleSided'],
 		warnings: [],
 	};
 }
