@@ -41,7 +41,8 @@ const toktx = function (options) {
 					logger.debug('• Skipping, already KTX.');
 					return;
 				} else if (options.slots !== '*' && !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
-					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`)
+					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`);
+					// TODO(bug): Print a warning if nothing matches the pattern.
 					return;
 				}
 

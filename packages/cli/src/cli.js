@@ -195,28 +195,28 @@ program
 	.option(
 		'--mode <mode>',
 		'Basis Universal compression mode ["etc1s" = low quality, "uastc" = high quality]',
-		[Mode.ETC1S, Mode.UASTC], Mode.ETC1S
+		{validator: [Mode.ETC1S, Mode.UASTC], default: Mode.ETC1S}
 	)
 	.option(
 		'--quality <quality>',
 		'Quality level, where higher levels mean larger files [0 – 1]',
-		program.FLOAT, TOKTX_DEFAULTS.quality
+		{validator: program.NUMERIC, default: TOKTX_DEFAULTS.quality}
 	)
 	.option(
 		'--zstd <zstd>',
 		'ZSTD compression level (UASTC only) [1 – 20, 0 = Off]',
-		program.FLOAT, 0
+		{validator: program.NUMERIC, default: 0}
 	)
 	.option(
 		'--slots <slots>',
 		'Texture slots to compress (glob expression)',
-		program.STRING, "*"
+		{validator: program.STRING, default: '*'}
 	)
-	.action(({input, output}, options, logger) => {
-		const doc = io.read(input)
+	.action(({args, options, logger}) => {
+		const doc = io.read(args.input)
 			.setLogger(logger)
 			.transform(toktx(options));
-		io.write(output, doc);
+		io.write(args.output, doc);
 	});
 
 program.disableGlobalOption('--silent');
