@@ -8,11 +8,7 @@ const { program } = require('@caporal/core');
 const { version } = require('../package.json');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
-const { ao } = require('@gltf-transform/ao');
-const { colorspace } = require('@gltf-transform/colorspace');
-const { split } = require('@gltf-transform/split');
-const { prune } = require('@gltf-transform/prune');
-
+const { ao, prune, partition } = require('@gltf-transform/lib');
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
@@ -109,7 +105,7 @@ program
 	.action(({args, options, logger}) => {
 		const doc = io.read(args.input)
 			.setLogger(logger)
-			.transform(split(options));
+			.transform(partition(options));
 		io.write(args.output, doc);
 	});
 
@@ -135,24 +131,6 @@ program
 		const doc = io.read(args.input)
 			.setLogger(logger)
 			.transform(ao({...options, gl}));
-		io.write(args.output, doc);
-	});
-
-// COLORSPACE
-program
-	.command('colorspace', '✨ Colorspace correction for vertex colors')
-	.help('Colorspace correction for vertex colors.')
-	.hide()
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
-	.option('--inputEncoding [inputEncoding]', 'Input encoding for existing vertex colors', {
-		validator: ['linear', 'sRGB'],
-		required: true,
-	})
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
-			.setLogger(logger)
-			.transform(colorspace(options));
 		io.write(args.output, doc);
 	});
 

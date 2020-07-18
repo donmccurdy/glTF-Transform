@@ -1,11 +1,15 @@
 import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 
-const NAME = '@gltf-transform/colorspace';
+const NAME = 'colorspace';
 
 interface ColorspaceOptions {
     inputEncoding: string;
 }
 
+/**
+ * Options:
+ * - **inputEncoding**: Currently accepts only `"sRGB"`. Required.
+ */
 export function colorspace (options: ColorspaceOptions): Transform {
 
 	return (doc: Document): void => {

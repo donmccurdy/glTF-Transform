@@ -9,7 +9,7 @@ const { NodeIO } = require('@gltf-transform/core');
 const { ao } = require('../');
 
 
-test('@gltf-transform/ao', t => {
+test('@gltf-transform/lib::ao', t => {
 	const io = new NodeIO(fs, path);
 	const doc = io.read(path.join(__dirname, 'in/chr_knight.glb'));
 	const root = doc.getRoot();

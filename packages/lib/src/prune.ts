@@ -1,32 +1,37 @@
 import { Accessor, BufferUtils, Document, Logger, Material, Texture, Transform } from '@gltf-transform/core';
 
-const NAME = '@gltf-transform/prune';
+const NAME = 'dedup';
 
-interface PruneOptions {
+interface DedupOptions {
 	accessors: boolean;
 	textures: boolean;
 }
 
-const DEFAULT_OPTIONS: PruneOptions = {
+const DEFAULT_OPTIONS: DedupOptions = {
 	accessors: true,
 	textures: true
 };
 
-export const prune = function (options: PruneOptions): Transform {
+/**
+ * Options:
+ * - **accessors**: Whether to prune duplicate accessors. Default `true`.
+ * - **textures**: Whether to prune duplicate textures. Default `true`.
+ */
+export const dedup = function (options: DedupOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
-		if (options.accessors !== false) pruneAccessors(logger, doc);
-		if (options.textures !== false) pruneImages(logger, doc);
+		if (options.accessors !== false) dedupAccessors(logger, doc);
+		if (options.textures !== false) dedupImages(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
 
 }
 
-function pruneAccessors(logger: Logger, doc: Document): void {
+function dedupAccessors(logger: Logger, doc: Document): void {
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
 	const attributeAccessors: Set<Accessor> = new Set();
@@ -94,7 +99,7 @@ function pruneAccessors(logger: Logger, doc: Document): void {
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
 }
 
-function pruneImages(logger: Logger, doc: Document): void {
+function dedupImages(logger: Logger, doc: Document): void {
 	const root = doc.getRoot();
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();

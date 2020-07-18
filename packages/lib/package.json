@@ -1,12 +1,12 @@
 {
-  "name": "@gltf-transform/prune",
+  "name": "@gltf-transform/lib",
   "version": "0.4.2",
   "repository": "github:donmccurdy/glTF-Transform",
-  "description": "Prunes duplicate accessors",
-  "main": "dist/prune.js",
-  "module": "dist/prune.modern.js",
-  "source": "src/prune.ts",
-  "types": "dist/prune.d.ts",
+  "description": "Library of functions built on the core glTF-Transform API",
+  "main": "dist/lib.js",
+  "module": "dist/lib.modern.js",
+  "source": "src/lib.ts",
+  "types": "dist/lib.d.ts",
   "scripts": {
     "dist": "microbundle --format modern,cjs",
     "watch": "microbundle watch --format modern,cjs"
@@ -22,6 +22,10 @@
   "license": "MIT",
   "dependencies": {
     "@gltf-transform/core": "^0.4.2"
+  },
+  "optionalDependencies": {
+    "geo-ambient-occlusion": "^3.0.2",
+    "regl": "^1.3.11"
   },
   "files": [
     "dist/",
