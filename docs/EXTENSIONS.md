@@ -77,82 +77,11 @@ For further details on the general Extension API, see {@link Extension} and
 
 In addition to the official Khronos and multi-vendor extensions, the glTF format can be extended
 with [custom extensions](https://github.com/KhronosGroup/glTF/blob/master/extensions/README.md)
-for specific applications. glTF-Transform can be extended to support these custom extensions. A
-simple example, allowing "Gizmo" resources to be attached to a {@link Node}, is shown below.
+for specific applications. glTF-Transform supports reading/writing custom extensions, without
+modifications to the core codebase. Any extension implemented correctly and registered with the I/O
+instance may be read from a file, modified programmatically, and written back to a file.
 
-Gizmo extension implementation:
-
-```typescript
-// gizmo-extension.js
-const { Document, Extension, ExtensionProperty, NodeIO, PropertyType } = require('../');
-
-const EXTENSION_NAME = 'TEST_node_gizmo';
-
-/**
- * Implementation of TEST_node_gizmo, enabling read/write when registered with I/O classes.
- */
-class GizmoExtension extends Extension {
-	constructor(doc) {
-		super(doc);
-		this.extensionName = EXTENSION_NAME;
-	}
-
-	createGizmo() {
-		return new Gizmo(this.doc.getGraph(), this);
-	}
-
-	write(context) {
-		for (const node of this.doc.getRoot().listNodes()) {
-			if (node.getExtension(Gizmo)) {
-				const nodeDef = context.nativeDocument.json.nodes[context.nodeIndexMap.get(node)];
-				nodeDef.extensions = {TEST_node_gizmo: {isGizmo: true}};
-			}
-		}
-	}
-
-	read(context) {
-		context.nativeDocument.json.nodes.forEach((nodeDef, index) => {
-			const extensionDef = nodeDef.extensions && nodeDef.extensions.TEST_node_gizmo;
-			if (!extensionDef || !extensionDef.isGizmo) return;
-			const extension = this.doc.createExtension(GizmoExtension);
-			context.nodes[index].setExtension(Gizmo, extension.createGizmo());
-		});
-	}
-}
-
-/**
- * Implementation of a Gizmo property, which can be attached to any Node. Often, an
- * ExtensionProperty may need to manage resources (Mesh, Texture, etc.) of its own.
- * See the `KHR_materials_clearcoat` implementation for an example of this.
- */
-class Gizmo extends ExtensionProperty {
-	constructor(graph, extension) {
-		super(graph, extension);
-		this.extensionName = EXTENSION_NAME;
-		this.propertyType = 'Gizmo';
-		this.parentTypes = [PropertyType.NODE];
-	}
-}
-```
-
-Usage:
-
- ```ts
-// my-script.ts
-import { Gizmo, GizmoExtension } from './gizmo-extension';
-
-const gizmoExtension = doc.createExtension(GizmoExtension)
-	.setRequired(true);
-
-const gizmo = gizmoExtension.createGizmo();
-
-node.setExtension(Gizmo, gizmo);
-node.getExtension(Gizmo); // → gizmo
-node.listExtensions(); // → [gizmo x1]
-node.setExtension(Gizmo, null);
- ```
-
- For more examples, see [packages/extensions](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions).
+For implementation examples, see [packages/extensions](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions).
 
 ## Supported extensions
 
