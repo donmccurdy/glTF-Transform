@@ -8,7 +8,7 @@ const { MeshQuantization } = require('../');
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
-test('@gltf-transform/extensions::materials-unlit', t => {
+test('@gltf-transform/extensions::mesh-quantization', t => {
 	const doc = new Document();
 	const quantizationExtension = doc.createExtension(MeshQuantization);
 	let nativeDoc;
@@ -20,5 +20,13 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 
 	nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
 	t.equal(nativeDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
+	t.end();
+});
+
+test('@gltf-transform/extensions::mesh-quantization | copy', t => {
+	const doc = new Document();
+	doc.createExtension(MeshQuantization);
+
+	t.equals(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy MeshQuantization');
 	t.end();
 });

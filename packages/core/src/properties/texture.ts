@@ -39,9 +39,10 @@ export class Texture extends ExtensibleProperty {
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this.image = other.image.slice(0);
 		this.mimeType = other.mimeType;
 		this.uri = other.uri;
+
+		if (other.image) this.image = other.image.slice(0);
 
 		return this;
 	}

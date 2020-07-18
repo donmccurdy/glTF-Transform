@@ -1,4 +1,4 @@
-import { ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler } from '@gltf-transform/core';
 import { KHR_MATERIALS_CLEARCOAT } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -15,6 +15,29 @@ export class Clearcoat extends ExtensionProperty {
 	@GraphChild private clearcoatTexture: TextureLink = null;
 	@GraphChild private clearcoatRoughnessTexture: TextureLink = null;
 	@GraphChild private clearcoatNormalTexture: TextureLink = null;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._clearcoatFactor = other._clearcoatFactor;
+		this._clearcoatRoughnessFactor = other._clearcoatRoughnessFactor;
+		this._clearcoatNormalScale = other._clearcoatNormalScale;
+
+		if (other.clearcoatTexture) {
+			this.setClearcoatTexture(resolve(other.clearcoatTexture.getChild()));
+			this.clearcoatTexture.copy(other.clearcoatTexture);
+		}
+		if (other.clearcoatRoughnessTexture) {
+			this.setClearcoatRoughnessTexture(resolve(other.clearcoatRoughnessTexture.getChild()));
+			this.clearcoatRoughnessTexture.copy(other.clearcoatRoughnessTexture);
+		}
+		if (other.clearcoatNormalTexture) {
+			this.setClearcoatNormalTexture(resolve(other.clearcoatNormalTexture.getChild()));
+			this.clearcoatNormalTexture.copy(other.clearcoatNormalTexture);
+		}
+
+		return this;
+	}
 
 	/**********************************************************************************************
 	 * Clearcoat.
