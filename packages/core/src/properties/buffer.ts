@@ -60,7 +60,7 @@ import { COPY_IDENTITY } from './property';
 export class Buffer extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.BUFFER;
 
-	/** URI (or filename) of the buffer. */
+	/** @hidden URI (or filename) of the buffer. */
 	private _uri: string;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

@@ -82,25 +82,25 @@ import { COPY_IDENTITY } from './property';
 export class Accessor extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.ACCESSOR;
 
-	/** Raw data of the accessor. */
+	/** @hidden Raw data of the accessor. */
 	private _array: TypedArray = null;
 
-	/** Type of element represented. */
+	/** @hidden Type of element represented. */
 	private _type: GLTF.AccessorType = GLTF.AccessorType.SCALAR;
 
-	/** Numeric type of each component in an element. */
+	/** @hidden Numeric type of each component in an element. */
 	private _componentType: GLTF.AccessorComponentType = null;
 
-	/** Whether data in the raw array should be considered normalized. */
+	/** @hidden Whether data in the raw array should be considered normalized. */
 	private _normalized = false;
 
-	/** Inbound transform to normalized representation, if applicable. */
+	/** @hidden Inbound transform to normalized representation, if applicable. */
 	private _in = identity;
 
-	/** Outbound transform from normalized representation, if applicable. */
+	/** @hidden Outbound transform from normalized representation, if applicable. */
 	private _out = identity;
 
-	/** The {@link Buffer} to which this accessor's data will be written. */
+	/** @hidden The {@link Buffer} to which this accessor's data will be written. */
 	@GraphChild private buffer: Link<Accessor, Buffer> = null;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

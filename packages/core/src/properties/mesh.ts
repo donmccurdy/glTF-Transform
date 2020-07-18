@@ -45,7 +45,7 @@ export class Mesh extends ExtensibleProperty {
 
 	private _weights: number[] = [];
 
-	/** Primitive GPU draw call list. */
+	/** @hidden Primitive GPU draw call list. */
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
@@ -131,7 +131,7 @@ export class Mesh extends ExtensibleProperty {
 export class Primitive extends Property {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
-	/** GPU draw mode. */
+	/** @hidden GPU draw mode. */
 	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
 
 	@GraphChild private material: Link<Primitive, Material> = null;
@@ -284,7 +284,7 @@ export class Primitive extends Property {
 export class PrimitiveTarget extends Property {
 	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
-	/** Vertex attributes. */
+	/** @hidden Vertex attributes. */
 	@GraphChildList private attributes: AttributeLink[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
