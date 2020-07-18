@@ -72,3 +72,44 @@ test('@gltf-transform/core::animation', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::animation | copy', t => {
+	const doc = new Document();
+	const a = doc.createAnimation('MyAnim')
+		.addChannel(doc.createAnimationChannel())
+		.addSampler(doc.createAnimationSampler());
+	const b = doc.createAnimation().copy(a);
+
+	t.equal(b.getName(), a.getName(), 'copy name');
+	t.deepEqual(b.listChannels(), a.listChannels(), 'copy channels');
+	t.deepEqual(b.listSamplers(), a.listSamplers(), 'copy samplers');
+	t.end();
+});
+
+test('@gltf-transform/core::animationChannel | copy', t => {
+	const doc = new Document();
+	const a = doc.createAnimationChannel('MyChannel')
+		.setTargetNode(doc.createNode())
+		.setSampler(doc.createAnimationSampler());
+	const b = doc.createAnimationChannel().copy(a);
+
+	t.equal(b.getName(), a.getName(), 'copy name');
+	t.equal(b.getTargetNode(), a.getTargetNode(), 'copy targetNode');
+	t.equal(b.getSampler(), a.getSampler(), 'copy sampler');
+	t.end();
+});
+
+test('@gltf-transform/core::animationSampler | copy', t => {
+	const doc = new Document();
+	const a = doc.createAnimationSampler('MySampler')
+		.setInterpolation('STEP')
+		.setInput(doc.createAccessor())
+		.setOutput(doc.createAccessor());
+	const b = doc.createAnimationSampler().copy(a);
+
+	t.equal(b.getName(), a.getName(), 'copy name');
+	t.equal(b.getInterpolation(), a.getInterpolation(), 'copy interpolation');
+	t.equal(b.getInput(), a.getInput(), 'copy input');
+	t.equal(b.getOutput(), a.getOutput(), 'copy output');
+	t.end();
+});

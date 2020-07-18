@@ -26,3 +26,13 @@ test('@gltf-transform/core::buffer', t => {
 	t.false('empty.bin' in nativeDoc.resources, 'empty buffer skipped');
 	t.end();
 });
+
+test('@gltf-transform/core::buffer | copy', t => {
+	const doc = new Document();
+	const buffer1 = doc.createBuffer('MyBuffer').setURI('mybuffer.bin');
+	const buffer2 = doc.createBuffer().copy(buffer1);
+
+	t.equal(buffer1.getName(), buffer2.getName(), 'copy name');
+	t.equal(buffer1.getURI(), buffer2.getURI(), 'copy URI');
+	t.end();
+});

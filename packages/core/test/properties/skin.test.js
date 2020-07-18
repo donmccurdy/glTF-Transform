@@ -73,3 +73,19 @@ test('@gltf-transform/core::skin', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::skin | copy', t => {
+	const doc = new Document();
+	const a = doc.createSkin('MySkin')
+		.addJoint(doc.createNode())
+		.addJoint(doc.createNode())
+		.setSkeleton(doc.createNode())
+		.setInverseBindMatrices(doc.createAccessor());
+	const b = doc.createSkin().copy(a);
+
+	t.equal(b.getName(), a.getName(), 'copy name');
+	t.deepEqual(b.listJoints(), a.listJoints(), 'copy joints');
+	t.equal(b.getSkeleton(), a.getSkeleton(), 'copy skeleton');
+	t.equal(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
+	t.end();
+});
