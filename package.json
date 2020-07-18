@@ -18,16 +18,18 @@
     "coverage:report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
-    "preversion": "yarn run test",
-    "version": "lerna run dist --parallel",
+    "preversion": "yarn test",
+    "version": "yarn changelog && git add CHANGELOG.md && lerna run dist --parallel",
     "postpublish": "git push && git push --tags && yarn run docs:deploy",
     "docs": "cd packages/core && typedoc --out ../../docs/dist/ --name glTF-Transform --excludeNotDocumented --theme ../../docs/theme --media ../../docs/media --mode file --readme ../../docs/INDEX.md --includes ../../docs && cd ../../ && mv docs/dist/modules/* docs/dist/",
-    "docs:deploy": "yarn run docs && now --prod"
+    "docs:deploy": "yarn docs && now --prod",
+    "changelog": "auto-changelog --package packages/core/package.json --tag-pattern \"^v\\d+\\.\\d+\\.\\d+$\" --starting-version \"v0.2.0\""
   },
   "devDependencies": {
     "@types/node": "^10.12.17",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "auto-changelog": "^2.2.0",
     "browserify": "^16.5.1",
     "canvas": "^2.6.1",
     "coveralls": "^3.0.11",
