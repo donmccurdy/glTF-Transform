@@ -6,7 +6,7 @@ const gl = require('gl');
 const { gzip } = require('node-gzip');
 const { program } = require('@caporal/core');
 const { version } = require('../package.json');
-const { NodeIO } = require('@gltf-transform/core');
+const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
 const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
@@ -65,17 +65,33 @@ program
 		io.write(args.output, doc);
 	});
 
+// MERGE
 program
-	.command('merge', '📦 Merges two models into one')
-	.help('Merges two models into one.')
-	.argument('<a>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.argument('<b>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.argument('<output>', 'Path to write output')
-	.action(({args, logger}) => {
-		const a = io.read(args.a).setLogger(logger);
-		const b = io.read(args.b).setLogger(logger);
-		// TODO(bug): Need more graceful way to deal with 1-buffer GLB requirement.
-		io.write(args.output, a.merge(b));
+	.command('merge', '📦 Merges two or more models into one')
+	.help(''
+		+ 'Merges two or more models into one, each in a separate Scene.\n\n'
+		+ 'Usage:\n\n'
+		+ '  ▸ gltf-transform merge a.glb b.glb c.glb output.glb'
+	)
+	.argument('<path...>', 'Path to glTF 2.0 (.glb, .gltf) model(s). Final path is used to write output.')
+	.option('--partition', 'Whether to maintain separate buffers for each input file. Invalid for GLB output.', {
+		validator: program.BOOL,
+		default: false,
+	})
+	.action(({args, options, logger}) => {
+		const doc = new Document().setLogger(logger);
+		args.path.forEach((path, index) => {
+			if (index < args.path.length - 1) {
+				logger.debug(`Merging ${index + 1} / ${args.path.length - 1}, ${path}`)
+				doc.merge(io.read(path));
+			}
+		});
+		if (!options.partition) {
+			const buffer = doc.getRoot().listBuffers()[0];
+			doc.getRoot().listAccessors().forEach((a) => a.setBuffer(buffer));
+			doc.getRoot().listBuffers().forEach((b, index) => index > 0 ? b.dispose() : null);
+		}
+		io.write(args.path.pop(), doc);
 	});
 
 // PARTITION
