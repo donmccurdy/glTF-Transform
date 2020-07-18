@@ -46,6 +46,18 @@ export class Animation extends ExtensibleProperty {
 	@GraphChildList private channels: Link<Animation, AnimationChannel>[] = [];
 	@GraphChildList private samplers: Link<Animation, AnimationSampler>[] = [];
 
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.clearGraphChildList(this.channels);
+		this.clearGraphChildList(this.samplers);
+
+		other.channels.forEach((link) => this.addChannel(resolve(link.getChild())));
+		other.samplers.forEach((link) => this.addSampler(resolve(link.getChild())));
+
+		return this;
+	}
+
 	/** Adds an {@link AnimationChannel} to this Animation. */
 	public addChannel(channel: AnimationChannel): this {
 		const link = this.graph.link('channel', this, channel);
@@ -112,6 +124,17 @@ export class AnimationChannel extends Property {
 	private _targetPath: GLTF.AnimationChannelTargetPath = null;
 	@GraphChild private targetNode: Link<AnimationChannel, Node> = null;
 	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> = null;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._targetPath = other._targetPath;
+
+		if (other.targetNode) this.setTargetNode(resolve(other.targetNode.getChild()));
+		if (other.sampler) this.setSampler(resolve(other.sampler.getChild()));
+
+		return this;
+	}
 
 	/**
 	 * Path (property) animated on the target {@link Node}. Supported values include:

@@ -89,3 +89,34 @@ test('@gltf-transform/core::mesh | primitive targets', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::mesh | copy', t => {
+	const doc = new Document();
+	const mesh = doc.createMesh('mesh')
+		.setWeights([1, 2, 3])
+		.addPrimitive(doc.createPrimitive());
+	const mesh2 = doc.createMesh().copy(mesh);
+
+	t.deepEqual(mesh2.getWeights(), mesh.getWeights(), 'copy weights');
+	t.deepEqual(mesh2.listPrimitives(), mesh.listPrimitives(), 'copy primitives');
+	t.end();
+});
+
+test('@gltf-transform/core::primitive | copy', t => {
+	const doc = new Document();
+	const prim = doc.createPrimitive()
+		.setAttribute('POSITION', doc.createAccessor())
+		.setIndices(doc.createAccessor())
+		.setMode(3)
+		.setMaterial(doc.createMaterial())
+		.addTarget(doc.createPrimitiveTarget())
+		.addTarget(doc.createPrimitiveTarget());
+	const prim2 = doc.createPrimitive().copy(prim);
+
+	t.equal(prim2.getAttribute('POSITION'), prim2.getAttribute('POSITION'), 'copy attributes');
+	t.equal(prim2.getIndices(), prim.getIndices(), 'copy indices');
+	t.equal(prim2.getMode(), prim.getMode(), 'copy mode');
+	t.equal(prim2.getMaterial(), prim.getMaterial(), 'copy material');
+	t.deepEqual(prim2.listTargets(), prim.listTargets(), 'copy targets');
+	t.end();
+});
