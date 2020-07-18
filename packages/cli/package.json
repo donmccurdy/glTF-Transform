@@ -19,11 +19,10 @@
     "@gltf-transform/core": "^0.4.2",
     "@gltf-transform/extensions": "^0.4.2",
     "cli-table": "^0.3.1",
-    "geo-ambient-occlusion": "^3.0.2",
     "gl": "^4.5.0",
     "gltf-validator": "^2.0.0-dev.3.2",
-    "node-gzip": "^1.1.2",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "node-gzip": "^1.1.2"
   },
   "files": [
     "src/",
