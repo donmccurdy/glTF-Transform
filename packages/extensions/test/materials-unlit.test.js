@@ -33,3 +33,15 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 	t.equal(mat.getExtension(Unlit), null, 'unlit is detached');
 	t.end();
 });
+
+test('@gltf-transform/extensions::materials-unlit | copy', t => {
+	const doc = new Document();
+	const unlitExtension = doc.createExtension(MaterialsUnlit);
+	doc.createMaterial()
+		.setExtension(Unlit, unlitExtension.createUnlit());
+
+	const doc2 = doc.clone();
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsUnlit');
+	t.ok(doc2.getRoot().listMaterials()[0].getExtension(Unlit), 'copy Unlit');
+	t.end();
+});

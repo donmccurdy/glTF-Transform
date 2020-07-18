@@ -46,3 +46,29 @@ test('@gltf-transform/extensions::materials-clearcoat', t => {
 	t.ok(roundtripMat.getExtension(Clearcoat).getClearcoatTexture(), 'reads clearcoatTexture');
 	t.end();
 });
+
+test('@gltf-transform/extensions::materials-clearcoat | copy', t => {
+	const doc = new Document();
+	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+	const clearcoat = clearcoatExtension.createClearcoat()
+		.setClearcoatFactor(0.9)
+		.setClearcoatRoughnessFactor(0.1)
+		.setClearcoatNormalScale(0.5)
+		.setClearcoatTexture(doc.createTexture('cc'))
+		.setClearcoatRoughnessTexture(doc.createTexture('ccrough'))
+		.setClearcoatNormalTexture(doc.createTexture('ccnormal'));
+	doc.createMaterial()
+		.setExtension(Clearcoat, clearcoat);
+
+	const doc2 = doc.clone();
+	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension(Clearcoat);
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsClearcoat');
+	t.ok(clearcoat2, 'copy Clearcoat');
+	t.equals(clearcoat2.getClearcoatFactor(), 0.9, 'copy clearcoatFactor');
+	t.equals(clearcoat2.getClearcoatRoughnessFactor(), 0.1, 'copy clearcoatFactor');
+	t.equals(clearcoat2.getClearcoatNormalScale(), 0.5, 'copy clearcoatFactor');
+	t.equals(clearcoat2.getClearcoatTexture().getName(), 'cc', 'copy clearcoatTexture');
+	t.equals(clearcoat2.getClearcoatRoughnessTexture().getName(), 'ccrough', 'copy clearcoatRoughnessTexture');
+	t.equals(clearcoat2.getClearcoatNormalTexture().getName(), 'ccnormal', 'copy clearcoatNormalTexture');
+	t.end();
+});

@@ -22,7 +22,7 @@ export abstract class ExtensibleProperty extends Property {
 		this.clearGraphChildList(this.extensions);
 		other.extensions.forEach((link) => {
 			const extension = link.getChild();
-			this.setExtension(extension.constructor as ExtensionPropertyConstructor<typeof extension>, extension);
+			this.setExtension(extension.constructor as ExtensionPropertyConstructor<typeof extension>, resolve(extension));
 		})
 
 		return this;
