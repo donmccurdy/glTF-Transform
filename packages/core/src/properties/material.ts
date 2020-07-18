@@ -40,54 +40,58 @@ import { Texture, TextureInfo, TextureSampler } from './texture';
 export class Material extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.MATERIAL;
 
-	/** Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
+	/** @hidden Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
 	private _alphaMode: GLTF.MaterialAlphaMode = GLTF.MaterialAlphaMode.OPAQUE;
 
-	/** Visibility threshold. Applied only when `.alphaMode='MASK'`. */
+	/** @hidden Visibility threshold. Applied only when `.alphaMode='MASK'`. */
 	private _alphaCutoff = 0.5;
 
-	/** When true, both sides of each triangle are rendered. May decrease performance. */
+	/** @hidden When true, both sides of each triangle are rendered. May decrease performance. */
 	private _doubleSided = false;
 
-	/** Base color / albedo; linear multiplier. */
+	/** @hidden Base color / albedo; linear multiplier. */
 	private _baseColorFactor: vec4 = [1, 1, 1, 1];
 
-	/** Emissive color; linear multiplier. */
+	/** @hidden Emissive color; linear multiplier. */
 	private _emissiveFactor: vec3 = [0, 0, 0];
 
-	/** Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
+	/** @hidden Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
 	private _normalScale = 1;
 
-	/** (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionMap`. */
+	/** @hidden (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionMap`. */
 	private _occlusionStrength = 1;
 
 	/**
 	 * Roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`.
+	 * @hidden
 	 */
 	private _roughnessFactor = 1;
 
 	/**
 	 * Metallic factor; linear multiplier. Affects metallic channel of
 	 * `metallicRoughnessTexture`.
+	 * @hidden
 	 */
 	private _metallicFactor = 1;
 
-	/** Base color / albedo texture. */
+	/** @hidden Base color / albedo texture. */
 	@GraphChild private baseColorTexture: TextureLink = null;
 
-	/** Emissive texture. */
+	/** @hidden Emissive texture. */
 	@GraphChild private emissiveTexture: TextureLink = null;
 
 	/**
 	 * Normal (surface detail) texture. Normal maps often suffer artifacts with JPEG compression,
 	 * so PNG files are preferred.
+	 * @hidden
 	 */
 	@GraphChild private normalTexture: TextureLink = null;
 
 	/**
 	 * (Ambient) Occlusion texture. Occlusion data is stored in the `.r` channel, allowing this
 	 * texture to be packed with `metallicRoughnessTexture`, optionally.
+	 * @hidden
 	 */
 	@GraphChild private occlusionTexture: TextureLink = null;
 
@@ -95,6 +99,7 @@ export class Material extends ExtensibleProperty {
 	 * Metallic/roughness PBR texture. Roughness data is stored in the `.g` channel and metallic
 	 * data is stored in the `.b` channel, allowing thist exture to be packed with
 	 * `occlusionTexture`, optionally.
+	 * @hidden
 	*/
 	@GraphChild private metallicRoughnessTexture: TextureLink = null;
 

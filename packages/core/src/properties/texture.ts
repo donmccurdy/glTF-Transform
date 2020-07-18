@@ -27,13 +27,13 @@ import { COPY_IDENTITY } from './property';
 export class Texture extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.TEXTURE;
 
-	/** Raw image data for this texture. */
+	/** @hidden Raw image data for this texture. */
 	private image: ArrayBuffer = null;
 
-	/** Image MIME type. Required if URI is not set. */
+	/** @hidden Image MIME type. Required if URI is not set. */
 	private mimeType = '';
 
-	/** Image URI. Required if MIME type is not set. */
+	/** @hidden Image URI. Required if MIME type is not set. */
 	private uri = '';
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
