@@ -43,7 +43,7 @@ export class GLTFReader {
 
 		/* Reader context. */
 
-		const context = new ReaderContext(doc, nativeDoc);
+		const context = new ReaderContext(nativeDoc);
 
 		/** Extensions (1/2). */
 
