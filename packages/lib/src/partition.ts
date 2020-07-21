@@ -1,16 +1,16 @@
 import { Document, Transform } from '@gltf-transform/core';
 
-const NAME = '@gltf-transform/split';
+const NAME = 'partition';
 
-interface SplitOptions {
+interface PartitionOptions {
 	meshes: Array<string>;
 }
 
-const DEFAULT_OPTIONS: SplitOptions =  {
+const DEFAULT_OPTIONS: PartitionOptions =  {
 	meshes: []
 };
 
-const split = (options: SplitOptions): Transform => {
+const partition = (options: PartitionOptions): Transform => {
 
 	options = {...DEFAULT_OPTIONS, ...options};
 
@@ -48,4 +48,4 @@ const split = (options: SplitOptions): Transform => {
 
 
 
-export { split };
+export { partition };

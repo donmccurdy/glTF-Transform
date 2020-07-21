@@ -2,7 +2,7 @@ import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
 import { Document, Primitive, Transform } from '@gltf-transform/core';
 
-const NAME = '@gltf-transform/ao';
+const NAME = 'ao';
 const geoao = geoaoNamespace['default'] as Function;
 const REGL = reglNamespace['default'] as Function;
 
@@ -30,6 +30,12 @@ const TEXTURE_DATA = new Uint8Array([
 	3, 254, 243, 176, 75, 70, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
 ]).buffer;
 
+/**
+ * Options:
+ * - **gl**: Callback taking `(width, height)` as parameters, and returning a GL instance. Optional on web; Requires `headless-gl` in Node.js.
+ * - **resolution**: Resolution of depth buffer. Default: 512.
+ * - **samples**: Number of samples to draw. Default: 500.
+ */
 export function ao (options: AOOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
