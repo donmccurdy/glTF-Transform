@@ -16,7 +16,7 @@ const { prune } = require('@gltf-transform/prune');
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
-const { toktx, Filter, Mode } = require('./toktx');
+const { toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -200,19 +200,19 @@ program
 	.option (
 		'--filter <filter>',
 		'Specifies the filter to use when generating mipmaps.',
-		{validator: Object.values(Filter), default: Filter.LANCZOS4}
+		{validator: Object.values(Filter), default: ETC1S_DEFAULTS.filter}
 	)
 	.option (
 		'--filter-scale <fscale>',
 		'Specifies the filter scale to use when generating mipmaps.',
-		{validator: program.NUMERIC, default: 1}
+		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.filterScale}
 	)
 	.option(
 		'--compression <clevel>',
 		'Compression level, an encoding speed vs. quality tradeoff.'
 		+ ' Higher values are slower, but give higher quality. Try'
 		+ ' --quality before experimenting with this option.',
-		{validator: [0, 1, 2, 3, 4, 5], default: 1}
+		{validator: [0, 1, 2, 3, 4, 5], default: ETC1S_DEFAULTS.compression}
 	)
 	.option(
 		'--quality <qlevel>',
@@ -220,7 +220,7 @@ program
 		+ ' compression, lower quality, and faster encoding. Higher gives less compression,'
 		+ ' higher quality, and slower encoding. Quality level determines values of'
 		+ ' --max_endpoints and --max-selectors, unless those values are explicitly set.',
-		{validator: program.NUMERIC, default: 128}
+		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.quality}
 	)
 	.option(
 		'--max-endpoints <max_endpoints>',
@@ -267,12 +267,12 @@ program
 	.option (
 		'--filter <filter>',
 		'Specifies the filter to use when generating mipmaps.',
-		{validator: Object.values(Filter), default: Filter.LANCZOS4}
+		{validator: Object.values(Filter), default: UASTC_DEFAULTS.filter}
 	)
 	.option (
 		'--filter-scale <fscale>',
 		'Specifies the filter scale to use when generating mipmaps.',
-		{validator: program.NUMERIC, default: 1}
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.filterScale}
 	)
 	.option(
 		'--level <level>',
@@ -287,7 +287,7 @@ program
 		+ '\n2     | Default   | 47.47dB'
 		+ '\n3     | Slower    | 48.01dB'
 		+ '\n4     | Very slow | 48.24dB',
-		{validator: [0, 1, 2, 3, 4], default: 2}
+		{validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level}
 	)
 	.option(
 		'--rdo-quality <uastc_rdo_q>',
@@ -296,14 +296,14 @@ program
 		+ ' quality/larger LZ compressed files, higher values yield lower'
 		+ ' quality/smaller LZ compressed files. A good range to try is [.2-4].'
 		+ ' Full range is .001 to 10.0.',
-		{validator: program.NUMERIC, default: 1}
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoQuality}
 	)
 	.option(
 		'--rdo-dictsize <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower'
 		+ ' values=faster, but give less compression. Possible range is 256'
 		+ ' to 65536.',
-		{validator: program.NUMERIC, default: 32768}
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoDictsize}
 	)
 	.option(
 		'--zstd <compressionLevel>',

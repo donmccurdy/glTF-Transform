@@ -2,8 +2,9 @@ const fs = require('fs');
 const tmp = require('tmp');
 const minimatch = require('minimatch');
 const { spawnSync } = require('child_process');
-const { BufferUtils, ImageUtils, FileUtils, PropertyType } = require('@gltf-transform/core');
+const { BufferUtils, ImageUtils, FileUtils } = require('@gltf-transform/core');
 const { TextureBasisu } = require('@gltf-transform/extensions');
+const { formatBytes } = require('./util');
 
 tmp.setGracefulCleanup();
 
@@ -29,6 +30,24 @@ const Filter = {
 	QUADRATIC_INTERP: 'quadratic_interp',
 	QUADRATIC_APPROX: 'quadratic_approx',
 	QUADRATIC_MIX: 'quadratic_mix',
+};
+
+const GLOBAL_OPTIONS = {
+	filter: Filter.LANCZOS4,
+	filterScale: 1,
+};
+
+const ETC1S_DEFAULTS = {
+	quality: 128,
+	compression: 1,
+	...GLOBAL_OPTIONS,
+};
+
+const UASTC_DEFAULTS = {
+	level: 2,
+	rdoQuality: 1,
+	rdoDictsize: 32768,
+	...GLOBAL_OPTIONS,
 };
 
 const toktx = function (options) {
@@ -57,10 +76,11 @@ const toktx = function (options) {
 					return;
 				}
 
-				const inExtension = texture.getURI()
+				// Create temporary in/out paths for the 'toktx' CLI tool.
+				const extension = texture.getURI()
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
-				const inPath = tmp.tmpNameSync({postfix: '.' + inExtension});
+				const inPath = tmp.tmpNameSync({postfix: '.' + extension});
 				const outPath = tmp.tmpNameSync({postfix: '.ktx2'});
 
 				const inBytes = texture.getImage().byteLength;
@@ -83,7 +103,8 @@ const toktx = function (options) {
 
 				numCompressed++;
 
-				logger.debug(`• ${inBytes} → ${texture.getImage().byteLength} bytes.`);
+				const outBytes = texture.getImage().byteLength;
+				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
 			});
 
 		if (numCompressed === 0) {
@@ -92,6 +113,7 @@ const toktx = function (options) {
 	};
 }
 
+/** Returns names of all texture slots using the given texture. */
 function getTextureSlots (doc, texture) {
 	return doc.getGraph().getLinks()
 		.filter((link) => link.getChild() === texture)
@@ -99,21 +121,23 @@ function getTextureSlots (doc, texture) {
 		.filter((slot) => slot !== 'texture')
 }
 
+/** Create CLI parameters from the given options. Attempts to write only non-default options. */
 function createParams (slots, options) {
 	const params = [];
 	params.push('--genmipmap');
-	params.push('--filter', options.filter);
-	params.push('--fscale', options.filterScale);
+	if (options.filter !== GLOBAL_OPTIONS.filter) params.push('--filter', options.filter);
+	if (options.filterScale !== GLOBAL_OPTIONS.filterScale) params.push('--fscale', options.filterScale);
 
 	if (options.mode === Mode.UASTC) {
-		params.push('--uastc', options.level);
-		params.push('--uastc_rdo_q', options.rdoQuality);
-		params.push('--uastc_rdo_d', options.rdoDictsize)
+		params.push('--uastc');
+		if (options.level !== UASTC_DEFAULTS.level) params.push(options.level);
+		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) params.push('--uastc_rdo_q', options.rdoQuality);
+		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) params.push('--uastc_rdo_d', options.rdoDictsize)
 		if (options.zstd > 0) params.push('--zcmp', options.zstd);
 	} else {
 		params.push('--bcmp');
-		params.push('--qlevel', options.quality);
-		params.push('--clevel', options.compression);
+		if (options.quality !== ETC1S_DEFAULTS.quality) params.push('--qlevel', options.quality);
+		if (options.compression !== ETC1S_DEFAULTS.compression) params.push('--clevel', options.compression);
 
 		if (options.maxEndpoints) params.push('--max_endpoints', options.maxEndpoints);
 		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
@@ -130,11 +154,11 @@ function createParams (slots, options) {
 		}
 	}
 
-	if (!slots.find((slot) => minimatch(slot, '*(color|emissive)*', {nocase: true}))) {
+	if (!slots.find((slot) => minimatch(slot, '*{color,emissive}*', {nocase: true}))) {
 		params.push('--linear');
 	}
 
 	return params;
 }
 
-module.exports = {toktx, Filter, Mode};
+module.exports = {toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS};
