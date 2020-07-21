@@ -8,7 +8,7 @@ const { MeshQuantization } = require('../');
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
-test('@gltf-transform/extensions::materials-unlit', t => {
+test('@gltf-transform/extensions::mesh-quantization', t => {
 	const doc = new Document();
 	const quantizationExtension = doc.createExtension(MeshQuantization);
 	let nativeDoc;
