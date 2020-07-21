@@ -159,7 +159,7 @@ node.setExtension(Gizmo, null);
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
-- [KHR_texture_basisu](#khr_texture_basisu) *(experimental)*
+- [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
 
 ### KHR_materials_clearcoat
 
@@ -233,9 +233,9 @@ import { MeshQuantization } from '@gltf-transform/extensions';
 const quantizationExtension = document.createExtension(MeshQuantization).setRequired(true);
 ```
 
-### KHR_texture_basisu
+### KHR_texture_basisu <mark>*(experimental)*</mark>
 
-- *Draft specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/pull/1751)* (experimental)
+- *Draft specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/pull/1751)*
 - *Source: [packages/extensions/src/khr-texture-basisu/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-texture-basisu)*
 
 The `KHR_texture_basisu` extension adds the ability to use KTX2 GPU textures with Basis Universal
@@ -268,8 +268,8 @@ the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}.
 CLI has functions to help with this, or any similar KTX2-capable utility will work.
 
 When the `KHR_texture_basisu` extension is added to a file by glTF-Transform, the extension should
-always be required. This tool does not support writing assets that "fall back" to optional PNG/JPG
-image data.
+always be required. This tool does not support writing assets that "fall back" to optional PNG or
+JPEG image data.
 
 > **NOTICE:** The `KHR_texture_basisu` extension is still a draft specification, and may change
 before being officially ratified. Some aspects are still being worked out — in particular, naively
