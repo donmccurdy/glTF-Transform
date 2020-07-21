@@ -31,7 +31,7 @@ glTF-Transform supports the complete glTF 2.0 core format, and some extensions. 
 - [KHR_materials_clearcoat](/extensions.html#khr_materials_clearcoat)
 - [KHR_materials_unlit](/extensions.html#khr_materials_unlit)
 - [KHR_mesh_quantization](/extensions.html#khr_mesh_quantization)
-- [KHR_texture_basisu](/extensions#khr_texture_basisu)
+- [KHR_texture_basisu](/extensions#khr_texture_basisu) *(experimental)*
 
 ## Alternatives and related projects
 

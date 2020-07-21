@@ -159,7 +159,7 @@ node.setExtension(Gizmo, null);
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
-- [KHR_texture_basisu](#khr_texture_basisu)
+- [KHR_texture_basisu](#khr_texture_basisu) *(experimental)*
 
 ### KHR_materials_clearcoat
 
@@ -232,3 +232,46 @@ import { MeshQuantization } from '@gltf-transform/extensions';
 // Create an Extension attached to the Document.
 const quantizationExtension = document.createExtension(MeshQuantization).setRequired(true);
 ```
+
+### KHR_texture_basisu
+
+- *Draft specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/pull/1751)* (experimental)
+- *Source: [packages/extensions/src/khr-texture-basisu/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-texture-basisu)*
+
+The `KHR_texture_basisu` extension adds the ability to use KTX2 GPU textures with Basis Universal
+supercompression for any material texture. GPU texture formats, unlike traditional image formats,
+remain compressed in GPU memory. As a result, they (1) upload to the GPU much more quickly, and (2)
+require much less GPU memory. In certain cases they may also have smaller filesizes than PNG or
+JPEG textures, but this is not guaranteed. GPU textures often require more careful tuning during
+compression to maintain image quality, but this extra effort is worthwhile for applications that
+need to maintain a smooth framerate while uploading images, or where GPU memory is limited.
+
+Defining no {@link ExtensionProperty} types, this {@link Extension} is simply attached to the
+{@link Document}, and affects the entire Document by allowing use of the `image/ktx2` MIME type
+and passing KTX2 image data to the {@link Texture.setImage} method. Without the Extension, the
+same MIME types and image data would yield an invalid glTF document, under the stricter core glTF
+specification.
+
+```typescript
+import { TextureBasisu } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const basisuExtension = document.createExtension(TextureBasisu)
+  .setRequired(true);
+document.createTexture('MyCompressedTexture')
+  .setMimeType('image/ktx2')
+  .setImage(fs.readFileSync('my-texture.ktx2'));
+```
+
+Compression is not done automatically when adding the extension as shown above — you must compress
+the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}. The glTF-Transform
+CLI has functions to help with this, or any similar KTX2-capable utility will work.
+
+When the `KHR_texture_basisu` extension is added to a file by glTF-Transform, the extension should
+always be required. This tool does not support writing assets that "fall back" to optional PNG/JPG
+image data.
+
+> **NOTICE:** The `KHR_texture_basisu` extension is still a draft specification, and may change
+before being officially ratified. Some aspects are still being worked out — in particular, naively
+compressing a 3-component (RGB) normal map will often give poor results with the ETC1S compression
+option.
