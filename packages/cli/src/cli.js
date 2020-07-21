@@ -12,9 +12,11 @@ const { ao } = require('@gltf-transform/ao');
 const { colorspace } = require('@gltf-transform/colorspace');
 const { split } = require('@gltf-transform/split');
 const { prune } = require('@gltf-transform/prune');
+
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
+const { toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS } = require('./toktx');
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
@@ -154,7 +156,6 @@ program
 		io.write(args.output, doc);
 	});
 
-
 // UNLIT
 program
 	.command('unlit', '✨ Converts materials to an unlit model')
@@ -177,7 +178,7 @@ program
  * OPTIMIZE
  */
 
-// PRUNE
+// DEDUP
 program
 	.command('dedup', '⏩ Deduplicates accessors and textures')
 	.help('Deduplicates accessors and textures.')
@@ -200,8 +201,8 @@ program
 
 // GZIP
 program
-	.command('gzip', '⏩ Compress .gltf/.glb/.bin with gzip')
-	.help('Compress .gltf/.glb/.bin with gzip.')
+	.command('gzip', '⏩ Compress the model with gzip')
+	.help('Compress the model with gzip.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
 		const inBuffer = fs.readFileSync(args.input);
@@ -213,6 +214,139 @@ program
 				fs.writeFileSync(fileName, outBuffer);
 				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 			});
+	});
+
+// ETC1S
+program
+	.command('etc1s', '⏩ Compress textures with KTX + Basis ETC1S')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option(
+		'--slots <slots>',
+		'Texture slots to compress (glob expression)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option (
+		'--filter <filter>',
+		'Specifies the filter to use when generating mipmaps.',
+		{validator: Object.values(Filter), default: ETC1S_DEFAULTS.filter}
+	)
+	.option (
+		'--filter-scale <fscale>',
+		'Specifies the filter scale to use when generating mipmaps.',
+		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.filterScale}
+	)
+	.option(
+		'--compression <clevel>',
+		'Compression level, an encoding speed vs. quality tradeoff.'
+		+ ' Higher values are slower, but give higher quality. Try'
+		+ ' --quality before experimenting with this option.',
+		{validator: [0, 1, 2, 3, 4, 5], default: ETC1S_DEFAULTS.compression}
+	)
+	.option(
+		'--quality <qlevel>',
+		'Quality level. Range is 1 - 255. Lower gives better'
+		+ ' compression, lower quality, and faster encoding. Higher gives less compression,'
+		+ ' higher quality, and slower encoding. Quality level determines values of'
+		+ ' --max_endpoints and --max-selectors, unless those values are explicitly set.',
+		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.quality}
+	)
+	.option(
+		'--max-endpoints <max_endpoints>',
+		'Manually set the maximum number of color endpoint clusters from'
+		+ ' 1-16128.',
+		{validator: program.NUMERIC}
+	)
+	.option(
+		'--max-selectors <max_selectors>',
+		'Manually set the maximum number of color selector clusters from'
+		+ ' 1-16128.',
+		{validator: program.NUMERIC}
+	)
+	.option(
+		'--rdo-threshold <rdo_threshold>',
+		'Set endpoint and selector RDO quality threshold. Lower'
+		+ ' is higher quality but less quality per output bit (try 1.0-3.0).'
+		+ ' Overrides --quality.',
+		{validator: program.NUMERIC}
+	)
+	.option(
+		'--rdo-off',
+		'Disable endpoint and selector RDO (slightly'
+		+ ' faster, less noisy output, but lower quality per output bit).',
+		{validator: program.BOOL}
+	)
+	.action(({args, options, logger}) => {
+		const doc = io.read(args.input)
+			.setLogger(logger)
+			.transform(toktx({mode: Mode.ETC1S, ...options}));
+		io.write(args.output, doc);
+	});
+
+// UASTC
+program
+	.command('uastc', '⏩ Compress textures with KTX + Basis UASTC')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option(
+		'--slots <slots>',
+		'Texture slots to compress (glob expression)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option (
+		'--filter <filter>',
+		'Specifies the filter to use when generating mipmaps.',
+		{validator: Object.values(Filter), default: UASTC_DEFAULTS.filter}
+	)
+	.option (
+		'--filter-scale <fscale>',
+		'Specifies the filter scale to use when generating mipmaps.',
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.filterScale}
+	)
+	.option(
+		'--level <level>',
+		'Create a texture in high-quality transcodable UASTC format.'
+		+ ' The optional parameter <level> selects a speed'
+		+ ' vs quality tradeoff as shown in the following table:'
+		+ '\n\n'
+		+ 'Level | Speed     | Quality'
+		+ '\n——————|———————————|————————'
+		+ '\n0     | Fastest   | 43.45dB'
+		+ '\n1     | Faster    | 46.49dB'
+		+ '\n2     | Default   | 47.47dB'
+		+ '\n3     | Slower    | 48.01dB'
+		+ '\n4     | Very slow | 48.24dB',
+		{validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level}
+	)
+	.option(
+		'--rdo-quality <uastc_rdo_q>',
+		'Enable UASTC RDO post-processing and optionally set UASTC RDO'
+		+ ' quality scalar to <quality>.  Lower values yield higher'
+		+ ' quality/larger LZ compressed files, higher values yield lower'
+		+ ' quality/smaller LZ compressed files. A good range to try is [.2-4].'
+		+ ' Full range is .001 to 10.0.',
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoQuality}
+	)
+	.option(
+		'--rdo-dictsize <uastc_rdo_d>',
+		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower'
+		+ ' values=faster, but give less compression. Possible range is 256'
+		+ ' to 65536.',
+		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoDictsize}
+	)
+	.option(
+		'--zstd <compressionLevel>',
+		'Supercompress the data with Zstandard.'
+		+ ' Compression level range is 1 - 22, or 0 is uncompressed.'
+		+ ' Lower values=faster but give less compression. Values above 20'
+		+ ' should be used with caution as they require more memory.',
+		{validator: program.NUMERIC, default: 0}
+	)
+	.action(({args, options, logger}) => {
+		const doc = io.read(args.input)
+			.setLogger(logger)
+			.transform(toktx({mode: Mode.UASTC, ...options}));
+		io.write(args.output, doc);
 	});
 
 program.disableGlobalOption('--silent');

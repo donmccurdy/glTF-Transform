@@ -1,3 +1,4 @@
+import { PropertyType } from './constants';
 import { Document } from './document';
 import { ReaderContext, WriterContext } from './io';
 import { ExtensionProperty, ExtensionPropertyParent } from './properties';
@@ -31,8 +32,15 @@ export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAM
  * @category Extensions
  */
 export abstract class Extension implements ExtensionPropertyParent {
+	/** Official name of the extension. */
 	public static EXTENSION_NAME: string;
+	/** Official name of the extension. */
 	public readonly extensionName: string;
+	/**
+	 * {@link Property} types this extension will provide. *Most extensions don't need to implement
+	 * this.*
+	 */
+	public readonly provideTypes: PropertyType[] = [];
 
 	private _required = false;
 	private _properties: Set<ExtensionProperty> = new Set();
@@ -90,9 +98,22 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 
 	/**
+	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method may
+	 * optionally be implemented by an extension, and should then support any property type
+	 * declared by the Extension's {@link Extension.provideTypes} list. The Extension will
+	 * be given a ReaderContext instance, and is expected to update either the context or its
+	 * NativeDocument with resources known to the Extension. *Most extensions don't need to
+	 * implement this.*
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public provide(readerContext: ReaderContext, propertyType: PropertyType): this {
+		return this;
+	}
+
+	/**
 	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method must be
 	 * implemented by each extension in order to support reading files. The extension will be
-	 * gieven a ReaderContext instance, and should update the current {@link Document} accordingly.
+	 * given a ReaderContext instance, and should update the current {@link Document} accordingly.
 	 */
 	public abstract read(readerContext: ReaderContext): this;
 
