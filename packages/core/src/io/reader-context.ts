@@ -1,3 +1,4 @@
+import { Document } from '../document';
 import { NativeDocument } from '../native-document';
 import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 
@@ -19,7 +20,10 @@ export class ReaderContext {
 	public animations: Animation[] = [];
 	public scenes: Scene[] = [];
 
-	constructor (public readonly nativeDocument: NativeDocument) {}
+	constructor (
+		public readonly document: Document,
+		public readonly nativeDocument: NativeDocument
+	) {}
 
 	public setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo): void {
 		if (textureInfoDef.texCoord !== undefined) {

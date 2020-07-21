@@ -1,5 +1,5 @@
 import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
-import { GLB_BUFFER, TypedArray, vec3, vec4 } from '../constants';
+import { GLB_BUFFER, PropertyType, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension, ExtensionConstructor } from '../extension';
 import { NativeDocument } from '../native-document';
@@ -43,7 +43,18 @@ export class GLTFReader {
 
 		/* Reader context. */
 
-		const context = new ReaderContext(nativeDoc);
+		const context = new ReaderContext(doc, nativeDoc);
+
+		/** Extensions (1/2). */
+
+		const extensionsUsed = json.extensionsUsed || [];
+		const extensionsRequired = json.extensionsRequired || [];
+		for (const Extension of options.extensions) {
+			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
+				doc.createExtension(Extension as ExtensionConstructor)
+					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
+			}
+		}
 
 		/** Buffers. */
 
@@ -96,6 +107,9 @@ export class GLTFReader {
 		// are reused with different sampler properties.
 		const imageDefs = json.images || [];
 		const textureDefs = json.textures || [];
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.provideTypes.includes(PropertyType.TEXTURE))
+			.forEach((extension) => extension.provide(context, PropertyType.TEXTURE));
 		context.textures = imageDefs.map((imageDef) => {
 			const texture = doc.createTexture(imageDef.name);
 
@@ -398,17 +412,11 @@ export class GLTFReader {
 			return scene;
 		});
 
-		/** Extensions. */
+		/** Extensions (2/2). */
 
-		const extensionsUsed = json.extensionsUsed || [];
-		const extensionsRequired = json.extensionsRequired || [];
-		for (const Extension of options.extensions) {
-			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				doc.createExtension(Extension as ExtensionConstructor)
-					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME))
-					.read(context);
-			}
-		}
+		doc.getRoot()
+			.listExtensionsUsed()
+			.forEach((extension) => extension.read(context));
 
 		return doc;
 	}

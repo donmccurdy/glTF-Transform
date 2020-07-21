@@ -1,4 +1,4 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_TEXTURE_BASISU } from '../constants';
 
 const NAME = KHR_TEXTURE_BASISU;
@@ -6,14 +6,24 @@ const NAME = KHR_TEXTURE_BASISU;
 /** Documentation in {@link EXTENSIONS.md}. */
 export class TextureBasisu extends Extension {
 	public readonly extensionName = NAME;
+	public readonly provideTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
-	read(_: ReaderContext): this {
-		// TODO(feat): May need ReaderContext to be able to 'resolve' texture->image references?
-		throw new Error('Not implemented.');
+	public provide(context: ReaderContext): this {
+		context.nativeDocument.json.textures.forEach((textureDef) => {
+			if (textureDef.extensions && textureDef.extensions[NAME]) {
+				textureDef.source = textureDef.extensions[NAME].source;
+			}
+		});
+		return this;
 	}
 
-	write(context: WriterContext): this {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public read(context: ReaderContext): this {
+		return this;
+	}
+
+	public write(context: WriterContext): this {
 		const nativeDoc = context.nativeDocument;
 
 		this.doc.getRoot()

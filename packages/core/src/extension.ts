@@ -1,3 +1,4 @@
+import { PropertyType } from './constants';
 import { Document } from './document';
 import { ReaderContext, WriterContext } from './io';
 import { ExtensionProperty, ExtensionPropertyParent } from './properties';
@@ -33,6 +34,7 @@ export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAM
 export abstract class Extension implements ExtensionPropertyParent {
 	public static EXTENSION_NAME: string;
 	public readonly extensionName: string;
+	public readonly provideTypes: PropertyType[] = [];
 
 	private _required = false;
 	private _properties: Set<ExtensionProperty> = new Set();
@@ -90,9 +92,21 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 
 	/**
+	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method may
+	 * optionally be implemented by an extension, and should then support any property type
+	 * declared by the Extension's {@link PropertyType.provideTypes} list. The Extension will
+	 * be given a ReaderContext instance, and is expected to update either the context or its
+	 * NativeDocument with resources known to the Extension.
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public provide(readerContext: ReaderContext, propertyType: PropertyType): this {
+		return this;
+	}
+
+	/**
 	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method must be
 	 * implemented by each extension in order to support reading files. The extension will be
-	 * gieven a ReaderContext instance, and should update the current {@link Document} accordingly.
+	 * given a ReaderContext instance, and should update the current {@link Document} accordingly.
 	 */
 	public abstract read(readerContext: ReaderContext): this;
 
