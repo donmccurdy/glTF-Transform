@@ -10,12 +10,12 @@
 
     inspect                              🔎 Inspect the contents of the model                   
     validate                             🔎 Validate the model against the glTF spec            
-    copy                                 📦 Copies the model with minimal changes               
-    merge                                📦 Merges two or more models into one                  
-    partition                            📦 Partitions mesh data into separate .bin files       
-    ao                                   ✨ Bakes per-vertex ambient occlusion                  
-    unlit                                ✨ Converts materials to an unlit model                
-    dedup                                ⏩ Deduplicates accessors and textures                 
+    copy                                 📦 Copy the model with minimal changes                 
+    merge                                📦 Merge two or more models into one                   
+    partition                            📦 Partition mesh data into separate .bin files        
+    ao                                   ✨ Bake per-vertex ambient occlusion                   
+    unlit                                ✨ Convert materials to an unlit model                 
+    dedup                                ⏩ Deduplicate accessors and textures                  
     gzip                                 ⏩ Compress the model with gzip                        
     etc1s                                ⏩ Compress textures with KTX + Basis ETC1S            
     uastc                                ⏩ Compress textures with KTX + Basis UASTC            

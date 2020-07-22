@@ -54,8 +54,8 @@ program
 
 // COPY
 program
-	.command('copy', '📦 Copies the model with minimal changes')
-	.help('Copies the model with minimal changes.')
+	.command('copy', '📦 Copy the model with minimal changes')
+	.help('Copy the model with minimal changes.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
 	.action(({args, logger}) => {
@@ -65,9 +65,9 @@ program
 
 // MERGE
 program
-	.command('merge', '📦 Merges two or more models into one')
+	.command('merge', '📦 Merge two or more models into one')
 	.help(''
-		+ 'Merges two or more models into one, each in a separate Scene.\n\n'
+		+ 'Merge two or more models into one, each in a separate Scene.\n\n'
 		+ 'Usage:\n\n'
 		+ '  ▸ gltf-transform merge a.glb b.glb c.glb output.glb'
 	)
@@ -94,8 +94,8 @@ program
 
 // PARTITION
 program
-	.command('partition', '📦 Partitions mesh data into separate .bin files')
-	.help('Partitions mesh data into separate .bin files.')
+	.command('partition', '📦 Partition mesh data into separate .bin files')
+	.help('Partition mesh data into separate .bin files.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--meshes <meshes>', 'Mesh names', {
@@ -115,8 +115,8 @@ program
 
 // AMBIENT OCCLUSION
 program
-	.command('ao', '✨ Bakes per-vertex ambient occlusion')
-	.help('Bakes per-vertex ambient occlusion.')
+	.command('ao', '✨ Bake per-vertex ambient occlusion')
+	.help('Bake per-vertex ambient occlusion.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--resolution <n>', 'AO resolution', {
@@ -136,8 +136,8 @@ program
 
 // UNLIT
 program
-	.command('unlit', '✨ Converts materials to an unlit model')
-	.help('Converts materials to an unlit, shadeless model.')
+	.command('unlit', '✨ Convert materials to an unlit model')
+	.help('Convert materials to an unlit, shadeless model.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.action(({args, logger}) => {
@@ -158,8 +158,8 @@ program
 
 // DEDUP
 program
-	.command('dedup', '⏩ Deduplicates accessors and textures')
-	.help('Deduplicates accessors and textures.')
+	.command('dedup', '⏩ Deduplicate accessors and textures')
+	.help('Deduplicate accessors and textures.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
