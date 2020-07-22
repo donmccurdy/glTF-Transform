@@ -21,10 +21,10 @@ INDEX.forEach((asset, assetIndex) => {
 		const dst = path.join(TARGET, asset.name, variant, filename.replace(/\.(gltf|glb)$/, '.transformed.glb'));
 
 		try {
-			execSync(`gltf-transform repack ${src} ${dst}`);
+			execSync(`gltf-transform copy ${src} ${dst}`);
 			console.info(`    - ✅ ${variant}/${filename}`);
 		} catch (e) {
-			console.error(`    - ⛔️ ${variant}/${filename}`);
+			console.error(`    - ⛔️ ${variant}/${filename}: ${e.message}`);
 		}
 	});
 
