@@ -101,6 +101,10 @@ const toktx = function (options) {
 					.setImage(BufferUtils.trim(fs.readFileSync(outPath)))
 					.setMimeType('image/ktx2');
 
+				if (texture.getURI()) {
+					texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
+				}
+
 				numCompressed++;
 
 				const outBytes = texture.getImage().byteLength;
@@ -129,8 +133,7 @@ function createParams (slots, options) {
 	if (options.filterScale !== GLOBAL_OPTIONS.filterScale) params.push('--fscale', options.filterScale);
 
 	if (options.mode === Mode.UASTC) {
-		params.push('--uastc');
-		if (options.level !== UASTC_DEFAULTS.level) params.push(options.level);
+		params.push('--uastc', options.level);
 		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) params.push('--uastc_rdo_q', options.rdoQuality);
 		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) params.push('--uastc_rdo_d', options.rdoDictsize)
 		if (options.zstd > 0) params.push('--zcmp', options.zstd);
@@ -138,7 +141,6 @@ function createParams (slots, options) {
 		params.push('--bcmp');
 		if (options.quality !== ETC1S_DEFAULTS.quality) params.push('--qlevel', options.quality);
 		if (options.compression !== ETC1S_DEFAULTS.compression) params.push('--clevel', options.compression);
-
 		if (options.maxEndpoints) params.push('--max_endpoints', options.maxEndpoints);
 		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
 
