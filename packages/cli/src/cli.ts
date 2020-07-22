@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -378,6 +378,39 @@ given --decodeSpeed.`.trim())
 		// Include a lossless weld — Draco requires indices.
 		Session.create(io, logger, args.input, args.output)
 			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
+	);
+
+// QUANTIZE
+program
+	.command('quantize', 'Quantize mesh vertex attributes')
+	.help(`
+Quantize mesh vertex attributes. Quantization is a simple type of
+compression taking vertex attributes and storing them as 16-bit or 8-bit
+integers, represented on a scale between the minimum and maximum values.
+This means that the attribute data requires less space, but has less precision.
+
+Most vertex attribute types can be quantized from 8–16 bits. Precision of some
+attribute types can be configured with options; the rest are inferred
+automatically from the model.
+
+Requires KHR_mesh_quantization support.`.trim())
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('-p, --position <bits>', 'Precision for POSITION attributes.', {
+		validator: [16, 8],
+		default: 16,
+	})
+	.option('-n, --normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
+		validator: [16, 8],
+		default: 8,
+	})
+	.option('-t, --texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
+		validator: [16, 8],
+		default: 16,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(quantize(options))
 	);
 
 // WELD
