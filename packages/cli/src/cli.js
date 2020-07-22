@@ -8,7 +8,7 @@ const { program } = require('@caporal/core');
 const { version } = require('../package.json');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
-const { ao, prune, partition } = require('@gltf-transform/lib');
+const { ao, dedup, partition } = require('@gltf-transform/lib');
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
@@ -173,7 +173,7 @@ program
 	.action(({args, options, logger}) => {
 		const doc = io.read(args.input)
 			.setLogger(logger)
-			.transform(prune(options));
+			.transform(dedup(options));
 		io.write(args.output, doc);
 	});
 
