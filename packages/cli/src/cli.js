@@ -194,9 +194,37 @@ program
 			});
 	});
 
+const BASIS_SUMMARY = `
+(EXPERIMENTAL) Compresses textures in the given file to .ktx2 GPU textures
+using the {VARIANT} Basis Universal bitstream. GPU
+textures offer faster GPU upload and less GPU memory consumption than
+traditional PNG or JPEG textures, which are fully uncompressed in GPU memory.
+GPU texture formats require more attention to compression settings to get
+similar visual results.
+
+{DETAILS}
+
+Documentation:
+https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu-experimental
+`;
+
 // ETC1S
 program
 	.command('etc1s', '⏩ Compress textures with KTX + Basis ETC1S')
+	.help(
+		BASIS_SUMMARY
+			.replace('{VARIANT}', 'ETC1S (lower size, lower quality)')
+			.replace('{DETAILS}', `
+ETC1S, one of the two Basis Universal bitstreams, offers lower size
+and lower quality than UASTC. In some cases it may be useful to
+increase the resolution of the texture slightly, to minimize compression
+artifacts while still retaining a smaller filesize. Details of this incomplete
+glTF extension are still being worked out, particularly in regard to normal
+maps. In the meantime, I recommend choosing less aggressive compression
+settings for normal maps than for other texture types: you may want to use
+UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
+		{sectionName: 'SUMMARY'}
+	)
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option(
@@ -264,6 +292,16 @@ program
 // UASTC
 program
 	.command('uastc', '⏩ Compress textures with KTX + Basis UASTC')
+	.help(
+		BASIS_SUMMARY
+			.replace('{VARIANT}', 'UASTC (higher size, higher quality)')
+			.replace('{DETAILS}', `
+UASTC, one of the two Basis Universal bitstreams, offers higher size and higher
+quality than ETC1S. While it is suitable for all texture types, you may find it
+useful to apply UASTC only where higher quality is necessary, and apply ETC1S for
+textures where the quality is sufficient.`.trim()),
+		{sectionName: 'SUMMARY'}
+	)
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option(
