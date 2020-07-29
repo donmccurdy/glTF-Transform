@@ -13,7 +13,9 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 function formatParagraph(str) {
-	return str.match(/.{1,80}(\s|$)/g).join('\n');
+	return str.match(/.{1,80}(\s|$)/g)
+		.map((line) => line.trim())
+		.join('\n');
 }
 
 function formatHeader(title) {
