@@ -46,7 +46,7 @@ program
 	})
 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
 		validator: program.ARRAY,
-		default: Infinity,
+		default: [],
 	})
 	.action(({args, options, logger}) => {
 		validate(args.input, options, logger);
@@ -365,12 +365,12 @@ textures where the quality is sufficient.`.trim()),
 		io.write(args.output, doc);
 	});
 
-program.disableGlobalOption('--silent');
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
 // Don't invoke run() in a test environment.
 if (require.main === module) {
+	program.disableGlobalOption('--silent');
 	program.run();
 }
 

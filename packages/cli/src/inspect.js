@@ -29,7 +29,7 @@ function inspect (doc) {
 		console.log(formatHeader(type));
 		if (rows.length === 0) {
 			console.log(`No ${type} found.\n`);
-			return;
+			continue;
 		}
 
 		const table = new Table({head});
