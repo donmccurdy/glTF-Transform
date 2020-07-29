@@ -1,5 +1,6 @@
 import { PropertyType, TypedArray } from '../constants';
 import { GraphChild, Link } from '../graph';
+import { MathUtils } from '../utils';
 import { Buffer } from './buffer';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
@@ -95,10 +96,10 @@ export class Accessor extends ExtensibleProperty {
 	private _normalized = false;
 
 	/** @hidden Inbound transform to normalized representation, if applicable. */
-	private _in = identity;
+	private _in = MathUtils.identity;
 
 	/** @hidden Outbound transform from normalized representation, if applicable. */
-	private _out = identity;
+	private _out = MathUtils.identity;
 
 	/** @hidden The {@link Buffer} to which this accessor's data will be written. */
 	@GraphChild private buffer: Link<Accessor, Buffer> = null;
@@ -320,11 +321,11 @@ export class Accessor extends ExtensibleProperty {
 		this._normalized = normalized;
 
 		if (normalized) {
-			this._out = (c: number): number => intToFloat(c, this._componentType);
-			this._in = (f: number): number => floatToInt(f, this._componentType);
+			this._out = (c: number): number => MathUtils.denormalize(c, this._componentType);
+			this._in = (f: number): number => MathUtils.normalize(f, this._componentType);
 		} else {
-			this._out = identity;
-			this._in = identity;
+			this._out = MathUtils.identity;
+			this._in = MathUtils.identity;
 		}
 
 		return this;
@@ -426,47 +427,5 @@ function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 			return GLTF.AccessorComponentType.BYTE;
 		default:
 			throw new Error('Unknown accessor componentType.');
-	}
-}
-
-/**************************************************************************************************
- * Normalization utilities.
- */
-
-/** @hidden */
-function identity(v: number): number {
-	return v;
-}
-
-/** @hidden */
-function intToFloat(c: number, componentType: GLTF.AccessorComponentType): number {
-	switch (componentType) {
-		case GLTF.AccessorComponentType.FLOAT:
-			return c;
-		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-			return c / 65535.0;
-		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-			return c / 255.0;
-		case GLTF.AccessorComponentType.SHORT:
-			return Math.max(c / 32767.0, -1.0);
-		case GLTF.AccessorComponentType.BYTE:
-			return Math.max(c / 127.0, -1.0);
-	}
-
-}
-
-/** @hidden */
-function floatToInt(f: number, componentType: GLTF.AccessorComponentType): number {
-	switch (componentType) {
-		case GLTF.AccessorComponentType.FLOAT:
-			return f;
-		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-			return Math.round(f * 65535.0);
-		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-			return Math.round(f * 255.0);
-		case GLTF.AccessorComponentType.SHORT:
-			return Math.round(f * 32767.0);
-		case GLTF.AccessorComponentType.BYTE:
-			return Math.round(f * 127.0);
 	}
 }
