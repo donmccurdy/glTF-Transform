@@ -21,7 +21,7 @@ glTF-Transform is modular:
 
 ## Getting started
 
-To learn how glTF-Transform works, see [Concepts](/concepts.html). To get started developing with the SDK, see [SDK Installation](#sdk-installation) below. Visit the [Library](/library.html) for examples of functionality created with the SDK already. To use the commandline interface, see [Commandline (CLI)](/cli.html). If you're interested in contributing to or customizing the project, see [Contributing](/contributing.html).
+To learn how glTF-Transform works, see [Concepts](/concepts.html). To get started developing with the SDK, see [SDK Installation](#sdk-installation) below. Visit the [Library](/library.html) for examples of functionality created with the SDK already. To use the commandline interface, see [Commandline (CLI)](/cli.html). If you're interested in contributing to or customizing the project, see [contributing](/contributing.html).
 
 ### SDK Installation
 
@@ -45,7 +45,7 @@ All classes described by this documentation are imported from the core package, 
 
 ## Limitations
 
-glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [Contributing guidelines](/contributing.html). To learn more about
+glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [contributing guidelines](/contributing.html).
 
 **Supported extensions:**
 
