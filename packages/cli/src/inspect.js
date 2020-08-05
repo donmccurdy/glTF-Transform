@@ -44,8 +44,8 @@ function formatPropertyReport(property, index) {
 		const value = property[key];
 		if (Array.isArray(value)) {
 			row[key] = value.join(', ');
-		} else if (key === 'size') {
-			row[key] = formatBytes(value);
+		} else if (key.match(/size/i)) {
+			row[key] = value > 0 ? formatBytes(value) : '';
 		} else if (typeof value === 'number') {
 			row[key] = formatLong(value);
 		} else {

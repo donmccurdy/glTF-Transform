@@ -115,12 +115,13 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			.filter((name) => name !== 'texture');
 
 		let resolution: vec2;
+		let channels: number;
 		if (texture.getMimeType() === 'image/png') {
 			resolution = ImageUtils.getSizePNG(texture.getImage());
+			channels = 4;
 		} else if (texture.getMimeType() === 'image/jpeg') {
 			resolution = ImageUtils.getSizeJPEG(texture.getImage());
-		} else {
-			resolution = [-1, -1];
+			channels = 3;
 		}
 
 		return {
@@ -129,8 +130,9 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			slots: Array.from(new Set(slots)),
 			instances,
 			mimeType: texture.getMimeType(),
-			resolution: Math.min(...resolution) > 0 ? resolution.join('x') : '',
-			size: texture.getImage().byteLength
+			resolution: resolution ? resolution.join('x') : '',
+			size: texture.getImage().byteLength,
+			memSize: resolution ? resolution[0] * resolution[1] * channels : null,
 		};
 	});
 
@@ -216,6 +218,7 @@ interface TextureReport {
 	mimeType: string;
 	resolution: string;
 	size: number;
+	memSize: number;
 }
 
 interface AnimationReport {
