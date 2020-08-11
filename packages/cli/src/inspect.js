@@ -50,7 +50,7 @@ function inspect (nativeDoc, io, logger) {
 }
 
 function formatPropertyReport(property, index) {
-	const row = {index};
+	const row = {'#': index};
 	for (const key in property) {
 		const value = property[key];
 		if (Array.isArray(value)) {
