@@ -23,7 +23,7 @@ test('@gltf-transform/core::io | web', {skip: IS_NODEJS}, t => {
 	const io = new WebIO();
 	t.equals(!!io, true, 'Creates WebIO');
 
-	io.readGLB(SAMPLE_GLB)
+	io.read(SAMPLE_GLB)
 		.then((doc) => {
 			t.equals(doc.getRoot().listBuffers().length, 1, 'reads a GLB with Fetch API');
 		})

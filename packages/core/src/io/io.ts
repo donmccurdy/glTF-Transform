@@ -135,7 +135,7 @@ class NodeIO extends PlatformIO {
 
 	/** Loads a local path and returns a {@link NativeDocument} struct. */
 	public readNativeDocument (uri: string): NativeDocument {
-		const isGLB = !!uri.match(/\.glb$/);
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
 	}
 
@@ -235,7 +235,7 @@ class WebIO extends PlatformIO {
 
 	/** Loads a URI and returns a {@link NativeDocument} struct. */
 	public readNativeDocument (uri: string): Promise<NativeDocument> {
-		const isGLB = !!uri.match(/\.glb$/);
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
 		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
 	}
 
