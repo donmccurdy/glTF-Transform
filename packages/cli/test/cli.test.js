@@ -21,7 +21,7 @@ test('@gltf-transform/cli::copy', t => {
 	cli
 		.exec(['copy', input, output])
 		.then(() => {
-			const doc2 = io.readGLB(output);
+			const doc2 = io.read(output);
 			t.ok(doc2, 'roundtrip document');
 			t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
 			t.end();

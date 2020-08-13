@@ -265,5 +265,3 @@ function getGLPrimitiveCount(prim: Primitive): number {
 			throw new Error('Unexpected mode: ' + prim.getMode());
 	}
 }
-
-module.exports = {inspect};
