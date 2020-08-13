@@ -8,7 +8,7 @@ function inspect (nativeDoc, io, logger) {
 	const extensionsRequired = nativeDoc.json.extensionsRequired || [];
 	const table = new Table();
 	table.push(
-		{generator: nativeDoc.json.asset.generator},
+		{generator: nativeDoc.json.asset.generator || ''},
 		{version: nativeDoc.json.asset.version},
 		{extensionsUsed: extensionsUsed.join(', ') || 'none'},
 		{extensionsRequired: extensionsRequired.join(', ') || 'none'},

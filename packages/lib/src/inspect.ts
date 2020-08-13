@@ -1,4 +1,4 @@
-import { Accessor, Document, ImageUtils, Texture, vec2 } from '@gltf-transform/core';
+import { Accessor, Document, ImageUtils, Primitive, Texture, vec2 } from '@gltf-transform/core';
 
 export function inspect (doc: Document): Report {
 	return {
@@ -28,7 +28,7 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 		const instances = mesh.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
-		let tris = 0;
+		let glPrimitives = 0;
 		let verts = 0;
 		let indexed = 0;
 		const componentTypes: Set<string> = new Set();
@@ -50,25 +50,26 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 			if (prim.getIndices()) {
 				const indices = prim.getIndices();
 				componentTypes.add(indices.getArray().constructor.name);
-				tris += indices.getCount() / 3;
 				indexed++;
 				meshAccessors.add(indices);
-			} else {
-				// TODO(bug): Consider mode!
-				tris += prim.getAttribute('POSITION').getCount() / 3;
 			}
 			verts += prim.getAttribute('POSITION').getCount();
+			glPrimitives += getGLPrimitiveCount(prim);
 		});
 
 		let size = 0;
 		Array.from(meshAccessors).forEach((a) => (size += a.getArray().byteLength));
 
+		const modes = mesh.listPrimitives()
+			.map((prim) => MeshPrimitiveModeLabels[prim.getMode()])
+
 		return {
 			name: mesh.getName(),
+			mode: Array.from(new Set(modes)),
 			primitives: mesh.listPrimitives().length,
-			primitivesIndexed: indexed,
+			glPrimitives: glPrimitives,
 			vertices: verts,
-			triangles: tris,
+			indexed: mesh.listPrimitives().length === indexed,
 			components: Array.from(componentTypes).sort().map((s) => s.replace('Array', '')),
 			attributes: Array.from(semantics).sort(),
 			instances: instances,
@@ -193,9 +194,10 @@ interface SceneReport {
 interface MeshReport {
 	name: string;
 	primitives: number;
-	primitivesIndexed: number;
+	indexed: boolean;
+	mode: string[];
 	vertices: number;
-	triangles: number;
+	glPrimitives: number;
 	components: string[];
 	attributes: string[];
 	instances: number;
@@ -227,6 +229,41 @@ interface AnimationReport {
 	samplers: number;
 	duration: number;
 	size: number;
+}
+
+const MeshPrimitiveModeLabels = [
+	'POINTS',
+	'LINES',
+	'LINE_LOOP',
+	'LINE_STRIP',
+	'TRIANGLES',
+	'TRIANGLE_STRIP',
+	'TRIANGLE_FAN',
+];
+
+function getGLPrimitiveCount(prim: Primitive): number {
+	// Reference: https://www.khronos.org/opengl/wiki/Primitive
+	switch (prim.getMode()) {
+		case GLTF.MeshPrimitiveMode.POINTS:
+			return prim.getAttribute('POSITION').getCount();
+		case GLTF.MeshPrimitiveMode.LINES:
+			return prim.getIndices()
+				? prim.getIndices().getCount() / 2
+				: prim.getAttribute('POSITION').getCount() / 2;
+		case GLTF.MeshPrimitiveMode.LINE_LOOP:
+			return prim.getAttribute('POSITION').getCount();
+		case GLTF.MeshPrimitiveMode.LINE_STRIP:
+			return prim.getAttribute('POSITION').getCount() - 1;
+		case GLTF.MeshPrimitiveMode.TRIANGLES:
+			return prim.getIndices()
+				? prim.getIndices().getCount() / 3
+				: prim.getAttribute('POSITION').getCount() / 3;
+		case GLTF.MeshPrimitiveMode.TRIANGLE_STRIP:
+		case GLTF.MeshPrimitiveMode.TRIANGLE_FAN:
+			return prim.getAttribute('POSITION').getCount() - 2;
+		default:
+			throw new Error('Unexpected mode: ' + prim.getMode());
+	}
 }
 
 module.exports = {inspect};
