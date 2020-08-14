@@ -19,6 +19,7 @@
     "@gltf-transform/extensions": "^0.5.1",
     "@gltf-transform/lib": "^0.5.1",
     "cli-table": "^0.3.1",
+    "command-exists": "^1.2.9",
     "gl": "^4.5.0",
     "gltf-validator": "^2.0.0-dev.3.2",
     "minimatch": "^3.0.4",

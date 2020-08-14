@@ -1,6 +1,7 @@
 const fs = require('fs');
 const tmp = require('tmp');
 const minimatch = require('minimatch');
+const commandExistsSync = require('command-exists').sync;
 const { spawnSync } = require('child_process');
 const { BufferUtils, ImageUtils, FileUtils } = require('@gltf-transform/core');
 const { TextureBasisu } = require('@gltf-transform/extensions');
@@ -53,6 +54,10 @@ const UASTC_DEFAULTS = {
 const toktx = function (options) {
 	return (doc) =>  {
 		const logger = doc.getLogger();
+
+		if (!commandExistsSync('toktx')) {
+			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
+		}
 
 		doc.createExtension(TextureBasisu);
 
