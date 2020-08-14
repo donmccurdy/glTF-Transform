@@ -1,6 +1,7 @@
 # @gltf-transform/lib
 
 [![Latest NPM release](https://img.shields.io/npm/v/@gltf-transform/lib.svg)](https://www.npmjs.com/package/@gltf-transform/lib)
+[![Minzipped size](https://badgen.net/bundlephobia/minzip/@gltf-transform/lib)](https://bundlephobia.com/result?p=@gltf-transform/lib)
 [![License](https://img.shields.io/npm/l/@gltf-transform/core.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
 
 Part of the glTF-Transform project.
