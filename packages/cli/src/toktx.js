@@ -55,7 +55,7 @@ const toktx = function (options) {
 	return (doc) =>  {
 		const logger = doc.getLogger();
 
-		if (!commandExistsSync('toktx')) {
+		if (!commandExistsSync('toktx') && !process.env.CI) {
 			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
 		}
 
