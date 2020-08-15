@@ -1,5 +1,7 @@
 export * from './accessor';
 export * from './animation';
+export * from './animation-channel';
+export * from './animation-sampler';
 export * from './buffer';
 export * from './camera';
 export * from './extension-property';
