@@ -86,6 +86,7 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 ## Supported extensions
 
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
+- [KHR_materials_transmission](#khr_materials_transmission) *(experimental)*
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
 - [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
@@ -114,6 +115,33 @@ const clearcoat = clearcoatExtension.createClearcoat()
 
 // Attach the property to a material.
 material.setExtension(Clearcoat, clearcoat);
+```
+
+### KHR_materials_transmission
+
+- *Specification: [KHR_materials_transmission](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_transmission/)*
+- *Source: [packages/extensions/src/khr-materials-transmission/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-transmission)*
+
+The `KHR_materials_transmission` This extension aims to address the simplest and most common use
+cases for optical transparency: infinitely-thin materials with no refraction, scattering, or
+dispersion. When combined with `KHR_materials_volume`, transmission may be used for thicker
+materials and refractive effects.
+
+The `MaterialsTransmission` class provides a single {@link ExtensionProperty} type, `Transmission`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsTransmission, Transmission } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const transmissionExtension = document.createExtension(MaterialsTransmission);
+
+// Create a Transmission property.
+const transmission = transmissionExtension.createTransmission()
+  .setTransmissionFactor(1.0);
+
+// Attach the property to a material.
+material.setExtension(Transmission, transmission);
 ```
 
 ### KHR_materials_unlit
