@@ -8,7 +8,7 @@ const { program } = require('@caporal/core');
 const { version } = require('../package.json');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
-const { ao, dedup, partition } = require('@gltf-transform/lib');
+const { ao, dedup, partition, metalRough } = require('@gltf-transform/lib');
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
@@ -130,6 +130,18 @@ program
 		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(ao({...options, gl}));
+		io.write(args.output, doc);
+	});
+
+// METALROUGH
+program
+	.command('metalrough', '✨ Convert materials from spec/gloss to metal/rough')
+	.help('Convert materials from spec/gloss to metal/rough.')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.action(async ({args, logger}) => {
+		const doc = io.read(args.input).setLogger(logger);
+		await metalRough({})(doc);
 		io.write(args.output, doc);
 	});
 

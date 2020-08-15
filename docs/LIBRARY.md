@@ -39,3 +39,4 @@ Transforms are functions applying a modification to the {@link Document}. This p
 | function | compatibility | description |
 |----------|---------------|-------------|
 | [inspect](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/inspect.ts)       | Node.js, Web  | Inspects the contents of a glTF file and returns a report. |
+| [metalRough](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/metalrough.ts)       | Node.js  | Convert materials from spec/gloss to metal/rough. |
