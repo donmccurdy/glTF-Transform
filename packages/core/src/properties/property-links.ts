@@ -3,7 +3,9 @@ import { Accessor } from './accessor';
 import { ExtensionProperty } from './extension-property';
 import { Material } from './material';
 import { Primitive, PrimitiveTarget } from './mesh';
-import { Texture, TextureInfo, TextureSampler } from './texture';
+import { Texture } from './texture';
+import { TextureInfo } from './texture-info';
+import { TextureSampler } from './texture-sampler';
 
 /** @hidden */
 export class TextureLink extends Link<Material|ExtensionProperty, Texture> {
