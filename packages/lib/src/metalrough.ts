@@ -39,12 +39,6 @@ export function metalRough (options: MetalRoughOptions) {
 		for (const material of doc.getRoot().listMaterials()) {
 			const specGloss = material.getExtension(PBRSpecularGlossiness) as PBRSpecularGlossiness;
 			if (specGloss) {
-				// Set up extensions.
-				const ior = iorExtension.createIOR().setIOR(0);
-				const spec = specExtension.createSpecular()
-					.setSpecularFactor(1.0)
-					.setSpecularColorFactor(specGloss.getSpecularFactor());
-
 				// Convent gloss -> roughness texture.
 				const specGlossTexture = specGloss.getSpecularGlossinessTexture();
 				specGlossTextures.add(specGlossTexture);
@@ -55,10 +49,18 @@ export function metalRough (options: MetalRoughOptions) {
 					.setBaseColorFactor(specGloss.getDiffuseFactor())
 					.setBaseColorTexture(specGloss.getDiffuseTexture())
 					.setMetallicFactor(0)
-					.setRoughnessFactor(specGloss.getGlossinessFactor()) // TODO(bug): Bake to texture?
+					.setRoughnessFactor(specGloss.getGlossinessFactor()) // TODO(bug): Bake?
 					.setMetallicRoughnessTexture(metalRoughTexture)
-					.setExtension(IOR, ior)
-					.setExtension(Specular, spec)
+					.setExtension(
+						IOR,
+						iorExtension.createIOR().setIOR(0)
+					)
+					.setExtension(
+						Specular,
+						specExtension.createSpecular()
+							.setSpecularFactor(1.0)
+							.setSpecularColorFactor(specGloss.getSpecularFactor())
+					)
 					.setExtension(PBRSpecularGlossiness, null);
 			}
 		}
@@ -67,6 +69,7 @@ export function metalRough (options: MetalRoughOptions) {
 		specGlossExtension.dispose();
 
 		// Clean up unused spec/gloss textures.
+		// TODO(cleanup): Also remove unused (fallback) metal/rough or baseColor textures?
 		Array.from(specGlossTextures).forEach((tex) => {
 			if (tex && tex.listParents().length === 1) tex.dispose();
 		});
