@@ -150,10 +150,9 @@ material.setExtension(IOR, ior);
 - *Draft specification: [KHR_materials_specular](https://github.com/KhronosGroup/glTF/pull/1719)*
 - *Source: [packages/extensions/src/khr-materials-specular/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-specular)*
 
-The `KHR_materials_specular` This extension aims to address the simplest and most common use
-cases for optical transparency: infinitely-thin materials with no refraction, scattering, or
-dispersion. When combined with `KHR_materials_volume`, specular may be used for thicker
-materials and refractive effects.
+`KHR_materials_specular` allows users to configure the strength of the specular reflection in the
+dielectric BRDF. A value of zero disables the specular reflection, resulting in a pure diffuse
+material.
 
 The `MaterialsSpecular` class provides a single {@link ExtensionProperty} type, `Specular`, which
 may be attached to any {@link Material} instance. For example:
