@@ -81,10 +81,10 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Specular.
 	 */
 
-	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular; linear multiplier. */
 	public getSpecularFactor(): vec3 { return this._specularFactor; }
 
-	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular; linear multiplier. */
 	public setSpecularFactor(specularFactor: vec3): this {
 		this._specularFactor = specularFactor;
 		return this;
@@ -107,15 +107,13 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Specular/Glossiness.
 	 */
 
-	/**
-	 * Spec/gloss texture; linear multiplier.
-	 */
+	/** Spec/gloss texture; linear multiplier. */
 	public getSpecularGlossinessTexture(): Texture {
 		return this.specularGlossinessTexture ? this.specularGlossinessTexture.getChild() : null;
 	}
 
 	/**
-	 * Settings affecting the material's use of its specular texture. If no texture is attached,
+	 * Settings affecting the material's use of its spec/gloss texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularGlossinessTextureInfo(): TextureInfo {
@@ -123,14 +121,14 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	}
 
 	/**
-	 * Settings affecting the material's use of its specular texture. If no texture is attached,
+	 * Settings affecting the material's use of its spec/gloss texture. If no texture is attached,
 	 * {@link TextureSampler} is `null`.
 	 */
 	public getSpecularGlossinessTextureSampler(): TextureSampler {
 		return this.specularGlossinessTexture ? this.specularGlossinessTexture.sampler : null;
 	}
 
-	/** Sets specular texture. See {@link getSpecularGlossinessTexture}. */
+	/** Spec/gloss texture; linear multiplier. */
 	public setSpecularGlossinessTexture(texture: Texture): this {
 		this.specularGlossinessTexture = this.graph.linkTexture('specularGlossinessTexture', this, texture);
 		return this;
