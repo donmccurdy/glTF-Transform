@@ -1,5 +1,9 @@
 // Utilities.
 
+function formatLong(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
 
@@ -24,4 +28,4 @@ function formatHeader(title) {
 		+ '\n ────────────────────────────────────────────';
 }
 
-module.exports = {formatBytes, formatHeader, formatParagraph};
+module.exports = {formatLong, formatBytes, formatHeader, formatParagraph};

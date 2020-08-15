@@ -9,18 +9,18 @@ const { Document, NodeIO } = require ('@gltf-transform/core');
 const { dedup } = require('../');
 
 test('@gltf-transform/lib::dedup | accessors', t => {
-  const io = new NodeIO(fs, path);
-  const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
-  t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
+	const io = new NodeIO(fs, path);
+	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
-  dedup({accessors: false})(doc);
+	dedup({accessors: false})(doc);
 
-  t.equal(doc.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
+	t.equal(doc.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
 
-  dedup()(doc);
+	dedup()(doc);
 
-  t.equal(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
-  t.end();
+	t.equal(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
+	t.end();
 });
 
 test('@gltf-transform/lib::dedup | textures', t => {

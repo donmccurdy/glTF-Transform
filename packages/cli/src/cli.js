@@ -31,8 +31,7 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
-		const doc = io.read(args.input).setLogger(logger);
-		inspect(doc);
+		inspect(io.readNativeDocument(args.input), io, logger);
 	});
 
 // VALIDATE

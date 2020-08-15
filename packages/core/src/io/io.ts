@@ -38,8 +38,8 @@ abstract class PlatformIO {
 		return GLTFWriter.write(doc, options);
 	}
 
-	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
-	public unpackGLB(glb: ArrayBuffer): Document {
+	/** Converts a GLB-formatted ArrayBuffer to a {@link NativeDocument}. */
+	public unpackGLBToNativeDocument(glb: ArrayBuffer): NativeDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
 		if (header[0] !== 0x46546C67) {
@@ -66,7 +66,12 @@ abstract class PlatformIO {
 		const binaryByteLength = binaryChunkHeader[0];
 		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-		return this.createDocument({json, resources: {[GLB_BUFFER]: binary}});
+		return {json, resources: {[GLB_BUFFER]: binary}};
+	}
+
+	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
+	public unpackGLB(glb: ArrayBuffer): Document {
+		return this.createDocument(this.unpackGLBToNativeDocument(glb));
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
@@ -128,10 +133,16 @@ class NodeIO extends PlatformIO {
 
 	/* Public. */
 
+	/** Loads a local path and returns a {@link NativeDocument} struct. */
+	public readNativeDocument (uri: string): NativeDocument {
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
+		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+	}
+
 	/** Loads a local path and returns a {@link Document} instance. */
 	public read (uri: string): Document {
-		const isGLB = !!uri.match(/\.glb$/);
-		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+		const nativeDoc = this.readNativeDocument(uri);
+		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
 	}
 
 	/** Writes a {@link Document} instance to a local path. */
@@ -142,13 +153,13 @@ class NodeIO extends PlatformIO {
 
 	/* Internal. */
 
-	private readGLB (uri: string): Document {
+	private readGLB (uri: string): NativeDocument {
 		const buffer: Buffer = this.fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
-		return this.unpackGLB(arrayBuffer);
+		return this.unpackGLBToNativeDocument(arrayBuffer);
 	}
 
-	private readGLTF (uri: string): Document {
+	private readGLTF (uri: string): NativeDocument {
 		const dir = this.path.dirname(uri);
 		const nativeDoc = {
 			json: JSON.parse(this.fs.readFileSync(uri, 'utf8')),
@@ -166,8 +177,8 @@ class NodeIO extends PlatformIO {
 				nativeDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
 				resource.uri = resourceUUID;
 			}
-		})
-		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
+		});
+		return nativeDoc;
 	}
 
 	private writeGLTF (uri: string, doc: Document): void {
@@ -222,15 +233,21 @@ class WebIO extends PlatformIO {
 
 	/* Public. */
 
+	/** Loads a URI and returns a {@link NativeDocument} struct. */
+	public readNativeDocument (uri: string): Promise<NativeDocument> {
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
+		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+	}
+
 	/** Loads a URI and returns a {@link Document} instance. */
 	public read (uri: string): Promise<Document> {
-		const isGLB = !!uri.match(/\.glb$/);
-		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
+		return this.readNativeDocument(uri)
+			.then((nativeDoc) => this.createDocument(nativeDoc));
 	}
 
 	/* Internal. */
 
-	private readGLTF (uri: string): Promise<Document> {
+	private readGLTF (uri: string): Promise<NativeDocument> {
 		const nativeDoc = {json: {}, resources: {}} as NativeDocument;
 		return fetch(uri, this.fetchConfig)
 		.then((response) => response.json())
@@ -246,15 +263,14 @@ class WebIO extends PlatformIO {
 					});
 				}
 			});
-			return Promise.all(pendingResources)
-			.then(() => this.createDocument(nativeDoc));
+			return Promise.all(pendingResources).then(() => nativeDoc);
 		});
 	}
 
-	private readGLB (uri: string): Promise<Document> {
+	private readGLB (uri: string): Promise<NativeDocument> {
 		return fetch(uri, this.fetchConfig)
 			.then((response) => response.arrayBuffer())
-			.then((arrayBuffer) => this.unpackGLB(arrayBuffer));
+			.then((arrayBuffer) => this.unpackGLBToNativeDocument(arrayBuffer));
 	}
 }
 

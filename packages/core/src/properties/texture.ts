@@ -103,8 +103,8 @@ export class Texture extends ExtensibleProperty {
 			isPNG = this.uri.match(/\.png$/);
 		}
 		return isPNG
-			? ImageUtils.getSizePNG(Buffer.from(this.image))
-			: ImageUtils.getSizeJPEG(Buffer.from(this.image));
+			? ImageUtils.getSizePNG(this.image)
+			: ImageUtils.getSizeJPEG(this.image);
 	}
 }
 
