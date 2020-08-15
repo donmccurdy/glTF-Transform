@@ -91,7 +91,9 @@ async function convertGlossinessTextureToRoughnessTexture(doc: Document, glossin
 
 	for(let i = 0; i < pixels.shape[0]; ++i) {
 		for(let j = 0; j < pixels.shape[1]; ++j) {
+			pixels.set(i, j, 0, 0);
 			pixels.set(i, j, 1, 1 - pixels.get(i, j, 3)); // invert glossiness
+			pixels.set(i, j, 2, 0);
 			pixels.set(i, j, 3, 255);
 		}
 	}
