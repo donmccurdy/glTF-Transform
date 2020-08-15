@@ -49,7 +49,8 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	}
 
 	/**
-	 * Diffuse texture; linear multiplier.
+	 * Diffuse texture; linear multiplier. Alternative to baseColorTexture used within the
+	 * spec/gloss PBR workflow.
 	 */
 	public getDiffuseTexture(): Texture {
 		return this.diffuseTexture ? this.diffuseTexture.getChild() : null;
@@ -94,10 +95,10 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Glossiness.
 	 */
 
-	/** Glossiness; linear multiplier. See {@link getGlossinessTexture}. */
+	/** Glossiness; linear multiplier. */
 	public getGlossinessFactor(): number { return this._glossinessFactor; }
 
-	/** Glossiness; linear multiplier. See {@link getGlossinessTexture}. */
+	/** Glossiness; linear multiplier. */
 	public setGlossinessFactor(glossinessFactor: number): this {
 		this._glossinessFactor = glossinessFactor;
 		return this;
