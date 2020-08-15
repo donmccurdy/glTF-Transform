@@ -1,4 +1,4 @@
-import { Accessor, Document, ImageUtils, Primitive, Texture, vec2 } from '@gltf-transform/core';
+import { Accessor, Document, ExtensionProperty, ImageUtils, Primitive, Property, Texture, vec2 } from '@gltf-transform/core';
 
 export function inspect (doc: Document): Report {
 	return {
@@ -87,8 +87,22 @@ function listMaterials (doc: Document): PropertyReport<MaterialReport> {
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
+		// Find all texture slots attached to this material or its extensions.
+		const extensions = new Set<ExtensionProperty>(material.listExtensions());
 		const slots = doc.getGraph().getLinks()
-			.filter((link) => link.getParent() === material && link.getChild() instanceof Texture)
+			.filter((link) => {
+				const child = link.getChild();
+				const parent = link.getParent();
+				if (child instanceof Texture && parent === material) {
+					return true;
+				}
+				if (child instanceof Texture
+						&& parent instanceof ExtensionProperty
+						&& extensions.has(parent)) {
+					return true;
+				}
+				return false;
+			})
 			.map((link) => link.getName());
 
 		return {
