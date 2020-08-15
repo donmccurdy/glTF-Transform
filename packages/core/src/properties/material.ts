@@ -3,7 +3,9 @@ import { GraphChild } from '../graph/index';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
-import { Texture, TextureInfo, TextureSampler } from './texture';
+import { Texture } from './texture';
+import { TextureInfo } from './texture-info';
+import { TextureSampler } from './texture-sampler';
 
 /**
  * # Material
