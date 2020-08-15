@@ -86,6 +86,8 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 ## Supported extensions
 
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
+- [KHR_materials_ior](#khr_materials_ior) *(experimental)*
+- [KHR_materials_specular](#khr_materials_specular) *(experimental)*
 - [KHR_materials_transmission](#khr_materials_transmission) *(experimental)*
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
@@ -117,7 +119,60 @@ const clearcoat = clearcoatExtension.createClearcoat()
 material.setExtension(Clearcoat, clearcoat);
 ```
 
-### KHR_materials_transmission
+### KHR_materials_ior <mark>*(experimental)*</mark>
+
+- *Draft specification: [KHR_materials_ior](https://github.com/KhronosGroup/glTF/pull/1718)*
+- *Source: [packages/extensions/src/khr-materials-ior/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-ior)*
+
+The dielectric BRDF of the metallic-roughness material in glTF uses a fixed value of 1.5 for the
+index of refraction. This is a good fit for many plastics and glass, but not for other materials
+like water or asphalt, sapphire or diamond. `KHR_materials_ior` allows users to set the index of
+refraction to a certain value.
+
+The `MaterialsIOR` class provides a single {@link ExtensionProperty} type, `IOR`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsIOR, IOR } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const iorExtension = document.createExtension(MaterialsIOR);
+
+// Create a IOR property.
+const ior = iorExtension.createIOR().setIOR(1.0);
+
+// Attach the property to a material.
+material.setExtension(IOR, ior);
+```
+
+### KHR_materials_specular <mark>*(experimental)*</mark>
+
+- *Draft specification: [KHR_materials_specular](https://github.com/KhronosGroup/glTF/pull/1719)*
+- *Source: [packages/extensions/src/khr-materials-specular/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-specular)*
+
+The `KHR_materials_specular` This extension aims to address the simplest and most common use
+cases for optical transparency: infinitely-thin materials with no refraction, scattering, or
+dispersion. When combined with `KHR_materials_volume`, specular may be used for thicker
+materials and refractive effects.
+
+The `MaterialsSpecular` class provides a single {@link ExtensionProperty} type, `Specular`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsSpecular, Specular } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const specularExtension = document.createExtension(MaterialsSpecular);
+
+// Create a Specular property.
+const specular = specularExtension.createSpecular()
+  .setSpecularFactor(1.0);
+
+// Attach the property to a material.
+material.setExtension(Specular, specular);
+```
+
+### KHR_materials_transmission <mark>*(experimental)*</mark>
 
 - *Specification: [KHR_materials_transmission](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_transmission/)*
 - *Source: [packages/extensions/src/khr-materials-transmission/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-transmission)*
