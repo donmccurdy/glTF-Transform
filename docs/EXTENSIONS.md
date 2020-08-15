@@ -87,6 +87,7 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_ior](#khr_materials_ior) *(experimental)*
+- [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrSpecularGlossiness)
 - [KHR_materials_specular](#khr_materials_specular) *(experimental)*
 - [KHR_materials_transmission](#khr_materials_transmission) *(experimental)*
 - [KHR_materials_unlit](#khr_materials_unlit)
@@ -143,6 +144,34 @@ const ior = iorExtension.createIOR().setIOR(1.0);
 
 // Attach the property to a material.
 material.setExtension(IOR, ior);
+```
+
+### KHR_materials_pbrSpecularGlossiness
+
+- *Specification: [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_pbrSpecularGlossiness/)*
+- *Source: [packages/extensions/src/khr-materials-pbr-specular-glossiness/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-pbr-specular-glossiness)*
+
+`KHR_materials_pbrSpecularGlossiness` converts a PBR material from the default metal/rough workflow
+to a spec/gloss workflow. The spec/gloss workflow does _not_ support other PBR extensions such as
+clearcoat, transmission, IOR, etc. For the complete PBR feature set and specular data, use the
+`KHR_materials_specular` extension instead of this one, which provides specular data within a
+metal/rough workflow.
+
+The `MaterialsPBRSpecularGlossiness` class provides a single {@link ExtensionProperty} type, `PBRSpecularGlossiness`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const specGlossExtension = document.createExtension(MaterialsPBRSpecularGlossiness);
+
+// Create a PBRSpecularGlossiness property.
+const specGloss = specGlossExtension.createPBRSpecularGlossiness()
+  .setSpecularFactor(1.0);
+
+// Attach the property to a material.
+material.setExtension(PBRSpecularGlossiness, specGloss);
 ```
 
 ### KHR_materials_specular <mark>*(experimental)*</mark>
