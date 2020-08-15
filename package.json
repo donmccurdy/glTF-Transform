@@ -14,10 +14,10 @@
     "watch:docs": "watch-exec -c \"yarn docs\" -w \"packages\" -w \"docs\" -e \"docs/dist\"",
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
-    "test": "tape packages/*/test/{*/,}*.test.js | tap-spec",
-    "test:browser": "browserify packages/core/test/{*/,}*.test.js | tape-run | tap-spec",
-    "coverage": "nyc --reporter=text --exclude=\"packages/*/vendor\" tape packages/*/test/{*/,}*.test.js",
-    "coverage:report": "nyc report --reporter=text-lcov --exclude=\"packages/*/vendor\" | coveralls",
+    "test": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
+    "test:browser": "browserify packages/core/test/document.test.ts -p [ tsify --noImplicitAny ] | tape-run | tap-spec",
+    "coverage": "nyc --reporter=text --exclude=\"packages/*/vendor\" --exclude=\"packages/*/test\" ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
+    "coverage:report": "nyc report --reporter=text-lcov --exclude=\"packages/*/vendor\" --exclude=\"packages/*/test\" | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "yarn run test",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/ndarray": "^1.0.8",
     "@types/node": "^10.12.17",
+    "@types/tape": "^4.13.0",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
     "browserify": "^16.5.1",
@@ -44,6 +45,8 @@
     "tap-spec": "^5.0.0",
     "tape": "^4.9.1",
     "tape-run": "^7.0.0",
+    "ts-node": "^8.10.2",
+    "tsify": "^5.0.2",
     "tslib": "^1.11.1",
     "typescript": "^4.0.2"
   }

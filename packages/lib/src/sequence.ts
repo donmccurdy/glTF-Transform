@@ -3,7 +3,7 @@ import { Document, Transform } from '@gltf-transform/core';
 const NAME = 'sequence';
 
 export interface SequenceOptions {
-	fps: number;
+	fps?: number;
 	pattern: RegExp;
 	name?: string;
 	sort?: boolean;

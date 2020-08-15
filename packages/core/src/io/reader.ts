@@ -1,7 +1,7 @@
 import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, PropertyType, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
-import { Extension, ExtensionConstructor } from '../extension';
+import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
 import { Accessor } from '../properties';
 import { FileUtils, ImageUtils, Logger } from '../utils';
@@ -56,7 +56,7 @@ export class GLTFReader {
 		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				const extension = doc.createExtension(Extension as ExtensionConstructor)
+				const extension = doc.createExtension(Extension as unknown as new (doc: Document) => Extension)
 					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
 
 				for (const key of extension.dependencies) {
