@@ -2,7 +2,8 @@ import { Graph } from '../graph';
 import { Accessor } from './accessor';
 import { ExtensionProperty } from './extension-property';
 import { Material } from './material';
-import { Primitive, PrimitiveTarget } from './mesh';
+import { Primitive } from './primitive';
+import { PrimitiveTarget } from './primitive-target';
 import { AttributeLink, IndexLink, TextureLink } from './property-links';
 import { Texture } from './texture';
 
