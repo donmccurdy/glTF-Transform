@@ -13,11 +13,12 @@
 
 glTF-Transform supports reading, editing, and writing 3D models in glTF 2.0 format. Unlike 3D modeling tools — which are ideal for artistic changes to geometry, materials, and animation — glTF-Transform provides fast, reproducible, and lossless control of the low-level details in 3D model. The API automatically manages array indices and byte offsets, which would otherwise require careful management when editing files. These traits make it a good choice for bundling, splitting, or optimizing an existing model. It can also be used to apply quick fixes for common issues, to build a model procedurally, or to easily develop custom extensions on top of the glTF format. Because the core SDK is compatible with both Node.js and Web, glTF-Transform may be used to develop offline workflows and web applications alike.
 
-glTF-Transform is modular, and can be used in several ways:
+glTF-Transform is modular:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
-- `@gltf-transform/cli`: Command-line interface to apply any available transform to a glTF file.
-- `@gltf-transform/*`: Growing collection of transforms, written using the core API, that modify glTF files.
+- `@gltf-transform/extensions`: [Extensions](/extensions.html) (optional glTF features) for the Core SDK.
+- `@gltf-transform/lib`: [Library](/library.html) of common functions, written using the core API, that modify glTF files.
+- `@gltf-transform/cli`: [Command-line interface](/cli.html) to apply changes quickly or in batch.
 
 To get started, head over to the [documentation](https://gltf-transform.donmccurdy.com).
 
