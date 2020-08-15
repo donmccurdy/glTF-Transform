@@ -3,8 +3,8 @@ import { Accessor, BufferUtils, Document, Logger, Material, Texture, Transform }
 const NAME = 'dedup';
 
 export interface DedupOptions {
-	accessors: boolean;
-	textures: boolean;
+	accessors?: boolean;
+	textures?: boolean;
 }
 
 const DEFAULT_OPTIONS: DedupOptions = {
@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS: DedupOptions = {
  * - **accessors**: Whether to remove duplicate accessors. Default `true`.
  * - **textures**: Whether to remove duplicate textures. Default `true`.
  */
-export const dedup = function (options: DedupOptions): Transform {
+export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void =>  {

@@ -1,4 +1,4 @@
-import { Extension, ExtensionConstructor } from './extension';
+import { Extension } from './extension';
 import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
 import { Logger } from './utils';
 
@@ -101,7 +101,9 @@ export class Document {
 		// 1. Attach extensions.
 		const thisExtensions: {[key: string]: Extension} = {};
 		for (const otherExtension of other.getRoot().listExtensionsUsed()) {
-			const thisExtension = this.createExtension(otherExtension.constructor as ExtensionConstructor);
+			const thisExtension = this.createExtension(
+				otherExtension.constructor as new (doc: Document) => Extension
+			);
 			if (otherExtension.isRequired()) thisExtension.setRequired(true);
 			thisExtensions[thisExtension.extensionName] = thisExtension;
 		}
@@ -167,10 +169,10 @@ export class Document {
 	 * Creates a new {@link Extension}, for the extension type of the given constructor. If the
 	 * extension is already enabled for this Document, the previous Extension reference is reused.
 	 */
-	createExtension(ctor: ExtensionConstructor): Extension {
+	createExtension<T extends Extension>(ctor: new (doc: Document) => T): T {
 		const prevExtension = this.getRoot().listExtensionsUsed()
-			.find((ext) => ext.extensionName === ctor.EXTENSION_NAME);
-		return prevExtension || new ctor(this);
+			.find((ext) => ext.extensionName === ctor['EXTENSION_NAME']);
+		return (prevExtension || new ctor(this)) as T;
 	}
 
 	/**********************************************************************************************
@@ -253,16 +255,16 @@ export class Document {
 	 * Creates a new {@link AnimationChannel}. Channels must be attached to an {@link Animation}
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
-	createAnimationChannel(): AnimationChannel {
-		return new AnimationChannel(this._graph);
+	createAnimationChannel(name = ''): AnimationChannel {
+		return new AnimationChannel(this._graph, name);
 	}
 
 	/**
 	 * Creates a new {@link AnimationSampler}. Samplers must be attached to an {@link Animation}
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
-	createAnimationSampler(): AnimationSampler {
-		return new AnimationSampler(this._graph);
+	createAnimationSampler(name = ''): AnimationSampler {
+		return new AnimationSampler(this._graph, name);
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */

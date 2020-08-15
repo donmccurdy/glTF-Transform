@@ -12,8 +12,8 @@ interface GLFactory {
 
 export interface AOOptions {
 	gl?: GLFactory;
-	resolution: number;
-	samples: number;
+	resolution?: number;
+	samples?: number;
 }
 
 const DEFAULT_OPTIONS: AOOptions = {
@@ -36,7 +36,7 @@ const TEXTURE_DATA = new Uint8Array([
  * - **resolution**: Resolution of depth buffer. Default: 512.
  * - **samples**: Number of samples to draw. Default: 500.
  */
-export function ao (options: AOOptions): Transform {
+export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void => {

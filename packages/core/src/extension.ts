@@ -4,12 +4,6 @@ import { ReaderContext, WriterContext } from './io';
 import { ExtensionProperty, ExtensionPropertyParent } from './properties';
 
 /**
- * Type alias allowing Extension constructors to be used as tokens for type checking.
- * @hidden
- */
-export type ExtensionConstructor = {new(doc: Document): Extension; EXTENSION_NAME: string};
-
-/**
  * # Extension
  *
  * *Base class for all Extensions.*
