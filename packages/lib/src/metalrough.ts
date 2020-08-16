@@ -18,7 +18,7 @@ interface GetPixelsResult {
 	get: (i: number, j?: number, k?: number, l?: number) => number;
 }
 
-export function metalRough (options: MetalRoughOptions) {
+export function metalRough (options: MetalRoughOptions = {}) {
 
 	return async (doc: Document): Promise<void> => {
 
@@ -34,15 +34,37 @@ export function metalRough (options: MetalRoughOptions) {
 		const specExtension = doc.createExtension(MaterialsSpecular) as MaterialsSpecular;
 		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness) as MaterialsPBRSpecularGlossiness;
 
-		const specGlossTextures = new Set<Texture>();
+		const inputTextures = new Set<Texture>();
 
 		for (const material of doc.getRoot().listMaterials()) {
 			const specGloss = material.getExtension(PBRSpecularGlossiness) as PBRSpecularGlossiness;
 			if (specGloss) {
 				// Convent gloss -> roughness texture.
 				const specGlossTexture = specGloss.getSpecularGlossinessTexture();
-				specGlossTextures.add(specGlossTexture);
-				const metalRoughTexture = await convertGlossinessTextureToRoughnessTexture(doc, specGlossTexture);
+				const specGlossTextureInfo = specGloss.getSpecularGlossinessTextureInfo(); // TODO(bug): Confirm shared texture is ok.
+				const specGlossTextureSampler = specGloss.getSpecularGlossinessTextureSampler();
+				const metalRoughTexture = await rewriteTexture(doc, specGlossTexture, (pixels, i, j) => {
+					pixels.set(i, j, 0, 0);
+					pixels.set(i, j, 1, 255 - pixels.get(i, j, 3)); // invert glossiness
+					pixels.set(i, j, 2, 0);
+					pixels.set(i, j, 3, 255);
+				});
+				const specularTexture = await rewriteTexture(doc, specGlossTexture, (pixels, i, j) => {
+					pixels.set(i, j, 3, 255); // remove glossiness
+				});
+
+				inputTextures.add(specGlossTexture);
+				inputTextures.add(specularTexture);
+
+				// Create specular extension.
+				const specular = specExtension.createSpecular()
+					.setSpecularFactor(1.0)
+					.setSpecularColorFactor(specGloss.getSpecularFactor())
+					.setSpecularTexture(specularTexture);
+				specular.getSpecularTextureInfo()
+					.copy(specGlossTextureInfo);
+				specular.getSpecularTextureSampler()
+					.copy(specGlossTextureSampler);
 
 				// Rewrite material.
 				material
@@ -51,17 +73,13 @@ export function metalRough (options: MetalRoughOptions) {
 					.setMetallicFactor(0)
 					.setRoughnessFactor(specGloss.getGlossinessFactor()) // TODO(bug): Bake?
 					.setMetallicRoughnessTexture(metalRoughTexture)
-					.setExtension(
-						IOR,
-						iorExtension.createIOR().setIOR(0)
-					)
-					.setExtension(
-						Specular,
-						specExtension.createSpecular()
-							.setSpecularFactor(1.0)
-							.setSpecularColorFactor(specGloss.getSpecularFactor())
-					)
+					.setExtension(IOR, iorExtension.createIOR().setIOR(0))
+					.setExtension(Specular, specular)
 					.setExtension(PBRSpecularGlossiness, null);
+				material.getMetallicRoughnessTextureInfo()
+					.copy(specGlossTextureInfo);
+				material.getMetallicRoughnessTextureSampler()
+					.copy(specGlossTextureSampler);
 			}
 		}
 
@@ -70,7 +88,7 @@ export function metalRough (options: MetalRoughOptions) {
 
 		// Clean up unused spec/gloss textures.
 		// TODO(cleanup): Also remove unused (fallback) metal/rough or baseColor textures?
-		Array.from(specGlossTextures).forEach((tex) => {
+		Array.from(inputTextures).forEach((tex) => {
 			if (tex && tex.listParents().length === 1) tex.dispose();
 		});
 
@@ -80,24 +98,21 @@ export function metalRough (options: MetalRoughOptions) {
 
 }
 
-async function convertGlossinessTextureToRoughnessTexture(doc: Document, glossinessTexture: Texture): Promise<Texture> {
-	if (!glossinessTexture) return null;
+async function rewriteTexture(doc: Document, input: Texture, fn: (pixels: GetPixelsResult, i: number, j: number) => void): Promise<Texture> {
+	if (!input) return null;
 
 	const pixels: GetPixelsResult = await new Promise((resolve, reject) => {
 		(getPixels as unknown as Function)(
 			// TODO(bug): Uint8Array won't work, what's web compat?
-			Buffer.from(glossinessTexture.getImage()),
-			glossinessTexture.getMimeType(),
+			Buffer.from(input.getImage()),
+			input.getMimeType(),
 			(err, pixels) => err ? reject(err) : resolve(pixels)
 		);
 	});
 
 	for(let i = 0; i < pixels.shape[0]; ++i) {
 		for(let j = 0; j < pixels.shape[1]; ++j) {
-			pixels.set(i, j, 0, 0);
-			pixels.set(i, j, 1, 1 - pixels.get(i, j, 3)); // invert glossiness
-			pixels.set(i, j, 2, 0);
-			pixels.set(i, j, 3, 255);
+			fn(pixels, i, j);
 		}
 	}
 
@@ -111,6 +126,5 @@ async function convertGlossinessTextureToRoughnessTexture(doc: Document, glossin
 
 	return doc.createTexture('')
 		.setMimeType('image/png')
-		.setImage(image)
-		.setURI(glossinessTexture.getURI());
+		.setImage(image);
 }
