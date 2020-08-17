@@ -35,7 +35,7 @@ export type Transform = (doc: Document) => void;
  * // Document containing duplicate copies of the same texture.
  * doc.getRoot().listTextures(); // → [texture x 2]
  *
- * doc.transform(
+ * await doc.transform(
  * 	prune({textures: true}),
  * 	// ...
  * );
@@ -143,7 +143,7 @@ export class Document {
 	 * Usage:
 	 *
 	 * ```ts
-	 * doc.transform(
+	 * await doc.transform(
 	 * 	ao({samples: 500}),
 	 * 	prune()
 	 * );
@@ -151,9 +151,9 @@ export class Document {
 	 *
 	 * @param transforms List of synchronous transformation functions to apply.
 	 */
-	public transform(...transforms: Transform[]): Document {
+	public async transform(...transforms: Transform[]): Promise<this> {
 		for (const transform of transforms) {
-			transform(this);
+			await transform(this);
 		}
 		return this;
 	}

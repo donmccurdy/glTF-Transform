@@ -17,7 +17,7 @@ import { WebIO } from '@gltf-transform/core';
 import { ao, dedup } from '@gltf-transform/lib';
 
 const doc = await new WebIO().readGLB('path/to/model.glb');
-doc.transform(
+await doc.transform(
   ao({samples: 500}),
   dedup({textures: true})
 );

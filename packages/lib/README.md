@@ -27,7 +27,7 @@ import { prune } from '@gltf-transform/lib';
 const { prune } = require('@gltf-transform/lib');
 
 // Use.
-const document.transform(prune({textures: true, accessors: false}));
+await document.transform(prune({textures: true, accessors: false}));
 ```
 
 ## API

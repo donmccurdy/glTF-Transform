@@ -101,8 +101,8 @@ program
 		validator: program.LIST,
 		required: true,
 	})
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(partition(options));
 		io.write(args.output, doc);
@@ -126,8 +126,8 @@ program
 		validator: program.NUMERIC,
 		default: 500,
 	})
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(ao({...options, gl}));
 		io.write(args.output, doc);
@@ -169,8 +169,8 @@ program
 		validator: program.BOOL,
 		default: true,
 	})
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(dedup(options));
 		io.write(args.output, doc);
@@ -281,8 +281,8 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		+ ' faster, less noisy output, but lower quality per output bit).',
 		{validator: program.BOOL}
 	)
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(toktx({mode: Mode.ETC1S, ...options}));
 		io.write(args.output, doc);
@@ -357,8 +357,8 @@ textures where the quality is sufficient.`.trim()),
 		+ ' should be used with caution as they require more memory.',
 		{validator: program.NUMERIC, default: 0}
 	)
-	.action(({args, options, logger}) => {
-		const doc = io.read(args.input)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(toktx({mode: Mode.UASTC, ...options}));
 		io.write(args.output, doc);

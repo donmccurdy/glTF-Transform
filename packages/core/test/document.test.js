@@ -3,10 +3,10 @@ require('source-map-support').install();
 const test = require('tape');
 const { Document } = require('../');
 
-test('@gltf-transform/core::document | transform', t => {
+test('@gltf-transform/core::document | transform', async t => {
 	const doc = new Document();
 
-	doc.transform(
+	await doc.transform(
 		(c) => c.createTexture(''),
 		(c) => c.createBuffer(''),
 	);
