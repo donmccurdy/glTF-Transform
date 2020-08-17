@@ -140,8 +140,9 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.action(async ({args, logger}) => {
-		const doc = io.read(args.input).setLogger(logger);
-		await metalRough({})(doc);
+		const doc = await io.read(args.input)
+			.setLogger(logger)
+			.transform(metalRough({}));
 		io.write(args.output, doc);
 	});
 

@@ -1,22 +1,11 @@
-import * as getPixelsNamespace from 'get-pixels';
-import * as savePixelsNamespace from 'save-pixels';
-import { BufferUtils, Document, Texture, vec2 } from '@gltf-transform/core';
+import { Document, Texture } from '@gltf-transform/core';
 import { IOR, MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness, Specular } from '@gltf-transform/extensions';
-
-const getPixels = getPixelsNamespace['default'] as Function;
-const savePixels = savePixelsNamespace['default'] as Function;
+import { rewriteTexture } from './utils';
 
 const NAME = 'metalRough';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MetalRoughOptions {}
-
-interface GetPixelsResult {
-	data: Uint8Array;
-	shape: vec2;
-	set: (i: number, j?: number, k?: number, l?: number) => void;
-	get: (i: number, j?: number, k?: number, l?: number) => number;
-}
 
 export function metalRough (options: MetalRoughOptions = {}) {
 
@@ -41,8 +30,8 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			if (specGloss) {
 				// Convent gloss -> roughness texture.
 				const specGlossTexture = specGloss.getSpecularGlossinessTexture();
-				const specGlossTextureInfo = specGloss.getSpecularGlossinessTextureInfo(); // TODO(bug): Confirm shared texture is ok.
-				const specGlossTextureSampler = specGloss.getSpecularGlossinessTextureSampler();
+				const specGlossTextureInfo = specGloss.getSpecularGlossinessTextureInfo();
+				const specGlossTextureSampler = specGloss.getSpecularGlossinessTextureSampler(); // TODO(bug): Succeed if no texture.
 				const metalRoughTexture = await rewriteTexture(doc, specGlossTexture, (pixels, i, j) => {
 					pixels.set(i, j, 0, 0);
 					pixels.set(i, j, 1, 255 - pixels.get(i, j, 3)); // invert glossiness
@@ -53,9 +42,6 @@ export function metalRough (options: MetalRoughOptions = {}) {
 					pixels.set(i, j, 3, 255); // remove glossiness
 				});
 
-				inputTextures.add(specGlossTexture);
-				inputTextures.add(specularTexture);
-
 				// Create specular extension.
 				const specular = specExtension.createSpecular()
 					.setSpecularFactor(1.0)
@@ -65,6 +51,12 @@ export function metalRough (options: MetalRoughOptions = {}) {
 					.copy(specGlossTextureInfo);
 				specular.getSpecularTextureSampler()
 					.copy(specGlossTextureSampler);
+
+				// Stash original textures, to clean up later.
+				inputTextures.add(specGlossTexture);
+				inputTextures.add(specularTexture);
+				inputTextures.add(material.getBaseColorTexture());
+				inputTextures.add(material.getMetallicRoughnessTexture());
 
 				// Rewrite material.
 				material
@@ -86,45 +78,13 @@ export function metalRough (options: MetalRoughOptions = {}) {
 		// Remove KHR_materials_pbrSpecularGlossiness from the document.
 		specGlossExtension.dispose();
 
-		// Clean up unused spec/gloss textures.
-		// TODO(cleanup): Also remove unused (fallback) metal/rough or baseColor textures?
-		Array.from(inputTextures).forEach((tex) => {
+		// Clean up unused textures.
+		for (const tex of inputTextures) {
 			if (tex && tex.listParents().length === 1) tex.dispose();
-		});
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 
 	};
 
-}
-
-async function rewriteTexture(doc: Document, input: Texture, fn: (pixels: GetPixelsResult, i: number, j: number) => void): Promise<Texture> {
-	if (!input) return null;
-
-	const pixels: GetPixelsResult = await new Promise((resolve, reject) => {
-		(getPixels as unknown as Function)(
-			// TODO(bug): Uint8Array won't work, what's web compat?
-			Buffer.from(input.getImage()),
-			input.getMimeType(),
-			(err, pixels) => err ? reject(err) : resolve(pixels)
-		);
-	});
-
-	for(let i = 0; i < pixels.shape[0]; ++i) {
-		for(let j = 0; j < pixels.shape[1]; ++j) {
-			fn(pixels, i, j);
-		}
-	}
-
-	const image: ArrayBuffer = await new Promise((resolve, reject) => {
-		const chunks = [];
-		savePixels(pixels, 'png')
-			.on('data', (d) => chunks.push(d))
-			.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks)))) // TODO(bug): Compat?
-			.on('error', (e) => reject(e));
-	});
-
-	return doc.createTexture('')
-		.setMimeType('image/png')
-		.setImage(image);
 }
