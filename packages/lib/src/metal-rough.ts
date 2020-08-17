@@ -28,13 +28,16 @@ export function metalRough (options: MetalRoughOptions = {}) {
 		for (const material of doc.getRoot().listMaterials()) {
 			const specGloss = material.getExtension(PBRSpecularGlossiness) as PBRSpecularGlossiness;
 			if (specGloss) {
+				// TODO(bug): Handle material w/o specularGlossinessTexture, only factors.
+
 				// Convent gloss -> roughness texture.
 				const specGlossTexture = specGloss.getSpecularGlossinessTexture();
 				const specGlossTextureInfo = specGloss.getSpecularGlossinessTextureInfo();
-				const specGlossTextureSampler = specGloss.getSpecularGlossinessTextureSampler(); // TODO(bug): Succeed if no texture.
+				const specGlossTextureSampler = specGloss.getSpecularGlossinessTextureSampler();
+				const glossinessFactor = specGloss.getGlossinessFactor();
 				const metalRoughTexture = await rewriteTexture(doc, specGlossTexture, (pixels, i, j) => {
 					pixels.set(i, j, 0, 0);
-					pixels.set(i, j, 1, 255 - pixels.get(i, j, 3)); // invert glossiness
+					pixels.set(i, j, 1, 255 - Math.round(pixels.get(i, j, 3) * glossinessFactor)); // invert glossiness
 					pixels.set(i, j, 2, 0);
 					pixels.set(i, j, 3, 255);
 				});
@@ -63,7 +66,7 @@ export function metalRough (options: MetalRoughOptions = {}) {
 					.setBaseColorFactor(specGloss.getDiffuseFactor())
 					.setBaseColorTexture(specGloss.getDiffuseTexture())
 					.setMetallicFactor(0)
-					.setRoughnessFactor(specGloss.getGlossinessFactor()) // TODO(bug): Bake?
+					.setRoughnessFactor(1)
 					.setMetallicRoughnessTexture(metalRoughTexture)
 					.setExtension(IOR, iorExtension.createIOR().setIOR(0))
 					.setExtension(Specular, specular)

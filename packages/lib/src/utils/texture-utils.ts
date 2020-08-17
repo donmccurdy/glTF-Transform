@@ -11,7 +11,6 @@ export async function rewriteTexture(doc: Document, input: Texture, fn: (pixels:
 
 	const pixels: ndarray = await new Promise((resolve, reject) => {
 		(getPixels as unknown as Function)(
-			// TODO(bug): Uint8Array won't work, what's web compat?
 			Buffer.from(input.getImage()),
 			input.getMimeType(),
 			(err, pixels) => err ? reject(err) : resolve(pixels)
@@ -25,10 +24,10 @@ export async function rewriteTexture(doc: Document, input: Texture, fn: (pixels:
 	}
 
 	const image: ArrayBuffer = await new Promise((resolve, reject) => {
-		const chunks = [];
+		const chunks: Buffer[] = [];
 		savePixels(pixels, 'png')
 			.on('data', (d) => chunks.push(d))
-			.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks)))) // TODO(bug): Compat?
+			.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks))))
 			.on('error', (e) => reject(e));
 	});
 
