@@ -78,7 +78,9 @@ export class NodeIO extends PlatformIO {
 		const images = nativeDoc.json.images || [];
 		const buffers = nativeDoc.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
-			if (resource.uri && !resource.uri.match(/data:/)) {
+			if (!resource.uri) return; // Skip image.bufferView.
+
+			if (!resource.uri.match(/data:/)) {
 				const absURI = this.path.resolve(dir, resource.uri);
 				nativeDoc.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
