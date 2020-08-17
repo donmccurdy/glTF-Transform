@@ -177,35 +177,35 @@ export class Document {
 	 */
 
 	/** Creates a new {@link Scene} attached to this document's {@link Root}. */
-	createScene(name: string): Scene {
+	createScene(name = ''): Scene {
 		const scene = new Scene(this.graph, name);
 		this.root._addScene(scene);
 		return scene;
 	}
 
 	/** Creates a new {@link Node} attached to this document's {@link Root}. */
-	createNode(name: string): Node {
+	createNode(name = ''): Node {
 		const node = new Node(this.graph, name);
 		this.root._addNode(node);
 		return node;
 	}
 
 	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
-	createCamera(name: string): Camera {
+	createCamera(name = ''): Camera {
 		const camera = new Camera(this.graph, name);
 		this.root._addCamera(camera);
 		return camera;
 	}
 
 	/** Creates a new {@link Skin} attached to this document's {@link Root}. */
-	createSkin(name: string): Skin {
+	createSkin(name = ''): Skin {
 		const skin = new Skin(this.graph, name);
 		this.root._addSkin(skin);
 		return skin;
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
-	createMesh(name: string): Mesh {
+	createMesh(name = ''): Mesh {
 		const mesh = new Mesh(this.graph, name);
 		this.root._addMesh(mesh);
 		return mesh;
@@ -223,26 +223,26 @@ export class Document {
 	 * Creates a new {@link PrimitiveTarget}, or morph target. Targets must be attached to a
 	 * {@link Primitive} for use and export; they are not otherwise associated with a {@link Root}.
 	 */
-	createPrimitiveTarget(name: string): PrimitiveTarget {
+	createPrimitiveTarget(name = ''): PrimitiveTarget {
 		return new PrimitiveTarget(this.graph, name);
 	}
 
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
-	createMaterial(name: string): Material {
+	createMaterial(name = ''): Material {
 		const material = new Material(this.graph, name);
 		this.root._addMaterial(material);
 		return material;
 	}
 
 	/** Creates a new {@link Texture} attached to this document's {@link Root}. */
-	createTexture(name: string): Texture {
+	createTexture(name = ''): Texture {
 		const texture = new Texture(this.graph, name);
 		this.root._addTexture(texture);
 		return texture;
 	}
 
 	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
-	createAnimation(name: string): Animation {
+	createAnimation(name = ''): Animation {
 		const animation = new Animation(this.graph, name);
 		this.root._addAnimation(animation);
 		return animation;
@@ -265,7 +265,7 @@ export class Document {
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */
-	createAccessor(name: string, buffer: Buffer = null): Accessor {
+	createAccessor(name = '', buffer: Buffer = null): Accessor {
 		if (!buffer) {
 			buffer = this.getRoot().listBuffers()[0];
 		}
@@ -275,7 +275,7 @@ export class Document {
 	}
 
 	/** Creates a new {@link Buffer} attached to this document's {@link Root}. */
-	createBuffer(name: string): Buffer {
+	createBuffer(name = ''): Buffer {
 		const buffer = new Buffer(this.graph, name);
 		this.root._addBuffer(buffer);
 		return buffer;
