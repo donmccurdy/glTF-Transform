@@ -70,7 +70,8 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				// specularGlossiness -> specular.
 				const sgTextureInfo = specGloss.getSpecularGlossinessTextureInfo();
 				const sgTextureSampler = specGloss.getSpecularGlossinessTextureSampler();
-				const specularTexture = await rewriteTexture(doc, sgTexture, (pixels, i, j) => {
+				const specularTexture = doc.createTexture();
+				await rewriteTexture(sgTexture, specularTexture, (pixels, i, j) => {
 					pixels.set(i, j, 3, 255); // Remove glossiness.
 				});
 				specular.setSpecularTexture(specularTexture);
@@ -79,7 +80,8 @@ export function metalRough (options: MetalRoughOptions = {}) {
 
 				// specularGlossiness -> roughness.
 				const glossinessFactor = specGloss.getGlossinessFactor();
-				const metalRoughTexture = await rewriteTexture(doc, sgTexture, (pixels, i, j) => {
+				const metalRoughTexture = doc.createTexture();
+				await rewriteTexture(sgTexture, metalRoughTexture, (pixels, i, j) => {
 					// Invert glossiness.
 					const roughness = 255 - Math.round(pixels.get(i, j, 3) * glossinessFactor);
 					pixels.set(i, j, 0, 0);
