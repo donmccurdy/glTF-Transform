@@ -39,6 +39,11 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				.setSpecularFactor(1.0)
 				.setSpecularColorFactor(specGloss.getSpecularFactor());
 
+			// Stash textures that might become unused, to check and clean up later.
+			inputTextures.add(specGloss.getSpecularGlossinessTexture());
+			inputTextures.add(material.getBaseColorTexture());
+			inputTextures.add(material.getMetallicRoughnessTexture());
+
 			// Set up a metal/rough PBR material with IOR=0 (or Infinity), metallic=0. This
 			// representation is precise and reliable, but perhaps less convenient for artists
 			// than deriving a metalness value. Unfortunately we can't do that without imprecise
@@ -46,13 +51,20 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			// See: https://github.com/KhronosGroup/glTF/pull/1719#issuecomment-674365677
 			material
 				.setBaseColorFactor(specGloss.getDiffuseFactor())
-				.setBaseColorTexture(specGloss.getDiffuseTexture())
 				.setMetallicFactor(0)
 				.setRoughnessFactor(1)
 				.setExtension(IOR, iorExtension.createIOR().setIOR(0))
 				.setExtension(Specular, specular);
 
-			// Convent specGloss texture to specular + roughness.
+			// Move diffuse -> baseColor.
+			const diffuseTexture = specGloss.getDiffuseTexture();
+			if (diffuseTexture) {
+				material.setBaseColorTexture(diffuseTexture);
+				material.getBaseColorTextureInfo().copy(specGloss.getDiffuseTextureInfo());
+				material.getBaseColorTextureSampler().copy(specGloss.getDiffuseTextureSampler());
+			}
+
+			// Move specular + gloss -> specular + roughness.
 			const sgTexture = specGloss.getSpecularGlossinessTexture();
 			if (sgTexture) {
 				// specularGlossiness -> specular.
@@ -82,11 +94,6 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				specular.setSpecularColorFactor(specGloss.getSpecularFactor());
 				material.setRoughnessFactor(1 - specGloss.getGlossinessFactor());
 			}
-
-			// Stash textures that might be unused, to check and clean up later.
-			inputTextures.add(sgTexture);
-			inputTextures.add(material.getBaseColorTexture());
-			inputTextures.add(material.getMetallicRoughnessTexture());
 
 			// Remove KHR_materials_pbrSpecularGlossiness from the material.
 			material.setExtension(PBRSpecularGlossiness, null);
