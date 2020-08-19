@@ -86,10 +86,10 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 ## Supported extensions
 
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
-- [KHR_materials_ior](#khr_materials_ior) *(experimental)*
-- [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrSpecularGlossiness)
-- [KHR_materials_specular](#khr_materials_specular) *(experimental)*
-- [KHR_materials_transmission](#khr_materials_transmission) *(experimental)*
+- [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
+- [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrspecularglossiness)
+- [KHR_materials_specular](#khr_materials_specular-experimental) *(experimental)*
+- [KHR_materials_transmission](#khr_materials_transmission-experimental) *(experimental)*
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
 - [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
