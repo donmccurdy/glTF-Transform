@@ -22,6 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "@gltf-transform/core": "^0.5.2",
+    "@gltf-transform/extensions": "^0.5.2",
     "geo-ambient-occlusion": "^3.0.2",
     "get-pixels": "^3.3.2",
     "ndarray": "^1.0.19",
