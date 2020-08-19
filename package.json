@@ -26,6 +26,7 @@
     "docs:deploy": "yarn run docs && now --prod"
   },
   "devDependencies": {
+    "@types/ndarray": "^1.0.8",
     "@types/node": "^10.12.17",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
