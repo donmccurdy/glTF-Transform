@@ -1,5 +1,5 @@
 
-  gltf-transform 0.5.2 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.5.3 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -14,6 +14,7 @@
     merge                                📦 Merge two or more models into one                   
     partition                            📦 Partition mesh data into separate .bin files        
     ao                                   ✨ Bake per-vertex ambient occlusion                   
+    metalrough                           ✨ Convert materials from spec/gloss to metal/rough    
     unlit                                ✨ Convert materials to an unlit model                 
     dedup                                ⏩ Deduplicate accessors and textures                  
     gzip                                 ⏩ Compress the model with gzip                        
