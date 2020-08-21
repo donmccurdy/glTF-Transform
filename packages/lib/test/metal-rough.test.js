@@ -90,7 +90,7 @@ test('@gltf-transform/lib::metalRough | textures', async t => {
 	t.deepEqual(mat.getBaseColorTexture().getImage(), baseColorImage, 'diffuse -> baseColor');
 	t.deepEqual(mat.getMetallicRoughnessTexture().getImage(), roughImage, 'spec -> rough');
 	t.deepEqual(mat.getExtension(Specular).getSpecularTexture().getImage(), specImage, 'diffuse -> baseColor');
-	t.equal(mat.getExtension(IOR).getIOR(), 0, 'ior = 0');
+	t.equal(mat.getExtension(IOR).getIOR(), 1000, 'ior = 1000');
 	t.equal(mat.getRoughnessFactor(), 1, 'roughnessFactor = 1');
 	t.equal(mat.getMetallicFactor(), 0, 'metallicFactor = 0');
 	t.equal(doc.getRoot().listTextures().length, 3, 'correct texture count');
@@ -121,7 +121,7 @@ test('@gltf-transform/lib::metalRough | factors', async t => {
 	t.deepEqual(mat.getBaseColorFactor(), [0, 1, 0, 0.5], 'baseColorFactor = diffuseFactor');
 	t.equal(mat.getExtension(Specular).getSpecularFactor(), 1, 'specularFactor = 1');
 	t.deepEqual(mat.getExtension(Specular).getSpecularColorFactor(), [1, 0.5, 0.5], 'specularColorFactor = specularFactor');
-	t.equal(mat.getExtension(IOR).getIOR(), 0, 'ior = 0');
+	t.equal(mat.getExtension(IOR).getIOR(), 1000, 'ior = 1000');
 	t.equal(mat.getRoughnessFactor().toFixed(3), '0.100', 'roughnessFactor = 1 - glossFactor');
 	t.equal(mat.getMetallicFactor(), 0, 'metallicFactor = 0');
 	t.equal(doc.getRoot().listTextures().length, 0, 'no textures');

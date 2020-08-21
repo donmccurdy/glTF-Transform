@@ -44,7 +44,7 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			inputTextures.add(material.getBaseColorTexture());
 			inputTextures.add(material.getMetallicRoughnessTexture());
 
-			// Set up a metal/rough PBR material with IOR=0 (or Infinity), metallic=0. This
+			// Set up a metal/rough PBR material with IOR=Infinity (or 0), metallic=0. This
 			// representation is precise and reliable, but perhaps less convenient for artists
 			// than deriving a metalness value. Unfortunately we can't do that without imprecise
 			// heuristics, and perhaps user tuning.
@@ -53,7 +53,7 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				.setBaseColorFactor(specGloss.getDiffuseFactor())
 				.setMetallicFactor(0)
 				.setRoughnessFactor(1)
-				.setExtension(IOR, iorExtension.createIOR().setIOR(0))
+				.setExtension(IOR, iorExtension.createIOR().setIOR(1000))
 				.setExtension(Specular, specular);
 
 			// Move diffuse -> baseColor.
