@@ -7,15 +7,16 @@ const { gzip } = require('node-gzip');
 const { program } = require('@caporal/core');
 const { version } = require('../package.json');
 const { Document, NodeIO } = require('@gltf-transform/core');
-const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
-const { ao, dedup, partition, metalRough } = require('@gltf-transform/lib');
+const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS, VENDOR_EXTENSIONS } = require('@gltf-transform/extensions');
+const { ao, dedup, partition, metalRough, removeDDS } = require('@gltf-transform/lib');
 const { inspect } = require('./inspect');
 const { validate } = require('./validate');
 const { formatBytes } = require('./util');
 const { toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS } = require('./toktx');
 
-const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
-
+const io = new NodeIO(fs, path)
+	.registerExtensions(KHRONOS_EXTENSIONS)
+	.registerExtensions(VENDOR_EXTENSIONS);
 
 program
 	.version(version)
@@ -105,6 +106,23 @@ program
 		const doc = await io.read(args.input)
 			.setLogger(logger)
 			.transform(partition(options));
+		io.write(args.output, doc);
+	});
+
+/**********************************************************************************************
+ * CLEANUP
+ */
+
+// STANDARD
+program
+	.command('standard', '🧼 Removes non-standard extensions')
+	.help('Removes non-standard extensions.')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input)
+			.setLogger(logger)
+			.transform(removeDDS(options));
 		io.write(args.output, doc);
 	});
 

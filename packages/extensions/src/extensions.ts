@@ -6,6 +6,7 @@ import { MaterialsTransmission } from './khr-materials-transmission';
 import { MaterialsUnlit } from './khr-materials-unlit';
 import { MeshQuantization } from './khr-mesh-quantization';
 import { TextureBasisu } from './khr-texture-basisu';
+import { TextureDDS } from './msft-texture-dds';
 
 export * from './khr-materials-clearcoat';
 export * from './khr-materials-ior';
@@ -15,6 +16,7 @@ export * from './khr-materials-transmission';
 export * from './khr-materials-unlit';
 export * from './khr-mesh-quantization';
 export * from './khr-texture-basisu';
+export * from './msft-texture-dds';
 
 export const KHRONOS_EXTENSIONS = [
 	MaterialsClearcoat,
@@ -25,4 +27,8 @@ export const KHRONOS_EXTENSIONS = [
 	MaterialsUnlit,
 	MeshQuantization,
 	TextureBasisu,
+];
+
+export const VENDOR_EXTENSIONS = [
+	TextureDDS,
 ];

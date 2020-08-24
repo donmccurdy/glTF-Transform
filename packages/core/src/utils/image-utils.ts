@@ -58,11 +58,13 @@ class ImageUtils {
 
 	public static mimeTypeToExtension(mimeType: string): string {
 		if (mimeType === 'image/jpeg') return 'jpg';
+		if (mimeType === 'image/vnd-ms.dds') return 'dds';
 		return mimeType.split('/').pop();
 	}
 
 	public static extensionToMimeType(extension: string): string {
 		if (extension === 'jpg') return 'image/jpeg';
+		if (extension === 'dds') return 'image/vnd-ms.dds';
 		return `image/${extension}`;
 	}
 }
