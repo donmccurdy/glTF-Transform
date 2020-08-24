@@ -54,6 +54,7 @@ program
 // COPY
 program
 	.command('copy', '📦 Copy the model with minimal changes')
+	.alias('cp')
 	.help('Copy the model with minimal changes.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
