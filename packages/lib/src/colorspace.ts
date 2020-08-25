@@ -2,7 +2,7 @@ import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = 'colorspace';
 
-interface ColorspaceOptions {
+export interface ColorspaceOptions {
     inputEncoding: string;
 }
 

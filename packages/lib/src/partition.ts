@@ -2,7 +2,7 @@ import { Document, Transform } from '@gltf-transform/core';
 
 const NAME = 'partition';
 
-interface PartitionOptions {
+export interface PartitionOptions {
 	meshes: Array<string>;
 }
 

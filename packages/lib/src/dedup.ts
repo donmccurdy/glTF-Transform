@@ -2,7 +2,7 @@ import { Accessor, BufferUtils, Document, Logger, Material, Texture, Transform }
 
 const NAME = 'dedup';
 
-interface DedupOptions {
+export interface DedupOptions {
 	accessors: boolean;
 	textures: boolean;
 }

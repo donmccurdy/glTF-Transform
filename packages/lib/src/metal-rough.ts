@@ -5,7 +5,7 @@ import { rewriteTexture } from './utils';
 const NAME = 'metalRough';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface MetalRoughOptions {}
+export interface MetalRoughOptions {}
 
 /**
  * Converts a spec/gloss PBR workflow to a metal/rough PBR workflow, relying on the IOR and

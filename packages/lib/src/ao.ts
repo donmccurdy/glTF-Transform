@@ -10,7 +10,7 @@ interface GLFactory {
 	(w: number, h: number): WebGLRenderingContext;
 }
 
-interface AOOptions {
+export interface AOOptions {
 	gl?: GLFactory;
 	resolution: number;
 	samples: number;

@@ -2,7 +2,7 @@ import { Document, Transform } from '@gltf-transform/core';
 
 const NAME = 'sequence';
 
-interface SequenceOptions {
+export interface SequenceOptions {
 	fps: number;
 	pattern: RegExp;
 }
