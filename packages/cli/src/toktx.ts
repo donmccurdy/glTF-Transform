@@ -1,20 +1,22 @@
-const fs = require('fs');
-const tmp = require('tmp');
-const minimatch = require('minimatch');
-const commandExistsSync = require('command-exists').sync;
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { spawnSync } = require('child_process');
-const { BufferUtils, ImageUtils, FileUtils } = require('@gltf-transform/core');
-const { TextureBasisu } = require('@gltf-transform/extensions');
-const { formatBytes } = require('./util');
+const fs = require('fs');
+const minimatch = require('minimatch');
+const tmp = require('tmp');
+
+import { sync as commandExistsSync } from 'command-exists';
+import { BufferUtils, Document, FileUtils, ImageUtils, Texture, Transform } from '@gltf-transform/core';
+import { TextureBasisu } from '@gltf-transform/extensions';
+import { formatBytes } from './util';
 
 tmp.setGracefulCleanup();
 
-const Mode = {
+export const Mode = {
 	ETC1S: 'etc1s',
 	UASTC: 'uastc',
 };
 
-const Filter = {
+export const Filter = {
 	BOX: 'box',
 	TENT: 'tent',
 	BELL: 'bell',
@@ -38,21 +40,21 @@ const GLOBAL_OPTIONS = {
 	filterScale: 1,
 };
 
-const ETC1S_DEFAULTS = {
+export const ETC1S_DEFAULTS = {
 	quality: 128,
 	compression: 1,
 	...GLOBAL_OPTIONS,
 };
 
-const UASTC_DEFAULTS = {
+export const UASTC_DEFAULTS = {
 	level: 2,
 	rdoQuality: 1,
 	rdoDictsize: 32768,
 	...GLOBAL_OPTIONS,
 };
 
-const toktx = function (options) {
-	return (doc) =>  {
+export const toktx = function (options): Transform {
+	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
 		if (!commandExistsSync('toktx') && !process.env.CI) {
@@ -123,7 +125,7 @@ const toktx = function (options) {
 }
 
 /** Returns names of all texture slots using the given texture. */
-function getTextureSlots (doc, texture) {
+function getTextureSlots (doc: Document, texture: Texture): string[] {
 	return doc.getGraph().getLinks()
 		.filter((link) => link.getChild() === texture)
 		.map((link) => link.getName())
@@ -131,7 +133,7 @@ function getTextureSlots (doc, texture) {
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
-function createParams (slots, options) {
+function createParams (slots: string[], options): string[] {
 	const params = [];
 	params.push('--genmipmap');
 	if (options.filter !== GLOBAL_OPTIONS.filter) params.push('--filter', options.filter);
@@ -167,5 +169,3 @@ function createParams (slots, options) {
 
 	return params;
 }
-
-module.exports = {toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS};

@@ -1,24 +1,21 @@
-#!/usr/bin/env node
-
-const fs = require('fs');
-const path = require('path');
-const gl = require('gl');
-const { gzip } = require('node-gzip');
-const { program } = require('@caporal/core');
-const { version } = require('../package.json');
-const { Document, NodeIO } = require('@gltf-transform/core');
-const { MaterialsUnlit, Unlit, KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
-const { ao, dedup, partition, metalRough } = require('@gltf-transform/lib');
-const { inspect } = require('./inspect');
-const { validate } = require('./validate');
-const { formatBytes } = require('./util');
-const { toktx, Filter, Mode, ETC1S_DEFAULTS, UASTC_DEFAULTS } = require('./toktx');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as gl from 'gl';
+import { gzip } from 'node-gzip';
+import { program } from '@caporal/core';
+import { Document, Logger, NodeIO } from '@gltf-transform/core';
+import { KHRONOS_EXTENSIONS, MaterialsUnlit, Unlit } from '@gltf-transform/extensions';
+import { AOOptions, DedupOptions, PartitionOptions, ao, dedup, metalRough, partition } from '@gltf-transform/lib';
+import { inspect } from './inspect';
+import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
+import { formatBytes } from './util';
+import { validate } from './validate';
 
 const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
 
 
 program
-	.version(version)
+	.version(require('../package.json').version)
 	.description('Commandline interface for the glTF-Transform SDK.');
 
 /**********************************************************************************************
@@ -31,7 +28,7 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
-		inspect(io.readNativeDocument(args.input), io, logger);
+		inspect(io.readNativeDocument(args.input as string), io, logger);
 	});
 
 // VALIDATE
@@ -40,7 +37,7 @@ program
 	.help('Validate the model with official glTF validator.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.option('--limit <limit>', 'Limit number of issues to display', {
-		validator: program.NUMERIC,
+		validator: program.NUMBER,
 		default: Infinity,
 	})
 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
@@ -48,7 +45,7 @@ program
 		default: [],
 	})
 	.action(({args, options, logger}) => {
-		validate(args.input, options, logger);
+		validate(args.input as string, options, logger as unknown as Logger);
 	});
 
 // COPY
@@ -59,8 +56,9 @@ program
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.argument('<output>', 'Path to write output')
 	.action(({args, logger}) => {
-		const doc = io.read(args.input).setLogger(logger);
-		io.write(args.output, doc);
+		const doc = io.read(args.input as string)
+			.setLogger(logger as unknown as Logger);
+		io.write(args.output as string, doc);
 	});
 
 // MERGE
@@ -73,14 +71,15 @@ program
 	)
 	.argument('<path...>', 'Path to glTF 2.0 (.glb, .gltf) model(s). Final path is used to write output.')
 	.option('--partition', 'Whether to maintain separate buffers for each input file. Invalid for GLB output.', {
-		validator: program.BOOL,
+		validator: program.BOOLEAN,
 		default: false,
 	})
 	.action(({args, options, logger}) => {
-		const doc = new Document().setLogger(logger);
-		args.path.forEach((path, index) => {
-			if (index < args.path.length - 1) {
-				logger.debug(`Merging ${index + 1} / ${args.path.length - 1}, ${path}`)
+		const doc = new Document().setLogger(logger as unknown as Logger);
+		const paths = args.path as string[];
+		paths.forEach((path, index) => {
+			if (index < paths.length - 1) {
+				logger.debug(`Merging ${index + 1} / ${paths.length - 1}, ${path}`)
 				doc.merge(io.read(path));
 			}
 		});
@@ -89,7 +88,7 @@ program
 			doc.getRoot().listAccessors().forEach((a) => a.setBuffer(buffer));
 			doc.getRoot().listBuffers().forEach((b, index) => index > 0 ? b.dispose() : null);
 		}
-		io.write(args.path.pop(), doc);
+		io.write(paths.pop(), doc);
 	});
 
 // PARTITION
@@ -99,14 +98,14 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--meshes <meshes>', 'Mesh names', {
-		validator: program.LIST,
+		validator: program.ARRAY,
 		required: true,
 	})
 	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
-			.transform(partition(options));
-		io.write(args.output, doc);
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(partition(options as unknown as PartitionOptions));
+		io.write(args.output as string, doc);
 	});
 
 /**********************************************************************************************
@@ -120,18 +119,18 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--resolution <n>', 'AO resolution', {
-		validator: program.NUMERIC,
+		validator: program.NUMBER,
 		default: 512,
 	})
 	.option('--samples <n>', 'Number of samples', {
-		validator: program.NUMERIC,
+		validator: program.NUMBER,
 		default: 500,
 	})
 	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
-			.transform(ao({...options, gl}));
-		io.write(args.output, doc);
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(ao({...options as unknown as AOOptions, gl}));
+		io.write(args.output as string, doc);
 	});
 
 // METALROUGH
@@ -141,10 +140,10 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.action(async ({args, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
 			.transform(metalRough({}));
-		io.write(args.output, doc);
+		io.write(args.output as string, doc);
 	});
 
 // UNLIT
@@ -154,15 +153,15 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.action(({args, logger}) => {
-		const doc = io.read(args.input).setLogger(logger);
+		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
 
-		const unlitExtension = doc.createExtension(MaterialsUnlit);
+		const unlitExtension = doc.createExtension(MaterialsUnlit) as MaterialsUnlit;
 		const unlit = unlitExtension.createUnlit();
 		doc.getRoot().listMaterials().forEach((material) => {
 			material.setExtension(Unlit, unlit);
 		});
 
-		io.write(args.output, doc);
+		io.write(args.output as string, doc);
 	});
 
 /**********************************************************************************************
@@ -176,18 +175,18 @@ program
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
-		validator: program.BOOL,
+		validator: program.BOOLEAN,
 		default: true,
 	})
 	.option('--textures <textures>', 'Remove duplicate textures', {
-		validator: program.BOOL,
+		validator: program.BOOLEAN,
 		default: true,
 	})
 	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
-			.transform(dedup(options));
-		io.write(args.output, doc);
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(dedup(options as unknown as DedupOptions));
+		io.write(args.output as string, doc);
 	});
 
 // GZIP
@@ -196,7 +195,7 @@ program
 	.help('Compress the model with gzip.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
-		const inBuffer = fs.readFileSync(args.input);
+		const inBuffer = fs.readFileSync(args.input as string);
 		return gzip(inBuffer)
 			.then((outBuffer) => {
 				const fileName = args.input + '.gz';
@@ -253,7 +252,7 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 	.option (
 		'--filter-scale <fscale>',
 		'Specifies the filter scale to use when generating mipmaps.',
-		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.filterScale}
+		{validator: program.NUMBER, default: ETC1S_DEFAULTS.filterScale}
 	)
 	.option(
 		'--compression <clevel>',
@@ -268,38 +267,38 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		+ ' compression, lower quality, and faster encoding. Higher gives less compression,'
 		+ ' higher quality, and slower encoding. Quality level determines values of'
 		+ ' --max_endpoints and --max-selectors, unless those values are explicitly set.',
-		{validator: program.NUMERIC, default: ETC1S_DEFAULTS.quality}
+		{validator: program.NUMBER, default: ETC1S_DEFAULTS.quality}
 	)
 	.option(
 		'--max-endpoints <max_endpoints>',
 		'Manually set the maximum number of color endpoint clusters from'
 		+ ' 1-16128.',
-		{validator: program.NUMERIC}
+		{validator: program.NUMBER}
 	)
 	.option(
 		'--max-selectors <max_selectors>',
 		'Manually set the maximum number of color selector clusters from'
 		+ ' 1-16128.',
-		{validator: program.NUMERIC}
+		{validator: program.NUMBER}
 	)
 	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower'
 		+ ' is higher quality but less quality per output bit (try 1.0-3.0).'
 		+ ' Overrides --quality.',
-		{validator: program.NUMERIC}
+		{validator: program.NUMBER}
 	)
 	.option(
 		'--rdo-off',
 		'Disable endpoint and selector RDO (slightly'
 		+ ' faster, less noisy output, but lower quality per output bit).',
-		{validator: program.BOOL}
+		{validator: program.BOOLEAN}
 	)
 	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
 			.transform(toktx({mode: Mode.ETC1S, ...options}));
-		io.write(args.output, doc);
+		io.write(args.output as string, doc);
 	});
 
 // UASTC
@@ -330,7 +329,7 @@ textures where the quality is sufficient.`.trim()),
 	.option (
 		'--filter-scale <fscale>',
 		'Specifies the filter scale to use when generating mipmaps.',
-		{validator: program.NUMERIC, default: UASTC_DEFAULTS.filterScale}
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.filterScale}
 	)
 	.option(
 		'--level <level>',
@@ -354,14 +353,14 @@ textures where the quality is sufficient.`.trim()),
 		+ ' quality/larger LZ compressed files, higher values yield lower'
 		+ ' quality/smaller LZ compressed files. A good range to try is [.2-4].'
 		+ ' Full range is .001 to 10.0.',
-		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoQuality}
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoQuality}
 	)
 	.option(
 		'--rdo-dictsize <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower'
 		+ ' values=faster, but give less compression. Possible range is 256'
 		+ ' to 65536.',
-		{validator: program.NUMERIC, default: UASTC_DEFAULTS.rdoDictsize}
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictsize}
 	)
 	.option(
 		'--zstd <compressionLevel>',
@@ -369,22 +368,17 @@ textures where the quality is sufficient.`.trim()),
 		+ ' Compression level range is 1 - 22, or 0 is uncompressed.'
 		+ ' Lower values=faster but give less compression. Values above 20'
 		+ ' should be used with caution as they require more memory.',
-		{validator: program.NUMERIC, default: 0}
+		{validator: program.NUMBER, default: 0}
 	)
 	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input)
-			.setLogger(logger)
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
 			.transform(toktx({mode: Mode.UASTC, ...options}));
-		io.write(args.output, doc);
+		io.write(args.output as string, doc);
 	});
 
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
-// Don't invoke run() in a test environment.
-if (require.main === module) {
-	program.disableGlobalOption('--silent');
-	program.run();
-}
-
-module.exports = program;
+export { program };
+export * from './util';

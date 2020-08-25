@@ -1,10 +1,10 @@
 // Utilities.
 
-function formatLong(x) {
+export function formatLong(x: number): string {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function formatBytes(bytes, decimals = 2) {
+export function formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
@@ -16,16 +16,14 @@ function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-function formatParagraph(str) {
+export function formatParagraph(str: string): string {
 	return str.match(/.{1,80}(\s|$)/g)
 		.map((line) => line.trim())
 		.join('\n');
 }
 
-function formatHeader(title) {
+export function formatHeader(title: string): string {
 	return ''
 		+ '\n ' + title.toUpperCase()
 		+ '\n ────────────────────────────────────────────';
 }
-
-module.exports = {formatLong, formatBytes, formatHeader, formatParagraph};

@@ -1,10 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const validator = require('gltf-validator');
-const Table = require('cli-table');
-const { formatHeader } = require('./util');
+import * as fs from 'fs';
+import * as path from 'path';
+import Table from 'cli-table';
+import validator from 'gltf-validator';
+import { Logger } from '@gltf-transform/core';
+import { formatHeader } from './util';
 
-function validate(input, options, logger) {
+export function validate(input: string, options, logger: Logger): void {
 	const buffer = fs.readFileSync(input);
 	return validator.validateBytes(new Uint8Array(buffer), {
 			maxIssues: options.limit,
@@ -25,7 +26,7 @@ function validate(input, options, logger) {
 		});
 }
 
-function printIssueSection(header, severity, report, logger) {
+function printIssueSection(header: string, severity, report, logger: Logger): void {
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {
@@ -37,5 +38,3 @@ function printIssueSection(header, severity, report, logger) {
 	}
 	console.log('\n');
 }
-
-module.exports = {validate};

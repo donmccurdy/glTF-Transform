@@ -3,9 +3,15 @@
   "version": "0.5.3",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "CLI interface to glTF Transform",
-  "main": "src/cli.js",
+  "main": "dist/cli.js",
+  "source": "src/cli.ts",
+  "types": "dist/cli.d.ts",
+  "scripts": {
+    "dist": "microbundle --format cjs",
+    "watch": "microbundle watch --format cjs"
+  },
   "bin": {
-    "gltf-transform": "src/cli.js"
+    "gltf-transform": "bin/cli.js"
   },
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",

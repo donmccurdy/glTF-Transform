@@ -1,5 +1,5 @@
 const test = require('tape');
-const util = require('../src/util');
+const util = require('../');
 
 const HEADER = `
  HELLO
