@@ -47,17 +47,6 @@ All classes described by this documentation are imported from the core package, 
 
 glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [contributing guidelines](/contributing.html).
 
-**Supported extensions:**
-
-- [KHR_materials_clearcoat](/extensions.html#khr_materials_clearcoat)
-- [KHR_materials_ior](/extensions.html#khr_materials_ior-experimental) *(experimental)*
-- [KHR_materials_pbrSpecularGlossiness](/extensions.html#khr_materials_pbrspecularglossiness)
-- [KHR_materials_specular](/extensions.html#khr_materials_specular-experimental) *(experimental)*
-- [KHR_materials_transmission](/extensions.html#khr_materials_transmission-experimental) *(experimental)*
-- [KHR_materials_unlit](/extensions.html#khr_materials_unlit)
-- [KHR_mesh_quantization](/extensions.html#khr_mesh_quantization)
-- [KHR_texture_basisu](/extensions.html#khr_texture_basisu-experimental) *(experimental)*
-
 ## Alternatives and related projects
 
 Several existing projects provide complementary functionality to that of glTF-Transform:

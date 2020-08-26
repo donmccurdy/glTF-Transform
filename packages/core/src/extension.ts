@@ -42,8 +42,8 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 	public readonly provideTypes: PropertyType[] = [];
 
-	private _required = false;
-	private _properties: Set<ExtensionProperty> = new Set();
+	protected required = false;
+	protected properties: Set<ExtensionProperty> = new Set();
 
 	/** @hidden */
 	constructor (protected readonly doc: Document) {
@@ -53,7 +53,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/** Disables and removes the extension from the Document. */
 	public dispose(): void {
 		this.doc.getRoot()._disableExtension(this);
-		for (const property of this._properties) {
+		for (const property of this.properties) {
 			property.dispose();
 		}
 	}
@@ -64,7 +64,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * to require a client to completely fail when an extension isn't known.
 	 */
 	public isRequired(): boolean {
-		return this._required;
+		return this.required;
 	}
 
 	/**
@@ -73,7 +73,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * to require a client to completely fail when an extension isn't known.
 	 */
 	public setRequired(required: boolean): this {
-		this._required = required;
+		this.required = required;
 		return this;
 	}
 
@@ -83,13 +83,13 @@ export abstract class Extension implements ExtensionPropertyParent {
 
 	/** @hidden */
 	public addExtensionProperty(property: ExtensionProperty): this {
-		this._properties.add(property);
+		this.properties.add(property);
 		return this;
 	}
 
 	/** @hidden */
 	public removeExtensionProperty(property: ExtensionProperty): this {
-		this._properties.delete(property);
+		this.properties.delete(property);
 		return this;
 	}
 
