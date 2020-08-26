@@ -38,7 +38,7 @@ program
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.option('--limit <limit>', 'Limit number of issues to display', {
 		validator: program.NUMBER,
-		default: Infinity,
+		default: 1e7,
 	})
 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
 		validator: program.ARRAY,
