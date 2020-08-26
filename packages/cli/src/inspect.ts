@@ -1,8 +1,8 @@
-const Table = require('cli-table');
-const { inspect: inspectDoc } = require('@gltf-transform/lib');
-const { formatBytes, formatHeader, formatLong, formatParagraph } = require('./util');
+import Table from 'cli-table';
+import { inspect as inspectDoc } from '@gltf-transform/lib';
+import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
 
-function inspect (nativeDoc, io, logger) {
+export function inspect (nativeDoc, io, logger): void {
 	// Summary (does not require parsing).
 	const extensionsUsed = nativeDoc.json.extensionsUsed || [];
 	const extensionsRequired = nativeDoc.json.extensionsRequired || [];
@@ -67,5 +67,3 @@ function formatPropertyReport(property, index) {
 	}
 	return row;
 }
-
-module.exports = {inspect};
