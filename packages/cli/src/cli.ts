@@ -18,13 +18,11 @@ program
 	.version(require('../package.json').version)
 	.description('Commandline interface for the glTF-Transform SDK.');
 
-/**********************************************************************************************
- * GENERAL
- */
+program.command('', '\n\n──────────────────── 🔎 INSPECT ─────────────────────');
 
 // INSPECT
 program
-	.command('inspect', '🔎 Inspect the contents of the model')
+	.command('inspect', 'Inspect the contents of the model')
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
@@ -33,7 +31,7 @@ program
 
 // VALIDATE
 program
-	.command('validate', '🔎 Validate the model against the glTF spec')
+	.command('validate', 'Validate the model against the glTF spec')
 	.help('Validate the model with official glTF validator.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.option('--limit <limit>', 'Limit number of issues to display', {
@@ -48,9 +46,11 @@ program
 		validate(args.input as string, options, logger as unknown as Logger);
 	});
 
+program.command('', '\n\n──────────────────── 📦 PACKAGE ─────────────────────');
+
 // COPY
 program
-	.command('copy', '📦 Copy the model with minimal changes')
+	.command('copy', 'Copy the model with minimal changes')
 	.alias('cp')
 	.help('Copy the model with minimal changes.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
@@ -63,7 +63,7 @@ program
 
 // MERGE
 program
-	.command('merge', '📦 Merge two or more models into one')
+	.command('merge', 'Merge two or more models into one')
 	.help(''
 		+ 'Merge two or more models into one, each in a separate Scene.\n\n'
 		+ 'Usage:\n\n'
@@ -93,7 +93,7 @@ program
 
 // PARTITION
 program
-	.command('partition', '📦 Partition mesh data into separate .bin files')
+	.command('partition', 'Partition mesh data into separate .bin files')
 	.help('Partition mesh data into separate .bin files.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -108,13 +108,11 @@ program
 		io.write(args.output as string, doc);
 	});
 
-/**********************************************************************************************
- * MODIFY
- */
+program.command('', '\n\n───────────────────── ✨ STYLE ──────────────────────');
 
 // AMBIENT OCCLUSION
 program
-	.command('ao', '✨ Bake per-vertex ambient occlusion')
+	.command('ao', 'Bake per-vertex ambient occlusion')
 	.help('Bake per-vertex ambient occlusion.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -135,7 +133,7 @@ program
 
 // METALROUGH
 program
-	.command('metalrough', '✨ Convert materials from spec/gloss to metal/rough')
+	.command('metalrough', 'Convert materials from spec/gloss to metal/rough')
 	.help('Convert materials from spec/gloss to metal/rough.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -148,7 +146,7 @@ program
 
 // UNLIT
 program
-	.command('unlit', '✨ Convert materials to an unlit model')
+	.command('unlit', 'Convert materials from metal/rough to unlit')
 	.help('Convert materials to an unlit, shadeless model.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -164,13 +162,11 @@ program
 		io.write(args.output as string, doc);
 	});
 
-/**********************************************************************************************
- * OPTIMIZE
- */
+program.command('', '\n\n──────────────────── ⏩ OPTIMIZE ────────────────────');
 
 // DEDUP
 program
-	.command('dedup', '⏩ Deduplicate accessors and textures')
+	.command('dedup', 'Deduplicate accessors and textures')
 	.help('Deduplicate accessors and textures.')
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -191,7 +187,7 @@ program
 
 // GZIP
 program
-	.command('gzip', '⏩ Compress the model with gzip')
+	.command('gzip', 'Compress the model with gzip')
 	.help('Compress the model with gzip.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
@@ -222,7 +218,7 @@ https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu-experim
 
 // ETC1S
 program
-	.command('etc1s', '⏩ Compress textures with KTX + Basis ETC1S')
+	.command('etc1s', 'Compress textures with KTX + Basis ETC1S')
 	.help(
 		BASIS_SUMMARY
 			.replace('{VARIANT}', 'ETC1S (lower size, lower quality)')
@@ -303,7 +299,7 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 
 // UASTC
 program
-	.command('uastc', '⏩ Compress textures with KTX + Basis UASTC')
+	.command('uastc', 'Compress textures with KTX + Basis UASTC')
 	.help(
 		BASIS_SUMMARY
 			.replace('{VARIANT}', 'UASTC (higher size, higher quality)')
