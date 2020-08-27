@@ -52,7 +52,7 @@ export class NodeIO extends PlatformIO {
 	/** Loads a local path and returns a {@link Document} instance. */
 	public read (uri: string): Document {
 		const nativeDoc = this.readNativeDocument(uri);
-		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
+		return GLTFReader.read(nativeDoc, {extensions: this._extensions, logger: this._logger});
 	}
 
 	/** Writes a {@link Document} instance to a local path. */

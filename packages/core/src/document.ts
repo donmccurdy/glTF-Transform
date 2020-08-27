@@ -51,13 +51,13 @@ export type Transform = (doc: Document) => void;
  * @category Documents
  */
 export class Document {
-	private graph: PropertyGraph = new PropertyGraph();
-	private root: Root = new Root(this.graph);
-	private logger = new Logger(Logger.Verbosity.INFO);
+	private _graph: PropertyGraph = new PropertyGraph();
+	private _root: Root = new Root(this._graph);
+	private _logger = Logger.DEFAULT_INSTANCE;
 
 	/** Returns the glTF {@link Root} property. */
 	public getRoot(): Root {
-		return this.root;
+		return this._root;
 	}
 
 	/**
@@ -66,12 +66,12 @@ export class Document {
 	 * @hidden
 	 */
 	public getGraph(): PropertyGraph {
-		return this.graph;
+		return this._graph;
 	}
 
 	/** Returns the {@link Logger} instance used for any operations performed on this document. */
 	public getLogger(): Logger {
-		return this.logger;
+		return this._logger;
 	}
 
 	/**
@@ -86,7 +86,7 @@ export class Document {
 	 * ```
 	 */
 	public setLogger(logger: Logger): Document {
-		this.logger = logger;
+		this._logger = logger;
 		return this;
 	}
 
@@ -108,17 +108,17 @@ export class Document {
 		// 2. Preconfigure the Root and merge history.
 		const visited = new Set<Property>();
 		const propertyMap = new Map<Property, Property>();
-		visited.add(other.root);
-		propertyMap.set(other.root, this.root);
+		visited.add(other._root);
+		propertyMap.set(other._root, this._root);
 
 		// 3. Create stub classes for every Property in other Document.
-		for (const link of other.graph.getLinks()) {
+		for (const link of other._graph.getLinks()) {
 			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
 				if (!visited.has(thisProp)) {
 					const PropertyClass = thisProp.constructor as new(g: PropertyGraph, e?: Extension) => Property;
 					const otherProp = thisProp instanceof ExtensionProperty
-						? new PropertyClass(this.graph, thisExtensions[thisProp.extensionName])
-						: new PropertyClass(this.graph);
+						? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
+						: new PropertyClass(this._graph);
 					propertyMap.set(thisProp as Property, otherProp);
 					visited.add(thisProp);
 				}
@@ -178,36 +178,36 @@ export class Document {
 
 	/** Creates a new {@link Scene} attached to this document's {@link Root}. */
 	createScene(name = ''): Scene {
-		const scene = new Scene(this.graph, name);
-		this.root._addScene(scene);
+		const scene = new Scene(this._graph, name);
+		this._root._addScene(scene);
 		return scene;
 	}
 
 	/** Creates a new {@link Node} attached to this document's {@link Root}. */
 	createNode(name = ''): Node {
-		const node = new Node(this.graph, name);
-		this.root._addNode(node);
+		const node = new Node(this._graph, name);
+		this._root._addNode(node);
 		return node;
 	}
 
 	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
 	createCamera(name = ''): Camera {
-		const camera = new Camera(this.graph, name);
-		this.root._addCamera(camera);
+		const camera = new Camera(this._graph, name);
+		this._root._addCamera(camera);
 		return camera;
 	}
 
 	/** Creates a new {@link Skin} attached to this document's {@link Root}. */
 	createSkin(name = ''): Skin {
-		const skin = new Skin(this.graph, name);
-		this.root._addSkin(skin);
+		const skin = new Skin(this._graph, name);
+		this._root._addSkin(skin);
 		return skin;
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
 	createMesh(name = ''): Mesh {
-		const mesh = new Mesh(this.graph, name);
-		this.root._addMesh(mesh);
+		const mesh = new Mesh(this._graph, name);
+		this._root._addMesh(mesh);
 		return mesh;
 	}
 
@@ -216,7 +216,7 @@ export class Document {
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createPrimitive(): Primitive {
-		return new Primitive(this.graph);
+		return new Primitive(this._graph);
 	}
 
 	/**
@@ -224,27 +224,27 @@ export class Document {
 	 * {@link Primitive} for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createPrimitiveTarget(name = ''): PrimitiveTarget {
-		return new PrimitiveTarget(this.graph, name);
+		return new PrimitiveTarget(this._graph, name);
 	}
 
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
 	createMaterial(name = ''): Material {
-		const material = new Material(this.graph, name);
-		this.root._addMaterial(material);
+		const material = new Material(this._graph, name);
+		this._root._addMaterial(material);
 		return material;
 	}
 
 	/** Creates a new {@link Texture} attached to this document's {@link Root}. */
 	createTexture(name = ''): Texture {
-		const texture = new Texture(this.graph, name);
-		this.root._addTexture(texture);
+		const texture = new Texture(this._graph, name);
+		this._root._addTexture(texture);
 		return texture;
 	}
 
 	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
 	createAnimation(name = ''): Animation {
-		const animation = new Animation(this.graph, name);
-		this.root._addAnimation(animation);
+		const animation = new Animation(this._graph, name);
+		this._root._addAnimation(animation);
 		return animation;
 	}
 
@@ -253,7 +253,7 @@ export class Document {
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createAnimationChannel(): AnimationChannel {
-		return new AnimationChannel(this.graph);
+		return new AnimationChannel(this._graph);
 	}
 
 	/**
@@ -261,7 +261,7 @@ export class Document {
 	 * for use and export; they are not otherwise associated with a {@link Root}.
 	 */
 	createAnimationSampler(): AnimationSampler {
-		return new AnimationSampler(this.graph);
+		return new AnimationSampler(this._graph);
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */
@@ -269,15 +269,15 @@ export class Document {
 		if (!buffer) {
 			buffer = this.getRoot().listBuffers()[0];
 		}
-		const accessor = new Accessor(this.graph, name).setBuffer(buffer);
-		this.root._addAccessor(accessor);
+		const accessor = new Accessor(this._graph, name).setBuffer(buffer);
+		this._root._addAccessor(accessor);
 		return accessor;
 	}
 
 	/** Creates a new {@link Buffer} attached to this document's {@link Root}. */
 	createBuffer(name = ''): Buffer {
-		const buffer = new Buffer(this.graph, name);
-		this.root._addBuffer(buffer);
+		const buffer = new Buffer(this._graph, name);
+		this._root._addBuffer(buffer);
 		return buffer;
 	}
 }

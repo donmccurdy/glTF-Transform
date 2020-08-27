@@ -26,6 +26,9 @@ class Logger {
 		DEBUG: 0,
 	}
 
+	/** Default logger instance. */
+	public static DEFAULT_INSTANCE = new Logger(Logger.Verbosity.INFO);
+
 	/** Constructs a new Logger instance. */
 	constructor (private readonly verbosity: number) {}
 

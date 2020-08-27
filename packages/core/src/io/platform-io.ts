@@ -2,7 +2,7 @@ import { GLB_BUFFER } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { NativeDocument } from '../native-document';
-import { BufferUtils } from '../utils/';
+import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
@@ -17,7 +17,15 @@ import { GLTFWriter, WriterOptions } from './writer';
  */
 export abstract class PlatformIO {
 
+	protected _logger = Logger.DEFAULT_INSTANCE;
+
 	protected _extensions: typeof Extension[] = [];
+
+	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
+	public setLogger(logger: Logger): this {
+		this._logger = logger;
+		return this;
+	}
 
 	/** Registers extensions, enabling I/O class to read and write glTF assets requiring them. */
 	public registerExtensions(extensions: typeof Extension[]): this {
@@ -27,7 +35,7 @@ export abstract class PlatformIO {
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public createDocument (nativeDoc: NativeDocument): Document {
-		return GLTFReader.read(nativeDoc, {extensions: this._extensions});
+		return GLTFReader.read(nativeDoc, {extensions: this._extensions, logger: this._logger});
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */

@@ -4,7 +4,7 @@ import { Document } from '../document';
 import { Extension, ExtensionConstructor } from '../extension';
 import { NativeDocument } from '../native-document';
 import { Accessor } from '../properties';
-import { FileUtils, ImageUtils } from '../utils';
+import { FileUtils, ImageUtils, Logger } from '../utils';
 import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
@@ -17,6 +17,7 @@ const ComponentTypeToTypedArray = {
 };
 
 export interface ReaderOptions {
+	logger: Logger;
 	extensions: (typeof Extension)[];
 }
 
@@ -26,18 +27,7 @@ export class GLTFReader {
 		const {json} = nativeDoc;
 		const doc = new Document();
 
-		if (json.asset.version !== '2.0') {
-			throw new Error(`Unsupported glTF version, "${json.asset.version}".`);
-		}
-
-		if (json.extensionsRequired) {
-			for (const extensionName of json.extensionsRequired) {
-				if (!options.extensions.find(
-						(extension) => extension.EXTENSION_NAME === extensionName)) {
-					throw new Error(`Missing required extension, "${extensionName}".`);
-				}
-			}
-		}
+		this.validate(nativeDoc, options);
 
 		doc.getRoot().getAsset().generator = nativeDoc.json.asset.generator;
 
@@ -419,6 +409,34 @@ export class GLTFReader {
 			.forEach((extension) => extension.read(context));
 
 		return doc;
+	}
+
+	private static validate(nativeDoc: NativeDocument, options: ReaderOptions): void {
+
+		const json = nativeDoc.json;
+
+		if (json.asset.version !== '2.0') {
+			throw new Error(`Unsupported glTF version, "${json.asset.version}".`);
+		}
+
+		if (json.extensionsRequired) {
+			for (const extensionName of json.extensionsRequired) {
+				if (!options.extensions.find(
+						(extension) => extension.EXTENSION_NAME === extensionName)) {
+					throw new Error(`Missing required extension, "${extensionName}".`);
+				}
+			}
+		}
+
+		if (json.extensionsUsed) {
+			for (const extensionName of json.extensionsUsed) {
+				if (!options.extensions.find(
+						(extension) => extension.EXTENSION_NAME === extensionName)) {
+					options.logger.warn(`Missing optional extension, "${extensionName}".`);
+				}
+			}
+		}
+
 	}
 }
 
