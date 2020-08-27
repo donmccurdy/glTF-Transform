@@ -31,7 +31,7 @@ export function metalRough (options: MetalRoughOptions = {}) {
 		const inputTextures = new Set<Texture>();
 
 		for (const material of doc.getRoot().listMaterials()) {
-			const specGloss = material.getExtension(PBRSpecularGlossiness) as PBRSpecularGlossiness;
+			const specGloss = material.getExtension('KHR_materials_pbrSpecularGlossiness') as PBRSpecularGlossiness;
 			if (!specGloss) continue;
 
 			// Create specular extension.
@@ -53,8 +53,8 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				.setBaseColorFactor(specGloss.getDiffuseFactor())
 				.setMetallicFactor(0)
 				.setRoughnessFactor(1)
-				.setExtension(IOR, iorExtension.createIOR().setIOR(1000))
-				.setExtension(Specular, specular);
+				.setExtension('KHR_materials_ior', iorExtension.createIOR().setIOR(1000))
+				.setExtension('KHR_materials_specular', specular);
 
 			// Move diffuse -> baseColor.
 			const diffuseTexture = specGloss.getDiffuseTexture();
@@ -98,7 +98,7 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			}
 
 			// Remove KHR_materials_pbrSpecularGlossiness from the material.
-			material.setExtension(PBRSpecularGlossiness, null);
+			material.setExtension('KHR_materials_pbrSpecularGlossiness', null);
 		}
 
 		// Remove KHR_materials_pbrSpecularGlossiness from the document.

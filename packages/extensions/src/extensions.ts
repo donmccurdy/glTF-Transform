@@ -1,4 +1,4 @@
-import { Light, LightsPunctual } from './khr-lights-punctual';
+import { LightsPunctual } from './khr-lights-punctual';
 import { MaterialsClearcoat } from './khr-materials-clearcoat';
 import { MaterialsIOR } from './khr-materials-ior';
 import { MaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';

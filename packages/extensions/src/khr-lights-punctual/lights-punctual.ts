@@ -40,7 +40,7 @@ export class LightsPunctual extends Extension {
 
 		nativeDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
 			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
-			context.nodes[nodeIndex].setExtension(Light, lights[nodeDef.extensions[NAME].light]);
+			context.nodes[nodeIndex].setExtension(NAME, lights[nodeDef.extensions[NAME].light]);
 		});
 
 		return this;
@@ -77,7 +77,7 @@ export class LightsPunctual extends Extension {
 		this.doc.getRoot()
 			.listNodes()
 			.forEach((node) => {
-				const light = node.getExtension(Light);
+				const light = node.getExtension<Light>(NAME);
 				if (light) {
 					const nodeIndex = context.nodeIndexMap.get(node);
 					const nodeDef = nativeDoc.json.nodes[nodeIndex];

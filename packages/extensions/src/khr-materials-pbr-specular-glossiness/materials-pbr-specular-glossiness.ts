@@ -20,7 +20,7 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const specGloss = this.createPBRSpecularGlossiness();
-				context.materials[materialIndex].setExtension(PBRSpecularGlossiness, specGloss);
+				context.materials[materialIndex].setExtension(NAME, specGloss);
 
 				// Factors.
 
@@ -62,7 +62,7 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const specGloss = material.getExtension(PBRSpecularGlossiness);
+				const specGloss = material.getExtension<PBRSpecularGlossiness>(NAME);
 				if (specGloss) {
 					const materialIndex = context.materialIndexMap.get(material);
 					const materialDef = nativeDoc.json.materials[materialIndex];

@@ -19,9 +19,9 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 		.setInnerConeAngle(0.5)
 		.setOuterConeAngle(0.75)
 
-	const node = doc.createNode().setExtension(Light, light);
+	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
-	t.equal(node.getExtension(Light), light, 'light is attached');
+	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
 	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
 	const nodeDef = nativeDoc.json.nodes[0];
@@ -39,13 +39,13 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 	}})
 
 	lightsExtension.dispose();
-	t.equal(node.getExtension(Light), null, 'light is detached');
+	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
 	const roundtripDoc = new NodeIO(fs, path)
 		.registerExtensions([LightsPunctual])
 		.createDocument(nativeDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
-	const light2 = roundtripNode.getExtension(Light);
+	const light2 = roundtripNode.getExtension('KHR_lights_punctual');
 
 	t.equal(light2.getType(), LightType.SPOT, 'reads type');
 	t.equal(light2.getIntensity(), 2, 'reads intensity');
@@ -66,10 +66,10 @@ test('@gltf-transform/extensions::lights-punctual | copy', t => {
 		.setRange(50)
 		.setInnerConeAngle(0.5)
 		.setOuterConeAngle(0.75)
-	doc.createNode().setExtension(Light, light);
+	doc.createNode().setExtension('KHR_lights_punctual', light);
 
 	const doc2 = doc.clone();
-	const light2 = doc2.getRoot().listNodes()[0].getExtension(Light);
+	const light2 = doc2.getRoot().listNodes()[0].getExtension('KHR_lights_punctual');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy LightsPunctual');
 	t.ok(light2, 'copy light');
 	t.equal(light2.getType(), LightType.SPOT, 'copy type');

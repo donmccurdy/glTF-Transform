@@ -18,9 +18,9 @@ test('@gltf-transform/extensions::materials-clearcoat', t => {
 
 	const mat = doc.createMaterial('MyClearcoatMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
-		.setExtension(Clearcoat, clearcoat);
+		.setExtension('KHR_materials_clearcoat', clearcoat);
 
-	t.equal(mat.getExtension(Clearcoat), clearcoat, 'clearcoat is attached');
+	t.equal(mat.getExtension('KHR_materials_clearcoat'), clearcoat, 'clearcoat is attached');
 
 	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
 	const materialDef = nativeDoc.json.materials[0];
@@ -34,16 +34,17 @@ test('@gltf-transform/extensions::materials-clearcoat', t => {
 	t.deepEqual(nativeDoc.json.extensionsUsed, [MaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
 
 	clearcoatExtension.dispose();
-	t.equal(mat.getExtension(Clearcoat), null, 'clearcoat is detached');
+	t.equal(mat.getExtension('KHR_materials_clearcoat'), null, 'clearcoat is detached');
 
 	const roundtripDoc = new NodeIO(fs, path)
 		.registerExtensions([MaterialsClearcoat])
 		.createDocument(nativeDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
+	const roundtripExt = roundtripMat.getExtension('KHR_materials_clearcoat');
 
-	t.equal(roundtripMat.getExtension(Clearcoat).getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
-	t.equal(roundtripMat.getExtension(Clearcoat).getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
-	t.ok(roundtripMat.getExtension(Clearcoat).getClearcoatTexture(), 'reads clearcoatTexture');
+	t.equal(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
+	t.equal(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
+	t.ok(roundtripExt.getClearcoatTexture(), 'reads clearcoatTexture');
 	t.end();
 });
 
@@ -58,10 +59,10 @@ test('@gltf-transform/extensions::materials-clearcoat | copy', t => {
 		.setClearcoatRoughnessTexture(doc.createTexture('ccrough'))
 		.setClearcoatNormalTexture(doc.createTexture('ccnormal'));
 	doc.createMaterial()
-		.setExtension(Clearcoat, clearcoat);
+		.setExtension('KHR_materials_clearcoat', clearcoat);
 
 	const doc2 = doc.clone();
-	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension(Clearcoat);
+	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_clearcoat');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsClearcoat');
 	t.ok(clearcoat2, 'copy Clearcoat');
 	t.equals(clearcoat2.getClearcoatFactor(), 0.9, 'copy clearcoatFactor');

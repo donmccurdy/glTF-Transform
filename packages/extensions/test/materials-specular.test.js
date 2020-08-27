@@ -18,9 +18,9 @@ test('@gltf-transform/extensions::materials-specular', t => {
 
 	const mat = doc.createMaterial('MyMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
-		.setExtension(Specular, specular);
+		.setExtension('KHR_materials_specular', specular);
 
-	t.equal(mat.getExtension(Specular), specular, 'specular is attached');
+	t.equal(mat.getExtension('KHR_materials_specular'), specular, 'specular is attached');
 
 	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
 	const materialDef = nativeDoc.json.materials[0];
@@ -34,16 +34,17 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	t.deepEqual(nativeDoc.json.extensionsUsed, [MaterialsSpecular.EXTENSION_NAME], 'writes extensionsUsed');
 
 	specularExtension.dispose();
-	t.equal(mat.getExtension(Specular), null, 'specular is detached');
+	t.equal(mat.getExtension('KHR_materials_specular'), null, 'specular is detached');
 
 	const roundtripDoc = new NodeIO(fs, path)
 		.registerExtensions([MaterialsSpecular])
 		.createDocument(nativeDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
+	const roundtripExt = roundtripMat.getExtension('KHR_materials_specular');
 
-	t.equal(roundtripMat.getExtension(Specular).getSpecularFactor(), 0.9, 'reads specularFactor');
-	t.deepEqual(roundtripMat.getExtension(Specular).getSpecularColorFactor(), [0.9, 0.5, 0.8], 'reads specularColorFactor');
-	t.ok(roundtripMat.getExtension(Specular).getSpecularTexture(), 'reads specularTexture');
+	t.equal(roundtripExt.getSpecularFactor(), 0.9, 'reads specularFactor');
+	t.deepEqual(roundtripExt.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'reads specularColorFactor');
+	t.ok(roundtripExt.getSpecularTexture(), 'reads specularTexture');
 	t.end();
 });
 
@@ -55,10 +56,10 @@ test('@gltf-transform/extensions::materials-specular | copy', t => {
 		.setSpecularColorFactor([0.9, 0.5, 0.8])
 		.setSpecularTexture(doc.createTexture('spec'));
 	doc.createMaterial()
-		.setExtension(Specular, specular);
+		.setExtension('KHR_materials_specular', specular);
 
 	const doc2 = doc.clone();
-	const specular2 = doc2.getRoot().listMaterials()[0].getExtension(Specular);
+	const specular2 = doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_specular');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsSpecular');
 	t.ok(specular2, 'copy Specular');
 	t.equals(specular2.getSpecularFactor(), 0.9, 'copy specularFactor');

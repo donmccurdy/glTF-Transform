@@ -73,7 +73,7 @@ const unlitExtension = doc.createExtension(MaterialsUnlit).setRequired(false);
 
 // Create a Material, and attach an Unlit property to it.
 const unlit = unlitExtension.createUnlit();
-doc.createMaterial('MyUnlitMaterial').setExtension(Unlit, unlit);
+doc.createMaterial('MyUnlitMaterial').setExtension('KHR_materials_unlit', unlit);
 ```
 
 The {@link Extension} instance is then used to construct {@link ExtensionProperty} instances
@@ -120,7 +120,7 @@ const light = lightsExtension.createLight()
   .setColor([1.0, 0.0, 0.0]);
 
 // Attach the property to a material.
-node.setExtension(Light, light);
+node.setExtension('KHR_lights_punctual', light);
 ```
 
 ### KHR_materials_clearcoat
@@ -146,7 +146,7 @@ const clearcoat = clearcoatExtension.createClearcoat()
   .setClearcoatFactor(1.0);
 
 // Attach the property to a material.
-material.setExtension(Clearcoat, clearcoat);
+material.setExtension('KHR_materials_clearcoat', clearcoat);
 ```
 
 ### KHR_materials_ior <mark>*(experimental)*</mark>
@@ -172,7 +172,7 @@ const iorExtension = document.createExtension(MaterialsIOR);
 const ior = iorExtension.createIOR().setIOR(1.0);
 
 // Attach the property to a material.
-material.setExtension(IOR, ior);
+material.setExtension('KHR_materials_ior', ior);
 ```
 
 ### KHR_materials_pbrSpecularGlossiness
@@ -200,7 +200,7 @@ const specGloss = specGlossExtension.createPBRSpecularGlossiness()
   .setSpecularFactor(1.0);
 
 // Attach the property to a material.
-material.setExtension(PBRSpecularGlossiness, specGloss);
+material.setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 ```
 
 ### KHR_materials_specular <mark>*(experimental)*</mark>
@@ -226,7 +226,7 @@ const specular = specularExtension.createSpecular()
   .setSpecularFactor(1.0);
 
 // Attach the property to a material.
-material.setExtension(Specular, specular);
+material.setExtension('KHR_materials_specular', specular);
 ```
 
 ### KHR_materials_transmission <mark>*(experimental)*</mark>
@@ -253,7 +253,7 @@ const transmission = transmissionExtension.createTransmission()
   .setTransmissionFactor(1.0);
 
 // Attach the property to a material.
-material.setExtension(Transmission, transmission);
+material.setExtension('KHR_materials_transmission', transmission);
 ```
 
 ### KHR_materials_unlit
@@ -278,7 +278,7 @@ const unlitExtension = document.createExtension(MaterialsUnlit);
 const unlit = unlitExtension.createUnlit();
 
 // Attach the property to a material.
-material.setExtension(Unlit, unlit);
+material.setExtension('KHR_materials_unlit', unlit);
 ```
 
 ### KHR_mesh_quantization

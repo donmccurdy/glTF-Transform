@@ -158,7 +158,7 @@ program
 		const unlitExtension = doc.createExtension(MaterialsUnlit) as MaterialsUnlit;
 		const unlit = unlitExtension.createUnlit();
 		doc.getRoot().listMaterials().forEach((material) => {
-			material.setExtension(Unlit, unlit);
+			material.setExtension('KHR_materials_unlit', unlit);
 		});
 
 		io.write(args.output as string, doc);

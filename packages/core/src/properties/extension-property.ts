@@ -9,13 +9,6 @@ export interface ExtensionPropertyParent {
 }
 
 /**
- * Type alias allowing ExtensionProperty constructors to be used as tokens when calling
- * property.getExtension(...) or property.setExtension(...), enabling type checking.
- * @hidden
- */
-export type ExtensionPropertyConstructor<Prop> = {new(graph: PropertyGraph, extension: ExtensionPropertyParent): Prop; EXTENSION_NAME: string};
-
-/**
  * # ExtensionProperty
  *
  * *Base class for all {@link Property} types that can be attached by an {@link Extension}.*

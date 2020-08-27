@@ -20,7 +20,7 @@ export class MaterialsTransmission extends Extension {
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const transmission = this.createTransmission();
-				context.materials[materialIndex].setExtension(Transmission, transmission);
+				context.materials[materialIndex].setExtension(NAME, transmission);
 
 				// Factors.
 
@@ -49,7 +49,7 @@ export class MaterialsTransmission extends Extension {
 		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const transmission = material.getExtension(Transmission);
+				const transmission = material.getExtension<Transmission>(NAME);
 				if (transmission) {
 					const materialIndex = context.materialIndexMap.get(material);
 					const materialDef = nativeDoc.json.materials[materialIndex];

@@ -1,7 +1,9 @@
-import { ExtensionConstructor } from '../extension';
 import { GraphChildList, Link } from '../graph';
-import { ExtensionProperty, ExtensionPropertyConstructor } from './extension-property';
+import { ExtensionProperty } from './extension-property';
 import { COPY_IDENTITY, Property } from './property';
+
+// Breaking change introduced in v0.6.
+const TOKEN_WARNING = 'Pass extension name (string) as lookup token, not a constructor.';
 
 /**
  * # ExtensibleProperty
@@ -22,19 +24,18 @@ export abstract class ExtensibleProperty extends Property {
 		this.clearGraphChildList(this.extensions);
 		other.extensions.forEach((link) => {
 			const extension = link.getChild();
-			this.setExtension(extension.constructor as ExtensionPropertyConstructor<typeof extension>, resolve(extension));
+			this.setExtension(extension.extensionName, resolve(extension));
 		})
 
 		return this;
 	}
 
 	/**
-	 * Returns the {@link ExtensionProperty} of the given type attached to this Property, if any.
-	 * The ExtensionProperty constructor is used as the lookup token, allowing better type-checking
-	 * in TypeScript environments. *Not available on {@link Root} properties.*
+	 * Returns an {@link ExtensionProperty} attached to this Property, if any. *Not available on
+	 * {@link Root} properties.*
 	 */
-	public getExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>): Prop {
-		const name = ctor.EXTENSION_NAME;
+	public getExtension<Prop extends ExtensionProperty>(name: string): Prop {
+		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
 		const link = this.extensions.find((link) => link.getChild().extensionName === name);
 		return link ? link.getChild() as Prop : null;
 	}
@@ -44,9 +45,11 @@ export abstract class ExtensibleProperty extends Property {
 	 * one ExtensionProperty may be attached to any one Property at a time. *Not available on
 	 * {@link Root} properties.*
 	 */
-	public setExtension<Prop extends ExtensionProperty>(ctor: ExtensionPropertyConstructor<Prop>, extensionProperty: Prop): this {
+	public setExtension<Prop extends ExtensionProperty>(name: string, extensionProperty: Prop): this {
+		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
+
 		// Remove previous extension.
-		const prevExtension = this.getExtension(ctor);
+		const prevExtension = this.getExtension(name);
 		if (prevExtension) this.removeGraphChild(this.extensions, prevExtension);
 
 		// Stop if deleting the extension.
@@ -54,7 +57,6 @@ export abstract class ExtensibleProperty extends Property {
 
 		// Add next extension.
 		extensionProperty._validateParent(this);
-		const name = extensionProperty.extensionName;
 		return this.addGraphChild(this.extensions, this.graph.link(name, this, extensionProperty));
 	}
 

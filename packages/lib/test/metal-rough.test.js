@@ -70,7 +70,7 @@ test('@gltf-transform/lib::metalRough | textures', async t => {
 	const mat = doc.createMaterial()
 		.setBaseColorTexture(baseColorTex)
 		.setMetallicRoughnessTexture(metalRoughTex)
-		.setExtension(PBRSpecularGlossiness, specGloss);
+		.setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 
 	await doc.transform(metalRough());
 
@@ -89,8 +89,8 @@ test('@gltf-transform/lib::metalRough | textures', async t => {
 	t.ok(specGlossTex.isDisposed(), 'disposes specGlossTexture');
 	t.deepEqual(mat.getBaseColorTexture().getImage(), baseColorImage, 'diffuse -> baseColor');
 	t.deepEqual(mat.getMetallicRoughnessTexture().getImage(), roughImage, 'spec -> rough');
-	t.deepEqual(mat.getExtension(Specular).getSpecularTexture().getImage(), specImage, 'diffuse -> baseColor');
-	t.equal(mat.getExtension(IOR).getIOR(), 1000, 'ior = 1000');
+	t.deepEqual(mat.getExtension('KHR_materials_specular').getSpecularTexture().getImage(), specImage, 'diffuse -> baseColor');
+	t.equal(mat.getExtension('KHR_materials_ior').getIOR(), 1000, 'ior = 1000');
 	t.equal(mat.getRoughnessFactor(), 1, 'roughnessFactor = 1');
 	t.equal(mat.getMetallicFactor(), 0, 'metallicFactor = 0');
 	t.equal(doc.getRoot().listTextures().length, 3, 'correct texture count');
@@ -109,7 +109,7 @@ test('@gltf-transform/lib::metalRough | factors', async t => {
 		.setBaseColorFactor([1, 0, 0, 1])
 		.setMetallicFactor(0.25)
 		.setRoughnessFactor(0.75)
-		.setExtension(PBRSpecularGlossiness, specGloss);
+		.setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 
 	await doc.transform(metalRough());
 
@@ -119,9 +119,9 @@ test('@gltf-transform/lib::metalRough | factors', async t => {
 		'uses KHR_materials_ior and KHR_materials_specular'
 	);
 	t.deepEqual(mat.getBaseColorFactor(), [0, 1, 0, 0.5], 'baseColorFactor = diffuseFactor');
-	t.equal(mat.getExtension(Specular).getSpecularFactor(), 1, 'specularFactor = 1');
-	t.deepEqual(mat.getExtension(Specular).getSpecularColorFactor(), [1, 0.5, 0.5], 'specularColorFactor = specularFactor');
-	t.equal(mat.getExtension(IOR).getIOR(), 1000, 'ior = 1000');
+	t.equal(mat.getExtension('KHR_materials_specular').getSpecularFactor(), 1, 'specularFactor = 1');
+	t.deepEqual(mat.getExtension('KHR_materials_specular').getSpecularColorFactor(), [1, 0.5, 0.5], 'specularColorFactor = specularFactor');
+	t.equal(mat.getExtension('KHR_materials_ior').getIOR(), 1000, 'ior = 1000');
 	t.equal(mat.getRoughnessFactor().toFixed(3), '0.100', 'roughnessFactor = 1 - glossFactor');
 	t.equal(mat.getMetallicFactor(), 0, 'metallicFactor = 0');
 	t.equal(doc.getRoot().listTextures().length, 0, 'no textures');

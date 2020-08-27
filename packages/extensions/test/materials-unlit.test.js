@@ -17,9 +17,9 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setRoughnessFactor(1.0)
 		.setMetallicFactor(0.0)
-		.setExtension(Unlit, unlit);
+		.setExtension('KHR_materials_unlit', unlit);
 
-	t.equal(mat.getExtension(Unlit), unlit, 'unlit is attached');
+	t.equal(mat.getExtension('KHR_materials_unlit'), unlit, 'unlit is attached');
 
 	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
 	const materialDef = nativeDoc.json.materials[0];
@@ -30,7 +30,7 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 
 	unlitExtension.dispose();
 
-	t.equal(mat.getExtension(Unlit), null, 'unlit is detached');
+	t.equal(mat.getExtension('KHR_materials_unlit'), null, 'unlit is detached');
 	t.end();
 });
 
@@ -38,10 +38,10 @@ test('@gltf-transform/extensions::materials-unlit | copy', t => {
 	const doc = new Document();
 	const unlitExtension = doc.createExtension(MaterialsUnlit);
 	doc.createMaterial()
-		.setExtension(Unlit, unlitExtension.createUnlit());
+		.setExtension('KHR_materials_unlit', unlitExtension.createUnlit());
 
 	const doc2 = doc.clone();
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsUnlit');
-	t.ok(doc2.getRoot().listMaterials()[0].getExtension(Unlit), 'copy Unlit');
+	t.ok(doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_unlit'), 'copy Unlit');
 	t.end();
 });

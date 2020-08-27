@@ -20,7 +20,7 @@ export class MaterialsClearcoat extends Extension {
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const clearcoat = this.createClearcoat();
-				context.materials[materialIndex].setExtension(Clearcoat, clearcoat);
+				context.materials[materialIndex].setExtension(NAME, clearcoat);
 
 				// Factors.
 
@@ -69,7 +69,7 @@ export class MaterialsClearcoat extends Extension {
 		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const clearcoat = material.getExtension(Clearcoat);
+				const clearcoat = material.getExtension<Clearcoat>(NAME);
 				if (clearcoat) {
 					const materialIndex = context.materialIndexMap.get(material);
 					const materialDef = nativeDoc.json.materials[materialIndex];

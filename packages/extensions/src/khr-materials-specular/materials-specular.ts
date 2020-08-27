@@ -20,7 +20,7 @@ export class MaterialsSpecular extends Extension {
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const specular = this.createSpecular();
-				context.materials[materialIndex].setExtension(Specular, specular);
+				context.materials[materialIndex].setExtension(NAME, specular);
 
 				// Factors.
 
@@ -52,7 +52,7 @@ export class MaterialsSpecular extends Extension {
 		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const specular = material.getExtension(Specular);
+				const specular = material.getExtension<Specular>(NAME);
 				if (specular) {
 					const materialIndex = context.materialIndexMap.get(material);
 					const materialDef = nativeDoc.json.materials[materialIndex];
