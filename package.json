@@ -21,7 +21,7 @@
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",
     "preversion": "yarn run test",
-    "version": "lerna run dist --parallel && gltf-transform -h > docs/CLI_HELP.md",
+    "version": "lerna run dist --parallel && gltf-transform -h > docs/CLI_HELP.md && git add -A docs",
     "postpublish": "git push && git push --tags && yarn run docs:deploy",
     "docs": "cd packages/core && typedoc --out ../../docs/dist/ --name glTF-Transform --excludeNotDocumented --theme ../../docs/theme --media ../../docs/media --mode file --readme ../../docs/INDEX.md --includes ../../docs && cd ../../ && mv docs/dist/modules/* docs/dist/",
     "docs:deploy": "yarn run docs && now --prod"
