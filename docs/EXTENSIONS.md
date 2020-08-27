@@ -17,6 +17,18 @@ extension constructor. The extension object may then be used to construct
 {@link ExtensionProperty} instances, which are attached to properties throughout the Document
 as prescribed by the extension itself.
 
+**Supported extensions:**
+
+- [KHR_lights_punctual](#khr_lights_punctual)
+- [KHR_materials_clearcoat](#khr_materials_clearcoat)
+- [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
+- [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrspecularglossiness)
+- [KHR_materials_specular](#khr_materials_specular-experimental) *(experimental)*
+- [KHR_materials_transmission](#khr_materials_transmission-experimental) *(experimental)*
+- [KHR_materials_unlit](#khr_materials_unlit)
+- [KHR_mesh_quantization](#khr_mesh_quantization)
+- [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
+
 ## Installation
 
 To use extensions, first install the `@gltf-transform/extensions` package:
@@ -85,14 +97,31 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 
 ## Supported extensions
 
-- [KHR_materials_clearcoat](#khr_materials_clearcoat)
-- [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
-- [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrspecularglossiness)
-- [KHR_materials_specular](#khr_materials_specular-experimental) *(experimental)*
-- [KHR_materials_transmission](#khr_materials_transmission-experimental) *(experimental)*
-- [KHR_materials_unlit](#khr_materials_unlit)
-- [KHR_mesh_quantization](#khr_mesh_quantization)
-- [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
+### KHR_lights_punctual
+
+- *Specification: [KHR_lights_punctual](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_lights_punctual/)*
+- *Source: [packages/extensions/src/khr-lights_punctual/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-lights_punctual)*
+
+The `KHR_lights_punctual` extension defines three "punctual" light types: directional, point and
+spot. Punctual lights are defined as parameterized, infinitely small points that emit light in
+well-defined directions and intensities. Lights are referenced by nodes and inherit the transform
+of that node.
+
+```typescript
+import { LightsPunctual, Light, LightType } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const lightsExtension = document.createExtension(LightsPunctual);
+
+// Create a Light property.
+const light = lightsExtension.createLight()
+  .setType(LightType.POINT)
+  .setIntensity(2.0)
+  .setColor([1.0, 0.0, 0.0]);
+
+// Attach the property to a material.
+node.setExtension(Light, light);
+```
 
 ### KHR_materials_clearcoat
 
