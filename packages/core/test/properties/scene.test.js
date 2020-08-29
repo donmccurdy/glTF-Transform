@@ -14,3 +14,15 @@ test('@gltf-transform/core::scene | copy', t => {
 	t.deepEqual(scene2.listNodes(), scene.listNodes(), 'copy nodes');
 	t.end();
 });
+
+test('@gltf-transform/core::scene | traverse', t => {
+	const doc = new Document();
+	const scene = doc.createScene('MyScene')
+		.addNode(doc.createNode('Node1'))
+		.addNode(doc.createNode('Node2'));
+
+	let count = 0;
+	scene.traverse((_) => count++);
+	t.equals(count, 2, 'traverses all nodes');
+	t.end();
+});

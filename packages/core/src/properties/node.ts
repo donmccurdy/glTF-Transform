@@ -154,4 +154,11 @@ export class Node extends ExtensibleProperty {
 		this._weights = weights;
 		return this;
 	}
+
+	/** Visits this {@link Node} and its descendants, top-down. */
+	public traverse(fn: (node: Node) => void): this {
+		fn(this);
+		for (const child of this.listChildren()) child.traverse(fn);
+		return this;
+	}
 }

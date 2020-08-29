@@ -29,3 +29,18 @@ test('@gltf-transform/core::node | copy', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::node | traverse', t => {
+	const doc = new Document();
+	const disposed = doc.createNode('Four');
+	const node = doc.createNode('One')
+		.addChild(doc.createNode('Two')
+			.addChild(doc.createNode('Three').addChild(disposed)));
+	disposed.dispose();
+
+	let count = 0;
+	node.traverse((_) => count++);
+	t.equal(count, 3, 'traverses all nodes')
+
+	t.end();
+});

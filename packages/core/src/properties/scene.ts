@@ -44,8 +44,14 @@ export class Scene extends ExtensibleProperty {
 		return this.removeGraphChild(this.nodes, node);
 	}
 
-	/** Lists all {@link Node}s in the scene. */
+	/** Lists all root {@link Node}s in the scene. */
 	public listNodes(): Node[] {
 		return this.nodes.map((p) => p.getChild());
+	}
+
+	/** Visits each {@link Node} in the scene, including descendants, top-down. */
+	public traverse(fn: (node: Node) => void): this {
+		for (const node of this.listNodes()) node.traverse(fn);
+		return this;
 	}
 }
