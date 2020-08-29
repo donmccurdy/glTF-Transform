@@ -3,6 +3,22 @@ require('source-map-support').install();
 const test = require('tape');
 const { Document } = require('../../');
 
+test('@gltf-transform/core::node | parent', t => {
+	const doc = new Document();
+	const a = doc.createNode('A');
+	const b = doc.createNode('B');
+	const c = doc.createNode('C');
+
+	a.addChild(c);
+	b.addChild(c);
+
+	t.deepEquals(a.listChildren(), [], 'removes child from 1st parent');
+	t.deepEquals(b.listChildren(), [c], 'adds child to 2nd parent');
+	// TODO(bug): What if parent is a Scene?
+
+	t.end();
+});
+
 test('@gltf-transform/core::node | copy', t => {
 	const doc = new Document();
 	const node = doc.createNode('MyNode')
@@ -41,6 +57,24 @@ test('@gltf-transform/core::node | traverse', t => {
 	let count = 0;
 	node.traverse((_) => count++);
 	t.equal(count, 3, 'traverses all nodes')
+
+	t.end();
+});
+
+test('@gltf-transform/core::node | getWorldMatrix', t => {
+	const doc = new Document();
+	const a = doc.createNode('A').setTranslation([10, 0, 0]);
+	const b = doc.createNode('B').setTranslation([0, 5, 0]);
+	a.addChild(b);
+
+	t.deepEquals(b.getWorldTranslation(), [10, 5, 0], 'getWorldTranslation');
+	t.deepEquals(b.getWorldRotation(), [0, 0, 0, 1], 'getWorldRotation');
+	t.deepEquals(b.getWorldScale(), [1, 1, 1], 'getWorldScale');
+	t.deepEquals(b.getWorldMatrix(), [
+		10, 0, 0, 0,
+		0, 5, 0, 0,
+		0, 0, 0, 0,
+	], 'getWorldMatrix');
 
 	t.end();
 });
