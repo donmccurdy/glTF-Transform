@@ -160,6 +160,15 @@ export class Material extends ExtensibleProperty {
 	 * Alpha.
 	 */
 
+	/** Returns material alpha, equivalent to baseColorFactor[3]. */
+	public getAlpha(): number { return this._baseColorFactor[3]; }
+
+	/** Sets material alpha, equivalent to baseColorFactor[3]. */
+	public setAlpha(alpha: number): this {
+		this._baseColorFactor[3] = alpha;
+		return this;
+	}
+
 	/**
 	 * Returns the mode of the material's alpha channels, which are provided by `baseColorFactor`
 	 * and `baseColorTexture`.
