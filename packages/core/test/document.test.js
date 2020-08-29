@@ -20,12 +20,18 @@ test('@gltf-transform/core::document | transform', async t => {
 test('@gltf-transform/core::document | clone', t => {
 	const doc1 = new Document();
 	doc1.createMaterial('MyMaterial');
-	doc1.createScene('MyScene');
+	const rootNode = doc1.createNode('A')
+		.addChild(doc1.createNode('B')
+			.addChild(doc1.createNode('C')));
+	const scene = doc1.createScene('MyScene').addChild(rootNode);
+
 
 	const doc2 = doc1.clone();
 
-	t.equal(doc2.getRoot().listScenes()[0].getName(), 'MyScene', 'transfers scene')
-	t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'transfers material')
+	t.equal(doc2.getRoot().listScenes()[0].getName(), 'MyScene', 'transfers scene');
+	t.equal(doc2.getRoot().listScenes()[0].listChildren().length, 1, 'transfers scene root node');
+	t.equal(doc2.getRoot().listNodes().length, 3, 'transfers nodes');
+	t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'transfers material');
 	t.notEqual(doc2.getRoot().listScenes()[0], doc1.getRoot().listScenes()[0], 'does not reference old scene');
 	t.notEqual(doc2.getRoot().listMaterials()[0], doc1.getRoot().listMaterials()[0], 'does not reference old material');
 

@@ -49,7 +49,7 @@ const cogNode = doc.createNode('CogInstance1')
 
 // Add the Node to a Scene.
 doc.listScenes()[0]
-  .addNode(cogNode);
+  .addChild(cogNode);
 
 // List all references to the 'Cog' mesh.
 mesh.listParents(); // → [cogNode, ...]

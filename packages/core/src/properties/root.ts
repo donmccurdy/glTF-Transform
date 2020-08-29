@@ -36,7 +36,7 @@ import { Texture } from './texture';
  * const root = document.getRoot();
  * const scene = document.createScene('myScene');
  * const node = document.createNode('myNode');
- * scene.addNode(node);
+ * scene.addChild(node);
  *
  * console.log(root.listScenes()); // → [scene x 1]
  * ```

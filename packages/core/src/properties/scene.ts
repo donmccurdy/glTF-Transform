@@ -23,35 +23,48 @@ import { COPY_IDENTITY } from './property';
 export class Scene extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.SCENE;
 
-	@GraphChildList private nodes: Link<Scene, Node>[] = [];
+	@GraphChildList private children: Link<Scene, Node>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this.clearGraphChildList(this.nodes);
-		other.nodes.forEach((link) => this.addNode(resolve(link.getChild())));
+		if (resolve !== COPY_IDENTITY) {
+			this.clearGraphChildList(this.children);
+			other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+		}
 
 		return this;
 	}
 
 	/** Adds a {@link Node} to the scene. */
-	public addNode(node: Node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
+	public addChild(node: Node): this {
+		// Remove existing parent.
+		if (node._parent) node._parent.removeChild(node);
+
+		// Link in graph.
+		const link = this.graph.link('child', this, node);
+		this.addGraphChild(this.children, link);
+
+		// Set new parent.
+		node._parent = this;
+		link.onDispose(() => node._parent = null);
+		return this;
 	}
 
 	/** Removes a {@link Node} from the scene. */
-	public removeNode(node: Node): this {
-		return this.removeGraphChild(this.nodes, node);
+	public removeChild(node: Node): this {
+		this.removeGraphChild(this.children, node);
+		return this;
 	}
 
 	/** Lists all root {@link Node}s in the scene. */
-	public listNodes(): Node[] {
-		return this.nodes.map((p) => p.getChild());
+	public listChildren(): Node[] {
+		return this.children.map((p) => p.getChild());
 	}
 
 	/** Visits each {@link Node} in the scene, including descendants, top-down. */
 	public traverse(fn: (node: Node) => void): this {
-		for (const node of this.listNodes()) node.traverse(fn);
+		for (const node of this.listChildren()) node.traverse(fn);
 		return this;
 	}
 }

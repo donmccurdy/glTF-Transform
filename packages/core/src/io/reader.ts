@@ -397,7 +397,7 @@ export class GLTFReader {
 
 			children
 			.map((nodeIndex) => context.nodes[nodeIndex])
-			.forEach((node) => (scene.addNode(node)));
+			.forEach((node) => (scene.addChild(node)));
 
 			return scene;
 		});

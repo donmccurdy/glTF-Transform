@@ -14,7 +14,6 @@ test('@gltf-transform/core::node | parent', t => {
 
 	t.deepEquals(a.listChildren(), [], 'removes child from 1st parent');
 	t.deepEquals(b.listChildren(), [c], 'adds child to 2nd parent');
-	// TODO(bug): What if parent is a Scene?
 
 	t.end();
 });
@@ -41,7 +40,8 @@ test('@gltf-transform/core::node | copy', t => {
 	t.equals(node2.getCamera(), node.getCamera(), 'copy camera');
 	t.equals(node2.getMesh(), node.getMesh(), 'copy mesh');
 	t.equals(node2.getSkin(), node.getSkin(), 'copy skin');
-	t.equals(node2.listChildren()[0], node.listChildren()[0], 'copy children');
+	t.deepEquals(node2.listChildren(), [], 'don\'t copy children');
+	t.deepEquals(node.listChildren().length, 1, 'retain children');
 
 	t.end();
 });

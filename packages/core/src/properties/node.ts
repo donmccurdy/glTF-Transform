@@ -8,6 +8,12 @@ import { Mesh } from './mesh';
 import { COPY_IDENTITY } from './property';
 import { Skin } from './skin';
 
+export interface SceneNode {
+	_parent?: SceneNode;
+	addChild(node: Node): this;
+	removeChild(node: Node): this;
+}
+
 /**
  * # Node
  *
@@ -43,8 +49,8 @@ export class Node extends ExtensibleProperty {
 	private _scale: vec3 = [1, 1, 1];
 	private _weights: number[] = [];
 
-	// Internal reference to node's parent, omitted from {@link Graph}.
-	private _parent: Node = null;
+	/** @hidden Internal reference to node's parent, omitted from {@link Graph}. */
+	public _parent: SceneNode = null;
 
 	@GraphChild private camera: Link<Node, Camera> = null;
 	@GraphChild private mesh: Link<Node, Mesh> = null;
@@ -63,8 +69,10 @@ export class Node extends ExtensibleProperty {
 		if (other.mesh) this.setMesh(resolve(other.mesh.getChild()));
 		if (other.skin) this.setSkin(resolve(other.skin.getChild()));
 
-		this.clearGraphChildList(this.children);
-		other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+		if (resolve !== COPY_IDENTITY) {
+			this.clearGraphChildList(this.children);
+			other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+		}
 
 		return this;
 	}
@@ -126,16 +134,20 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the world matrix of this node. */
 	public getWorldMatrix(): mat4 {
-		// Build ancestor chain.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		let parent: Node = this;
-		const ancestors = [];
-		while ((parent = parent._parent)) ancestors.push(parent);
+		let sceneNode: SceneNode = this;
+
+		// Build ancestor chain.
+		const ancestors: Node[] = [];
+		while ((sceneNode = sceneNode._parent) && sceneNode instanceof Node) {
+			ancestors.push(sceneNode);
+		}
 
 		// Compute world matrix.
+		let ancestor: Node;
 		const worldMatrix = ancestors.pop().getMatrix();
-		while ((parent = ancestors.pop())) {
-			multiply(worldMatrix, worldMatrix, parent.getMatrix());
+		while ((ancestor = ancestors.pop())) {
+			multiply(worldMatrix, worldMatrix, ancestor.getMatrix());
 		}
 
 		return worldMatrix;
@@ -147,22 +159,36 @@ export class Node extends ExtensibleProperty {
 
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
 	public addChild(child: Node): this {
+		// Remove existing parent.
 		if (child._parent) child._parent.removeChild(child);
-		this.addGraphChild(this.children, this.graph.link('child', this, child));
+
+		// Link in graph.
+		const link = this.graph.link('child', this, child);
+		this.addGraphChild(this.children, link);
+
+		// Set new parent.
 		child._parent = this;
+		link.onDispose(() => child._parent = null);
 		return this;
 	}
 
 	/** Removes a node from this node's child node list. */
 	public removeChild(child: Node): this {
 		this.removeGraphChild(this.children, child)
-		child._parent = null;
 		return this;
 	}
 
 	/** Lists all child nodes of this node. */
 	public listChildren(): Node[] {
 		return this.children.map((link) => link.getChild());
+	}
+
+	/**
+	 * Returns the unique parent ({@link Scene}, {@link Node}, or null) of this node in the scene
+	 * hierarchy. Unrelated to {@link Property.listParents}, which lists all resource references.
+	 */
+	public getParent(): SceneNode {
+		return this._parent;
 	}
 
 	/**********************************************************************************************

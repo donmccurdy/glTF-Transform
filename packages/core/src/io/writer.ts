@@ -562,7 +562,7 @@ export class GLTFWriter {
 
 		json.scenes = root.listScenes().map((scene) => {
 			const sceneDef = context.createPropertyDef(scene) as GLTF.IScene;
-			sceneDef.nodes = scene.listNodes().map((node) => context.nodeIndexMap.get(node));
+			sceneDef.nodes = scene.listChildren().map((node) => context.nodeIndexMap.get(node));
 			return sceneDef;
 		});
 
