@@ -1,4 +1,5 @@
 export * from './buffer-utils';
+export * from './color-utils';
 export * from './file-utils';
 export * from './image-utils';
 export * from './graph-utils';
