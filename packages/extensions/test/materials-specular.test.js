@@ -66,3 +66,13 @@ test('@gltf-transform/extensions::materials-specular | copy', t => {
 	t.equals(specular2.getSpecularTexture().getName(), 'spec', 'copy specularTexture');
 	t.end();
 });
+
+
+test('@gltf-transform/extensions::materials-specular | hex', t => {
+	const doc = new Document();
+	const specularExtension = doc.createExtension(MaterialsSpecular);
+	const specular = specularExtension.createSpecular()
+		.setSpecularColorHex(0x252525)
+	t.equals(specular.getSpecularColorHex(), 0x252525, 'specularColorHex');
+	t.end();
+});

@@ -1,5 +1,6 @@
 import { PropertyType, vec3, vec4 } from '../constants';
 import { GraphChild } from '../graph/index';
+import { ColorUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
@@ -159,6 +160,15 @@ export class Material extends ExtensibleProperty {
 	 * Alpha.
 	 */
 
+	/** Returns material alpha, equivalent to baseColorFactor[3]. */
+	public getAlpha(): number { return this._baseColorFactor[3]; }
+
+	/** Sets material alpha, equivalent to baseColorFactor[3]. */
+	public setAlpha(alpha: number): this {
+		this._baseColorFactor[3] = alpha;
+		return this;
+	}
+
 	/**
 	 * Returns the mode of the material's alpha channels, which are provided by `baseColorFactor`
 	 * and `baseColorTexture`.
@@ -201,12 +211,29 @@ export class Material extends ExtensibleProperty {
 	 * Base color.
 	 */
 
-	/** Base color / albedo; linear multiplier. See {@link getBaseColorTexture}. */
+	/** Base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
 	public getBaseColorFactor(): vec4 { return this._baseColorFactor; }
 
-	/** Sets the base color / albedo; linear multiplier. See {@link getBaseColorTexture}. */
+	/** Sets the base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
 	public setBaseColorFactor(baseColorFactor: vec4): this {
 		this._baseColorFactor = baseColorFactor;
+		return this;
+	}
+
+	/**
+	 * Base color / albedo as hexadecimal in sRGB colorspace. Converted automatically from
+	 * baseColorFactor in linear space. See {@link getBaseColorTexture}.
+	 */
+	public getBaseColorHex(): number {
+		return ColorUtils.factorToHex(this._baseColorFactor);
+	}
+
+	/**
+	 * Sets base color / albedo as hexadecimal in sRGB colorspace. Converted automatically to
+	 * baseColorFactor in linear space. See {@link getBaseColorTexture}.
+	 */
+	public setBaseColorHex(hex: number): this {
+		ColorUtils.hexToFactor(hex, this._baseColorFactor);
 		return this;
 	}
 
@@ -256,6 +283,23 @@ export class Material extends ExtensibleProperty {
 	/** Sets the emissive color; linear multiplier. See {@link getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
 		this._emissiveFactor = emissiveFactor;
+		return this;
+	}
+
+	/**
+	 * Emissive as hexadecimal in sRGB colorspace. Converted automatically from
+	 * emissiveFactor in linear space. See {@link getBaseColorTexture}.
+	 */
+	public getEmissiveHex(): number {
+		return ColorUtils.factorToHex(this._emissiveFactor);
+	}
+
+	/**
+	 * Sets emissive as hexadecimal in sRGB colorspace. Converted automatically to
+	 * emissiveFactor in linear space. See {@link getEmissiveTexture}.
+	 */
+	public setEmissiveHex(hex: number): this {
+		ColorUtils.hexToFactor(hex, this._emissiveFactor);
 		return this;
 	}
 

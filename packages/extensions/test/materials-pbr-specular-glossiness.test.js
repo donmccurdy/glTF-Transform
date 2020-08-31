@@ -70,3 +70,12 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', t =
 	t.equals(specGloss2.getSpecularGlossinessTexture().getName(), 'specGloss', 'copy specularGlossinessTexture');
 	t.end();
 });
+
+test('@gltf-transform/extensions::materials-pbr-specular-glossiness | hex', t => {
+	const doc = new Document();
+	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGloss = specGlossExtension.createPBRSpecularGlossiness()
+		.setDiffuseHex(0x0000FF);
+	t.equals(specGloss.getDiffuseHex(), 254, 'diffuseHex');
+	t.end();
+});

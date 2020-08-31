@@ -1,4 +1,5 @@
 import { COPY_IDENTITY, ExtensionProperty, PropertyType, vec3 } from '@gltf-transform/core';
+import { ColorUtils } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants';
 
 export enum LightType {
@@ -40,12 +41,21 @@ export class Light extends ExtensionProperty {
 	 * COLOR.
 	 */
 
-	/** RGB value for light's color in linear space.. */
+	/** Components (R, G, B) of light's color in linear space. */
 	public getColor(): vec3 { return this._color; }
 
-	/** RGB value for light's color in linear space.. */
+	/** Components (R, G, B) of light's color in linear space. */
 	public setColor(color: vec3): this {
 		this._color = color;
+		return this;
+	}
+
+	/** Hex light color in sRGB colorspace. */
+	public getColorHex(): number { return ColorUtils.factorToHex(this._color); }
+
+	/** Hex light color in sRGB colorspace. */
+	public setColorHex(hex: number): this {
+		ColorUtils.hexToFactor(hex, this._color);
 		return this;
 	}
 

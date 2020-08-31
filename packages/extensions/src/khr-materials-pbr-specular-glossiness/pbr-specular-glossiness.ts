@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3, vec4 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3, vec4 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -45,6 +45,15 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	/** Diffuse; linear multiplier. See {@link getDiffuseTexture}. */
 	public setDiffuseFactor(diffuseFactor: vec4): this {
 		this._diffuseFactor = diffuseFactor;
+		return this;
+	}
+
+	/** Diffuse; hex color in sRGB colorspace. */
+	public getDiffuseHex(): number { return ColorUtils.factorToHex(this._diffuseFactor); }
+
+	/** Diffuse; hex color in sRGB colorspace. */
+	public setDiffuseHex(hex: number): this {
+		ColorUtils.hexToFactor(hex, this._diffuseFactor);
 		return this;
 	}
 
