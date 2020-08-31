@@ -3,7 +3,7 @@ export { Extension } from './extension';
 export { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Property, Material, Mesh, Node, Primitive, PrimitiveTarget, Root, Scene, Skin, Texture, TextureInfo, TextureLink, TextureSampler, COPY_IDENTITY } from './properties';
 export { Graph, GraphChild } from './graph/';
 export { NodeIO, WebIO, ReaderContext, WriterContext } from './io/';
-export { BufferUtils, FileUtils, ImageUtils, MathUtils, Logger, uuid } from './utils/';
+export { BufferUtils, ColorUtils, FileUtils, ImageUtils, MathUtils, Logger, uuid } from './utils/';
 export { PropertyType, vec2, vec3, vec4, mat3, mat4 } from './constants';
 
 /** [[include:CONCEPTS.md]] */

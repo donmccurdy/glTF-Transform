@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -39,13 +39,23 @@ export class Specular extends ExtensionProperty {
 		return this;
 	}
 
-
-	/** Specular color; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular color; components in linear space. See {@link getSpecularTexture}. */
 	public getSpecularColorFactor(): vec3 { return this._specularColorFactor; }
 
-	/** Specular color; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular color; components in linear space. See {@link getSpecularTexture}. */
 	public setSpecularColorFactor(specularColorFactor: vec3): this {
 		this._specularColorFactor = specularColorFactor;
+		return this;
+	}
+
+	/** Specular color; hexadecimal in sRGB colorspace. See {@link getSpecularTexture} */
+	public getSpecularColorHex(): number {
+		return ColorUtils.factorToHex(this._specularColorFactor);
+	}
+
+	/** Specular color; hexadecimal in sRGB colorspace. See {@link getSpecularTexture} */
+	public setSpecularColorHex(hex: number): this {
+		ColorUtils.hexToFactor(hex, this._specularColorFactor);
 		return this;
 	}
 
