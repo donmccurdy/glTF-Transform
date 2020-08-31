@@ -80,3 +80,12 @@ test('@gltf-transform/extensions::lights-punctual | copy', t => {
 	t.equal(light2.getOuterConeAngle(), 0.75, 'copy outerConeAngle');
 	t.end();
 });
+
+test('@gltf-transform/extensions::lights-punctual | hex', t => {
+	const doc = new Document();
+	const lightsExtension = doc.createExtension(LightsPunctual);
+	const light = lightsExtension.createLight()
+		.setColorHex(0x111111)
+	t.equals(light.getColorHex(), 0x111111, 'colorHex');
+	t.end();
+});

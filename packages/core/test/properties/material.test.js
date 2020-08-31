@@ -33,6 +33,18 @@ test('@gltf-transform/core::material | factors', t => {
 	t.end();
 });
 
+test('@gltf-transform/core::material | hex', t => {
+	const doc = new Document();
+
+	const mat = doc.createMaterial('mat')
+		.setAlpha(0.9)
+		.setBaseColorHex(0x00FF00);
+
+	t.equal(mat.getAlpha(), 0.9, 'alpha');
+	t.equal(mat.getBaseColorHex(), 65024, 'baseColorHex');
+	t.end();
+});
+
 test('@gltf-transform/core::material | textures', t => {
 	const doc = new Document();
 
