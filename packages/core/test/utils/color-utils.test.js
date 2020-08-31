@@ -3,7 +3,7 @@ require('source-map-support').install();
 const test = require('tape');
 const { ColorUtils } = require('../../');
 
-test.only('@gltf-transform/core::color-utils', t => {
+test('@gltf-transform/core::color-utils', t => {
 	t.deepEquals(ColorUtils.hexToFactor(0xFF0000, []), [1, 0, 0], 'hexToFactor');
 	t.deepEquals(ColorUtils.factorToHex([1, 0, 0]), 16646144, 'factorToHex');
 
