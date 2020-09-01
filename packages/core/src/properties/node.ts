@@ -8,12 +8,6 @@ import { Mesh } from './mesh';
 import { COPY_IDENTITY } from './property';
 import { Skin } from './skin';
 
-export interface SceneNode {
-	_parent?: SceneNode;
-	addChild(node: Node): this;
-	removeChild(node: Node): this;
-}
-
 /**
  * # Node
  *
@@ -172,8 +166,7 @@ export class Node extends ExtensibleProperty {
 
 	/** Removes a node from this node's child node list. */
 	public removeChild(child: Node): this {
-		this.removeGraphChild(this.children, child)
-		return this;
+		return this.removeGraphChild(this.children, child)
 	}
 
 	/** Lists all child nodes of this node. */
@@ -250,4 +243,10 @@ export class Node extends ExtensibleProperty {
 		for (const child of this.listChildren()) child.traverse(fn);
 		return this;
 	}
+}
+
+interface SceneNode {
+	_parent?: SceneNode;
+	addChild(node: Node): this;
+	removeChild(node: Node): this;
 }

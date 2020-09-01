@@ -53,8 +53,7 @@ export class Scene extends ExtensibleProperty {
 
 	/** Removes a {@link Node} from the scene. */
 	public removeChild(node: Node): this {
-		this.removeGraphChild(this.children, node);
-		return this;
+		return this.removeGraphChild(this.children, node);
 	}
 
 	/** Lists all root {@link Node}s in the scene. */
