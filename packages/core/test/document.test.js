@@ -31,6 +31,9 @@ test('@gltf-transform/core::document | clone', t => {
 	t.equal(doc2.getRoot().listScenes()[0].getName(), 'MyScene', 'transfers scene');
 	t.equal(doc2.getRoot().listScenes()[0].listChildren().length, 1, 'transfers scene root node');
 	t.equal(doc2.getRoot().listNodes().length, 3, 'transfers nodes');
+	t.equal(doc2.getRoot().listNodes()[0].listChildren().length, 1, 'transfers node hierarchy (1/3)');
+	t.equal(doc2.getRoot().listNodes()[1].listChildren().length, 1, 'transfers node hierarchy (2/3)');
+	t.equal(doc2.getRoot().listNodes()[2].listChildren().length, 0, 'transfers node hierarchy (3/3)');
 	t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'transfers material');
 	t.notEqual(doc2.getRoot().listScenes()[0], doc1.getRoot().listScenes()[0], 'does not reference old scene');
 	t.notEqual(doc2.getRoot().listMaterials()[0], doc1.getRoot().listMaterials()[0], 'does not reference old material');
