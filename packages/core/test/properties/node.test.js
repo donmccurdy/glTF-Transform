@@ -67,14 +67,23 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 	const b = doc.createNode('B').setTranslation([0, 5, 0]);
 	a.addChild(b);
 
-	t.deepEquals(b.getWorldTranslation(), [10, 5, 0], 'getWorldTranslation');
-	t.deepEquals(b.getWorldRotation(), [0, 0, 0, 1], 'getWorldRotation');
-	t.deepEquals(b.getWorldScale(), [1, 1, 1], 'getWorldScale');
+	t.deepEquals(b.getWorldTranslation(), [10, 5, 0], 'inherit translated position');
+	t.deepEquals(b.getWorldRotation(), [0, 0, 0, 1], 'default rotation');
+	t.deepEquals(b.getWorldScale(), [1, 1, 1], 'default scale');
 	t.deepEquals(b.getWorldMatrix(), [
-		10, 0, 0, 0,
-		0, 5, 0, 0,
-		0, 0, 0, 0,
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		10, 5, 0, 1
 	], 'getWorldMatrix');
+
+	b.setTranslation([0, 0, 1]);
+	a.setTranslation([0, 0, 0]).setRotation([0.7071, 0, 0.7071, 0]);
+
+	const pos = b.getWorldTranslation();
+	t.deepEquals(pos[0].toFixed(3), '1.000', 'inherit rotated position.x');
+	t.deepEquals(pos[1].toFixed(3), '0.000', 'inherit rotated position.y');
+	t.deepEquals(pos[2].toFixed(3), '0.000', 'inherit rotated position.z');
 
 	t.end();
 });

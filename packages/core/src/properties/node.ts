@@ -134,13 +134,11 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the world matrix of this node. */
 	public getWorldMatrix(): mat4 {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		let sceneNode: SceneNode = this;
-
 		// Build ancestor chain.
 		const ancestors: Node[] = [];
-		while ((sceneNode = sceneNode._parent) && sceneNode instanceof Node) {
-			ancestors.push(sceneNode);
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		for (let node: SceneNode = this; node instanceof Node; node = node._parent) {
+			ancestors.push(node);
 		}
 
 		// Compute world matrix.
