@@ -12,7 +12,7 @@ test('@gltf-transform/lib::sequence', async t => {
 	const scene = doc.createScene();
 
 	for (let i = 0; i < 4; i++) {
-		scene.addNode(doc.createNode(`Step.00${i + 1}`));
+		scene.addChild(doc.createNode(`Step.00${i + 1}`));
 	}
 
 	await doc.transform(sequence({fps: 1, pattern: /^Step\.\d{3}$/}));

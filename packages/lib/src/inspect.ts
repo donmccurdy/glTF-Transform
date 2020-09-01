@@ -13,7 +13,7 @@ export function inspect (doc: Document): Report {
 /** List scenes. */
 function listScenes (doc): PropertyReport<SceneReport> {
 	const scenes = doc.getRoot().listScenes().map((scene) => {
-		const root = scene.listNodes()[0];
+		const root = scene.listChildren()[0];
 		return {
 			name: scene.getName(),
 			rootName: root ? root.getName() : '',

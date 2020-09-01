@@ -52,7 +52,7 @@ test('@gltf-transform/cli::inspect', t => {
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMesh('MyMesh');
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	doc.createScene('MyScene').addNode(doc.createNode('MyNode'));
+	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
 	doc.createAnimation();
 	io.writeGLB(input, doc);
 

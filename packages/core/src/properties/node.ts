@@ -1,4 +1,5 @@
-import { PropertyType, vec3, vec4 } from '../constants';
+import { fromRotationTranslationScale, getRotation, getScaling, getTranslation, multiply } from 'gl-matrix/mat4'
+import { PropertyType, mat4, vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
 import { Camera } from './camera';
@@ -42,6 +43,9 @@ export class Node extends ExtensibleProperty {
 	private _scale: vec3 = [1, 1, 1];
 	private _weights: number[] = [];
 
+	/** @hidden Internal reference to node's parent, omitted from {@link Graph}. */
+	public _parent: SceneNode = null;
+
 	@GraphChild private camera: Link<Node, Camera> = null;
 	@GraphChild private mesh: Link<Node, Mesh> = null;
 	@GraphChild private skin: Link<Node, Skin> = null;
@@ -59,11 +63,17 @@ export class Node extends ExtensibleProperty {
 		if (other.mesh) this.setMesh(resolve(other.mesh.getChild()));
 		if (other.skin) this.setSkin(resolve(other.skin.getChild()));
 
-		this.clearGraphChildList(this.children);
-		other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+		if (resolve !== COPY_IDENTITY) {
+			this.clearGraphChildList(this.children);
+			other.children.forEach((link) => this.addChild(resolve(link.getChild())));
+		}
 
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * Local transform.
+	 */
 
 	/** Returns the translation (position) of this node in local space. */
 	public getTranslation(): vec3 { return this._translation; }
@@ -92,21 +102,89 @@ export class Node extends ExtensibleProperty {
 		return this;
 	}
 
+	/** Returns the local matrix of this node. */
+	public getMatrix(): mat4 {
+		return fromRotationTranslationScale([], this._rotation, this._translation, this._scale);
+	}
+
+	/**********************************************************************************************
+	 * World transform.
+	 */
+
+	/** Returns the translation (position) of this node in world space. */
+	public getWorldTranslation(): vec3 {
+		return getTranslation([], this.getWorldMatrix());
+	}
+
+	/** Returns the rotation (quaternion) of this node in world space. */
+	public getWorldRotation(): vec4 {
+		return getRotation([], this.getWorldMatrix());
+	}
+
+	/** Returns the scale of this node in world space. */
+	public getWorldScale(): vec3 {
+		return getScaling([], this.getWorldMatrix());
+	}
+
+	/** Returns the world matrix of this node. */
+	public getWorldMatrix(): mat4 {
+		// Build ancestor chain.
+		const ancestors: Node[] = [];
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		for (let node: SceneNode = this; node instanceof Node; node = node._parent) {
+			ancestors.push(node);
+		}
+
+		// Compute world matrix.
+		let ancestor: Node;
+		const worldMatrix = ancestors.pop().getMatrix();
+		while ((ancestor = ancestors.pop())) {
+			multiply(worldMatrix, worldMatrix, ancestor.getMatrix());
+		}
+
+		return worldMatrix;
+	}
+
+	/**********************************************************************************************
+	 * Scene hierarchy.
+	 */
+
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
 	public addChild(child: Node): this {
+		// Remove existing parent.
+		if (child._parent) child._parent.removeChild(child);
+
+		// Link in graph.
 		const link = this.graph.link('child', this, child);
-		return this.addGraphChild(this.children, link);
+		this.addGraphChild(this.children, link);
+
+		// Set new parent.
+		child._parent = this;
+		link.onDispose(() => child._parent = null);
+		return this;
 	}
 
 	/** Removes a node from this node's child node list. */
 	public removeChild(child: Node): this {
-		return this.removeGraphChild(this.children, child);
+		return this.removeGraphChild(this.children, child)
 	}
 
 	/** Lists all child nodes of this node. */
 	public listChildren(): Node[] {
 		return this.children.map((link) => link.getChild());
 	}
+
+	/**
+	 * Returns the unique parent ({@link Scene}, {@link Node}, or null) of this node in the scene
+	 * hierarchy. Unrelated to {@link Property.listParents}, which lists all resource references.
+	 */
+	public getParent(): SceneNode {
+		return this._parent;
+	}
+
+	/**********************************************************************************************
+	 * Attachments.
+	 */
 
 	/** Returns the {@link Mesh}, if any, instantiated at this node. */
 	public getMesh(): Mesh { return this.mesh ? this.mesh.getChild() : null; }
@@ -155,10 +233,20 @@ export class Node extends ExtensibleProperty {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * Helpers.
+	 */
+
 	/** Visits this {@link Node} and its descendants, top-down. */
 	public traverse(fn: (node: Node) => void): this {
 		fn(this);
 		for (const child of this.listChildren()) child.traverse(fn);
 		return this;
 	}
+}
+
+interface SceneNode {
+	_parent?: SceneNode;
+	addChild(node: Node): this;
+	removeChild(node: Node): this;
 }
