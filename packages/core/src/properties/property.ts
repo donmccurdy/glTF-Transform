@@ -45,7 +45,6 @@ export abstract class Property extends GraphNode {
 
 	protected readonly graph: PropertyGraph;
 
-	// TODO(feat): Extras should be Properties.
 	private _extras: object = {};
 	private _name = '';
 
@@ -80,10 +79,16 @@ export abstract class Property extends GraphNode {
 	 * Extras.
 	 */
 
-	/** @hidden */
+	/**
+	 * Returns a reference to the Extras object, containing application-specific data for this
+	 * Property. Extras should be an Object, not a primitive value, for best portability.
+	 */
 	public getExtras(): object { return this._extras; }
 
-	/** @hidden */
+	/**
+	 * Updates the Extras object, containing application-specific data for this Property. Extras
+	 * should be an Object, not a primitive value, for best portability.
+	 */
 	public setExtras(extras: object): this {
 		this._extras = extras;
 		return this;
