@@ -4,9 +4,17 @@
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/6)
 
+**Features:**
+
+- Add world transform API (getWorldTranslation/getWorldRotation/getWorldScale/getWorldMatrix) and getMatrix to Node.
+- Add ColorUtils and helper methods to work with colors in hexadecimal and sRGB.
+- Add traverse method to Node.
+- Simplified Extension API.
+
 **Breaking changes:**
 
 - getExtension/setExtension syntax changed to accept extension names, not constructors. See [ExtensibleProperty](https://gltf-transform.donmccurdy.com/classes/extensibleproperty.html).
+- Scene addNode/removeNode/listNodes are now addChild/removeChild/listChildren, for consistency with Node API.
 
 ## v0.5
 
