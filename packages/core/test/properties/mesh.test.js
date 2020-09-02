@@ -1,5 +1,7 @@
 require('source-map-support').install();
 
+const fs = require('fs');
+const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -133,8 +135,10 @@ test('@gltf-transform/core::mesh | extras', t => {
 	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
 	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips mesh extras');
 
-	const prim = doc2.getRoot().listMeshes()[0].listPrimitives()[0];
-	t.deepEqual(prim.getExtras(), {baz: 3}, 'roundtrips prim extras');
+	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const prim2 = doc2.getRoot().listMeshes()[0].listPrimitives()[0];
+	t.deepEqual(prim.getExtras(), {baz: 3}, 'stores prim extras');
+	t.deepEqual(prim2.getExtras(), {baz: 3}, 'roundtrips prim extras');
 
 	t.end();
 });

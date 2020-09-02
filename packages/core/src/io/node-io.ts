@@ -94,8 +94,11 @@ export class NodeIO extends PlatformIO {
 	}
 
 	private writeGLTF (uri: string, doc: Document): void {
-		const writerOptions = {basename: FileUtils.basename(uri), isGLB: false};
-		const {json, resources} = GLTFWriter.write(doc, writerOptions);
+		const {json, resources} = GLTFWriter.write(doc, {
+			basename: FileUtils.basename(uri),
+			isGLB: false,
+			logger: this._logger
+		});
 		const {fs, path} = this;
 		const dir = path.dirname(uri);
 		fs.writeFileSync(uri, JSON.stringify(json, null, 2));

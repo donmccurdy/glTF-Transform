@@ -36,3 +36,18 @@ test('@gltf-transform/core::buffer | copy', t => {
 	t.equal(buffer1.getURI(), buffer2.getURI(), 'copy URI');
 	t.end();
 });
+
+test('@gltf-transform/core::buffer | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	const buffer = doc.createBuffer('A').setExtras({foo: 1, bar: 2});
+	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer);
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
+	t.deepEqual(doc2.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+
+	t.end();
+});

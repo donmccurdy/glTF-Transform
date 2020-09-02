@@ -84,7 +84,11 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
 	public packGLB(doc: Document): ArrayBuffer {
-		const {json, resources} = this.createNativeDocument(doc, {basename: '', isGLB: true});
+		const {json, resources} = this.createNativeDocument(doc, {
+			basename: '',
+			isGLB: true,
+			logger: this._logger,
+		});
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );

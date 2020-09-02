@@ -95,7 +95,7 @@ test('@gltf-transform/core::texture | copy', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::scene | extras', t => {
+test('@gltf-transform/core::texture | extras', t => {
 	const io = new NodeIO(fs, path);
 	const doc = new Document();
 	doc.createTexture('A').setExtras({foo: 1, bar: 2});

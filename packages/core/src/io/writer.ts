@@ -3,7 +3,7 @@ import { Document } from '../document';
 import { Link } from '../graph';
 import { NativeDocument } from '../native-document';
 import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, Property, Root } from '../properties';
-import { BufferUtils } from '../utils';
+import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
 
 const BufferViewTarget = {
@@ -12,15 +12,23 @@ const BufferViewTarget = {
 };
 
 export interface WriterOptions {
-	basename: string;
-	isGLB: boolean;
+	logger?: Logger;
+	basename?: string;
+	isGLB?: boolean;
 }
+
+const DEFAULT_OPTIONS: WriterOptions = {
+	logger: Logger.DEFAULT_INSTANCE,
+	basename: '',
+	isGLB: true,
+};
 
 /** @hidden */
 export class GLTFWriter {
-	public static write(doc: Document, options: WriterOptions): NativeDocument {
+	public static write(doc: Document, options: WriterOptions = DEFAULT_OPTIONS): NativeDocument {
 		const root = doc.getRoot();
 		const nativeDoc = {json: {asset: root.getAsset()}, resources: {}} as NativeDocument;
+		const logger = options.logger || Logger.DEFAULT_INSTANCE;
 		const json = nativeDoc.json;
 		json.asset.generator = `glTF-Transform ${VERSION}`;
 
@@ -322,6 +330,10 @@ export class GLTFWriter {
 			json.buffers.push(bufferDef);
 		});
 
+		if (root.listAccessors().find((a) => !a.getBuffer())) {
+			logger.warn('Skipped writing one or more Accessors: no Buffer assigned.')
+		}
+
 		/* Materials. */
 
 		json.materials = root.listMaterials().map((material, index) => {
@@ -403,6 +415,10 @@ export class GLTFWriter {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
 				primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
 				primitiveDef.mode = primitive.getMode();
+
+				if (Object.keys(primitive.getExtras()).length) {
+					primitiveDef.extras = primitive.getExtras();
+				}
 
 				if (primitive.getIndices()) {
 					primitiveDef.indices = context.accessorIndexMap.get(primitive.getIndices());

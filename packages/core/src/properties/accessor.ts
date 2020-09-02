@@ -382,7 +382,7 @@ export class Accessor extends ExtensibleProperty {
 	 */
 
 	/** Returns the {@link Buffer} into which this accessor will be organized. */
-	public getBuffer(): Buffer { return this.buffer.getChild(); }
+	public getBuffer(): Buffer { return this.buffer ? this.buffer.getChild() : null; }
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
 	public setBuffer(buffer: Buffer): this {

@@ -17,13 +17,18 @@ const ComponentTypeToTypedArray = {
 };
 
 export interface ReaderOptions {
-	logger: Logger;
-	extensions: (typeof Extension)[];
+	logger?: Logger;
+	extensions?: (typeof Extension)[];
 }
+
+const DEFAULT_OPTIONS: ReaderOptions = {
+	logger: Logger.DEFAULT_INSTANCE,
+	extensions: [],
+};
 
 /** @hidden */
 export class GLTFReader {
-	public static read(nativeDoc: NativeDocument, options: ReaderOptions): Document {
+	public static read(nativeDoc: NativeDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
 		const {json} = nativeDoc;
 		const doc = new Document();
 

@@ -1,7 +1,9 @@
 require('source-map-support').install();
 
+const fs = require('fs');
+const path = require('path');
 const test = require('tape');
-const { Document } = require('../../');
+const { Document, NodeIO } = require('../../');
 
 test('@gltf-transform/core::scene | copy', t => {
 	const doc = new Document();
