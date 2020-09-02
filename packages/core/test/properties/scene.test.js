@@ -27,3 +27,17 @@ test('@gltf-transform/core::scene | traverse', t => {
 	t.equals(count, 2, 'traverses all nodes');
 	t.end();
 });
+
+test('@gltf-transform/core::scene | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createScene('A').setExtras({foo: 1, bar: 2});
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listScenes()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
+	t.deepEqual(doc2.getRoot().listScenes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+
+	t.end();
+});

@@ -94,3 +94,17 @@ test('@gltf-transform/core::texture | copy', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::scene | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createTexture('A').setExtras({foo: 1, bar: 2});
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
+	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+
+	t.end();
+});

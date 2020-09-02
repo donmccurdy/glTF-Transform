@@ -120,3 +120,21 @@ test('@gltf-transform/core::primitive | copy', t => {
 	t.deepEqual(prim2.listTargets(), prim.listTargets(), 'copy targets');
 	t.end();
 });
+
+test('@gltf-transform/core::mesh | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createMesh('A').setExtras({foo: 1, bar: 2})
+		.addPrimitive(doc.createPrimitive().setExtras({baz: 3}));
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
+	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips mesh extras');
+
+	const prim = doc2.getRoot().listMeshes()[0].listPrimitives()[0];
+	t.deepEqual(prim.getExtras(), {baz: 3}, 'roundtrips prim extras');
+
+	t.end();
+});

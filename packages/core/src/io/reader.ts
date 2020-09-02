@@ -116,8 +116,8 @@ export class GLTFReader {
 		context.textures = imageDefs.map((imageDef) => {
 			const texture = doc.createTexture(imageDef.name);
 
-			// TODO(bug): -> texture? -> image?
-			// if (textureDef.extras) texture.setExtras(textureDef.extras);
+			// glTF Image corresponds 1:1 with glTF-Transform Texture. See `writer.ts`.
+			if (imageDef.extras) texture.setExtras(imageDef.extras);
 
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews[imageDef.bufferView];
@@ -253,6 +253,8 @@ export class GLTFReader {
 
 			meshDef.primitives.forEach((primitiveDef) => {
 				const primitive = doc.createPrimitive();
+
+				if (primitiveDef.extras) primitive.setExtras(primitiveDef.extras);
 
 				if (primitiveDef.material !== undefined) {
 					primitive.setMaterial(context.materials[primitiveDef.material]);
@@ -400,6 +402,9 @@ export class GLTFReader {
 					.setInput(context.accessors[samplerDef.input])
 					.setOutput(context.accessors[samplerDef.output])
 					.setInterpolation(samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR);
+
+				if (samplerDef.extras) sampler.setExtras(samplerDef.extras);
+
 				animation.addSampler(sampler);
 				return sampler;
 			})
@@ -410,6 +415,9 @@ export class GLTFReader {
 					.setSampler(samplers[channelDef.sampler])
 					.setTargetNode(context.nodes[channelDef.target.node])
 					.setTargetPath(channelDef.target.path);
+
+				if (channelDef.extras) channel.setExtras(channelDef.extras);
+
 				animation.addChannel(channel);
 			});
 
