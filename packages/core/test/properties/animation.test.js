@@ -113,3 +113,26 @@ test('@gltf-transform/core::animationSampler | copy', t => {
 	t.equal(b.getOutput(), a.getOutput(), 'copy output');
 	t.end();
 });
+
+test('@gltf-transform/core::animation | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createAnimation('A').setExtras({foo: 1, bar: 2})
+		.addChannel(doc.createAnimationChannel().setExtras({channel: true}))
+		.addSampler(doc.createAnimationSampler().setExtras({sampler: true}));
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	const anim = doc.getRoot().listAnimations()[0];
+	const anim2 = doc2.getRoot().listAnimations()[0];
+
+	t.deepEqual(anim.getExtras(), {foo: 1, bar: 2}, 'stores extras');
+	t.deepEqual(anim2.getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+	t.deepEqual(anim.listChannels()[0].getExtras(), {channel: true}, 'stores channel extras');
+	t.deepEqual(anim2.listChannels()[0].getExtras(), {channel: true}, 'roundtrips channel extras');
+	t.deepEqual(anim.listSamplers()[0].getExtras(), {sampler: true}, 'stores channel extras');
+	t.deepEqual(anim2.listSamplers()[0].getExtras(), {sampler: true}, 'roundtrips channel extras');
+
+	t.end();
+});

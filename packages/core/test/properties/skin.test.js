@@ -89,3 +89,17 @@ test('@gltf-transform/core::skin | copy', t => {
 	t.equal(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
 	t.end();
 });
+
+test('@gltf-transform/core::skin | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createSkin('A').setExtras({foo: 1, bar: 2});
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
+	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+
+	t.end();
+});

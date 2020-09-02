@@ -17,23 +17,36 @@ const ComponentTypeToTypedArray = {
 };
 
 export interface ReaderOptions {
-	logger: Logger;
-	extensions: (typeof Extension)[];
+	logger?: Logger;
+	extensions?: (typeof Extension)[];
 }
+
+const DEFAULT_OPTIONS: ReaderOptions = {
+	logger: Logger.DEFAULT_INSTANCE,
+	extensions: [],
+};
 
 /** @hidden */
 export class GLTFReader {
-	public static read(nativeDoc: NativeDocument, options: ReaderOptions): Document {
+	public static read(nativeDoc: NativeDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
 		const {json} = nativeDoc;
 		const doc = new Document();
 
 		this.validate(nativeDoc, options);
 
-		doc.getRoot().getAsset().generator = nativeDoc.json.asset.generator;
-
 		/* Reader context. */
 
 		const context = new ReaderContext(nativeDoc);
+
+		/** Asset. */
+
+		const assetDef = nativeDoc.json.asset;
+		const asset = doc.getRoot().getAsset();
+
+		if (assetDef.copyright) asset.copyright = assetDef.copyright;
+		if (assetDef.extras) asset.extras = assetDef.extras;
+		if (assetDef.generator) asset.generator = assetDef.generator;
+		if (assetDef.minVersion) asset.minVersion = assetDef.minVersion;
 
 		/** Extensions (1/2). */
 
@@ -51,9 +64,13 @@ export class GLTFReader {
 		const bufferDefs = json.buffers || [];
 		context.buffers = bufferDefs.map((bufferDef) => {
 			const buffer = doc.createBuffer(bufferDef.name);
+
+			if (bufferDef.extras) buffer.setExtras(bufferDef.extras);
+
 			if (bufferDef.uri && bufferDef.uri.indexOf('__') !== 0) {
 				buffer.setURI(bufferDef.uri);
 			}
+
 			return buffer;
 		});
 
@@ -70,8 +87,9 @@ export class GLTFReader {
 		const accessorDefs = json.accessors || [];
 		context.accessors = accessorDefs.map((accessorDef) => {
 			const buffer = context.bufferViewBuffers[accessorDef.bufferView];
-			const accessor = doc.createAccessor(accessorDef.name, buffer);
-			accessor.setType(accessorDef.type);
+			const accessor = doc.createAccessor(accessorDef.name, buffer).setType(accessorDef.type);
+
+			if (accessorDef.extras) accessor.setExtras(accessorDef.extras);
 
 			let array: TypedArray;
 
@@ -102,6 +120,9 @@ export class GLTFReader {
 			.forEach((extension) => extension.provide(context, PropertyType.TEXTURE));
 		context.textures = imageDefs.map((imageDef) => {
 			const texture = doc.createTexture(imageDef.name);
+
+			// glTF Image corresponds 1:1 with glTF-Transform Texture. See `writer.ts`.
+			if (imageDef.extras) texture.setExtras(imageDef.extras);
 
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews[imageDef.bufferView];
@@ -135,6 +156,8 @@ export class GLTFReader {
 		const materialDefs = json.materials || [];
 		context.materials = materialDefs.map((materialDef) => {
 			const material = doc.createMaterial(materialDef.name);
+
+			if (materialDef.extras) material.setExtras(materialDef.extras);
 
 			// Program state & blending.
 
@@ -227,12 +250,16 @@ export class GLTFReader {
 		context.meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 
+			if (meshDef.extras) mesh.setExtras(meshDef.extras);
+
 			if (meshDef.weights !== undefined) {
 				mesh.setWeights(meshDef.weights);
 			}
 
 			meshDef.primitives.forEach((primitiveDef) => {
 				const primitive = doc.createPrimitive();
+
+				if (primitiveDef.extras) primitive.setExtras(primitiveDef.extras);
 
 				if (primitiveDef.material !== undefined) {
 					primitive.setMaterial(context.materials[primitiveDef.material]);
@@ -274,6 +301,9 @@ export class GLTFReader {
 		const cameraDefs = json.cameras || [];
 		context.cameras = cameraDefs.map((cameraDef) => {
 			const camera = doc.createCamera(cameraDef.name).setType(cameraDef.type);
+
+			if (cameraDef.extras) camera.setExtras(cameraDef.extras);
+
 			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
 				camera
 					.setZNear(cameraDef.perspective.znear)
@@ -295,6 +325,8 @@ export class GLTFReader {
 		const nodeDefs = json.nodes || [];
 		context.nodes = nodeDefs.map((nodeDef) => {
 			const node = doc.createNode(nodeDef.name);
+
+			if (nodeDef.extras) node.setExtras(nodeDef.extras);
 
 			if (nodeDef.translation !== undefined) {
 				node.setTranslation(nodeDef.translation as vec3);
@@ -328,6 +360,8 @@ export class GLTFReader {
 		const skinDefs = json.skins || [];
 		context.skins = skinDefs.map((skinDef) => {
 			const skin = doc.createSkin(skinDef.name);
+
+			if (skinDef.extras) skin.setExtras(skinDef.extras);
 
 			if (skinDef.inverseBindMatrices !== undefined) {
 				skin.setInverseBindMatrices(context.accessors[skinDef.inverseBindMatrices]);
@@ -365,12 +399,17 @@ export class GLTFReader {
 		context.animations = animationDefs.map((animationDef) => {
 			const animation = doc.createAnimation(animationDef.name);
 
+			if (animationDef.extras) animation.setExtras(animationDef.extras);
+
 			const samplerDefs = animationDef.samplers || [];
 			const samplers = samplerDefs.map((samplerDef) => {
 				const sampler = doc.createAnimationSampler()
 					.setInput(context.accessors[samplerDef.input])
 					.setOutput(context.accessors[samplerDef.output])
 					.setInterpolation(samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR);
+
+				if (samplerDef.extras) sampler.setExtras(samplerDef.extras);
+
 				animation.addSampler(sampler);
 				return sampler;
 			})
@@ -381,6 +420,9 @@ export class GLTFReader {
 					.setSampler(samplers[channelDef.sampler])
 					.setTargetNode(context.nodes[channelDef.target.node])
 					.setTargetPath(channelDef.target.path);
+
+				if (channelDef.extras) channel.setExtras(channelDef.extras);
+
 				animation.addChannel(channel);
 			});
 
@@ -392,6 +434,8 @@ export class GLTFReader {
 		const sceneDefs = json.scenes || [];
 		context.scenes = sceneDefs.map((sceneDef) => {
 			const scene = doc.createScene(sceneDef.name);
+
+			if (sceneDef.extras) scene.setExtras(sceneDef.extras);
 
 			const children = sceneDef.nodes || [];
 

@@ -1,5 +1,7 @@
 require('source-map-support').install();
 
+const fs = require('fs');
+const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -118,5 +120,25 @@ test('@gltf-transform/core::primitive | copy', t => {
 	t.equal(prim2.getMode(), prim.getMode(), 'copy mode');
 	t.equal(prim2.getMaterial(), prim.getMaterial(), 'copy material');
 	t.deepEqual(prim2.listTargets(), prim.listTargets(), 'copy targets');
+	t.end();
+});
+
+test('@gltf-transform/core::mesh | extras', t => {
+	const io = new NodeIO(fs, path);
+	const doc = new Document();
+	doc.createMesh('A').setExtras({foo: 1, bar: 2})
+		.addPrimitive(doc.createPrimitive().setExtras({baz: 3}));
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+
+	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
+	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips mesh extras');
+
+	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const prim2 = doc2.getRoot().listMeshes()[0].listPrimitives()[0];
+	t.deepEqual(prim.getExtras(), {baz: 3}, 'stores prim extras');
+	t.deepEqual(prim2.getExtras(), {baz: 3}, 'roundtrips prim extras');
+
 	t.end();
 });
