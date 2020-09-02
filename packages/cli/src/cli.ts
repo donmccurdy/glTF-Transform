@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as gl from 'gl';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { BufferUtils, Document, FileUtils, ImageUtils, Logger, NodeIO } from '@gltf-transform/core';
+import { Document, Logger, NodeIO } from '@gltf-transform/core';
 import { KHRONOS_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
 import { AOOptions, DedupOptions, PartitionOptions, ao, dedup, metalRough, partition } from '@gltf-transform/lib';
 import { inspect } from './inspect';

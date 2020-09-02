@@ -21,14 +21,16 @@ const merge = (options: MergeOptions): Transform => {
 			logger.debug(`Merging ${index + 1} / ${paths.length}, ${path}`);
 
 			const basename = FileUtils.basename(path);
-			const extension = FileUtils.extension(path);
-			if (['png', 'jpeg', 'ktx2'].includes(extension)) {
+			const extension = FileUtils.extension(path).toLowerCase();
+			if (['png', 'jpg', 'jpeg', 'ktx2'].includes(extension)) {
 				doc.createTexture(basename)
 					.setImage(BufferUtils.trim(fs.readFileSync(path)))
 					.setMimeType(ImageUtils.extensionToMimeType(extension))
 					.setURI(basename + '.' + extension);
-			} else {
+			} else if (['gltf', 'glb'].includes(extension)) {
 				doc.merge(io.read(path));
+			} else {
+				throw new Error(`Unknown file extension: "${extension}".`)
 			}
 		});
 
