@@ -45,7 +45,4 @@ const merge = (options: MergeOptions): Transform => {
 
 }
 
-
-
-
 export { merge };
