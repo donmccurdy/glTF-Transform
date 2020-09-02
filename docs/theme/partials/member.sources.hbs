@@ -2,9 +2,10 @@
     {{#if implementationOf}}
         <p>Implementation of {{#with implementationOf}}{{> typeAndParent}}{{/with}}</p>
     {{/if}}
+    {{!-- See https://github.com/TypeStrong/typedoc/issues/1209.
     {{#if inheritedFrom}}
         <p>Inherited from {{#with inheritedFrom}}{{> typeAndParent}}{{/with}}</p>
-    {{/if}}
+    {{/if}} --}}
     {{#if overwrites}}
         <p>Overrides {{#with overwrites}}{{> typeAndParent}}{{/with}}</p>
     {{/if}}
