@@ -17,7 +17,7 @@ const merge = (options: MergeOptions): Transform => {
 
 		const logger = doc.getLogger();
 
-		options.paths.forEach((path, index) => {
+		paths.forEach((path, index) => {
 			logger.debug(`Merging ${index + 1} / ${paths.length}, ${path}`);
 
 			const basename = FileUtils.basename(path);

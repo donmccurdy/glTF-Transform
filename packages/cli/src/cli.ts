@@ -76,7 +76,9 @@ program
 		default: false,
 	})
 	.action(async ({args, options, logger}) => {
-		const paths = args.path as string[];
+		const paths = typeof args.path === 'string'
+			? args.path.split(',')
+			: args.path as string[];
 		const output = paths.pop();
 		const doc = await new Document()
 			.setLogger(logger as unknown as Logger)

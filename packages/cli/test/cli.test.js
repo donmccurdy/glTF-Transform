@@ -98,7 +98,8 @@ test('@gltf-transform/cli::merge', t => {
 	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
 
 	program
-		.exec(['merge', inputA, inputB, inputC, output], {silent: true})
+		// https://github.com/mattallty/Caporal.js/issues/195
+		.exec(['merge', [inputA, inputB, inputC, output].join(',')], {silent: true})
 		.then(() => {
 			const doc = io.read(output);
 			const sceneNames = doc.getRoot().listScenes().map((s) => s.getName());
