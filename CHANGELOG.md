@@ -12,6 +12,10 @@
 - Simplified Extension API.
 - Add Extras API.
 
+**CLI:**
+
+- Accept textures in `merge` command.
+
 **Breaking changes:**
 
 - getExtension/setExtension syntax changed to accept extension names, not constructors. See [ExtensibleProperty](https://gltf-transform.donmccurdy.com/classes/extensibleproperty.html).
