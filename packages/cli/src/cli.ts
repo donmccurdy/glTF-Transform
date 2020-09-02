@@ -4,9 +4,10 @@ import * as gl from 'gl';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
-import { KHRONOS_EXTENSIONS, MaterialsUnlit, Unlit } from '@gltf-transform/extensions';
+import { KHRONOS_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
 import { AOOptions, DedupOptions, PartitionOptions, ao, dedup, metalRough, partition } from '@gltf-transform/lib';
 import { inspect } from './inspect';
+import { merge } from './merge';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
 import { formatBytes } from './util';
 import { validate } from './validate';
@@ -74,21 +75,15 @@ program
 		validator: program.BOOLEAN,
 		default: false,
 	})
-	.action(({args, options, logger}) => {
-		const doc = new Document().setLogger(logger as unknown as Logger);
-		const paths = args.path as string[];
-		paths.forEach((path, index) => {
-			if (index < paths.length - 1) {
-				logger.debug(`Merging ${index + 1} / ${paths.length - 1}, ${path}`)
-				doc.merge(io.read(path));
-			}
-		});
-		if (!options.partition) {
-			const buffer = doc.getRoot().listBuffers()[0];
-			doc.getRoot().listAccessors().forEach((a) => a.setBuffer(buffer));
-			doc.getRoot().listBuffers().forEach((b, index) => index > 0 ? b.dispose() : null);
-		}
-		io.write(paths.pop(), doc);
+	.action(async ({args, options, logger}) => {
+		const paths = typeof args.path === 'string'
+			? args.path.split(',')
+			: args.path as string[];
+		const output = paths.pop();
+		const doc = await new Document()
+			.setLogger(logger as unknown as Logger)
+			.transform(merge({io, paths, partition: !!options.partition}));
+		io.write(output, doc);
 	});
 
 // PARTITION

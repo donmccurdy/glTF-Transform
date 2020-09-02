@@ -3,7 +3,7 @@ const path = require('path');
 const test = require('tape');
 const tmp = require('tmp');
 const { program } = require('../');
-const { Document, NodeIO } = require('@gltf-transform/core');
+const { Document, NodeIO, FileUtils } = require('@gltf-transform/core');
 
 tmp.setGracefulCleanup();
 
@@ -74,4 +74,38 @@ test('@gltf-transform/cli::toktx', t => {
 	program
 		.exec(['etc1s', input, output], {silent: true})
 		.then(() => t.end());
+});
+
+test('@gltf-transform/cli::merge', t => {
+	const io = new NodeIO(fs, path);
+	const inputA = tmp.tmpNameSync({postfix: '.glb'});
+	const inputB = tmp.tmpNameSync({postfix: '.glb'});
+	const inputC = tmp.tmpNameSync({postfix: '.png'});
+	const output = tmp.tmpNameSync({postfix: '.glb'});
+
+	const docA = new Document();
+	docA.createScene('SceneA');
+	const bufA = docA.createBuffer('BufferA');
+	docA.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(bufA);
+	io.write(inputA, docA);
+
+	const docB = new Document();
+	docB.createScene('SceneB');
+	const bufB = docB.createBuffer('BufferB');
+	docB.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(bufB);
+	io.write(inputB, docB);
+
+	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
+
+	program
+		// https://github.com/mattallty/Caporal.js/issues/195
+		.exec(['merge', [inputA, inputB, inputC, output].join(',')], {silent: true})
+		.then(() => {
+			const doc = io.read(output);
+			const sceneNames = doc.getRoot().listScenes().map((s) => s.getName());
+			const texName = doc.getRoot().listTextures()[0].getName();
+			t.deepEquals(sceneNames, ['SceneA', 'SceneB'], 'merge scenes');
+			t.equals(texName, FileUtils.basename(inputC), 'merge textures');
+			t.end();
+		});
 });
