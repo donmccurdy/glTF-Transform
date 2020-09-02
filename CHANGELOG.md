@@ -10,6 +10,7 @@
 - Add ColorUtils and helper methods to work with colors in hexadecimal and sRGB.
 - Add traverse method to Node.
 - Simplified Extension API.
+- Add Extras API.
 
 **Breaking changes:**
 
