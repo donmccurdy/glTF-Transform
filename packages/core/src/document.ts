@@ -22,6 +22,7 @@ export type Transform = (doc: Document) => void;
  *
  * ```ts
  * import { Document } from '@gltf-transform/core';
+ * import { dedup } from '@gltf-transform/lib';
  *
  * const doc = new Document();
  *
@@ -36,7 +37,7 @@ export type Transform = (doc: Document) => void;
  * doc.getRoot().listTextures(); // → [texture x 2]
  *
  * await doc.transform(
- * 	prune({textures: true}),
+ * 	dedup({textures: true}),
  * 	// ...
  * );
  *

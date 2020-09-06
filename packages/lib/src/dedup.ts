@@ -14,8 +14,8 @@ const DEFAULT_OPTIONS: DedupOptions = {
 
 /**
  * Options:
- * - **accessors**: Whether to prune duplicate accessors. Default `true`.
- * - **textures**: Whether to prune duplicate textures. Default `true`.
+ * - **accessors**: Whether to remove duplicate accessors. Default `true`.
+ * - **textures**: Whether to remove duplicate textures. Default `true`.
  */
 export const dedup = function (options: DedupOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};

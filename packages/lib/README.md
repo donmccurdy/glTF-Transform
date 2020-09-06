@@ -21,13 +21,13 @@ Import:
 
 ```js
 // ES6
-import { prune } from '@gltf-transform/lib';
+import { dedup } from '@gltf-transform/lib';
 
 // CommonJS
-const { prune } = require('@gltf-transform/lib');
+const { dedup } = require('@gltf-transform/lib');
 
 // Use.
-await document.transform(prune({textures: true, accessors: false}));
+await document.transform(dedup({textures: true, accessors: false}));
 ```
 
 ## API

@@ -10,7 +10,7 @@ import { COPY_IDENTITY } from './property';
  *
  * Textures in glTF-Transform are a combination of glTF's `texture` and `image` properties, and
  * should be unique within a document, such that no other texture contains the same
- * {@link getImage}() data. Where duplicates may already exist, the `prune({textures: true})`
+ * {@link getImage}() data. Where duplicates may already exist, the `dedup({textures: true})`
  * transform can remove them. A {@link Document} with N texture properties will be exported to a
  * glTF file with N `image` properties, and the minimum number of `texture` properties necessary
  * for the materials that use it.
