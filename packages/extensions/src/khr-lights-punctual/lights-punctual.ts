@@ -14,11 +14,11 @@ export class LightsPunctual extends Extension {
 	}
 
 	public read(context: ReaderContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
-		if (!nativeDoc.json.extensions || !nativeDoc.json.extensions[NAME]) return this;
+		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
-		const lightDefs = nativeDoc.json.extensions[NAME].lights || [];
+		const lightDefs = jsonDoc.json.extensions[NAME].lights || [];
 		const lights = lightDefs.map((lightDef) => {
 			const light = this.createLight()
 				.setName(lightDef.name || '')
@@ -38,7 +38,7 @@ export class LightsPunctual extends Extension {
 			return light;
 		});
 
-		nativeDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
+		jsonDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
 			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
 			context.nodes[nodeIndex].setExtension(NAME, lights[nodeDef.extensions[NAME].light]);
 		});
@@ -47,7 +47,7 @@ export class LightsPunctual extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
 		if (this.properties.size === 0) return this;
 
@@ -80,14 +80,14 @@ export class LightsPunctual extends Extension {
 				const light = node.getExtension<Light>(NAME);
 				if (light) {
 					const nodeIndex = context.nodeIndexMap.get(node);
-					const nodeDef = nativeDoc.json.nodes[nodeIndex];
+					const nodeDef = jsonDoc.json.nodes[nodeIndex];
 					nodeDef.extensions = nodeDef.extensions || {};
 					nodeDef.extensions[NAME] = {light: lightIndexMap.get(light)};
 				}
 			});
 
-		nativeDoc.json.extensions = nativeDoc.json.extensions || {};
-		nativeDoc.json.extensions[NAME] = {lights: lightDefs};
+		jsonDoc.json.extensions = jsonDoc.json.extensions || {};
+		jsonDoc.json.extensions[NAME] = {lights: lightDefs};
 
 		return this;
 	}

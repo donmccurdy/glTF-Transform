@@ -27,7 +27,7 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
-		inspect(io.readNativeDocument(args.input as string), io, logger);
+		inspect(io.readAsJSON(args.input as string), io, logger);
 	});
 
 // VALIDATE

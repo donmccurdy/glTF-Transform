@@ -16,7 +16,7 @@ test('@gltf-transform/cli::copy', t => {
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['copy', input, output])
@@ -36,7 +36,7 @@ test('@gltf-transform/cli::validate', t => {
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['validate', input], {silent: true})
@@ -54,7 +54,7 @@ test('@gltf-transform/cli::inspect', t => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
 	doc.createAnimation();
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['inspect', input], {silent: true})
@@ -69,7 +69,7 @@ test('@gltf-transform/cli::toktx', t => {
 
 	const doc = new Document();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(doc.createBuffer());
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['etc1s', input, output], {silent: true})

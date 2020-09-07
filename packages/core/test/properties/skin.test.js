@@ -51,9 +51,9 @@ test('@gltf-transform/core::skin', t => {
 
 	const io = new NodeIO(fs, path);
 	const options = {basename: 'skinTest'};
-	const nativeDoc = io.createNativeDocument(io.createDocument(io.createNativeDocument(doc, options)), options);
+	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
 
-	t.deepEqual(nativeDoc.json.nodes[3], {
+	t.deepEqual(jsonDoc.json.nodes[3], {
 		name: 'armature',
 		skin: 0,
 		children: [ 0, 1, 2 ],
@@ -62,14 +62,14 @@ test('@gltf-transform/core::skin', t => {
 		scale: [ 1, 1, 1 ],
 	}, 'attaches skin to node');
 
-	t.deepEqual(nativeDoc.json.skins[0], {
+	t.deepEqual(jsonDoc.json.skins[0], {
 		name: 'testSkin',
 		inverseBindMatrices: 0,
 		joints: [0, 1, 2],
 		skeleton: 0,
 	}, 'defines skin');
 
-	t.deepEqual(new Float32Array(nativeDoc.resources['skinTest.bin']), ibm.getArray(), 'stores skin IBMs');
+	t.deepEqual(new Float32Array(jsonDoc.resources['skinTest.bin']), ibm.getArray(), 'stores skin IBMs');
 
 	t.end();
 });
@@ -96,7 +96,7 @@ test('@gltf-transform/core::skin | extras', t => {
 	doc.createSkin('A').setExtras({foo: 1, bar: 2});
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

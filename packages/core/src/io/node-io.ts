@@ -1,5 +1,5 @@
 import { Document } from '../document';
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { BufferUtils, FileUtils, uuid } from '../utils/';
 import { PlatformIO } from './platform-io';
 import { GLTFReader } from './reader';
@@ -41,59 +41,63 @@ export class NodeIO extends PlatformIO {
 		super();
 	}
 
-	/* Public. */
-
-	/** Loads a local path and returns a {@link NativeDocument} struct. */
-	public readNativeDocument (uri: string): NativeDocument {
-		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
-		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
-	}
+	/**********************************************************************************************
+	 * Public.
+	 */
 
 	/** Loads a local path and returns a {@link Document} instance. */
 	public read (uri: string): Document {
-		const nativeDoc = this.readNativeDocument(uri);
-		return GLTFReader.read(nativeDoc, {extensions: this._extensions, logger: this._logger});
+		const jsonDoc = this.readAsJSON(uri);
+		return GLTFReader.read(jsonDoc, {extensions: this._extensions, logger: this._logger});
+	}
+
+	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */
+	public readAsJSON (uri: string): JSONDocument {
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
+		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
 	}
 
 	/** Writes a {@link Document} instance to a local path. */
 	public write (uri: string, doc: Document): void {
 		const isGLB = !!uri.match(/\.glb$/);
-		isGLB ? this.writeGLB(uri, doc) : this.writeGLTF(uri, doc);
+		isGLB ? this._writeGLB(uri, doc) : this._writeGLTF(uri, doc);
 	}
 
-	/* Internal. */
+	/**********************************************************************************************
+	 * Private.
+	 */
 
-	private readGLB (uri: string): NativeDocument {
+	private _readGLB (uri: string): JSONDocument {
 		const buffer: Buffer = this.fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
-		return this.unpackGLBToNativeDocument(arrayBuffer);
+		return this.binaryToJSON(arrayBuffer);
 	}
 
-	private readGLTF (uri: string): NativeDocument {
+	private _readGLTF (uri: string): JSONDocument {
 		const dir = this.path.dirname(uri);
-		const nativeDoc = {
+		const jsonDoc = {
 			json: JSON.parse(this.fs.readFileSync(uri, 'utf8')),
 			resources: {}
-		} as NativeDocument;
-		const images = nativeDoc.json.images || [];
-		const buffers = nativeDoc.json.buffers || [];
+		} as JSONDocument;
+		const images = jsonDoc.json.images || [];
+		const buffers = jsonDoc.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
 			if (!resource.uri) return; // Skip image.bufferView.
 
 			if (!resource.uri.match(/data:/)) {
 				const absURI = this.path.resolve(dir, resource.uri);
-				nativeDoc.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
+				jsonDoc.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
 			} else {
 				// Rewrite Data URIs to something short and unique.
 				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
-				nativeDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
+				jsonDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
 				resource.uri = resourceUUID;
 			}
 		});
-		return nativeDoc;
+		return jsonDoc;
 	}
 
-	private writeGLTF (uri: string, doc: Document): void {
+	private _writeGLTF (uri: string, doc: Document): void {
 		const {json, resources} = GLTFWriter.write(doc, {
 			basename: FileUtils.basename(uri),
 			isGLB: false,
@@ -108,8 +112,8 @@ export class NodeIO extends PlatformIO {
 		});
 	}
 
-	private writeGLB (uri: string, doc: Document): void {
-		const buffer = Buffer.from(this.packGLB(doc));
+	private _writeGLB (uri: string, doc: Document): void {
+		const buffer = Buffer.from(this.writeBinary(doc));
 		this.fs.writeFileSync(uri, buffer);
 	}
 }

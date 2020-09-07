@@ -1,7 +1,7 @@
 import { GLB_BUFFER, NAME, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, Property, Root } from '../properties';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
@@ -25,16 +25,16 @@ const DEFAULT_OPTIONS: WriterOptions = {
 
 /** @hidden */
 export class GLTFWriter {
-	public static write(doc: Document, options: WriterOptions = DEFAULT_OPTIONS): NativeDocument {
+	public static write(doc: Document, options: WriterOptions = DEFAULT_OPTIONS): JSONDocument {
 		const root = doc.getRoot();
-		const nativeDoc = {json: {asset: root.getAsset()}, resources: {}} as NativeDocument;
+		const jsonDoc = {json: {asset: root.getAsset()}, resources: {}} as JSONDocument;
 		const logger = options.logger || Logger.DEFAULT_INSTANCE;
-		const json = nativeDoc.json;
+		const json = jsonDoc.json;
 		json.asset.generator = `glTF-Transform ${VERSION}`;
 
 		/* Writer context. */
 
-		const context = new WriterContext(nativeDoc, options);
+		const context = new WriterContext(jsonDoc, options);
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
 		context.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
@@ -325,7 +325,7 @@ export class GLTFWriter {
 			// Write buffer views to buffer.
 
 			bufferDef.byteLength = bufferByteLength;
-			nativeDoc.resources[uri] = BufferUtils.concat(buffers);
+			jsonDoc.resources[uri] = BufferUtils.concat(buffers);
 
 			json.buffers.push(bufferDef);
 		});
@@ -592,7 +592,7 @@ export class GLTFWriter {
 
 		clean(json);
 
-		return nativeDoc;
+		return jsonDoc;
 	}
 }
 

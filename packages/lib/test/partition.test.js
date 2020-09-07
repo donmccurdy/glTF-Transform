@@ -20,13 +20,13 @@ test('@gltf-transform/lib::partition', t => {
 
 	partition({meshes: ['CubeA', 'CubeB']})(doc);
 
-	const nativeDoc = io.createNativeDocument(doc, {basename: 'partition-test', isGLB: false});
-	t.deepEqual(nativeDoc.json.buffers, [
+	const jsonDoc = io.writeJSON(doc, {basename: 'partition-test', isGLB: false});
+	t.deepEqual(jsonDoc.json.buffers, [
 		{ uri: 'CubeA.bin', byteLength: 324, name: 'CubeA' },
 		{ uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' }
 	], 'partitions into two buffers');
 
-	const bufferReferences = nativeDoc.json.bufferViews.map((b) => b.buffer);
+	const bufferReferences = jsonDoc.json.bufferViews.map((b) => b.buffer);
 	t.deepEquals(bufferReferences, [0,0,1,1], 'creates four buffer views');
 
 	t.end();

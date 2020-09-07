@@ -14,7 +14,7 @@ export class MaterialsUnlit extends Extension {
 	}
 
 	public read(context: ReaderContext): this {
-		const materialDefs = context.nativeDocument.json.materials || [];
+		const materialDefs = context.jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				context.materials[materialIndex].setExtension(NAME, this.createUnlit());
@@ -25,14 +25,14 @@ export class MaterialsUnlit extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
 		this.doc.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				if (material.getExtension<Unlit>(NAME)) {
 					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = nativeDoc.json.materials[materialIndex];
+					const materialDef = jsonDoc.json.materials[materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 					materialDef.extensions[NAME] = {};
 				}

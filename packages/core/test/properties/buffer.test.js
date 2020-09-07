@@ -18,12 +18,12 @@ test('@gltf-transform/core::buffer', t => {
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
 
 	const io = new NodeIO(fs, path);
-	const nativeDoc = io.createNativeDocument(doc, {basename: 'basename', isGLB: false});
+	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});
 
-	t.true('mybuffer.bin' in nativeDoc.resources, 'explicitly named buffer');
-	t.true('basename_1.bin' in nativeDoc.resources, 'implicitly named buffer #1');
-	t.true('basename_2.bin' in nativeDoc.resources, 'implicitly named buffer #2');
-	t.false('empty.bin' in nativeDoc.resources, 'empty buffer skipped');
+	t.true('mybuffer.bin' in jsonDoc.resources, 'explicitly named buffer');
+	t.true('basename_1.bin' in jsonDoc.resources, 'implicitly named buffer #1');
+	t.true('basename_2.bin' in jsonDoc.resources, 'implicitly named buffer #2');
+	t.false('empty.bin' in jsonDoc.resources, 'empty buffer skipped');
 	t.end();
 });
 
@@ -44,7 +44,7 @@ test('@gltf-transform/core::buffer | extras', t => {
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer);
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

@@ -133,7 +133,7 @@ test('@gltf-transform/core::accessor | interleaved', t => {
 	};
 
 	const io = new NodeIO(fs, path);
-	const doc = io.createDocument({json, resources});
+	const doc = io.readJSON({json, resources});
 	const arrays = doc.getRoot()
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
@@ -186,7 +186,7 @@ test('@gltf-transform/core::accessor | sparse', t => {
 	};
 
 	const io = new NodeIO(fs, path);
-	const doc = io.createDocument({json, resources});
+	const doc = io.readJSON({json, resources});
 	const accessors = doc.getRoot()
 		.listAccessors();
 
@@ -226,7 +226,7 @@ test('@gltf-transform/core::accessor | extras', t => {
 		.setBuffer(doc.createBuffer());
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

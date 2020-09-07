@@ -14,8 +14,8 @@ export class MaterialsIOR extends Extension {
 	}
 
 	public read(context: ReaderContext): this {
-		const nativeDoc = context.nativeDocument;
-		const materialDefs = nativeDoc.json.materials || [];
+		const jsonDoc = context.jsonDoc;
+		const materialDefs = jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const ior = this.createIOR();
@@ -33,7 +33,7 @@ export class MaterialsIOR extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
 		this.doc.getRoot()
 			.listMaterials()
@@ -41,7 +41,7 @@ export class MaterialsIOR extends Extension {
 				const ior = material.getExtension<IOR>(NAME);
 				if (ior) {
 					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = nativeDoc.json.materials[materialIndex];
+					const materialDef = jsonDoc.json.materials[materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.

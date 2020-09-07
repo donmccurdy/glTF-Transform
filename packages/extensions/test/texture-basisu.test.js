@@ -17,18 +17,18 @@ test('@gltf-transform/extensions::texture-basisu', t => {
 	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new ArrayBuffer(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
 
-	let nativeDoc;
+	let jsonDoc;
 
-	nativeDoc = io.createNativeDocument(doc, WRITER_OPTIONS);
+	jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
 
 	// Writing to file.
-	t.deepEqual(nativeDoc.json.extensionsUsed, [TextureBasisu.EXTENSION_NAME], 'writes extensionsUsed');
-	t.equal(nativeDoc.json.textures[0].source, undefined, 'omits .source on KTX2 texture');
-	t.equal(nativeDoc.json.textures[1].source, 1, 'includes .source on PNG texture');
-	t.equal(nativeDoc.json.textures[0].extensions['KHR_texture_basisu'].source, 0, 'includes .source on KTX2 extension');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [TextureBasisu.EXTENSION_NAME], 'writes extensionsUsed');
+	t.equal(jsonDoc.json.textures[0].source, undefined, 'omits .source on KTX2 texture');
+	t.equal(jsonDoc.json.textures[1].source, 1, 'includes .source on PNG texture');
+	t.equal(jsonDoc.json.textures[0].extensions['KHR_texture_basisu'].source, 0, 'includes .source on KTX2 extension');
 
 	// Read (roundtrip) from file.
-	const rtDoc = io.createDocument(nativeDoc);
+	const rtDoc = io.readJSON(jsonDoc);
 	const rtRoot = rtDoc.getRoot();
 	t.equal(rtRoot.listTextures()[0].getMimeType(), 'image/ktx2', 'reads KTX2 mimetype');
 	t.equal(rtRoot.listTextures()[1].getMimeType(), 'image/png', 'reads PNG mimetype');
@@ -38,9 +38,9 @@ test('@gltf-transform/extensions::texture-basisu', t => {
 	// Clean up extension data, revert to core glTF.
 	basisuExtension.dispose();
 	tex1.dispose();
-	nativeDoc = io.createNativeDocument(doc, WRITER_OPTIONS);
-	t.equal(nativeDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
-	t.equal(nativeDoc.json.textures.length, 1, 'writes only 1 texture');
-	t.equal(nativeDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
+	jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
+	t.equal(jsonDoc.json.textures.length, 1, 'writes only 1 texture');
+	t.equal(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 	t.end();
 });

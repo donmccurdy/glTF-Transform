@@ -19,19 +19,19 @@ test('@gltf-transform/extensions::materials-ior', t => {
 
 	t.equal(mat.getExtension('KHR_materials_ior'), ior, 'ior is attached');
 
-	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
-	const materialDef = nativeDoc.json.materials[0];
+	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
 	t.deepEqual(materialDef.extensions, {KHR_materials_ior: {ior: 1.2,}}, 'writes ior extension');
-	t.deepEqual(nativeDoc.json.extensionsUsed, [MaterialsIOR.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsIOR.EXTENSION_NAME], 'writes extensionsUsed');
 
 	iorExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_ior'), null, 'ior is detached');
 
 	const roundtripDoc = new NodeIO(fs, path)
 		.registerExtensions([MaterialsIOR])
-		.createDocument(nativeDoc);
+		.readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 
 	t.equal(roundtripMat.getExtension('KHR_materials_ior').getIOR(), 1.2, 'reads ior');

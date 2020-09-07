@@ -23,11 +23,11 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
-	const nodeDef = nativeDoc.json.nodes[0];
+	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, {KHR_lights_punctual: {light: 0}}, 'attaches light');
-	t.deepEqual(nativeDoc.json.extensions, {KHR_lights_punctual:{
+	t.deepEqual(jsonDoc.json.extensions, {KHR_lights_punctual:{
 		lights: [{
 			type: LightType.SPOT,
 			intensity: 2,
@@ -43,7 +43,7 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 
 	const roundtripDoc = new NodeIO(fs, path)
 		.registerExtensions([LightsPunctual])
-		.createDocument(nativeDoc);
+		.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension('KHR_lights_punctual');
 
