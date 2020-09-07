@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } = require('../');
@@ -22,7 +20,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), specGloss, 'specGloss is attached');
 
-	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.extensions, {KHR_materials_pbrSpecularGlossiness: {
@@ -36,7 +34,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 	specGlossExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), null, 'specGloss is detached');
 
-	const roundtripDoc = new NodeIO(fs, path)
+	const roundtripDoc = new NodeIO()
 		.registerExtensions([MaterialsPBRSpecularGlossiness])
 		.readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();

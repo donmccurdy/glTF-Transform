@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -31,7 +29,7 @@ test('@gltf-transform/core::scene | traverse', t => {
 });
 
 test('@gltf-transform/core::scene | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createScene('A').setExtras({foo: 1, bar: 2});
 

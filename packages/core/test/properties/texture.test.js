@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO, TextureInfo } = require('../../');
 
@@ -32,7 +30,7 @@ test('@gltf-transform/core::texture | read', t => {
 		}
 	};
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.readJSON(jsonDoc);
 	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
@@ -67,7 +65,7 @@ test('@gltf-transform/core::texture | write', t => {
 		.getBaseColorTextureSampler()
 		.setWrapS(TextureInfo.CLAMP_TO_EDGE);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
@@ -96,7 +94,7 @@ test('@gltf-transform/core::texture | copy', t => {
 });
 
 test('@gltf-transform/core::texture | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createTexture('A').setExtras({foo: 1, bar: 2});
 

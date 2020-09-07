@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Accessor, Document, NodeIO } = require('../../');
 
@@ -132,7 +130,7 @@ test('@gltf-transform/core::accessor | interleaved', t => {
 		buffers: [{uri: 'test.bin'}]
 	};
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.readJSON({json, resources});
 	const arrays = doc.getRoot()
 		.listAccessors()
@@ -185,7 +183,7 @@ test('@gltf-transform/core::accessor | sparse', t => {
 		]
 	};
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.readJSON({json, resources});
 	const accessors = doc.getRoot()
 		.listAccessors();
@@ -218,7 +216,7 @@ test('@gltf-transform/core::accessor | minmax', t => {
 });
 
 test('@gltf-transform/core::accessor | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAccessor('A')
 		.setArray(new Uint8Array([1,2,3]))

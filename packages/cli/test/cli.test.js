@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const tmp = require('tmp');
 const { program } = require('../');
@@ -8,7 +7,7 @@ const { Document, NodeIO, FileUtils } = require('@gltf-transform/core');
 tmp.setGracefulCleanup();
 
 test('@gltf-transform/cli::copy', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
 
@@ -29,7 +28,7 @@ test('@gltf-transform/cli::copy', t => {
 });
 
 test('@gltf-transform/cli::validate', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
 	const doc = new Document();
@@ -44,7 +43,7 @@ test('@gltf-transform/cli::validate', t => {
 });
 
 test('@gltf-transform/cli::inspect', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
 	const doc = new Document();
@@ -63,7 +62,7 @@ test('@gltf-transform/cli::inspect', t => {
 
 
 test('@gltf-transform/cli::toktx', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
 
@@ -77,7 +76,7 @@ test('@gltf-transform/cli::toktx', t => {
 });
 
 test('@gltf-transform/cli::merge', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({postfix: '.glb'});
 	const inputB = tmp.tmpNameSync({postfix: '.glb'});
 	const inputC = tmp.tmpNameSync({postfix: '.png'});

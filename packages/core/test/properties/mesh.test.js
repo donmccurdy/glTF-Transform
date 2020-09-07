@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -124,7 +122,7 @@ test('@gltf-transform/core::primitive | copy', t => {
 });
 
 test('@gltf-transform/core::mesh | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createMesh('A').setExtras({foo: 1, bar: 2})
 		.addPrimitive(doc.createPrimitive().setExtras({baz: 3}));

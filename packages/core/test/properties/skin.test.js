@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -49,7 +47,7 @@ test('@gltf-transform/core::skin', t => {
 		.addChild(joints[2])
 		.setSkin(skin);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const options = {basename: 'skinTest'};
 	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
 
@@ -91,7 +89,7 @@ test('@gltf-transform/core::skin | copy', t => {
 });
 
 test('@gltf-transform/core::skin | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createSkin('A').setExtras({foo: 1, bar: 2});
 

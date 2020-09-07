@@ -1,10 +1,8 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
-const { MaterialsTransmission, Transmission } = require('../');
+const { MaterialsTransmission } = require('../');
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
@@ -21,7 +19,7 @@ test('@gltf-transform/extensions::materials-transmission', t => {
 
 	t.equal(mat.getExtension('KHR_materials_transmission'), transmission, 'transmission is attached');
 
-	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -34,7 +32,7 @@ test('@gltf-transform/extensions::materials-transmission', t => {
 	transmissionExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_transmission'), null, 'transmission is detached');
 
-	const roundtripDoc = new NodeIO(fs, path)
+	const roundtripDoc = new NodeIO()
 		.registerExtensions([MaterialsTransmission])
 		.readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();

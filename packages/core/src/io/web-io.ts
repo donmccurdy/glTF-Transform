@@ -2,10 +2,16 @@ import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { PlatformIO } from './platform-io';
 
+const DEFAULT_INIT: RequestInit = {};
+
 /**
  * # WebIO
  *
  * *I/O service for Web.*
+ *
+ * The most common use of the I/O service is to read/write a {@link Document} with a given path.
+ * Methods are also available for converting in-memory representations of raw glTF files, both
+ * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
  *
  * Usage:
  *
@@ -15,11 +21,11 @@ import { PlatformIO } from './platform-io';
  * const io = new WebIO({credentials: 'include'});
  *
  * // Read.
- * const doc = await io.read('model.glb'); // → Document
- * const doc = io.unpackGLB(ArrayBuffer);  // → Document
+ * const doc = await io.read('model.glb');  // → Document
+ * const doc = io.readBinary(ArrayBuffer);  // → Document
  *
  * // Write.
- * const arrayBuffer = io.packGLB(doc);    // → ArrayBuffer
+ * const arrayBuffer = io.writeBinary(doc); // → ArrayBuffer
  * ```
  *
  * @category I/O
@@ -28,9 +34,9 @@ export class WebIO extends PlatformIO {
 
 	/**
 	 * Constructs a new WebIO service. Instances are reusable.
-	 * @param fetchConfig Configuration object for Fetch API.
+	 * @param _fetchConfig Configuration object for Fetch API.
 	 */
-	constructor(private readonly fetchConfig: RequestInit) {
+	constructor(private readonly _fetchConfig: RequestInit = DEFAULT_INIT) {
 		super();
 	}
 
@@ -53,16 +59,17 @@ export class WebIO extends PlatformIO {
 	 * Private.
 	 */
 
+	/** @hidden */
 	private _readGLTF (uri: string): Promise<JSONDocument> {
 		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
-		return fetch(uri, this.fetchConfig)
+		return fetch(uri, this._fetchConfig)
 		.then((response) => response.json())
 		.then((json: GLTF.IGLTF) => {
 			jsonDoc.json = json;
 			const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
 				if (resource.uri) {
-					return fetch(resource.uri, this.fetchConfig)
+					return fetch(resource.uri, this._fetchConfig)
 					.then((response) => response.arrayBuffer())
 					.then((arrayBuffer) => {
 						jsonDoc.resources[resource.uri] = arrayBuffer;
@@ -73,8 +80,9 @@ export class WebIO extends PlatformIO {
 		});
 	}
 
+	/** @hidden */
 	private _readGLB (uri: string): Promise<JSONDocument> {
-		return fetch(uri, this.fetchConfig)
+		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
 			.then((arrayBuffer) => this.binaryToJSON(arrayBuffer));
 	}

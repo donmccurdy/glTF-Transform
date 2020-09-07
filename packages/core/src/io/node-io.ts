@@ -10,6 +10,10 @@ import { GLTFWriter } from './writer';
  *
  * *I/O service for Node.js.*
  *
+ * The most common use of the I/O service is to read/write a {@link Document} with a given path.
+ * Methods are also available for converting in-memory representations of raw glTF files, both
+ * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
+ *
  * Usage:
  *
  * ```typescript
@@ -17,28 +21,30 @@ import { GLTFWriter } from './writer';
  * const path = require('path');
  * const { NodeIO } = require('@gltf-transform/core');
  *
- * const io = new NodeIO(fs, path);
+ * const io = new NodeIO();
  *
  * // Read.
  * io.read('model.glb');             // → Document
- * io.unpackGLB(ArrayBuffer);        // → Document
+ * io.readBinary(ArrayBuffer);       // → Document
  *
  * // Write.
  * io.write('model.glb', doc); // → void
- * io.packGLB(doc);            // → ArrayBuffer
+ * io.writeBinary(doc);        // → ArrayBuffer
  * ```
  *
  * @category I/O
  */
 export class NodeIO extends PlatformIO {
-	/**
-	 * Constructs a new NodeIO service. Instances are reusable.
-	 * @param fs
-	 * @param path
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(private readonly fs: any, private readonly path: any) {
+
+	private _fs;
+	private _path;
+
+	/** Constructs a new NodeIO service. Instances are reusable. */
+	constructor() {
 		super();
+		// Excluded from browser builds with 'package.browser' field.
+		this._fs = require('fs');
+		this._path = require('path');
 	}
 
 	/**********************************************************************************************
@@ -67,16 +73,18 @@ export class NodeIO extends PlatformIO {
 	 * Private.
 	 */
 
+	/** @hidden */
 	private _readGLB (uri: string): JSONDocument {
-		const buffer: Buffer = this.fs.readFileSync(uri);
+		const buffer: Buffer = this._fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
 		return this.binaryToJSON(arrayBuffer);
 	}
 
+	/** @hidden */
 	private _readGLTF (uri: string): JSONDocument {
-		const dir = this.path.dirname(uri);
+		const dir = this._path.dirname(uri);
 		const jsonDoc = {
-			json: JSON.parse(this.fs.readFileSync(uri, 'utf8')),
+			json: JSON.parse(this._fs.readFileSync(uri, 'utf8')),
 			resources: {}
 		} as JSONDocument;
 		const images = jsonDoc.json.images || [];
@@ -85,8 +93,8 @@ export class NodeIO extends PlatformIO {
 			if (!resource.uri) return; // Skip image.bufferView.
 
 			if (!resource.uri.match(/data:/)) {
-				const absURI = this.path.resolve(dir, resource.uri);
-				jsonDoc.resources[resource.uri] = BufferUtils.trim(this.fs.readFileSync(absURI));
+				const absURI = this._path.resolve(dir, resource.uri);
+				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
 			} else {
 				// Rewrite Data URIs to something short and unique.
 				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
@@ -97,13 +105,14 @@ export class NodeIO extends PlatformIO {
 		return jsonDoc;
 	}
 
+	/** @hidden */
 	private _writeGLTF (uri: string, doc: Document): void {
 		const {json, resources} = GLTFWriter.write(doc, {
 			basename: FileUtils.basename(uri),
 			isGLB: false,
 			logger: this._logger
 		});
-		const {fs, path} = this;
+		const {_fs: fs, _path: path} = this;
 		const dir = path.dirname(uri);
 		fs.writeFileSync(uri, JSON.stringify(json, null, 2));
 		Object.keys(resources).forEach((resourceName) => {
@@ -112,8 +121,9 @@ export class NodeIO extends PlatformIO {
 		});
 	}
 
+	/** @hidden */
 	private _writeGLB (uri: string, doc: Document): void {
 		const buffer = Buffer.from(this.writeBinary(doc));
-		this.fs.writeFileSync(uri, buffer);
+		this._fs.writeFileSync(uri, buffer);
 	}
 }

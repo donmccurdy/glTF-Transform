@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -40,7 +38,7 @@ test('@gltf-transform/core::animation', t => {
 		.addChannel(channel)
 		.addSampler(sampler);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 
 	const options = {basename: 'animationTest'};
 	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
@@ -115,7 +113,7 @@ test('@gltf-transform/core::animationSampler | copy', t => {
 });
 
 test('@gltf-transform/core::animation | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAnimation('A').setExtras({foo: 1, bar: 2})
 		.addChannel(doc.createAnimationChannel().setExtras({channel: true}))

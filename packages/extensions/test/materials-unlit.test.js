@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsUnlit, Unlit } = require('../');
@@ -21,7 +19,7 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 
 	t.equal(mat.getExtension('KHR_materials_unlit'), unlit, 'unlit is attached');
 
-	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');

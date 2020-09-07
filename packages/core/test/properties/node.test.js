@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { NodeIO, Document } = require('../../');
 
@@ -91,7 +89,7 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 });
 
 test('@gltf-transform/core::node | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createNode('A').setExtras({foo: 1, bar: 2});
 

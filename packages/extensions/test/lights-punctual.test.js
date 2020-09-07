@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { LightsPunctual, Light, LightType } = require('../');
@@ -23,7 +21,7 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, {KHR_lights_punctual: {light: 0}}, 'attaches light');
@@ -41,7 +39,7 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
-	const roundtripDoc = new NodeIO(fs, path)
+	const roundtripDoc = new NodeIO()
 		.registerExtensions([LightsPunctual])
 		.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();

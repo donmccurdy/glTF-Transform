@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -17,7 +15,7 @@ test('@gltf-transform/core::buffer', t => {
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer2);
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});
 
 	t.true('mybuffer.bin' in jsonDoc.resources, 'explicitly named buffer');
@@ -38,7 +36,7 @@ test('@gltf-transform/core::buffer | copy', t => {
 });
 
 test('@gltf-transform/core::buffer | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	const buffer = doc.createBuffer('A').setExtras({foo: 1, bar: 2});
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer);

@@ -35,7 +35,7 @@ test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
 	glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 
-		const io = new NodeIO(fs, path);
+		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		t.ok(doc, `Read "${basepath}".`)
@@ -47,7 +47,7 @@ test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
 	glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 
-		const io = new NodeIO(fs, path);
+		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		t.ok(doc, `Read "${basepath}".`)
@@ -60,7 +60,7 @@ test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 		const outputURI = path.join(__dirname, 'out', basepath);
 
-		const io = new NodeIO(fs, path);
+		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		ensureDir(outputURI);
@@ -75,7 +75,7 @@ test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
 		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
 		const outputURI = path.join(__dirname, 'out', basepath);
 
-		const io = new NodeIO(fs, path);
+		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		ensureDir(outputURI);

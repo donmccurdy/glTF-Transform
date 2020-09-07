@@ -1,6 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 const gl = require('gl');
@@ -10,7 +9,7 @@ const { ao } = require('../');
 
 
 test('@gltf-transform/lib::ao', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/chr_knight.glb'));
 	const root = doc.getRoot();
 	const primitive = root.listMeshes()[0].listPrimitives()[0];

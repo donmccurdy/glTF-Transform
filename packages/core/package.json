@@ -29,6 +29,10 @@
     "package.json",
     "package-lock.json"
   ],
+  "browser": {
+    "fs": false,
+    "path": false
+  },
   "dependencies": {
     "gl-matrix": "^3.3.0"
   },

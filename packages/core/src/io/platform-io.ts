@@ -11,6 +11,10 @@ import { GLTFWriter, WriterOptions } from './writer';
  *
  * *Abstract I/O service.*
  *
+ * The most common use of the I/O service is to read/write a {@link Document} with a given path.
+ * Methods are also available for converting in-memory representations of raw glTF files, both
+ * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
+ *
  * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
  *
  * @category I/O

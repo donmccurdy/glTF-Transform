@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, Extension, ExtensionProperty, NodeIO, PropertyType } = require('../');
 
@@ -101,7 +99,7 @@ test('@gltf-transform/core::extension | property', t => {
 
 
 test('@gltf-transform/core::extension | i/o', t => {
-	const io = new NodeIO(fs, path).registerExtensions([GizmoExtension]);
+	const io = new NodeIO().registerExtensions([GizmoExtension]);
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension);
 	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());

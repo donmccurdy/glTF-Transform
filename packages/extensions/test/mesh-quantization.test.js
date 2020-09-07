@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MeshQuantization } = require('../');
@@ -13,12 +11,12 @@ test('@gltf-transform/extensions::mesh-quantization', t => {
 	const quantizationExtension = doc.createExtension(MeshQuantization);
 	let jsonDoc;
 
-	jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
 
 	quantizationExtension.dispose();
 
-	jsonDoc = new NodeIO(fs, path).writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 	t.end();
 });

@@ -1,14 +1,12 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { TextureBasisu } = require('../');
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
-const io = new NodeIO(fs, path).registerExtensions([TextureBasisu]);
+const io = new NodeIO().registerExtensions([TextureBasisu]);
 
 test('@gltf-transform/extensions::texture-basisu', t => {
 	const doc = new Document();
