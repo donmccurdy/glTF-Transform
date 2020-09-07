@@ -43,10 +43,6 @@ const { Document, Scene, WebIO } = require('@gltf-transform/core');
 
 All classes described by this documentation are imported from the core package, as shown above. Most projects should start with the {@link Document} or {@link PlatformIO} classes.
 
-## Limitations
-
-glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally. For any proposals, including questions or possible pull requests, please first review the [contributing guidelines](/contributing.html).
-
 ## Alternatives and related projects
 
 Several existing projects provide complementary functionality to that of glTF-Transform:
