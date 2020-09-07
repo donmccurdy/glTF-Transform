@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { LightsPunctual, Light, LightType } = require('../');
@@ -23,11 +21,11 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
-	const nodeDef = nativeDoc.json.nodes[0];
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, {KHR_lights_punctual: {light: 0}}, 'attaches light');
-	t.deepEqual(nativeDoc.json.extensions, {KHR_lights_punctual:{
+	t.deepEqual(jsonDoc.json.extensions, {KHR_lights_punctual:{
 		lights: [{
 			type: LightType.SPOT,
 			intensity: 2,
@@ -41,9 +39,9 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
-	const roundtripDoc = new NodeIO(fs, path)
+	const roundtripDoc = new NodeIO()
 		.registerExtensions([LightsPunctual])
-		.createDocument(nativeDoc);
+		.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension('KHR_lights_punctual');
 

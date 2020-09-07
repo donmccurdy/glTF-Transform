@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Accessor, Document, NodeIO } = require('../../');
 
@@ -132,8 +130,8 @@ test('@gltf-transform/core::accessor | interleaved', t => {
 		buffers: [{uri: 'test.bin'}]
 	};
 
-	const io = new NodeIO(fs, path);
-	const doc = io.createDocument({json, resources});
+	const io = new NodeIO();
+	const doc = io.readJSON({json, resources});
 	const arrays = doc.getRoot()
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
@@ -185,8 +183,8 @@ test('@gltf-transform/core::accessor | sparse', t => {
 		]
 	};
 
-	const io = new NodeIO(fs, path);
-	const doc = io.createDocument({json, resources});
+	const io = new NodeIO();
+	const doc = io.readJSON({json, resources});
 	const accessors = doc.getRoot()
 		.listAccessors();
 
@@ -218,7 +216,7 @@ test('@gltf-transform/core::accessor | minmax', t => {
 });
 
 test('@gltf-transform/core::accessor | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAccessor('A')
 		.setArray(new Uint8Array([1,2,3]))
@@ -226,7 +224,7 @@ test('@gltf-transform/core::accessor | extras', t => {
 		.setBuffer(doc.createBuffer());
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

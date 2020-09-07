@@ -10,7 +10,7 @@ export class TextureBasisu extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	public provide(context: ReaderContext): this {
-		context.nativeDocument.json.textures.forEach((textureDef) => {
+		context.jsonDoc.json.textures.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
 				textureDef.source = textureDef.extensions[NAME].source;
 			}
@@ -24,14 +24,14 @@ export class TextureBasisu extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
 		this.doc.getRoot()
 			.listTextures()
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/ktx2') {
 					const imageIndex = context.imageIndexMap.get(texture);
-					nativeDoc.json.textures.forEach((textureDef) => {
+					jsonDoc.json.textures.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {}
 							textureDef.extensions[NAME] = {source: textureDef.source};

@@ -2,7 +2,7 @@ import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
 import { GLB_BUFFER, PropertyType, TypedArray, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension, ExtensionConstructor } from '../extension';
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { Accessor } from '../properties';
 import { FileUtils, ImageUtils, Logger } from '../utils';
 import { ReaderContext } from './reader-context';
@@ -28,19 +28,19 @@ const DEFAULT_OPTIONS: ReaderOptions = {
 
 /** @hidden */
 export class GLTFReader {
-	public static read(nativeDoc: NativeDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
-		const {json} = nativeDoc;
+	public static read(jsonDoc: JSONDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
+		const {json} = jsonDoc;
 		const doc = new Document();
 
-		this.validate(nativeDoc, options);
+		this.validate(jsonDoc, options);
 
 		/* Reader context. */
 
-		const context = new ReaderContext(nativeDoc);
+		const context = new ReaderContext(jsonDoc);
 
 		/** Asset. */
 
-		const assetDef = nativeDoc.json.asset;
+		const assetDef = jsonDoc.json.asset;
 		const asset = doc.getRoot().getAsset();
 
 		if (assetDef.copyright) asset.copyright = assetDef.copyright;
@@ -94,10 +94,10 @@ export class GLTFReader {
 			let array: TypedArray;
 
 			if (accessorDef.sparse !== undefined) {
-				array = getSparseArray(accessorDef, nativeDoc);
+				array = getSparseArray(accessorDef, jsonDoc);
 			} else {
 				// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
-				array = getAccessorArray(accessorDef, nativeDoc).slice();
+				array = getAccessorArray(accessorDef, jsonDoc).slice();
 			}
 
 			if (accessorDef.normalized !== undefined) {
@@ -126,16 +126,16 @@ export class GLTFReader {
 
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews[imageDef.bufferView];
-				const bufferDef = nativeDoc.json.buffers[bufferViewDef.buffer];
+				const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
 				const bufferData = bufferDef.uri
-					? nativeDoc.resources[bufferDef.uri]
-					: nativeDoc.resources[GLB_BUFFER];
+					? jsonDoc.resources[bufferDef.uri]
+					: jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
 				const byteLength = bufferViewDef.byteLength;
 				const imageData = bufferData.slice(byteOffset, byteOffset + byteLength);
 				texture.setImage(imageData);
 			} else if (imageDef.uri !== undefined) {
-				texture.setImage(nativeDoc.resources[imageDef.uri]);
+				texture.setImage(jsonDoc.resources[imageDef.uri]);
 				if (imageDef.uri.indexOf('__') !== 0) {
 					texture.setURI(imageDef.uri);
 				}
@@ -455,9 +455,9 @@ export class GLTFReader {
 		return doc;
 	}
 
-	private static validate(nativeDoc: NativeDocument, options: ReaderOptions): void {
+	private static validate(jsonDoc: JSONDocument, options: ReaderOptions): void {
 
-		const json = nativeDoc.json;
+		const json = jsonDoc.json;
 
 		if (json.asset.version !== '2.0') {
 			throw new Error(`Unsupported glTF version, "${json.asset.version}".`);
@@ -488,10 +488,10 @@ export class GLTFReader {
  * Returns the contents of an interleaved accessor, as a typed array.
  * @hidden
  */
-function getInterleavedArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument): TypedArray {
-	const bufferViewDef = nativeDoc.json.bufferViews[accessorDef.bufferView];
-	const bufferDef = nativeDoc.json.buffers[bufferViewDef.buffer];
-	const resource = bufferDef.uri ? nativeDoc.resources[bufferDef.uri] : nativeDoc.resources[GLB_BUFFER];
+function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
+	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
+	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+	const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
@@ -539,10 +539,10 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocum
  * Returns the contents of an accessor, as a typed array.
  * @hidden
  */
-function getAccessorArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument): TypedArray {
-	const bufferViewDef = nativeDoc.json.bufferViews[accessorDef.bufferView];
-	const bufferDef = nativeDoc.json.buffers[bufferViewDef.buffer];
-	const resource = bufferDef.uri ? nativeDoc.resources[bufferDef.uri] : nativeDoc.resources[GLB_BUFFER];
+function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
+	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
+	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+	const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
@@ -551,7 +551,7 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument
 
 	// Interleaved buffer view.
 	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  elementStride) {
-		return getInterleavedArray(accessorDef, nativeDoc);
+		return getInterleavedArray(accessorDef, jsonDoc);
 	}
 
 	const start = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
@@ -578,14 +578,14 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument
  * Returns the contents of a sparse accessor, as a typed array.
  * @hidden
  */
-function getSparseArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument): TypedArray {
+function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
 
 	let array: TypedArray;
 	if (accessorDef.bufferView !== undefined) {
 		// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
-		array = getAccessorArray(accessorDef, nativeDoc).slice();
+		array = getAccessorArray(accessorDef, jsonDoc).slice();
 	} else {
 		array = new TypedArray(accessorDef.count * elementSize);
 	}
@@ -593,8 +593,8 @@ function getSparseArray(accessorDef: GLTF.IAccessor, nativeDoc: NativeDocument):
 	const count = accessorDef.sparse.count;
 	const indicesDef = {...accessorDef, ...accessorDef.sparse.indices, count, type: 'SCALAR'};
 	const valuesDef = {...accessorDef, ...accessorDef.sparse.values, count};
-	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, nativeDoc);
-	const values = getAccessorArray(valuesDef, nativeDoc);
+	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, jsonDoc);
+	const values = getAccessorArray(valuesDef, jsonDoc);
 
 	// Override indices given in the sparse data.
 	for (let i = 0; i < indicesDef.count; i++) {

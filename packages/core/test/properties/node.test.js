@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { NodeIO, Document } = require('../../');
 
@@ -91,12 +89,12 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 });
 
 test('@gltf-transform/core::node | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createNode('A').setExtras({foo: 1, bar: 2});
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

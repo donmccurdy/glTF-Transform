@@ -1,6 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 const { createCanvas } = require('canvas');
@@ -9,7 +8,7 @@ const { Document, NodeIO } = require ('@gltf-transform/core');
 const { dedup } = require('../');
 
 test('@gltf-transform/lib::dedup | accessors', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 

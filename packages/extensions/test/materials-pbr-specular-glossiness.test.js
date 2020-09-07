@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('@gltf-transform/core');
 const { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } = require('../');
@@ -22,8 +20,8 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), specGloss, 'specGloss is attached');
 
-	const nativeDoc = new NodeIO(fs, path).createNativeDocument(doc, WRITER_OPTIONS);
-	const materialDef = nativeDoc.json.materials[0];
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.extensions, {KHR_materials_pbrSpecularGlossiness: {
 		diffuseFactor: [0.5, 0.5, 0.5, 0.9],
@@ -31,14 +29,14 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 		glossinessFactor: 0.5,
 		specularGlossinessTexture: {index: 0, texCoord: 0},
 	}}, 'writes specGloss extension');
-	t.deepEqual(nativeDoc.json.extensionsUsed, [MaterialsPBRSpecularGlossiness.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsPBRSpecularGlossiness.EXTENSION_NAME], 'writes extensionsUsed');
 
 	specGlossExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), null, 'specGloss is detached');
 
-	const roundtripDoc = new NodeIO(fs, path)
+	const roundtripDoc = new NodeIO()
 		.registerExtensions([MaterialsPBRSpecularGlossiness])
-		.createDocument(nativeDoc);
+		.readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension('KHR_materials_pbrSpecularGlossiness');
 

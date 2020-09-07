@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -83,8 +81,8 @@ test('@gltf-transform/core::mesh | primitive targets', t => {
 
 	const io = new NodeIO();
 	const options = {basename: 'targetTest'};
-	const nativeDoc = io.createNativeDocument(io.createDocument(io.createNativeDocument(doc, options)), options);
-	const meshDef = nativeDoc.json.meshes[0];
+	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
+	const meshDef = jsonDoc.json.meshes[0];
 
 	t.deepEquals(meshDef.extras.targetNames, ['trg1', 'trg2', 'trg3'], 'writes target names');
 	t.deepEquals(meshDef.primitives[0].targets, [{POSITION: 0}, {POSITION: 1}, {POSITION: 2}], 'writes target accessors');
@@ -124,13 +122,13 @@ test('@gltf-transform/core::primitive | copy', t => {
 });
 
 test('@gltf-transform/core::mesh | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createMesh('A').setExtras({foo: 1, bar: 2})
 		.addPrimitive(doc.createPrimitive().setExtras({baz: 3}));
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
 	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips mesh extras');

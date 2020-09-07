@@ -1,4 +1,4 @@
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 
 /**
@@ -19,7 +19,7 @@ export class ReaderContext {
 	public animations: Animation[] = [];
 	public scenes: Scene[] = [];
 
-	constructor (public readonly nativeDocument: NativeDocument) {}
+	constructor (public readonly jsonDoc: JSONDocument) {}
 
 	public setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo): void {
 		if (textureInfoDef.texCoord !== undefined) {
@@ -29,11 +29,11 @@ export class ReaderContext {
 
 	// eslint-disable-next-line max-len
 	public setTextureSampler(textureSampler: TextureSampler, textureInfoDef: GLTF.ITextureInfo): void {
-		const textureDef = this.nativeDocument.json.textures[textureInfoDef.index];
+		const textureDef = this.jsonDoc.json.textures[textureInfoDef.index];
 
 		if (textureDef.sampler === undefined) return;
 
-		const samplerDef = this.nativeDocument.json.samplers[textureDef.sampler];
+		const samplerDef = this.jsonDoc.json.samplers[textureDef.sampler];
 
 		if (samplerDef.magFilter !== undefined) {
 			textureSampler.setMagFilter(samplerDef.magFilter);

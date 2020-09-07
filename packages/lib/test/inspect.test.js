@@ -1,6 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
 const path = require('path');
 const test = require('tape');
 
@@ -9,7 +8,7 @@ const { inspect } = require('../');
 
 test('@gltf-transform/lib::inspect', t => {
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb'))
 		.setLogger(new Logger(Logger.Verbosity.SILENT));
 

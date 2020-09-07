@@ -1,7 +1,7 @@
 import { GLB_BUFFER } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
@@ -10,6 +10,10 @@ import { GLTFWriter, WriterOptions } from './writer';
  * # PlatformIO
  *
  * *Abstract I/O service.*
+ *
+ * The most common use of the I/O service is to read/write a {@link Document} with a given path.
+ * Methods are also available for converting in-memory representations of raw glTF files, both
+ * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
  *
  * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
  *
@@ -33,21 +37,29 @@ export abstract class PlatformIO {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * JSON.
+	 */
+
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
-	public createDocument (nativeDoc: NativeDocument): Document {
-		return GLTFReader.read(nativeDoc, {extensions: this._extensions, logger: this._logger});
+	public readJSON (jsonDoc: JSONDocument): Document {
+		return GLTFReader.read(jsonDoc, {extensions: this._extensions, logger: this._logger});
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public createNativeDocument (doc: Document, options: WriterOptions): NativeDocument {
+	public writeJSON (doc: Document, options: WriterOptions): JSONDocument {
 		if (options.isGLB && doc.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
 		return GLTFWriter.write(doc, options);
 	}
 
-	/** Converts a GLB-formatted ArrayBuffer to a {@link NativeDocument}. */
-	public unpackGLBToNativeDocument(glb: ArrayBuffer): NativeDocument {
+	/**********************************************************************************************
+	 * Binary -> JSON.
+	 */
+
+	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
+	public binaryToJSON(glb: ArrayBuffer): JSONDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
 		if (header[0] !== 0x46546C67) {
@@ -77,14 +89,18 @@ export abstract class PlatformIO {
 		return {json, resources: {[GLB_BUFFER]: binary}};
 	}
 
+	/**********************************************************************************************
+	 * Binary.
+	 */
+
 	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
-	public unpackGLB(glb: ArrayBuffer): Document {
-		return this.createDocument(this.unpackGLBToNativeDocument(glb));
+	public readBinary(glb: ArrayBuffer): Document {
+		return this.readJSON(this.binaryToJSON(glb));
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
-	public packGLB(doc: Document): ArrayBuffer {
-		const {json, resources} = this.createNativeDocument(doc, {
+	public writeBinary(doc: Document): ArrayBuffer {
+		const {json, resources} = this.writeJSON(doc, {
 			basename: '',
 			isGLB: true,
 			logger: this._logger,

@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -40,12 +38,12 @@ test('@gltf-transform/core::animation', t => {
 		.addChannel(channel)
 		.addSampler(sampler);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 
 	const options = {basename: 'animationTest'};
-	const nativeDoc = io.createNativeDocument(io.createDocument(io.createNativeDocument(doc, options)), options);
+	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
 
-	t.deepEqual(nativeDoc.json.animations[0], {
+	t.deepEqual(jsonDoc.json.animations[0], {
 		name: 'BallBounce',
 		channels: [
 			{
@@ -65,7 +63,7 @@ test('@gltf-transform/core::animation', t => {
 		]
 	}, 'animation samplers and channels');
 
-	const finalDoc = io.createDocument(nativeDoc);
+	const finalDoc = io.readJSON(jsonDoc);
 
 	t.deepEqual(finalDoc.getRoot().listAccessors()[0].getArray(), input.getArray(), 'sampler times');
 	t.deepEqual(finalDoc.getRoot().listAccessors()[1].getArray(), output.getArray(), 'sampler values');
@@ -115,14 +113,14 @@ test('@gltf-transform/core::animationSampler | copy', t => {
 });
 
 test('@gltf-transform/core::animation | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAnimation('A').setExtras({foo: 1, bar: 2})
 		.addChannel(doc.createAnimationChannel().setExtras({channel: true}))
 		.addSampler(doc.createAnimationSampler().setExtras({sampler: true}));
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	const anim = doc.getRoot().listAnimations()[0];
 	const anim2 = doc2.getRoot().listAnimations()[0];

@@ -1,4 +1,4 @@
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
@@ -28,7 +28,7 @@ export class WriterContext {
 	public imageURIGenerator: UniqueURIGenerator;
 	public logger: Logger;
 
-	constructor (public readonly nativeDocument: NativeDocument, public readonly options: WriterOptions) {}
+	constructor (public readonly jsonDoc: JSONDocument, public readonly options: WriterOptions) {}
 
 	/**
 	 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
@@ -44,8 +44,8 @@ export class WriterContext {
 
 		const samplerKey = JSON.stringify(samplerDef);
 		if (!this.samplerDefIndexMap.has(samplerKey)) {
-			this.samplerDefIndexMap.set(samplerKey, this.nativeDocument.json.samplers.length);
-			this.nativeDocument.json.samplers.push(samplerDef);
+			this.samplerDefIndexMap.set(samplerKey, this.jsonDoc.json.samplers.length);
+			this.jsonDoc.json.samplers.push(samplerDef);
 		}
 
 		const textureDef = {
@@ -55,8 +55,8 @@ export class WriterContext {
 
 		const textureKey = JSON.stringify(textureDef);
 		if (!this.textureDefIndexMap.has(textureKey)) {
-			this.textureDefIndexMap.set(textureKey, this.nativeDocument.json.textures.length);
-			this.nativeDocument.json.textures.push(textureDef);
+			this.textureDefIndexMap.set(textureKey, this.jsonDoc.json.textures.length);
+			this.jsonDoc.json.textures.push(textureDef);
 		}
 
 		return {
@@ -90,8 +90,8 @@ export class WriterContext {
 	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
 		if (this.options.isGLB) {
 			this.imageData.push(data);
-			imageDef.bufferView = this.nativeDocument.json.bufferViews.length;
-			this.nativeDocument.json.bufferViews.push({
+			imageDef.bufferView = this.jsonDoc.json.bufferViews.length;
+			this.jsonDoc.json.bufferViews.push({
 				buffer: 0,
 				byteOffset: -1, // determined while iterating buffers, in Writer.ts.
 				byteLength: data.byteLength
@@ -99,7 +99,7 @@ export class WriterContext {
 		} else {
 			const extension = ImageUtils.mimeTypeToExtension(texture.getMimeType());
 			imageDef.uri = this.imageURIGenerator.createURI(texture, extension);
-			this.nativeDocument.resources[imageDef.uri] = data;
+			this.jsonDoc.resources[imageDef.uri] = data;
 		}
 	}
 }

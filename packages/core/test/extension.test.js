@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, Extension, ExtensionProperty, NodeIO, PropertyType } = require('../');
 
@@ -20,14 +18,14 @@ class GizmoExtension extends Extension {
 	write(context) {
 		for (const node of this.doc.getRoot().listNodes()) {
 			if (node.getExtension(EXTENSION_NAME)) {
-				const nodeDef = context.nativeDocument.json.nodes[context.nodeIndexMap.get(node)];
+				const nodeDef = context.jsonDoc.json.nodes[context.nodeIndexMap.get(node)];
 				nodeDef.extensions = {TEST_node_gizmo: {isGizmo: true}};
 			}
 		}
 	}
 
 	read(context) {
-		context.nativeDocument.json.nodes.forEach((nodeDef, index) => {
+		context.jsonDoc.json.nodes.forEach((nodeDef, index) => {
 			const extensionDef = nodeDef.extensions && nodeDef.extensions.TEST_node_gizmo;
 			if (!extensionDef || !extensionDef.isGizmo) return;
 			const extension = this.doc.createExtension(GizmoExtension);
@@ -101,26 +99,26 @@ test('@gltf-transform/core::extension | property', t => {
 
 
 test('@gltf-transform/core::extension | i/o', t => {
-	const io = new NodeIO(fs, path).registerExtensions([GizmoExtension]);
+	const io = new NodeIO().registerExtensions([GizmoExtension]);
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension);
 	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
 
 	const options = {basename: 'extensionTest'};
 
-	let nativeDoc;
+	let jsonDoc;
 	let resultDoc;
 
 	// Write.
 
-	nativeDoc = io.createNativeDocument(doc, options);
-	t.deepEqual(nativeDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed');
-	t.equal(nativeDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
-	t.equal(nativeDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
+	jsonDoc = io.writeJSON(doc, options);
+	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed');
+	t.equal(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
+	t.equal(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
 
 	// Read.
 
-	resultDoc = io.createDocument(nativeDoc);
+	resultDoc = io.readJSON(jsonDoc);
 	t.deepEqual(
 		resultDoc.getRoot().listExtensionsUsed().map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],
@@ -132,9 +130,9 @@ test('@gltf-transform/core::extension | i/o', t => {
 	// Write + read with extensionsRequired.
 
 	extension.setRequired(true);
-	nativeDoc = io.createNativeDocument(doc, options);
-	t.deepEqual(nativeDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
-	resultDoc = io.createDocument(nativeDoc);
+	jsonDoc = io.writeJSON(doc, options);
+	t.deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
+	resultDoc = io.readJSON(jsonDoc);
 	t.deepEqual(
 		resultDoc.getRoot().listExtensionsRequired().map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],

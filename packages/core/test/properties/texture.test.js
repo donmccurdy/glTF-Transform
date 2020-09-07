@@ -1,12 +1,10 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO, TextureInfo } = require('../../');
 
 test('@gltf-transform/core::texture | read', t => {
-	const nativeDoc = {
+	const jsonDoc = {
 		json: {
 			asset: {version: '2.0'},
 			textures: [
@@ -32,8 +30,8 @@ test('@gltf-transform/core::texture | read', t => {
 		}
 	};
 
-	const io = new NodeIO(fs, path);
-	const doc = io.createDocument(nativeDoc);
+	const io = new NodeIO();
+	const doc = io.readJSON(jsonDoc);
 	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
@@ -67,15 +65,15 @@ test('@gltf-transform/core::texture | write', t => {
 		.getBaseColorTextureSampler()
 		.setWrapS(TextureInfo.CLAMP_TO_EDGE);
 
-	const io = new NodeIO(fs, path);
-	const nativeDoc = io.createNativeDocument(doc, {basename: 'basename', isGLB: false});
+	const io = new NodeIO();
+	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});
 
-	t.false('basename.bin' in nativeDoc.resources, 'external image resources');
-	t.true('tex1.png' in nativeDoc.resources, 'writes tex1.png');
-	t.true('basename_1.jpg' in nativeDoc.resources, 'writes default-named jpeg');
-	t.equals(nativeDoc.json.images.length, 2, 'reuses images');
-	t.equals(nativeDoc.json.textures.length, 3, 'writes three textures');
-	t.equals(nativeDoc.json.samplers.length, 2, 'reuses samplers');
+	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
+	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
+	t.true('basename_1.jpg' in jsonDoc.resources, 'writes default-named jpeg');
+	t.equals(jsonDoc.json.images.length, 2, 'reuses images');
+	t.equals(jsonDoc.json.textures.length, 3, 'writes three textures');
+	t.equals(jsonDoc.json.samplers.length, 2, 'reuses samplers');
 	t.end();
 });
 
@@ -96,12 +94,12 @@ test('@gltf-transform/core::texture | copy', t => {
 });
 
 test('@gltf-transform/core::texture | extras', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const doc = new Document();
 	doc.createTexture('A').setExtras({foo: 1, bar: 2});
 
 	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.createDocument(io.createNativeDocument(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

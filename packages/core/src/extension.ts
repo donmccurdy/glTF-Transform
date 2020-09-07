@@ -102,7 +102,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * optionally be implemented by an extension, and should then support any property type
 	 * declared by the Extension's {@link Extension.provideTypes} list. The Extension will
 	 * be given a ReaderContext instance, and is expected to update either the context or its
-	 * NativeDocument with resources known to the Extension. *Most extensions don't need to
+	 * {@link JSONDocument} with resources known to the Extension. *Most extensions don't need to
 	 * implement this.*
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -120,7 +120,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/**
 	 * Used by the {@link PlatformIO} utilities when writing a glTF asset. This method must be
 	 * implemented by each extension in order to support writing files. The extension will be
-	 * given a WriterContext instance, and should modify the {@link NativeDocument} output
+	 * given a WriterContext instance, and should modify the {@link JSONDocument} output
 	 * accordingly. Adding the extension name to the `extensionsUsed` and `extensionsRequired` list
 	 * is done automatically, and should not be included here.
 	 */

@@ -1,11 +1,17 @@
 import { Document } from '../document';
-import { NativeDocument } from '../native-document';
+import { JSONDocument } from '../json-document';
 import { PlatformIO } from './platform-io';
+
+const DEFAULT_INIT: RequestInit = {};
 
 /**
  * # WebIO
  *
  * *I/O service for Web.*
+ *
+ * The most common use of the I/O service is to read/write a {@link Document} with a given path.
+ * Methods are also available for converting in-memory representations of raw glTF files, both
+ * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
  *
  * Usage:
  *
@@ -15,11 +21,11 @@ import { PlatformIO } from './platform-io';
  * const io = new WebIO({credentials: 'include'});
  *
  * // Read.
- * const doc = await io.read('model.glb'); // → Document
- * const doc = io.unpackGLB(ArrayBuffer);  // → Document
+ * const doc = await io.read('model.glb');  // → Document
+ * const doc = io.readBinary(ArrayBuffer);  // → Document
  *
  * // Write.
- * const arrayBuffer = io.packGLB(doc);    // → ArrayBuffer
+ * const arrayBuffer = io.writeBinary(doc); // → ArrayBuffer
  * ```
  *
  * @category I/O
@@ -28,51 +34,56 @@ export class WebIO extends PlatformIO {
 
 	/**
 	 * Constructs a new WebIO service. Instances are reusable.
-	 * @param fetchConfig Configuration object for Fetch API.
+	 * @param _fetchConfig Configuration object for Fetch API.
 	 */
-	constructor(private readonly fetchConfig: RequestInit) {
+	constructor(private readonly _fetchConfig: RequestInit = DEFAULT_INIT) {
 		super();
 	}
 
-	/* Public. */
-
-	/** Loads a URI and returns a {@link NativeDocument} struct. */
-	public readNativeDocument (uri: string): Promise<NativeDocument> {
-		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
-		return isGLB ? this.readGLB(uri) : this.readGLTF(uri);
-	}
+	/**********************************************************************************************
+	 * Public.
+	 */
 
 	/** Loads a URI and returns a {@link Document} instance. */
 	public read (uri: string): Promise<Document> {
-		return this.readNativeDocument(uri)
-			.then((nativeDoc) => this.createDocument(nativeDoc));
+		return this.readAsJSON(uri).then((jsonDoc) => this.readJSON(jsonDoc));
 	}
 
-	/* Internal. */
+	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */
+	public readAsJSON (uri: string): Promise<JSONDocument> {
+		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
+		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
+	}
 
-	private readGLTF (uri: string): Promise<NativeDocument> {
-		const nativeDoc = {json: {}, resources: {}} as NativeDocument;
-		return fetch(uri, this.fetchConfig)
+	/**********************************************************************************************
+	 * Private.
+	 */
+
+	/** @hidden */
+	private _readGLTF (uri: string): Promise<JSONDocument> {
+		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
+		return fetch(uri, this._fetchConfig)
 		.then((response) => response.json())
 		.then((json: GLTF.IGLTF) => {
-			nativeDoc.json = json;
+			jsonDoc.json = json;
 			const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
 				if (resource.uri) {
-					return fetch(resource.uri, this.fetchConfig)
+					return fetch(resource.uri, this._fetchConfig)
 					.then((response) => response.arrayBuffer())
 					.then((arrayBuffer) => {
-						nativeDoc.resources[resource.uri] = arrayBuffer;
+						jsonDoc.resources[resource.uri] = arrayBuffer;
 					});
 				}
 			});
-			return Promise.all(pendingResources).then(() => nativeDoc);
+			return Promise.all(pendingResources).then(() => jsonDoc);
 		});
 	}
 
-	private readGLB (uri: string): Promise<NativeDocument> {
-		return fetch(uri, this.fetchConfig)
+	/** @hidden */
+	private _readGLB (uri: string): Promise<JSONDocument> {
+		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
-			.then((arrayBuffer) => this.unpackGLBToNativeDocument(arrayBuffer));
+			.then((arrayBuffer) => this.binaryToJSON(arrayBuffer));
 	}
 }

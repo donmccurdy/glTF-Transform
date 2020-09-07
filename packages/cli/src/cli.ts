@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as gl from 'gl';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
@@ -12,7 +11,7 @@ import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
 import { formatBytes } from './util';
 import { validate } from './validate';
 
-const io = new NodeIO(fs, path).registerExtensions(KHRONOS_EXTENSIONS);
+const io = new NodeIO().registerExtensions(KHRONOS_EXTENSIONS);
 
 
 program
@@ -27,7 +26,7 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
 	.action(({args, logger}) => {
-		inspect(io.readNativeDocument(args.input as string), io, logger);
+		inspect(io.readAsJSON(args.input as string), io, logger);
 	});
 
 // VALIDATE

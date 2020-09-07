@@ -2,14 +2,14 @@ import Table from 'cli-table';
 import { inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
 
-export function inspect (nativeDoc, io, logger): void {
+export function inspect (jsonDoc, io, logger): void {
 	// Summary (does not require parsing).
-	const extensionsUsed = nativeDoc.json.extensionsUsed || [];
-	const extensionsRequired = nativeDoc.json.extensionsRequired || [];
+	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
+	const extensionsRequired = jsonDoc.json.extensionsRequired || [];
 	const table = new Table();
 	table.push(
-		{generator: nativeDoc.json.asset.generator || ''},
-		{version: nativeDoc.json.asset.version},
+		{generator: jsonDoc.json.asset.generator || ''},
+		{version: jsonDoc.json.asset.version},
 		{extensionsUsed: extensionsUsed.join(', ') || 'none'},
 		{extensionsRequired: extensionsRequired.join(', ') || 'none'},
 	);
@@ -19,7 +19,7 @@ export function inspect (nativeDoc, io, logger): void {
 	// Parse.
 	let doc;
 	try {
-		doc = io.createDocument(nativeDoc);
+		doc = io.readJSON(jsonDoc);
 	} catch (e) {
 		logger.warn('Unable to parse document.');
 		logger.error(e.message);

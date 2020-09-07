@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const tmp = require('tmp');
 const { program } = require('../');
@@ -8,7 +7,7 @@ const { Document, NodeIO, FileUtils } = require('@gltf-transform/core');
 tmp.setGracefulCleanup();
 
 test('@gltf-transform/cli::copy', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
 
@@ -16,7 +15,7 @@ test('@gltf-transform/cli::copy', t => {
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['copy', input, output])
@@ -29,14 +28,14 @@ test('@gltf-transform/cli::copy', t => {
 });
 
 test('@gltf-transform/cli::validate', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
 	const doc = new Document();
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['validate', input], {silent: true})
@@ -44,7 +43,7 @@ test('@gltf-transform/cli::validate', t => {
 });
 
 test('@gltf-transform/cli::inspect', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
 	const doc = new Document();
@@ -54,7 +53,7 @@ test('@gltf-transform/cli::inspect', t => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
 	doc.createAnimation();
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['inspect', input], {silent: true})
@@ -63,13 +62,13 @@ test('@gltf-transform/cli::inspect', t => {
 
 
 test('@gltf-transform/cli::toktx', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
 
 	const doc = new Document();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(doc.createBuffer());
-	io.writeGLB(input, doc);
+	io.write(input, doc);
 
 	program
 		.exec(['etc1s', input, output], {silent: true})
@@ -77,7 +76,7 @@ test('@gltf-transform/cli::toktx', t => {
 });
 
 test('@gltf-transform/cli::merge', t => {
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({postfix: '.glb'});
 	const inputB = tmp.tmpNameSync({postfix: '.glb'});
 	const inputC = tmp.tmpNameSync({postfix: '.png'});

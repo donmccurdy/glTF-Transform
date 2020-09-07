@@ -14,9 +14,9 @@ export class MaterialsTransmission extends Extension {
 	}
 
 	public read(context: ReaderContext): this {
-		const nativeDoc = context.nativeDocument;
-		const materialDefs = nativeDoc.json.materials || [];
-		const textureDefs = nativeDoc.json.textures || [];
+		const jsonDoc = context.jsonDoc;
+		const materialDefs = jsonDoc.json.materials || [];
+		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
 				const transmission = this.createTransmission();
@@ -44,7 +44,7 @@ export class MaterialsTransmission extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const nativeDoc = context.nativeDocument;
+		const jsonDoc = context.jsonDoc;
 
 		this.doc.getRoot()
 			.listMaterials()
@@ -52,7 +52,7 @@ export class MaterialsTransmission extends Extension {
 				const transmission = material.getExtension<Transmission>(NAME);
 				if (transmission) {
 					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = nativeDoc.json.materials[materialIndex];
+					const materialDef = jsonDoc.json.materials[materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.

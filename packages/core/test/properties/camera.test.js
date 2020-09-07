@@ -1,7 +1,5 @@
 require('source-map-support').install();
 
-const fs = require('fs');
-const path = require('path');
 const test = require('tape');
 const { Document, NodeIO } = require('../../');
 
@@ -22,12 +20,12 @@ test('@gltf-transform/core::camera', t => {
 		.setXMag(50)
 		.setYMag(25);
 
-	const io = new NodeIO(fs, path);
+	const io = new NodeIO();
 
 	const options = {basename: 'cameraTest'};
-	const nativeDoc = io.createNativeDocument(io.createDocument(io.createNativeDocument(doc, options)), options);
+	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
 
-	t.deepEqual(nativeDoc.json.cameras[0], {
+	t.deepEqual(jsonDoc.json.cameras[0], {
 		name: 'p',
 		type: 'perspective',
 		perspective: {
@@ -38,7 +36,7 @@ test('@gltf-transform/core::camera', t => {
 		}
 	}, 'perspective camera');
 
-	t.deepEqual(nativeDoc.json.cameras[1], {
+	t.deepEqual(jsonDoc.json.cameras[1], {
 		name: 'o',
 		type: 'orthographic',
 		orthographic: {
