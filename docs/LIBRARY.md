@@ -41,3 +41,4 @@ Transforms are functions applying a modification to the {@link Document}. This p
 | function | compatibility | description |
 |----------|---------------|-------------|
 | [inspect](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/inspect.ts)       | Node.js, Web  | Inspects the contents of a glTF file and returns a report. |
+| [bounds](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/bounds.ts)       | Node.js, Web  | Computes world bounding box of given {@link Node} or {@link Scene}, ignoring animation. |
