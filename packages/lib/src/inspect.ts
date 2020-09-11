@@ -1,4 +1,5 @@
 import { Accessor, Document, ExtensionProperty, ImageUtils, Primitive, Property, Texture, vec2 } from '@gltf-transform/core';
+import { bounds } from './bounds';
 
 export function inspect (doc: Document): Report {
 	return {
@@ -14,9 +15,12 @@ export function inspect (doc: Document): Report {
 function listScenes (doc): PropertyReport<SceneReport> {
 	const scenes = doc.getRoot().listScenes().map((scene) => {
 		const root = scene.listChildren()[0];
+		const sceneBounds = bounds(scene);
 		return {
 			name: scene.getName(),
 			rootName: root ? root.getName() : '',
+			bboxMin: toPrecision(sceneBounds.min),
+			bboxMax: toPrecision(sceneBounds.max),
 		};
 	});
 	return {properties: scenes};
@@ -203,6 +207,8 @@ interface PropertyReport<T> {
 interface SceneReport {
 	name: string;
 	rootName: string;
+	bboxMin: number[];
+	bboxMax: number[];
 }
 
 interface MeshReport {
@@ -278,4 +284,12 @@ function getGLPrimitiveCount(prim: Primitive): number {
 		default:
 			throw new Error('Unexpected mode: ' + prim.getMode());
 	}
+}
+
+/** Maps values in a vector to a finite precision. */
+function toPrecision(v: number[]): number[] {
+	for (let i = 0; i < v.length; i++) {
+		if (v[i].toFixed) v[i] = Number(v[i].toFixed(5));
+	}
+	return v;
 }
