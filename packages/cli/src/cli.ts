@@ -177,6 +177,10 @@ program
 		validator: program.NUMBER,
 		default: 10,
 	})
+	.option('--sort <sort>', 'Whether to sort nodes by name, or use order in scene.', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.action(async ({args, options, logger}) => {
 		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
 		const doc = await io.read(args.input as string)

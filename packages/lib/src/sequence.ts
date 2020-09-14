@@ -3,21 +3,25 @@ import { Document, Transform } from '@gltf-transform/core';
 const NAME = 'sequence';
 
 export interface SequenceOptions {
-	name?: string;
 	fps: number;
 	pattern: RegExp;
+	name?: string;
+	sort?: boolean;
 }
 
 const DEFAULT_OPTIONS: SequenceOptions = {
 	name: '',
 	fps: 10,
 	pattern: null,
+	sort: true,
 };
 
 /**
  * Options:
+ * - **name**: Name of the new animation.
  * - **fps**: Frames per second, where one node is shown each frame. Default 10.
  * - **pattern**: Pattern (regex) used to filter nodes for the sequence. Required.
+ * - **sort**: Whether to sort the nodes by name, or use original order. Default true.
  */
 export function sequence (options: SequenceOptions): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
@@ -31,6 +35,11 @@ export function sequence (options: SequenceOptions): Transform {
 		// Collect sequence nodes.
 		const sequenceNodes = root.listNodes()
 			.filter((node) => node.getName().match(options.pattern));
+
+		// Sort by node name.
+		if (options.sort) {
+			sequenceNodes.sort((a, b) => a.getName() > b.getName() ? 1 : -1);
+		}
 
 		// Create animation cycling visibility of each node.
 		const anim = doc.createAnimation(options.name);
