@@ -14,6 +14,8 @@ import { validate } from './validate';
 
 const io = new NodeIO().registerExtensions(KHRONOS_EXTENSIONS);
 
+const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
+const OUTPUT_DESC = 'Path to write output';
 
 program
 	.version(require('../package.json').version)
@@ -25,7 +27,7 @@ program.command('', '\n\n──────────────────�
 program
 	.command('inspect', 'Inspect the contents of the model')
 	.help('Inspect the contents of the model.')
-	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
 		inspect(io.readAsJSON(args.input as string), io, logger);
 	});
@@ -34,7 +36,7 @@ program
 program
 	.command('validate', 'Validate the model against the glTF spec')
 	.help('Validate the model with official glTF validator.')
-	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<input>', INPUT_DESC)
 	.option('--limit <limit>', 'Limit number of issues to display', {
 		validator: program.NUMBER,
 		default: 1e7,
@@ -54,8 +56,8 @@ program
 	.command('copy', 'Copy the model with minimal changes')
 	.alias('cp')
 	.help('Copy the model with minimal changes.')
-	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) => {
 		const doc = io.read(args.input as string)
 			.setLogger(logger as unknown as Logger);
@@ -90,8 +92,8 @@ program
 program
 	.command('partition', 'Partition mesh data into separate .bin files')
 	.help('Partition mesh data into separate .bin files.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option('--meshes <meshes>', 'Mesh names', {
 		validator: program.ARRAY,
 		required: true,
@@ -109,8 +111,8 @@ program.command('', '\n\n──────────────────�
 program
 	.command('ao', 'Bake per-vertex ambient occlusion')
 	.help('Bake per-vertex ambient occlusion.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option('--resolution <n>', 'AO resolution', {
 		validator: program.NUMBER,
 		default: 512,
@@ -130,8 +132,8 @@ program
 program
 	.command('metalrough', 'Convert materials from spec/gloss to metal/rough')
 	.help('Convert materials from spec/gloss to metal/rough.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.action(async ({args, logger}) => {
 		const doc = await io.read(args.input as string)
 			.setLogger(logger as unknown as Logger)
@@ -143,8 +145,8 @@ program
 program
 	.command('unlit', 'Convert materials from metal/rough to unlit')
 	.help('Convert materials to an unlit, shadeless model.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) => {
 		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
 
@@ -161,8 +163,8 @@ program
 program
 	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
 	.help('Animate nodes\' visibilities as a flipboard sequence.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option('--name <name>', 'Name of new animation', {
 		validator: program.STRING,
 		default: '',
@@ -190,8 +192,8 @@ program.command('', '\n\n──────────────────�
 program
 	.command('dedup', 'Deduplicate accessors and textures')
 	.help('Deduplicate accessors and textures.')
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -211,7 +213,7 @@ program
 program
 	.command('gzip', 'Compress the model with gzip')
 	.help('Compress the model with gzip.')
-	.argument('<input>', 'Path to glTF 2.0 (.glb, .gltf) model')
+	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
 		const inBuffer = fs.readFileSync(args.input as string);
 		return gzip(inBuffer)
@@ -255,8 +257,8 @@ settings for normal maps than for other texture types: you may want to use
 UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		{sectionName: 'SUMMARY'}
 	)
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--slots <slots>',
 		'Texture slots to compress (glob expression)',
@@ -332,8 +334,8 @@ useful to apply UASTC only where higher quality is necessary, and apply ETC1S fo
 textures where the quality is sufficient.`.trim()),
 		{sectionName: 'SUMMARY'}
 	)
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--slots <slots>',
 		'Texture slots to compress (glob expression)',
