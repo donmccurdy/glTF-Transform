@@ -177,7 +177,7 @@ program
 		validator: program.NUMBER,
 		default: 10,
 	})
-	.option('--sort <sort>', 'Whether to sort nodes by name, or use order in scene.', {
+	.option('--sort <sort>', 'Order sequence by node name', {
 		validator: program.BOOLEAN,
 		default: true,
 	})
