@@ -3,11 +3,13 @@ import { Document, Transform } from '@gltf-transform/core';
 const NAME = 'sequence';
 
 export interface SequenceOptions {
+	name?: string;
 	fps: number;
 	pattern: RegExp;
 }
 
 const DEFAULT_OPTIONS: SequenceOptions = {
+	name: '',
 	fps: 10,
 	pattern: null,
 };
@@ -31,7 +33,7 @@ export function sequence (options: SequenceOptions): Transform {
 			.filter((node) => node.getName().match(options.pattern));
 
 		// Create animation cycling visibility of each node.
-		const anim = doc.createAnimation();
+		const anim = doc.createAnimation(options.name);
 		const animBuffer = root.listBuffers()[0];
 		sequenceNodes.forEach((node, i) => {
 			// Create keyframe tracks that show each node for a single frame.

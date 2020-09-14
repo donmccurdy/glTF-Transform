@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as gl from 'gl';
+import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
 import { KHRONOS_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
-import { AOOptions, DedupOptions, PartitionOptions, ao, dedup, metalRough, partition } from '@gltf-transform/lib';
+import { AOOptions, DedupOptions, PartitionOptions, SequenceOptions, ao, dedup, metalRough, partition, sequence } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { merge } from './merge';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
@@ -152,6 +153,33 @@ program
 		doc.getRoot().listMaterials().forEach((material) => {
 			material.setExtension('KHR_materials_unlit', unlit);
 		});
+
+		io.write(args.output as string, doc);
+	});
+
+// SEQUENCE
+program
+	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
+	.help('Animate nodes\' visibilities as a flipboard sequence.')
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--name <name>', 'Name of new animation', {
+		validator: program.STRING,
+		default: '',
+	})
+	.option('--pattern <pattern>', 'Pattern for node names (case-insensitive glob)', {
+		validator: program.STRING,
+		required: true,
+	})
+	.option('--fps <fps>', 'FPS (frames / second)', {
+		validator: program.NUMBER,
+		default: 10,
+	})
+	.action(async ({args, options, logger}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(sequence({...options, pattern} as SequenceOptions));
 
 		io.write(args.output as string, doc);
 	});
