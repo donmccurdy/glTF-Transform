@@ -1,5 +1,5 @@
 
-  gltf-transform 0.7.0-alpha.0 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.7.0-alpha.1 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -25,6 +25,7 @@
     ao                                   Bake per-vertex ambient occlusion                      
     metalrough                           Convert materials from spec/gloss to metal/rough       
     unlit                                Convert materials from metal/rough to unlit            
+    center                               Centers the scene at the origin, or above/below it     
     sequence                             Animate nodes' visibilities as a flipboard sequence    
                                                                                                 
                                                                                                 
