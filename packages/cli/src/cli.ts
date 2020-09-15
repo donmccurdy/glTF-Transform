@@ -5,7 +5,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
 import { KHRONOS_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
-import { AOOptions, DedupOptions, PartitionOptions, SequenceOptions, ao, dedup, metalRough, partition, sequence } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, ao, center, dedup, metalRough, partition, sequence } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { merge } from './merge';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
@@ -156,6 +156,23 @@ program
 			material.setExtension('KHR_materials_unlit', unlit);
 		});
 
+		io.write(args.output as string, doc);
+	});
+
+// CENTER
+program
+	.command('center', 'Centers the scene at the origin, or above/below it')
+	.help('Centers the scene at the origin, or above/below it.')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--pivot <pivot>', 'Method used to determine the scene pivot', {
+		validator: ['center', 'above', 'below'],
+		default: 'center',
+	})
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(center({...options} as CenterOptions));
 		io.write(args.output as string, doc);
 	});
 
