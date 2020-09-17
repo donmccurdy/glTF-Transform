@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import * as fs from 'fs';
 import * as gl from 'gl';
 import * as minimatch from 'minimatch';
@@ -59,9 +61,15 @@ program
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) => {
+		try {
 		const doc = io.read(args.input as string)
 			.setLogger(logger as unknown as Logger);
+		doc.getRoot().listExtensionsUsed().forEach((o) => o.dispose());
 		io.write(args.output as string, doc);
+		} catch (e) {
+			console.error(e);
+			logger.error(e);
+		}
 	});
 
 // MERGE

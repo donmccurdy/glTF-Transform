@@ -86,10 +86,17 @@ export class GLTFReader {
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
 		context.accessors = accessorDefs.map((accessorDef) => {
-			const buffer = context.bufferViewBuffers[accessorDef.bufferView];
+			const buffer = accessorDef.bufferView !== undefined ? context.bufferViewBuffers[accessorDef.bufferView] : null;
 			const accessor = doc.createAccessor(accessorDef.name, buffer).setType(accessorDef.type);
 
 			if (accessorDef.extras) accessor.setExtras(accessorDef.extras);
+
+			if (accessorDef.normalized !== undefined) {
+				accessor.setNormalized(accessorDef.normalized);
+			}
+
+			// KHR_draco_mesh_compression.
+			if (accessorDef.bufferView === undefined) return accessor;
 
 			let array: TypedArray;
 
@@ -98,10 +105,6 @@ export class GLTFReader {
 			} else {
 				// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
 				array = getAccessorArray(accessorDef, jsonDoc).slice();
-			}
-
-			if (accessorDef.normalized !== undefined) {
-				accessor.setNormalized(accessorDef.normalized);
 			}
 
 			accessor.setArray(array);
@@ -247,6 +250,9 @@ export class GLTFReader {
 		/** Meshes. */
 
 		const meshDefs = json.meshes || [];
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.provideTypes.includes(PropertyType.PRIMITIVE))
+			.forEach((extension) => extension.provide(context, PropertyType.PRIMITIVE));
 		context.meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 
