@@ -11,8 +11,8 @@
 
 **Breaking changes:**
 
-- Simplified I/O API:
-  - Rename NativeDocument -> JSONDocument
+- Simplified I/O API. Renamed:
+  - NativeDocument -> JSONDocument
   - unpackGLB -> readBinary
   - packGLB -> writeBinary
   - createDocument -> readJSON
