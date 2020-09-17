@@ -4,6 +4,21 @@
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7)
 
+**Features:**
+
+- Add 'center' and 'sequence' transforms.
+- Add 'bounds' helper.
+
+**Breaking changes:**
+
+- Simplified I/O API:
+  - Rename NativeDocument -> JSONDocument
+  - unpackGLB -> readBinary
+  - packGLB -> writeBinary
+  - createDocument -> readJSON
+  - createNativeDocument -> writeJSON
+  - unpackGLBToNativeDocument -> binaryToJSON
+
 ## v0.6
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/6)
