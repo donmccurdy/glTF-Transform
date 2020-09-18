@@ -18,12 +18,14 @@ const ComponentTypeToTypedArray = {
 
 export interface ReaderOptions {
 	logger?: Logger;
-	extensions?: (typeof Extension)[];
+	extensions: (typeof Extension)[];
+	dependencies: {[key: string]: unknown};
 }
 
 const DEFAULT_OPTIONS: ReaderOptions = {
 	logger: Logger.DEFAULT_INSTANCE,
 	extensions: [],
+	dependencies: {},
 };
 
 /** @hidden */
@@ -54,8 +56,12 @@ export class GLTFReader {
 		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				doc.createExtension(Extension as ExtensionConstructor)
+				const extension = doc.createExtension(Extension as ExtensionConstructor)
 					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
+
+				for (const key of extension.dependencies) {
+					extension.install(key, options.dependencies[key]);
+				}
 			}
 		}
 
@@ -91,6 +97,13 @@ export class GLTFReader {
 
 			if (accessorDef.extras) accessor.setExtras(accessorDef.extras);
 
+			if (accessorDef.normalized !== undefined) {
+				accessor.setNormalized(accessorDef.normalized);
+			}
+
+			// KHR_draco_mesh_compression.
+			if (accessorDef.bufferView === undefined && !accessorDef.sparse) return accessor;
+
 			let array: TypedArray;
 
 			if (accessorDef.sparse !== undefined) {
@@ -98,10 +111,6 @@ export class GLTFReader {
 			} else {
 				// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
 				array = getAccessorArray(accessorDef, jsonDoc).slice();
-			}
-
-			if (accessorDef.normalized !== undefined) {
-				accessor.setNormalized(accessorDef.normalized);
 			}
 
 			accessor.setArray(array);
@@ -247,6 +256,9 @@ export class GLTFReader {
 		/** Meshes. */
 
 		const meshDefs = json.meshes || [];
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.provideTypes.includes(PropertyType.PRIMITIVE))
+			.forEach((extension) => extension.provide(context, PropertyType.PRIMITIVE));
 		context.meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 

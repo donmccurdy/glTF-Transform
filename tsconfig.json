@@ -15,7 +15,8 @@
     ]
   },
   "files": [
-    "typings/gltf.d.ts"
+    "typings/gltf.d.ts",
+    "typings/draco3d.d.ts"
   ],
   "include": ["packages/*/src/**/*.ts"]
 }

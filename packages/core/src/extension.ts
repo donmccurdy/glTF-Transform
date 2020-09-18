@@ -42,6 +42,9 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 	public readonly provideTypes: PropertyType[] = [];
 
+	/** Dependency IDs needed by this extension, to be installed before I/O. */
+	public readonly dependencies: string[] = [];
+
 	protected required = false;
 	protected properties: Set<ExtensionProperty> = new Set();
 
@@ -96,6 +99,12 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/**********************************************************************************************
 	 * I/O implementation.
 	 */
+
+	/** Installs dependencies required by the extension. */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public install(key: string, dependency: unknown): this {
+		return this;
+	}
 
 	/**
 	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method may

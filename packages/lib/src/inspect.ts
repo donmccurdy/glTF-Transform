@@ -1,4 +1,4 @@
-import { Accessor, Document, ExtensionProperty, ImageUtils, Primitive, Property, Texture, vec2 } from '@gltf-transform/core';
+import { Accessor, Document, ExtensionProperty, ImageUtils, Primitive, Texture, vec2 } from '@gltf-transform/core';
 import { bounds } from './bounds';
 
 export function inspect (doc: Document): Report {

@@ -1,0 +1,97 @@
+import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
+import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
+
+const NAME = KHR_DRACO_MESH_COMPRESSION;
+
+interface DracoPrimitiveExtension {
+	bufferView: number;
+	attributes: {
+		[name: string]: number;
+	};
+}
+
+/** Documentation in {@link EXTENSIONS.md}. */
+export class DracoMeshCompression extends Extension {
+	public readonly extensionName = NAME;
+	public readonly provideTypes = [PropertyType.PRIMITIVE];
+	public readonly dependencies = ['draco3d.decoder'];
+	public static readonly EXTENSION_NAME = NAME;
+
+	private _decoderModule: DRACO.DecoderModule;
+
+	public install(key: string, dependency: unknown): this {
+		if (key === 'draco3d.decoder') {
+			this._decoderModule = dependency as DRACO.DecoderModule;
+			initDecoderModule(this._decoderModule);
+		}
+		return this;
+	}
+
+	public provide(context: ReaderContext): this {
+		if (!this._decoderModule) {
+			throw new Error('Please install extension dependency, "draco3d.decoder".');
+		}
+
+		const logger = this.doc.getLogger();
+		const jsonDoc = context.jsonDoc;
+		const decoder = new this._decoderModule.Decoder();
+		const dracoMeshes: Map<number, DRACO.Mesh> = new Map();
+
+		for (const meshDef of jsonDoc.json.meshes) {
+			for (const primDef of meshDef.primitives) {
+				if (!primDef.extensions || !primDef.extensions[NAME]) continue;
+
+				const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
+				let dracoMesh = dracoMeshes.get(dracoDef.bufferView);
+
+				if (!dracoMesh) {
+					const bufferViewDef = jsonDoc.json.bufferViews[dracoDef.bufferView];
+					const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+					const resource = bufferDef.uri
+						? jsonDoc.resources[bufferDef.uri]
+						: jsonDoc.resources[GLB_BUFFER];
+
+					const byteOffset = bufferViewDef.byteOffset || 0;
+					const byteLength = bufferViewDef.byteLength;
+					const compressedData = new Uint8Array(resource, byteOffset, byteLength);
+
+					dracoMesh = decodeGeometry(decoder, compressedData);
+					dracoMeshes.set(dracoDef.bufferView, dracoMesh);
+					logger.debug(`Decompressed ${compressedData.byteLength} bytes.`);
+				}
+
+				// Attributes.
+				for (const semantic in primDef.attributes) {
+					const accessorDef = context.jsonDoc.json.accessors[primDef.attributes[semantic]];
+					const dracoAttribute = decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
+					const attributeArray = decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
+					context.accessors[primDef.attributes[semantic]].setArray(attributeArray);
+				}
+
+				// Indices.
+				const indicesArray = decodeIndex(decoder, dracoMesh);
+				context.accessors[primDef.indices].setArray(indicesArray);
+			}
+
+			this._decoderModule.destroy(decoder);
+			for (const dracoMesh of Array.from(dracoMeshes.values())) {
+				this._decoderModule.destroy(dracoMesh);
+			}
+		}
+
+		return this;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public read(context: ReaderContext): this {
+		this.dispose(); // Writes aren't implemented, so remove extension after unpacking.
+		return this;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public write(context: WriterContext): this {
+		this.doc.getLogger().warn(`Writing ${this.extensionName} not yet implemented.`);
+		return this;
+	}
+}

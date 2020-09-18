@@ -19,6 +19,7 @@ as prescribed by the extension itself.
 
 **Supported extensions:**
 
+- [KHR_draco_mesh_compression](#khr_draco_mesh_compression)
 - [KHR_lights_punctual](#khr_lights_punctual)
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
@@ -56,7 +57,24 @@ const doc = await io.readGLB('unlit.glb');
 ```
 
 Reading files requires registering the necessary Extensions, but writing files does not — the
-Extension objects are already attached to the Document itself.
+Extension objects are already attached to the Document itself. Some extensions may require
+installing dependencies:
+
+```typescript
+import { NodeIO } from '@gltf-transform/core';
+import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
+
+import * as draco3d from 'draco3dgltf';
+
+const io = new NodeIO()
+  .registerExtensions(KHRONOS_EXTENSIONS)
+  .registerDependencies({
+    'draco3d.decoder': draco3d.createDecoderModule(), // Optional.
+    'draco3d.encoder': draco3d.createEncoderModule(), // Optional.
+  });
+
+const doc = io.read('compressed.glb');
+```
 
 ## API
 
@@ -97,10 +115,48 @@ For implementation examples, see [packages/extensions](https://github.com/donmcc
 
 ## Supported extensions
 
+### KHR_draco_mesh_compression
+
+- *Specification: [KHR_draco_mesh_compression](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/)*
+- *Source: [packages/extensions/src/khr-draco-mesh-compression/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-draco-mesh-compression)*
+
+The `KHR_draco_mesh_compression` extension provides advanced compression for mesh geometry. For
+models where geometry is a significant factor (>1 MB), Draco can reduce filesize by ~95% in many
+cases. When animation or textures are large, other complementary compression methods should be used
+as well. For geometry <1MB, the size of the WASM decoder library may outweigh size savings.
+
+Be aware that decompression happens before uploading to the GPU — this will add some latency to the
+parsing process, and means that compressing geometry with  Draco does _not_ affect runtime
+performance. To improve framerate, you'll need to simplify the geometry by reducing vertex count or
+draw calls — not just compress it. Finally, be aware that Draco compression is lossy: repeatedly
+compressing and decompressing a model in a pipeline will lose precision, so compression should
+generally be the last stage of an art workflow, and uncompressed original files should be kept.
+
+Currently, only _reading_ `KHR_draco_mesh_compression` is supported, and output will always be
+uncompressed. Writing compressed data will be added at a later date, so for now use glTF-Pipeline
+for that. A decoder or encoder from `draco3dgltf` npm module is required for reading and writing
+respectively, and must be provided by the application:
+
+```typescript
+import { NodeIO } from '@gltf-transform/core';
+import { DracoMeshCompression } from '@gltf-transform/extensions';
+
+import * as draco3d from 'draco3dgltf';
+
+const io = new NodeIO()
+  .registerExtensions([DracoMeshCompression])
+  .registerDependencies({
+    'draco3d.decoder': draco3d.createDecoderModule(),
+    'draco3d.encoder': draco3d.createEncoderModule(),
+  });
+
+const doc = io.read('compressed.glb');
+```
+
 ### KHR_lights_punctual
 
 - *Specification: [KHR_lights_punctual](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_lights_punctual/)*
-- *Source: [packages/extensions/src/khr-lights_punctual/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-lights_punctual)*
+- *Source: [packages/extensions/src/khr-lights-punctual/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-lights-punctual)*
 
 The `KHR_lights_punctual` extension defines three "punctual" light types: directional, point and
 spot. Punctual lights are defined as parameterized, infinitely small points that emit light in
