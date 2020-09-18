@@ -1,9 +1,10 @@
 import { TypedArray } from '@gltf-transform/core';
 
-// TODO(bug): Import makes builds very slow, and increases size to 250kb. Require the user to
-// install this as a dependency, at least on web?
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const decoderModule: DRACO.DecoderModule = require('draco3dgltf').createDecoderModule({});
+export let decoderModule: DRACO.DecoderModule;
+
+export async function init (library: DRACO.Library): Promise<void> {
+	if (!decoderModule) decoderModule = library.createDecoderModule({});
+}
 
 export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer): DRACO.Mesh {
 	let buffer: DRACO.DecoderBuffer;

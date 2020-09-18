@@ -1,6 +1,6 @@
 import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
-import { decodeAttribute, decodeGeometry, decodeIndex, decoderModule } from './decoder';
+import { decodeAttribute, decodeGeometry, decodeIndex, decoderModule, init } from './decoder';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -15,7 +15,13 @@ interface DracoPrimitiveExtension {
 export class DRACOMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly provideTypes = [PropertyType.PRIMITIVE];
+	public readonly dependencies = ['draco3d'];
 	public static readonly EXTENSION_NAME = NAME;
+
+	public install(key: string, dependency: unknown): this {
+		if (key === 'draco3d') init(dependency as DRACO.Library);
+		return this;
+	}
 
 	public provide(context: ReaderContext): this {
 		const logger = this.doc.getLogger();

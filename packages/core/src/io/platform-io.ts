@@ -6,6 +6,11 @@ import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface IODependencies {
+	draco3d?: unknown;
+}
+
 /**
  * # PlatformIO
  *
@@ -22,8 +27,8 @@ import { GLTFWriter, WriterOptions } from './writer';
 export abstract class PlatformIO {
 
 	protected _logger = Logger.DEFAULT_INSTANCE;
-
 	protected _extensions: typeof Extension[] = [];
+	protected _dependencies: IODependencies = {};
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
 	public setLogger(logger: Logger): this {
@@ -37,13 +42,23 @@ export abstract class PlatformIO {
 		return this;
 	}
 
+	/** Registers dependencies used (e.g. by extensions) in the I/O process. */
+	public registerDependencies(dependencies: IODependencies): this {
+		Object.assign(this._dependencies, dependencies);
+		return this;
+	}
+
 	/**********************************************************************************************
 	 * JSON.
 	 */
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public readJSON (jsonDoc: JSONDocument): Document {
-		return GLTFReader.read(jsonDoc, {extensions: this._extensions, logger: this._logger});
+		return GLTFReader.read(jsonDoc, {
+			extensions: this._extensions,
+			dependencies: this._dependencies,
+			logger: this._logger
+		});
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */

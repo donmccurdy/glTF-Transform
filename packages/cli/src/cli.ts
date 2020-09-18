@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as gl from 'gl';
 import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
@@ -12,7 +11,9 @@ import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
 import { formatBytes } from './util';
 import { validate } from './validate';
 
-const io = new NodeIO().registerExtensions(KHRONOS_EXTENSIONS);
+const io = new NodeIO()
+	.registerExtensions(KHRONOS_EXTENSIONS)
+	.registerDependencies({draco3d: require('draco3dgltf')});
 
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
 const OUTPUT_DESC = 'Path to write output';
@@ -122,6 +123,8 @@ program
 		default: 500,
 	})
 	.action(async ({args, options, logger}) => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const gl = require('gl');
 		const doc = await io.read(args.input as string)
 			.setLogger(logger as unknown as Logger)
 			.transform(ao({...options as unknown as AOOptions, gl}));
