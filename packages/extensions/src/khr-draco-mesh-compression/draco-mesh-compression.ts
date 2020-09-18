@@ -82,11 +82,13 @@ export class DRACOMeshCompression extends Extension {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
+		this.dispose(); // Writes aren't implemented, so remove extension after unpacking.
 		return this;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public write(context: WriterContext): this {
-		throw new Error('Not implemented.');
+		this.doc.getLogger().warn(`Writing ${this.extensionName} not yet implemented.`);
+		return this;
 	}
 }
