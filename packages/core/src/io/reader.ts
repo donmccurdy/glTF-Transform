@@ -92,7 +92,7 @@ export class GLTFReader {
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
 		context.accessors = accessorDefs.map((accessorDef) => {
-			const buffer = accessorDef.bufferView !== undefined ? context.bufferViewBuffers[accessorDef.bufferView] : null;
+			const buffer = context.bufferViewBuffers[accessorDef.bufferView];
 			const accessor = doc.createAccessor(accessorDef.name, buffer).setType(accessorDef.type);
 
 			if (accessorDef.extras) accessor.setExtras(accessorDef.extras);
