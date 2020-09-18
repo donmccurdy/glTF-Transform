@@ -37,38 +37,38 @@ export class DRACOMeshCompression extends Extension {
 		// Reference: https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/DRACOLoader.js
 		for (const meshDef of jsonDoc.json.meshes) {
 			for (const primDef of meshDef.primitives) {
-				if (primDef.extensions && primDef.extensions[NAME]) {
-					const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
-					let dracoMesh = dracoMeshes.get(dracoDef.bufferView);
+				if (!primDef.extensions || !primDef.extensions[NAME]) continue;
 
-					if (!dracoMesh) {
-						const bufferViewDef = jsonDoc.json.bufferViews[dracoDef.bufferView];
-						const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
-						const resource = bufferDef.uri
-							? jsonDoc.resources[bufferDef.uri]
-							: jsonDoc.resources[GLB_BUFFER];
+				const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
+				let dracoMesh = dracoMeshes.get(dracoDef.bufferView);
 
-						const byteOffset = bufferViewDef.byteOffset || 0;
-						const byteLength = bufferViewDef.byteLength;
-						const compressedData = new Uint8Array(resource, byteOffset, byteLength);
+				if (!dracoMesh) {
+					const bufferViewDef = jsonDoc.json.bufferViews[dracoDef.bufferView];
+					const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+					const resource = bufferDef.uri
+						? jsonDoc.resources[bufferDef.uri]
+						: jsonDoc.resources[GLB_BUFFER];
 
-						dracoMesh = decodeGeometry(decoder, compressedData);
-						dracoMeshes.set(dracoDef.bufferView, dracoMesh);
-						logger.debug(`Decompressed ${compressedData.byteLength} bytes.`);
-					}
+					const byteOffset = bufferViewDef.byteOffset || 0;
+					const byteLength = bufferViewDef.byteLength;
+					const compressedData = new Uint8Array(resource, byteOffset, byteLength);
 
-					// Attributes.
-					for (const semantic in primDef.attributes) {
-						const accessorDef = context.jsonDoc.json.accessors[primDef.attributes[semantic]];
-						const dracoAttribute = decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
-						const attributeArray = decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
-						context.accessors[primDef.attributes[semantic]].setArray(attributeArray);
-					}
-
-					// Indices.
-					const indicesArray = decodeIndex(decoder, dracoMesh);
-					context.accessors[primDef.indices].setArray(indicesArray);
+					dracoMesh = decodeGeometry(decoder, compressedData);
+					dracoMeshes.set(dracoDef.bufferView, dracoMesh);
+					logger.debug(`Decompressed ${compressedData.byteLength} bytes.`);
 				}
+
+				// Attributes.
+				for (const semantic in primDef.attributes) {
+					const accessorDef = context.jsonDoc.json.accessors[primDef.attributes[semantic]];
+					const dracoAttribute = decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
+					const attributeArray = decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
+					context.accessors[primDef.attributes[semantic]].setArray(attributeArray);
+				}
+
+				// Indices.
+				const indicesArray = decodeIndex(decoder, dracoMesh);
+				context.accessors[primDef.indices].setArray(indicesArray);
 			}
 
 			this._decoderModule.destroy(decoder);
