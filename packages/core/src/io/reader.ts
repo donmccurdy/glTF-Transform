@@ -102,7 +102,7 @@ export class GLTFReader {
 			}
 
 			// KHR_draco_mesh_compression.
-			if (accessorDef.bufferView === undefined) return accessor;
+			if (accessorDef.bufferView === undefined && !accessorDef.sparse) return accessor;
 
 			let array: TypedArray;
 
