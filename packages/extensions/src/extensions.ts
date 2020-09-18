@@ -1,4 +1,4 @@
-import { DRACOMeshCompression } from './khr-draco-mesh-compression';
+import { DracoMeshCompression } from './khr-draco-mesh-compression';
 import { LightsPunctual } from './khr-lights-punctual';
 import { MaterialsClearcoat } from './khr-materials-clearcoat';
 import { MaterialsIOR } from './khr-materials-ior';
@@ -21,7 +21,7 @@ export * from './khr-mesh-quantization';
 export * from './khr-texture-basisu';
 
 export const KHRONOS_EXTENSIONS = [
-	DRACOMeshCompression,
+	DracoMeshCompression,
 	LightsPunctual,
 	MaterialsClearcoat,
 	MaterialsIOR,

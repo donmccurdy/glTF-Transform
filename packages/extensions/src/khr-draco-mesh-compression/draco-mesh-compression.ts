@@ -12,7 +12,7 @@ interface DracoPrimitiveExtension {
 }
 
 /** Documentation in {@link EXTENSIONS.md}. */
-export class DRACOMeshCompression extends Extension {
+export class DracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly provideTypes = [PropertyType.PRIMITIVE];
 	public readonly dependencies = ['draco3d.decoder'];
@@ -29,6 +29,10 @@ export class DRACOMeshCompression extends Extension {
 	}
 
 	public provide(context: ReaderContext): this {
+		if (!this._decoderModule) {
+			throw new Error('Please install extension dependency, "draco3d.decoder".');
+		}
+
 		const logger = this.doc.getLogger();
 		const jsonDoc = context.jsonDoc;
 		const decoder = new this._decoderModule.Decoder();
