@@ -42,6 +42,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 */
 	public readonly provideTypes: PropertyType[] = [];
 
+	/** Dependency IDs needed by this extension, to be installed before I/O. */
 	public readonly dependencies: string[] = [];
 
 	protected required = false;

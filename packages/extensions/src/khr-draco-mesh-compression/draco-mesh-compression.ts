@@ -38,7 +38,6 @@ export class DracoMeshCompression extends Extension {
 		const decoder = new this._decoderModule.Decoder();
 		const dracoMeshes: Map<number, DRACO.Mesh> = new Map();
 
-		// Reference: https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/DRACOLoader.js
 		for (const meshDef of jsonDoc.json.meshes) {
 			for (const primDef of meshDef.primitives) {
 				if (!primDef.extensions || !primDef.extensions[NAME]) continue;
