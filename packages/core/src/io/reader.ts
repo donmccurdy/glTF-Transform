@@ -5,7 +5,6 @@ import { Extension, ExtensionConstructor } from '../extension';
 import { JSONDocument } from '../json-document';
 import { Accessor } from '../properties';
 import { FileUtils, ImageUtils, Logger } from '../utils';
-import { IODependencies } from './platform-io';
 import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
@@ -20,7 +19,7 @@ const ComponentTypeToTypedArray = {
 export interface ReaderOptions {
 	logger?: Logger;
 	extensions: (typeof Extension)[];
-	dependencies: IODependencies;
+	dependencies: {[key: string]: unknown};
 }
 
 const DEFAULT_OPTIONS: ReaderOptions = {
@@ -34,7 +33,6 @@ export class GLTFReader {
 	public static read(jsonDoc: JSONDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
 		const {json} = jsonDoc;
 		const doc = new Document();
-		const logger = options.logger;
 
 		this.validate(jsonDoc, options);
 
@@ -62,11 +60,7 @@ export class GLTFReader {
 					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
 
 				for (const key of extension.dependencies) {
-					if (options.dependencies[key]) {
-						extension.install(key, options.dependencies[key]);
-					} else {
-						logger.warn(`Missing ${Extension.EXTENSION_NAME} dependency, "${key}".`);
-					}
+					extension.install(key, options.dependencies[key]);
 				}
 			}
 		}

@@ -54,7 +54,11 @@ export class NodeIO extends PlatformIO {
 	/** Loads a local path and returns a {@link Document} instance. */
 	public read (uri: string): Document {
 		const jsonDoc = this.readAsJSON(uri);
-		return GLTFReader.read(jsonDoc, {extensions: this._extensions, logger: this._logger});
+		return GLTFReader.read(jsonDoc, {
+			extensions: this._extensions,
+			dependencies: this._dependencies,
+			logger: this._logger
+		});
 	}
 
 	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */

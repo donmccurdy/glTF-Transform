@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 declare module DRACO {
 	interface Library {
-		createDecoderModule(object: object): DecoderModule;
+		createDecoderModule(object?: object): DecoderModule;
 	}
 	interface DecoderModule {
 		Decoder: new () => Decoder;

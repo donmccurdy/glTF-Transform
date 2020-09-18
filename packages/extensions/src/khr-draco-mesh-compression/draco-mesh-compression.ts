@@ -1,6 +1,6 @@
 import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
-import { decodeAttribute, decodeGeometry, decodeIndex, decoderModule, init } from './decoder';
+import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -15,18 +15,23 @@ interface DracoPrimitiveExtension {
 export class DRACOMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly provideTypes = [PropertyType.PRIMITIVE];
-	public readonly dependencies = ['draco3d'];
+	public readonly dependencies = ['draco3d.decoder'];
 	public static readonly EXTENSION_NAME = NAME;
 
+	private _decoderModule: DRACO.DecoderModule;
+
 	public install(key: string, dependency: unknown): this {
-		if (key === 'draco3d') init(dependency as DRACO.Library);
+		if (key === 'draco3d.decoder') {
+			this._decoderModule = dependency as DRACO.DecoderModule;
+			initDecoderModule(this._decoderModule);
+		}
 		return this;
 	}
 
 	public provide(context: ReaderContext): this {
 		const logger = this.doc.getLogger();
 		const jsonDoc = context.jsonDoc;
-		const decoder = new decoderModule.Decoder();
+		const decoder = new this._decoderModule.Decoder();
 		const dracoMeshes: Map<number, DRACO.Mesh> = new Map();
 
 		// Reference: https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/DRACOLoader.js
@@ -66,9 +71,9 @@ export class DRACOMeshCompression extends Extension {
 				}
 			}
 
-			decoderModule.destroy(decoder);
+			this._decoderModule.destroy(decoder);
 			for (const dracoMesh of Array.from(dracoMeshes.values())) {
-				decoderModule.destroy(dracoMesh);
+				this._decoderModule.destroy(dracoMesh);
 			}
 		}
 

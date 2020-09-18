@@ -6,11 +6,6 @@ import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-export interface IODependencies {
-	draco3d?: unknown;
-}
-
 /**
  * # PlatformIO
  *
@@ -28,7 +23,7 @@ export abstract class PlatformIO {
 
 	protected _logger = Logger.DEFAULT_INSTANCE;
 	protected _extensions: typeof Extension[] = [];
-	protected _dependencies: IODependencies = {};
+	protected _dependencies: {[key: string]: unknown} = {};
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
 	public setLogger(logger: Logger): this {
@@ -43,7 +38,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Registers dependencies used (e.g. by extensions) in the I/O process. */
-	public registerDependencies(dependencies: IODependencies): this {
+	public registerDependencies(dependencies: {[key: string]: unknown}): this {
 		Object.assign(this._dependencies, dependencies);
 		return this;
 	}

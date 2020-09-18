@@ -2,8 +2,8 @@ import { TypedArray } from '@gltf-transform/core';
 
 export let decoderModule: DRACO.DecoderModule;
 
-export async function init (library: DRACO.Library): Promise<void> {
-	if (!decoderModule) decoderModule = library.createDecoderModule({});
+export function initDecoderModule (_decoderModule: DRACO.DecoderModule): void {
+	decoderModule = _decoderModule;
 }
 
 export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer): DRACO.Mesh {

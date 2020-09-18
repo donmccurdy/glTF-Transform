@@ -13,7 +13,7 @@ import { validate } from './validate';
 
 const io = new NodeIO()
 	.registerExtensions(KHRONOS_EXTENSIONS)
-	.registerDependencies({draco3d: require('draco3dgltf')});
+	.registerDependencies({'draco3d.decoder': require('draco3dgltf').createDecoderModule()});
 
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
 const OUTPUT_DESC = 'Path to write output';
