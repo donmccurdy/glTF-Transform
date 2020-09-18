@@ -8,6 +8,7 @@
 
 - Add 'center' and 'sequence' transforms.
 - Add 'bounds' helper.
+- Add `KHR_draco_mesh_compression` extension (decode only).
 
 **Breaking changes:**
 
