@@ -17,12 +17,37 @@ declare module DRACO {
 		DracoUInt16Array: new () => Array;
 		DracoUInt32Array: new () => Array;
 		destroy: (object: unknown) => void;
+		_malloc: (ptr: number) => number;
+		_free: (ptr: number) => void;
+
+		// Heap.
+		HEAPF32: Float32Array;
+		HEAP32: Int32Array;
+		HEAP16: Int16Array;
+		HEAP8: Int8Array;
+		HEAPU32: Uint32Array;
+		HEAPU16: Uint16Array;
+		HEAPU8: Uint8Array;
+
+		// GeometryType.
 		TRIANGULAR_MESH: GeometryType;
+		POINT_CLOUD: GeometryType;
+
+		// DataType.
+		DT_FLOAT32: DataType;
+		DT_INT8: DataType;
+		DT_INT16: DataType;
+		DT_INT32: DataType;
+		DT_UINT8: DataType;
+		DT_UINT16: DataType;
+		DT_UINT32: DataType;
 	}
 	interface Decoder {
 		DecodeBufferToMesh: (buffer: DecoderBuffer, mesh: Mesh) => Status;
 		GetAttributeByUniqueId: (mesh: Mesh, id: number) => Attribute;
 		GetFaceFromMesh: (mesh: Mesh, number, array: Array) => number;
+		GetTrianglesUInt32Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
+		GetAttributeDataArrayForAllPoints: (mesh: Mesh, attribute: Attribute, type: DataType, byteLength: number, ptr: number) => void;
 		GetAttributeFloatForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeInt8ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeInt16ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
@@ -50,4 +75,5 @@ declare module DRACO {
 		ok: () => boolean;
 	}
 	enum GeometryType {}
+	enum DataType {}
 }

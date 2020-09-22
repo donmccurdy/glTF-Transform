@@ -1,10 +1,10 @@
-import { TypedArray } from '@gltf-transform/core';
+import { TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 
 export let decoderModule: DRACO.DecoderModule;
 
-export function initDecoderModule (_decoderModule: DRACO.DecoderModule): void {
-	decoderModule = _decoderModule;
-}
+// Initialized when decoder module loads.
+let COMPONENT_ARRAY: {[key: number]: TypedArrayConstructor};
+let DATA_TYPE: {[key: number]: DRACO.DataType};
 
 export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer): DRACO.Mesh {
 	let buffer: DRACO.DecoderBuffer;
@@ -30,109 +30,59 @@ export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer)
 	}
 }
 
-export function decodeIndex(decoder: DRACO.Decoder, geometry: DRACO.Mesh): Uint32Array {
-	const numFaces = geometry.num_faces();
+export function decodeIndex(decoder: DRACO.Decoder, mesh: DRACO.Mesh): Uint32Array {
+	const numFaces = mesh.num_faces();
 	const numIndices = numFaces * 3;
-	const index = new Uint32Array( numIndices );
-	const dracoIndices = new decoderModule.DracoInt32Array();
+	const byteLength = numIndices * Uint32Array.BYTES_PER_ELEMENT;
 
-	for (let i = 0; i < numFaces; i++) {
-		decoder.GetFaceFromMesh(geometry, i, dracoIndices);
-		for (let j = 0; j < 3; ++ j) {
-			index[ i * 3 + j ] = dracoIndices.GetValue( j );
-		}
-	}
+	const ptr = decoderModule._malloc(byteLength);
+	decoder.GetTrianglesUInt32Array(mesh, byteLength, ptr);
+	const indices = new Uint32Array(decoderModule.HEAP32.buffer, ptr, numIndices).slice();
+	decoderModule._free(ptr);
 
-	decoderModule.destroy(dracoIndices);
-
-	return index;
+	return indices;
 }
 
 export function decodeAttribute(
 		decoder: DRACO.Decoder,
-		geometry: DRACO.Mesh,
+		mesh: DRACO.Mesh,
 		attribute: DRACO.Attribute,
 		accessorDef: GLTF.IAccessor): TypedArray {
 
-	const componentType = componentTypeToArray(accessorDef.componentType);
+	const dataType = DATA_TYPE[accessorDef.componentType];
+	const ArrayCtor = COMPONENT_ARRAY[accessorDef.componentType];
 	const numComponents = attribute.num_components();
-	const numPoints = geometry.num_points();
+	const numPoints = mesh.num_points();
 	const numValues = numPoints * numComponents;
+	const byteLength: number = numValues * ArrayCtor.BYTES_PER_ELEMENT;
 
-	let dracoArray;
-	let array;
+	const ptr = decoderModule._malloc(byteLength);
+	decoder.GetAttributeDataArrayForAllPoints(mesh, attribute, dataType, byteLength, ptr);
+	const array: TypedArray = new ArrayCtor(decoderModule.HEAPF32.buffer, ptr, numValues).slice();
+	decoderModule._free(ptr);
 
-	switch (componentType) {
-
-		case Float32Array:
-			dracoArray = new decoderModule.DracoFloat32Array();
-			decoder.GetAttributeFloatForAllPoints(geometry, attribute, dracoArray);
-			array = new Float32Array(numValues);
-			break;
-
-		case Int8Array:
-			dracoArray = new decoderModule.DracoInt8Array();
-			decoder.GetAttributeInt8ForAllPoints(geometry, attribute, dracoArray);
-			array = new Int8Array(numValues);
-			break;
-
-		case Int16Array:
-			dracoArray = new decoderModule.DracoInt16Array();
-			decoder.GetAttributeInt16ForAllPoints(geometry, attribute, dracoArray);
-			array = new Int16Array(numValues);
-			break;
-
-		case Uint8Array:
-			dracoArray = new decoderModule.DracoUInt8Array();
-			decoder.GetAttributeUInt8ForAllPoints(geometry, attribute, dracoArray);
-			array = new Uint8Array(numValues);
-			break;
-
-		case Uint16Array:
-			dracoArray = new decoderModule.DracoUInt16Array();
-			decoder.GetAttributeUInt16ForAllPoints(geometry, attribute, dracoArray);
-			array = new Uint16Array(numValues);
-			break;
-
-		case Uint32Array:
-			dracoArray = new decoderModule.DracoUInt32Array();
-			decoder.GetAttributeUInt32ForAllPoints(geometry, attribute, dracoArray);
-			array = new Uint32Array(numValues);
-			break;
-
-		default:
-			throw new Error('Unexpected attribute type.');
-
-	}
-
-	for (let i = 0; i < numValues; i ++) {
-		array[i] = dracoArray.GetValue(i);
-	}
-
-	decoderModule.destroy(dracoArray);
 	return array;
 }
 
-function componentTypeToArray (componentType: GLTF.AccessorComponentType): new () => TypedArray {
-	switch (componentType) {
+export function initDecoderModule (_decoderModule: DRACO.DecoderModule): void {
+	decoderModule = _decoderModule;
 
-		case GLTF.AccessorComponentType.FLOAT:
-			return Float32Array;
+	COMPONENT_ARRAY = {
+		[GLTF.AccessorComponentType.FLOAT]: Float32Array,
+		[GLTF.AccessorComponentType.UNSIGNED_INT]: Uint32Array,
+		[GLTF.AccessorComponentType.UNSIGNED_SHORT]: Uint16Array,
+		[GLTF.AccessorComponentType.UNSIGNED_BYTE]: Uint8Array,
+		[GLTF.AccessorComponentType.SHORT]: Int16Array,
+		[GLTF.AccessorComponentType.BYTE]: Int8Array,
+	};
 
-		case GLTF.AccessorComponentType.UNSIGNED_INT:
-			return Uint32Array;
-
-		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-			return Uint16Array;
-
-		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-			return Uint8Array;
-
-		case GLTF.AccessorComponentType.SHORT:
-			return Int16Array;
-
-		case GLTF.AccessorComponentType.BYTE:
-			return Int8Array;
-
-	}
+	DATA_TYPE = {
+		[GLTF.AccessorComponentType.FLOAT]: decoderModule.DT_FLOAT32,
+		[GLTF.AccessorComponentType.UNSIGNED_INT]: decoderModule.DT_UINT32,
+		[GLTF.AccessorComponentType.UNSIGNED_SHORT]: decoderModule.DT_UINT16,
+		[GLTF.AccessorComponentType.UNSIGNED_BYTE]: decoderModule.DT_UINT8,
+		[GLTF.AccessorComponentType.SHORT]: decoderModule.DT_INT16,
+		[GLTF.AccessorComponentType.BYTE]: decoderModule.DT_INT8,
+	};
 }
+
