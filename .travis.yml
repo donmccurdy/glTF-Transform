@@ -8,6 +8,6 @@ env:
 before_script:
   - yarn run dist
 script:
-  - yarn test && yarn run test:browser
+  - yarn test
 after_success:
   - yarn run coverage:report
