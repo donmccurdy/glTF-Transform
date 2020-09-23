@@ -70,7 +70,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getDiffuseTextureInfo(): TextureInfo {
-		return this.diffuseTexture ? this.diffuseTexture.textureInfo : null;
+		return this.diffuseTexture ? this.diffuseTexture.getTextureInfo() : null;
 	}
 
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
@@ -119,7 +119,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularGlossinessTextureInfo(): TextureInfo {
-		return this.specularGlossinessTexture ? this.specularGlossinessTexture.textureInfo : null;
+		return this.specularGlossinessTexture ? this.specularGlossinessTexture.getTextureInfo() : null;
 	}
 
 	/** Spec/gloss texture; linear multiplier. */

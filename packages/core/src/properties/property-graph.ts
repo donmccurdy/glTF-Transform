@@ -6,12 +6,14 @@ import { Primitive } from './primitive';
 import { PrimitiveTarget } from './primitive-target';
 import { AttributeLink, IndexLink, TextureLink } from './property-links';
 import { Texture } from './texture';
+import { TextureInfo } from './texture-info';
 
 /** @hidden */
 export class PropertyGraph extends Graph {
 	public linkTexture(name: string, a: Material | ExtensionProperty, b: Texture): TextureLink {
 		if (!b) return null;
-		const link = new TextureLink(name, a, b);
+		const link = new TextureLink(name, a, b)
+			.setTextureInfoLink(this.link(name + 'Info', a, new TextureInfo(this)));
 		this.registerLink(link);
 		return link;
 	}

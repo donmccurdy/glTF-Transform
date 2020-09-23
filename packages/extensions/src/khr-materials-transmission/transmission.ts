@@ -53,7 +53,7 @@ export class Transmission extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getTransmissionTextureInfo(): TextureInfo {
-		return this.transmissionTexture ? this.transmissionTexture.textureInfo : null;
+		return this.transmissionTexture ? this.transmissionTexture.getTextureInfo() : null;
 	}
 
 	/** Sets transmission texture. See {@link getTransmissionTexture}. */

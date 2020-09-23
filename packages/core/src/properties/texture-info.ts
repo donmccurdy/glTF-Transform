@@ -1,4 +1,5 @@
 import { PropertyType } from '../constants';
+import { ExtensibleProperty } from './extensible-property';
 
 /**
  * # TextureInfo
@@ -12,7 +13,7 @@ import { PropertyType } from '../constants';
  *
  * @category Properties
  */
-export class TextureInfo {
+export class TextureInfo extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.TEXTURE_INFO;
 
 	private _texCoord = 0;

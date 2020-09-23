@@ -66,7 +66,7 @@ export class Clearcoat extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatTextureInfo(): TextureInfo {
-		return this.clearcoatTexture ? this.clearcoatTexture.textureInfo : null;
+		return this.clearcoatTexture ? this.clearcoatTexture.getTextureInfo() : null;
 	}
 
 	/** Sets clearcoat texture. See {@link getClearcoatTexture}. */
@@ -101,7 +101,7 @@ export class Clearcoat extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatRoughnessTextureInfo(): TextureInfo {
-		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTexture.textureInfo : null;
+		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTexture.getTextureInfo() : null;
 	}
 
 	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
@@ -135,7 +135,7 @@ export class Clearcoat extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatNormalTextureInfo(): TextureInfo {
-		return this.clearcoatNormalTexture ? this.clearcoatNormalTexture.textureInfo : null;
+		return this.clearcoatNormalTexture ? this.clearcoatNormalTexture.getTextureInfo() : null;
 	}
 
 	/** Sets clearcoat normal texture. See {@link getClearcoatNormalTexture}. */

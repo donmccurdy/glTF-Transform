@@ -77,7 +77,7 @@ export class Specular extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularTextureInfo(): TextureInfo {
-		return this.specularTexture ? this.specularTexture.textureInfo : null;
+		return this.specularTexture ? this.specularTexture.getTextureInfo() : null;
 	}
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */

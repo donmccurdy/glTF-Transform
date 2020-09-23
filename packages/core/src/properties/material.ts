@@ -255,7 +255,7 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getBaseColorTextureInfo(): TextureInfo {
-		return this.baseColorTexture ? this.baseColorTexture.textureInfo : null;
+		return this.baseColorTexture ? this.baseColorTexture.getTextureInfo() : null;
 	}
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
@@ -312,7 +312,7 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getEmissiveTextureInfo(): TextureInfo {
-		return this.emissiveTexture ? this.emissiveTexture.textureInfo : null;
+		return this.emissiveTexture ? this.emissiveTexture.getTextureInfo() : null;
 	}
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
@@ -355,7 +355,7 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getNormalTextureInfo(): TextureInfo {
-		return this.normalTexture ? this.normalTexture.textureInfo : null;
+		return this.normalTexture ? this.normalTexture.getTextureInfo() : null;
 	}
 
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
@@ -398,7 +398,7 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getOcclusionTextureInfo(): TextureInfo {
-		return this.occlusionTexture ? this.occlusionTexture.textureInfo : null;
+		return this.occlusionTexture ? this.occlusionTexture.getTextureInfo() : null;
 	}
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
@@ -459,7 +459,7 @@ export class Material extends ExtensibleProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getMetallicRoughnessTextureInfo(): TextureInfo {
-		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.textureInfo : null;
+		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.getTextureInfo() : null;
 	}
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
