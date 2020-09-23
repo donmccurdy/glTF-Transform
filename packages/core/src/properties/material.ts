@@ -1,9 +1,8 @@
 import { PropertyType, vec3, vec4 } from '../constants';
-import { GraphChild } from '../graph/index';
+import { GraphChild, Link } from '../graph/index';
 import { ColorUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
-import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
 
@@ -78,24 +77,32 @@ export class Material extends ExtensibleProperty {
 	private _metallicFactor = 1;
 
 	/** @hidden Base color / albedo texture. */
-	@GraphChild private baseColorTexture: TextureLink = null;
+	@GraphChild private baseColorTexture: Link<this, Texture> = null;
+	@GraphChild private baseColorTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('baseColorTextureInfo', this, new TextureInfo(this.graph));
 
 	/** @hidden Emissive texture. */
-	@GraphChild private emissiveTexture: TextureLink = null;
+	@GraphChild private emissiveTexture: Link<this, Texture> = null;
+	@GraphChild private emissiveTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('emissiveTextureInfo', this, new TextureInfo(this.graph));
 
 	/**
 	 * Normal (surface detail) texture. Normal maps often suffer artifacts with JPEG compression,
 	 * so PNG files are preferred.
 	 * @hidden
 	 */
-	@GraphChild private normalTexture: TextureLink = null;
+	@GraphChild private normalTexture: Link<this, Texture> = null;
+	@GraphChild private normalTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('normalTextureInfo', this, new TextureInfo(this.graph));
 
 	/**
 	 * (Ambient) Occlusion texture. Occlusion data is stored in the `.r` channel, allowing this
 	 * texture to be packed with `metallicRoughnessTexture`, optionally.
 	 * @hidden
 	 */
-	@GraphChild private occlusionTexture: TextureLink = null;
+	@GraphChild private occlusionTexture: Link<this, Texture> = null;
+	@GraphChild private occlusionTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('occlusionTextureInfo', this, new TextureInfo(this.graph));
 
 	/**
 	 * Metallic/roughness PBR texture. Roughness data is stored in the `.g` channel and metallic
@@ -103,7 +110,9 @@ export class Material extends ExtensibleProperty {
 	 * `occlusionTexture`, optionally.
 	 * @hidden
 	*/
-	@GraphChild private metallicRoughnessTexture: TextureLink = null;
+	@GraphChild private metallicRoughnessTexture: Link<this, Texture> = null;
+	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('metallicRoughnessTextureInfo', this, new TextureInfo(this.graph));
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -120,23 +129,23 @@ export class Material extends ExtensibleProperty {
 
 		if (other.baseColorTexture) {
 			this.setBaseColorTexture(resolve(other.baseColorTexture.getChild()));
-			this.baseColorTexture.copy(other.baseColorTexture);
+			this.getBaseColorTextureInfo().copy(resolve(other.baseColorTextureInfo.getChild()));
 		}
 		if (other.emissiveTexture) {
 			this.setEmissiveTexture(resolve(other.emissiveTexture.getChild()));
-			this.emissiveTexture.copy(other.emissiveTexture);
+			this.getEmissiveTextureInfo().copy(resolve(other.emissiveTextureInfo.getChild()));
 		}
 		if (other.normalTexture) {
 			this.setNormalTexture(resolve(other.normalTexture.getChild()));
-			this.normalTexture.copy(other.normalTexture);
+			this.getNormalTextureInfo().copy(resolve(other.normalTextureInfo.getChild()));
 		}
 		if (other.occlusionTexture) {
 			this.setOcclusionTexture(resolve(other.occlusionTexture.getChild()));
-			this.occlusionTexture.copy(other.occlusionTexture);
+			this.getOcclusionTextureInfo().copy(resolve(other.occlusionTextureInfo.getChild()));
 		}
 		if (other.metallicRoughnessTexture) {
 			this.setMetallicRoughnessTexture(resolve(other.metallicRoughnessTexture.getChild()));
-			this.metallicRoughnessTexture.copy(other.metallicRoughnessTexture);
+			this.getMetallicRoughnessTextureInfo().copy(resolve(other.metallicRoughnessTextureInfo.getChild()));
 		}
 
 		return this;
@@ -255,12 +264,12 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getBaseColorTextureInfo(): TextureInfo {
-		return this.baseColorTexture ? this.baseColorTexture.textureInfo : null;
+		return this.baseColorTexture ? this.baseColorTextureInfo.getChild() : null;
 	}
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture): this {
-		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
+		this.baseColorTexture = this.graph.link('baseColorTexture', this, texture);
 		return this;
 	}
 
@@ -312,12 +321,12 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getEmissiveTextureInfo(): TextureInfo {
-		return this.emissiveTexture ? this.emissiveTexture.textureInfo : null;
+		return this.emissiveTexture ? this.emissiveTextureInfo.getChild() : null;
 	}
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture): this {
-		this.emissiveTexture = this.graph.linkTexture('emissiveTexture', this, texture);
+		this.emissiveTexture = this.graph.link('emissiveTexture', this, texture);
 		return this;
 	}
 
@@ -355,12 +364,12 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getNormalTextureInfo(): TextureInfo {
-		return this.normalTexture ? this.normalTexture.textureInfo : null;
+		return this.normalTexture ? this.normalTextureInfo.getChild() : null;
 	}
 
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
 	public setNormalTexture(texture: Texture): this {
-		this.normalTexture = this.graph.linkTexture('normalTexture', this, texture);
+		this.normalTexture = this.graph.link('normalTexture', this, texture);
 		return this;
 	}
 
@@ -398,12 +407,12 @@ export class Material extends ExtensibleProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getOcclusionTextureInfo(): TextureInfo {
-		return this.occlusionTexture ? this.occlusionTexture.textureInfo : null;
+		return this.occlusionTexture ? this.occlusionTextureInfo.getChild() : null;
 	}
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
 	public setOcclusionTexture(texture: Texture): this {
-		this.occlusionTexture = this.graph.linkTexture('occlusionTexture', this, texture);
+		this.occlusionTexture = this.graph.link('occlusionTexture', this, texture);
 		return this;
 	}
 
@@ -459,12 +468,12 @@ export class Material extends ExtensibleProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getMetallicRoughnessTextureInfo(): TextureInfo {
-		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.textureInfo : null;
+		return this.metallicRoughnessTexture ? this.metallicRoughnessTextureInfo.getChild() : null;
 	}
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
 	public setMetallicRoughnessTexture(texture: Texture): this {
-		this.metallicRoughnessTexture = this.graph.linkTexture('metallicRoughnessTexture', this, texture);
+		this.metallicRoughnessTexture = this.graph.link('metallicRoughnessTexture', this, texture);
 		return this;
 	}
 }

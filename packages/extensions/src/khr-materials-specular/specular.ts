@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -11,7 +11,9 @@ export class Specular extends ExtensionProperty {
 	private _specularFactor = 1.0;
 	private _specularColorFactor: vec3 = [1.0, 1.0, 1.0];
 
-	@GraphChild private specularTexture: TextureLink = null;
+	@GraphChild private specularTexture: Link<this, Texture> = null;
+	@GraphChild private specularTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('specularTextureInfo', this, new TextureInfo(this.graph));
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -20,7 +22,7 @@ export class Specular extends ExtensionProperty {
 
 		if (other.specularTexture) {
 			this.setSpecularTexture(resolve(other.specularTexture.getChild()));
-			this.specularTexture.copy(other.specularTexture);
+			this.getSpecularTextureInfo().copy(resolve(other.specularTextureInfo.getChild()));
 		}
 
 		return this;
@@ -77,12 +79,12 @@ export class Specular extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularTextureInfo(): TextureInfo {
-		return this.specularTexture ? this.specularTexture.textureInfo : null;
+		return this.specularTexture ? this.specularTextureInfo.getChild() : null;
 	}
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */
 	public setSpecularTexture(texture: Texture): this {
-		this.specularTexture = this.graph.linkTexture('specularTexture', this, texture);
+		this.specularTexture = this.graph.link('specularTexture', this, texture);
 		return this;
 	}
 }
