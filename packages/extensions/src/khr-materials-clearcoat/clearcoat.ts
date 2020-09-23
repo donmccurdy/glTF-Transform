@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo } from '@gltf-transform/core';
 import { KHR_MATERIALS_CLEARCOAT } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -12,9 +12,17 @@ export class Clearcoat extends ExtensionProperty {
 	private _clearcoatRoughnessFactor = 0.0;
 	private _clearcoatNormalScale = 1.0;
 
-	@GraphChild private clearcoatTexture: TextureLink = null;
-	@GraphChild private clearcoatRoughnessTexture: TextureLink = null;
-	@GraphChild private clearcoatNormalTexture: TextureLink = null;
+	@GraphChild private clearcoatTexture: Link<this, Texture> = null;
+	@GraphChild private clearcoatTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('clearcoatTextureInfo', this, new TextureInfo(this.graph));
+
+	@GraphChild private clearcoatRoughnessTexture: Link<this, Texture> = null;
+	@GraphChild private clearcoatRoughnessTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('clearcoatRoughnessTextureInfo', this, new TextureInfo(this.graph));
+
+	@GraphChild private clearcoatNormalTexture: Link<this, Texture> = null;
+	@GraphChild private clearcoatNormalTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('clearcoatNormalTextureInfo', this, new TextureInfo(this.graph));
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -25,15 +33,15 @@ export class Clearcoat extends ExtensionProperty {
 
 		if (other.clearcoatTexture) {
 			this.setClearcoatTexture(resolve(other.clearcoatTexture.getChild()));
-			this.clearcoatTexture.copy(other.clearcoatTexture);
+			this.getClearcoatTextureInfo().copy(resolve(other.clearcoatTextureInfo.getChild()));
 		}
 		if (other.clearcoatRoughnessTexture) {
 			this.setClearcoatRoughnessTexture(resolve(other.clearcoatRoughnessTexture.getChild()));
-			this.clearcoatRoughnessTexture.copy(other.clearcoatRoughnessTexture);
+			this.getClearcoatRoughnessTextureInfo().copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()));
 		}
 		if (other.clearcoatNormalTexture) {
 			this.setClearcoatNormalTexture(resolve(other.clearcoatNormalTexture.getChild()));
-			this.clearcoatNormalTexture.copy(other.clearcoatNormalTexture);
+			this.getClearcoatNormalTextureInfo().copy(resolve(other.clearcoatNormalTextureInfo.getChild()));
 		}
 
 		return this;
@@ -66,12 +74,12 @@ export class Clearcoat extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatTextureInfo(): TextureInfo {
-		return this.clearcoatTexture ? this.clearcoatTexture.getTextureInfo() : null;
+		return this.clearcoatTexture ? this.clearcoatTextureInfo.getChild() : null;
 	}
 
 	/** Sets clearcoat texture. See {@link getClearcoatTexture}. */
 	public setClearcoatTexture(texture: Texture): this {
-		this.clearcoatTexture = this.graph.linkTexture('clearcoatTexture', this, texture);
+		this.clearcoatTexture = this.graph.link('clearcoatTexture', this, texture);
 		return this;
 	}
 
@@ -101,12 +109,12 @@ export class Clearcoat extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatRoughnessTextureInfo(): TextureInfo {
-		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTexture.getTextureInfo() : null;
+		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTextureInfo.getChild() : null;
 	}
 
 	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
 	public setClearcoatRoughnessTexture(texture: Texture): this {
-		this.clearcoatRoughnessTexture = this.graph.linkTexture('clearcoatRoughnessTexture', this, texture);
+		this.clearcoatRoughnessTexture = this.graph.link('clearcoatRoughnessTexture', this, texture);
 		return this;
 	}
 
@@ -135,12 +143,12 @@ export class Clearcoat extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatNormalTextureInfo(): TextureInfo {
-		return this.clearcoatNormalTexture ? this.clearcoatNormalTexture.getTextureInfo() : null;
+		return this.clearcoatNormalTexture ? this.clearcoatNormalTextureInfo.getChild() : null;
 	}
 
 	/** Sets clearcoat normal texture. See {@link getClearcoatNormalTexture}. */
 	public setClearcoatNormalTexture(texture: Texture): this {
-		this.clearcoatNormalTexture = this.graph.linkTexture('clearcoatNormalTexture', this, texture);
+		this.clearcoatNormalTexture = this.graph.link('clearcoatNormalTexture', this, texture);
 		return this;
 	}
 }

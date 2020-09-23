@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -10,7 +10,9 @@ export class Transmission extends ExtensionProperty {
 
 	private _transmissionFactor = 0.0;
 
-	@GraphChild private transmissionTexture: TextureLink = null;
+	@GraphChild private transmissionTexture: Link<this, Texture> = null;
+	@GraphChild private transmissionTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('transmissionTextureInfo', this, new TextureInfo(this.graph));
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -19,7 +21,7 @@ export class Transmission extends ExtensionProperty {
 
 		if (other.transmissionTexture) {
 			this.setTransmissionTexture(resolve(other.transmissionTexture.getChild()));
-			this.transmissionTexture.copy(other.transmissionTexture);
+			this.getTransmissionTextureInfo().copy(resolve(other.transmissionTextureInfo.getChild()));
 		}
 
 		return this;
@@ -53,12 +55,12 @@ export class Transmission extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getTransmissionTextureInfo(): TextureInfo {
-		return this.transmissionTexture ? this.transmissionTexture.getTextureInfo() : null;
+		return this.transmissionTexture ? this.transmissionTextureInfo.getChild() : null;
 	}
 
 	/** Sets transmission texture. See {@link getTransmissionTexture}. */
 	public setTransmissionTexture(texture: Texture): this {
-		this.transmissionTexture = this.graph.linkTexture('transmissionTexture', this, texture);
+		this.transmissionTexture = this.graph.link('transmissionTexture', this, texture);
 		return this;
 	}
 }

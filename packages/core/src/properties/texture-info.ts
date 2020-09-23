@@ -6,7 +6,14 @@ import { ExtensibleProperty } from './extensible-property';
  *
  * *Settings associated with a particular use of a {@link Texture}.*
  *
- * Different materials may reuse the same texture but with different texture coordinates.
+ * Different materials may reuse the same texture but with different texture coordinates,
+ * minFilter/magFilter, or wrapS/wrapT settings. The TextureInfo class contains settings
+ * derived from both the "TextureInfo" and "Sampler" properties in the glTF specification,
+ * consolidated here for simplicity.
+ *
+ * TextureInfo properties cannot be directly created. For any material texture slot, such as
+ * baseColorTexture, there will be a corresponding method to obtain the TextureInfo for that slot.
+ * For example, see {@link Material.getBaseColorTextureInfo}.
  *
  * References:
  * - [glTF → Texture Info](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-textureinfo)

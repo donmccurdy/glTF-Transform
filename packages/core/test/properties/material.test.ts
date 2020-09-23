@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, TextureInfo } from '../../';
+import { Document, Property, TextureInfo } from '../../';
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
@@ -144,7 +144,7 @@ test('@gltf-transform/core::material | texture linking', t => {
 
 	const mat = doc.createMaterial('mat');
 
-	const toType = (p) => p.propertyType;
+	const toType = (p: Property): string => p.propertyType;
 
 	mat.setBaseColorTexture(tex1);
 	t.equals(mat.getBaseColorTexture(), tex1, 'sets baseColorTexture');
@@ -163,6 +163,35 @@ test('@gltf-transform/core::material | texture linking', t => {
 	mat.setBaseColorTexture(null);
 	t.equals(mat.getBaseColorTexture(), null, 'deletes baseColorTexture');
 	t.deepEqual(tex3.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
+
+	t.end();
+});
+
+test('@gltf-transform/core::material | texture info linking', t => {
+	const doc = new Document();
+
+	const mat = doc.createMaterial('mat');
+	const tex1 = doc.createTexture('tex1');
+	const tex2 = doc.createTexture('tex2');
+	const tex3 = doc.createTexture('tex3');
+
+	t.equals(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
+
+	mat.setBaseColorTexture(tex1);
+	mat.getBaseColorTextureInfo().setTexCoord(2);
+
+	const textureInfo = mat.getBaseColorTextureInfo();
+	t.ok(textureInfo, 'textureInfo != null');
+	t.equals(textureInfo.getTexCoord(), 2, 'textureInfo.texCoord === 2');
+
+	mat.setBaseColorTexture(tex2);
+	t.equals(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
+
+	mat.setBaseColorTexture(null);
+	t.equals(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
+
+	mat.setBaseColorTexture(tex3);
+	t.equals(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
 
 	t.end();
 });
