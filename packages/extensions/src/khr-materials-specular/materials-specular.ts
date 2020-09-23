@@ -38,7 +38,6 @@ export class MaterialsSpecular extends Extension {
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specular.setSpecularTexture(texture);
 					context.setTextureInfo(specular.getSpecularTextureInfo(), textureInfoDef);
-					context.setTextureSampler(specular.getSpecularTextureSampler(), textureInfoDef);
 				}
 			}
 		});
@@ -70,8 +69,7 @@ export class MaterialsSpecular extends Extension {
 					if (specular.getSpecularTexture()) {
 						const texture = specular.getSpecularTexture();
 						const textureInfo = specular.getSpecularTextureInfo();
-						const textureSampler = specular.getSpecularTextureSampler();
-						materialDef.extensions[NAME].specularTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].specularTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

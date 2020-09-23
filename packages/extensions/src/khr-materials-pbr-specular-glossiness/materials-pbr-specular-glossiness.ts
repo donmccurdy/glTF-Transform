@@ -41,14 +41,12 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specGloss.setDiffuseTexture(texture);
 					context.setTextureInfo(specGloss.getDiffuseTextureInfo(), textureInfoDef);
-					context.setTextureSampler(specGloss.getDiffuseTextureSampler(), textureInfoDef);
 				}
 				if (materialDef.extensions[NAME].specularGlossinessTexture !== undefined) {
 					const textureInfoDef = materialDef.extensions[NAME].specularGlossinessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specGloss.setSpecularGlossinessTexture(texture);
 					context.setTextureInfo(specGloss.getSpecularGlossinessTextureInfo(), textureInfoDef);
-					context.setTextureSampler(specGloss.getSpecularGlossinessTextureSampler(), textureInfoDef);
 				}
 			}
 		});
@@ -81,14 +79,12 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 					if (specGloss.getDiffuseTexture()) {
 						const texture = specGloss.getDiffuseTexture();
 						const textureInfo = specGloss.getDiffuseTextureInfo();
-						const textureSampler = specGloss.getDiffuseTextureSampler();
-						materialDef.extensions[NAME].diffuseTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].diffuseTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (specGloss.getSpecularGlossinessTexture()) {
 						const texture = specGloss.getSpecularGlossinessTexture();
 						const textureInfo = specGloss.getSpecularGlossinessTextureInfo();
-						const textureSampler = specGloss.getSpecularGlossinessTextureSampler();
-						materialDef.extensions[NAME].specularGlossinessTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].specularGlossinessTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

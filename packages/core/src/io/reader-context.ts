@@ -1,5 +1,5 @@
 import { JSONDocument } from '../json-document';
-import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo } from '../properties';
 
 /**
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used
@@ -25,10 +25,7 @@ export class ReaderContext {
 		if (textureInfoDef.texCoord !== undefined) {
 			textureInfo.setTexCoord(textureInfoDef.texCoord);
 		}
-	}
 
-	// eslint-disable-next-line max-len
-	public setTextureSampler(textureSampler: TextureSampler, textureInfoDef: GLTF.ITextureInfo): void {
 		const textureDef = this.jsonDoc.json.textures[textureInfoDef.index];
 
 		if (textureDef.sampler === undefined) return;
@@ -36,16 +33,16 @@ export class ReaderContext {
 		const samplerDef = this.jsonDoc.json.samplers[textureDef.sampler];
 
 		if (samplerDef.magFilter !== undefined) {
-			textureSampler.setMagFilter(samplerDef.magFilter);
+			textureInfo.setMagFilter(samplerDef.magFilter);
 		}
 		if (samplerDef.minFilter !== undefined) {
-			textureSampler.setMinFilter(samplerDef.minFilter);
+			textureInfo.setMinFilter(samplerDef.minFilter);
 		}
 		if (samplerDef.wrapS !== undefined) {
-			textureSampler.setWrapS(samplerDef.wrapS);
+			textureInfo.setWrapS(samplerDef.wrapS);
 		}
 		if (samplerDef.wrapT !== undefined) {
-			textureSampler.setWrapT(samplerDef.wrapT);
+			textureInfo.setWrapT(samplerDef.wrapT);
 		}
 	}
 }

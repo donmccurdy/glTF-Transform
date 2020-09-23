@@ -12,6 +12,7 @@
 
 **Breaking changes:**
 
+- Merged TextureSampler properties into TextureInfo.
 - Simplified I/O API. Renamed:
   - NativeDocument -> JSONDocument
   - unpackGLB -> readBinary

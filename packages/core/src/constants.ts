@@ -96,5 +96,4 @@ export enum PropertyType {
 	SKIN = 'Skin',
 	TEXTURE = 'Texture',
 	TEXTURE_INFO = 'TextureInfo',
-	TEXTURE_SAMPLER = 'TextureSampler',
 }

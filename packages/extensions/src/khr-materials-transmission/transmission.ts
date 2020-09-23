@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -54,14 +54,6 @@ export class Transmission extends ExtensionProperty {
 	 */
 	public getTransmissionTextureInfo(): TextureInfo {
 		return this.transmissionTexture ? this.transmissionTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its transmission texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getTransmissionTextureSampler(): TextureSampler {
-		return this.transmissionTexture ? this.transmissionTexture.sampler : null;
 	}
 
 	/** Sets transmission texture. See {@link getTransmissionTexture}. */

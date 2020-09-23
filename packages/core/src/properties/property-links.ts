@@ -6,15 +6,12 @@ import { Primitive } from './primitive';
 import { PrimitiveTarget } from './primitive-target';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
-import { TextureSampler } from './texture-sampler';
 
 /** @hidden */
 export class TextureLink extends Link<Material|ExtensionProperty, Texture> {
 	public textureInfo = new TextureInfo();
-	public sampler = new TextureSampler();
 	public copy (other: this): this {
 		this.textureInfo.copy(other.textureInfo);
-		this.sampler.copy(other.sampler);
 		return this;
 	}
 }

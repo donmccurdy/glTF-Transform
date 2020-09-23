@@ -360,22 +360,19 @@ export class GLTFWriter {
 			if (material.getBaseColorTexture()) {
 				const texture = material.getBaseColorTexture();
 				const textureInfo = material.getBaseColorTextureInfo();
-				const textureSampler = material.getBaseColorTextureSampler();
-				materialDef.pbrMetallicRoughness.baseColorTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.pbrMetallicRoughness.baseColorTexture = context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getEmissiveTexture()) {
 				const texture = material.getEmissiveTexture();
 				const textureInfo = material.getEmissiveTextureInfo();
-				const textureSampler = material.getEmissiveTextureSampler();
-				materialDef.emissiveTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.emissiveTexture = context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getNormalTexture()) {
 				const texture = material.getNormalTexture();
 				const textureInfo = material.getNormalTextureInfo();
-				const textureSampler = material.getNormalTextureSampler();
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialNormalTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
 				}
@@ -385,8 +382,7 @@ export class GLTFWriter {
 			if (material.getOcclusionTexture()) {
 				const texture = material.getOcclusionTexture();
 				const textureInfo = material.getOcclusionTextureInfo();
-				const textureSampler = material.getOcclusionTextureSampler();
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo, textureSampler) as GLTF.IMaterialOcclusionTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
 				}
@@ -396,8 +392,7 @@ export class GLTFWriter {
 			if (material.getMetallicRoughnessTexture()) {
 				const texture = material.getMetallicRoughnessTexture();
 				const textureInfo = material.getMetallicRoughnessTextureInfo();
-				const textureSampler = material.getMetallicRoughnessTextureSampler();
-				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			context.materialIndexMap.set(material, index);

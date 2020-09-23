@@ -6,7 +6,6 @@ import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
-import { TextureSampler } from './texture-sampler';
 
 /**
  * # Material
@@ -259,14 +258,6 @@ export class Material extends ExtensibleProperty {
 		return this.baseColorTexture ? this.baseColorTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its base color texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getBaseColorTextureSampler(): TextureSampler {
-		return this.baseColorTexture ? this.baseColorTexture.sampler : null;
-	}
-
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture): this {
 		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', this, texture);
@@ -324,14 +315,6 @@ export class Material extends ExtensibleProperty {
 		return this.emissiveTexture ? this.emissiveTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its emissive texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getEmissiveTextureSampler(): TextureSampler {
-		return this.emissiveTexture ? this.emissiveTexture.sampler : null;
-	}
-
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture): this {
 		this.emissiveTexture = this.graph.linkTexture('emissiveTexture', this, texture);
@@ -375,14 +358,6 @@ export class Material extends ExtensibleProperty {
 		return this.normalTexture ? this.normalTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its normal texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getNormalTextureSampler(): TextureSampler {
-		return this.normalTexture ? this.normalTexture.sampler : null;
-	}
-
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
 	public setNormalTexture(texture: Texture): this {
 		this.normalTexture = this.graph.linkTexture('normalTexture', this, texture);
@@ -424,14 +399,6 @@ export class Material extends ExtensibleProperty {
 	 */
 	public getOcclusionTextureInfo(): TextureInfo {
 		return this.occlusionTexture ? this.occlusionTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its occlusion texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getOcclusionTextureSampler(): TextureSampler {
-		return this.occlusionTexture ? this.occlusionTexture.sampler : null;
 	}
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
@@ -493,14 +460,6 @@ export class Material extends ExtensibleProperty {
 	 */
 	public getMetallicRoughnessTextureInfo(): TextureInfo {
 		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its metallic/roughness texture. If no texture is
-	 * attached, {@link TextureSampler} is `null`.
-	 */
-	public getMetallicRoughnessTextureSampler(): TextureSampler {
-		return this.metallicRoughnessTexture ? this.metallicRoughnessTexture.sampler : null;
 	}
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */

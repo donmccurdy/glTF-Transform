@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3, vec4 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, vec3, vec4 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -73,14 +73,6 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 		return this.diffuseTexture ? this.diffuseTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its diffuse texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getDiffuseTextureSampler(): TextureSampler {
-		return this.diffuseTexture ? this.diffuseTexture.sampler : null;
-	}
-
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
 	public setDiffuseTexture(texture: Texture): this {
 		this.diffuseTexture = this.graph.linkTexture('diffuseTexture', this, texture);
@@ -128,14 +120,6 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 */
 	public getSpecularGlossinessTextureInfo(): TextureInfo {
 		return this.specularGlossinessTexture ? this.specularGlossinessTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its spec/gloss texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getSpecularGlossinessTextureSampler(): TextureSampler {
-		return this.specularGlossinessTexture ? this.specularGlossinessTexture.sampler : null;
 	}
 
 	/** Spec/gloss texture; linear multiplier. */

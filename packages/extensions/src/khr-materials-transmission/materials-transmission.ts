@@ -35,7 +35,6 @@ export class MaterialsTransmission extends Extension {
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					transmission.setTransmissionTexture(texture);
 					context.setTextureInfo(transmission.getTransmissionTextureInfo(), textureInfoDef);
-					context.setTextureSampler(transmission.getTransmissionTextureSampler(), textureInfoDef);
 				}
 			}
 		});
@@ -66,8 +65,7 @@ export class MaterialsTransmission extends Extension {
 					if (transmission.getTransmissionTexture()) {
 						const texture = transmission.getTransmissionTexture();
 						const textureInfo = transmission.getTransmissionTextureInfo();
-						const textureSampler = transmission.getTransmissionTextureSampler();
-						materialDef.extensions[NAME].transmissionTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].transmissionTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

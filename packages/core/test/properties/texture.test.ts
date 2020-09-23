@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, NodeIO, TextureSampler } from '../../';
+import { Document, NodeIO, TextureInfo } from '../../';
 
 test('@gltf-transform/core::texture | read', t => {
 	const jsonDoc = {
@@ -39,8 +39,8 @@ test('@gltf-transform/core::texture | read', t => {
 	t.equals(root.listTextures().length, 2, 'reads two textures');
 	t.equals(mat1.getNormalTexture().getURI(), 'tex1.png', 'assigns texture');
 	t.equals(mat1.getOcclusionTexture().getURI(), 'tex1.png', 'reuses texture');
-	t.equals(mat1.getNormalTextureSampler().getWrapS(), 33071, 'assigns sampler properties');
-	t.equals(mat1.getOcclusionTextureSampler().getWrapS(), 10497, 'keeps default sampler properties');
+	t.equals(mat1.getNormalTextureInfo().getWrapS(), 33071, 'assigns sampler properties');
+	t.equals(mat1.getOcclusionTextureInfo().getWrapS(), 10497, 'keeps default sampler properties');
 	t.equals(mat2.getNormalTexture().getURI(), 'tex2.jpeg', 'assigns 2nd texture');
 	t.equals(root.listTextures()[0].getMimeType(), 'image/png', 'assigns "image/png" MIME type');
 	t.equals(root.listTextures()[1].getMimeType(), 'image/jpeg', 'assigns "image/jpeg" MIME type');
@@ -62,8 +62,8 @@ test('@gltf-transform/core::texture | write', t => {
 		.setNormalTexture(texture2);
 	doc.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
-		.getBaseColorTextureSampler()
-		.setWrapS(TextureSampler.TextureWrapMode.CLAMP_TO_EDGE);
+		.getBaseColorTextureInfo()
+		.setWrapS(TextureInfo.TextureWrapMode.CLAMP_TO_EDGE);
 
 	const io = new NodeIO();
 	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});

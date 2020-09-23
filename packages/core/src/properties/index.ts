@@ -18,4 +18,3 @@ export * from './scene';
 export * from './skin';
 export * from './texture';
 export * from './texture-info';
-export * from './texture-sampler';

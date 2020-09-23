@@ -15,8 +15,7 @@ import { COPY_IDENTITY } from './property';
  * glTF file with N `image` properties, and the minimum number of `texture` properties necessary
  * for the materials that use it.
  *
- * For properties associated with a particular _use_ of a texture, see {@link TextureInfo} and
- * {@link TextureSampler}.
+ * For properties associated with a particular _use_ of a texture, see {@link TextureInfo}.
  *
  * Reference:
  * - [glTF → Textures](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#textures)
@@ -28,21 +27,21 @@ export class Texture extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.TEXTURE;
 
 	/** @hidden Raw image data for this texture. */
-	private image: ArrayBuffer = null;
+	private _image: ArrayBuffer = null;
 
 	/** @hidden Image MIME type. Required if URI is not set. */
-	private mimeType = '';
+	private _mimeType = '';
 
 	/** @hidden Image URI. Required if MIME type is not set. */
-	private uri = '';
+	private _uri = '';
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this.mimeType = other.mimeType;
-		this.uri = other.uri;
+		this._mimeType = other._mimeType;
+		this._uri = other._uri;
 
-		if (other.image) this.image = other.image.slice(0);
+		if (other._image) this._image = other._image.slice(0);
 
 		return this;
 	}
@@ -52,14 +51,14 @@ export class Texture extends ExtensibleProperty {
 	 */
 
 	/** Returns the MIME type for this texture ('image/jpeg' or 'image/png'). */
-	public getMimeType(): string { return this.mimeType; }
+	public getMimeType(): string { return this._mimeType; }
 
 	/**
 	 * Sets the MIME type for this texture ('image/jpeg' or 'image/png'). If the texture does not
 	 * have a URI, a MIME type is required for correct export.
 	 */
 	public setMimeType(mimeType: string): this {
-		this.mimeType = mimeType;
+		this._mimeType = mimeType;
 		return this;
 	}
 
@@ -69,7 +68,7 @@ export class Texture extends ExtensibleProperty {
 
 	/** Returns the URI (e.g. 'path/to/file.png') for this texture. */
 	public getURI(): string {
-		return this.uri;
+		return this._uri;
 	}
 
 	/**
@@ -77,7 +76,7 @@ export class Texture extends ExtensibleProperty {
 	 * type, a URI is required for correct export.
 	 */
 	public setURI(uri: string): this {
-		this.uri = uri;
+		this._uri = uri;
 		return this;
 	}
 
@@ -86,24 +85,24 @@ export class Texture extends ExtensibleProperty {
 	 */
 
 	/** Returns the raw image data for this texture. */
-	public getImage(): ArrayBuffer { return this.image; }
+	public getImage(): ArrayBuffer { return this._image; }
 
 	/** Sets the raw image data for this texture. */
 	public setImage(image: ArrayBuffer): this {
-		this.image = image;
+		this._image = image;
 		return this;
 	}
 
 	/** Returns the size, in pixels, of this texture. */
 	public getSize(): vec2 {
 		let isPNG;
-		if (this.mimeType) {
-			isPNG = this.mimeType === 'image/png';
+		if (this._mimeType) {
+			isPNG = this._mimeType === 'image/png';
 		} else {
-			isPNG = this.uri.match(/\.png$/);
+			isPNG = this._uri.match(/\.png$/);
 		}
 		return isPNG
-			? ImageUtils.getSizePNG(this.image)
-			: ImageUtils.getSizeJPEG(this.image);
+			? ImageUtils.getSizePNG(this._image)
+			: ImageUtils.getSizeJPEG(this._image);
 	}
 }

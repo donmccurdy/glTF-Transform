@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink } from '@gltf-transform/core';
 import { KHR_MATERIALS_CLEARCOAT } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -69,14 +69,6 @@ export class Clearcoat extends ExtensionProperty {
 		return this.clearcoatTexture ? this.clearcoatTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its clearcoat texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getClearcoatTextureSampler(): TextureSampler {
-		return this.clearcoatTexture ? this.clearcoatTexture.sampler : null;
-	}
-
 	/** Sets clearcoat texture. See {@link getClearcoatTexture}. */
 	public setClearcoatTexture(texture: Texture): this {
 		this.clearcoatTexture = this.graph.linkTexture('clearcoatTexture', this, texture);
@@ -112,14 +104,6 @@ export class Clearcoat extends ExtensionProperty {
 		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTexture.textureInfo : null;
 	}
 
-	/**
-	 * Settings affecting the material's use of its clearcoat roughness texture. If no texture is
-	 * attached, {@link TextureSampler} is `null`.
-	 */
-	public getClearcoatRoughnessTextureSampler(): TextureSampler {
-		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTexture.sampler : null;
-	}
-
 	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
 	public setClearcoatRoughnessTexture(texture: Texture): this {
 		this.clearcoatRoughnessTexture = this.graph.linkTexture('clearcoatRoughnessTexture', this, texture);
@@ -152,14 +136,6 @@ export class Clearcoat extends ExtensionProperty {
 	 */
 	public getClearcoatNormalTextureInfo(): TextureInfo {
 		return this.clearcoatNormalTexture ? this.clearcoatNormalTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its clearcoat normal texture. If no texture is
-	 * attached, {@link TextureSampler} is `null`.
-	 */
-	public getClearcoatNormalTextureSampler(): TextureSampler {
-		return this.clearcoatNormalTexture ? this.clearcoatNormalTexture.sampler : null;
 	}
 
 	/** Sets clearcoat normal texture. See {@link getClearcoatNormalTexture}. */

@@ -1,5 +1,5 @@
 import { JSONDocument } from '../json-document';
-import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo, TextureSampler } from '../properties';
+import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
 
@@ -34,12 +34,12 @@ export class WriterContext {
 	 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
 	 * possible, Texture and Sampler definitions are shared.
 	 */
-	public createTextureInfoDef(texture: Texture, textureInfo: TextureInfo, textureSampler: TextureSampler): GLTF.ITextureInfo {
+	public createTextureInfoDef(texture: Texture, textureInfo: TextureInfo): GLTF.ITextureInfo {
 		const samplerDef = {
-			magFilter: textureSampler.getMagFilter() || undefined,
-			minFilter: textureSampler.getMinFilter() || undefined,
-			wrapS: textureSampler.getWrapS(),
-			wrapT: textureSampler.getWrapT(),
+			magFilter: textureInfo.getMagFilter() || undefined,
+			minFilter: textureInfo.getMinFilter() || undefined,
+			wrapS: textureInfo.getWrapS(),
+			wrapT: textureInfo.getWrapT(),
 		} as GLTF.ISampler;
 
 		const samplerKey = JSON.stringify(samplerDef);

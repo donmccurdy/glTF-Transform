@@ -38,21 +38,18 @@ export class MaterialsClearcoat extends Extension {
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatTexture(texture);
 					context.setTextureInfo(clearcoat.getClearcoatTextureInfo(), textureInfoDef);
-					context.setTextureSampler(clearcoat.getClearcoatTextureSampler(), textureInfoDef);
 				}
 				if (materialDef.extensions[NAME].clearcoatRoughnessTexture !== undefined) {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatRoughnessTexture(texture);
-					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo(), textureInfoDef);
-					context.setTextureSampler(clearcoat.getClearcoatRoughnessTextureSampler(), textureInfoDef);
+					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo(), textureInfoDef);;
 				}
 				if (materialDef.extensions[NAME].clearcoatNormalTexture !== undefined) {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatNormalTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatNormalTexture(texture);
 					context.setTextureInfo(clearcoat.getClearcoatNormalTextureInfo(), textureInfoDef);
-					context.setTextureSampler(clearcoat.getClearcoatNormalTextureSampler(), textureInfoDef);
 					if (textureInfoDef.scale !== undefined) {
 						clearcoat.setClearcoatNormalScale(textureInfoDef.scale);
 					}
@@ -87,20 +84,17 @@ export class MaterialsClearcoat extends Extension {
 					if (clearcoat.getClearcoatTexture()) {
 						const texture = clearcoat.getClearcoatTexture();
 						const textureInfo = clearcoat.getClearcoatTextureInfo();
-						const textureSampler = clearcoat.getClearcoatTextureSampler();
-						materialDef.extensions[NAME].clearcoatTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].clearcoatTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatRoughnessTexture()) {
 						const texture = clearcoat.getClearcoatRoughnessTexture();
 						const textureInfo = clearcoat.getClearcoatRoughnessTextureInfo();
-						const textureSampler = clearcoat.getClearcoatRoughnessTextureSampler();
-						materialDef.extensions[NAME].clearcoatRoughnessTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].clearcoatRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatNormalTexture()) {
 						const texture = clearcoat.getClearcoatNormalTexture();
 						const textureInfo = clearcoat.getClearcoatNormalTextureInfo();
-						const textureSampler = clearcoat.getClearcoatNormalTextureSampler();
-						materialDef.extensions[NAME].clearcoatNormalTexture = context.createTextureInfoDef(texture, textureInfo, textureSampler);
+						materialDef.extensions[NAME].clearcoatNormalTexture = context.createTextureInfoDef(texture, textureInfo);
 						if (clearcoat.getClearcoatNormalScale() !== 1) {
 							materialDef.extensions[NAME].clearcoatNormalTexture.scale = clearcoat.getClearcoatNormalScale();
 						}

@@ -209,7 +209,6 @@ export class GLTFReader {
 				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setBaseColorTexture(texture);
 				context.setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef);
-				context.setTextureSampler(material.getBaseColorTextureSampler(), textureInfoDef);
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {
@@ -217,7 +216,6 @@ export class GLTFReader {
 				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setEmissiveTexture(texture);
 				context.setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef);
-				context.setTextureSampler(material.getEmissiveTextureSampler(), textureInfoDef);
 			}
 
 			if (materialDef.normalTexture !== undefined) {
@@ -225,7 +223,6 @@ export class GLTFReader {
 				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setNormalTexture(texture);
 				context.setTextureInfo(material.getNormalTextureInfo(), textureInfoDef);
-				context.setTextureSampler(material.getNormalTextureSampler(), textureInfoDef);
 				if (materialDef.normalTexture.scale !== undefined) {
 					material.setNormalScale(materialDef.normalTexture.scale);
 				}
@@ -236,7 +233,6 @@ export class GLTFReader {
 				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setOcclusionTexture(texture);
 				context.setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef);
-				context.setTextureSampler(material.getOcclusionTextureSampler(), textureInfoDef);
 				if (materialDef.occlusionTexture.strength !== undefined) {
 					material.setOcclusionStrength(materialDef.occlusionTexture.strength);
 				}
@@ -247,7 +243,6 @@ export class GLTFReader {
 				const texture = context.textures[textureDefs[textureInfoDef.index].source];
 				material.setMetallicRoughnessTexture(texture);
 				context.setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef);
-				context.setTextureSampler(material.getMetallicRoughnessTextureSampler(), textureInfoDef);
 			}
 
 			return material;

@@ -1,4 +1,4 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, TextureSampler, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, PropertyType, Texture, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -78,14 +78,6 @@ export class Specular extends ExtensionProperty {
 	 */
 	public getSpecularTextureInfo(): TextureInfo {
 		return this.specularTexture ? this.specularTexture.textureInfo : null;
-	}
-
-	/**
-	 * Settings affecting the material's use of its specular texture. If no texture is attached,
-	 * {@link TextureSampler} is `null`.
-	 */
-	public getSpecularTextureSampler(): TextureSampler {
-		return this.specularTexture ? this.specularTexture.sampler : null;
 	}
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */

@@ -1,5 +1,5 @@
 import { Document, Texture } from '@gltf-transform/core';
-import { IOR, MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness, Specular } from '@gltf-transform/extensions';
+import { MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness } from '@gltf-transform/extensions';
 import { rewriteTexture } from './utils';
 
 const NAME = 'metalRough';
@@ -61,7 +61,6 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			if (diffuseTexture) {
 				material.setBaseColorTexture(diffuseTexture);
 				material.getBaseColorTextureInfo().copy(specGloss.getDiffuseTextureInfo());
-				material.getBaseColorTextureSampler().copy(specGloss.getDiffuseTextureSampler());
 			}
 
 			// Move specular + gloss -> specular + roughness.
@@ -69,14 +68,12 @@ export function metalRough (options: MetalRoughOptions = {}) {
 			if (sgTexture) {
 				// specularGlossiness -> specular.
 				const sgTextureInfo = specGloss.getSpecularGlossinessTextureInfo();
-				const sgTextureSampler = specGloss.getSpecularGlossinessTextureSampler();
 				const specularTexture = doc.createTexture();
 				await rewriteTexture(sgTexture, specularTexture, (pixels, i, j) => {
 					pixels.set(i, j, 3, 255); // Remove glossiness.
 				});
 				specular.setSpecularTexture(specularTexture);
 				specular.getSpecularTextureInfo().copy(sgTextureInfo);
-				specular.getSpecularTextureSampler().copy(sgTextureSampler);
 
 				// specularGlossiness -> roughness.
 				const glossinessFactor = specGloss.getGlossinessFactor();
@@ -91,7 +88,6 @@ export function metalRough (options: MetalRoughOptions = {}) {
 				});
 				material.setMetallicRoughnessTexture(metalRoughTexture);
 				material.getMetallicRoughnessTextureInfo().copy(sgTextureInfo);
-				material.getMetallicRoughnessTextureSampler().copy(sgTextureSampler);
 			} else {
 				specular.setSpecularColorFactor(specGloss.getSpecularFactor());
 				material.setRoughnessFactor(1 - specGloss.getGlossinessFactor());
