@@ -66,7 +66,9 @@ export class WebIO extends PlatformIO {
 		.then((response) => response.json())
 		.then((json: GLTF.IGLTF) => {
 			jsonDoc.json = json;
-			const pendingResources: Array<Promise<void>> = [...json.images, ...json.buffers]
+			const images = json.images || [];
+			const buffers = json.buffers || [];
+			const pendingResources: Array<Promise<void>> = [...images, ...buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
 				if (resource.uri) {
 					return fetch(resource.uri, this._fetchConfig)
