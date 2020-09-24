@@ -228,6 +228,7 @@ export class GLTFWriter {
 			// miscellaneous buffer view.
 			const attributeAccessors = new Map<Primitive, Set<Accessor>>();
 			const indexAccessors = new Set<Accessor>();
+			const ibmAccessors = new Set<Accessor>();
 			const otherAccessors = new Set<Accessor>();
 
 			const bufferParents = buffer.listParents()
@@ -241,6 +242,7 @@ export class GLTFWriter {
 
 				let isAttribute = false;
 				let isIndex = false;
+				let isIBM = false;
 				let isOther = false;
 
 				const accessorRefs = accessorLinks.get(parent) || [];
@@ -250,25 +252,29 @@ export class GLTFWriter {
 						isAttribute = true;
 					} else if (link instanceof IndexLink) {
 						isIndex = true;
+					} else if (link.getName() === 'inverseBindMatrices') {
+						isIBM = true;
 					} else {
 						isOther = true;
 					}
 				}
 
 				// If the Accessor isn't used at all, treat it as "other".
-				if (!isAttribute && !isIndex && !isOther) isOther = true;
+				if (!isAttribute && !isIndex && !isIBM && !isOther) isOther = true;
 
-				if (isAttribute && !isIndex && !isOther) {
+				if (isAttribute && !isIndex && !isIBM && !isOther) {
 					const primitive = accessorRefs[0].getParent() as Primitive;
 					const primitiveAccessors = attributeAccessors.get(primitive) || new Set<Accessor>();
 					primitiveAccessors.add(parent);
 					attributeAccessors.set(primitive, primitiveAccessors);
-				} else if (isIndex && !isAttribute && !isOther) {
+				} else if (isIndex && !isAttribute && !isIBM && !isOther) {
 					indexAccessors.add(parent);
-				} else if (isOther && !isAttribute && !isIndex) {
+				} else if (isIBM && !isAttribute && !isIndex && !isOther) {
+					ibmAccessors.add(parent);
+				} else if (isOther && !isAttribute && !isIndex && !isIBM) {
 					otherAccessors.add(parent);
 				} else {
-					throw new Error('Attribute or index accessors must be used only for that purpose.');
+					throw new Error('Attribute, index, or IBM accessors must be used only for that purpose.');
 				}
 			}
 
@@ -290,6 +296,12 @@ export class GLTFWriter {
 					bufferByteLength += primitiveResult.byteLength;
 					buffers.push(...primitiveResult.buffers);
 				}
+			}
+
+			if (ibmAccessors.size) {
+				const ibmResult = concatAccessors(Array.from(ibmAccessors), bufferIndex, bufferByteLength);
+				bufferByteLength += ibmResult.byteLength;
+				buffers.push(...ibmResult.buffers);
 			}
 
 			if (otherAccessors.size) {
