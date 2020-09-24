@@ -49,7 +49,7 @@ export class WebIO extends PlatformIO {
 		return this.readAsJSON(uri).then((jsonDoc) => this.readJSON(jsonDoc));
 	}
 
-	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */
+	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
 	public readAsJSON (uri: string): Promise<JSONDocument> {
 		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
 		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
