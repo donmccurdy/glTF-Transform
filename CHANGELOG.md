@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.7 — 🚧 Unreleased
+## v0.8 — 🚧 Unreleased
+
+## v0.7
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7)
 
@@ -9,6 +11,7 @@
 - Add 'center' and 'sequence' transforms.
 - Add 'bounds' helper.
 - Add `KHR_draco_mesh_compression` extension (decode only).
+- Add `KHR_texture_transform` extension.
 
 **Breaking changes:**
 
