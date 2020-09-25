@@ -25,10 +25,10 @@ as prescribed by the extension itself.
 - [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
 - [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrspecularglossiness)
 - [KHR_materials_specular](#khr_materials_specular-experimental) *(experimental)*
-- [KHR_materials_transmission](#khr_materials_transmission-experimental) *(experimental)*
+- [KHR_materials_transmission](#khr_materials_transmission)
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
-- [KHR_texture_basisu](#khr_texture_basisu-experimental) *(experimental)*
+- [KHR_texture_basisu](#khr_texture_basisu)
 
 ## Installation
 
@@ -285,7 +285,7 @@ const specular = specularExtension.createSpecular()
 material.setExtension('KHR_materials_specular', specular);
 ```
 
-### KHR_materials_transmission <mark>*(experimental)*</mark>
+### KHR_materials_transmission
 
 - *Specification: [KHR_materials_transmission](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_transmission/)*
 - *Source: [packages/extensions/src/khr-materials-transmission/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-transmission)*
@@ -358,7 +358,7 @@ import { MeshQuantization } from '@gltf-transform/extensions';
 const quantizationExtension = document.createExtension(MeshQuantization).setRequired(true);
 ```
 
-### KHR_texture_basisu <mark>*(experimental)*</mark>
+### KHR_texture_basisu
 
 - *Draft specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/pull/1751)*
 - *Source: [packages/extensions/src/khr-texture-basisu/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-texture-basisu)*
