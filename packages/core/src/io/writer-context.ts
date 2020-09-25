@@ -20,6 +20,7 @@ export class WriterContext {
 	public readonly nodeIndexMap = new Map<Node, number>();
 	public readonly imageIndexMap = new Map<Texture, number>();
 	public readonly textureDefIndexMap = new Map<string, number>(); // textureDef JSON -> index
+	public readonly textureInfoDefMap = new Map<TextureInfo, GLTF.ITextureInfo>();
 	public readonly samplerDefIndexMap = new Map<string, number>(); // samplerDef JSON -> index
 
 	public readonly imageData: ArrayBuffer[] = [];
@@ -59,10 +60,14 @@ export class WriterContext {
 			this.jsonDoc.json.textures.push(textureDef);
 		}
 
-		return {
+		const textureInfoDef = {
 			index: this.textureDefIndexMap.get(textureKey),
 			texCoord: textureInfo.getTexCoord(),
 		} as GLTF.ITextureInfo;
+
+		this.textureInfoDefMap.set(textureInfo, textureInfoDef);
+
+		return textureInfoDef;
 	}
 
 	public createPropertyDef(property: Property): PropertyDef {

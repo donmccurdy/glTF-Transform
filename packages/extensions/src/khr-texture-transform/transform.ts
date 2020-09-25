@@ -5,7 +5,7 @@ import { KHR_TEXTURE_TRANSFORM } from '../constants';
 /** Documentation in {@link EXTENSIONS.md}. */
 export class Transform extends ExtensionProperty {
 	public readonly propertyType = 'Transform';
-	public readonly parentTypes = [PropertyType.TEXTURE];
+	public readonly parentTypes = [PropertyType.TEXTURE_INFO];
 	public readonly extensionName = KHR_TEXTURE_TRANSFORM;
 	public static EXTENSION_NAME = KHR_TEXTURE_TRANSFORM;
 

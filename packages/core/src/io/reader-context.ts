@@ -11,6 +11,7 @@ export class ReaderContext {
 	public bufferViewBuffers: Buffer[] = [];
 	public accessors: Accessor[] = [];
 	public textures: Texture[] = [];
+	public textureInfos: Map<TextureInfo, GLTF.ITextureInfo> = new Map();
 	public materials: Material[] = [];
 	public meshes: Mesh[] = [];
 	public cameras: Camera[] = [];
@@ -22,6 +23,8 @@ export class ReaderContext {
 	constructor (public readonly jsonDoc: JSONDocument) {}
 
 	public setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo): void {
+		this.textureInfos.set(textureInfo, textureInfoDef);
+
 		if (textureInfoDef.texCoord !== undefined) {
 			textureInfo.setTexCoord(textureInfoDef.texCoord);
 		}
