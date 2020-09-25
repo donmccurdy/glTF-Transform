@@ -47,6 +47,13 @@ export class Clearcoat extends ExtensionProperty {
 		return this;
 	}
 
+	public dispose(): void {
+		this.clearcoatTextureInfo.getChild().dispose();
+		this.clearcoatRoughnessTextureInfo.getChild().dispose();
+		this.clearcoatNormalTextureInfo.getChild().dispose();
+		super.dispose();
+	}
+
 	/**********************************************************************************************
 	 * Clearcoat.
 	 */

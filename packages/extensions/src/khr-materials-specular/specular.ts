@@ -28,6 +28,11 @@ export class Specular extends ExtensionProperty {
 		return this;
 	}
 
+	public dispose(): void {
+		this.specularTextureInfo.getChild().dispose();
+		super.dispose();
+	}
+
 	/**********************************************************************************************
 	 * Specular.
 	 */

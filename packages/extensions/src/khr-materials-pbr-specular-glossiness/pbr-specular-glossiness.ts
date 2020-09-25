@@ -39,6 +39,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 		return this;
 	}
 
+	public dispose(): void {
+		this.diffuseTextureInfo.getChild().dispose();
+		this.specularGlossinessTextureInfo.getChild().dispose();
+		super.dispose();
+	}
+
 	/**********************************************************************************************
 	 * Diffuse.
 	 */
