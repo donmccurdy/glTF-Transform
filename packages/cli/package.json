@@ -32,7 +32,9 @@
     "node-gzip": "^1.1.2"
   },
   "files": [
+    "dist/",
     "src/",
+    "vendor/",
     "README.md",
     "package.json",
     "package-lock.json"
