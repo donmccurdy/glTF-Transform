@@ -12,6 +12,8 @@ test('@gltf-transform/core::skin', t => {
 		doc.createNode('joint3'),
 	];
 
+	doc.createBuffer('skinBuffer');
+
 	const ibm = doc.createAccessor('ibm')
 		.setType('MAT4')
 		.setArray(new Float32Array([
@@ -29,10 +31,7 @@ test('@gltf-transform/core::skin', t => {
 			0, 3, 0, 0,
 			0, 0, 3, 0,
 			0, 0, 0, 1,
-		]))
-		.setBuffer(doc.createBuffer('skinBuffer'));
-
-	// TODO(bug): Omit the buffer above and the accessor silently isn't written.
+		]));
 
 	const skin = doc.createSkin('testSkin')
 		.addJoint(joints[0])
@@ -46,6 +45,17 @@ test('@gltf-transform/core::skin', t => {
 		.addChild(joints[1])
 		.addChild(joints[2])
 		.setSkin(skin);
+
+	const sampler = doc.createAnimationSampler()
+		.setInput(doc.createAccessor().setArray(new Uint8Array([0, 1, 2])))
+		.setOutput(doc.createAccessor().setArray(new Uint8Array([0, 0, 0, 1, 1, 1, 2, 2, 2])))
+	const channel = doc.createAnimationChannel()
+		.setSampler(sampler)
+		.setTargetNode(joints[0])
+		.setTargetPath('translation');
+	doc.createAnimation()
+		.addChannel(channel)
+		.addSampler(sampler);
 
 	const io = new NodeIO();
 	const options = {basename: 'skinTest'};
@@ -67,7 +77,16 @@ test('@gltf-transform/core::skin', t => {
 		skeleton: 0,
 	}, 'defines skin');
 
-	t.deepEqual(new Float32Array(jsonDoc.resources['skinTest.bin']), ibm.getArray(), 'stores skin IBMs');
+	const ibmAccessor = jsonDoc.json.accessors[jsonDoc.json.skins[0].inverseBindMatrices];
+	const inputAccessor = jsonDoc.json.accessors[jsonDoc.json.animations[0].samplers[0].input];
+	t.notEqual(
+		ibmAccessor.bufferView,
+		inputAccessor.bufferView,
+		'stores IBMs and animation in different buffer views'
+	);
+
+	const actualIBM = new Float32Array(jsonDoc.resources['skinTest.bin'].slice(0, 192));
+	t.deepEqual(actualIBM, ibm.getArray(), 'stores skin IBMs');
 
 	t.end();
 });
