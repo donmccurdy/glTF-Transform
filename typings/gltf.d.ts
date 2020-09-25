@@ -755,7 +755,7 @@ declare module GLTF {
   /**
    * Reference to a texture
    */
-  interface ITextureInfo {
+  interface ITextureInfo extends IProperty {
     /**
      * The index of the texture
      */

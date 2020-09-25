@@ -27,6 +27,11 @@ export class Transmission extends ExtensionProperty {
 		return this;
 	}
 
+	public dispose(): void {
+		this.transmissionTextureInfo.getChild().dispose();
+		super.dispose();
+	}
+
 	/**********************************************************************************************
 	 * Transmission.
 	 */

@@ -151,6 +151,16 @@ export class Material extends ExtensibleProperty {
 		return this;
 	}
 
+	dispose(): void {
+		// TextureInfo instances were created by this material, and should be disposed with it.
+		this.baseColorTextureInfo.getChild().dispose();
+		this.emissiveTextureInfo.getChild().dispose();
+		this.normalTextureInfo.getChild().dispose();
+		this.occlusionTextureInfo.getChild().dispose();
+		this.metallicRoughnessTextureInfo.getChild().dispose();
+		super.dispose();
+	}
+
 	/**********************************************************************************************
 	 * Double-sided / culling.
 	 */

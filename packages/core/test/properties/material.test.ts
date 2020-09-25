@@ -193,6 +193,10 @@ test('@gltf-transform/core::material | texture info linking', t => {
 	mat.setBaseColorTexture(tex3);
 	t.equals(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
 
+	const baseColorTextureInfo = mat.getBaseColorTextureInfo();
+	mat.dispose();
+	t.equals(baseColorTextureInfo.isDisposed(), true, 'textureInfo disposed with material');
+
 	t.end();
 });
 

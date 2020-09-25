@@ -29,6 +29,7 @@ as prescribed by the extension itself.
 - [KHR_materials_unlit](#khr_materials_unlit)
 - [KHR_mesh_quantization](#khr_mesh_quantization)
 - [KHR_texture_basisu](#khr_texture_basisu)
+- [KHR_texture_transform](#khr_texture_transform)
 
 ## Installation
 
@@ -175,7 +176,7 @@ const light = lightsExtension.createLight()
   .setIntensity(2.0)
   .setColor([1.0, 0.0, 0.0]);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 node.setExtension('KHR_lights_punctual', light);
 ```
 
@@ -201,7 +202,7 @@ const clearcoatExtension = document.createExtension(MaterialsClearcoat);
 const clearcoat = clearcoatExtension.createClearcoat()
   .setClearcoatFactor(1.0);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_clearcoat', clearcoat);
 ```
 
@@ -227,7 +228,7 @@ const iorExtension = document.createExtension(MaterialsIOR);
 // Create a IOR property.
 const ior = iorExtension.createIOR().setIOR(1.0);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_ior', ior);
 ```
 
@@ -255,7 +256,7 @@ const specGlossExtension = document.createExtension(MaterialsPBRSpecularGlossine
 const specGloss = specGlossExtension.createPBRSpecularGlossiness()
   .setSpecularFactor(1.0);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 ```
 
@@ -281,7 +282,7 @@ const specularExtension = document.createExtension(MaterialsSpecular);
 const specular = specularExtension.createSpecular()
   .setSpecularFactor(1.0);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_specular', specular);
 ```
 
@@ -308,7 +309,7 @@ const transmissionExtension = document.createExtension(MaterialsTransmission);
 const transmission = transmissionExtension.createTransmission()
   .setTransmissionFactor(1.0);
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_transmission', transmission);
 ```
 
@@ -333,7 +334,7 @@ const unlitExtension = document.createExtension(MaterialsUnlit);
 // Create an Unlit property.
 const unlit = unlitExtension.createUnlit();
 
-// Attach the property to a material.
+// Attach the property to a Material.
 material.setExtension('KHR_materials_unlit', unlit);
 ```
 
@@ -400,3 +401,31 @@ JPEG image data.
 before being officially ratified. Some aspects are still being worked out — in particular, naively
 compressing a 3-component (RGB) normal map will often give poor results with the ETC1S compression
 option.
+
+### KHR_texture_transform
+
+- *Draft specification: [KHR_texture_transform](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_texture_transform/)*
+- *Source: [packages/extensions/src/khr-texture-transform/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-texture-transform)*
+
+The `KHR_texture_transform` extension adds offset, rotation, and scale to {@link TextureInfo}
+properties, applying an affine transform on the UV coordinates. UV transforms are useful for
+reducing the number of textures the GPU must load, improving performance when used in techniques
+like texture atlases. UV transforms cannot be animated at this time.
+
+```typescript
+import { TextureTransform } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const transformExtension = document.createExtension(TextureTransform)
+  .setRequired(true);
+
+// Create a reusable Transform.
+const transform = transformExtension.createTransform()
+  .setScale([100, 100]);
+
+// Apply the Transform to a Material's baseColorTexture.
+document.createMaterial()
+  .setBaseColorTexture(myTexture)
+  .getBaseColorTextureInfo()
+  .setExtension('KHR_texture_transform', transform);
+```
