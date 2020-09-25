@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/core",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
   "main": "dist/core.js",
@@ -39,5 +39,5 @@
   "mangle": {
     "regex": "^_"
   },
-  "gitHead": "015684062116979c17053539f6ebf63e67263b4f"
+  "gitHead": "62125cc3d244785f65f50fccc73b225cba1d380f"
 }

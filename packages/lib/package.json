@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/lib",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Library of functions built on the core glTF-Transform API",
   "main": "dist/lib.js",
@@ -21,8 +21,8 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.7.0-alpha.3",
-    "@gltf-transform/extensions": "^0.7.0-alpha.3",
+    "@gltf-transform/core": "^0.7.0-alpha.4",
+    "@gltf-transform/extensions": "^0.7.0-alpha.4",
     "geo-ambient-occlusion": "^3.0.2",
     "get-pixels": "^3.3.2",
     "gl-matrix": "^3.3.0",
@@ -37,7 +37,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "015684062116979c17053539f6ebf63e67263b4f",
+  "gitHead": "62125cc3d244785f65f50fccc73b225cba1d380f",
   "publishConfig": {
     "access": "public"
   }
