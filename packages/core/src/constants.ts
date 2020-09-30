@@ -64,7 +64,7 @@ export type mat4 = [
 ];
 
 /** @hidden */
-export const GLB_BUFFER = '__glb.bin';
+export const GLB_BUFFER = '@glb.bin';
 
 /**
  * Abstraction representing any one of the typed array classes supported by glTF and JavaScript.
