@@ -9,37 +9,32 @@ import { GraphNode } from './graph-node';
  * @category Graph
  */
 export class Graph {
-	private _links: Link<GraphNode, GraphNode>[] = [];
+	private _links: Set<Link<GraphNode, GraphNode>> = new Set();
+	private _parents: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
+	private _children: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
 
 	public getLinks(): Link<GraphNode, GraphNode>[] {
-		return this._links;
+		return Array.from(this._links);
 	}
 
 	public listParents(node: GraphNode): GraphNode[] {
-		// TODO(optimize)
-		return this._links
-			.filter((link) => link.getChild() === node)
-			.map((link) => link.getParent());
+		const links = this._children.get(node) || [];
+		return links.map((link) => link.getParent());
 	}
 
 	public listChildren(node: GraphNode): GraphNode[] {
-		// TODO(optimize)
-		return this._links
-			.filter((link) => link.getParent() === node)
-			.map((link) => link.getChild());
+		const links = this._parents.get(node) || [];
+		return links.map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: GraphNode): this {
-		// TODO(optimize)
-		this._links
-			.filter((link) => link.getParent() === node)
-			.forEach((link) => link.dispose());
+		const links = this._parents.get(node) || [];
+		links.forEach((link) => link.dispose());
 		return this;
 	}
 
 	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
-		// TODO(optimize)
-		let links = this._links.filter((link) => link.getChild() === node);
+		let links = this._parents.get(node) || [];
 		if (filter) {
 			links = links.filter((link) => filter(link.getParent()));
 		}
@@ -63,7 +58,16 @@ export class Graph {
 	}
 
 	protected registerLink(link: Link<GraphNode, GraphNode>): Link<GraphNode, GraphNode> {
-		this._links.push(link);
+		this._links.add(link);
+
+		const parent = link.getParent();
+		if (!this._parents.has(parent)) this._parents.set(parent, []);
+		this._parents.get(parent).push(link);
+
+		const child = link.getChild();
+		if (!this._children.has(child)) this._children.set(child, []);
+		this._children.get(child).push(link);
+
 		link.onDispose(() => this.unlink(link));
 		return link;
 	}
@@ -75,7 +79,16 @@ export class Graph {
 	* @param link
 	*/
 	private unlink(link: Link<GraphNode, GraphNode>): this {
-		this._links = this._links.filter((l) => l !== link);
+		this._links.delete(link);
+
+		const parentRefs = this._parents.get(link.getParent())
+			.filter((_link) => link !== _link);
+		this._parents.set(link.getParent(), parentRefs);
+
+		const childRefs = this._children.get(link.getChild())
+			.filter((_link) => link !== _link);
+		this._children.set(link.getChild(), childRefs);
+
 		return this;
 	}
 }
