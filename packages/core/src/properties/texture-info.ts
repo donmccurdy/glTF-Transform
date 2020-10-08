@@ -1,5 +1,6 @@
 import { PropertyType } from '../constants';
 import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
 
 /**
  * # TextureInfo
@@ -54,12 +55,15 @@ export class TextureInfo extends ExtensibleProperty {
 		LINEAR_MIPMAP_LINEAR: GLTF.TextureMinFilter.LINEAR_MIPMAP_LINEAR,
 	}
 
-	public copy(other: this): this {
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
 		this._texCoord = other._texCoord;
 		this._magFilter = other._magFilter;
 		this._minFilter = other._minFilter;
 		this._wrapS = other._wrapS;
 		this._wrapT = other._wrapT;
+
 		return this;
 	}
 

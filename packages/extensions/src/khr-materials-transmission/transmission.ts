@@ -21,7 +21,7 @@ export class Transmission extends ExtensionProperty {
 
 		if (other.transmissionTexture) {
 			this.setTransmissionTexture(resolve(other.transmissionTexture.getChild()));
-			this.getTransmissionTextureInfo().copy(resolve(other.transmissionTextureInfo.getChild()));
+			this.getTransmissionTextureInfo().copy(resolve(other.transmissionTextureInfo.getChild()), resolve);
 		}
 
 		return this;
