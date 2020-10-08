@@ -10,31 +10,31 @@ import { GraphNode } from './graph-node';
  */
 export class Graph {
 	private _links: Set<Link<GraphNode, GraphNode>> = new Set();
-	private _parents: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
-	private _children: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
+	private _parentRefs: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
+	private _childRefs: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
 
 	public getLinks(): Link<GraphNode, GraphNode>[] {
 		return Array.from(this._links);
 	}
 
 	public listParents(node: GraphNode): GraphNode[] {
-		const links = this._children.get(node) || [];
+		const links = this._childRefs.get(node) || [];
 		return links.map((link) => link.getParent());
 	}
 
 	public listChildren(node: GraphNode): GraphNode[] {
-		const links = this._parents.get(node) || [];
+		const links = this._parentRefs.get(node) || [];
 		return links.map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: GraphNode): this {
-		const links = this._parents.get(node) || [];
+		const links = this._parentRefs.get(node) || [];
 		links.forEach((link) => link.dispose());
 		return this;
 	}
 
 	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
-		let links = this._parents.get(node) || [];
+		let links = this._childRefs.get(node) || [];
 		if (filter) {
 			links = links.filter((link) => filter(link.getParent()));
 		}
@@ -61,12 +61,12 @@ export class Graph {
 		this._links.add(link);
 
 		const parent = link.getParent();
-		if (!this._parents.has(parent)) this._parents.set(parent, []);
-		this._parents.get(parent).push(link);
+		if (!this._parentRefs.has(parent)) this._parentRefs.set(parent, []);
+		this._parentRefs.get(parent).push(link);
 
 		const child = link.getChild();
-		if (!this._children.has(child)) this._children.set(child, []);
-		this._children.get(child).push(link);
+		if (!this._childRefs.has(child)) this._childRefs.set(child, []);
+		this._childRefs.get(child).push(link);
 
 		link.onDispose(() => this.unlink(link));
 		return link;
@@ -81,13 +81,13 @@ export class Graph {
 	private unlink(link: Link<GraphNode, GraphNode>): this {
 		this._links.delete(link);
 
-		const parentRefs = this._parents.get(link.getParent())
+		const parentRefs = this._parentRefs.get(link.getParent())
 			.filter((_link) => link !== _link);
-		this._parents.set(link.getParent(), parentRefs);
+		this._parentRefs.set(link.getParent(), parentRefs);
 
-		const childRefs = this._children.get(link.getChild())
+		const childRefs = this._childRefs.get(link.getChild())
 			.filter((_link) => link !== _link);
-		this._children.set(link.getChild(), childRefs);
+		this._childRefs.set(link.getChild(), childRefs);
 
 		return this;
 	}
