@@ -29,11 +29,11 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 
 		if (other.diffuseTexture) {
 			this.setDiffuseTexture(resolve(other.diffuseTexture.getChild()));
-			this.getDiffuseTextureInfo().copy(resolve(other.diffuseTextureInfo.getChild()));
+			this.getDiffuseTextureInfo().copy(resolve(other.diffuseTextureInfo.getChild()), resolve);
 		}
 		if (other.specularGlossinessTexture) {
 			this.setSpecularGlossinessTexture(resolve(other.specularGlossinessTexture.getChild()));
-			this.getSpecularGlossinessTextureInfo().copy(resolve(other.specularGlossinessTextureInfo.getChild()));
+			this.getSpecularGlossinessTextureInfo().copy(resolve(other.specularGlossinessTextureInfo.getChild()), resolve);
 		}
 
 		return this;

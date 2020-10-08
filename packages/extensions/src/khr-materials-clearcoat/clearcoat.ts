@@ -33,15 +33,15 @@ export class Clearcoat extends ExtensionProperty {
 
 		if (other.clearcoatTexture) {
 			this.setClearcoatTexture(resolve(other.clearcoatTexture.getChild()));
-			this.getClearcoatTextureInfo().copy(resolve(other.clearcoatTextureInfo.getChild()));
+			this.getClearcoatTextureInfo().copy(resolve(other.clearcoatTextureInfo.getChild()), resolve);
 		}
 		if (other.clearcoatRoughnessTexture) {
 			this.setClearcoatRoughnessTexture(resolve(other.clearcoatRoughnessTexture.getChild()));
-			this.getClearcoatRoughnessTextureInfo().copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()));
+			this.getClearcoatRoughnessTextureInfo().copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()), resolve);
 		}
 		if (other.clearcoatNormalTexture) {
 			this.setClearcoatNormalTexture(resolve(other.clearcoatNormalTexture.getChild()));
-			this.getClearcoatNormalTextureInfo().copy(resolve(other.clearcoatNormalTextureInfo.getChild()));
+			this.getClearcoatNormalTextureInfo().copy(resolve(other.clearcoatNormalTextureInfo.getChild()), resolve);
 		}
 
 		return this;

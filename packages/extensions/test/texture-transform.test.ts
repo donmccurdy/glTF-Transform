@@ -71,3 +71,51 @@ test('@gltf-transform/extensions::texture-transform', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/extensions::texture-transform | clone', t => {
+	let doc = new Document();
+	const transformExtension = doc.createExtension(TextureTransform);
+	const tex1 = doc.createTexture();
+	const tex2 = doc.createTexture();
+	const tex3 = doc.createTexture();
+
+	let mat = doc.createMaterial();
+	mat.setBaseColorTexture(tex1)
+		.getBaseColorTextureInfo()
+		.setExtension('KHR_texture_transform', transformExtension.createTransform()
+			.setTexCoord(2)
+			.setScale([100, 100]));
+	mat.setEmissiveTexture(tex2)
+		.getEmissiveTextureInfo()
+		.setExtension('KHR_texture_transform', transformExtension.createTransform()
+			.setTexCoord(1)
+			.setOffset([.5, .5])
+			.setRotation(Math.PI));
+	mat.setOcclusionTexture(tex3);
+
+	// Clone the Document, and ensure data is intact.
+	doc = doc.clone();
+	mat = doc.getRoot().listMaterials()[0];
+	const transform1 = mat.getBaseColorTextureInfo()
+		.getExtension<Transform>('KHR_texture_transform');
+	const transform2 = mat.getEmissiveTextureInfo()
+		.getExtension<Transform>('KHR_texture_transform');
+	const transform3 = mat.getOcclusionTextureInfo()
+		.getExtension<Transform>('KHR_texture_transform');
+
+	t.ok(transform1, 'baseColorTexture transform');
+	t.ok(transform2, 'emissiveColorTexture transform');
+	t.notOk(transform3, 'occlusionColorTexture transform');
+
+	t.equal(transform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
+	t.deepEqual(transform1.getScale(), [100, 100], 'baseColorTexture.scale');
+	t.deepEqual(transform1.getOffset(), [0, 0], 'baseColorTexture.offset');
+	t.deepEqual(transform1.getRotation(), 0, 'baseColorTexture.rotation');
+
+	t.equal(transform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
+	t.deepEqual(transform2.getScale(), [1, 1], 'emissiveColorTexture.scale');
+	t.deepEqual(transform2.getOffset(), [.5, .5], 'emissiveColorTexture.offset');
+	t.deepEqual(transform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
+
+	t.end();
+});

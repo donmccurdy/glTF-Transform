@@ -1,3 +1,4 @@
+import { PropertyType } from './constants';
 import { Extension } from './extension';
 import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
 import { Logger } from './utils';
@@ -117,14 +118,25 @@ export class Document {
 		// 3. Create stub classes for every Property in other Document.
 		for (const link of other._graph.getLinks()) {
 			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
-				if (!visited.has(thisProp)) {
+				if (visited.has(thisProp)) continue;
+
+				let otherProp: Property;
+				if (thisProp.propertyType === PropertyType.TEXTURE_INFO) {
+					// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
+					// TODO(cleanup): Should the lifecycle be decoupled? Maybe just create
+					// TextureInfo automatically when appending a Texture to a Material or
+					// ExtensionProperty that doesn't have one? More work for extensions.
+					otherProp = thisProp as Property;
+				} else {
+					// For other property types, create stub classes.
 					const PropertyClass = thisProp.constructor as new(g: PropertyGraph, e?: Extension) => Property;
-					const otherProp = thisProp instanceof ExtensionProperty
+					otherProp = thisProp instanceof ExtensionProperty
 						? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
 						: new PropertyClass(this._graph);
-					propertyMap.set(thisProp as Property, otherProp);
-					visited.add(thisProp);
 				}
+
+				propertyMap.set(thisProp as Property, otherProp);
+				visited.add(thisProp);
 			}
 		}
 
