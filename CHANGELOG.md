@@ -2,6 +2,8 @@
 
 ## v0.8 — 🚧 Unreleased
 
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/8)
+
 ## v0.7
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7)
