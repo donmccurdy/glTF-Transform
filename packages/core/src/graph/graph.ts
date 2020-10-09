@@ -1,6 +1,8 @@
 import { Link } from './graph-links';
 import { GraphNode } from './graph-node';
 
+const EMPTY_SET: Set<Link<GraphNode, GraphNode>> = new Set();
+
 /**
  * A graph manages a network of {@link GraphNode} nodes, connected
  * by {@link @Link} edges.
@@ -10,35 +12,49 @@ import { GraphNode } from './graph-node';
  */
 export class Graph {
 	private _links: Set<Link<GraphNode, GraphNode>> = new Set();
-	private _parentRefs: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
-	private _childRefs: Map<GraphNode, Link<GraphNode, GraphNode>[]> = new Map();
+	private _parentRefs: Map<GraphNode, Set<Link<GraphNode, GraphNode>>> = new Map();
+	private _childRefs: Map<GraphNode, Set<Link<GraphNode, GraphNode>>> = new Map();
 
 	public getLinks(): Link<GraphNode, GraphNode>[] {
 		return Array.from(this._links);
 	}
 
 	public listParents(node: GraphNode): GraphNode[] {
-		const links = this._childRefs.get(node) || [];
-		return links.map((link) => link.getParent());
+		const links = this._childRefs.get(node) || EMPTY_SET;
+		return Array.from(links).map((link) => link.getParent());
 	}
 
 	public listChildren(node: GraphNode): GraphNode[] {
-		const links = this._parentRefs.get(node) || [];
-		return links.map((link) => link.getChild());
+		const links = this._parentRefs.get(node) || EMPTY_SET;
+		return Array.from(links).map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: GraphNode): this {
-		const links = this._parentRefs.get(node) || [];
+		const links = this._parentRefs.get(node) || EMPTY_SET;
 		links.forEach((link) => link.dispose());
 		return this;
 	}
 
 	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
-		let links = this._childRefs.get(node) || [];
+		let links = Array.from(this._childRefs.get(node) || EMPTY_SET);
 		if (filter) {
 			links = links.filter((link) => filter(link.getParent()));
 		}
 		links.forEach((link) => link.dispose());
+		return this;
+	}
+
+	public swapChild(parent: GraphNode, prevChild: GraphNode, nextChild: GraphNode): this {
+		const links = this._parentRefs.get(parent) || EMPTY_SET;
+		Array.from(links)
+			.filter((link) => link.getChild() === prevChild)
+			.forEach((link) => {
+				this._childRefs.get(prevChild).delete(link);
+
+				link.setChild(nextChild);
+				if (!this._childRefs.has(nextChild)) this._childRefs.set(nextChild, new Set());
+				this._childRefs.get(nextChild).add(link);
+			});
 		return this;
 	}
 
@@ -61,12 +77,12 @@ export class Graph {
 		this._links.add(link);
 
 		const parent = link.getParent();
-		if (!this._parentRefs.has(parent)) this._parentRefs.set(parent, []);
-		this._parentRefs.get(parent).push(link);
+		if (!this._parentRefs.has(parent)) this._parentRefs.set(parent, new Set());
+		this._parentRefs.get(parent).add(link);
 
 		const child = link.getChild();
-		if (!this._childRefs.has(child)) this._childRefs.set(child, []);
-		this._childRefs.get(child).push(link);
+		if (!this._childRefs.has(child)) this._childRefs.set(child, new Set());
+		this._childRefs.get(child).add(link);
 
 		link.onDispose(() => this.unlink(link));
 		return link;
@@ -80,15 +96,8 @@ export class Graph {
 	*/
 	private unlink(link: Link<GraphNode, GraphNode>): this {
 		this._links.delete(link);
-
-		const parentRefs = this._parentRefs.get(link.getParent())
-			.filter((_link) => link !== _link);
-		this._parentRefs.set(link.getParent(), parentRefs);
-
-		const childRefs = this._childRefs.get(link.getChild())
-			.filter((_link) => link !== _link);
-		this._childRefs.set(link.getChild(), childRefs);
-
+		this._parentRefs.get(link.getParent()).delete(link);
+		this._childRefs.get(link.getChild()).delete(link);
 		return this;
 	}
 }
