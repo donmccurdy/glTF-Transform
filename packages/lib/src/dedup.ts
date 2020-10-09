@@ -76,10 +76,10 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	}
 
 	const duplicateIndices = detectDuplicates(Array.from(indicesAccessors));
-	logger.debug(`${NAME}: Found ${duplicateIndices.size} duplicates of ${indicesAccessors.size} indices.`);
+	logger.debug(`${NAME}: Found ${duplicateIndices.size} duplicates among ${indicesAccessors.size} indices.`);
 
 	const duplicateAttributes = detectDuplicates(Array.from(attributeAccessors));
-	logger.debug(`${NAME}: Found ${duplicateAttributes.size} duplicates of ${attributeAccessors.size} attributes.`);
+	logger.debug(`${NAME}: Found ${duplicateAttributes.size} duplicates among ${attributeAccessors.size} attributes.`);
 
 	// Dissolve duplicates.
 	meshes.forEach((mesh) => {
@@ -127,7 +127,7 @@ function dedupImages(logger: Logger, doc: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates of ${root.listTextures().length} textures.`);
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${root.listTextures().length} textures.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {

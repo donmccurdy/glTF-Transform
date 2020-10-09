@@ -32,7 +32,13 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	/** Resource node. */
 	getChild(): Child { return this._child; }
 
-	/** Sets the child node. */
+	/**
+	 * Sets the child node.
+	 *
+	 * @internal Only {@link Graph} implementations may safely call this method directly. Use
+	 * 	{@link Property.swap} or {@link Graph.swapChild} instead.
+	 * @hidden
+	 */
 	setChild(child: Child): this {
 		this._child = child;
 		return this;

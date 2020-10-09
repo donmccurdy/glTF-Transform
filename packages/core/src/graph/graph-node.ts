@@ -57,9 +57,7 @@ export abstract class GraphNode {
 	 * already hold equivalent links to the replacement object.
 	 */
 	public swap(old: GraphNode, replacement: GraphNode): this {
-		this.graph.getLinks()
-			.filter((link) => link.getParent() === this && link.getChild() === old)
-			.forEach((link) => (link.setChild(replacement)));
+		this.graph.swapChild(this, old, replacement);
 		return this;
 	}
 
