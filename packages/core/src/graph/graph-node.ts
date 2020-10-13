@@ -74,7 +74,7 @@ export abstract class GraphNode {
 		link.onDispose(() => {
 			const remaining = links.filter((l) => l !== link);
 			links.length = 0;
-			links.push(...remaining);
+			for (const link of remaining) links.push(link);
 		});
 		return this;
 	}
