@@ -97,13 +97,17 @@ program
 
 // PARTITION
 program
-	.command('partition', 'Partition mesh data into separate .bin files')
-	.help('Partition mesh data into separate .bin files.')
+	.command('partition', 'Partition binary data into separate .bin files')
+	.help('Partition binary data for meshes or animations into separate .bin files.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--meshes <meshes>', 'Mesh names', {
-		validator: program.ARRAY,
-		required: true,
+	.option('--animations', 'Partition each animation into a separate .bin file', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
+	.option('--meshes', 'Partition each mesh into a separate .bin file', {
+		validator: program.BOOLEAN,
+		default: false,
 	})
 	.action(async ({args, options, logger}) => {
 		const doc = await io.read(args.input as string)

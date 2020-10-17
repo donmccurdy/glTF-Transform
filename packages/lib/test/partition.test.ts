@@ -13,6 +13,7 @@ test('@gltf-transform/lib::partition', t => {
 	t.equal(doc.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 
 	partition({meshes: []})(doc);
+	partition({meshes: false})(doc);
 
 	t.equal(doc.getRoot().listBuffers().length, 1, 'has no effect when disabled');
 
