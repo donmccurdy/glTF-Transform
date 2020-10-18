@@ -1,3 +1,4 @@
+export const EXT_TEXTURE_WEBP = 'EXT_texture_webp';
 export const KHR_DRACO_MESH_COMPRESSION = 'KHR_draco_mesh_compression';
 export const KHR_LIGHTS_PUNCTUAL = 'KHR_lights_punctual';
 export const KHR_MATERIALS_CLEARCOAT = 'KHR_materials_clearcoat';

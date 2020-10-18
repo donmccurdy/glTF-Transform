@@ -19,6 +19,8 @@ as prescribed by the extension itself.
 
 **Supported extensions:**
 
+Khronos Group:
+
 - [KHR_draco_mesh_compression](#khr_draco_mesh_compression)
 - [KHR_lights_punctual](#khr_lights_punctual)
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
@@ -31,6 +33,10 @@ as prescribed by the extension itself.
 - [KHR_mesh_quantization](#khr_mesh_quantization)
 - [KHR_texture_basisu](#khr_texture_basisu)
 - [KHR_texture_transform](#khr_texture_transform)
+
+Vendor:
+
+- [EXT_texture_webp](#ext_texture_webp)
 
 ## Installation
 
@@ -389,7 +395,7 @@ const quantizationExtension = document.createExtension(MeshQuantization).setRequ
 
 ### KHR_texture_basisu
 
-- *Draft specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/pull/1751)*
+- *Specification: [KHR_texture_basisu](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_texture_basisu)*
 - *Source: [packages/extensions/src/khr-texture-basisu/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-texture-basisu)*
 
 The `KHR_texture_basisu` extension adds the ability to use KTX2 GPU textures with Basis Universal
@@ -425,10 +431,14 @@ When the `KHR_texture_basisu` extension is added to a file by glTF-Transform, th
 always be required. This tool does not support writing assets that "fall back" to optional PNG or
 JPEG image data.
 
-> **NOTICE:** The `KHR_texture_basisu` extension is still a draft specification, and may change
-before being officially ratified. Some aspects are still being worked out — in particular, naively
-compressing a 3-component (RGB) normal map will often give poor results with the ETC1S compression
-option.
+> **NOTICE:** Compressing some textures — particularly 3-component (RGB) normal maps, and
+occlusion/roughness/metalness maps, may give poor results with the ETC1S compression option. These
+issues can often be avoided with the larger UASTC compression option, or by upscaling the texture
+before compressing it.
+>
+> For best results when authoring new textures, use
+> [texture dilation](https://docs.substance3d.com/spdoc/padding-134643719.html) and minimize
+> prominent UV seams.
 
 ### KHR_texture_transform
 
@@ -457,3 +467,38 @@ document.createMaterial()
   .getBaseColorTextureInfo()
   .setExtension('KHR_texture_transform', transform);
 ```
+
+### EXT_texture_webp
+
+- *Specification: [EXT_texture_webp](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_webp/)*
+- *Source: [packages/extensions/src/ext-texture-webp/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/ext-texture-webp)*
+
+The `EXT_texture_webp` extension adds the ability to use WebP images for any material texture. WebP
+typically provides the smallest transmission size, but [requires browser support](https://caniuse.com/webp).
+Like PNG and JPEG, a WebP image is *fully decompressed* when uploaded to the GPU, which increases
+upload time and GPU memory cost. For seamless uploads and minimal GPU memory cost, it is necessary
+to use a GPU texture format like Basis Universal, with the `KHR_texture_basisu` extension.
+
+Defining no {@link ExtensionProperty} types, this {@link Extension} is simply attached to the
+{@link Document}, and affects the entire Document by allowing use of the `image/webp` MIME type
+and passing WebP image data to the {@link Texture.setImage} method. Without the Extension, the
+same MIME types and image data would yield an invalid glTF document, under the stricter core glTF
+specification.
+
+```typescript
+import { TextureWebP } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const webpExtension = document.createExtension(TextureWebP)
+  .setRequired(true);
+document.createTexture('MyWebPTexture')
+  .setMimeType('image/webp')
+  .setImage(fs.readFileSync('my-texture.webp'));
+```
+
+WebP conversion is not done automatically when adding the extension as shown above — you must
+convert the image data first, then pass the `.webp` payload to {@link Texture.setImage}.
+
+When the `EXT_texture_webp` extension is added to a file by glTF-Transform, the extension should
+always be required. This tool does not support writing assets that "fall back" to optional PNG or
+JPEG image data.
