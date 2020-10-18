@@ -24,6 +24,7 @@ as prescribed by the extension itself.
 - [KHR_materials_clearcoat](#khr_materials_clearcoat)
 - [KHR_materials_ior](#khr_materials_ior-experimental) *(experimental)*
 - [KHR_materials_pbrSpecularGlossiness](#khr_materials_pbrspecularglossiness)
+- [KHR_materials_sheen](#khr_materials_sheen)
 - [KHR_materials_specular](#khr_materials_specular-experimental) *(experimental)*
 - [KHR_materials_transmission](#khr_materials_transmission)
 - [KHR_materials_unlit](#khr_materials_unlit)
@@ -258,6 +259,33 @@ const specGloss = specGlossExtension.createPBRSpecularGlossiness()
 
 // Attach the property to a Material.
 material.setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
+```
+
+
+### KHR_materials_sheen
+
+- *Specification: [KHR_materials_sheen](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_sheen/)*
+- *Source: [packages/extensions/src/khr-materials-sheen/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-sheen)*
+
+`KHR_materials_sheen` defines a sheen that can be layered on top of an existing glTF material
+definition. A sheen layer is a common technique used in Physically-Based Rendering to represent
+cloth and fabric materials.
+
+The `MaterialsSheen` class provides a single {@link ExtensionProperty} type, `Sheen`, which
+may be attached to any {@link Material} instance. For example:
+
+```typescript
+import { MaterialsSheen, Sheen } from '@gltf-transform/extensions';
+
+// Create an Extension attached to the Document.
+const sheenExtension = document.createExtension(MaterialsSheen);
+
+// Create a Sheen property.
+const sheen = sheenExtension.createSheen()
+  .setSheenColorFactor(1.0);
+
+// Attach the property to a Material.
+material.setExtension('KHR_materials_sheen', sheen);
 ```
 
 ### KHR_materials_specular <mark>*(experimental)*</mark>
