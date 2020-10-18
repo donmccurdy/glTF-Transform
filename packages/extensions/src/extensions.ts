@@ -1,3 +1,4 @@
+import { TextureWebP } from './ext-texture-webp';
 import { DracoMeshCompression } from './khr-draco-mesh-compression';
 import { LightsPunctual } from './khr-lights-punctual';
 import { MaterialsClearcoat } from './khr-materials-clearcoat';
@@ -26,6 +27,12 @@ export const KHRONOS_EXTENSIONS = [
 	TextureTransform,
 ];
 
+export const ALL_EXTENSIONS = [
+	TextureWebP,
+	...KHRONOS_EXTENSIONS,
+];
+
+export * from './ext-texture-webp';
 export * from './khr-draco-mesh-compression';
 export * from './khr-lights-punctual';
 export * from './khr-materials-clearcoat';
