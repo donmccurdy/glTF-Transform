@@ -1,13 +1,5 @@
-import { Accessor, AttributeLink, COPY_IDENTITY, ExtensionProperty, GraphChildList, Link, PropertyType } from '@gltf-transform/core';
+import { Accessor, AttributeLink, COPY_IDENTITY, ExtensionProperty, GraphChildList, PropertyType } from '@gltf-transform/core';
 import { EXT_MESH_GPU_INSTANCING } from '../constants';
-
-class InstancedAttributeLink extends Link<InstancedMesh, Accessor> {
-	public semantic = '';
-	public copy (other: this): this {
-		this.semantic = other.semantic;
-		return this;
-	}
-}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class InstancedMesh extends ExtensionProperty {

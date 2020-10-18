@@ -31,16 +31,14 @@ export class MeshGPUInstancing extends Extension {
 			const instancedMesh = this.createInstancedMesh();
 
 			for (const semantic in instancedMeshDef.attributes) {
-				console.log(`reading ${semantic}...`);
-				instancedMesh.setAttribute(semantic, context.accessors[instancedMeshDef[semantic]]);
+				instancedMesh.setAttribute(
+					semantic,
+					context.accessors[instancedMeshDef.attributes[semantic]]
+				);
 			}
-
-			console.log(instancedMesh.listSemantics());
 
 			context.nodes[nodeIndex].setExtension(NAME, instancedMesh);
 		});
-
-		this.doc.getLogger().info('instancedMeshes: ' + JSON.stringify(this.properties));
 
 		return this;
 	}
@@ -58,8 +56,6 @@ export class MeshGPUInstancing extends Extension {
 					const nodeDef = jsonDoc.json.nodes[nodeIndex];
 
 					const instancedMeshDef = {attributes: {}} as InstancedMeshDef;
-
-					console.log(instancedMesh.listSemantics());
 
 					instancedMesh.listSemantics()
 						.forEach((semantic) => {
