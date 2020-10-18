@@ -24,8 +24,6 @@ export class MeshGPUInstancing extends Extension {
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
-
 		jsonDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
 			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
 
@@ -33,11 +31,16 @@ export class MeshGPUInstancing extends Extension {
 			const instancedMesh = this.createInstancedMesh();
 
 			for (const semantic in instancedMeshDef.attributes) {
+				console.log(`reading ${semantic}...`);
 				instancedMesh.setAttribute(semantic, context.accessors[instancedMeshDef[semantic]]);
 			}
 
+			console.log(instancedMesh.listSemantics());
+
 			context.nodes[nodeIndex].setExtension(NAME, instancedMesh);
 		});
+
+		this.doc.getLogger().info('instancedMeshes: ' + JSON.stringify(this.properties));
 
 		return this;
 	}
@@ -56,10 +59,13 @@ export class MeshGPUInstancing extends Extension {
 
 					const instancedMeshDef = {attributes: {}} as InstancedMeshDef;
 
+					console.log(instancedMesh.listSemantics());
+
 					instancedMesh.listSemantics()
 						.forEach((semantic) => {
 							const attribute = instancedMesh.getAttribute(semantic);
-							nodeDef.extensions[NAME].attributes[semantic] = context.accessorIndexMap.get(attribute);
+							instancedMeshDef.attributes[semantic] =
+								context.accessorIndexMap.get(attribute);
 						});
 
 					nodeDef.extensions = nodeDef.extensions || {};

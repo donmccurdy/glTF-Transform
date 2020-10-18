@@ -280,6 +280,7 @@ export class GLTFWriter {
 				if (!isAttribute && !isIndex && !isIBM && !isOther) isOther = true;
 
 				if (isAttribute && !isIndex && !isIBM && !isOther) {
+					// TODO(bug): This could be a PrimitiveTarget.
 					const primitive = accessorRefs[0].getParent() as Primitive;
 					const primitiveAccessors = attributeAccessors.get(primitive) || new Set<Accessor>();
 					primitiveAccessors.add(parent);
