@@ -3,7 +3,7 @@ import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
-import { KHRONOS_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
+import { ALL_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, ao, center, dedup, metalRough, partition, sequence } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { merge } from './merge';
@@ -16,7 +16,7 @@ import { validate } from './validate';
 const draco3d = require('../vendor/draco3dgltf/draco3dgltf.js');
 
 const io = new NodeIO()
-	.registerExtensions(KHRONOS_EXTENSIONS)
+	.registerExtensions(ALL_EXTENSIONS)
 	.registerDependencies({
 		'draco3d.decoder': draco3d.createDecoderModule(),
 	});
