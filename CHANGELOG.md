@@ -12,8 +12,11 @@
 
 - Add 'center' and 'sequence' transforms.
 - Add 'bounds' helper.
+- Enhance 'partition' transform to support animations.
 - Add `KHR_draco_mesh_compression` extension (decode only).
 - Add `KHR_texture_transform` extension.
+- Add `EXT_texture_webp` extension.
+- Add `KHR_materials_sheen` extension.
 
 **Breaking changes:**
 
