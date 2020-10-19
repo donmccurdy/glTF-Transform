@@ -1,5 +1,5 @@
 
-  gltf-transform 0.7.3 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.7.4 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -18,7 +18,7 @@
                                          ──────────────────── 📦 PACKAGE ─────────────────────  
     copy                                 Copy the model with minimal changes                    
     merge                                Merge two or more models into one                      
-    partition                            Partition mesh data into separate .bin files           
+    partition                            Partition binary data into separate .bin files         
                                                                                                 
                                                                                                 
                                          ───────────────────── ✨ STYLE ──────────────────────  
