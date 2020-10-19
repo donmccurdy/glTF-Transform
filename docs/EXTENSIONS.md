@@ -288,7 +288,7 @@ const sheenExtension = document.createExtension(MaterialsSheen);
 
 // Create a Sheen property.
 const sheen = sheenExtension.createSheen()
-  .setSheenColorFactor(1.0);
+  .setSheenColorFactor([1.0, 1.0, 1.0]);
 
 // Attach the property to a Material.
 material.setExtension('KHR_materials_sheen', sheen);
