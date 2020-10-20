@@ -113,7 +113,7 @@ hr {
 /**
 * * Address styling not present in IE 6/7/8/9. */
 mark {
-    background: #ff0;
+    background: #ff8;
     color: #000;
 }
 
@@ -1814,6 +1814,19 @@ html.minimal .tsd-generator {
 
 .tsd-generator img {
     max-width: 40%;
+}
+
+details[open] {
+    padding-left: 1em;
+    margin-bottom: 1em;
+}
+
+details[open] > summary {
+    margin-left: -1em;
+}
+
+details > summary {
+    cursor: pointer;
 }
 
 @media (max-width: 900px) {
