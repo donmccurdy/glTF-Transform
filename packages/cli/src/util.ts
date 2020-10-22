@@ -1,4 +1,4 @@
-import { Document, FileUtils, Logger, NodeIO, Transform } from '@gltf-transform/core';
+import { Document, FileUtils, Logger, NodeIO, Texture, Transform } from '@gltf-transform/core';
 
 // Utilities.
 
@@ -74,4 +74,12 @@ export class Session {
 			);
 		}
 	}
+}
+
+/** Returns names of all texture slots using the given texture. */
+export function getTextureSlots (doc: Document, texture: Texture): string[] {
+	return doc.getGraph().getLinks()
+		.filter((link) => link.getChild() === texture)
+		.map((link) => link.getName())
+		.filter((slot) => slot !== 'texture')
 }

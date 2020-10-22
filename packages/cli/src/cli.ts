@@ -8,7 +8,7 @@ import { Logger, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
-import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, MozJPEGOptions, OxiPNGOptions, UASTC_DEFAULTS, WebPOptions, draco, merge, mozjpeg, oxipng, toktx, unlit, webp } from './transforms';
 import { Session, formatBytes } from './util';
 import { validate } from './validate';
 
@@ -487,6 +487,136 @@ for textures where the quality is sufficient.`.trim()),
 		Session.create(io, logger, args.input, args.output)
 			.transform(toktx({mode: Mode.UASTC, ...options}))
 	);
+
+const SQUOOSH_SUMMARY = `
+Compresses textures with {VARIANT}, using Squoosh CLI. Reduces transmitted file
+size. Compared to GPU texture compression like KTX/Basis, PNG/JPEG/WebP must
+be fully decompressed in GPU memory — this makes texture GPU upload much
+slower, and may consume 4-8x more GPU memory. However, traditional compression
+methods are typically more forgiving, and require less tuning to achieve
+optimal visual and filesize results.
+
+Dependencies:
+@squoosh/cli (https://www.npmjs.com/package/@squoosh/cli)`.trim();
+
+// WEBP
+program
+	.command('webp', 'WebP texture compression')
+	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'WebP'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: '*'}
+	)
+	.option(
+		'--quality <quality>',
+		'Quality, 0–100. Defaults to auto optimizer.',
+		{validator: program.NUMBER}
+	)
+	.option(
+		'--lossless <lossless>',
+		'Whether to use lossless compression mode.',
+		{validator: program.BOOLEAN, default: false}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--optimizer-rounds <rounds>',
+		'Maximum number of rounds to use for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--optimizer-distance <distance>',
+		'Target Butteraugli distance for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(webp(options as unknown as WebPOptions));
+		io.write(args.output as string, doc);
+	});
+
+// OXIPNG
+program
+	.command('oxipng', 'OxiPNG texture compression')
+	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'OxiPNG'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--effort <effort>',
+		'Effort, 0 – 3. Default 2.',
+		{validator: program.NUMBER}
+	)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: 'png'}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--optimizer-max-rounds <rounds>',
+		'Maximum number of rounds to use for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--optimizer-distance <distance>',
+		'Target Butteraugli distance for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(oxipng(options as unknown as OxiPNGOptions));
+		io.write(args.output as string, doc);
+	});
+
+// MOZJPEG
+program
+	.command('mozjpeg', 'MozJPEG texture compression')
+	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'MozJPEG'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: 'jpeg'}
+	)
+	.option(
+		'--quality <quality>',
+		'Quality, 0–100. Defaults to auto optimizer.',
+		{validator: program.NUMBER}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--optimizer-max-rounds <rounds>',
+		'Maximum number of rounds to use for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--optimizer-distance <distance>',
+		'Target Butteraugli distance for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(mozjpeg(options as unknown as MozJPEGOptions));
+		io.write(args.output as string, doc);
+	});
 
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');

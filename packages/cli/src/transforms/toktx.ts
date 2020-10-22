@@ -5,9 +5,9 @@ const minimatch = require('minimatch');
 const tmp = require('tmp');
 
 import { sync as commandExistsSync } from 'command-exists';
-import { BufferUtils, Document, FileUtils, ImageUtils, Texture, Transform } from '@gltf-transform/core';
+import { BufferUtils, Document, FileUtils, ImageUtils, Transform } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { formatBytes } from '../util';
+import { formatBytes, getTextureSlots } from '../util';
 
 tmp.setGracefulCleanup();
 
@@ -61,7 +61,7 @@ export const toktx = function (options): Transform {
 			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
 		}
 
-		doc.createExtension(TextureBasisu);
+		doc.createExtension(TextureBasisu).setRequired(true);
 
 		let numCompressed = 0;
 
@@ -122,14 +122,6 @@ export const toktx = function (options): Transform {
 			logger.warn('No textures were found, or none were selected for compression.');
 		}
 	};
-}
-
-/** Returns names of all texture slots using the given texture. */
-function getTextureSlots (doc: Document, texture: Texture): string[] {
-	return doc.getGraph().getLinks()
-		.filter((link) => link.getChild() === texture)
-		.map((link) => link.getName())
-		.filter((slot) => slot !== 'texture')
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
