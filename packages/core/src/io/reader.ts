@@ -1,5 +1,6 @@
-import { getRotation, getScaling, getTranslation } from 'gl-matrix/mat4'
-import { GLB_BUFFER, PropertyType, TypedArray, vec3, vec4 } from '../constants';
+import { determinant, getRotation } from 'gl-matrix/mat4'
+import { length } from 'gl-matrix/vec3'
+import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
@@ -348,9 +349,15 @@ export class GLTFReader {
 			}
 
 			if (nodeDef.matrix !== undefined) {
-				node.setTranslation(getTranslation([], nodeDef.matrix) as vec3);
-				node.setRotation(getRotation([], nodeDef.matrix) as vec4);
-				node.setScale(getScaling([], nodeDef.matrix) as vec3);
+				const translation = [0, 0, 0] as vec3;
+				const rotation = [0, 0, 0, 1] as vec4;
+				const scale = [1, 1, 1] as vec3;
+
+				decompose(nodeDef.matrix as mat4, rotation, translation, scale);
+
+				node.setTranslation(translation);
+				node.setRotation(rotation);
+				node.setScale(scale);
 			}
 
 			if (nodeDef.weights !== undefined) {
@@ -611,4 +618,46 @@ function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): Typ
 	}
 
 	return array;
+}
+
+// See: https://github.com/toji/gl-matrix/issues/408
+function decompose(srcMat: mat4, targetRot: vec4, targetPos: vec3, targetScale: vec3): void {
+
+	let sx = length([srcMat[0], srcMat[1], srcMat[2]]);
+	const sy = length([srcMat[4], srcMat[5], srcMat[6]]);
+	const sz = length([srcMat[8], srcMat[9], srcMat[10]]);
+
+	// if determine is negative, we need to invert one scale
+	const det = determinant(srcMat);
+	if (det < 0) sx = - sx;
+
+	targetPos[0] = srcMat[12];
+	targetPos[1] = srcMat[13];
+	targetPos[2] = srcMat[14];
+
+	// scale the rotation part
+	const _m1 = srcMat.slice();
+
+	const invSX = 1 / sx;
+	const invSY = 1 / sy;
+	const invSZ = 1 / sz;
+
+	_m1[0] *= invSX;
+	_m1[1] *= invSX;
+	_m1[2] *= invSX;
+
+	_m1[4] *= invSY;
+	_m1[5] *= invSY;
+	_m1[6] *= invSY;
+
+	_m1[8] *= invSZ;
+	_m1[9] *= invSZ;
+	_m1[10] *= invSZ;
+
+	getRotation(targetRot, _m1);
+
+	targetScale[0] = sx;
+	targetScale[1] = sy;
+	targetScale[2] = sz;
+
 }
