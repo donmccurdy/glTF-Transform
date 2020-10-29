@@ -1,6 +1,7 @@
 import { PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
 import { GraphChildList, Link } from '../graph/index';
+import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
-declare module DRACO {
+export declare module DRACO {
 	interface Library {
 		createDecoderModule(object?: object): DecoderModule;
 	}
@@ -55,7 +55,7 @@ declare module DRACO {
 		GetAttributeUInt8ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeUInt16ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeUInt32ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
-		GetEncodedGeometryType: (buffer: Buffer) => GeometryType;
+		GetEncodedGeometryType: (buffer: DecoderBuffer) => GeometryType;
 	}
 	interface DecoderBuffer {
 		Init: (array: Int8Array, byteLength: number) => void;

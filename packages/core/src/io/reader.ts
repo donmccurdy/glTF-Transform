@@ -5,6 +5,7 @@ import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
 import { Accessor } from '../properties';
+import { GLTF } from '../types/gltf';
 import { FileUtils, ImageUtils, Logger } from '../utils';
 import { ReaderContext } from './reader-context';
 

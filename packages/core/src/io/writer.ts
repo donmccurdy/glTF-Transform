@@ -3,6 +3,7 @@ import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, Property, Root } from '../properties';
+import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
 

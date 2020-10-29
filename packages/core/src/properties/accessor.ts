@@ -1,5 +1,6 @@
 import { PropertyType, TypedArray } from '../constants';
 import { GraphChild, Link } from '../graph';
+import { GLTF } from '../types/gltf';
 import { MathUtils } from '../utils';
 import { Buffer } from './buffer';
 import { ExtensibleProperty } from './extensible-property';

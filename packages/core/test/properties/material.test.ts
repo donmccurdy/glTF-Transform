@@ -1,14 +1,14 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, Property, TextureInfo } from '../../';
+import { Document, GLTF, Property, TextureInfo } from '../../';
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
 
 	const mat = doc.createMaterial('mat')
 		.setDoubleSided(true)
-		.setAlphaMode('MASK')
+		.setAlphaMode(GLTF.MaterialAlphaMode.MASK)
 		.setAlphaCutoff(0.33);
 
 	t.equal(mat.getDoubleSided(), true, 'doubleSided');
@@ -204,7 +204,7 @@ test('@gltf-transform/core::material | copy', t => {
 	const doc = new Document();
 	const tex = doc.createTexture('MyTex');
 	const mat = doc.createMaterial('MyMat')
-		.setAlphaMode('BLEND')
+		.setAlphaMode(GLTF.MaterialAlphaMode.BLEND)
 		.setAlphaCutoff(0.5)
 		.setBaseColorFactor([1, 0, 1, 0.5])
 		.setBaseColorTexture(tex)

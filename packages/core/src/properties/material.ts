@@ -1,5 +1,6 @@
 import { PropertyType, vec3, vec4 } from '../constants';
 import { GraphChild, Link } from '../graph/index';
+import { GLTF } from '../types/gltf';
 import { ColorUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';

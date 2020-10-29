@@ -1,4 +1,5 @@
-import { TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
+import { GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
+import { DRACO } from '../types/draco3d';
 
 export let decoderModule: DRACO.DecoderModule;
 

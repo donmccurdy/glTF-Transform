@@ -9,14 +9,7 @@
     "target": "es6",
     "declaration": true,
     "experimentalDecorators": true,
-    "typeRoots": [
-      "typings",
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types"]
   },
-  "files": [
-    "typings/gltf.d.ts",
-    "typings/draco3d.d.ts"
-  ],
   "include": ["packages/*/src/**/*.ts"]
 }

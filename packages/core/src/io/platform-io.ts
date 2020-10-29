@@ -2,6 +2,7 @@ import { GLB_BUFFER } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
+import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';

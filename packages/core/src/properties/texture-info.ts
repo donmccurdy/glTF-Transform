@@ -1,4 +1,5 @@
 import { PropertyType } from '../constants';
+import { GLTF } from '../types/gltf';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 

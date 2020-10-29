@@ -1,5 +1,6 @@
 import { JSONDocument } from '../json-document';
 import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo } from '../properties';
+import { GLTF } from '../types/gltf';
 
 /**
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used

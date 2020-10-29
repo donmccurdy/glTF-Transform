@@ -1,5 +1,6 @@
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
+import { GLTF } from '../types/gltf';
 import { PlatformIO } from './platform-io';
 
 const DEFAULT_INIT: RequestInit = {};

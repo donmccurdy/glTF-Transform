@@ -1,5 +1,6 @@
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
+import { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils, uuid } from '../utils/';
 import { PlatformIO } from './platform-io';
 import { GLTFReader } from './reader';

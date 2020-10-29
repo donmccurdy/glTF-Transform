@@ -1,5 +1,6 @@
 import { PropertyType } from '../constants';
 import { GraphChild, Link } from '../graph';
+import { GLTF } from '../types/gltf';
 import { AnimationSampler } from './animation-sampler';
 import { Node } from './node';
 import { COPY_IDENTITY, Property } from './property';

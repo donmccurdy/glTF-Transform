@@ -1,6 +1,7 @@
 import { PropertyType } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
+import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';

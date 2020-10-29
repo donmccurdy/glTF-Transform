@@ -1,3 +1,5 @@
+import { GLTF } from '../types/gltf';
+
 /** @hidden */
 export class MathUtils {
 	public static identity(v: number): number {

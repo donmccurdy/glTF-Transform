@@ -1,3 +1,5 @@
+import { GLTF } from './types/gltf';
+
 /**
  * # JSONDocument
  *

@@ -1,6 +1,6 @@
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
-import { Document, Primitive, Transform } from '@gltf-transform/core';
+import { Document, GLTF, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = 'ao';
 const geoao = geoaoNamespace['default'] as Function;

@@ -1,4 +1,4 @@
-import { Document, Transform } from '@gltf-transform/core';
+import { Document, GLTF, Transform } from '@gltf-transform/core';
 
 const NAME = 'sequence';
 
