@@ -23,7 +23,7 @@ import { COPY_IDENTITY, Property } from './property';
  * // Create accessor containing input times, in seconds.
  * const input = doc.createAccessor('bounceTimes')
  * 	.setArray(new Float32Array([0, 1, 2]))
- * 	.setType('SCALAR');
+ * 	.setType(GLTF.AccessorType.SCALAR);
  *
  * // Create accessor containing output values, in local units.
  * const output = doc.createAccessor('bounceValues')
@@ -32,13 +32,13 @@ import { COPY_IDENTITY, Property } from './property';
  * 		0, 1, 0, // y = 1
  * 		0, 0, 0, // y = 0
  * 	]))
- * 	.setType('VEC3');
+ * 	.setType(GLTF.AccessorType.VEC3);
  *
  * // Create sampler.
  * const sampler = doc.createAnimationSampler('bounce')
  * 	.setInput(input)
  * 	.setOutput(output)
- * 	.setInterpolation('LINEAR');
+ * 	.setInterpolation(GLTF.AnimationSamplerInterpolation.LINEAR);
  * ```
  *
  * Reference

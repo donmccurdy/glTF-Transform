@@ -51,7 +51,7 @@ import { COPY_IDENTITY } from './property';
  * ```typescript
  * const accessor = doc.createAccessor('myData')
  * 	.setArray(new Float32Array([1,2,3,4,5,6,7,8,9,10,11,12]))
- * 	.setType('VEC3')
+ * 	.setType(GLTF.AccessorType.VEC3)
  * 	.setBuffer(doc.listBuffers()[0]);
  *
  * accessor.getCount();        // → 4

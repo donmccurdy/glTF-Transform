@@ -25,7 +25,7 @@ import { COPY_IDENTITY, Property } from './property';
  * 	.find((node) => node.getName() === 'Cog');
  *
  * const channel = doc.createAnimationChannel('cogRotation')
- * 	.setTargetPath('rotation')
+ * 	.setTargetPath(GLTF.AnimationChannelTargetPath.ROTATION)
  * 	.setTargetNode(node)
  * 	.setSampler(rotateSampler);
  * ```

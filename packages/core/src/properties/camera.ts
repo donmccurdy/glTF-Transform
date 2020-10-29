@@ -17,7 +17,7 @@ import { COPY_IDENTITY } from './property';
  *
  * ```typescript
  * const camera = doc.createCamera('myCamera')
- * 	.setType('perspective')
+ * 	.setType(GLTF.CameraType.PERSPECTIVE)
  * 	.setZNear(0.1)
  * 	.setZFar(100)
  * 	.setYFov(Math.PI / 4)
