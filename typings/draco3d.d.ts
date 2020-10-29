@@ -45,7 +45,7 @@ declare module DRACO {
 	interface Decoder {
 		DecodeBufferToMesh: (buffer: DecoderBuffer, mesh: Mesh) => Status;
 		GetAttributeByUniqueId: (mesh: Mesh, id: number) => Attribute;
-		GetFaceFromMesh: (mesh: Mesh, number, array: Array) => number;
+		GetFaceFromMesh: (mesh: Mesh, index: number, array: Array) => number;
 		GetTrianglesUInt32Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
 		GetAttributeDataArrayForAllPoints: (mesh: Mesh, attribute: Attribute, type: DataType, byteLength: number, ptr: number) => void;
 		GetAttributeFloatForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
@@ -55,7 +55,7 @@ declare module DRACO {
 		GetAttributeUInt8ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeUInt16ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeUInt32ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
-		GetEncodedGeometryType: (Buffer) => GeometryType;
+		GetEncodedGeometryType: (buffer: Buffer) => GeometryType;
 	}
 	interface DecoderBuffer {
 		Init: (array: Int8Array, byteLength: number) => void;
