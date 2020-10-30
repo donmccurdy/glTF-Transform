@@ -22,7 +22,7 @@ const merge = (options: MergeOptions): Transform => {
 
 			const basename = FileUtils.basename(path);
 			const extension = FileUtils.extension(path).toLowerCase();
-			if (['png', 'jpg', 'jpeg', 'ktx2'].includes(extension)) {
+			if (['png', 'jpg', 'jpeg', 'webp', 'ktx2'].includes(extension)) {
 				doc.createTexture(basename)
 					.setImage(BufferUtils.trim(fs.readFileSync(path)))
 					.setMimeType(ImageUtils.extensionToMimeType(extension))

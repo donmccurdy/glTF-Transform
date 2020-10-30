@@ -104,20 +104,13 @@ class ImageUtils {
 				const height = view.getInt16(offset + 16, true) & 0x3fff;
 				return [width, height];
 			} else if (chunkId === 'VP8L') {
-				// TODO(feat): Support parsing VP8L chunk.
-
-				// binary scan $chunk1 a4icucu4 vp8 size signature sizeInfo
-				// a4: 4-byte string
-				// i: 4-byte int
-				// c: 1-byte int
-				// u: 1-byte ???
-				// c: 1-byte int
-				// u: 4-byte ???
-				//
-				// lassign $sizeInfo b0 b1 b2 b3
-				// set width [expr {1 + ((($b1 & 0x3F) << 8) | $b0)}]
-				// set height [expr {1 + ((($b3 & 0xF) << 10) | ($b2 << 2) | (($b1 & 0xC0) >> 6))}]
-				return null;
+				const b0 = view.getUint8(offset + 9);
+				const b1 = view.getUint8(offset + 10);
+				const b2 = view.getUint8(offset + 11);
+				const b3 = view.getUint8(offset + 12);
+				const width = 1 + (((b1 & 0x3F) << 8) | b0);
+				const height = 1 + (((b3 & 0xF) << 10) | (b2 << 2) | ((b1 & 0xC0) >> 6));
+				return [width, height];
 			}
 			offset += 8 + (chunkByteLength % 2 ? chunkByteLength + 1 : chunkByteLength);
 		}
