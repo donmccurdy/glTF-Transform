@@ -17,6 +17,7 @@ const PNG_FRIED_CHUNK_NAME = 'CgBI';
  * @category Utilities
  */
 class ImageUtils {
+	/** Returns [conservative] estimate of the dimensions of the image. */
 	public static getSize (buffer: ArrayBuffer, mimeType: string): vec2 {
 		switch (mimeType) {
 			case 'image/png': return this._getSizePNG(buffer);
@@ -27,7 +28,7 @@ class ImageUtils {
 		}
 	}
 
-	/** Returns (conservative estimate of) the number of channels in the image. */
+	/** Returns [conservative] estimate of the number of channels in the image. */
 	public static getChannels (buffer: ArrayBuffer, mimeType: string): number {
 		switch (mimeType) {
 			case 'image/png': return 4;
@@ -36,6 +37,14 @@ class ImageUtils {
 			case 'image/ktx2': return 4;
 			default: return 4;
 		}
+	}
+
+	/** Returns [conservative] estimate of the GPU memory required by this image. */
+	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number {
+		if (mimeType === 'image/ktx2') return buffer.byteLength;
+		const resolution = this.getSize(buffer, mimeType);
+		const channels = this.getChannels(buffer, mimeType);
+		return resolution ? resolution[0] * resolution[1] * channels : null;
 	}
 
 	/** Returns the size of a JPEG image. */
@@ -81,9 +90,7 @@ class ImageUtils {
 		// Reference: http://tools.ietf.org/html/rfc6386
 		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
 		const WEBP = BufferUtils.decodeText(buffer.slice(8, 12));
-		if (RIFF !== 'RIFF' && WEBP !== WEBP) {
-			throw new Error('Expected WEBP, got ' + WEBP);
-		}
+		if (RIFF !== 'RIFF' && WEBP !== 'WEBP') return null;
 
 		const view = new DataView(buffer);
 
@@ -112,11 +119,15 @@ class ImageUtils {
 			}
 			offset += 8 + (chunkByteLength % 2 ? chunkByteLength + 1 : chunkByteLength);
 		}
-		throw new Error('Unable to read WebP image.');
+
+		return null;
 	}
 
 	private static _getSizeKTX2 (buffer: ArrayBuffer): vec2 {
-		return null;
+		const magic = BufferUtils.decodeText(buffer.slice(1, 7));
+		if (magic !== 'KTX 20') return null;
+		const view = new DataView(buffer);
+		return [view.getUint32(20, true), view.getUint32(24, true)];
 	}
 
 	public static mimeTypeToExtension(mimeType: string): string {

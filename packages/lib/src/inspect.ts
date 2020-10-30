@@ -134,7 +134,6 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			.filter((name) => name !== 'texture');
 
 		const resolution = ImageUtils.getSize(texture.getImage(), texture.getMimeType());
-		const channels = ImageUtils.getChannels(texture.getImage(), texture.getMimeType());
 
 		return {
 			name: texture.getName(),
@@ -144,7 +143,7 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			mimeType: texture.getMimeType(),
 			resolution: resolution ? resolution.join('x') : '',
 			size: texture.getImage().byteLength,
-			memSize: resolution ? resolution[0] * resolution[1] * channels : null,
+			memSize: ImageUtils.getMemSize(texture.getImage(), texture.getMimeType()),
 		};
 	});
 
