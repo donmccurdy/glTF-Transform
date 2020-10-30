@@ -133,15 +133,7 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			.map((link) => link.getName())
 			.filter((name) => name !== 'texture');
 
-		let resolution: vec2;
-		let channels: number;
-		if (texture.getMimeType() === 'image/png') {
-			resolution = ImageUtils.getSizePNG(texture.getImage());
-			channels = 4;
-		} else if (texture.getMimeType() === 'image/jpeg') {
-			resolution = ImageUtils.getSizeJPEG(texture.getImage());
-			channels = 3;
-		}
+		const resolution = ImageUtils.getSize(texture.getImage(), texture.getMimeType());
 
 		return {
 			name: texture.getName(),
@@ -151,7 +143,7 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			mimeType: texture.getMimeType(),
 			resolution: resolution ? resolution.join('x') : '',
 			size: texture.getImage().byteLength,
-			memSize: resolution ? resolution[0] * resolution[1] * channels : null,
+			memSize: ImageUtils.getMemSize(texture.getImage(), texture.getMimeType()),
 		};
 	});
 

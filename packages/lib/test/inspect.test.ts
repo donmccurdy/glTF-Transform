@@ -13,7 +13,8 @@ test('@gltf-transform/lib::inspect', t => {
 
 	doc.createAnimation('TestAnim');
 	doc.createTexture('TestTex')
-		.setImage(new ArrayBuffer(10));
+		.setImage(new ArrayBuffer(10))
+		.setMimeType('image/fake');
 
 	const report = inspect(doc);
 

@@ -1,5 +1,5 @@
 import { PropertyType, vec2 } from '../constants';
-import { ImageUtils } from '../utils';
+import { FileUtils, ImageUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 
@@ -51,7 +51,9 @@ export class Texture extends ExtensibleProperty {
 	 */
 
 	/** Returns the MIME type for this texture ('image/jpeg' or 'image/png'). */
-	public getMimeType(): string { return this._mimeType; }
+	public getMimeType(): string {
+		return this._mimeType || ImageUtils.extensionToMimeType(FileUtils.extension(this._uri));
+	}
 
 	/**
 	 * Sets the MIME type for this texture ('image/jpeg' or 'image/png'). If the texture does not
@@ -77,6 +79,7 @@ export class Texture extends ExtensibleProperty {
 	 */
 	public setURI(uri: string): this {
 		this._uri = uri;
+		this._mimeType = ImageUtils.extensionToMimeType(FileUtils.extension(uri));
 		return this;
 	}
 
@@ -95,14 +98,6 @@ export class Texture extends ExtensibleProperty {
 
 	/** Returns the size, in pixels, of this texture. */
 	public getSize(): vec2 {
-		let isPNG;
-		if (this._mimeType) {
-			isPNG = this._mimeType === 'image/png';
-		} else {
-			isPNG = this._uri.match(/\.png$/);
-		}
-		return isPNG
-			? ImageUtils.getSizePNG(this._image)
-			: ImageUtils.getSizeJPEG(this._image);
+		return ImageUtils.getSize(this._image, this.getMimeType());
 	}
 }
