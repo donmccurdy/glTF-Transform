@@ -104,6 +104,8 @@ class ImageUtils {
 				const height = view.getInt16(offset + 16, true) & 0x3fff;
 				return [width, height];
 			} else if (chunkId === 'VP8L') {
+				// TODO(feat): Support parsing VP8L chunk.
+
 				// binary scan $chunk1 a4icucu4 vp8 size signature sizeInfo
 				// a4: 4-byte string
 				// i: 4-byte int
