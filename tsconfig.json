@@ -9,7 +9,16 @@
     "target": "es6",
     "declaration": true,
     "experimentalDecorators": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+
+    // Progress toward "strict": true.
+    "alwaysStrict": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+    // "strictPropertyInitialization": true,
   },
   "include": ["packages/*/src/**/*.ts"]
 }

@@ -8,9 +8,9 @@ import { Link } from './graph-links';
  * @category Graph
  */
 export abstract class GraphNode {
-	protected readonly graph: Graph;
+	protected readonly graph: Graph<GraphNode>;
 	private _disposed = false;
-	constructor(graph: Graph) {
+	constructor(graph: Graph<GraphNode>) {
 		this.graph = graph;
 	}
 

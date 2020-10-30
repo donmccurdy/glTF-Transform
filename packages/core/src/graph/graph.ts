@@ -1,8 +1,6 @@
 import { Link } from './graph-links';
 import { GraphNode } from './graph-node';
 
-const EMPTY_SET: Set<Link<GraphNode, GraphNode>> = new Set();
-
 /**
  * A graph manages a network of {@link GraphNode} nodes, connected
  * by {@link @Link} edges.
@@ -10,33 +8,35 @@ const EMPTY_SET: Set<Link<GraphNode, GraphNode>> = new Set();
  * @hidden
  * @category Graph
  */
-export class Graph {
-	private _links: Set<Link<GraphNode, GraphNode>> = new Set();
-	private _parentRefs: Map<GraphNode, Set<Link<GraphNode, GraphNode>>> = new Map();
-	private _childRefs: Map<GraphNode, Set<Link<GraphNode, GraphNode>>> = new Map();
+export class Graph<T extends GraphNode> {
+	private _emptySet: Set<Link<T, T>> = new Set();
 
-	public getLinks(): Link<GraphNode, GraphNode>[] {
+	private _links: Set<Link<T, T>> = new Set();
+	private _parentRefs: Map<T, Set<Link<T, T>>> = new Map();
+	private _childRefs: Map<T, Set<Link<T, T>>> = new Map();
+
+	public getLinks(): Link<T, T>[] {
 		return Array.from(this._links);
 	}
 
-	public listParents(node: GraphNode): GraphNode[] {
-		const links = this._childRefs.get(node) || EMPTY_SET;
+	public listParents(node: T): T[] {
+		const links = this._childRefs.get(node) || this._emptySet;
 		return Array.from(links).map((link) => link.getParent());
 	}
 
-	public listChildren(node: GraphNode): GraphNode[] {
-		const links = this._parentRefs.get(node) || EMPTY_SET;
+	public listChildren(node: T): T[] {
+		const links = this._parentRefs.get(node) || this._emptySet;
 		return Array.from(links).map((link) => link.getChild());
 	}
 
-	public disconnectChildren(node: GraphNode): this {
-		const links = this._parentRefs.get(node) || EMPTY_SET;
+	public disconnectChildren(node: T): this {
+		const links = this._parentRefs.get(node) || this._emptySet;
 		links.forEach((link) => link.dispose());
 		return this;
 	}
 
-	public disconnectParents(node: GraphNode, filter?: (n: GraphNode) => boolean): this {
-		let links = Array.from(this._childRefs.get(node) || EMPTY_SET);
+	public disconnectParents(node: T, filter?: (n: T) => boolean): this {
+		let links = Array.from(this._childRefs.get(node) || this._emptySet);
 		if (filter) {
 			links = links.filter((link) => filter(link.getParent()));
 		}
@@ -44,8 +44,8 @@ export class Graph {
 		return this;
 	}
 
-	public swapChild(parent: GraphNode, prevChild: GraphNode, nextChild: GraphNode): this {
-		const links = this._parentRefs.get(parent) || EMPTY_SET;
+	public swapChild(parent: T, prevChild: T, nextChild: T): this {
+		const links = this._parentRefs.get(parent) || this._emptySet;
 		Array.from(links)
 			.filter((link) => link.getChild() === prevChild)
 			.forEach((link) => {
@@ -64,7 +64,7 @@ export class Graph {
 	* @param a Owner
 	* @param b Resource
 	*/
-	public link<A extends GraphNode, B extends GraphNode>(name: string, a: A, b: B): Link<A, B> {
+	public link<A extends T, B extends T>(name: string, a: A, b: B): Link<A, B> {
 		// If there's no resource, return a null link. Avoids a lot of boilerplate in node setters.
 		if (!b) return null;
 
@@ -73,7 +73,7 @@ export class Graph {
 		return link;
 	}
 
-	protected registerLink(link: Link<GraphNode, GraphNode>): Link<GraphNode, GraphNode> {
+	protected registerLink(link: Link<T, T>): Link<T, T> {
 		this._links.add(link);
 
 		const parent = link.getParent();
@@ -94,7 +94,7 @@ export class Graph {
 	* of removing a link is {@link link.dispose()}.
 	* @param link
 	*/
-	private unlink(link: Link<GraphNode, GraphNode>): this {
+	private unlink(link: Link<T, T>): this {
 		this._links.delete(link);
 		this._parentRefs.get(link.getParent()).delete(link);
 		this._childRefs.get(link.getChild()).delete(link);
