@@ -24,6 +24,7 @@
     "@gltf-transform/core": "^0.7.5",
     "@gltf-transform/extensions": "^0.7.5",
     "@gltf-transform/lib": "^0.7.5",
+    "@types/node": "^14.14.6",
     "cli-table": "^0.3.1",
     "command-exists": "^1.2.9",
     "gl": "^4.5.0",
@@ -40,7 +41,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "62125cc3d244785f65f50fccc73b225cba1d380f",
+  "gitHead": "f92b1eb22fd911e37688e646767bceb32efb4698",
   "devDependencies": {
     "tmp": "^0.2.1"
   }

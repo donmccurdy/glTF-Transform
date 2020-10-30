@@ -23,6 +23,7 @@
   "dependencies": {
     "@gltf-transform/core": "^0.7.5",
     "@gltf-transform/extensions": "^0.7.5",
+    "@types/ndarray": "^1.0.8",
     "geo-ambient-occlusion": "^3.0.2",
     "get-pixels": "^3.3.2",
     "gl-matrix": "^3.3.0",
@@ -37,7 +38,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "62125cc3d244785f65f50fccc73b225cba1d380f",
+  "gitHead": "f92b1eb22fd911e37688e646767bceb32efb4698",
   "publishConfig": {
     "access": "public"
   }
