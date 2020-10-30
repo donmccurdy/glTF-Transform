@@ -133,15 +133,8 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			.map((link) => link.getName())
 			.filter((name) => name !== 'texture');
 
-		let resolution: vec2;
-		let channels: number;
-		if (texture.getMimeType() === 'image/png') {
-			resolution = ImageUtils.getSizePNG(texture.getImage());
-			channels = 4;
-		} else if (texture.getMimeType() === 'image/jpeg') {
-			resolution = ImageUtils.getSizeJPEG(texture.getImage());
-			channels = 3;
-		}
+		const resolution = ImageUtils.getSize(texture.getImage(), texture.getMimeType());
+		const channels = ImageUtils.getChannels(texture.getImage(), texture.getMimeType());
 
 		return {
 			name: texture.getName(),
