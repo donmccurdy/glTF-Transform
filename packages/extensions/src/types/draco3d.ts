@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/interface-name-prefix */
+
+import { TypedArray } from "@gltf-transform/core";
+
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 export declare module DRACO {
 	interface Library {
@@ -43,7 +46,7 @@ export declare module DRACO {
 		DT_UINT32: DataType;
 	}
 	interface Decoder {
-		DecodeBufferToMesh: (buffer: DecoderBuffer, mesh: Mesh) => Status;
+		DecodeBufferToMesh(buffer: DecoderBuffer, mesh: Mesh): Status;
 		GetAttributeByUniqueId: (mesh: Mesh, id: number) => Attribute;
 		GetFaceFromMesh: (mesh: Mesh, index: number, array: Array) => number;
 		GetTrianglesUInt32Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
@@ -65,6 +68,9 @@ export declare module DRACO {
 		num_faces: () => number;
 		num_points: () => number;
 	}
+	interface MeshBuilder {
+		AddFloatAttributeToMesh(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+	}
 	interface Attribute {
 		num_components: () => number;
 	}
@@ -76,4 +82,17 @@ export declare module DRACO {
 	}
 	enum GeometryType {}
 	enum DataType {}
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface EncoderModule {
+		Encoder: new () => Encoder;
+		Mesh: new () => Mesh;
+		MeshBuilder: new () => MeshBuilder;
+		POSITION: number;
+		NORMAL: number;
+		TEX_COORD: number;
+		COLOR: number;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Encoder {}
 }

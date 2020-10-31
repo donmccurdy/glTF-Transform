@@ -2,6 +2,7 @@ import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } fro
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
+import { initEncoderModule } from './encoder';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -20,11 +21,16 @@ export class DracoMeshCompression extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	private _decoderModule: DRACO.DecoderModule;
+	private _encoderModule: DRACO.EncoderModule;
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'draco3d.decoder') {
 			this._decoderModule = dependency as DRACO.DecoderModule;
 			initDecoderModule(this._decoderModule);
+		}
+		if (key === 'draco3d.encoder') {
+			this._encoderModule = dependency as DRACO.EncoderModule;
+			initEncoderModule(this._encoderModule);
 		}
 		return this;
 	}
