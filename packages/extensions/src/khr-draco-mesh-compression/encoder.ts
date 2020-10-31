@@ -1,3 +1,4 @@
+import { Accessor, Primitive } from '@gltf-transform/core';
 import { DRACO } from '../types/draco3d';
 
 export let encoderModule: DRACO.EncoderModule;
@@ -7,18 +8,34 @@ export enum EncoderMethod {
 	SEQUENTIAL = 0,
 }
 
+enum AttributeEnum {
+	POSITION = 'POSITION',
+	NORMAL = 'NORMAL',
+	COLOR = 'COLOR',
+	TEX_COORD = 'TEX_COORD',
+	GENERIC = 'GENERIC',
+}
+
+const DEFAULT_QUANTIZATION_BITS = {
+	[AttributeEnum.POSITION]: 16,
+	[AttributeEnum.NORMAL]: 8,
+	[AttributeEnum.COLOR]: 8,
+	[AttributeEnum.TEX_COORD]: 8,
+	[AttributeEnum.GENERIC]: 8,
+}
+
 interface EncoderOptions {
 	decodeSpeed?: number;
 	encodeSpeed?: number;
-	encodeMethod?: EncoderMethod;
-	encodeQuantization?: number[];
+	method?: EncoderMethod;
+	quantizationBits: {[key: string]: number};
 }
 
 const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
 	decodeSpeed: 5,
 	encodeSpeed: 5,
-	encodeMethod: EncoderMethod.EDGEBREAKER,
-	encodeQuantization: [ 16, 8, 8, 8, 8 ],
+	method: EncoderMethod.EDGEBREAKER,
+	quantizationBits: DEFAULT_QUANTIZATION_BITS,
 }
 
 export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
@@ -29,125 +46,95 @@ export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
  * - https://github.com/mrdoob/three.js/blob/dev/examples/js/exporters/DRACOExporter.js
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
-export function encodeGeometry (options: EncoderOptions = DEFAULT_ENCODER_OPTIONS) {
+export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAULT_ENCODER_OPTIONS) {
 	options = {...DEFAULT_ENCODER_OPTIONS, ...options};
+	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ...options.quantizationBits};
 
 	const encoder = new encoderModule.Encoder();
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
 
-	// var vertices = geometry.getAttribute( 'position' );
-	// builder.AddFloatAttributeToMesh( mesh, encoderModule.POSITION, vertices.count, vertices.itemSize, vertices.array );
+	const dracoAttributes: {[key: string]: number} = {};
+	const dracoBuffer = new encoderModule.DracoInt8Array();
 
-	// var faces = geometry.getIndex();
+	for (const semantic of prim.listSemantics()) {
+		const attribute = prim.getAttribute(semantic);
+		const attributeEnum = getAttributeEnum(semantic);
+		const addAttributeFn = ADD_ATTRIBUTE_FN[attribute.getComponentType()];
+		const attributeID: number = builder[addAttributeFn](
+			mesh,
+			encoderModule[attributeEnum],
+			attribute.getCount(),
+			attribute.getElementSize(),
+			attribute.getArray(),
+		);
 
-	// if ( faces !== null ) {
+		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
 
-	// 	builder.AddFacesToMesh( mesh, faces.count / 3, faces.array );
+		dracoAttributes[semantic] = attributeID;
+		encoder.SetAttributeQuantization(
+			encoderModule[attributeEnum],
+			options.quantizationBits[attributeEnum]
+		);
+	}
 
-	// } else {
+	if (prim.getIndices()) {
+		builder.AddFacesToMesh(
+			mesh,
+			prim.getIndices().getCount() / 3,
+			prim.getIndices().getArray() as unknown as Uint32Array
+		);
+	} else {
+		// TODO(feat): Implement.
+		throw new Error('Non-indexed compression not implemented.');
+	}
 
-	// 	var faces = new ( vertices.count > 65535 ? Uint32Array : Uint16Array )( vertices.count );
+	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
+	encoder.SetTrackEncodedProperties(true);
 
-	// 	for ( var i = 0; i < faces.length; i ++ ) {
+	// Preserve vertex order for primitives with morph targets.
+	if (prim.listTargets().length > 0 || options.method === EncoderMethod.SEQUENTIAL) {
+		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
+	} else {
+		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
+	}
 
-	// 		faces[ i ] = i;
+	const byteLength = encoder.EncodeMeshToDracoBuffer(mesh, dracoBuffer);
+	if (byteLength <= 0) throw new Error('Error applying Draco compression.');
 
-	// 	}
+	const compressedData = new Uint8Array(byteLength);
+	for (let i = 0; i < byteLength; ++i) {
+		compressedData[i] = dracoBuffer.GetValue(i);
+	}
 
-	// 	builder.AddFacesToMesh( mesh, vertices.count, faces );
+	const numVertices = encoder.GetNumberOfEncodedPoints();
+	const numIndices = encoder.GetNumberOfEncodedFaces();
+	// TODO(feat): Write binary data, numVertices, numIndices, and attribute IDs.
 
-	// }
-
-	// if ( options.exportNormals === true ) {
-
-	// 	var normals = geometry.getAttribute( 'normal' );
-
-	// 	if ( normals !== undefined ) {
-
-	// 		builder.AddFloatAttributeToMesh( mesh, encoderModule.NORMAL, normals.count, normals.itemSize, normals.array );
-
-	// 	}
-
-	// }
-
-	// if ( options.exportUvs === true ) {
-
-	// 	var uvs = geometry.getAttribute( 'uv' );
-
-	// 	if ( uvs !== undefined ) {
-
-	// 		builder.AddFloatAttributeToMesh( mesh, encoderModule.TEX_COORD, uvs.count, uvs.itemSize, uvs.array );
-
-	// 	}
-
-	// }
-
-	// if ( options.exportColor === true ) {
-
-	// 	var colors = geometry.getAttribute( 'color' );
-
-	// 	if ( colors !== undefined ) {
-
-	// 		builder.AddFloatAttributeToMesh( mesh, encoderModule.COLOR, colors.count, colors.itemSize, colors.array );
-
-	// 	}
-
-	// }
-
-	// //Compress using draco encoder
-
-	// var encodedData = new encoderModule.DracoInt8Array();
-
-	// //Sets the desired encoding and decoding speed for the given options from 0 (slowest speed, but the best compression) to 10 (fastest, but the worst compression).
-
-	// encoder.SetSpeedOptions( options.encodeSpeed || 5, options.decodeSpeed || 5 );
-
-	// // Sets the desired encoding method for a given geometry.
-
-	// if ( options.encoderMethod !== undefined ) {
-
-	// 	encoder.SetEncodingMethod( options.encoderMethod );
-
-	// }
-
-	// // Sets the quantization (number of bits used to represent) compression options for a named attribute.
-	// // The attribute values will be quantized in a box defined by the maximum extent of the attribute values.
-	// if ( options.quantization !== undefined ) {
-
-	// 	for ( var i = 0; i < 5; i ++ ) {
-
-	// 		if ( options.quantization[ i ] !== undefined ) {
-
-	// 			encoder.SetAttributeQuantization( i, options.quantization[ i ] );
-
-	// 		}
-
-	// 	}
-
-	// }
-
-	// var length = encoder.EncodeMeshToDracoBuffer( mesh, encodedData );
-	// encoderModule.destroy( mesh );
-
-	// if ( length === 0 ) {
-
-	// 	throw new Error( 'THREE.DRACOExporter: Draco encoding failed.' );
-
-	// }
-
-	// //Copy encoded data to buffer.
-	// var outputData = new Int8Array( new ArrayBuffer( length ) );
-
-	// for ( var i = 0; i < length; i ++ ) {
-
-	// 	outputData[ i ] = encodedData.GetValue( i );
-
-	// }
-
-	// encoderModule.destroy( encodedData );
-	// encoderModule.destroy( encoder );
-	// encoderModule.destroy( builder );
-
-	// return outputData;
+	encoderModule.destroy(dracoBuffer);
+	encoderModule.destroy(mesh);
+	encoderModule.destroy(builder);
+	encoderModule.destroy(encoder);
 }
+
+function getAttributeEnum(semantic: string): AttributeEnum {
+	if (semantic === 'POSITION') {
+		return AttributeEnum.POSITION;
+	} else if (semantic === 'NORMAL') {
+		return AttributeEnum.NORMAL;
+	} else if (semantic.startsWith('COLOR_')) {
+		return AttributeEnum.COLOR;
+	} else if (semantic.startsWith('TEXCOORD_')) {
+		return AttributeEnum.TEX_COORD;
+	}
+	return AttributeEnum.GENERIC;
+}
+
+const ADD_ATTRIBUTE_FN = {
+	[Accessor.ComponentType.UNSIGNED_BYTE]: 'AddUInt8Attribute',
+	[Accessor.ComponentType.BYTE]: 'AddInt8Attribute',
+	[Accessor.ComponentType.UNSIGNED_SHORT]: 'AddUInt16Attribute',
+	[Accessor.ComponentType.SHORT]: 'AddInt16Attribute',
+	[Accessor.ComponentType.UNSIGNED_INT]: 'AddUInt32Attribute',
+	[Accessor.ComponentType.FLOAT]: 'AddFloatAttribute',
+};

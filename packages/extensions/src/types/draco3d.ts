@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 
-import { TypedArray } from "@gltf-transform/core";
+type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
 
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 export declare module DRACO {
@@ -69,7 +69,14 @@ export declare module DRACO {
 		num_points: () => number;
 	}
 	interface MeshBuilder {
-		AddFloatAttributeToMesh(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddFacesToMesh(mesh: Mesh, numFaces: number, faces: Uint16Array | Uint32Array): void;
+		AddUInt8Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddInt8Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddUInt16Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddInt16Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddUInt32Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddFloatAttribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		// AddFloatAttributeToMesh(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
 	}
 	interface Attribute {
 		num_components: () => number;
@@ -77,22 +84,41 @@ export declare module DRACO {
 	interface Array {
 		GetValue: (index: number) => number;
 	}
+	interface DracoInt8Array {
+		GetValue: (index: number) => number;
+	}
+
 	interface Status {
 		ok: () => boolean;
 	}
 	enum GeometryType {}
 	enum DataType {}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-interface
 	interface EncoderModule {
 		Encoder: new () => Encoder;
 		Mesh: new () => Mesh;
 		MeshBuilder: new () => MeshBuilder;
+		DracoInt8Array: new () => DracoInt8Array;
+
 		POSITION: number;
 		NORMAL: number;
 		TEX_COORD: number;
 		COLOR: number;
+		GENERIC: number;
+
+		MESH_SEQUENTIAL_ENCODING: number;
+		MESH_EDGEBREAKER_ENCODING: number;
+
+		destroy: (object: unknown) => void;
 	}
-	// eslint-disable-next-line @typescript-eslint/no-empty-interface
-	interface Encoder {}
+
+	interface Encoder {
+		SetAttributeQuantization(attribute: number, bits: number): void;
+		SetSpeedOptions(encodeSpeed: number, decodeSpeed: number): void;
+		SetEncodingMethod(method: number): void;
+		SetTrackEncodedProperties(track: boolean): void;
+		EncodeMeshToDracoBuffer(mesh: Mesh, array: DracoInt8Array): number;
+		GetNumberOfEncodedPoints(): number;
+		GetNumberOfEncodedFaces(): number;
+	}
 }
