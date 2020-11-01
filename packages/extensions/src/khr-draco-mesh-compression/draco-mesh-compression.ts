@@ -2,7 +2,7 @@ import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } fro
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
-import { initEncoderModule } from './encoder';
+import { EncoderOptions, encodeGeometry, initEncoderModule } from './encoder';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -22,6 +22,7 @@ export class DracoMeshCompression extends Extension {
 
 	private _decoderModule: DRACO.DecoderModule;
 	private _encoderModule: DRACO.EncoderModule;
+	private _encoderOptions: EncoderOptions = {};
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'draco3d.decoder') {
@@ -32,6 +33,11 @@ export class DracoMeshCompression extends Extension {
 			this._encoderModule = dependency as DRACO.EncoderModule;
 			initEncoderModule(this._encoderModule);
 		}
+		return this;
+	}
+
+	public setEncoderOptions(options: EncoderOptions): this {
+		this._encoderOptions = options;
 		return this;
 	}
 
@@ -70,9 +76,12 @@ export class DracoMeshCompression extends Extension {
 
 				// Attributes.
 				for (const semantic in primDef.attributes) {
-					const accessorDef = context.jsonDoc.json.accessors[primDef.attributes[semantic]];
-					const dracoAttribute = decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
-					const attributeArray = decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
+					const accessorDef =
+						context.jsonDoc.json.accessors[primDef.attributes[semantic]];
+					const dracoAttribute =
+						decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
+					const attributeArray =
+						decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
 					context.accessors[primDef.attributes[semantic]].setArray(attributeArray);
 				}
 
@@ -92,13 +101,24 @@ export class DracoMeshCompression extends Extension {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
-		this.dispose(); // Writes aren't implemented, so remove extension after unpacking.
+		this.dispose(); // TODO(bug): Keep extension? Warn?
 		return this;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public write(context: WriterContext): this {
-		this.doc.getLogger().warn(`Writing ${this.extensionName} not yet implemented.`);
+		if (!this._encoderModule) {
+			throw new Error('Please install extension dependency, "draco3d.encoder".');
+		}
+
+		for (const mesh of this.doc.getRoot().listMeshes()) {
+			for (const prim of mesh.listPrimitives()) {
+				const encodedPrim = encodeGeometry(prim, this._encoderOptions);
+				// TODO(feat): Implement provideWrite().
+				throw new Error('Not implemented.');
+			}
+		}
+
 		return this;
 	}
 }

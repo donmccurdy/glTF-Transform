@@ -22,13 +22,20 @@ const DEFAULT_QUANTIZATION_BITS = {
 	[AttributeEnum.COLOR]: 8,
 	[AttributeEnum.TEX_COORD]: 8,
 	[AttributeEnum.GENERIC]: 8,
+};
+
+export interface EncodedPrimitive {
+	numVertices: number;
+	numIndices: number;
+	data: Uint8Array;
+	attributeIDs: {[key: string]: number};
 }
 
-interface EncoderOptions {
+export interface EncoderOptions {
 	decodeSpeed?: number;
 	encodeSpeed?: number;
 	method?: EncoderMethod;
-	quantizationBits: {[key: string]: number};
+	quantizationBits?: {[key: string]: number};
 }
 
 const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
@@ -46,7 +53,7 @@ export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
  * - https://github.com/mrdoob/three.js/blob/dev/examples/js/exporters/DRACOExporter.js
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
-export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAULT_ENCODER_OPTIONS) {
+export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
 	options = {...DEFAULT_ENCODER_OPTIONS, ...options};
 	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ...options.quantizationBits};
 
@@ -54,7 +61,7 @@ export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAU
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
 
-	const dracoAttributes: {[key: string]: number} = {};
+	const attributeIDs: {[key: string]: number} = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
 
 	for (const semantic of prim.listSemantics()) {
@@ -71,7 +78,7 @@ export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAU
 
 		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
 
-		dracoAttributes[semantic] = attributeID;
+		attributeIDs[semantic] = attributeID;
 		encoder.SetAttributeQuantization(
 			encoderModule[attributeEnum],
 			options.quantizationBits[attributeEnum]
@@ -102,19 +109,20 @@ export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAU
 	const byteLength = encoder.EncodeMeshToDracoBuffer(mesh, dracoBuffer);
 	if (byteLength <= 0) throw new Error('Error applying Draco compression.');
 
-	const compressedData = new Uint8Array(byteLength);
+	const data = new Uint8Array(byteLength);
 	for (let i = 0; i < byteLength; ++i) {
-		compressedData[i] = dracoBuffer.GetValue(i);
+		data[i] = dracoBuffer.GetValue(i);
 	}
 
 	const numVertices = encoder.GetNumberOfEncodedPoints();
 	const numIndices = encoder.GetNumberOfEncodedFaces();
-	// TODO(feat): Write binary data, numVertices, numIndices, and attribute IDs.
 
 	encoderModule.destroy(dracoBuffer);
 	encoderModule.destroy(mesh);
 	encoderModule.destroy(builder);
 	encoderModule.destroy(encoder);
+
+	return {numVertices, numIndices, data, attributeIDs};
 }
 
 function getAttributeEnum(semantic: string): AttributeEnum {
