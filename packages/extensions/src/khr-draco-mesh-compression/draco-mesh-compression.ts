@@ -158,7 +158,11 @@ export class DracoMeshCompression extends Extension {
 	public write(context: WriterContext): this {
 		if (!this._encoderEnabled) {
 			const logger = this.doc.getLogger();
-			logger.warn('Skipping (lossy) recompression. To recompress manually, reapply Draco.');
+			logger.warn(
+				'Skipping Draco recompression. To compress manually (lossy), reapply Draco.'
+			);
+			return this;
+			// TODO(bug): This leaves the model with an unused, required Draco extension.
 		}
 
 		// TODO(feat): Ensure that compressed accessors are not re-written elsewhere. This could be
