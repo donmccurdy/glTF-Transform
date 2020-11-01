@@ -1,5 +1,6 @@
-import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Primitive, Texture, vec2 } from '@gltf-transform/core';
+import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture } from '@gltf-transform/core';
 import { bounds } from './bounds';
+import { getGLPrimitiveCount } from './utils';
 
 export function inspect (doc: Document): Report {
 	return {
@@ -252,31 +253,6 @@ const MeshPrimitiveModeLabels = [
 	'TRIANGLE_STRIP',
 	'TRIANGLE_FAN',
 ];
-
-function getGLPrimitiveCount(prim: Primitive): number {
-	// Reference: https://www.khronos.org/opengl/wiki/Primitive
-	switch (prim.getMode()) {
-		case GLTF.MeshPrimitiveMode.POINTS:
-			return prim.getAttribute('POSITION').getCount();
-		case GLTF.MeshPrimitiveMode.LINES:
-			return prim.getIndices()
-				? prim.getIndices().getCount() / 2
-				: prim.getAttribute('POSITION').getCount() / 2;
-		case GLTF.MeshPrimitiveMode.LINE_LOOP:
-			return prim.getAttribute('POSITION').getCount();
-		case GLTF.MeshPrimitiveMode.LINE_STRIP:
-			return prim.getAttribute('POSITION').getCount() - 1;
-		case GLTF.MeshPrimitiveMode.TRIANGLES:
-			return prim.getIndices()
-				? prim.getIndices().getCount() / 3
-				: prim.getAttribute('POSITION').getCount() / 3;
-		case GLTF.MeshPrimitiveMode.TRIANGLE_STRIP:
-		case GLTF.MeshPrimitiveMode.TRIANGLE_FAN:
-			return prim.getAttribute('POSITION').getCount() - 2;
-		default:
-			throw new Error('Unexpected mode: ' + prim.getMode());
-	}
-}
 
 /** Maps values in a vector to a finite precision. */
 function toPrecision(v: number[]): number[] {

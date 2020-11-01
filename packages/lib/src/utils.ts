@@ -1,7 +1,7 @@
 import * as getPixelsNamespace from 'get-pixels';
 import * as ndarray from 'ndarray';
 import * as savePixelsNamespace from 'save-pixels';
-import { BufferUtils, Texture } from '@gltf-transform/core';
+import { BufferUtils, GLTF, Primitive, Texture } from '@gltf-transform/core';
 
 const getPixels = getPixelsNamespace['default'] as Function;
 const savePixels = savePixelsNamespace['default'] as Function;
@@ -37,4 +37,29 @@ export async function rewriteTexture(
 	});
 
 	return target.setImage(image).setMimeType('image/png');
+}
+
+export function getGLPrimitiveCount(prim: Primitive): number {
+	// Reference: https://www.khronos.org/opengl/wiki/Primitive
+	switch (prim.getMode()) {
+		case GLTF.MeshPrimitiveMode.POINTS:
+			return prim.getAttribute('POSITION').getCount();
+		case GLTF.MeshPrimitiveMode.LINES:
+			return prim.getIndices()
+				? prim.getIndices().getCount() / 2
+				: prim.getAttribute('POSITION').getCount() / 2;
+		case GLTF.MeshPrimitiveMode.LINE_LOOP:
+			return prim.getAttribute('POSITION').getCount();
+		case GLTF.MeshPrimitiveMode.LINE_STRIP:
+			return prim.getAttribute('POSITION').getCount() - 1;
+		case GLTF.MeshPrimitiveMode.TRIANGLES:
+			return prim.getIndices()
+				? prim.getIndices().getCount() / 3
+				: prim.getAttribute('POSITION').getCount() / 3;
+		case GLTF.MeshPrimitiveMode.TRIANGLE_STRIP:
+		case GLTF.MeshPrimitiveMode.TRIANGLE_FAN:
+			return prim.getAttribute('POSITION').getCount() - 2;
+		default:
+			throw new Error('Unexpected mode: ' + prim.getMode());
+	}
 }
