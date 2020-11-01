@@ -36,6 +36,8 @@ Transforms are functions applying a modification to the {@link Document}. This p
 | [metalRough](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/metal-rough.ts) | Node.js, Web  | Convert materials from spec/gloss to metal/rough.                                                                                                                              |
 | [partition](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/partition.ts)   | Node.js, Web  | Partitions the binary payload of a glTF file so separate mesh or animation data is in separate .bin files.                                                                      |
 | [sequence](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/sequence.ts)     | Node.js, Web  | Creates an animation displaying each of the specified nodes sequentially.                                                                                                       |
+| [weld](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/weld.ts)             | Node.js, Web  | Index geometry and (optionally) merge similar vertices.                                                                                                                         |
+| [unweld](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/lib/src/unweld.ts)         | Node.js, Web  | De-index geometry, disconnecting any shared vertices.                                                                                                                           |
 
 ## Other functions
 

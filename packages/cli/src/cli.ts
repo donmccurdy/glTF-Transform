@@ -4,7 +4,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, ao, center, dedup, metalRough, partition, sequence } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { merge } from './merge';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
@@ -113,6 +113,38 @@ program
 		const doc = await io.read(args.input as string)
 			.setLogger(logger as unknown as Logger)
 			.transform(partition(options as unknown as PartitionOptions));
+		io.write(args.output as string, doc);
+	});
+
+// WELD
+program
+	.command('weld', 'Index geometry and optionally merge similar vertices')
+	.help(`
+Index geometry and optionally merge similar vertices. With --tolerance=0,
+geometry is indexed in place, without merging.`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--tolerance', 'Per-attribute tolerance to merge similar vertices', {
+		validator: program.NUMBER,
+		default: 1e-4,
+	})
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(weld(options as unknown as WeldOptions));
+		io.write(args.output as string, doc);
+	});
+
+// UNWELD
+program
+	.command('unweld', 'De-index geometry, disconnecting any shared vertices')
+	.help('De-index geometry, disconnecting any shared vertices.')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(async ({args, options, logger}) => {
+		const doc = await io.read(args.input as string)
+			.setLogger(logger as unknown as Logger)
+			.transform(unweld(options as unknown as UnweldOptions));
 		io.write(args.output as string, doc);
 	});
 
