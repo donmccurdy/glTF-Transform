@@ -7,7 +7,9 @@ type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16A
 export declare module DRACO {
 	interface Library {
 		createDecoderModule(object?: object): DecoderModule;
+		createEncoderModule(object?: object): EncoderModule;
 	}
+
 	interface DecoderModule {
 		Decoder: new () => Decoder;
 		DecoderBuffer: new () => DecoderBuffer;

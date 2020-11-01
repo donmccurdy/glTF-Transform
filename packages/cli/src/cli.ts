@@ -3,7 +3,7 @@ import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, MaterialsUnlit } from '@gltf-transform/extensions';
+import { ALL_EXTENSIONS, DracoMeshCompression, MaterialsUnlit } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { merge } from './merge';
@@ -19,6 +19,7 @@ const io = new NodeIO()
 	.registerExtensions(ALL_EXTENSIONS)
 	.registerDependencies({
 		'draco3d.decoder': draco3d.createDecoderModule(),
+		'draco3d.encoder': draco3d.createEncoderModule(),
 	});
 
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
@@ -290,6 +291,55 @@ program
 				fs.writeFileSync(fileName, outBuffer);
 				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 			});
+	});
+
+// DRACO
+program
+	.command('draco', 'Compress mesh geometry with Draco')
+	.help(`
+Compress mesh geometry with the Draco library. This type of compression affects
+only geometry data — animation and textures are not compressed.
+
+Two compression methods are available: 'edgebreaker' and 'sequential'. The
+edgebreaker method will give higher compression in general, but changes the
+order of the model's vertices. To preserve index order, use sequential
+compression. When a mesh uses morph targets, or a high decoding speed is
+selected, sequential compression will automatically be chosen.
+
+Both speed options affect the encoder's choice of algorithms. For example, a
+requirement for fast decoding may prevent the encoder from using the best
+compression methods even if the encoding speed is set to 0. In general, the
+faster of the two options limits the choice of features that can be used by the
+encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow the
+encoder to choose the optimal method out of the available features for the
+given --decodeSpeed.`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--method <method>', 'Compression method.', {
+		validator: ['edgebreaker', 'sequential'],
+		default: 'edgebreaker',
+	})
+	.option('--encodeSpeed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
+	.option('--decodeSpeed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
+	.action(({args, options, logger}) => {
+		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
+		doc.createExtension(DracoMeshCompression)
+			.setRequired(true)
+			.setEncoderEnabled(true)
+			.setEncoderOptions({
+				method: options.method === 'edgebreaker'
+					? DracoMeshCompression.EncoderMethod.EDGEBREAKER
+					: DracoMeshCompression.EncoderMethod.SEQUENTIAL,
+				encodeSpeed: options.encodeSpeed as number,
+				decodeSpeed: options.decodeSpeed as number,
+			});
+		io.write(args.output as string, doc);
 	});
 
 const BASIS_SUMMARY = `

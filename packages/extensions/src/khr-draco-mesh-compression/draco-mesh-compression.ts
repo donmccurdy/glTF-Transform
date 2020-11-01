@@ -1,8 +1,8 @@
-import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
-import { EncoderOptions, encodeGeometry, initEncoderModule } from './encoder';
+import { EncodedPrimitive, EncoderMethod, EncoderOptions, encodeGeometry, initEncoderModule } from './encoder';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -16,13 +16,17 @@ interface DracoPrimitiveExtension {
 /** Documentation in {@link EXTENSIONS.md}. */
 export class DracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
-	public readonly provideTypes = [PropertyType.PRIMITIVE];
-	public readonly dependencies = ['draco3d.decoder'];
+	public readonly prereadTypes = [PropertyType.PRIMITIVE];
+	public readonly prewriteTypes = [PropertyType.ACCESSOR];
+	public readonly dependencies = ['draco3d.decoder', 'draco3d.encoder'];
+
 	public static readonly EXTENSION_NAME = NAME;
+	public static readonly EncoderMethod = EncoderMethod;
 
 	private _decoderModule: DRACO.DecoderModule;
 	private _encoderModule: DRACO.EncoderModule;
 	private _encoderOptions: EncoderOptions = {};
+	private _encoderEnabled = true;
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'draco3d.decoder') {
@@ -41,7 +45,12 @@ export class DracoMeshCompression extends Extension {
 		return this;
 	}
 
-	public provide(context: ReaderContext): this {
+	public setEncoderEnabled(enabled: boolean): this {
+		this._encoderEnabled = enabled;
+		return this;
+	}
+
+	public preread(context: ReaderContext): this {
 		if (!this._decoderModule) {
 			throw new Error('Please install extension dependency, "draco3d.decoder".');
 		}
@@ -99,23 +108,75 @@ export class DracoMeshCompression extends Extension {
 		return this;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public read(context: ReaderContext): this {
-		this.dispose(); // TODO(bug): Keep extension? Warn?
+	public read(_context: ReaderContext): this {
+		this._encoderEnabled = false;
 		return this;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext, _propertyType: PropertyType): this {
+		if (!this._encoderEnabled) return this;
 		if (!this._encoderModule) {
 			throw new Error('Please install extension dependency, "draco3d.encoder".');
 		}
 
+		const primitiveEncodingMap = new Map<Primitive, EncodedPrimitive>();
+		context.extensionData[NAME] = {primitiveEncodingMap};
+
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
+				if (!prim.getIndices()) {
+					throw new Error('Draco compression requires indexed primitives.');
+				}
+
 				const encodedPrim = encodeGeometry(prim, this._encoderOptions);
-				// TODO(feat): Implement provideWrite().
-				throw new Error('Not implemented.');
+
+				const indicesDef = context.createAccessorDef(prim.getIndices());
+				indicesDef.count = encodedPrim.numIndices;
+				context.accessorIndexMap
+					.set(prim.getIndices(), context.jsonDoc.json.accessors.length);
+				context.jsonDoc.json.accessors.push(indicesDef);
+
+				for (const semantic of prim.listSemantics()) {
+					const attribute = prim.getAttribute(semantic);
+					const attributeDef = context.createAccessorDef(attribute);
+					attributeDef.count = encodedPrim.numVertices;
+					context.accessorIndexMap.set(attribute, context.jsonDoc.json.accessors.length)
+					context.jsonDoc.json.accessors.push(attributeDef);
+				}
+
+				const buffer = prim.getAttribute('POSITION').getBuffer()
+					|| this.doc.getRoot().listBuffers()[0];
+				if (!context.otherBufferViews.has(buffer)) context.otherBufferViews.set(buffer, []);
+				context.otherBufferViews.get(buffer).push(encodedPrim.data);
+				primitiveEncodingMap.set(prim, encodedPrim);
+			}
+		}
+
+		return this;
+	}
+
+	public write(context: WriterContext): this {
+		if (!this._encoderEnabled) {
+			const logger = this.doc.getLogger();
+			logger.warn('Skipping (lossy) recompression. To recompress manually, reapply Draco.');
+		}
+
+		// TODO(feat): Ensure that compressed accessors are not re-written elsewhere. This could be
+		// nontrivial, if the same accessor is reused (e.g. for morph targets).
+
+		for (const mesh of this.doc.getRoot().listMeshes()) {
+			const meshDef = context.jsonDoc.json.meshes[context.meshIndexMap.get(mesh)];
+			for (let i = 0; i < mesh.listPrimitives().length; i++) {
+				const prim = mesh.listPrimitives()[i];
+				const primDef = meshDef.primitives[i];
+				const encodedPrim = (context.extensionData[NAME].primitiveEncodingMap as
+					Map<Primitive, EncodedPrimitive>).get(prim);
+
+				primDef.extensions = primDef.extensions || {};
+				primDef.extensions[NAME] = {
+					bufferView: context.otherBufferViewsIndexMap.get(encodedPrim.data),
+					attributes: encodedPrim.attributeIDs,
+				};
 			}
 		}
 

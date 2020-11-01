@@ -17,11 +17,11 @@ enum AttributeEnum {
 }
 
 const DEFAULT_QUANTIZATION_BITS = {
-	[AttributeEnum.POSITION]: 16,
-	[AttributeEnum.NORMAL]: 8,
+	[AttributeEnum.POSITION]: 14,
+	[AttributeEnum.NORMAL]: 10,
 	[AttributeEnum.COLOR]: 8,
-	[AttributeEnum.TEX_COORD]: 8,
-	[AttributeEnum.GENERIC]: 8,
+	[AttributeEnum.TEX_COORD]: 12,
+	[AttributeEnum.GENERIC]: 12,
 };
 
 export interface EncodedPrimitive {
@@ -85,16 +85,11 @@ export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAU
 		);
 	}
 
-	if (prim.getIndices()) {
-		builder.AddFacesToMesh(
-			mesh,
-			prim.getIndices().getCount() / 3,
-			prim.getIndices().getArray() as unknown as Uint32Array
-		);
-	} else {
-		// TODO(feat): Implement.
-		throw new Error('Non-indexed compression not implemented.');
-	}
+	builder.AddFacesToMesh(
+		mesh,
+		prim.getIndices().getCount() / 3,
+		prim.getIndices().getArray() as unknown as Uint32Array
+	);
 
 	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
 	encoder.SetTrackEncodedProperties(true);

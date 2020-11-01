@@ -115,7 +115,8 @@ export class NodeIO extends PlatformIO {
 		const {json, resources} = GLTFWriter.write(doc, {
 			basename: FileUtils.basename(uri),
 			isGLB: false,
-			logger: this._logger
+			logger: this._logger,
+			dependencies: this._dependencies,
 		});
 		const {_fs: fs, _path: path} = this;
 		const dir = path.dirname(uri);

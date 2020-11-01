@@ -62,6 +62,7 @@ export abstract class PlatformIO {
 		if (options.isGLB && doc.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
+		options.dependencies = {...this._dependencies, ...options.dependencies};
 		return GLTFWriter.write(doc, options);
 	}
 
@@ -115,6 +116,7 @@ export abstract class PlatformIO {
 			basename: '',
 			isGLB: true,
 			logger: this._logger,
+			dependencies: this._dependencies,
 		});
 
 		const jsonText = JSON.stringify(json);

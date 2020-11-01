@@ -6,10 +6,10 @@ const NAME = EXT_TEXTURE_WEBP;
 /** Documentation in {@link EXTENSIONS.md}. */
 export class TextureWebP extends Extension {
 	public readonly extensionName = NAME;
-	public readonly provideTypes = [PropertyType.TEXTURE];
+	public readonly prereadTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
-	public provide(context: ReaderContext): this {
+	public preread(context: ReaderContext): this {
 		context.jsonDoc.json.textures.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
 				textureDef.source = textureDef.extensions[NAME].source;
