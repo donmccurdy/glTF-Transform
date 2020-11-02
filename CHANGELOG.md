@@ -4,6 +4,16 @@
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/8)
 
+**Features:**
+
+- Add 'weld' and 'unweld' transforms.
+- Add KTX and WebP support in utils and 'inspect' function.
+
+**Breaking changes:**
+
+- Stricter type checking.
+- External type definitions are now installed as dependencies.
+
 ## v0.7
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7)
