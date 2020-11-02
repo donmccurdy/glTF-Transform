@@ -7,7 +7,7 @@
 **Features:**
 
 - Add 'weld' and 'unweld' transforms.
-- Add encoding/compression support to `KHR_draco_mesh_compression'.
+- Add encoding/compression support to `KHR_draco_mesh_compression`.
 - Add KTX and WebP support in utils and 'inspect' function.
 
 **Breaking changes:**
