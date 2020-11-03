@@ -327,8 +327,10 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: 5,
 	})
-	.action(({args, options, logger}) => {
+	.action(async ({args, options, logger}) => {
 		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
+		// Include a lossless weld — Draco requires indices.
+		await doc.transform(weld({tolerance: 0}));
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)
 			.setEncoderEnabled(true)

@@ -125,7 +125,7 @@ export class DracoMeshCompression extends Extension {
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				if (!prim.getIndices()) {
-					throw new Error('Draco compression requires indexed primitives.');
+					throw new Error('Draco compression requires indexed primitives. Try "weld"?');
 				}
 
 				const encodedPrim = encodeGeometry(prim, this._encoderOptions);
