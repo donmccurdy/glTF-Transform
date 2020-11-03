@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
+import { Accessor, Document, Logger, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils';
 
 const NAME = 'weld';
@@ -141,9 +141,8 @@ function swapAttributes(
 		dstAttrElements: number[][]): void {
 	const dstAttrArrayLength = dstAttrElements.length * srcAttr.getElementSize();
 	const dstAttrArray = createArrayOfType(srcAttr.getArray(), dstAttrArrayLength);
-
-	// Use a temporary Accessor to write elements to a typed array.
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
+
 	for (let i = 0; i < dstAttrElements.length; i++) {
 		dstAttr.setElement(i, dstAttrElements[i]);
 	}
