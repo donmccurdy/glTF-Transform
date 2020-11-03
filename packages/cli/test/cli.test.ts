@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import * as fs from 'fs';
 import * as test from 'tape';
 import * as tmp from 'tmp';

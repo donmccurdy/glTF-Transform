@@ -108,13 +108,13 @@ export class Accessor extends ExtensibleProperty {
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this._array = other._array.slice();
 		this._type = other._type;
 		this._componentType = other._componentType;
 		this._normalized = other._normalized;
 		this._in = other._in;
 		this._out = other._out;
 
+		if (other._array) this._array = other._array.slice();
 		if (other.buffer) this.setBuffer(resolve(other.buffer.getChild()));
 
 		return this;

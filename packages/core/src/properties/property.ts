@@ -103,7 +103,12 @@ export abstract class Property extends GraphNode {
 	 */
 	public clone(): this {
 		const PropertyClass = this.constructor as new(g: PropertyGraph) => this;
-		return new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
+		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
+
+		// Root needs this event to link cloned properties.
+		this.graph.emit('clone', child);
+
+		return child;
 	}
 
 	/**
