@@ -26,7 +26,6 @@ export class DracoMeshCompression extends Extension {
 	private _decoderModule: DRACO.DecoderModule;
 	private _encoderModule: DRACO.EncoderModule;
 	private _encoderOptions: EncoderOptions = {};
-	private _encoderEnabled = true;
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'draco3d.decoder') {
@@ -42,11 +41,6 @@ export class DracoMeshCompression extends Extension {
 
 	public setEncoderOptions(options: EncoderOptions): this {
 		this._encoderOptions = options;
-		return this;
-	}
-
-	public setEncoderEnabled(enabled: boolean): this {
-		this._encoderEnabled = enabled;
 		return this;
 	}
 
@@ -109,12 +103,10 @@ export class DracoMeshCompression extends Extension {
 	}
 
 	public read(_context: ReaderContext): this {
-		this._encoderEnabled = false;
 		return this;
 	}
 
 	public prewrite(context: WriterContext, _propertyType: PropertyType): this {
-		if (!this._encoderEnabled) return this;
 		if (!this._encoderModule) {
 			throw new Error('Please install extension dependency, "draco3d.encoder".');
 		}
@@ -156,16 +148,7 @@ export class DracoMeshCompression extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		if (!this._encoderEnabled) {
-			const logger = this.doc.getLogger();
-			logger.warn(
-				'Skipping Draco recompression. To compress manually (lossy), reapply Draco.'
-			);
-			return this;
-			// TODO(bug): This leaves the model with an unused, required Draco extension.
-		}
-
-		// TODO(feat): Ensure that compressed accessors are not re-written elsewhere. This could be
+		// TODO(bug): Ensure that compressed accessors are not re-written elsewhere. This could be
 		// nontrivial, if the same accessor is reused (e.g. for morph targets).
 
 		for (const mesh of this.doc.getRoot().listMeshes()) {

@@ -333,7 +333,6 @@ given --decodeSpeed.`.trim())
 		await doc.transform(weld({tolerance: 0}));
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)
-			.setEncoderEnabled(true)
 			.setEncoderOptions({
 				method: options.method === 'edgebreaker'
 					? DracoMeshCompression.EncoderMethod.EDGEBREAKER
