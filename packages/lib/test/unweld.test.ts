@@ -79,5 +79,6 @@ test('@gltf-transform/lib::unweld', async t => {
 		positionArray,
 		'original vertices in prim3'
 	);
+	t.equals(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
 	t.end();
 });

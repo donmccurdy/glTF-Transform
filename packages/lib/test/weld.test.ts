@@ -45,12 +45,12 @@ test('@gltf-transform/lib::weld | tolerance=0', async t => {
 		new Uint32Array([3, 4, 5, 0, 1, 2]),
 		'indices on prim2'
 	);
-	t.deepEqual(
+	t.deepEquals(
 		prim1.getAttribute('POSITION').getArray(),
 		positionArray,
 		'vertices on prim1'
 	);
-	t.deepEqual(
+	t.deepEquals(
 		prim2.getAttribute('POSITION').getArray(),
 		positionArray,
 		'vertices on prim2'
@@ -58,7 +58,7 @@ test('@gltf-transform/lib::weld | tolerance=0', async t => {
 	t.end();
 });
 
-test.only('@gltf-transform/lib::weld | tolerance>0', async t => {
+test('@gltf-transform/lib::weld | tolerance>0', async t => {
 	const doc = new Document();
 	const positionArray = new Float32Array([
 		0, 0, 0,
@@ -115,24 +115,21 @@ test.only('@gltf-transform/lib::weld | tolerance>0', async t => {
 		new Uint32Array([0, 1, 2, 0, 1, 2]),
 		'indices on prim2'
 	);
-	t.deepEqual(
+	t.deepEquals(
 		prim1.getAttribute('POSITION').getArray(),
 		positionArray.slice(0, 9),
 		'vertices on prim1'
 	);
-	t.deepEqual(
+	t.deepEquals(
 		prim2.getAttribute('POSITION').getArray(),
 		positionArray.slice(0, 9),
 		'vertices on prim2'
 	);
-	t.deepEqual(
+	t.deepEquals(
 		prim2.listTargets()[0].getAttribute('POSITION').getArray(),
 		positionTargetArray.slice(9, 18), // Uses later targets, because of index order.
 		'morph targets on prim2'
 	);
-
-	// - [ ] TODO(test): Safe if primitive is TRIANGLE_FAN or TRIANGLE_STRIP?
-	// - [ ] TODO(test): Safe for normalized attributes?
-	// - [ ] TODO(test): Dispose of unused attributes and indices?
+	t.equals(doc.getRoot().listAccessors().length, 5, 'keeps only needed accessors');
 	t.end();
 });
