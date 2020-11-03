@@ -14,3 +14,13 @@ test('@gltf-transform/core::root | copy', t => {
 	t.deepEqual(doc.getRoot().listScenes(), [scene], 'listScenes()');
 	t.end();
 });
+
+test('@gltf-transform/core::root | clone child of root', t => {
+	const doc = new Document();
+	const a = doc.createAccessor();
+	const b = a.clone();
+	const c = b.clone();
+
+	t.deepEqual(doc.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
+	t.end();
+});

@@ -15,6 +15,19 @@ export class Graph<T extends GraphNode> {
 	private _parentRefs: Map<T, Set<Link<T, T>>> = new Map();
 	private _childRefs: Map<T, Set<Link<T, T>>> = new Map();
 
+	private _listeners: {[event: string]: ((target: unknown) => void)[]} = {};
+
+	public on(type: string, fn: (target: unknown) => void): this {
+		this._listeners[type] = this._listeners[type] || [];
+		this._listeners[type].push(fn);
+		return this;
+	}
+
+	public emit(type: string, target: T): this {
+		for (const fn of this._listeners[type] || []) fn(target);
+		return this;
+	}
+
 	public getLinks(): Link<T, T>[] {
 		return Array.from(this._links);
 	}

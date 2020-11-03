@@ -10,6 +10,7 @@ import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
 import { COPY_IDENTITY, Property } from './property';
+import { PropertyGraph } from './property-graph';
 import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
@@ -67,6 +68,11 @@ export class Root extends Property {
 	@GraphChildList private skins: Link<Root, Skin>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
 
+	constructor (graph: PropertyGraph) {
+		super(graph);
+		graph.on('clone', (target) => this._addChildOfRoot(target));
+	}
+
 	public clone(): this {
 		throw new Error('Root cannot be cloned.');
 	}
@@ -92,6 +98,34 @@ export class Root extends Property {
 		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
 		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
 
+		return this;
+	}
+
+	/** @hidden */
+	public _addChildOfRoot (child: unknown): this {
+		// TODO(cleanup): Extra private helpers could probably be removed, here.
+		if (child instanceof Scene) {
+			this._addScene(child as Scene);
+		} else if (child instanceof Node) {
+			this._addNode(child as Node);
+		} else if (child instanceof Camera) {
+			this._addCamera(child as Camera);
+		} else if (child instanceof Skin) {
+			this._addSkin(child as Skin);
+		} else if (child instanceof Mesh) {
+			this._addMesh(child as Mesh);
+		} else if (child instanceof Material) {
+			this._addMaterial(child as Material);
+		} else if (child instanceof Texture) {
+			this._addTexture(child as Texture);
+		} else if (child instanceof Animation) {
+			this._addAnimation(child as Animation);
+		} else if (child instanceof Accessor) {
+			this._addAccessor(child as Accessor);
+		} else if (child instanceof Buffer) {
+			this._addBuffer(child as Buffer);
+		}
+		// No error for untracked property types.
 		return this;
 	}
 
