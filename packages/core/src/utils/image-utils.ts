@@ -90,7 +90,7 @@ class ImageUtils {
 		// Reference: http://tools.ietf.org/html/rfc6386
 		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
 		const WEBP = BufferUtils.decodeText(buffer.slice(8, 12));
-		if (RIFF !== 'RIFF' && WEBP !== 'WEBP') return null;
+		if (RIFF !== 'RIFF' || WEBP !== 'WEBP') return null;
 
 		const view = new DataView(buffer);
 
@@ -112,7 +112,7 @@ class ImageUtils {
 				const height = 1 + (((b3 & 0xF) << 10) | (b2 << 2) | ((b1 & 0xC0) >> 6));
 				return [width, height];
 			}
-			offset += 8 + (chunkByteLength % 2 ? chunkByteLength + 1 : chunkByteLength);
+			offset += 8 + chunkByteLength + (chunkByteLength % 2);
 		}
 
 		return null;
