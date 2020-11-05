@@ -26,6 +26,10 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 	t.deepEqual(materialDef.extensions, {'KHR_materials_unlit': {}}, 'writes unlit extension');
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsUnlit.EXTENSION_NAME], 'writes extensionsUsed');
 
+	const rtDoc = new NodeIO().registerExtensions([MaterialsUnlit]).readJSON(jsonDoc);
+	const rtMat = rtDoc.getRoot().listMaterials()[0];
+	t.ok(rtMat.getExtension('KHR_materials_unlit'), 'unlit is round tripped');
+
 	unlitExtension.dispose();
 
 	t.equal(mat.getExtension('KHR_materials_unlit'), null, 'unlit is detached');

@@ -6,12 +6,36 @@ import { Clearcoat, MaterialsClearcoat } from '../';
 
 const WRITER_OPTIONS = {basename: 'extensionTest'};
 
-test('@gltf-transform/extensions::materials-clearcoat', t => {
+test('@gltf-transform/extensions::materials-clearcoat | factors', t => {
+	const doc = new Document();
+	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+	const clearcoat = clearcoatExtension.createClearcoat()
+		.setClearcoatFactor(0.9)
+		.setClearcoatRoughnessFactor(0.1);
+
+	doc.createMaterial('MyClearcoatMaterial')
+		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
+		.setExtension('KHR_materials_clearcoat', clearcoat);
+
+	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
+	const roundtripDoc = io.readJSON(io.writeJSON(doc, {isGLB: false}));
+	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
+	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
+
+	t.equal(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
+	t.equal(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
+	t.end();
+});
+
+test('@gltf-transform/extensions::materials-clearcoat | textures', t => {
 	const doc = new Document();
 	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat()
 		.setClearcoatFactor(0.9)
 		.setClearcoatTexture(doc.createTexture())
+		.setClearcoatRoughnessTexture(doc.createTexture())
+		.setClearcoatNormalTexture(doc.createTexture())
+		.setClearcoatNormalScale(2.0)
 		.setClearcoatRoughnessFactor(0.1);
 
 	const mat = doc.createMaterial('MyClearcoatMaterial')
@@ -28,6 +52,8 @@ test('@gltf-transform/extensions::materials-clearcoat', t => {
 		clearcoatFactor: 0.9,
 		clearcoatRoughnessFactor: 0.1,
 		clearcoatTexture: {index: 0, texCoord: 0},
+		clearcoatRoughnessTexture: {index: 1, texCoord: 0},
+		clearcoatNormalTexture: {index: 2, texCoord: 0, scale: 2},
 	}}, 'writes clearcoat extension');
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -43,6 +69,21 @@ test('@gltf-transform/extensions::materials-clearcoat', t => {
 	t.equal(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
 	t.equal(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
 	t.ok(roundtripExt.getClearcoatTexture(), 'reads clearcoatTexture');
+	t.ok(roundtripExt.getClearcoatRoughnessTexture(), 'reads clearcoatRoughnessTexture');
+	t.ok(roundtripExt.getClearcoatNormalTexture(), 'reads clearcoatNormalTexture');
+	t.equal(roundtripExt.getClearcoatNormalScale(), 2, 'reads clearcoatNormalScale');
+	t.end();
+});
+
+test('@gltf-transform/extensions::materials-clearcoat | disabled', t => {
+	const doc = new Document();
+	doc.createExtension(MaterialsClearcoat);
+	doc.createMaterial();
+
+	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
+	const roundtripDoc = io.readJSON(io.writeJSON(doc, {isGLB: false}));
+	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
+	t.equals(roundtripMat.getExtension('KHR_materials_clearcoat'), null, 'no effect when not attached');
 	t.end();
 });
 
