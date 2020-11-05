@@ -116,6 +116,9 @@ export class DracoMeshCompression extends Extension {
 			throw new Error('Please install extension dependency, "draco3d.encoder".');
 		}
 
+		const logger = this.doc.getLogger();
+		logger.debug(`Draco compression options: ${JSON.stringify(this._encoderOptions)}`);
+
 		const primitiveHashMap = listDracoPrimitives(this.doc);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
 
@@ -154,6 +157,8 @@ export class DracoMeshCompression extends Extension {
 			if (!context.otherBufferViews.has(buffer)) context.otherBufferViews.set(buffer, []);
 			context.otherBufferViews.get(buffer).push(encodedPrim.data);
 		}
+
+		logger.debug(`Compressed ${primitiveHashMap.size} primitives.`);
 
 		context.extensionData[NAME] = {
 			primitiveHashMap,

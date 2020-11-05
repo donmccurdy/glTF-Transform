@@ -49,13 +49,14 @@ export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
 	encoderModule = _encoderModule;
 }
 
-/** References:
+/**
+ * References:
  * - https://github.com/mrdoob/three.js/blob/dev/examples/js/exporters/DRACOExporter.js
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
-export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
-	options = {...DEFAULT_ENCODER_OPTIONS, ...options};
-	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ...options.quantizationBits};
+export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
+	const options = {...DEFAULT_ENCODER_OPTIONS, ..._options};
+	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits};
 
 	const encoder = new encoderModule.Encoder();
 	const builder = new encoderModule.MeshBuilder();

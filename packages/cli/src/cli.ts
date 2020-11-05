@@ -276,23 +276,6 @@ program
 		io.write(args.output as string, doc);
 	});
 
-// GZIP
-program
-	.command('gzip', 'Compress the model with gzip')
-	.help('Compress the model with gzip.')
-	.argument('<input>', INPUT_DESC)
-	.action(({args, logger}) => {
-		const inBuffer = fs.readFileSync(args.input as string);
-		return gzip(inBuffer)
-			.then((outBuffer) => {
-				const fileName = args.input + '.gz';
-				const inSize = formatBytes(inBuffer.byteLength);
-				const outSize = formatBytes(outBuffer.byteLength);
-				fs.writeFileSync(fileName, outBuffer);
-				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
-			});
-	});
-
 // DRACO
 program
 	.command('draco', 'Compress mesh geometry with Draco')
@@ -327,6 +310,26 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: 5,
 	})
+	.option('--quantizePosition <bits>', 'Quantization bits for POSITION, 1-16.', {
+		validator: program.NUMBER,
+		default: 14,
+	})
+	.option('--quantizeNormal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+		validator: program.NUMBER,
+		default: 10,
+	})
+	.option('--quantizeColor <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+		validator: program.NUMBER,
+		default: 8,
+	})
+	.option('--quantizeTexcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+		validator: program.NUMBER,
+		default: 12,
+	})
+	.option('--quantizeOther <bits>', 'Quantization bits for other attributes, 1-16.', {
+		validator: program.NUMBER,
+		default: 12,
+	})
 	.action(async ({args, options, logger}) => {
 		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
 		// Include a lossless weld — Draco requires indices.
@@ -339,8 +342,32 @@ given --decodeSpeed.`.trim())
 					: DracoMeshCompression.EncoderMethod.SEQUENTIAL,
 				encodeSpeed: options.encodeSpeed as number,
 				decodeSpeed: options.decodeSpeed as number,
+				quantizationBits: {
+					'POSITION': options.quantizePosition as number,
+					'NORMAL': options.quantizeNormal as number,
+					'COLOR': options.quantizeColor as number,
+					'TEX_COORD': options.quantizeTexcoord as number,
+					'GENERIC': options.quantizeOther as number,
+				}
 			});
 		io.write(args.output as string, doc);
+	});
+
+// GZIP
+program
+	.command('gzip', 'Compress the model with gzip')
+	.help('Compress the model with gzip.')
+	.argument('<input>', INPUT_DESC)
+	.action(({args, logger}) => {
+		const inBuffer = fs.readFileSync(args.input as string);
+		return gzip(inBuffer)
+			.then((outBuffer) => {
+				const fileName = args.input + '.gz';
+				const inSize = formatBytes(inBuffer.byteLength);
+				const outSize = formatBytes(outBuffer.byteLength);
+				fs.writeFileSync(fileName, outBuffer);
+				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
+			});
 	});
 
 const BASIS_SUMMARY = `
