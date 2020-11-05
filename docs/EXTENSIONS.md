@@ -37,9 +37,7 @@ draw calls — not just compress it. Finally, be aware that Draco compression is
 compressing and decompressing a model in a pipeline will lose precision, so compression should
 generally be the last stage of an art workflow, and uncompressed original files should be kept.
 
-Currently, only _reading_ `KHR_draco_mesh_compression` is supported, and output will always be
-uncompressed. Writing compressed data will be added at a later date, so for now use glTF-Pipeline
-for that. A decoder or encoder from `draco3dgltf` npm module is required for reading and writing
+A decoder or encoder from `draco3dgltf` npm module is required for reading and writing
 respectively, and must be provided by the application:
 
 ```typescript
