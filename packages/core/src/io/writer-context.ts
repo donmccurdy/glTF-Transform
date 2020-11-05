@@ -24,7 +24,10 @@ export class WriterContext {
 	public readonly textureInfoDefMap = new Map<TextureInfo, GLTF.ITextureInfo>();
 	public readonly samplerDefIndexMap = new Map<string, number>(); // samplerDef JSON -> index
 
-	public readonly imageData: ArrayBuffer[] = [];
+	public readonly imageBufferViews: ArrayBuffer[] = [];
+	public readonly otherBufferViews = new Map<Buffer, ArrayBuffer[]>();
+	public readonly otherBufferViewsIndexMap = new Map<ArrayBuffer, number>();
+	public readonly extensionData = {};
 
 	public bufferURIGenerator: UniqueURIGenerator;
 	public imageURIGenerator: UniqueURIGenerator;
@@ -95,7 +98,7 @@ export class WriterContext {
 
 	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
 		if (this.options.isGLB) {
-			this.imageData.push(data);
+			this.imageBufferViews.push(data);
 			imageDef.bufferView = this.jsonDoc.json.bufferViews.length;
 			this.jsonDoc.json.bufferViews.push({
 				buffer: 0,

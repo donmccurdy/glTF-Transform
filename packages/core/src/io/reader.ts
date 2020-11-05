@@ -127,8 +127,8 @@ export class GLTFReader {
 		const imageDefs = json.images || [];
 		const textureDefs = json.textures || [];
 		doc.getRoot().listExtensionsUsed()
-			.filter((extension) => extension.provideTypes.includes(PropertyType.TEXTURE))
-			.forEach((extension) => extension.provide(context, PropertyType.TEXTURE));
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.TEXTURE))
+			.forEach((extension) => extension.preread(context, PropertyType.TEXTURE));
 		context.textures = imageDefs.map((imageDef) => {
 			const texture = doc.createTexture(imageDef.name);
 
@@ -254,8 +254,8 @@ export class GLTFReader {
 
 		const meshDefs = json.meshes || [];
 		doc.getRoot().listExtensionsUsed()
-			.filter((extension) => extension.provideTypes.includes(PropertyType.PRIMITIVE))
-			.forEach((extension) => extension.provide(context, PropertyType.PRIMITIVE));
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.PRIMITIVE))
+			.forEach((extension) => extension.preread(context, PropertyType.PRIMITIVE));
 		context.meshes = meshDefs.map((meshDef) => {
 			const mesh = doc.createMesh(meshDef.name);
 

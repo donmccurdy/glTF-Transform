@@ -1,4 +1,4 @@
-import { GLB_BUFFER, NAME, VERSION } from '../constants';
+import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
@@ -16,12 +16,14 @@ export interface WriterOptions {
 	logger?: Logger;
 	basename?: string;
 	isGLB?: boolean;
+	dependencies?: {[key: string]: unknown};
 }
 
 const DEFAULT_OPTIONS: WriterOptions = {
 	logger: Logger.DEFAULT_INSTANCE,
 	basename: '',
 	isGLB: true,
+	dependencies: {},
 };
 
 /** @hidden */
@@ -41,6 +43,14 @@ export class GLTFWriter {
 		context.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
 		context.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
 		context.logger = doc.getLogger();
+
+		/* Extensions (1/2). */
+
+		for (const extension of doc.getRoot().listExtensionsUsed()) {
+			for (const key of extension.dependencies) {
+				extension.install(key, options.dependencies[key]);
+			}
+		}
 
 		/* Utilities. */
 
@@ -66,7 +76,6 @@ export class GLTFWriter {
 			for (const accessor of accessors) {
 				const accessorDef = context.createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews.length;
-				// TODO(feat): accessorDef.sparse
 
 				const data = BufferUtils.pad(accessor.getArray().buffer);
 				accessorDef.byteOffset = byteLength;
@@ -220,6 +229,10 @@ export class GLTFWriter {
 
 		/* Buffers, buffer views, and accessors. */
 
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.prewriteTypes.includes(PropertyType.ACCESSOR))
+			.forEach((extension) => extension.prewrite(context, PropertyType.ACCESSOR));
+
 		json.buffers = [];
 		root.listBuffers().forEach((buffer) => {
 			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
@@ -240,6 +253,9 @@ export class GLTFWriter {
 				if ((!(parent instanceof Accessor))) { // Not expected.
 					throw new Error('Unimplemented buffer reference: ' + parent);
 				}
+
+				// Skip if already written by an extension.
+				if (context.accessorIndexMap.has(parent)) continue;
 
 				let isAttribute = false;
 				let isIndex = false;
@@ -312,11 +328,24 @@ export class GLTFWriter {
 			}
 
 			// We only support embedded images in GLB, so we know there is only one buffer.
-			if (context.imageData.length) {
-				for (let i = 0; i < context.imageData.length; i++) {
+			if (context.imageBufferViews.length) {
+				for (let i = 0; i < context.imageBufferViews.length; i++) {
 					json.bufferViews[json.images[i].bufferView].byteOffset = bufferByteLength;
-					bufferByteLength += context.imageData[i].byteLength;
-					buffers.push(context.imageData[i]);
+					bufferByteLength += context.imageBufferViews[i].byteLength;
+					buffers.push(context.imageBufferViews[i]);
+				}
+			}
+
+			if (context.otherBufferViews.has(buffer)) {
+				for (const data of context.otherBufferViews.get(buffer)) {
+					json.bufferViews.push({
+						buffer: bufferIndex,
+						byteOffset: bufferByteLength,
+						byteLength: data.byteLength,
+					});
+					context.otherBufferViewsIndexMap.set(data, json.bufferViews.length - 1);
+					bufferByteLength += data.byteLength;
+					buffers.push(data);
 				}
 			}
 
@@ -421,8 +450,12 @@ export class GLTFWriter {
 
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
-				primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
+
 				primitiveDef.mode = primitive.getMode();
+
+				if (primitive.getMaterial()) {
+					primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
+				}
 
 				if (Object.keys(primitive.getExtras()).length) {
 					primitiveDef.extras = primitive.getExtras();
@@ -590,7 +623,7 @@ export class GLTFWriter {
 			return sceneDef;
 		});
 
-		/* Extensions. */
+		/* Extensions (2/2). */
 
 		json.extensionsUsed = root.listExtensionsUsed().map((ext) => ext.extensionName);
 		json.extensionsRequired = root.listExtensionsRequired().map((ext) => ext.extensionName);

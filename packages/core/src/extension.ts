@@ -31,10 +31,15 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/** Official name of the extension. */
 	public readonly extensionName: string;
 	/**
-	 * {@link Property} types this extension will provide. *Most extensions don't need to implement
-	 * this.*
+	 * Before reading, extension should be called for these {@link Property} types. *Most
+	 * extensions don't need to implement this.*
 	 */
-	public readonly provideTypes: PropertyType[] = [];
+	public readonly prereadTypes: PropertyType[] = [];
+	/**
+	 * Before writing, extension should be called for these {@link Property} types. *Most
+	 * extensions don't need to implement this.*
+	 */
+	public readonly prewriteTypes: PropertyType[] = [];
 
 	/** Dependency IDs needed by this extension, to be installed before I/O. */
 	public readonly dependencies: string[] = [];
@@ -103,13 +108,26 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/**
 	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method may
 	 * optionally be implemented by an extension, and should then support any property type
-	 * declared by the Extension's {@link Extension.provideTypes} list. The Extension will
+	 * declared by the Extension's {@link Extension.prereadTypes} list. The Extension will
 	 * be given a ReaderContext instance, and is expected to update either the context or its
 	 * {@link JSONDocument} with resources known to the Extension. *Most extensions don't need to
 	 * implement this.*
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public provide(readerContext: ReaderContext, propertyType: PropertyType): this {
+	public preread(readerContext: ReaderContext, propertyType: PropertyType): this {
+		return this;
+	}
+
+	/**
+	 * Used by the {@link PlatformIO} utilities when writing a glTF asset. This method may
+	 * optionally be implemented by an extension, and should then support any property type
+	 * declared by the Extension's {@link Extension.prewriteTypes} list. The Extension will
+	 * be given a WriterContext instance, and is expected to update either the context or its
+	 * {@link JSONDocument} with resources known to the Extension. *Most extensions don't need to
+	 * implement this.*
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public prewrite(writerContext: WriterContext, propertyType: PropertyType): this {
 		return this;
 	}
 
