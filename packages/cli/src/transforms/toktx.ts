@@ -7,7 +7,7 @@ const tmp = require('tmp');
 import { sync as commandExistsSync } from 'command-exists';
 import { BufferUtils, Document, FileUtils, ImageUtils, Texture, Transform } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { formatBytes } from './util';
+import { formatBytes } from '../util';
 
 tmp.setGracefulCleanup();
 

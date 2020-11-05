@@ -1,3 +1,5 @@
+import { Document, FileUtils, Logger, NodeIO, Transform } from '@gltf-transform/core';
+
 // Utilities.
 
 export function formatLong(x: number): string {
@@ -26,4 +28,53 @@ export function formatHeader(title: string): string {
 	return ''
 		+ '\n ' + title.toUpperCase()
 		+ '\n ────────────────────────────────────────────';
+}
+
+/** Helper class for managing a CLI command session. */
+export class Session {
+	constructor (
+		private _io: NodeIO,
+		private _logger: Logger,
+		private _input: string,
+		private _output: string) {}
+
+	public static create (io: NodeIO, logger: unknown, input: unknown, output: unknown): Session {
+		return new Session(io, logger as Logger, input as string, output as string);
+	}
+
+	public async transform (...transforms: Transform[]): Promise<void> {
+		const doc = this._input
+			? this._io.read(this._input).setLogger(this._logger)
+			: new Document().setLogger(this._logger);
+
+		const dracoExtension = doc.getRoot().listExtensionsUsed()
+			.find((extension) => extension.extensionName === 'KHR_draco_mesh_compression');
+		if (dracoExtension) {
+			dracoExtension.dispose();
+			this._logger.warn(
+				'Skipping Draco recompression. To compress again — which will be lossy — manually'
+				+ ' reapply compression using the `draco` command.'
+			);
+		}
+
+		await doc.transform(...transforms);
+
+		this._io.write(this._output, doc);
+
+		const {lastReadBytes, lastWriteBytes} = this._io;
+		if (!this._input) {
+			const output = FileUtils.basename(this._output)
+				+ '.' + FileUtils.extension(this._output);
+			this._logger.info(`${output} (${formatBytes(lastWriteBytes)})`);
+		} else {
+			const input = FileUtils.basename(this._input)
+				+ '.' + FileUtils.extension(this._input);
+			const output = FileUtils.basename(this._output)
+				+ '.' + FileUtils.extension(this._output);
+			this._logger.info(
+				`${input} (${formatBytes(lastReadBytes)})`
+				+ ` → ${output} (${formatBytes(lastWriteBytes)})`
+			);
+		}
+	}
 }

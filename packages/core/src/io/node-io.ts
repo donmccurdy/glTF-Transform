@@ -40,6 +40,12 @@ export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
 
+	/** @hidden */
+	public lastReadBytes = 0;
+
+	/** @hidden */
+	public lastWriteBytes = 0;
+
 	/** Constructs a new NodeIO service. Instances are reusable. */
 	constructor() {
 		super();
@@ -82,14 +88,18 @@ export class NodeIO extends PlatformIO {
 	private _readGLB (uri: string): JSONDocument {
 		const buffer: Buffer = this._fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
+		this.lastReadBytes = arrayBuffer.byteLength;
 		return this.binaryToJSON(arrayBuffer);
 	}
 
 	/** @hidden */
 	private _readGLTF (uri: string): JSONDocument {
+		this.lastReadBytes = 0;
 		const dir = this._path.dirname(uri);
+		const jsonContent = this._fs.readFileSync(uri, 'utf8');
+		this.lastReadBytes += jsonContent.length;
 		const jsonDoc = {
-			json: JSON.parse(this._fs.readFileSync(uri, 'utf8')),
+			json: JSON.parse(jsonContent),
 			resources: {}
 		} as JSONDocument;
 		const images = jsonDoc.json.images || [];
@@ -100,6 +110,7 @@ export class NodeIO extends PlatformIO {
 			if (!resource.uri.match(/data:/)) {
 				const absURI = this._path.resolve(dir, resource.uri);
 				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
+				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
 			} else {
 				// Rewrite Data URIs to something short and unique.
 				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
@@ -112,6 +123,7 @@ export class NodeIO extends PlatformIO {
 
 	/** @hidden */
 	private _writeGLTF (uri: string, doc: Document): void {
+		this.lastWriteBytes = 0;
 		const {json, resources} = GLTFWriter.write(doc, {
 			basename: FileUtils.basename(uri),
 			isGLB: false,
@@ -120,10 +132,13 @@ export class NodeIO extends PlatformIO {
 		});
 		const {_fs: fs, _path: path} = this;
 		const dir = path.dirname(uri);
-		fs.writeFileSync(uri, JSON.stringify(json, null, 2));
+		const jsonContent = JSON.stringify(json, null, 2);
+		this.lastWriteBytes += jsonContent.length;
+		fs.writeFileSync(uri, jsonContent);
 		Object.keys(resources).forEach((resourceName) => {
 			const resource = Buffer.from(resources[resourceName]);
 			fs.writeFileSync(path.join(dir, resourceName), resource);
+			this.lastWriteBytes += resource.byteLength;
 		});
 	}
 
@@ -131,5 +146,6 @@ export class NodeIO extends PlatformIO {
 	private _writeGLB (uri: string, doc: Document): void {
 		const buffer = Buffer.from(this.writeBinary(doc));
 		this._fs.writeFileSync(uri, buffer);
+		this.lastWriteBytes = buffer.byteLength;
 	}
 }
