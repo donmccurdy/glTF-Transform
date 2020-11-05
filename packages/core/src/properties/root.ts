@@ -83,7 +83,7 @@ export class Root extends Property {
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
 		// the Document during cloning. The Root, and only the Root, should avoid calling
 		// .clearGraphChildList() while copying to avoid overwriting existing links during a merge.
-		if (!resolve) throw new Error('Root cannot be copied.');
+		if (resolve === COPY_IDENTITY) throw new Error('Root cannot be copied.');
 
 		Object.assign(this._asset, other._asset);
 
@@ -153,9 +153,6 @@ export class Root extends Property {
 
 	/** @hidden */
 	public _enableExtension(extension: Extension): this {
-		if (this._extensions.has(extension)) {
-			throw new Error(`Extension "${extension.extensionName}" is already enabled.`);
-		}
 		this._extensions.add(extension);
 		return this;
 	}
