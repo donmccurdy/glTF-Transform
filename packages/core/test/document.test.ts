@@ -40,3 +40,24 @@ test('@gltf-transform/core::document | clone', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::document | defaults', t => {
+	// offering to the code coverage gods.
+	const doc = new Document();
+
+	doc.createAccessor('test');
+	doc.createAnimation('test');
+	doc.createAnimationChannel('test');
+	doc.createAnimationSampler('test');
+	doc.createBuffer('test');
+	doc.createCamera('test');
+	doc.createMesh('test');
+	doc.createNode('test');
+	doc.createPrimitive();
+	doc.createPrimitiveTarget('test');
+	doc.createScene('test');
+	doc.createSkin('test');
+
+	t.ok(true);
+	t.end();
+});
