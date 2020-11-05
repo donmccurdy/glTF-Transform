@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, NodeIO } from '../../';
+import { Accessor, Document, GLTF, NodeIO } from '../../';
 
 test('@gltf-transform/core::mesh', t => {
 	const doc = new Document();
@@ -138,5 +138,52 @@ test('@gltf-transform/core::mesh | extras', t => {
 	t.deepEqual(prim.getExtras(), {baz: 3}, 'stores prim extras');
 	t.deepEqual(prim2.getExtras(), {baz: 3}, 'roundtrips prim extras');
 
+	t.end();
+});
+
+test('@gltf-transform/core::mesh | primitive i/o', t => {
+	const doc = new Document();
+	const prim = doc.createPrimitive();
+	const buffer = doc.createBuffer();
+
+	prim
+		.setMode(GLTF.MeshPrimitiveMode.POINTS)
+		.setAttribute('POSITION', doc.createAccessor()
+			.setArray(new Float32Array([0, 0, 0]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_0', doc.createAccessor()
+			.setArray(new Uint8Array([128, 128, 128]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_1', doc.createAccessor()
+			.setArray(new Uint16Array([64, 64, 64]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_2', doc.createAccessor()
+			.setArray(new Uint32Array([32, 32, 32]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_3', doc.createAccessor()
+			.setArray(new Int16Array([16, 16, 16]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_4', doc.createAccessor()
+			.setArray(new Int8Array([8, 8, 8]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer));
+
+	doc.createMesh().addPrimitive(prim);
+
+	const io = new NodeIO();
+	const rtDoc = io.readBinary(io.writeBinary(doc));
+	const rtPrim = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
+
+	t.deepEquals(rtPrim.getAttribute('POSITION').getArray(), new Float32Array([0, 0, 0]),  'float32');
+	t.deepEquals(rtPrim.getAttribute('COLOR_0').getArray(), new Uint8Array([128, 128, 128]), 'uint8');
+	t.deepEquals(rtPrim.getAttribute('COLOR_1').getArray(), new Uint16Array([64, 64, 64]), 'uint16');
+	t.deepEquals(rtPrim.getAttribute('COLOR_2').getArray(), new Uint32Array([32, 32, 32]), 'uint32');
+	t.deepEquals(rtPrim.getAttribute('COLOR_3').getArray(), new Int16Array([16, 16, 16]), 'int8');
+	t.deepEquals(rtPrim.getAttribute('COLOR_4').getArray(), new Int8Array([8, 8, 8]), 'int8');
 	t.end();
 });

@@ -1,7 +1,8 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF, Property, TextureInfo } from '../../';
+import { Document, GLTF, NodeIO, Property, TextureInfo } from '../../';
+import { PlatformIO } from '../../dist/io/platform-io';
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
@@ -248,5 +249,38 @@ test('@gltf-transform/core::material | copy', t => {
 	t.equal(textureInfo.getWrapS(), 3, 'wrapS');
 	t.equal(textureInfo.getWrapT(), 4, 'wrapT');
 
+	t.end();
+});
+
+test('@gltf-transform/core::material | i/o', t => {
+	const doc = new Document();
+	doc.createBuffer();
+
+	const baseColor = doc.createTexture('baseColor');
+	const emissive = doc.createTexture('emissive');
+	const normal = doc.createTexture('normal');
+	const metalRough = doc.createTexture('metalRough');
+	const occlusion = doc.createTexture('occlusion');
+
+	doc.createMaterial('mat')
+		.setBaseColorTexture(baseColor)
+		.setEmissiveTexture(emissive)
+		.setNormalTexture(normal)
+		.setNormalScale(0.85)
+		.setMetallicRoughnessTexture(metalRough)
+		.setOcclusionTexture(occlusion)
+		.setOcclusionStrength(0.4);
+
+	const io = new NodeIO();
+	const rtDoc = io.readJSON(io.writeJSON(doc, {isGLB: true}));
+	const rtMat = rtDoc.getRoot().listMaterials()[0];
+
+	t.ok(rtMat.getBaseColorTexture(), 'baseColorTexture');
+	t.ok(rtMat.getEmissiveTexture(), 'emissiveTexture');
+	t.ok(rtMat.getNormalTexture(), 'normalTexture');
+	t.equals(rtMat.getNormalScale(), 0.85, 'normalTexture.scale');
+	t.ok(rtMat.getMetallicRoughnessTexture(), 'metallicRoughnessTexture');
+	t.ok(rtMat.getOcclusionTexture(), 'occlusionTexture');
+	t.equals(rtMat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
 	t.end();
 });

@@ -115,3 +115,11 @@ test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
 	});
 	t.end();
 });
+
+test('@gltf-transform/core::io | common', t => {
+	t.throws(() => new NodeIO().readJSON({
+		json: {asset: {version: '1.0'}},
+		resources: {},
+	}), '1.0');
+	t.end();
+});

@@ -1,0 +1,9 @@
+{
+    "exclude": [
+        "packages/*/vendor",
+        "packages/*/test",
+        "packages/core/src/constants.ts",
+        "packages/cli/src/cli.ts",
+        "packages/cli/src/transforms/toktx.ts"
+    ]
+}
