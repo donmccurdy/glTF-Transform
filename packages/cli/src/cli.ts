@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import * as fs from 'fs';
 import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Document, Logger, NodeIO } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, DracoMeshCompression, MaterialsUnlit } from '@gltf-transform/extensions';
+import { ALL_EXTENSIONS, DracoMeshCompression } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
-import { merge } from './merge';
-import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, toktx } from './toktx';
-import { formatBytes } from './util';
+import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { Session, formatBytes } from './util';
 import { validate } from './validate';
 
 // Use require() so microbundle doesn't compile this.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const draco3d = require('../vendor/draco3dgltf/draco3dgltf.js');
 
 const io = new NodeIO()
@@ -66,11 +66,7 @@ program
 	.help('Copy the model with minimal changes.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(({args, logger}) => {
-		const doc = io.read(args.input as string)
-			.setLogger(logger as unknown as Logger);
-		io.write(args.output as string, doc);
-	});
+	.action(({args, logger}) => Session.create(io, logger, args.input, args.output).transform());
 
 // MERGE
 program
@@ -85,15 +81,13 @@ program
 		validator: program.BOOLEAN,
 		default: false,
 	})
-	.action(async ({args, options, logger}) => {
+	.action(({args, options, logger}) => {
 		const paths = typeof args.path === 'string'
 			? args.path.split(',')
 			: args.path as string[];
 		const output = paths.pop();
-		const doc = await new Document()
-			.setLogger(logger as unknown as Logger)
+		return Session.create(io, logger, '', output)
 			.transform(merge({io, paths, partition: !!options.partition}));
-		io.write(output, doc);
 	});
 
 // PARTITION
@@ -110,12 +104,10 @@ program
 		validator: program.BOOLEAN,
 		default: false,
 	})
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(partition(options as unknown as PartitionOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(partition(options as PartitionOptions))
+	);
 
 // WELD
 program
@@ -129,12 +121,10 @@ geometry is indexed in place, without merging.`.trim())
 		validator: program.NUMBER,
 		default: 1e-4,
 	})
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(weld(options as unknown as WeldOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(weld(options as unknown as WeldOptions))
+	);
 
 // UNWELD
 program
@@ -142,12 +132,10 @@ program
 	.help('De-index geometry, disconnecting any shared vertices.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(unweld(options as unknown as UnweldOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(unweld(options as unknown as UnweldOptions))
+	);
 
 program.command('', '\n\n───────────────────── ✨ STYLE ──────────────────────');
 
@@ -165,14 +153,10 @@ program
 		validator: program.NUMBER,
 		default: 500,
 	})
-	.action(async ({args, options, logger}) => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const gl = require('gl');
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(ao({...options as unknown as AOOptions, gl}));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(ao({...options as unknown as AOOptions, gl: require('gl')}))
+	);
 
 // METALROUGH
 program
@@ -180,12 +164,10 @@ program
 	.help('Convert materials from spec/gloss to metal/rough.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(async ({args, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(metalRough({}));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(metalRough())
+	);
 
 // UNLIT
 program
@@ -193,17 +175,10 @@ program
 	.help('Convert materials to an unlit, shadeless model.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(({args, logger}) => {
-		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
-
-		const unlitExtension = doc.createExtension(MaterialsUnlit) as MaterialsUnlit;
-		const unlit = unlitExtension.createUnlit();
-		doc.getRoot().listMaterials().forEach((material) => {
-			material.setExtension('KHR_materials_unlit', unlit);
-		});
-
-		io.write(args.output as string, doc);
-	});
+	.action(({args, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(unlit())
+	);
 
 // CENTER
 program
@@ -215,12 +190,10 @@ program
 		validator: ['center', 'above', 'below'],
 		default: 'center',
 	})
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(center({...options} as CenterOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(center({...options} as CenterOptions))
+	);
 
 // SEQUENCE
 program
@@ -244,13 +217,10 @@ program
 		validator: program.BOOLEAN,
 		default: true,
 	})
-	.action(async ({args, options, logger}) => {
+	.action(({args, options, logger}) => {
 		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
+		return Session.create(io, logger, args.input, args.output)
 			.transform(sequence({...options, pattern} as SequenceOptions));
-
-		io.write(args.output as string, doc);
 	});
 
 program.command('', '\n\n──────────────────── ⏩ OPTIMIZE ────────────────────');
@@ -269,12 +239,10 @@ program
 		validator: program.BOOLEAN,
 		default: true,
 	})
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(dedup(options as unknown as DedupOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(dedup(options as unknown as DedupOptions))
+	);
 
 // DRACO
 program
@@ -326,32 +294,15 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: 12,
 	})
-	.option('--quantizeOther <bits>', 'Quantization bits for other attributes, 1-16.', {
+	.option('--quantizeGeneric <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
 		default: 12,
 	})
-	.action(async ({args, options, logger}) => {
-		const doc = io.read(args.input as string).setLogger(logger as unknown as Logger);
+	.action(({args, options, logger}) =>
 		// Include a lossless weld — Draco requires indices.
-		await doc.transform(weld({tolerance: 0}));
-		doc.createExtension(DracoMeshCompression)
-			.setRequired(true)
-			.setEncoderOptions({
-				method: options.method === 'edgebreaker'
-					? DracoMeshCompression.EncoderMethod.EDGEBREAKER
-					: DracoMeshCompression.EncoderMethod.SEQUENTIAL,
-				encodeSpeed: options.encodeSpeed as number,
-				decodeSpeed: options.decodeSpeed as number,
-				quantizationBits: {
-					'POSITION': options.quantizePosition as number,
-					'NORMAL': options.quantizeNormal as number,
-					'COLOR': options.quantizeColor as number,
-					'TEX_COORD': options.quantizeTexcoord as number,
-					'GENERIC': options.quantizeOther as number,
-				}
-			});
-		io.write(args.output as string, doc);
-	});
+		Session.create(io, logger, args.input, args.output)
+			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
+	);
 
 // GZIP
 program
@@ -458,12 +409,10 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		+ ' faster, less noisy output, but lower quality per output bit).',
 		{validator: program.BOOLEAN}
 	)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(toktx({mode: Mode.ETC1S, ...options}));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(toktx({mode: Mode.ETC1S, ...options}))
+	);
 
 // UASTC
 program
@@ -534,12 +483,10 @@ textures where the quality is sufficient.`.trim()),
 		+ ' should be used with caution as they require more memory.',
 		{validator: program.NUMBER, default: 0}
 	)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(toktx({mode: Mode.UASTC, ...options}));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(toktx({mode: Mode.UASTC, ...options}))
+	);
 
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
