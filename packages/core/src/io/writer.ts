@@ -450,8 +450,12 @@ export class GLTFWriter {
 
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
-				primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
+
 				primitiveDef.mode = primitive.getMode();
+
+				if (primitive.getMaterial()) {
+					primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
+				}
 
 				if (Object.keys(primitive.getExtras()).length) {
 					primitiveDef.extras = primitive.getExtras();

@@ -1,4 +1,4 @@
-import { Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Accessor, Extension, GLB_BUFFER, GLTF, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
@@ -111,19 +111,39 @@ export class DracoMeshCompression extends Extension {
 			throw new Error('Please install extension dependency, "draco3d.encoder".');
 		}
 
+		const logger = this.doc.getLogger();
+
 		const primitiveEncodingMap = new Map<Primitive, EncodedPrimitive>();
 		context.extensionData[NAME] = {primitiveEncodingMap};
 
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				if (!prim.getIndices()) {
-					throw new Error('Draco compression requires indexed primitives. Try "weld"?');
+					logger.warn('Skipping Draco compression on non-indexed primitive.');
+					continue;
+				} else if (prim.getMode() !== GLTF.MeshPrimitiveMode.TRIANGLES) {
+					logger.warn('Skipping Draco compression on non-TRIANGLES primitive.');
+					continue;
 				}
 
-				const encodedPrim = encodeGeometry(prim, this._encoderOptions);
+				// Ensure that compressed accessors are not used for anything incompatible with
+				// Draco, such as morph targets.
+				validateAccessor(prim.getIndices());
+				for (const attribute of prim.listAttributes()) validateAccessor(attribute);
+
+				// Reuse an existing EncodedPrimitive, if possible.
+				let encodedPrim = findEncodedPrimitive(prim, primitiveEncodingMap);
+				if (encodedPrim) {
+					primitiveEncodingMap.set(prim, encodedPrim);
+					continue;
+				}
+
+				// Create a new EncodedPrimitive.
+				encodedPrim = encodeGeometry(prim, this._encoderOptions);
 
 				const indicesDef = context.createAccessorDef(prim.getIndices());
 				indicesDef.count = encodedPrim.numIndices;
+				// TODO(bug): Accessor min/max may be imprecise.
 				context.accessorIndexMap
 					.set(prim.getIndices(), context.jsonDoc.json.accessors.length);
 				context.jsonDoc.json.accessors.push(indicesDef);
@@ -132,6 +152,7 @@ export class DracoMeshCompression extends Extension {
 					const attribute = prim.getAttribute(semantic);
 					const attributeDef = context.createAccessorDef(attribute);
 					attributeDef.count = encodedPrim.numVertices;
+					// TODO(bug): Accessor min/max may be imprecise.
 					context.accessorIndexMap.set(attribute, context.jsonDoc.json.accessors.length)
 					context.jsonDoc.json.accessors.push(attributeDef);
 				}
@@ -148,16 +169,15 @@ export class DracoMeshCompression extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		// TODO(bug): Ensure that compressed accessors are not re-written elsewhere. This could be
-		// nontrivial, if the same accessor is reused (e.g. for morph targets).
-
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			const meshDef = context.jsonDoc.json.meshes[context.meshIndexMap.get(mesh)];
 			for (let i = 0; i < mesh.listPrimitives().length; i++) {
 				const prim = mesh.listPrimitives()[i];
 				const primDef = meshDef.primitives[i];
+
 				const encodedPrim = (context.extensionData[NAME].primitiveEncodingMap as
 					Map<Primitive, EncodedPrimitive>).get(prim);
+				if (!encodedPrim) continue;
 
 				primDef.extensions = primDef.extensions || {};
 				primDef.extensions[NAME] = {
@@ -168,5 +188,42 @@ export class DracoMeshCompression extends Extension {
 		}
 
 		return this;
+	}
+}
+
+function findEncodedPrimitive(
+		prim: Primitive,
+		map: Map<Primitive, EncodedPrimitive>): EncodedPrimitive | null {
+	// Check for an existing reuse of the same Primitive.
+	if (map.has(prim)) return map.get(prim);
+
+	const attributes = new Set(prim.listAttributes());
+	for (const otherPrim of Array.from(map.keys())) {
+		// Verify that indices and attributes are exactly the same. Technically it's possible to
+		// mix uncompressed attributes in a Draco primitive, but this requires reducing the
+		// compression level and adding a fair bit more complexity.
+		if (prim.getIndices() !== otherPrim.getIndices()) continue;
+		if (attributes.size !== otherPrim.listAttributes().length) continue;
+
+		let isMatch = true;
+		for (const otherAttr of otherPrim.listAttributes()) {
+			if (!attributes.has(otherAttr)) {
+				isMatch = false;
+				break;
+			}
+		}
+
+		if (isMatch) return map.get(otherPrim);
+	}
+
+	return null;
+}
+
+function validateAccessor(accessor: Accessor): void {
+	const parentTypes = new Set(accessor.listParents().map((prop) => prop.propertyType));
+	if (parentTypes.size !== 2 || !parentTypes.has('Primitive') || !parentTypes.has('Root')) {
+		throw new Error(
+			'Draco compressed accessors must only be used as indices or vertex attributes.'
+		);
 	}
 }

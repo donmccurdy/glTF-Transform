@@ -110,7 +110,7 @@ export function encodeGeometry (prim: Primitive, options: EncoderOptions = DEFAU
 	}
 
 	const numVertices = encoder.GetNumberOfEncodedPoints();
-	const numIndices = encoder.GetNumberOfEncodedFaces();
+	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
 
 	encoderModule.destroy(dracoBuffer);
 	encoderModule.destroy(mesh);
