@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import * as minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Document, Logger, NodeIO } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, DracoMeshCompression } from '@gltf-transform/extensions';
+import { Logger, NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
@@ -493,3 +493,4 @@ program.disableGlobalOption('--no-color');
 
 export { program };
 export * from './util';
+export * from './transforms';
