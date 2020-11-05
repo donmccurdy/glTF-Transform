@@ -1,4 +1,5 @@
-import { Document, Transform, vec3, quat } from '@gltf-transform/core';
+import { create, multiply, fromEuler } from 'gl-matrix/quat';
+import { Document, Transform, vec3 } from '@gltf-transform/core';
 
 const NAME = 'rotate';
 
@@ -22,9 +23,9 @@ export function rotate (options: RotateOptions = DEFAULT_OPTIONS): Transform {
 		doc.getRoot().listScenes().forEach((scene, index) => {
 			logger.debug(`${NAME}: Scene ${index + 1} / ${root.listScenes().length}.`);
 
-            let rot: quat = quat.create();
-            quat.fromEuler(rot, options.euler[0], options.euler[1], options.euler[2]);
-
+            let rot = create();
+            logger.debug(`${NAME}: Euler "${options.euler.join(', ')}".`);
+            fromEuler(rot, options.euler[0], options.euler[1], options.euler[2]);
 			logger.debug(`${NAME}: Rotation "${rot.join(', ')}".`);
 
 			if (isAnimated) {
@@ -36,8 +37,8 @@ export function rotate (options: RotateOptions = DEFAULT_OPTIONS): Transform {
 				logger.debug(`${NAME}: Skipping wrapper, offsetting all root nodes.`);
 				scene.listChildren().forEach((child) => {
                     const r = child.getRotation();
-                    const newR: quat = quat.create();
-                    quat.multiply(newR, rot, r);
+                    const newR = create();
+                    multiply(newR, rot, r);
 					child.setRotation(newR);
 				});
 			}

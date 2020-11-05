@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, RotateOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, rotate, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -193,6 +193,29 @@ program
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(center({...options} as CenterOptions))
+	);
+
+// ROTATE
+program
+	.command('rotate', 'Rotates the scene along euler angles')
+	.help('Rotates the scene along euler angles.')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--yaw <yaw>', 'Yaw angle, rotation around base z axis', {
+		validator: program.NUMBER,
+		default: 0,
+	})
+	.option('--pitch <pitch>', 'Pitch angle, rotation around new x axis', {
+		validator: program.NUMBER,
+		default: 0,
+	})
+	.option('--roll <roll>', 'Roll angle, rotation around new z axis', {
+		validator: program.NUMBER,
+		default: 0,
+	})
+	.action(({args, options, logger}) => 
+		Session.create(io, logger, args.input, args.output)
+			.transform(rotate({euler: [options.yaw, options.pitch, options.roll]} as RotateOptions))
 	);
 
 // SEQUENCE

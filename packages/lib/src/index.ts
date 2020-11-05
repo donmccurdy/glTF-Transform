@@ -1,6 +1,7 @@
 export * from './ao';
 export * from './bounds';
 export * from './center';
+export * from './rotate';
 export * from './colorspace';
 export * from './dedup';
 export * from './metal-rough';
