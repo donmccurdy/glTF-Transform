@@ -15,7 +15,7 @@
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
     "test": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
-    "coverage": "nyc --reporter=text ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
+    "coverage": "nyc --reporter=lcov --reporter=text ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
     "coverage:report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint packages/*/src/**/*.ts",
     "validate": "scripts/validate.js",

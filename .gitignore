@@ -15,3 +15,4 @@ packages/**/.rts2_cache_es
 packages/**/.rts2_cache_umd
 packages/**/.rts2_cache_modern
 docs/dist/**
+coverage
