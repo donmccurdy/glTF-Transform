@@ -4,6 +4,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "repository": "github:donmccurdy/glTF-Transform",
   "license": "MIT",
+  "version": "1.0.0",
   "workspaces": [
     "packages/*"
   ],
