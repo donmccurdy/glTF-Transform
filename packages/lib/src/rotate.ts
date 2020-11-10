@@ -1,5 +1,5 @@
 import { create, multiply, fromEuler } from 'gl-matrix/quat';
-import { Document, Transform, vec3 } from '@gltf-transform/core';
+import { Document, Transform, vec3, vec4 } from '@gltf-transform/core';
 
 const NAME = 'rotate';
 
@@ -28,12 +28,12 @@ export function rotate (options: RotateOptions = DEFAULT_OPTIONS): Transform {
             fromEuler(rot, options.euler[0], options.euler[1], options.euler[2]);
 			logger.debug(`${NAME}: Rotation "${rot.join(', ')}".`);
 
-			if (isAnimated) {
+			//if (isAnimated) {
 				logger.debug(`${NAME}: Model contains animation or skin. Adding a wrapper node.`);
 				const offsetNode = doc.createNode('Rotation').setRotation(rot);
 				scene.listChildren().forEach((child) => offsetNode.addChild(child));
 				scene.addChild(offsetNode);
-			} else {
+			/*} else {
 				logger.debug(`${NAME}: Skipping wrapper, offsetting all root nodes.`);
 				scene.listChildren().forEach((child) => {
                     const r = child.getRotation();
@@ -41,7 +41,8 @@ export function rotate (options: RotateOptions = DEFAULT_OPTIONS): Transform {
                     multiply(newR, rot, r);
 					child.setRotation(newR);
 				});
-			}
+				
+			}*/
 		});
 
 		logger.debug(`${NAME}: Complete.`);

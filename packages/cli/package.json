@@ -41,6 +41,11 @@
     "package.json",
     "package-lock.json"
   ],
+  "pkg": {
+    "assets": [
+      "vendor/**"
+    ]
+  },
   "gitHead": "f92b1eb22fd911e37688e646767bceb32efb4698",
   "devDependencies": {
     "tmp": "^0.2.1"

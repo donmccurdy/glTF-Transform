@@ -529,9 +529,9 @@ export class GLTFWriter {
 
 		json.nodes = root.listNodes().map((node, index) => {
 			const nodeDef = context.createPropertyDef(node) as GLTF.INode;
-			nodeDef.translation = node.getTranslation();
-			nodeDef.rotation = node.getRotation();
-			nodeDef.scale = node.getScale();
+			nodeDef.translation = Array.from(node.getTranslation());
+			nodeDef.rotation = Array.from(node.getRotation());
+			nodeDef.scale = Array.from(node.getScale());
 
 			if (node.getWeights().length) {
 				nodeDef.weights = node.getWeights();
