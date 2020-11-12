@@ -1,5 +1,5 @@
 import { create, multiply, fromEuler } from 'gl-matrix/quat';
-import { Document, Transform, vec3, vec4 } from '@gltf-transform/core';
+import { Document, Transform, vec3 } from '@gltf-transform/core';
 
 const NAME = 'rotate';
 
