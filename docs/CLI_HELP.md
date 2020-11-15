@@ -1,5 +1,5 @@
 
-  gltf-transform 0.7.5 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.8.0-alpha.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -19,6 +19,8 @@
     copy                                 Copy the model with minimal changes                    
     merge                                Merge two or more models into one                      
     partition                            Partition binary data into separate .bin files         
+    weld                                 Index geometry and optionally merge similar vertices   
+    unweld                               De-index geometry, disconnecting any shared vertices   
                                                                                                 
                                                                                                 
                                          ───────────────────── ✨ STYLE ──────────────────────  
@@ -31,6 +33,7 @@
                                                                                                 
                                          ──────────────────── ⏩ OPTIMIZE ────────────────────  
     dedup                                Deduplicate accessors and textures                     
+    draco                                Compress mesh geometry with Draco                      
     gzip                                 Compress the model with gzip                           
     etc1s                                Compress textures with KTX + Basis ETC1S               
     uastc                                Compress textures with KTX + Basis UASTC               
