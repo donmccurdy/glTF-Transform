@@ -3,9 +3,10 @@ import { GraphChild, GraphChildList } from '../graph/index';
 import { Link } from '../graph/index';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
+import { ExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';
-import { COPY_IDENTITY, Property } from './property';
+import { COPY_IDENTITY } from './property';
 import { AttributeLink } from './property-links';
 
 /**
@@ -42,7 +43,7 @@ import { AttributeLink } from './property-links';
  *
  * @category Properties
  */
-export class Primitive extends Property {
+export class Primitive extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
 	/** @hidden GPU draw mode. */
