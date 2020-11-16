@@ -7,7 +7,7 @@ import { Variant } from './variant';
 const NAME = KHR_MATERIALS_VARIANTS;
 
 /** Documentation in {@link EXTENSIONS.md}. */
-export class MaterialsTransmission extends Extension {
+export class MaterialsVariants extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
@@ -35,9 +35,8 @@ export class MaterialsTransmission extends Extension {
 
 		// Read all top-level variant names.
 		const variantDefs = jsonDoc.json.extensions[NAME].variants || [];
-		const variants = variantDefs.map((variantDef) => {
-			this.createVariant().setName(variantDef.name || '');
-		});
+		const variants = variantDefs
+			.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
 
 		// For each mesh primitive, read its material/variant mappings.
 		const meshDefs = jsonDoc.json.meshes || [];
@@ -82,7 +81,9 @@ export class MaterialsTransmission extends Extension {
 
 		// Write all top-level variant names.
 		const variantDefs = [];
+		const variantIndexMap = new Map<Variant, number>();
 		for (const variant of variants) {
+			variantIndexMap.set(variant, variantDefs.length);
 			variantDefs.push(context.createPropertyDef(variant));
 		}
 
@@ -105,7 +106,9 @@ export class MaterialsTransmission extends Extension {
 					}
 
 					mappingDef['variants'] = mapping.listVariants()
-						.map((_, variantIndex) => variantIndex);
+						.map((variant) => variantIndexMap.get(variant));
+
+					return mappingDef;
 				});
 
 				primDef.extensions = primDef.extensions || {};

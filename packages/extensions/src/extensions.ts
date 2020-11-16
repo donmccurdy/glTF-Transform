@@ -8,6 +8,7 @@ import { MaterialsSheen } from './khr-materials-sheen';
 import { MaterialsSpecular } from './khr-materials-specular';
 import { MaterialsTransmission } from './khr-materials-transmission';
 import { MaterialsUnlit } from './khr-materials-unlit';
+import { MaterialsVariants } from './khr-materials-variants';
 import { MeshQuantization } from './khr-mesh-quantization';
 import { TextureBasisu } from './khr-texture-basisu';
 import { TextureTransform } from './khr-texture-transform';
@@ -22,6 +23,7 @@ export const KHRONOS_EXTENSIONS = [
 	MaterialsSheen,
 	MaterialsTransmission,
 	MaterialsUnlit,
+	MaterialsVariants,
 	MeshQuantization,
 	TextureBasisu,
 	TextureTransform,
@@ -42,6 +44,7 @@ export * from './khr-materials-specular';
 export * from './khr-materials-pbr-specular-glossiness';
 export * from './khr-materials-transmission';
 export * from './khr-materials-unlit';
+export * from './khr-materials-variants';
 export * from './khr-mesh-quantization';
 export * from './khr-texture-basisu';
 export * from './khr-texture-transform';
