@@ -5,6 +5,7 @@ import { FileUtils } from '../../';
 
 test('@gltf-transform/core::file-utils | basename', t => {
 	t.equals(FileUtils.basename('http://foo.com/path/to/index.html'), 'index', 'URI');
+	t.equals(FileUtils.basename('http://foo.com/path/to/index.test.suffix.html'), 'index.test.suffix', 'URI');
 	t.end();
 });
 

@@ -8,8 +8,8 @@
 export class FileUtils {
 	/** Extracts the basename from a path, e.g. "folder/model.glb" -> "model". */
 	static basename(path: string): string {
-		// https://stackoverflow.com/a/15270931/1314762
-		return path.split(/[\\/]/).pop().split(/[.]/).shift();
+		const fileName = path.split(/[\\/]/).pop();
+		return fileName.substr(0, fileName.lastIndexOf('.'));
 	}
 
 	/** Extracts the extension from a path, e.g. "folder/model.glb" -> "glb". */

@@ -51,10 +51,7 @@ export class Session {
 			.find((extension) => extension.extensionName === 'KHR_draco_mesh_compression');
 		if (dracoExtension) {
 			dracoExtension.dispose();
-			this._logger.warn(
-				'Skipping Draco recompression. To compress again — which will be lossy — manually'
-				+ ' reapply compression using the `draco` command.'
-			);
+			this._logger.warn('Decoding Draco compression. Further compression will be lossy.');
 		}
 
 		await doc.transform(...transforms);
