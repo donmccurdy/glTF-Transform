@@ -117,7 +117,7 @@ export abstract class Property extends GraphNode {
 	 * @param other Property to copy references from.
 	 * @param resolve Function to resolve each Property being transferred. Default is identity.
 	 */
-	public copy(other: this, resolve: PropertyResolver<Property>): this {
+	public copy(other: this, _resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
 		this._name = other._name;
 		this._extras = JSON.parse(JSON.stringify(other._extras));
 		return this;

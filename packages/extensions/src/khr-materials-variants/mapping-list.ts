@@ -1,4 +1,4 @@
-import { ExtensionProperty, GraphChildList, Link, PropertyType } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChildList, Link, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants';
 import { Mapping } from './mapping';
 
@@ -10,6 +10,15 @@ export class MappingList extends ExtensionProperty {
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
 
 	@GraphChildList private mappings: Link<this, Mapping>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this.clearGraphChildList(this.mappings);
+		other.mappings.forEach((link) => this.addMapping(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** Adds a {@link Mapping} to this mapping. */
 	public addMapping(mapping: Mapping): this {

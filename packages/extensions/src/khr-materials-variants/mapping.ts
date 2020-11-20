@@ -1,4 +1,4 @@
-import { ExtensionProperty, GraphChild, GraphChildList, Link, Material } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, GraphChildList, Link, Material } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants';
 import { Variant } from './variant';
 
@@ -11,6 +11,19 @@ export class Mapping extends ExtensionProperty {
 
 	@GraphChild private material: Link<this, Material> = null;
 	@GraphChildList private variants: Link<this, Variant>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		if (other.material) {
+			this.setMaterial(resolve(other.material.getChild()));
+		}
+
+		this.clearGraphChildList(this.variants);
+		other.variants.forEach((link) => this.addVariant(resolve(link.getChild())));
+
+		return this;
+	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */
 	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }

@@ -15,8 +15,8 @@ export class MaterialsVariants extends Extension {
 		return new MappingList(this.doc.getGraph(), this);
 	}
 
-	public createVariant(): Variant {
-		return new Variant(this.doc.getGraph(), this);
+	public createVariant(name = ''): Variant {
+		return new Variant(this.doc.getGraph(), this).setName(name);
 	}
 
 	public createMapping(): Mapping {
