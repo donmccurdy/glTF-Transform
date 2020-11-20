@@ -95,10 +95,10 @@ test('@gltf-transform/core::image-utils | webp', {skip: !IS_NODEJS}, t => {
 test('@gltf-transform/core::image-utils | ktx2', {skip: !IS_NODEJS}, t => {
 	const ktx2 = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.ktx2')));
 
-	t.equals(ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), null, 'no size');
+	t.throws(() => ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), 'corrupt file');
 	t.deepEquals(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
 	t.equals(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
-	t.equals(ImageUtils.getMemSize(ktx2, 'image/ktx2'), ktx2.byteLength, 'memSize');
+	t.equals(ImageUtils.getMemSize(ktx2, 'image/ktx2'), 65536, 'memSize');
 	t.end();
 });
 

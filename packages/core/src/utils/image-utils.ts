@@ -41,7 +41,22 @@ class ImageUtils {
 
 	/** Returns [conservative] estimate of the GPU memory required by this image. */
 	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number {
-		if (mimeType === 'image/ktx2') return buffer.byteLength;
+		if (mimeType === 'image/ktx2') {
+			const view = new DataView(buffer);
+			validateKTX2Buffer(view);
+
+			const levelCount = view.getUint32(12 + 7 * 4, true);
+			const levelsOffset = 12 + 17 * 4;
+
+			let uncompressedBytes = 0;
+			for (let i = 0; i < levelCount; i++) {
+				// UASTC uses level.uncompressedByteLength, ETC1S uses level.byteLength.
+				uncompressedBytes += getUint64(view, levelsOffset + i * 3 * 8 + 16, true)
+					|| getUint64(view, levelsOffset + i * 3 * 8 + 8, true);
+			}
+			return uncompressedBytes;
+		}
+
 		const resolution = this.getSize(buffer, mimeType);
 		const channels = this.getChannels(buffer, mimeType);
 		return resolution ? resolution[0] * resolution[1] * channels : null;
@@ -59,7 +74,7 @@ class ImageUtils {
 			// i = buffer.readUInt16BE(0);
 
 			// ensure correct format
-			validateBuffer(view, i);
+			validateJPEGBuffer(view, i);
 
 			// 0xFFC0 is baseline standard(SOF)
 			// 0xFFC1 is baseline optimized(SOF)
@@ -119,8 +134,7 @@ class ImageUtils {
 	}
 
 	private static _getSizeKTX2 (buffer: ArrayBuffer): vec2 {
-		const magic = BufferUtils.decodeText(buffer.slice(1, 7));
-		if (magic !== 'KTX 20') return null;
+		validateKTX2Buffer(new DataView(buffer));
 		const view = new DataView(buffer);
 		return [view.getUint32(20, true), view.getUint32(24, true)];
 	}
@@ -136,7 +150,13 @@ class ImageUtils {
 	}
 }
 
-function validateBuffer (view: DataView, i: number): void {
+function validateKTX2Buffer (view: DataView): void {
+	const magicBuffer = view.buffer.slice(view.byteOffset + 1, view.byteOffset + 7);
+	const magic = BufferUtils.decodeText(magicBuffer);
+	if (magic !== 'KTX 20') throw new TypeError('Corrupt KTX2.');
+}
+
+function validateJPEGBuffer (view: DataView, i: number): void {
     // index should be within buffer limits
     if (i > view.byteLength) {
         throw new TypeError('Corrupt JPG, exceeded buffer limits');
@@ -145,6 +165,13 @@ function validateBuffer (view: DataView, i: number): void {
     if (view.getUint8(i) !== 0xFF) {
         throw new TypeError('Invalid JPG, marker table corrupted');
     }
+}
+
+function getUint64 (view: DataView, byteOffset: number, littleEndian: boolean): number {
+	// https://stackoverflow.com/questions/53103695/
+	const left = view.getUint32(byteOffset, littleEndian);
+	const right = view.getUint32(byteOffset + 4, littleEndian);
+	return littleEndian ? left + (2 ** 32 * right) : (2 ** 32 * left) + right;
 }
 
 export { ImageUtils };
