@@ -22,8 +22,7 @@ export function inspect (jsonDoc, io, logger): void {
 		doc = io.readJSON(jsonDoc);
 	} catch (e) {
 		logger.warn('Unable to parse document.');
-		logger.error(e.message);
-		return;
+		throw e;
 	}
 
 	// Detailed report.
