@@ -141,6 +141,40 @@ test('@gltf-transform/core::mesh | extras', t => {
 	t.end();
 });
 
+test('@gltf-transform/core::mesh | empty i/o', t => {
+	// Technically meshes must have primitives for the file to be valid, but we'll test that
+	// reading/writing works anyway.
+
+	const doc = new Document();
+	doc.createMesh('EmptyMesh').setWeights([1, 0, 0, 0]);
+
+	const io = new NodeIO();
+	let rtDoc = io.readJSON(io.writeJSON(doc, {}));
+	let rtMesh = rtDoc.getRoot().listMeshes()[0];
+
+	t.deepEquals(rtMesh.listPrimitives(), [],  'primitives');
+	t.deepEquals(rtMesh.getName(), 'EmptyMesh',  'name');
+	t.deepEquals(rtMesh.getWeights(), [1, 0, 0, 0], 'weights');
+
+	rtDoc = io.readJSON({
+		json: {
+			asset: {version: '2.0'},
+			meshes: [{
+				name: 'EmptyMesh.2',
+				weights: [0, 0, 1, 0]
+			} as unknown as GLTF.IMesh]
+		},
+		resources: {}
+	});
+	rtMesh = rtDoc.getRoot().listMeshes()[0];
+
+	t.deepEquals(rtMesh.listPrimitives(), [],  'primitives');
+	t.deepEquals(rtMesh.getName(), 'EmptyMesh.2',  'name');
+	t.deepEquals(rtMesh.getWeights(), [0, 0, 1, 0], 'weights');
+
+	t.end();
+});
+
 test('@gltf-transform/core::mesh | primitive i/o', t => {
 	const doc = new Document();
 	const prim = doc.createPrimitive();

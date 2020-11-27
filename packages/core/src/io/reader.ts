@@ -265,7 +265,8 @@ export class GLTFReader {
 				mesh.setWeights(meshDef.weights);
 			}
 
-			meshDef.primitives.forEach((primitiveDef) => {
+			const primitiveDefs = meshDef.primitives || [];
+			primitiveDefs.forEach((primitiveDef) => {
 				const primitive = doc.createPrimitive();
 
 				if (primitiveDef.extras) primitive.setExtras(primitiveDef.extras);
