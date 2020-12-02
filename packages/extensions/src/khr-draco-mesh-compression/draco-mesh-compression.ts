@@ -75,7 +75,8 @@ export class DracoMeshCompression extends Extension {
 
 					const byteOffset = bufferViewDef.byteOffset || 0;
 					const byteLength = bufferViewDef.byteLength;
-					const compressedData = new Uint8Array(resource, byteOffset, byteLength);
+					console.log(`byteOffset: ${byteOffset}, byteLength: ${byteLength}, resourceByteLength: ${resource.byteLength}`);
+					const compressedData = new Uint8Array(resource.slice(0), byteOffset, byteLength);
 
 					dracoMesh = decodeGeometry(decoder, compressedData);
 					dracoMeshes.set(dracoDef.bufferView, dracoMesh);

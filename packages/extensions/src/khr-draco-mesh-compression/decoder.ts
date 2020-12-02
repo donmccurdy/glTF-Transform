@@ -18,12 +18,16 @@ export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer)
 			throw new Error('Unknown geometry type.');
 		}
 
+		console.log(arrayBuffer);
+
 		const dracoMesh = new decoderModule.Mesh();
 		const status = decoder.DecodeBufferToMesh(buffer, dracoMesh);
 
 		if (!status.ok() || dracoMesh.ptr === 0) {
 			throw new Error('Decoding failure.');
 		}
+
+		console.info('success!');
 
 		return dracoMesh;
 	} finally {

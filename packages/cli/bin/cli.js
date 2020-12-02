@@ -3,6 +3,7 @@
 // Uncomment for better stack traces during local development.
 // require('source-map-support').install();
 
-const { program } = require('../');
+const { program, programReady } = require('../');
+
 program.disableGlobalOption('--silent');
-program.run();
+programReady.then(() => program.run());
