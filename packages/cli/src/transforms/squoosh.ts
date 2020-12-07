@@ -114,6 +114,10 @@ const squoosh = function (options: SquooshOptions): Transform {
 			);
 		}
 
+		if (doc.getRoot().listTextures().length > 1) {
+			logger.info('This may take some time. For more detailed progress, use "--verbose".');
+		}
+
 		let numCompressed = 0;
 
 		doc.getRoot()
