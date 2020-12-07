@@ -535,12 +535,10 @@ program
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(webp(options as unknown as WebPOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(webp(options as unknown as WebPOptions))
+	);
 
 // OXIPNG
 program
@@ -573,12 +571,10 @@ program
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(oxipng(options as unknown as OxiPNGOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(oxipng(options as unknown as OxiPNGOptions))
+	);
 
 // MOZJPEG
 program
@@ -611,12 +607,10 @@ program
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(async ({args, options, logger}) => {
-		const doc = await io.read(args.input as string)
-			.setLogger(logger as unknown as Logger)
-			.transform(mozjpeg(options as unknown as MozJPEGOptions));
-		io.write(args.output as string, doc);
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(mozjpeg(options as unknown as MozJPEGOptions))
+	);
 
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
