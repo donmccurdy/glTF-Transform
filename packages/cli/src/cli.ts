@@ -322,32 +322,32 @@ program
 	});
 
 const BASIS_SUMMARY = `
-(EXPERIMENTAL) Compresses textures in the given file to .ktx2 GPU textures
-using the {VARIANT} Basis Universal bitstream. GPU
-textures offer faster GPU upload and less GPU memory consumption than
-traditional PNG or JPEG textures, which are fully uncompressed in GPU memory.
-GPU texture formats require more attention to compression settings to get
-similar visual results.
+Compresses textures in the given file to .ktx2 GPU textures using the
+{VARIANT} Basis Universal bitstream. GPU textures offer faster GPU upload
+and less GPU memory consumption than traditional PNG or JPEG textures,
+which are fully uncompressed in GPU memory. GPU texture formats require
+more attention to compression settings to get similar visual results.
 
 {DETAILS}
 
 Documentation:
-https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu-experimental
+https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu
+
+Dependencies:
+KTX-Software (https://github.com/KhronosGroup/KTX-Software/)
 `;
 
 // ETC1S
 program
-	.command('etc1s', 'Compress textures with KTX + Basis ETC1S')
+	.command('etc1s', 'KTX + Basis ETC1S texture compression')
 	.help(
 		BASIS_SUMMARY
-			.replace('{VARIANT}', 'ETC1S (lower size, lower quality)')
+			.replace('{VARIANT}', 'ETC1S')
 			.replace('{DETAILS}', `
-ETC1S, one of the two Basis Universal bitstreams, offers lower size
-and lower quality than UASTC. In some cases it may be useful to
-increase the resolution of the texture slightly, to minimize compression
-artifacts while still retaining a smaller filesize. Details of this incomplete
-glTF extension are still being worked out, particularly in regard to normal
-maps. In the meantime, I recommend choosing less aggressive compression
+ETC1S, one of the two Basis Universal bitstreams, offers lower size and lower
+quality than UASTC. In some cases it may be useful to increase the resolution
+of the texture slightly, to minimize compression artifacts while still
+retaining a smaller filesize. Consider using less aggressive compression
 settings for normal maps than for other texture types: you may want to use
 UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		{sectionName: 'SUMMARY'}
@@ -356,7 +356,7 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--slots <slots>',
-		'Texture slots to compress (glob expression)',
+		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
 	.option (
@@ -416,22 +416,22 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 
 // UASTC
 program
-	.command('uastc', 'Compress textures with KTX + Basis UASTC')
+	.command('uastc', 'KTX + Basis UASTC texture compression')
 	.help(
 		BASIS_SUMMARY
-			.replace('{VARIANT}', 'UASTC (higher size, higher quality)')
+			.replace('{VARIANT}', 'UASTC')
 			.replace('{DETAILS}', `
 UASTC, one of the two Basis Universal bitstreams, offers higher size and higher
 quality than ETC1S. While it is suitable for all texture types, you may find it
-useful to apply UASTC only where higher quality is necessary, and apply ETC1S for
-textures where the quality is sufficient.`.trim()),
+useful to apply UASTC only where higher quality is necessary, and apply ETC1S
+for textures where the quality is sufficient.`.trim()),
 		{sectionName: 'SUMMARY'}
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--slots <slots>',
-		'Texture slots to compress (glob expression)',
+		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
 	.option (
