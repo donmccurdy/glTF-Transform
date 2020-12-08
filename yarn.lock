@@ -3566,6 +3566,11 @@ dotignore@~0.1.2:
   dependencies:
     minimatch "^3.0.4"
 
+draco3dgltf@1.4.1, draco3dgltf@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/draco3dgltf/-/draco3dgltf-1.4.1.tgz#57b7aeeefb06f4529a312d27ff48e60c26a1e31c"
+  integrity sha512-/d3SSWca9ftcNkpSOG6dwm3z7iQtM2oqnD6Eiy4YwJczbcQ3jEkDYrtBl8RuvS9xPKqwpsyciQejAtddyjKvFg==
+
 duplexer@0.1.1, duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"

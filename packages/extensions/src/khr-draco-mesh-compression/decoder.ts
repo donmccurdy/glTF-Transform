@@ -1,5 +1,8 @@
 import { GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
+
+const NAME = KHR_DRACO_MESH_COMPRESSION;
 
 export let decoderModule: DRACO.DecoderModule;
 
@@ -7,22 +10,22 @@ export let decoderModule: DRACO.DecoderModule;
 let COMPONENT_ARRAY: {[key: number]: TypedArrayConstructor};
 let DATA_TYPE: {[key: number]: DRACO.DataType};
 
-export function decodeGeometry(decoder: DRACO.Decoder, arrayBuffer: ArrayBuffer): DRACO.Mesh {
+export function decodeGeometry(decoder: DRACO.Decoder, data: Int8Array): DRACO.Mesh {
 	let buffer: DRACO.DecoderBuffer;
 	try {
 		buffer = new decoderModule.DecoderBuffer();
-		buffer.Init(new Int8Array(arrayBuffer), arrayBuffer.byteLength);
-		const geometryType = decoder.GetEncodedGeometryType(buffer);
+		buffer.Init(data, data.length);
 
+		const geometryType = decoder.GetEncodedGeometryType(buffer);
 		if (geometryType !== decoderModule.TRIANGULAR_MESH) {
-			throw new Error('Unknown geometry type.');
+			throw new Error(`[${NAME}] Unknown geometry type.`);
 		}
 
 		const dracoMesh = new decoderModule.Mesh();
 		const status = decoder.DecodeBufferToMesh(buffer, dracoMesh);
 
 		if (!status.ok() || dracoMesh.ptr === 0) {
-			throw new Error('Decoding failure.');
+			throw new Error(`[${NAME}] Decoding failure.`);
 		}
 
 		return dracoMesh;

@@ -46,11 +46,13 @@ import { DracoMeshCompression } from '@gltf-transform/extensions';
 
 import * as draco3d from 'draco3dgltf';
 
+// ...
+
 const io = new NodeIO()
   .registerExtensions([DracoMeshCompression])
   .registerDependencies({
-    'draco3d.decoder': draco3d.createDecoderModule(),
-    'draco3d.encoder': draco3d.createEncoderModule(),
+    'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
+    'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
   });
 
 const doc = io.read('compressed.glb');
@@ -533,11 +535,13 @@ import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
 
 import * as draco3d from 'draco3dgltf';
 
+// ...
+
 const io = new NodeIO()
   .registerExtensions(KHRONOS_EXTENSIONS)
   .registerDependencies({
-    'draco3d.decoder': draco3d.createDecoderModule(), // Optional.
-    'draco3d.encoder': draco3d.createEncoderModule(), // Optional.
+    'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
+    'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
   });
 
 const doc = io.read('compressed.glb');

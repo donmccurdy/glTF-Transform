@@ -4,11 +4,12 @@ import * as fs from 'fs';
 import * as test from 'tape';
 import * as tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
-import { draco, program, unlit } from '../';
+import { draco, program, programReady, unlit } from '../';
 
 tmp.setGracefulCleanup();
 
-test('@gltf-transform/cli::copy', t => {
+test('@gltf-transform/cli::copy', async t => {
+	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
@@ -29,7 +30,8 @@ test('@gltf-transform/cli::copy', t => {
 		});
 });
 
-test('@gltf-transform/cli::validate', t => {
+test('@gltf-transform/cli::validate', async t => {
+	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
@@ -44,7 +46,8 @@ test('@gltf-transform/cli::validate', t => {
 		.then(() => t.end());
 });
 
-test('@gltf-transform/cli::inspect', t => {
+test('@gltf-transform/cli::inspect', async t => {
+	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 
@@ -63,7 +66,8 @@ test('@gltf-transform/cli::inspect', t => {
 });
 
 
-test('@gltf-transform/cli::toktx', t => {
+test('@gltf-transform/cli::toktx', async t => {
+	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
 	const output = tmp.tmpNameSync({postfix: '.glb'});
@@ -77,7 +81,8 @@ test('@gltf-transform/cli::toktx', t => {
 		.then(() => t.end());
 });
 
-test('@gltf-transform/cli::merge', t => {
+test('@gltf-transform/cli::merge', async t => {
+	await programReady;
 	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({postfix: '.glb'});
 	const inputB = tmp.tmpNameSync({postfix: '.glb'});

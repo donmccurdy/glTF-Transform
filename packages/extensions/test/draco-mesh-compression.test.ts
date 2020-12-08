@@ -1,20 +1,14 @@
 require('source-map-support').install();
 
 import * as path from 'path';
+import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import * as test from 'tape';
 import { Accessor, Buffer, Document, GLTF, NodeIO, Primitive } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/lib';
-import { createDecoderModule, createEncoderModule } from '../../cli/vendor/draco3dgltf/draco3dgltf.js';
 import { DracoMeshCompression } from '../';
 
-const io = new NodeIO()
-	.registerExtensions([DracoMeshCompression])
-	.registerDependencies({
-		'draco3d.decoder': createDecoderModule(),
-		'draco3d.encoder': createEncoderModule(),
-	});
-
-test('@gltf-transform/extensions::draco-mesh-compression | decoding', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | decoding', async t => {
+	const io = await createNodeIO();
 	const doc = io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
 	const bbox = bounds(doc.getRoot().listScenes()[0]);
 	t.deepEquals(bbox.min.map(v => +v.toFixed(3)), [-0.5, -0.5, -0.5], 'decompress (min)');
@@ -22,7 +16,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', async t => {
 	// Cases:
 	// (1) Entire primitive reused (share compressed buffer views).
 	// (2) All primitive accessors reused (share compressed buffer views).
@@ -41,6 +35,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', t
 		.addPrimitive(prim2.clone());
 	doc.createNode().setMesh(mesh);
 
+	const io = await createNodeIO();
 	const jsonDoc = io.writeJSON(doc, {isGLB: true});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -98,7 +93,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', t
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', async t => {
 	// Cases:
 	// (1) Non-indexed.
 	// (2) Non-TRIANGLES.
@@ -117,6 +112,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', t 
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
+	const io = await createNodeIO();
 	const jsonDoc = io.writeJSON(doc, {isGLB: true});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -133,7 +129,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', t 
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async t => {
 	const doc = new Document();
 	doc.createExtension(DracoMeshCompression).setRequired(true);
 
@@ -149,11 +145,12 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', t => 
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
+	const io = await createNodeIO();
 	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'fail on mixed indices');
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', async t => {
 	const doc = new Document();
 	doc.createExtension(DracoMeshCompression).setRequired(true);
 
@@ -177,11 +174,12 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', t 
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
+	const io = await createNodeIO();
 	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'fail on mixed attributes');
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent', t => {
+test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent', async t => {
 	const doc = new Document();
 	doc.createExtension(DracoMeshCompression).setRequired(true);
 
@@ -190,6 +188,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent'
 		.setAttribute('POSITION', prim.getAttribute('POSITION')));
 	doc.createMesh().addPrimitive(prim);
 
+	const io = await createNodeIO();
 	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'invalid accessor reuse');
 	t.end();
 });
@@ -214,4 +213,20 @@ function createMeshPrimitive(doc: Document, buffer: Buffer): Primitive {
 		.setIndices(indices)
 		.setAttribute('POSITION', position);
 
+}
+
+let _io: Promise<NodeIO>;
+async function createNodeIO(): Promise<NodeIO> {
+	_io = _io || Promise.all([
+		createDecoderModule(),
+		createEncoderModule()
+	]).then(([decoder, encoder]) => {
+		return new NodeIO()
+			.registerExtensions([DracoMeshCompression])
+			.registerDependencies({
+				'draco3d.decoder': decoder,
+				'draco3d.encoder': encoder,
+			});
+	});
+	return _io;
 }

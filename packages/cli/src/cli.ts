@@ -12,15 +12,25 @@ import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, m
 import { Session, formatBytes } from './util';
 import { validate } from './validate';
 
-// Use require() so microbundle doesn't compile this.
-const draco3d = require('../vendor/draco3dgltf/draco3dgltf.js');
+let io: NodeIO;
 
-const io = new NodeIO()
-	.registerExtensions(ALL_EXTENSIONS)
-	.registerDependencies({
-		'draco3d.decoder': draco3d.createDecoderModule(),
-		'draco3d.encoder': draco3d.createEncoderModule(),
+// Use require() so microbundle doesn't compile this.
+const draco3d = require('draco3dgltf');
+
+const programReady = new Promise((resolve) => {
+	Promise.all([
+		draco3d.createDecoderModule(),
+		draco3d.createEncoderModule()
+	]).then(([decoder, encoder]) => {
+		io = new NodeIO()
+			.registerExtensions(ALL_EXTENSIONS)
+			.registerDependencies({
+				'draco3d.decoder': decoder,
+				'draco3d.encoder': encoder,
+			});
+		resolve();
 	});
+});
 
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
 const OUTPUT_DESC = 'Path to write output';
@@ -37,6 +47,7 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
+		io.setLogger(logger as unknown as Logger);
 		inspect(io.readAsJSON(args.input as string), io, logger);
 	});
 
@@ -491,6 +502,6 @@ for textures where the quality is sufficient.`.trim()),
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
-export { program };
+export { program, programReady };
 export * from './util';
 export * from './transforms';
