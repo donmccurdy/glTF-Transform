@@ -47,12 +47,8 @@ program
 	.help('Inspect the contents of the model.')
 	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
-		try {
-			inspect(io.readAsJSON(args.input as string), io, logger);
-		} catch (e) {
-			console.error(e);
-			throw e;
-		}
+		io.setLogger(logger as unknown as Logger);
+		inspect(io.readAsJSON(args.input as string), io, logger);
 	});
 
 // VALIDATE

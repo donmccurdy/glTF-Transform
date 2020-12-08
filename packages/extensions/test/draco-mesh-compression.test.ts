@@ -222,6 +222,7 @@ async function createNodeIO(): Promise<NodeIO> {
 		createEncoderModule()
 	]).then(([decoder, encoder]) => {
 		return new NodeIO()
+			.registerExtensions([DracoMeshCompression])
 			.registerDependencies({
 				'draco3d.decoder': decoder,
 				'draco3d.encoder': encoder,

@@ -33,10 +33,12 @@ export function formatHeader(title: string): string {
 /** Helper class for managing a CLI command session. */
 export class Session {
 	constructor (
-		private _io: NodeIO,
-		private _logger: Logger,
-		private _input: string,
-		private _output: string) {}
+			private _io: NodeIO,
+			private _logger: Logger,
+			private _input: string,
+			private _output: string) {
+		_io.setLogger(_logger);
+	}
 
 	public static create (io: NodeIO, logger: unknown, input: unknown, output: unknown): Session {
 		return new Session(io, logger as Logger, input as string, output as string);

@@ -51,20 +51,21 @@ export class DracoMeshCompression extends Extension {
 
 	public preread(context: ReaderContext): this {
 		if (!this._decoderModule) {
-			throw new Error('Please install extension dependency, "draco3d.decoder".');
+			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.decoder".`);
 		}
 
 		const logger = this.doc.getLogger();
 		const jsonDoc = context.jsonDoc;
-		const decoder = new this._decoderModule.Decoder();
-		const dracoMeshes: Map<number, DRACO.Mesh> = new Map();
+		const dracoMeshes: Map<number, [DRACO.Decoder, DRACO.Mesh]> = new Map();
+
+		try {
 
 		for (const meshDef of jsonDoc.json.meshes) {
 			for (const primDef of meshDef.primitives) {
 				if (!primDef.extensions || !primDef.extensions[NAME]) continue;
 
 				const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
-				let dracoMesh = dracoMeshes.get(dracoDef.bufferView);
+				let [decoder, dracoMesh] = dracoMeshes.get(dracoDef.bufferView) || [];
 
 				if (!dracoMesh) {
 					const bufferViewDef = jsonDoc.json.bufferViews[dracoDef.bufferView];
@@ -75,12 +76,12 @@ export class DracoMeshCompression extends Extension {
 
 					const byteOffset = bufferViewDef.byteOffset || 0;
 					const byteLength = bufferViewDef.byteLength;
-					console.log(`byteOffset: ${byteOffset}, byteLength: ${byteLength}, resourceByteLength: ${resource.byteLength}`);
-					const compressedData = new Uint8Array(resource.slice(0), byteOffset, byteLength);
+					const compressedData = new Int8Array(resource.slice(0), byteOffset, byteLength);
 
+					decoder = new this._decoderModule.Decoder();
 					dracoMesh = decodeGeometry(decoder, compressedData);
-					dracoMeshes.set(dracoDef.bufferView, dracoMesh);
-					logger.debug(`Decompressed ${compressedData.byteLength} bytes.`);
+					dracoMeshes.set(dracoDef.bufferView, [decoder, dracoMesh]);
+					logger.debug(`[${NAME}] Decompressed ${compressedData.byteLength} bytes.`);
 				}
 
 				// Attributes.
@@ -98,9 +99,11 @@ export class DracoMeshCompression extends Extension {
 				const indicesArray = decodeIndex(decoder, dracoMesh);
 				context.accessors[primDef.indices].setArray(indicesArray);
 			}
+		}
 
-			this._decoderModule.destroy(decoder);
-			for (const dracoMesh of Array.from(dracoMeshes.values())) {
+		} finally {
+			for (const [decoder, dracoMesh] of Array.from(dracoMeshes.values())) {
+				this._decoderModule.destroy(decoder);
 				this._decoderModule.destroy(dracoMesh);
 			}
 		}
@@ -114,11 +117,11 @@ export class DracoMeshCompression extends Extension {
 
 	public prewrite(context: WriterContext, _propertyType: PropertyType): this {
 		if (!this._encoderModule) {
-			throw new Error('Please install extension dependency, "draco3d.encoder".');
+			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.encoder".`);
 		}
 
 		const logger = this.doc.getLogger();
-		logger.debug(`Draco compression options: ${JSON.stringify(this._encoderOptions)}`);
+		logger.debug(`[${NAME}] Compression options: ${JSON.stringify(this._encoderOptions)}`);
 
 		const primitiveHashMap = listDracoPrimitives(this.doc);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
@@ -159,7 +162,7 @@ export class DracoMeshCompression extends Extension {
 			context.otherBufferViews.get(buffer).push(encodedPrim.data);
 		}
 
-		logger.debug(`Compressed ${primitiveHashMap.size} primitives.`);
+		logger.debug(`[${NAME}] Compressed ${primitiveHashMap.size} primitives.`);
 
 		context.extensionData[NAME] = {
 			primitiveHashMap,
@@ -207,10 +210,10 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		for (const prim of mesh.listPrimitives()) {
 			if (!prim.getIndices()) {
 				excluded.add(prim);
-				logger.warn('Skipping Draco compression on non-indexed primitive.');
+				logger.warn(`[${NAME}] Skipping Draco compression on non-indexed primitive.`);
 			} else if (prim.getMode() !== GLTF.MeshPrimitiveMode.TRIANGLES) {
 				excluded.add(prim);
-				logger.warn('Skipping Draco compression on non-TRIANGLES primitive.');
+				logger.warn(`[${NAME}] Skipping Draco compression on non-TRIANGLES primitive.`);
 			} else {
 				included.add(prim);
 			}
@@ -247,7 +250,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		const parentTypes = new Set(accessor.listParents().map((prop) => prop.propertyType));
 		if (parentTypes.size !== 2 || !parentTypes.has('Primitive') || !parentTypes.has('Root')) {
 			throw new Error(
-				'Compressed accessors must only be used as indices or vertex attributes.'
+				`[${NAME}] Compressed accessors must only be used as indices or vertex attributes.`
 			);
 		}
 	}
@@ -257,7 +260,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		const hashKey = primHashKeys.get(prim);
 		if (includedAccessors.get(prim.getIndices()) !== hashKey
 				|| prim.listAttributes().some((attr) => includedAccessors.get(attr) !== hashKey)) {
-			throw new Error('Draco primitives must share all, or no, accessors.')
+			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`)
 		}
 	}
 
@@ -265,7 +268,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	for (const prim of Array.from(excluded)) {
 		if (includedAccessors.has(prim.getIndices())
 				|| prim.listAttributes().some((attr) => includedAccessors.has(attr))) {
-			throw new Error('Accessor cannot be shared by compressed and uncompressed primitives.');
+			throw new Error(`[${NAME}] Accessor cannot be shared by compressed and uncompressed primitives.`);
 		}
 	}
 
