@@ -12,6 +12,8 @@ import { formatBytes, getTextureSlots } from '../util';
 
 tmp.setGracefulCleanup();
 
+const SQUOOSH_VERSION = '^0.6.0'
+
 // Configuration: https://github.com/GoogleChromeLabs/squoosh/blob/visdf/cli/src/codecs.js
 
 export interface WebPOptions {
@@ -68,7 +70,7 @@ export const webp = function (options: WebPOptions = WEBP_DEFAULT_OPTIONS): Tran
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--webp', `"${JSON.stringify(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--webp', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
 			outExtension: 'webp',
 			outMimeType: 'image/webp',
 		})(doc);
@@ -82,7 +84,7 @@ export const mozjpeg = function (options: MozJPEGOptions = MOZJPEG_DEFAULT_OPTIO
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--mozjpeg', `"${JSON.stringify(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--mozjpeg', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
 			outExtension: 'jpg',
 			outMimeType: 'image/jpeg',
 		})(doc);
@@ -96,7 +98,7 @@ export const oxipng = function (options: OxiPNGOptions = OXIPNG_DEFAULT_OPTIONS)
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--oxipng', `"${JSON.stringify(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--oxipng', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
 			outExtension: 'png',
 			outMimeType: 'image/png',
 		})(doc);
@@ -110,7 +112,7 @@ const squoosh = function (options: SquooshOptions): Transform {
 
 		if (!commandExistsSync('squoosh-cli') && !process.env.CI) {
 			throw new Error(
-				'Command "squoosh-cli" not found. Please install "@squoosh/cli" from NPM.'
+				`Command "squoosh-cli" not found. Please install "@squoosh/cli@${SQUOOSH_VERSION}" from NPM.`
 			);
 		}
 
@@ -161,11 +163,15 @@ const squoosh = function (options: SquooshOptions): Transform {
 				const {status, error} = spawnSync(
 					'squoosh-cli',
 					[...options.flags, '--output-dir', outDir, inPath],
-					{stdio: [process.stderr]}
+					{
+						stdio: ['silly', 'debug'].includes(logger['level'])
+							? 'inherit'
+							: [process.stderr]
+					}
 				);
 
 				if (status !== 0) {
-					logger.error('• Texture compression failed.');
+					logger.error(`• Texture compression failed [status = ${status}].`);
 					throw error || new Error('Texture compression failed');
 				}
 
@@ -191,4 +197,9 @@ const squoosh = function (options: SquooshOptions): Transform {
 			logger.warn('No textures were found, or none were selected for compression.');
 		}
 	};
+}
+
+/** Formats an object for JSON serialization in a CLI parameter, as expected by Squoosh CLI. */
+function toParamJSON (value: unknown): string {
+	return JSON.stringify(value).replace(/"/g, '\\"');
 }
