@@ -52,12 +52,12 @@ export function resize (options: ResizeOptions): Transform {
 
 			logger.info(`inputs: ${texture.getSize()} → ${options.size}`);
 
-			const [inputWidth, inputHeight] = texture.getSize();
-			const [outputWidth, outputHeight] = options.size;
+			const [inWidth, inHeight] = texture.getSize();
+			const [outWidth, outHeight] = options.size;
 
 			logger.info('decoding...');
 
-			const pixels: ndarray = await new Promise((resolve, reject) => {
+			const inPixels: ndarray = await new Promise((resolve, reject) => {
 				getPixels(
 					Buffer.from(texture.getImage()),
 					texture.getMimeType(),
@@ -68,20 +68,23 @@ export function resize (options: ResizeOptions): Transform {
 			logger.info(`resizing from ${texture.getSize()} to ${options.size}...`);
 
 			const data = _resize(
-				new Uint8Array(pixels.data),
-				inputWidth,
-				inputHeight,
-				outputWidth,
-				outputHeight,
+				new Uint8Array(inPixels.data),
+				inWidth,
+				inHeight,
+				outWidth,
+				outHeight,
 				3, // TODO(bug): filter
 				true, // TODO(bug): ???
 				true, // TODO(bug): ???
 			);
 
+			// TODO(cleanup): Why is transposing necessary?
+			const outPixels = (ndarray['default'])(data, [outWidth, outHeight, 4]).transpose(1, 0);
+
 			const image: ArrayBuffer = await new Promise((resolve, reject) => {
 				const chunks: Buffer[] = [];
 				// TODO(bug): Need to detect # channels correctly.
-				savePixels((ndarray['default'])(data, [outputWidth, outputHeight, 4]), 'png')
+				savePixels(outPixels, 'png')
 					.on('data', (d) => chunks.push(d))
 					.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks))))
 					.on('error', (e) => reject(e));
