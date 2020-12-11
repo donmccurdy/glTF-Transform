@@ -15,7 +15,7 @@ export async function rewriteTexture(
 	if (!source) return null;
 
 	const pixels: ndarray = await new Promise((resolve, reject) => {
-		(getPixels as unknown as Function)(
+		getPixels(
 			Buffer.from(source.getImage()),
 			source.getMimeType(),
 			(err, pixels) => err ? reject(err) : resolve(pixels)

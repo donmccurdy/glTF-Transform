@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, ResizeFilter, ResizeOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, resize, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -254,6 +254,43 @@ program
 		Session.create(io, logger, args.input, args.output)
 			.transform(dedup(options as unknown as DedupOptions))
 	);
+
+// RESIZE
+program
+	.command('resize', 'Resize textures')
+	.help('Resize PNG or JPEG textures.')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (regex) to match textures, by name or URI.', {
+		validator: program.STRING,
+	})
+	.option('--filter', 'Resampling filter', {
+		validator: ['triangle', 'catrom', 'mitchell', 'lanczos3'],
+		default: 'lanczos3',
+	})
+	.option('--width <pixels>', 'Width (px) of output textures.', {
+		validator: program.NUMBER,
+		required: true
+	})
+	.option('--height <pixels>', 'Height (px) of output textures.', {
+		validator: program.NUMBER,
+		required: true
+	})
+	.action(async ({args, options, logger}) => {
+		const pattern = options.pattern
+			? minimatch.makeRe(String(options.pattern), {nocase: true})
+			: null;
+		try {
+		return await Session.create(io, logger, args.input, args.output)
+			.transform(resize({
+				size: [options.width as number, options.height as number],
+				pattern,
+				// TODO(bug): filter
+			}));
+		} catch (e) {
+			console.error(e);
+		}
+	});
 
 // DRACO
 program
