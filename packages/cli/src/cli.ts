@@ -8,7 +8,7 @@ import { Logger, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, metalRough, partition, sequence, unweld, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
-import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, MozJPEGOptions, OxiPNGOptions, UASTC_DEFAULTS, WebPOptions, draco, merge, mozjpeg, oxipng, toktx, unlit, webp } from './transforms';
+import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, SquooshOptions, UASTC_DEFAULTS, draco, merge, mozjpeg, oxipng, toktx, unlit, webp } from './transforms';
 import { Session, formatBytes } from './util';
 import { validate } from './validate';
 
@@ -492,9 +492,14 @@ const SQUOOSH_SUMMARY = `
 Compresses textures with {VARIANT}, using Squoosh CLI. Reduces transmitted file
 size. Compared to GPU texture compression like KTX/Basis, PNG/JPEG/WebP must
 be fully decompressed in GPU memory — this makes texture GPU upload much
-slower, and may consume 4-8x more GPU memory. However, traditional compression
-methods are typically more forgiving, and require less tuning to achieve
-optimal visual and filesize results.
+slower, and may consume 4-8x more GPU memory. However, the PNG/JPEG/WebP
+compression methods are typically more forgiving than GPU texture compression,
+and require less tuning to achieve good visual and filesize results.
+
+By default, compression levels are chosen automatically based on a target
+visual distance, configurable with --auto-target. Alternatively, override the
+auto optimizer for {VARIANT} with --config. Configuration options are provided
+at https://github.com/GoogleChromeLabs/squoosh/tree/dev/cli#squoosh-cli.
 
 Dependencies:
 @squoosh/cli (https://www.npmjs.com/package/@squoosh/cli)`.trim();
@@ -502,23 +507,18 @@ Dependencies:
 // WEBP
 program
 	.command('webp', 'WebP texture compression')
-	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'WebP'))
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--config <config>',
+		'OxiPNG configuration, as JSON.',
+		{validator: program.STRING, default: 'auto'}
+	)
 	.option(
 		'--formats <formats>',
 		'Texture formats to include',
 		{validator: ['png', 'jpeg', '*'], default: '*'}
-	)
-	.option(
-		'--quality <quality>',
-		'Quality, 0–100. Defaults to auto optimizer.',
-		{validator: program.NUMBER}
-	)
-	.option(
-		'--lossless <lossless>',
-		'Whether to use lossless compression mode.',
-		{validator: program.BOOLEAN, default: false}
 	)
 	.option(
 		'--slots <slots>',
@@ -526,30 +526,30 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--optimizer-rounds <rounds>',
+		'--auto-rounds <rounds>',
 		'Maximum number of rounds to use for auto optimizer.',
 		{validator: program.NUMBER, default: 6}
 	)
 	.option(
-		'--optimizer-distance <distance>',
+		'--auto-target <distance>',
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(webp(options as unknown as WebPOptions))
+			.transform(webp(options as unknown as SquooshOptions))
 	);
 
 // OXIPNG
 program
 	.command('oxipng', 'OxiPNG texture compression')
-	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'OxiPNG'))
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'OxiPNG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
-		'--effort <effort>',
-		'Effort, 0 – 3. Default 2.',
-		{validator: program.NUMBER}
+		'--config <config>',
+		'OxiPNG configuration, as JSON, for manual optimizer.',
+		{validator: program.STRING, default: 'auto'}
 	)
 	.option(
 		'--formats <formats>',
@@ -562,35 +562,35 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--optimizer-max-rounds <rounds>',
-		'Maximum number of rounds to use for auto optimizer.',
+		'--auto-rounds <rounds>',
+		'Maximum number of rounds, for auto optimizer.',
 		{validator: program.NUMBER, default: 6}
 	)
 	.option(
-		'--optimizer-distance <distance>',
-		'Target Butteraugli distance for auto optimizer.',
+		'--auto-target <distance>',
+		'Target Butteraugli distance, for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(oxipng(options as unknown as OxiPNGOptions))
+			.transform(oxipng(options as unknown as SquooshOptions))
 	);
 
 // MOZJPEG
 program
 	.command('mozjpeg', 'MozJPEG texture compression')
-	.help(SQUOOSH_SUMMARY.replace('{VARIANT}', 'MozJPEG'))
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'MozJPEG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--config <config>',
+		'OxiPNG configuration, as JSON.',
+		{validator: program.STRING, default: 'auto'}
+	)
 	.option(
 		'--formats <formats>',
 		'Texture formats to include',
 		{validator: ['png', 'jpeg', '*'], default: 'jpeg'}
-	)
-	.option(
-		'--quality <quality>',
-		'Quality, 0–100. Defaults to auto optimizer.',
-		{validator: program.NUMBER}
 	)
 	.option(
 		'--slots <slots>',
@@ -598,18 +598,18 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--optimizer-max-rounds <rounds>',
+		'--auto-rounds <rounds>',
 		'Maximum number of rounds to use for auto optimizer.',
 		{validator: program.NUMBER, default: 6}
 	)
 	.option(
-		'--optimizer-distance <distance>',
+		'--auto-target <distance>',
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(mozjpeg(options as unknown as MozJPEGOptions))
+			.transform(mozjpeg(options as unknown as SquooshOptions))
 	);
 
 program.disableGlobalOption('--quiet');

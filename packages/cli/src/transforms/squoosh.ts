@@ -6,7 +6,7 @@ const minimatch = require('minimatch');
 const tmp = require('tmp');
 
 import { sync as commandExistsSync } from 'command-exists';
-import { BufferUtils, Document, FileUtils, ImageUtils, Transform } from '@gltf-transform/core';
+import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
 import { formatBytes, getTextureSlots } from '../util';
 
@@ -16,89 +16,94 @@ const SQUOOSH_VERSION = '^0.6.0'
 
 // Configuration: https://github.com/GoogleChromeLabs/squoosh/blob/visdf/cli/src/codecs.js
 
-export interface WebPOptions {
-	rounds: number;
-	distance: number;
-	slots?: string;
+export interface SquooshOptions {
+	config: string;
+	autoRounds?: number;
+	autoTarget?: number;
 	formats?: string;
-	quality?: number;
-	lossless?: boolean;
+	slots?: string;
 }
 
-export interface MozJPEGOptions {
-	rounds: number;
-	distance: number;
-	slots?: string;
-	formats?: string;
-	quality?: number;
-}
+const DEFAULT_OPTIONS: SquooshOptions = {
+	config: 'auto',
+	autoRounds: 6,
+	autoTarget: 1.4,
+	slots: '*'
+};
+const WEBP_DEFAULT_OPTIONS: SquooshOptions = {...DEFAULT_OPTIONS};
+const MOZJPEG_DEFAULT_OPTIONS: SquooshOptions = {formats: 'jpeg', ...DEFAULT_OPTIONS};
+const OXIPNG_DEFAULT_OPTIONS: SquooshOptions = {formats: 'png', ...DEFAULT_OPTIONS};
 
-export interface OxiPNGOptions {
-	rounds: number;
-	distance: number;
-	slots?: string;
+interface SquooshInternalOptions {
 	formats?: string;
-	effort?: number;
-}
-
-const DEFAULT_OPTIONS = {rounds: 6, distance: 1.4, slots: '*'};
-const WEBP_DEFAULT_OPTIONS: WebPOptions = {...DEFAULT_OPTIONS};
-const MOZJPEG_DEFAULT_OPTIONS: MozJPEGOptions = {formats: 'jpeg', ...DEFAULT_OPTIONS};
-const OXIPNG_DEFAULT_OPTIONS: OxiPNGOptions = {formats: 'png', ...DEFAULT_OPTIONS};
-
-interface SquooshOptions {
 	slots?: string;
-	formats?: string;
 	flags: string[];
 	outExtension: string;
 	outMimeType: string;
 }
 
-function createDefaultFlags(options: {distance: number; rounds: number}): string[] {
-	return [
-		'--optimizer-butteraugli-target', options.distance + '',
-		'--max-optimizer-rounds', options.rounds + '',
-	];
+function createDefaultFlags(options: SquooshOptions, logger: Logger): string[] {
+	// Verify that user hasn't provided both auto and manual configuration.
+	// See: https://github.com/GoogleChromeLabs/squoosh/issues/898.
+	const usesAutoSettings = options.autoTarget !== DEFAULT_OPTIONS.autoTarget
+		|| options.autoRounds !== DEFAULT_OPTIONS.autoRounds;
+	if (options.config !== 'auto' && usesAutoSettings) {
+		logger.warn('Ignoring --auto-target and/or --auto-rounds, because --config has been provided.')
+	}
+
+	// Verify that config is valid JSON.
+	if (options.config !== 'auto') {
+		try {
+			JSON.parse(options.config)
+		} catch (e) {
+			logger.warn(`Invalid JSON configuration: ${options.config}`);
+			throw e;
+		}
+	}
+
+	return options.config !== 'auto'
+		? [options.config]
+		: [
+			'auto',
+			'--optimizer-butteraugli-target', options.autoTarget + '',
+			'--max-optimizer-rounds', options.autoRounds + '',
+		];
 }
 
-export const webp = function (options: WebPOptions = WEBP_DEFAULT_OPTIONS): Transform {
+export const webp = function (options: SquooshOptions = WEBP_DEFAULT_OPTIONS): Transform {
 	options = {...WEBP_DEFAULT_OPTIONS, ...options};
-
 	return (doc: Document): void => {
 		doc.createExtension(TextureWebP).setRequired(true);
-		const config = {quality: options.quality, lossless: options.lossless ? 1 : 0};
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--webp', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--webp', ...createDefaultFlags(options, doc.getLogger())],
 			outExtension: 'webp',
 			outMimeType: 'image/webp',
 		})(doc);
 	};
 }
 
-export const mozjpeg = function (options: MozJPEGOptions = MOZJPEG_DEFAULT_OPTIONS): Transform {
+export const mozjpeg = function (options: SquooshOptions = MOZJPEG_DEFAULT_OPTIONS): Transform {
 	options = {...MOZJPEG_DEFAULT_OPTIONS, ...options};
-	const config = {quality: options.quality};
 	return (doc: Document): void => {
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--mozjpeg', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--mozjpeg', ...createDefaultFlags(options, doc.getLogger())],
 			outExtension: 'jpg',
 			outMimeType: 'image/jpeg',
 		})(doc);
 	};
 }
 
-export const oxipng = function (options: OxiPNGOptions = OXIPNG_DEFAULT_OPTIONS): Transform {
+export const oxipng = function (options: SquooshOptions = OXIPNG_DEFAULT_OPTIONS): Transform {
 	options = {...OXIPNG_DEFAULT_OPTIONS, ...options};
-	const config = {effort: options.effort};
 	return (doc: Document): void => {
 		return squoosh({
 			formats: options.formats,
 			slots: options.slots,
-			flags: ['--oxipng', `"${toParamJSON(config)}"`, ...createDefaultFlags(options)],
+			flags: ['--oxipng', ...createDefaultFlags(options, doc.getLogger())],
 			outExtension: 'png',
 			outMimeType: 'image/png',
 		})(doc);
@@ -106,18 +111,18 @@ export const oxipng = function (options: OxiPNGOptions = OXIPNG_DEFAULT_OPTIONS)
 }
 
 /** Uses Squoosh CLI to compress textures with the specified encoder. */
-const squoosh = function (options: SquooshOptions): Transform {
+const squoosh = function (options: SquooshInternalOptions): Transform {
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
 
 		if (!commandExistsSync('squoosh-cli') && !process.env.CI) {
 			throw new Error(
-				`Command "squoosh-cli" not found. Please install "@squoosh/cli@${SQUOOSH_VERSION}" from NPM.`
+				`Squoosh CLI not found. Try "npm install --global @squoosh/cli@${SQUOOSH_VERSION}".`
 			);
 		}
 
 		if (doc.getRoot().listTextures().length > 1) {
-			logger.info('This may take some time. For more detailed progress, use "--verbose".');
+			logger.info('This may take some time. For more detailed progress, use --verbose.');
 		}
 
 		let numCompressed = 0;
@@ -197,9 +202,4 @@ const squoosh = function (options: SquooshOptions): Transform {
 			logger.warn('No textures were found, or none were selected for compression.');
 		}
 	};
-}
-
-/** Formats an object for JSON serialization in a CLI parameter, as expected by Squoosh CLI. */
-function toParamJSON (value: unknown): string {
-	return JSON.stringify(value).replace(/"/g, '\\"');
 }
