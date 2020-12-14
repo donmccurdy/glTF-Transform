@@ -408,6 +408,14 @@ UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
 		{validator: program.NUMBER}
 	)
 	.option(
+		'--power-of-two',
+		'Resizes any non-power-of-two textures to the closest power-of-two'
+		+ ' dimensions, not exceeding 2048x2048px. Required for '
+		+ ' compatibility on some older devices and APIs, particularly '
+		+ ' WebGL 1.0.',
+		{validator: program.BOOLEAN}
+	)
+	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower'
 		+ ' is higher quality but less quality per output bit (try 1.0-3.0).'
@@ -469,6 +477,14 @@ for textures where the quality is sufficient.`.trim()),
 		+ '\n3     | Slower    | 48.01dB'
 		+ '\n4     | Very slow | 48.24dB',
 		{validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level}
+	)
+	.option(
+		'--power-of-two',
+		'Resizes any non-power-of-two textures to the closest power-of-two'
+		+ ' dimensions, not exceeding 2048x2048px. Required for '
+		+ ' compatibility on some older devices and APIs, particularly '
+		+ ' WebGL 1.0.',
+		{validator: program.BOOLEAN}
 	)
 	.option(
 		'--rdo-quality <uastc_rdo_q>',

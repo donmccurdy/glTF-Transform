@@ -1,4 +1,21 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { spawnSync: _spawnSync } = require('child_process');
+
+import { sync as _commandExistsSync } from 'command-exists';
 import { Document, FileUtils, Logger, NodeIO, Transform } from '@gltf-transform/core';
+
+// Mock for tests.
+
+export let spawnSync = _spawnSync;
+export let commandExistsSync = _commandExistsSync;
+
+export function mockSpawnSync (_spawnSync: unknown): void {
+	spawnSync = _spawnSync;
+}
+
+export function mockCommandExistsSync (_commandExistsSync: unknown): void {
+	commandExistsSync = _commandExistsSync;
+}
 
 // Utilities.
 
