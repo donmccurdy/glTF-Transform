@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/extensions",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Adds extension support to @gltf-transform/core",
   "main": "dist/extensions.js",
@@ -21,7 +21,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.8.3"
+    "@gltf-transform/core": "^0.8.4"
   },
   "files": [
     "dist/",
@@ -29,5 +29,5 @@
     "README.md",
     "package.json"
   ],
-  "gitHead": "f92b1eb22fd911e37688e646767bceb32efb4698"
+  "gitHead": "4e2d586b48cfe059c525438dac6bb15dc92ba99d"
 }
