@@ -50,6 +50,11 @@ export function resize (options: ResizeOptions): Transform {
 				|| options.pattern.test(texture.getURI());
 			if (!match) continue;
 
+			if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
+				logger.warn(`Skipping unsupported texture type, "${texture.getMimeType()}".`);
+				continue;
+			}
+
 			logger.info(`inputs: ${texture.getSize()} → ${options.size}`);
 
 			const [inWidth, inHeight] = texture.getSize();
@@ -83,7 +88,8 @@ export function resize (options: ResizeOptions): Transform {
 
 			const image: ArrayBuffer = await new Promise((resolve, reject) => {
 				const chunks: Buffer[] = [];
-				// TODO(bug): Need to detect # channels correctly.
+				// TODO(bug): Preserve # channels.
+				// TODO(bug): Preserve format.
 				savePixels(outPixels, 'png')
 					.on('data', (d) => chunks.push(d))
 					.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks))))
