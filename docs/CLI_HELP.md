@@ -1,5 +1,5 @@
 
-  gltf-transform 0.8.1 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.8.2 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -35,8 +35,8 @@
     dedup                                Deduplicate accessors and textures                     
     draco                                Compress mesh geometry with Draco                      
     gzip                                 Compress the model with gzip                           
-    etc1s                                Compress textures with KTX + Basis ETC1S               
-    uastc                                Compress textures with KTX + Basis UASTC               
+    etc1s                                KTX + Basis ETC1S texture compression                  
+    uastc                                KTX + Basis UASTC texture compression                  
 
   GLOBAL OPTIONS
 
