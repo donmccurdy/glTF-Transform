@@ -62,7 +62,7 @@ class ImageUtils {
 		return resolution ? resolution[0] * resolution[1] * channels : null;
 	}
 
-	/** Returns the size of a JPEG image. */
+	/** @hidden Returns the size of a JPEG image. */
 	private static _getSizeJPEG (buffer: ArrayBuffer): vec2 {
 		// Skip 4 chars, they are for signature
 		let view = new DataView(buffer, 4);
@@ -91,7 +91,7 @@ class ImageUtils {
 		throw new TypeError('Invalid JPG, no size found');
 	}
 
-	/** Returns the size of a PNG image. */
+	/** @hidden Returns the size of a PNG image. */
 	private static _getSizePNG (buffer: ArrayBuffer): vec2 {
 		const view = new DataView(buffer);
 		const magic = BufferUtils.decodeText(buffer.slice(12, 16));
@@ -101,6 +101,7 @@ class ImageUtils {
 		return [view.getUint32(16, false), view.getUint32(20, false)];
 	}
 
+	/** @hidden Returns the size of a WebP image. */
 	private static _getSizeWebP (buffer: ArrayBuffer): vec2 {
 		// Reference: http://tools.ietf.org/html/rfc6386
 		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
@@ -133,17 +134,20 @@ class ImageUtils {
 		return null;
 	}
 
+	/** @hidden */
 	private static _getSizeKTX2 (buffer: ArrayBuffer): vec2 {
 		validateKTX2Buffer(new DataView(buffer));
 		const view = new DataView(buffer);
 		return [view.getUint32(20, true), view.getUint32(24, true)];
 	}
 
+	/** Returns the preferred file extension for the given MIME type. */
 	public static mimeTypeToExtension(mimeType: string): string {
 		if (mimeType === 'image/jpeg') return 'jpg';
 		return mimeType.split('/').pop();
 	}
 
+	/** Returns the MIME type for the given file extension. */
 	public static extensionToMimeType(extension: string): string {
 		if (extension === 'jpg') return 'image/jpeg';
 		return `image/${extension}`;

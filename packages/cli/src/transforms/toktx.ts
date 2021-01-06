@@ -9,6 +9,10 @@ import { commandExistsSync, formatBytes, spawnSync } from '../util';
 
 tmp.setGracefulCleanup();
 
+/**********************************************************************************************
+ * Interfaces.
+ */
+
 export const Mode = {
 	ETC1S: 'etc1s',
 	UASTC: 'uastc',
@@ -72,6 +76,10 @@ export const UASTC_DEFAULTS = {
 	...GLOBAL_DEFAULTS,
 };
 
+/**********************************************************************************************
+ * Implementation.
+ */
+
 export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform {
 	options = {...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS), ...options};
 
@@ -82,7 +90,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
 		}
 
-		doc.createExtension(TextureBasisu);
+		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
 		let numCompressed = 0;
 
@@ -95,7 +103,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
 				logger.debug(`Texture ${textureLabel} (${slots.join(', ')})`);
 
-				// Exclude textures that don't match the 'slots' glob, or are already KTX.
+				// FILTER: Exclude textures that don't match the 'slots' glob, or are already KTX.
+
 				if (texture.getMimeType() === 'image/ktx2') {
 					logger.debug('• Skipping, already KTX.');
 					return;
@@ -104,7 +113,9 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				}
 
-				// Create temporary in/out paths for the 'toktx' CLI tool.
+				// PREPARE: Create temporary in/out paths for the 'toktx' CLI tool, and determine
+				// necessary commandline flags.
+
 				const extension = texture.getURI()
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
@@ -121,13 +132,16 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				];
 				logger.debug(`• toktx ${params.join(' ')}`);
 
-				// Run `toktx` CLI tool.
+				// COMPRESS: Run `toktx` CLI tool.
+
 				const {status, error} = spawnSync('toktx', params, {stdio: [process.stderr]});
 
 				if (status !== 0) {
 					logger.error('• Texture compression failed.');
 					throw error || new Error('Texture compression failed');
 				}
+
+				// PACK: Replace image data in the glTF asset.
 
 				texture
 					.setImage(BufferUtils.trim(fs.readFileSync(outPath)))
@@ -146,8 +160,16 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		if (numCompressed === 0) {
 			logger.warn('No textures were found, or none were selected for compression.');
 		}
+
+		if (!doc.getRoot().listTextures().find((t) => t.getMimeType() === 'image/ktx2')) {
+			basisuExtension.dispose();
+		}
 	};
 }
+
+/**********************************************************************************************
+ * Utilities.
+ */
 
 /** Returns names of all texture slots using the given texture. */
 function getTextureSlots (doc: Document, texture: Texture): string[] {
