@@ -4,6 +4,9 @@ import { InstancedMesh } from './instanced-mesh';
 
 const NAME = EXT_MESH_GPU_INSTANCING;
 
+// See BufferViewUsage in `writer.ts`.
+const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
+
 interface InstancedMeshDef {
 	attributes: {
 		[name: string]: number;
@@ -14,13 +17,13 @@ interface InstancedMeshDef {
 export class MeshGPUInstancing extends Extension {
 	public readonly extensionName = NAME;
 	public readonly provideTypes = [PropertyType.NODE];
+	public readonly prewriteTypes = [PropertyType.ACCESSOR];
 	public static readonly EXTENSION_NAME = NAME;
 
 	public createInstancedMesh(): InstancedMesh {
 		return new InstancedMesh(this.doc.getGraph(), this);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
@@ -43,7 +46,18 @@ export class MeshGPUInstancing extends Extension {
 		return this;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public prewrite(context: WriterContext): this {
+		// Set usage for instance attribute accessors, so they are stored in separate buffer
+		// views grouped by parent reference.
+		context.accessorUsageGroupedByParent.add(INSTANCE_ATTRIBUTE);
+		for (const prop of this.properties) {
+			for (const attribute of (prop as InstancedMesh).listAttributes()) {
+				context.setAccessorUsage(attribute, INSTANCE_ATTRIBUTE);
+			}
+		}
+		return this;
+	}
+
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
