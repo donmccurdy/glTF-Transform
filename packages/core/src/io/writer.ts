@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, PrimitiveTarget, Property, Root } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, IndexLink, Property, Root } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
@@ -254,23 +254,20 @@ export class GLTFWriter {
 			const groupByParent = context.accessorUsageGroupedByParent;
 			const accessorParents = new Map<Property, Set<Accessor>>();
 
-			const bufferParents = buffer.listParents()
-				.filter((property) => !(property instanceof Root)) as Property[];
+			const bufferAccessors = buffer.listParents()
+				.filter((property) => property instanceof Accessor) as Accessor[];
+			const bufferAccessorsSet = new Set(bufferAccessors);
 
 			// Categorize accessors by use.
-			for (const accessor of bufferParents) {
-				if ((!(accessor instanceof Accessor))) { // Not expected.
-					throw new Error(
-						`Unsupported buffer reference to type "${accessor.propertyType}"`
-					);
-				}
-
+			for (const accessor of bufferAccessors) {
 				// Skip if already written by an extension.
 				if (context.accessorIndexMap.has(accessor)) continue;
 
 				// Assign usage for core accessor usage types (explicit targets and implicit usage).
 				const accessorRefs = accessorLinks.get(accessor) || [];
 				for (const link of accessorRefs) {
+					if (context.getAccessorUsage(accessor)) break;
+
 					if (link instanceof AttributeLink) {
 						context.setAccessorUsage(accessor, BufferViewUsage.ARRAY_BUFFER);
 					} else if (link instanceof IndexLink) {
@@ -302,6 +299,7 @@ export class GLTFWriter {
 			let bufferByteLength = 0;
 
 			const usageGroups = context.listAccessorsByUsage();
+
 			for (const usage in usageGroups) {
 				if (groupByParent.has(usage)) {
 					// Accessors grouped by (first) parent, including vertex and instance
@@ -309,6 +307,7 @@ export class GLTFWriter {
 					// https://github.com/KhronosGroup/glTF/pull/1888
 					for (const parentAccessors of Array.from(accessorParents.values())) {
 						const accessors = Array.from(parentAccessors)
+							.filter((a) => bufferAccessorsSet.has(a))
 							.filter((a) => context.getAccessorUsage(a) === usage);
 						const result = usage === BufferViewUsage.ARRAY_BUFFER
 							? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
@@ -318,11 +317,12 @@ export class GLTFWriter {
 					}
 				} else {
 					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
+					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
 					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
 						? BufferViewTarget.ELEMENT_ARRAY_BUFFER
 						: null;
 					const result = concatAccessors(
-						usageGroups[usage], bufferIndex, bufferByteLength, target
+						accessors, bufferIndex, bufferByteLength, target
 					);
 					bufferByteLength += result.byteLength;
 					buffers.push(...result.buffers);

@@ -142,7 +142,7 @@ export class WriterContext {
 	/** Lists accessors grouped by usage. Accessors with unspecified usage are not included. */
 	listAccessorsByUsage(): {[key: string]: Accessor[]} {
 		const result = {};
-		for (const [accessor, usage] of Object.entries(this._accessorUsageMap)) {
+		for (const [accessor, usage] of Array.from(this._accessorUsageMap.entries())) {
 			result[usage] = result[usage] || [];
 			result[usage].push(accessor);
 		}
