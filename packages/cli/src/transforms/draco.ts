@@ -31,4 +31,4 @@ export const draco = (options: DracoCLIOptions): Transform => {
 				}
 			});
 	};
-}
+};

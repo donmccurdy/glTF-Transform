@@ -14,7 +14,7 @@ export function validate(input: string, options, logger: Logger): void {
 			new Promise((resolve, reject) => {
 				uri = path.resolve(path.dirname(input), decodeURIComponent(uri));
 				fs.readFile(uri, (err, data) => {
-					if (err) logger.warn(`Unable to validate "${uri}": ${err.toString()}.`)
+					if (err) logger.warn(`Unable to validate "${uri}": ${err.toString()}.`);
 					err ? reject(err.toString()) : resolve(data);
 				});
 			})

@@ -165,7 +165,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			basisuExtension.dispose();
 		}
 	};
-}
+};
 
 /**********************************************************************************************
  * Utilities.
@@ -176,7 +176,7 @@ function getTextureSlots (doc: Document, texture: Texture): string[] {
 	return doc.getGraph().getLinks()
 		.filter((link) => link.getChild() === texture)
 		.map((link) => link.getName())
-		.filter((slot) => slot !== 'texture')
+		.filter((slot) => slot !== 'texture');
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
@@ -189,7 +189,7 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 	if (options.mode === Mode.UASTC) {
 		params.push('--uastc', options.level);
 		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) params.push('--uastc_rdo_q', options.rdoQuality);
-		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) params.push('--uastc_rdo_d', options.rdoDictsize)
+		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) params.push('--uastc_rdo_d', options.rdoDictsize);
 		if (options.zstd > 0) params.push('--zcmp', options.zstd);
 	} else {
 		params.push('--bcmp');
@@ -199,7 +199,7 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
 
 		if (options.rdoOff) {
-			params.push('--no_endpoint_rdo', '--no_selector_rdo')
+			params.push('--no_endpoint_rdo', '--no_selector_rdo');
 		} else if (options.rdoThreshold) {
 			params.push('--endpoint_rdo_threshold', options.rdoThreshold);
 			params.push('--selector_rdo_threshold', options.rdoThreshold);

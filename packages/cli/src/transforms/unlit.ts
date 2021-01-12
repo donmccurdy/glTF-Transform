@@ -9,4 +9,4 @@ export const unlit = (): Transform => {
 			material.setExtension('KHR_materials_unlit', unlit);
 		});
 	};
-}
+};
