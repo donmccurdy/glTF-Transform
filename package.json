@@ -27,8 +27,8 @@
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
-    "@typescript-eslint/eslint-plugin": "^2.27.0",
-    "@typescript-eslint/parser": "^2.27.0",
+    "@typescript-eslint/eslint-plugin": "^4.13.0",
+    "@typescript-eslint/parser": "^4.13.0",
     "canvas": "^2.6.1",
     "coveralls": "^3.0.11",
     "draco3dgltf": "^1.4.1",
