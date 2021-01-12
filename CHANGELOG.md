@@ -6,6 +6,7 @@
 
 **Features:**
 
+- Add 'resample' transform.
 - Add `EXT_mesh_gpu_instancing` extension.
 
 **Breaking changes:**
