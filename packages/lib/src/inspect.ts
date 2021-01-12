@@ -162,8 +162,10 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 		});
 
 		let size = 0;
+		let keyframes = 0;
 		const accessors: Set<Accessor> = new Set();
 		anim.listSamplers().forEach((sampler) => {
+			keyframes += sampler.getInput().getCount();
 			accessors.add(sampler.getInput());
 			accessors.add(sampler.getOutput());
 		});
@@ -176,6 +178,7 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 			channels: anim.listChannels().length,
 			samplers: anim.listSamplers().length,
 			duration: Math.round((maxTime - minTime) * 1000) / 1000,
+			keyframes,
 			size: size,
 		};
 	});
@@ -240,6 +243,7 @@ interface AnimationReport {
 	name: string;
 	channels: number;
 	samplers: number;
+	keyframes: number;
 	duration: number;
 	size: number;
 }
