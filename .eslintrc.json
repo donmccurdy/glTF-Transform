@@ -26,7 +26,13 @@
     "@typescript-eslint/no-unused-vars": ["warn", {"argsIgnorePattern": "^_"}],
     "quotes": ["warn", "single"],
     "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}],
-    "newline-per-chained-call": [2, {"ignoreChainWithDepth": 3}]
+    "newline-per-chained-call": ["warn", {"ignoreChainWithDepth": 3}],
+    "semi": ["error"],
+    "eqeqeq": ["warn"],
+    "space-infix-ops": ["warn"],
+    "array-bracket-spacing": ["warn"],
+    "no-irregular-whitespace": ["warn"],
+    "comma-spacing": ["warn"]
   },
   "ignorePatterns": ["**/*.js"]
 }
