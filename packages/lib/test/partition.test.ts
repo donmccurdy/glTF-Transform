@@ -26,7 +26,7 @@ test('@gltf-transform/lib::partition', t => {
 	], 'partitions into two buffers');
 
 	const bufferReferences = jsonDoc.json.bufferViews.map((b) => b.buffer);
-	t.deepEquals(bufferReferences, [0,0,1,1], 'creates four buffer views');
+	t.deepEquals(bufferReferences, [0, 0, 1, 1], 'creates four buffer views');
 
 	t.end();
 });

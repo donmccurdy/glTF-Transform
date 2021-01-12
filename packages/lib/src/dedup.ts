@@ -29,7 +29,7 @@ export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transfo
 		logger.debug(`${NAME}: Complete.`);
 	};
 
-}
+};
 
 function dedupAccessors(logger: Logger, doc: Document): void {
 	// Find all accessors used for mesh data.
@@ -43,7 +43,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 			if (primitive.getIndices()) {
 				indicesAccessors.add(primitive.getIndices());
 			}
-		})
+		});
 	});
 
 	// Find duplicate mesh accessors.
@@ -93,7 +93,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 			if (indices && duplicateIndices.has(indices)) {
 				primitive.swap(indices, duplicateIndices.get(indices));
 			}
-		})
+		});
 	});
 	Array.from(duplicateIndices.keys()).forEach((indices) => indices.dispose());
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());

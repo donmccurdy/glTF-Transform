@@ -5,8 +5,8 @@ import { Document, GLTF } from '@gltf-transform/core';
 import { colorspace } from '../';
 
 test('@gltf-transform/lib::colorspace', t => {
-	const input = [ 0.25882352941176473, 0.5215686274509804, 0.9568627450980393 ]; // sRGB
-	const expected = [ 0.054480276435339814, 0.23455058215026167, 0.9046611743890203 ]; // linear
+	const input = [0.25882352941176473, 0.5215686274509804, 0.9568627450980393]; // sRGB
+	const expected = [0.054480276435339814, 0.23455058215026167, 0.9046611743890203]; // linear
 
 	const doc = new Document();
 	const mesh = doc.createMesh('test-mesh');
@@ -18,14 +18,14 @@ test('@gltf-transform/lib::colorspace', t => {
 
 	const accessor1 = doc.createAccessor('#1');
 	const accessor2 = doc.createAccessor('#2');
-	accessor1.setType(GLTF.AccessorType.VEC3).setArray(new Float32Array([...input, ...input]))
+	accessor1.setType(GLTF.AccessorType.VEC3).setArray(new Float32Array([...input, ...input]));
 	accessor2.setType(GLTF.AccessorType.VEC4).setArray(new Float32Array([...input, 0.5]));
 
 	primitive1
 		.setAttribute('COLOR_0', accessor1)
 		.setAttribute('COLOR_1', accessor2);
 	primitive2
-		.setAttribute('COLOR_0', accessor1)
+		.setAttribute('COLOR_0', accessor1);
 
 	colorspace({inputEncoding: 'sRGB'})(doc);
 

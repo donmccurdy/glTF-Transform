@@ -79,7 +79,7 @@ test('@gltf-transform/lib::metalRough | textures', async t => {
 
 	const extensionsUsed = doc.getRoot().listExtensionsUsed()
 		.map((e) => e.extensionName)
-		.sort()
+		.sort();
 
 	t.deepEqual(
 		extensionsUsed,

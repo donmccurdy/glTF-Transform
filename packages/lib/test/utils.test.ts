@@ -11,7 +11,7 @@ test('@gltf-transform/lib::utils | getGLPrimitiveCount', async t => {
 		.setArray(new Uint16Array(6));
 	const position = doc.createAccessor()
 		.setType(Accessor.Type.VEC3)
-		.setArray(new Float32Array(99))
+		.setArray(new Float32Array(99));
 	const prim = doc.createPrimitive()
 		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES)
 		.setAttribute('POSITION', position);

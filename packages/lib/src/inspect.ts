@@ -66,7 +66,7 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 		Array.from(meshAccessors).forEach((a) => (size += a.getArray().byteLength));
 
 		const modes = mesh.listPrimitives()
-			.map((prim) => MeshPrimitiveModeLabels[prim.getMode()])
+			.map((prim) => MeshPrimitiveModeLabels[prim.getMode()]);
 
 		return {
 			name: mesh.getName(),
@@ -180,7 +180,7 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 		};
 	});
 
-	return {properties: animations}
+	return {properties: animations};
 }
 
 interface Report {

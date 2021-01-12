@@ -30,7 +30,7 @@ test('@gltf-transform/lib::dedup | textures', t => {
 	const buffer = canvas.toBuffer('image/png').slice().buffer;
 
 	doc.createTexture('copy 1').setMimeType('image/png').setImage(buffer);
-	doc.createTexture('copy 2').setMimeType('image/png').setImage(buffer.slice(0))
+	doc.createTexture('copy 2').setMimeType('image/png').setImage(buffer.slice(0));
 
 	t.equal(doc.getRoot().listTextures().length, 2, 'begins with duplicate textures');
 

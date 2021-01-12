@@ -29,7 +29,7 @@ const partition = (options: PartitionOptions): Transform => {
 		logger.debug(`${NAME}: Complete.`);
 	};
 
-}
+};
 
 function partitionMeshes (doc: Document, logger: Logger, options: PartitionOptions): void {
 	const existingURIs = new Set<string>(doc.getRoot().listBuffers().map((b) => b.getURI()));
@@ -55,7 +55,7 @@ function partitionMeshes (doc: Document, logger: Logger, options: PartitionOptio
 						.forEach((primTarget) => {
 							primTarget.listAttributes()
 								.forEach((attribute) => attribute.setBuffer(buffer));
-						})
+						});
 				});
 		});
 }

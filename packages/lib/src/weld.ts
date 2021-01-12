@@ -98,7 +98,7 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 
 	const srcVertexCount = prim.getAttribute('POSITION').getCount();
 	const dstVertexCount = dstAttributes.get(prim.getAttribute('POSITION')).length;
-	doc.getLogger().debug(`${NAME}: ${srcVertexCount} → ${dstVertexCount} vertices.`)
+	doc.getLogger().debug(`${NAME}: ${srcVertexCount} → ${dstVertexCount} vertices.`);
 
 	// Update the primitive.
 	for (const srcAttr of prim.listAttributes()) {

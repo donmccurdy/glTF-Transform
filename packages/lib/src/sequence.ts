@@ -50,13 +50,13 @@ export function sequence (options: SequenceOptions): Transform {
 			let outputArray;
 			if (i === 0) {
 				inputArray = [i / fps, (i + 1) / fps];
-				outputArray = [1,1,1, 0,0,0];
+				outputArray = [1, 1, 1, 0, 0, 0];
 			} else if (i === sequenceNodes.length - 1) {
 				inputArray = [(i - 1) / fps, i / fps];
-				outputArray = [0,0,0, 1,1,1];
+				outputArray = [0, 0, 0, 1, 1, 1];
 			} else {
 				inputArray = [(i - 1) / fps, i / fps, (i + 1) / fps];
-				outputArray = [0,0,0, 1,1,1, 0,0,0];
+				outputArray = [0, 0, 0, 1, 1, 1, 0, 0, 0];
 			}
 
 			// Append channel to animation sequence.
