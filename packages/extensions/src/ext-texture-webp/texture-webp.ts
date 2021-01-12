@@ -12,7 +12,7 @@ export class TextureWebP extends Extension {
 	public preread(context: ReaderContext): this {
 		context.jsonDoc.json.textures.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
-				textureDef.source = textureDef.extensions[NAME].source;
+				textureDef.source = textureDef.extensions[NAME]['source'];
 			}
 		});
 		return this;

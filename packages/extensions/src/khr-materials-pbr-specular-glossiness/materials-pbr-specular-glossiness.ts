@@ -1,8 +1,16 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3, vec4 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
 import { PBRSpecularGlossiness } from './pbr-specular-glossiness';
 
 const NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+
+interface SpecularGlossinessDef {
+	diffuseFactor?: vec4;
+	specularFactor: vec3;
+	glossinessFactor: number;
+	diffuseTexture?: GLTF.ITextureInfo;
+	specularGlossinessTexture?: GLTF.ITextureInfo;
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsPBRSpecularGlossiness extends Extension {
@@ -22,28 +30,30 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 				const specGloss = this.createPBRSpecularGlossiness();
 				context.materials[materialIndex].setExtension(NAME, specGloss);
 
+				const specGlossDef = materialDef.extensions[NAME] as SpecularGlossinessDef;
+
 				// Factors.
 
-				if (materialDef.extensions[NAME].diffuseFactor !== undefined) {
-					specGloss.setDiffuseFactor(materialDef.extensions[NAME].diffuseFactor);
+				if (specGlossDef.diffuseFactor !== undefined) {
+					specGloss.setDiffuseFactor(specGlossDef.diffuseFactor);
 				}
-				if (materialDef.extensions[NAME].specularFactor !== undefined) {
-					specGloss.setSpecularFactor(materialDef.extensions[NAME].specularFactor);
+				if (specGlossDef.specularFactor !== undefined) {
+					specGloss.setSpecularFactor(specGlossDef.specularFactor);
 				}
-				if (materialDef.extensions[NAME].glossinessFactor !== undefined) {
-					specGloss.setGlossinessFactor(materialDef.extensions[NAME].glossinessFactor);
+				if (specGlossDef.glossinessFactor !== undefined) {
+					specGloss.setGlossinessFactor(specGlossDef.glossinessFactor);
 				}
 
 				// Textures.
 
-				if (materialDef.extensions[NAME].diffuseTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].diffuseTexture;
+				if (specGlossDef.diffuseTexture !== undefined) {
+					const textureInfoDef = specGlossDef.diffuseTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specGloss.setDiffuseTexture(texture);
 					context.setTextureInfo(specGloss.getDiffuseTextureInfo(), textureInfoDef);
 				}
-				if (materialDef.extensions[NAME].specularGlossinessTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].specularGlossinessTexture;
+				if (specGlossDef.specularGlossinessTexture !== undefined) {
+					const textureInfoDef = specGlossDef.specularGlossinessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specGloss.setSpecularGlossinessTexture(texture);
 					context.setTextureInfo(
@@ -71,24 +81,24 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					const specGlossDef = materialDef.extensions[NAME] = {
 						diffuseFactor: specGloss.getDiffuseFactor(),
 						specularFactor: specGloss.getSpecularFactor(),
 						glossinessFactor: specGloss.getGlossinessFactor(),
-					};
+					} as SpecularGlossinessDef;
 
 					// Textures.
 
 					if (specGloss.getDiffuseTexture()) {
 						const texture = specGloss.getDiffuseTexture();
 						const textureInfo = specGloss.getDiffuseTextureInfo();
-						materialDef.extensions[NAME].diffuseTexture
+						specGlossDef.diffuseTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (specGloss.getSpecularGlossinessTexture()) {
 						const texture = specGloss.getSpecularGlossinessTexture();
 						const textureInfo = specGloss.getSpecularGlossinessTextureInfo();
-						materialDef.extensions[NAME].specularGlossinessTexture
+						specGlossDef.specularGlossinessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}

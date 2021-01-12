@@ -240,9 +240,7 @@ export declare module GLTF {
 		/**
 		 * Dictionary object with extension-specific objects
 		 */
-		extensions?: {
-			[key: string]: Record<string, unknown>;
-		};
+		extensions?: Record<string, unknown>;
 		/**
 		 * Application-Specific data
 		 */

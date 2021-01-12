@@ -1,8 +1,13 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants';
 import { Transmission } from './transmission';
 
 const NAME = KHR_MATERIALS_TRANSMISSION;
+
+interface TransmissionDef {
+	transmissionFactor?: number;
+	transmissionTexture?: GLTF.ITextureInfo;
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsTransmission extends Extension {
@@ -22,18 +27,20 @@ export class MaterialsTransmission extends Extension {
 				const transmission = this.createTransmission();
 				context.materials[materialIndex].setExtension(NAME, transmission);
 
+				const transmissionDef = materialDef.extensions[NAME] as TransmissionDef;
+
 				// Factors.
 
-				if (materialDef.extensions[NAME].transmissionFactor !== undefined) {
+				if (transmissionDef.transmissionFactor !== undefined) {
 					transmission.setTransmissionFactor(
-						materialDef.extensions[NAME].transmissionFactor
+						transmissionDef.transmissionFactor
 					);
 				}
 
 				// Textures.
 
-				if (materialDef.extensions[NAME].transmissionTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].transmissionTexture;
+				if (transmissionDef.transmissionTexture !== undefined) {
+					const textureInfoDef = transmissionDef.transmissionTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					transmission.setTransmissionTexture(texture);
 					context.setTextureInfo(
@@ -61,16 +68,16 @@ export class MaterialsTransmission extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					const transmissionDef = materialDef.extensions[NAME] = {
 						transmissionFactor: transmission.getTransmissionFactor(),
-					};
+					} as TransmissionDef;
 
 					// Textures.
 
 					if (transmission.getTransmissionTexture()) {
 						const texture = transmission.getTransmissionTexture();
 						const textureInfo = transmission.getTransmissionTextureInfo();
-						materialDef.extensions[NAME].transmissionTexture
+						transmissionDef.transmissionTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}

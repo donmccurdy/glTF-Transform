@@ -1,8 +1,17 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants';
 import { Light, LightType } from './light';
 
 const NAME = KHR_LIGHTS_PUNCTUAL;
+
+interface LightDef {
+	color?: vec3;
+	intensity?: number;
+	range?: number;
+	innerConeAngle?: number;
+	outerConeAngle?: number;
+	type: 'spot' | 'cone' | 'directional'
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class LightsPunctual extends Extension {
@@ -18,7 +27,7 @@ export class LightsPunctual extends Extension {
 
 		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
-		const lightDefs = jsonDoc.json.extensions[NAME].lights || [];
+		const lightDefs = jsonDoc.json.extensions[NAME]['lights'] || [] as LightDef[];
 		const lights = lightDefs.map((lightDef) => {
 			const light = this.createLight()
 				.setName(lightDef.name || '')
@@ -40,7 +49,7 @@ export class LightsPunctual extends Extension {
 
 		jsonDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
 			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
-			context.nodes[nodeIndex].setExtension(NAME, lights[nodeDef.extensions[NAME].light]);
+			context.nodes[nodeIndex].setExtension(NAME, lights[nodeDef.extensions[NAME]['light']]);
 		});
 
 		return this;

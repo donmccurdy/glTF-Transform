@@ -1,8 +1,15 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants';
 import { Transform } from './transform';
 
 const NAME = KHR_TEXTURE_TRANSFORM;
+
+interface TransformDef {
+	offset: vec2;
+	rotation: number;
+	scale: vec2;
+	texCoord: number;
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class TextureTransform extends Extension {
@@ -18,7 +25,7 @@ export class TextureTransform extends Extension {
 			if (!textureInfoDef.extensions || !textureInfoDef.extensions[NAME]) continue;
 
 			const transform = this.createTransform();
-			const transformDef = textureInfoDef.extensions[NAME];
+			const transformDef = textureInfoDef.extensions[NAME] as TransformDef;
 
 			if (transformDef.offset !== undefined) transform.setOffset(transformDef.offset);
 			if (transformDef.rotation !== undefined) transform.setRotation(transformDef.rotation);

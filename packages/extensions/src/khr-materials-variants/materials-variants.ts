@@ -34,7 +34,7 @@ export class MaterialsVariants extends Extension {
 		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
 		// Read all top-level variant names.
-		const variantDefs = jsonDoc.json.extensions[NAME].variants || [];
+		const variantDefs = jsonDoc.json.extensions[NAME]['variants'] || [];
 		const variants = variantDefs
 			.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
 
@@ -51,7 +51,7 @@ export class MaterialsVariants extends Extension {
 
 				const mappingList = this.createMappingList();
 
-				for (const mappingDef of primDef.extensions[NAME].mappings) {
+				for (const mappingDef of primDef.extensions[NAME]['mappings']) {
 					const mapping = this.createMapping();
 
 					if (mappingDef.material !== undefined) {

@@ -1,8 +1,14 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
 import { Specular } from './specular';
 
 const NAME = KHR_MATERIALS_SPECULAR;
+
+interface SpecularDef {
+	specularFactor?: number;
+	specularColorFactor?: vec3;
+	specularTexture?: GLTF.ITextureInfo;
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsSpecular extends Extension {
@@ -22,21 +28,23 @@ export class MaterialsSpecular extends Extension {
 				const specular = this.createSpecular();
 				context.materials[materialIndex].setExtension(NAME, specular);
 
+				const specularDef = materialDef.extensions[NAME] as SpecularDef;
+
 				// Factors.
 
-				if (materialDef.extensions[NAME].specularFactor !== undefined) {
-					specular.setSpecularFactor(materialDef.extensions[NAME].specularFactor);
+				if (specularDef.specularFactor !== undefined) {
+					specular.setSpecularFactor(specularDef.specularFactor);
 				}
-				if (materialDef.extensions[NAME].specularColorFactor !== undefined) {
+				if (specularDef.specularColorFactor !== undefined) {
 					specular.setSpecularColorFactor(
-						materialDef.extensions[NAME].specularColorFactor
+						specularDef.specularColorFactor
 					);
 				}
 
 				// Textures.
 
-				if (materialDef.extensions[NAME].specularTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].specularTexture;
+				if (specularDef.specularTexture !== undefined) {
+					const textureInfoDef = specularDef.specularTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specular.setSpecularTexture(texture);
 					context.setTextureInfo(specular.getSpecularTextureInfo(), textureInfoDef);
@@ -61,17 +69,17 @@ export class MaterialsSpecular extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					const specularDef = materialDef.extensions[NAME] = {
 						specularFactor: specular.getSpecularFactor(),
 						specularColorFactor: specular.getSpecularColorFactor(),
-					};
+					} as SpecularDef;
 
 					// Textures.
 
 					if (specular.getSpecularTexture()) {
 						const texture = specular.getSpecularTexture();
 						const textureInfo = specular.getSpecularTextureInfo();
-						materialDef.extensions[NAME].specularTexture
+						specularDef.specularTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}

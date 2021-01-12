@@ -1,8 +1,15 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants';
 import { Sheen } from './sheen';
 
 const NAME = KHR_MATERIALS_SHEEN;
+
+interface SheenDef {
+	sheenColorFactor?: vec3;
+	sheenRoughnessFactor?: number;
+	sheenColorTexture?: GLTF.ITextureInfo;
+	sheenRoughnessTexture?: GLTF.ITextureInfo;
+}
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsSheen extends Extension {
@@ -22,27 +29,29 @@ export class MaterialsSheen extends Extension {
 				const sheen = this.createSheen();
 				context.materials[materialIndex].setExtension(NAME, sheen);
 
+				const sheenDef = materialDef.extensions[NAME] as SheenDef;
+
 				// Factors.
 
-				if (materialDef.extensions[NAME].sheenColorFactor !== undefined) {
-					sheen.setSheenColorFactor(materialDef.extensions[NAME].sheenColorFactor);
+				if (sheenDef.sheenColorFactor !== undefined) {
+					sheen.setSheenColorFactor(sheenDef.sheenColorFactor);
 				}
-				if (materialDef.extensions[NAME].sheenRoughnessFactor !== undefined) {
+				if (sheenDef.sheenRoughnessFactor !== undefined) {
 					sheen.setSheenRoughnessFactor(
-						materialDef.extensions[NAME].sheenRoughnessFactor
+						sheenDef.sheenRoughnessFactor
 					);
 				}
 
 				// Textures.
 
-				if (materialDef.extensions[NAME].sheenColorTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].sheenColorTexture;
+				if (sheenDef.sheenColorTexture !== undefined) {
+					const textureInfoDef = sheenDef.sheenColorTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					sheen.setSheenColorTexture(texture);
 					context.setTextureInfo(sheen.getSheenColorTextureInfo(), textureInfoDef);
 				}
-				if (materialDef.extensions[NAME].sheenRoughnessTexture !== undefined) {
-					const textureInfoDef = materialDef.extensions[NAME].sheenRoughnessTexture;
+				if (sheenDef.sheenRoughnessTexture !== undefined) {
+					const textureInfoDef = sheenDef.sheenRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					sheen.setSheenRoughnessTexture(texture);
 					context.setTextureInfo(sheen.getSheenRoughnessTextureInfo(), textureInfoDef);
@@ -67,23 +76,23 @@ export class MaterialsSheen extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					const sheenDef = materialDef.extensions[NAME] = {
 						sheenColorFactor: sheen.getSheenColorFactor(),
 						sheenRoughnessFactor: sheen.getSheenRoughnessFactor(),
-					};
+					} as SheenDef;
 
 					// Textures.
 
 					if (sheen.getSheenColorTexture()) {
 						const texture = sheen.getSheenColorTexture();
 						const textureInfo = sheen.getSheenColorTextureInfo();
-						materialDef.extensions[NAME].sheenColorTexture
+						sheenDef.sheenColorTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (sheen.getSheenRoughnessTexture()) {
 						const texture = sheen.getSheenRoughnessTexture();
 						const textureInfo = sheen.getSheenRoughnessTextureInfo();
-						materialDef.extensions[NAME].sheenRoughnessTexture
+						sheenDef.sheenRoughnessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}

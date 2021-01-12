@@ -4,6 +4,10 @@ import { IOR } from './ior';
 
 const NAME = KHR_MATERIALS_IOR;
 
+interface IORDef {
+	ior?: number;
+}
+
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsIOR extends Extension {
 	public readonly extensionName = NAME;
@@ -21,10 +25,12 @@ export class MaterialsIOR extends Extension {
 				const ior = this.createIOR();
 				context.materials[materialIndex].setExtension(NAME, ior);
 
+				const iorDef = materialDef.extensions[NAME] as IORDef;
+
 				// Factors.
 
-				if (materialDef.extensions[NAME].ior !== undefined) {
-					ior.setIOR(materialDef.extensions[NAME].ior);
+				if (iorDef.ior !== undefined) {
+					ior.setIOR(iorDef.ior);
 				}
 			}
 		});
