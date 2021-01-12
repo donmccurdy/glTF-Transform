@@ -119,12 +119,12 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
 	t.deepEquals(primitiveDefs[0], {
 		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
-		attributes: {POSITION: 1},
+		attributes: {POSITION: 0},
 	}, 'primitiveDef 1/2');
 	t.deepEquals(primitiveDefs[1], {
 		mode: GLTF.MeshPrimitiveMode.TRIANGLE_FAN,
-		indices: 0,
-		attributes: {POSITION: 2},
+		indices: 2,
+		attributes: {POSITION: 1},
 	}, 'primitiveDef 2/4');
 	t.end();
 });

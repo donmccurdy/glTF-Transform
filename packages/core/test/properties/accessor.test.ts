@@ -232,8 +232,7 @@ test('@gltf-transform/core::accessor | extras', t => {
 		.setExtras({foo: 1, bar: 2})
 		.setBuffer(doc.createBuffer());
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readBinary(io.writeBinary(doc));
 
 	t.deepEqual(doc.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

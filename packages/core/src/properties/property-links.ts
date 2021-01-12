@@ -1,10 +1,10 @@
 import { Link } from '../graph';
 import { Accessor } from './accessor';
 import { Primitive } from './primitive';
-import { PrimitiveTarget } from './primitive-target';
+import { Property } from './property';
 
 /** @hidden */
-export class AttributeLink extends Link<Primitive|PrimitiveTarget, Accessor> {
+export class AttributeLink extends Link<Property, Accessor> {
 	public semantic = '';
 	public copy (other: this): this {
 		this.semantic = other.semantic;

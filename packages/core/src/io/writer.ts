@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, AttributeLink, IndexLink, Primitive, Property, Root } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, IndexLink, Property, Root } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
@@ -10,6 +10,13 @@ import { UniqueURIGenerator, WriterContext } from './writer-context';
 const BufferViewTarget = {
 	ARRAY_BUFFER: 34962,
 	ELEMENT_ARRAY_BUFFER: 34963
+};
+
+const BufferViewUsage = {
+	ARRAY_BUFFER: 'ARRAY_BUFFER',
+	ELEMENT_ARRAY_BUFFER: 'ELEMENT_ARRAY_BUFFER',
+	INVERSE_BIND_MATRICES: 'INVERSE_BIND_MATRICES',
+	OTHER: 'OTHER',
 };
 
 export interface WriterOptions {
@@ -237,61 +244,51 @@ export class GLTFWriter {
 		root.listBuffers().forEach((buffer) => {
 			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
 
-			// Attributes are grouped and interleaved in one buffer view per mesh primitive. Indices for
-			// all primitives are grouped into a single buffer view. Everything else goes into a
-			// miscellaneous buffer view.
-			const attributeAccessors = new Map<Primitive, Set<Accessor>>();
-			const indexAccessors = new Set<Accessor>();
-			const ibmAccessors = new Set<Accessor>();
-			const otherAccessors = new Set<Accessor>();
+			// Attributes are grouped and interleaved in one buffer view per mesh primitive.
+			// Indices for all primitives are grouped into a single buffer view. IBMs are grouped
+			// into a single buffer view. Other usage (if specified by extensions) also goes into
+			// a dedicated buffer view. Everything else goes into a miscellaneous buffer view.
 
-			const bufferParents = buffer.listParents()
-				.filter((property) => !(property instanceof Root)) as Property[];
+			// Certain accessor usage should group data into buffer views by the accessor parent.
+			// The `accessorParents` map uses the first parent of each accessor for this purpose.
+			const groupByParent = context.accessorUsageGroupedByParent;
+			const accessorParents = new Map<Property, Set<Accessor>>();
+
+			const bufferAccessors = buffer.listParents()
+				.filter((property) => property instanceof Accessor) as Accessor[];
+			const bufferAccessorsSet = new Set(bufferAccessors);
 
 			// Categorize accessors by use.
-			for (const parent of bufferParents) {
-				if ((!(parent instanceof Accessor))) { // Not expected.
-					throw new Error('Unimplemented buffer reference: ' + parent);
-				}
-
+			for (const accessor of bufferAccessors) {
 				// Skip if already written by an extension.
-				if (context.accessorIndexMap.has(parent)) continue;
+				if (context.accessorIndexMap.has(accessor)) continue;
 
-				let isAttribute = false;
-				let isIndex = false;
-				let isIBM = false;
-				let isOther = false;
-
-				const accessorRefs = accessorLinks.get(parent) || [];
-
+				// Assign usage for core accessor usage types (explicit targets and implicit usage).
+				const accessorRefs = accessorLinks.get(accessor) || [];
 				for (const link of accessorRefs) {
+					if (context.getAccessorUsage(accessor)) break;
+
 					if (link instanceof AttributeLink) {
-						isAttribute = true;
+						context.setAccessorUsage(accessor, BufferViewUsage.ARRAY_BUFFER);
 					} else if (link instanceof IndexLink) {
-						isIndex = true;
+						context.setAccessorUsage(accessor, BufferViewUsage.ELEMENT_ARRAY_BUFFER);
 					} else if (link.getName() === 'inverseBindMatrices') {
-						isIBM = true;
-					} else {
-						isOther = true;
+						context.setAccessorUsage(accessor, BufferViewUsage.INVERSE_BIND_MATRICES);
 					}
 				}
 
-				// If the Accessor isn't used at all, treat it as "other".
-				if (!isAttribute && !isIndex && !isIBM && !isOther) isOther = true;
+				// Group accessors with no specified usage into a miscellaneous buffer view.
+				if (!context.getAccessorUsage(accessor)) {
+					context.setAccessorUsage(accessor, BufferViewUsage.OTHER);
+				}
 
-				if (isAttribute && !isIndex && !isIBM && !isOther) {
-					const primitive = accessorRefs[0].getParent() as Primitive;
-					const primitiveAccessors = attributeAccessors.get(primitive) || new Set<Accessor>();
-					primitiveAccessors.add(parent);
-					attributeAccessors.set(primitive, primitiveAccessors);
-				} else if (isIndex && !isAttribute && !isIBM && !isOther) {
-					indexAccessors.add(parent);
-				} else if (isIBM && !isAttribute && !isIndex && !isOther) {
-					ibmAccessors.add(parent);
-				} else if (isOther && !isAttribute && !isIndex && !isIBM) {
-					otherAccessors.add(parent);
-				} else {
-					throw new Error('Attribute, index, or IBM accessors must be used only for that purpose.');
+				// For accessor usage that requires grouping by parent (vertex and instance
+				// attributes) organize buffer views accordingly.
+				if (groupByParent.has(context.getAccessorUsage(accessor))) {
+					const parent = accessorRefs[0].getParent();
+					const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
+					parentAccessors.add(accessor);
+					accessorParents.set(parent, parentAccessors);
 				}
 			}
 
@@ -301,30 +298,39 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers.length;
 			let bufferByteLength = 0;
 
-			if (indexAccessors.size) {
-				const indexResult = concatAccessors(Array.from(indexAccessors), bufferIndex, bufferByteLength, BufferViewTarget.ELEMENT_ARRAY_BUFFER);
-				bufferByteLength += indexResult.byteLength;
-				buffers.push(...indexResult.buffers);
-			}
+			const usageGroups = context.listAccessorsByUsage();
 
-			for (const primitiveAccessors of Array.from(attributeAccessors.values())) {
-				if (primitiveAccessors.size) {
-					const primitiveResult = interleaveAccessors(Array.from(primitiveAccessors), bufferIndex, bufferByteLength);
-					bufferByteLength += primitiveResult.byteLength;
-					buffers.push(...primitiveResult.buffers);
+			for (const usage in usageGroups) {
+				if (groupByParent.has(usage)) {
+					// Accessors grouped by (first) parent, including vertex and instance
+					// attributes. Instanced data is not interleaved, see:
+					// https://github.com/KhronosGroup/glTF/pull/1888
+					for (const parentAccessors of Array.from(accessorParents.values())) {
+						const accessors = Array.from(parentAccessors)
+							.filter((a) => bufferAccessorsSet.has(a))
+							.filter((a) => context.getAccessorUsage(a) === usage);
+						if (!accessors.length) continue;
+
+						const result = usage === BufferViewUsage.ARRAY_BUFFER
+							? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
+							: concatAccessors(accessors, bufferIndex, bufferByteLength);
+						bufferByteLength += result.byteLength;
+						buffers.push(...result.buffers);
+					}
+				} else {
+					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
+					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
+					if (!accessors.length) continue;
+
+					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
+						? BufferViewTarget.ELEMENT_ARRAY_BUFFER
+						: null;
+					const result = concatAccessors(
+						accessors, bufferIndex, bufferByteLength, target
+					);
+					bufferByteLength += result.byteLength;
+					buffers.push(...result.buffers);
 				}
-			}
-
-			if (ibmAccessors.size) {
-				const ibmResult = concatAccessors(Array.from(ibmAccessors), bufferIndex, bufferByteLength);
-				bufferByteLength += ibmResult.byteLength;
-				buffers.push(...ibmResult.buffers);
-			}
-
-			if (otherAccessors.size) {
-				const otherResult = concatAccessors(Array.from(otherAccessors), bufferIndex, bufferByteLength);
-				bufferByteLength += otherResult.byteLength;
-				buffers.push(...otherResult.buffers);
 			}
 
 			// We only support embedded images in GLB, so we know there is only one buffer.

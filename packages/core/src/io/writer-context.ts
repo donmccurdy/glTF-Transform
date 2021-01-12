@@ -33,6 +33,9 @@ export class WriterContext {
 	public imageURIGenerator: UniqueURIGenerator;
 	public logger: Logger;
 
+	private readonly _accessorUsageMap = new Map<Accessor, string>();
+	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
+
 	constructor (public readonly jsonDoc: JSONDocument, public readonly options: WriterOptions) {}
 
 	/**
@@ -110,6 +113,40 @@ export class WriterContext {
 			imageDef.uri = this.imageURIGenerator.createURI(texture, extension);
 			this.jsonDoc.resources[imageDef.uri] = data;
 		}
+	}
+
+	/**
+	 * Returns usage for the given accessor, if any. Some accessor types must be grouped into
+	 * buffer views with like accessors. This includes the specified buffer view "targets", but
+	 * also implicit usage like IBMs or instanced mesh attributes.
+	 */
+	getAccessorUsage(accessor: Accessor): string {
+		return this._accessorUsageMap.get(accessor);
+	}
+
+	/**
+	 * Sets usage for the given accessor. Some accessor types must be grouped into
+	 * buffer views with like accessors. This includes the specified buffer view "targets", but
+	 * also implicit usage like IBMs or instanced mesh attributes. If unspecified, an accessor
+	 * will be grouped with other accessors of unspecified usage.
+	 */
+	setAccessorUsage(accessor: Accessor, usage: string): this {
+		const prevUsage = this._accessorUsageMap.get(accessor);
+		if (prevUsage && prevUsage !== usage) {
+			throw new Error(`Accessor with usage "${prevUsage}" cannot be reused as "${usage}".`);
+		}
+		this._accessorUsageMap.set(accessor, usage);
+		return this;
+	}
+
+	/** Lists accessors grouped by usage. Accessors with unspecified usage are not included. */
+	listAccessorsByUsage(): {[key: string]: Accessor[]} {
+		const result = {};
+		for (const [accessor, usage] of Array.from(this._accessorUsageMap.entries())) {
+			result[usage] = result[usage] || [];
+			result[usage].push(accessor);
+		}
+		return result;
 	}
 }
 

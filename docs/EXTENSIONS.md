@@ -19,6 +19,8 @@ as prescribed by the extension itself.
 
 ## Khronos Extensions
 
+*Khronos extensions are widely supported and recommended for general use.*
+
 <details>
 <summary><b>KHR_draco_mesh_compression</b></summary>
 
@@ -460,6 +462,69 @@ document.createMaterial()
 
 ## Vendor Extensions
 
+*Multi-vendor extensions should be considered last-mile optimizations for a specific application.
+glTF files using `EXT_*` extensions are not widely portable, nor officially endorsed by Khronos,
+and will not be supported in all applications. It may be difficult to edit a glTF file after
+applying these extensions.*
+
+<details>
+<summary><b>EXT_mesh_gpu_instancing</b></summary>
+
+- *Specification: [EXT_mesh_gpu_instancing](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing/)*
+- *Source: [packages/extensions/src/ext-mesh-gpu-instancing/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/ext-mesh-gpu-instancing)*
+
+The `EXT_mesh_gpu_instancing` extension prepares mesh data for efficient GPU instancing, allowing
+engines to render many copies of a single mesh at once using a small number of draw calls. Instancing
+is particularly useful for things like trees, grass, road signs, etc. Keep in mind that predefined
+batches, as used in this extension, may prevent frustum culling within a batch. Dividing batches
+into collocated cells may be preferable to using a single large batch.
+
+> **Implementation Note:** While this extension stores mesh data optimized for GPU instancing, it
+is important to note that (1) GPU instancing and other optimizations are possible — and encouraged
+— even without this extension, and (2) other common meanings of the term "instancing" exist,
+distinct from this extension. See [Appendix: Motivation and Purpose](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing#appendix-motivation-and-purpose)
+of the `EXT_mesh_gpu_instancing` specification.
+
+```typescript
+import { MeshGPUInstancing } from '@gltf-transform/extensions';
+
+// Create standard mesh, node, and scene hierarchy.
+// ...
+
+// Assign positions for each instance.
+const batchPositions = doc.createAccessor('instance_positions')
+  .setArray(new Float32Array([
+    0, 0, 0,
+    1, 0, 0,
+    2, 0, 0,
+  ]))
+  .setType(Accessor.Type.VEC3)
+  .setBuffer(buffer);
+
+// Assign IDs for each instance.
+const batchIDs = doc.createAccessor('instance_ids')
+  .setArray(new Uint8Array([0, 1, 2]))
+  .setType(Accessor.Type.SCALAR)
+  .setBuffer(buffer);
+
+// Create an Extension attached to the Document.
+const batchExtension = document.createExtension(MeshGPUInstancing)
+  .setRequired(true);
+const batch = batchExtension.createInstancedMesh()
+  .setAttribute('TRANSLATION', batchPositions)
+  .setAttribute('_ID', batchIDs);
+
+node
+  .setMesh(mesh)
+  .setExtension('EXT_mesh_gpu_instancing', batch);
+```
+
+Standard instance attributes are `TRANSLATION`, `ROTATION`, and `SCALE`, and support the accessor
+types allowed by the extension specification. Custom instance attributes are allowed, and should
+be prefixed with an underscore (`_*`).
+
+</details>
+
 <details>
 <summary><b>EXT_texture_webp</b></summary>
 
@@ -497,7 +562,6 @@ always be required. This tool does not support writing assets that "fall back" t
 JPEG image data.
 
 </details>
-
 
 ## Installation
 

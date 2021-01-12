@@ -17,7 +17,7 @@ let io: NodeIO;
 // Use require() so microbundle doesn't compile this.
 const draco3d = require('draco3dgltf');
 
-const programReady = new Promise((resolve) => {
+const programReady = new Promise<void>((resolve) => {
 	Promise.all([
 		draco3d.createDecoderModule(),
 		draco3d.createEncoderModule()
