@@ -22,7 +22,7 @@ test('@gltf-transform/core::uuid | conflict', t => {
 		.10, .20, .30, .40, .50, .60,
 		.10, .20, .30, .40, .50, .60,
 	];
-	Math.random = () => values.pop();
+	Math.random = (): number => values.pop();
 
 	const set = new Set();
 	for (let i = 0; i < 3; i++) {

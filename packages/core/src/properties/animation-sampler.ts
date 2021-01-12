@@ -14,7 +14,8 @@ import { COPY_IDENTITY, Property } from './property';
  * animated property at each keyframe. Samplers using `CUBICSPLINE` interpolation will also contain
  * in/out tangents in the output, with the layout:
  *
- * in<sub>1</sub>, value<sub>1</sub>, out<sub>1</sub>, in<sub>2</sub>, value<sub>2</sub>, out<sub>2</sub>,
+ * in<sub>1</sub>, value<sub>1</sub>, out<sub>1</sub>,
+ * in<sub>2</sub>, value<sub>2</sub>, out<sub>2</sub>,
  * in<sub>3</sub>, value<sub>3</sub>, out<sub>3</sub>, ...
  *
  * Usage:
@@ -47,7 +48,8 @@ import { COPY_IDENTITY, Property } from './property';
 export class AnimationSampler extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
-	private _interpolation: GLTF.AnimationSamplerInterpolation = GLTF.AnimationSamplerInterpolation.LINEAR;
+	private _interpolation: GLTF.AnimationSamplerInterpolation
+		= GLTF.AnimationSamplerInterpolation.LINEAR;
 
 	@GraphChild private input: Link<AnimationSampler, Accessor> = null;
 	@GraphChild private output: Link<AnimationSampler, Accessor> = null;

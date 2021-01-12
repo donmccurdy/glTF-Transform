@@ -27,7 +27,9 @@ export class Skin extends ExtensibleProperty {
 		super.copy(other, resolve);
 
 		if (other.skeleton) this.setSkeleton(resolve(other.skeleton.getChild()));
-		if (other.inverseBindMatrices) this.setInverseBindMatrices(resolve(other.inverseBindMatrices.getChild()));
+		if (other.inverseBindMatrices) {
+			this.setInverseBindMatrices(resolve(other.inverseBindMatrices.getChild()));
+		}
 
 		this.clearGraphChildList(this.joints);
 		other.joints.forEach((link) => this.addJoint(resolve(link.getChild())));
@@ -67,7 +69,8 @@ export class Skin extends ExtensibleProperty {
 	 * pre-applied.
 	 */
 	public setInverseBindMatrices(inverseBindMatrices: Accessor): this {
-		this.inverseBindMatrices = this.graph.link('inverseBindMatrices', this, inverseBindMatrices);
+		this.inverseBindMatrices
+			= this.graph.link('inverseBindMatrices', this, inverseBindMatrices);
 		return this;
 	}
 

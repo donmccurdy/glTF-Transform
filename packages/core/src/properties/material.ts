@@ -130,23 +130,28 @@ export class Material extends ExtensibleProperty {
 
 		if (other.baseColorTexture) {
 			this.setBaseColorTexture(resolve(other.baseColorTexture.getChild()));
-			this.getBaseColorTextureInfo().copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
+			this.getBaseColorTextureInfo()
+				.copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
 		}
 		if (other.emissiveTexture) {
 			this.setEmissiveTexture(resolve(other.emissiveTexture.getChild()));
-			this.getEmissiveTextureInfo().copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
+			this.getEmissiveTextureInfo()
+				.copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
 		}
 		if (other.normalTexture) {
 			this.setNormalTexture(resolve(other.normalTexture.getChild()));
-			this.getNormalTextureInfo().copy(resolve(other.normalTextureInfo.getChild()), resolve);
+			this.getNormalTextureInfo()
+				.copy(resolve(other.normalTextureInfo.getChild()), resolve);
 		}
 		if (other.occlusionTexture) {
 			this.setOcclusionTexture(resolve(other.occlusionTexture.getChild()));
-			this.getOcclusionTextureInfo().copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
+			this.getOcclusionTextureInfo()
+				.copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
 		}
 		if (other.metallicRoughnessTexture) {
 			this.setMetallicRoughnessTexture(resolve(other.metallicRoughnessTexture.getChild()));
-			this.getMetallicRoughnessTextureInfo().copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
+			this.getMetallicRoughnessTextureInfo()
+				.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
 		}
 
 		return this;

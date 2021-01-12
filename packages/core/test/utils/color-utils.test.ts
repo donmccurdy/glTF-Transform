@@ -12,7 +12,7 @@ test('@gltf-transform/core::color-utils', t => {
 	t.equals(linear[1].toFixed(4), '0.2140', 'convertSRGBToLinear[1]');
 	t.equals(linear[2].toFixed(4), '0.2140', 'convertSRGBToLinear[2]');
 
- 	const srgb = ColorUtils.convertLinearToSRGB([.5, .5, .5], []);
+	const srgb = ColorUtils.convertLinearToSRGB([.5, .5, .5], []);
 	t.equals(srgb[0].toFixed(4), '0.7354', 'convertLinearToSRGB[0]');
 	t.equals(srgb[1].toFixed(4), '0.7354', 'convertLinearToSRGB[1]');
 	t.equals(srgb[2].toFixed(4), '0.7354', 'convertLinearToSRGB[2]');

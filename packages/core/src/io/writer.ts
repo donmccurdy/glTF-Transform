@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, AttributeLink, IndexLink, Property, Root } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, IndexLink, Property } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
@@ -75,7 +75,11 @@ export class GLTFWriter {
 		* @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
 		* @param bufferViewTarget (Optional) target use of the buffer view.
 		*/
-		function concatAccessors(accessors: Accessor[], bufferIndex: number, bufferByteOffset: number, bufferViewTarget?: number): BufferViewResult {
+		function concatAccessors(
+				accessors: Accessor[],
+				bufferIndex: number,
+				bufferByteOffset: number,
+				bufferViewTarget?: number): BufferViewResult {
 			const buffers: ArrayBuffer[] = [];
 			let byteLength = 0;
 
@@ -107,18 +111,21 @@ export class GLTFWriter {
 		}
 
 		/**
-		* Pack a group of accessors into an interleaved buffer view. Appends accessor and buffer view
-		* definitions to the root JSON lists. Buffer view target is implicitly attribute data.
-		*
-		* References:
-		* - [Apple • Best Practices for Working with Vertex Data](https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
-		* - [Khronos • Vertex Specification Best Practices](https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices)
-		*
-		* @param accessors Accessors to be included.
-		* @param bufferIndex Buffer to write to.
-		* @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
-		*/
-		function interleaveAccessors(accessors: Accessor[], bufferIndex: number, bufferByteOffset: number): BufferViewResult {
+		 * Pack a group of accessors into an interleaved buffer view. Appends accessor and buffer
+ 		 * view definitions to the root JSON lists. Buffer view target is implicitly attribute data.
+ 		 *
+ 		 * References:
+		 * - [Apple • Best Practices for Working with Vertex Data](https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
+		 * - [Khronos • Vertex Specification Best Practices](https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices)
+ 		 *
+ 		 * @param accessors Accessors to be included.
+ 		 * @param bufferIndex Buffer to write to.
+ 		 * @param bufferByteOffset Offset into the buffer, accounting for other buffer views.
+		 */
+		function interleaveAccessors(
+				accessors: Accessor[],
+				bufferIndex: number,
+				bufferByteOffset: number): BufferViewResult {
 			const vertexCount = accessors[0].getCount();
 			let byteStride = 0;
 
@@ -150,7 +157,8 @@ export class GLTFWriter {
 					const componentType = accessor.getComponentType();
 					const array = accessor.getArray();
 					for (let j = 0; j < elementSize; j++) {
-						const viewByteOffset = i * byteStride + vertexByteOffset + j * componentSize;
+						const viewByteOffset =
+							i * byteStride + vertexByteOffset + j * componentSize;
 						const value = array[i * elementSize + j];
 						switch (componentType) {
 							case GLTF.AccessorComponentType.FLOAT:
@@ -408,7 +416,8 @@ export class GLTFWriter {
 			if (material.getBaseColorTexture()) {
 				const texture = material.getBaseColorTexture();
 				const textureInfo = material.getBaseColorTextureInfo();
-				materialDef.pbrMetallicRoughness.baseColorTexture = context.createTextureInfoDef(texture, textureInfo);
+				materialDef.pbrMetallicRoughness.baseColorTexture
+					= context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getEmissiveTexture()) {
@@ -420,7 +429,8 @@ export class GLTFWriter {
 			if (material.getNormalTexture()) {
 				const texture = material.getNormalTexture();
 				const textureInfo = material.getNormalTextureInfo();
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialNormalTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
+					GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
 				}
@@ -430,7 +440,8 @@ export class GLTFWriter {
 			if (material.getOcclusionTexture()) {
 				const texture = material.getOcclusionTexture();
 				const textureInfo = material.getOcclusionTextureInfo();
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as GLTF.IMaterialOcclusionTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
+					GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
 				}
@@ -440,7 +451,8 @@ export class GLTFWriter {
 			if (material.getMetallicRoughnessTexture()) {
 				const texture = material.getMetallicRoughnessTexture();
 				const textureInfo = material.getMetallicRoughnessTextureInfo();
-				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture
+					= context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			context.materialIndexMap.set(material, index);
@@ -472,14 +484,16 @@ export class GLTFWriter {
 				}
 
 				for (const semantic of primitive.listSemantics()) {
-					primitiveDef.attributes[semantic] = context.accessorIndexMap.get(primitive.getAttribute(semantic));
+					primitiveDef.attributes[semantic]
+						= context.accessorIndexMap.get(primitive.getAttribute(semantic));
 				}
 
 				for (const target of primitive.listTargets()) {
 					const targetDef = {};
 
 					for (const semantic of target.listSemantics()) {
-						targetDef[semantic] = context.accessorIndexMap.get(target.getAttribute(semantic));
+						targetDef[semantic]
+							= context.accessorIndexMap.get(target.getAttribute(semantic));
 					}
 
 					primitiveDef.targets = primitiveDef.targets || [];
@@ -499,7 +513,7 @@ export class GLTFWriter {
 
 			if (targetNames) {
 				meshDef.extras = meshDef.extras || {};
-				meshDef.extras.targetNames = targetNames;
+				meshDef.extras['targetNames'] = targetNames;
 			}
 
 			context.meshIndexMap.set(mesh, index);
@@ -555,7 +569,8 @@ export class GLTFWriter {
 			const skinDef = context.createPropertyDef(skin) as GLTF.ISkin;
 
 			if (skin.getInverseBindMatrices()) {
-				skinDef.inverseBindMatrices = context.accessorIndexMap.get(skin.getInverseBindMatrices());
+				skinDef.inverseBindMatrices
+					= context.accessorIndexMap.get(skin.getInverseBindMatrices());
 			}
 
 			if (skin.getSkeleton()) {
@@ -586,7 +601,8 @@ export class GLTFWriter {
 			}
 
 			if (node.listChildren().length > 0) {
-				nodeDef.children = node.listChildren().map((node) => context.nodeIndexMap.get(node));
+				nodeDef.children = node.listChildren()
+					.map((node) => context.nodeIndexMap.get(node));
 			}
 		});
 

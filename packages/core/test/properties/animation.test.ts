@@ -65,8 +65,16 @@ test('@gltf-transform/core::animation', t => {
 
 	const finalDoc = io.readJSON(jsonDoc);
 
-	t.deepEqual(finalDoc.getRoot().listAccessors()[0].getArray(), input.getArray(), 'sampler times');
-	t.deepEqual(finalDoc.getRoot().listAccessors()[1].getArray(), output.getArray(), 'sampler values');
+	t.deepEqual(
+		finalDoc.getRoot().listAccessors()[0].getArray(),
+		input.getArray(),
+		'sampler times'
+	);
+	t.deepEqual(
+		finalDoc.getRoot().listAccessors()[1].getArray(),
+		output.getArray(),
+		'sampler values'
+	);
 
 	t.end();
 });

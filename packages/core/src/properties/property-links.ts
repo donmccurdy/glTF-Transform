@@ -14,5 +14,5 @@ export class AttributeLink extends Link<Property, Accessor> {
 
 /** @hidden */
 export class IndexLink extends Link<Primitive, Accessor> {
-	public copy (other: this): this { return this; }
+	public copy (_other: this): this { return this; }
 }

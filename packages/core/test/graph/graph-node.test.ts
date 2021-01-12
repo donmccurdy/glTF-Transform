@@ -12,13 +12,13 @@ class TestNode extends Property {
 	constructor(graph) {
 		super(graph);
 	}
-	addNode(node) {
+	addNode(node): this {
 		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
 	}
-	removeNode(node) {
+	removeNode(node): this {
 		return this.removeGraphChild(this.nodes, node);
 	}
-	listNodes() {
+	listNodes(): Property[] {
 		return this.nodes.map((link) => link.getChild());
 	}
 }

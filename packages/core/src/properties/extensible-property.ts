@@ -45,7 +45,8 @@ export abstract class ExtensibleProperty extends Property {
 	 * one ExtensionProperty may be attached to any one Property at a time. *Not available on
 	 * {@link Root} properties.*
 	 */
-	public setExtension<Prop extends ExtensionProperty>(name: string, extensionProperty: Prop): this {
+	public setExtension<Prop extends ExtensionProperty>(
+			name: string, extensionProperty: Prop): this {
 		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
 
 		// Remove previous extension.

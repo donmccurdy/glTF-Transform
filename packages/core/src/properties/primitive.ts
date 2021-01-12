@@ -107,7 +107,7 @@ export class Primitive extends ExtensibleProperty {
 		if (!accessor) return this;
 
 		// Add next attribute.
-		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor);
 		link.semantic = semantic;
 		return this.addGraphChild(this.attributes, link);
 	}

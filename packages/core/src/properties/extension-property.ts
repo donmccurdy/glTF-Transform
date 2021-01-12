@@ -44,7 +44,9 @@ export abstract class ExtensionProperty extends Property {
 	/** @hidden */
 	public _validateParent(parent: ExtensibleProperty): void {
 		if (!this.parentTypes.includes(parent.propertyType)) {
-			throw new Error(`Parent "${parent.propertyType}" invalid for child "${this.propertyType}".`);
+			throw new Error(
+				`Parent "${parent.propertyType}" invalid for child "${this.propertyType}".`
+			);
 		}
 	}
 }
