@@ -1,4 +1,4 @@
-name: ci
+name: build
 on: [push, pull_request]
 jobs:
   build:
@@ -9,13 +9,14 @@ jobs:
     env:
       CI: true
     steps:
+    # Setup.
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
 
-    # Cache dependencies.
+    # Cache.
     - id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
     - uses: actions/cache@v2
@@ -26,11 +27,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    # Install dependencies.
-    - if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
-
-    # Build, test, and lint.
+    # Test.
+    - run: yarn install
     - run: yarn dist
     - run: yarn test
     - run: yarn lint
