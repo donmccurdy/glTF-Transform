@@ -178,7 +178,7 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 			channels: anim.listChannels().length,
 			samplers: anim.listSamplers().length,
 			duration: Math.round((maxTime - minTime) * 1000) / 1000,
-			keyframes,
+			keyframes: keyframes,
 			size: size,
 		};
 	});

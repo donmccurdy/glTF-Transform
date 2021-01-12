@@ -61,8 +61,6 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 				const valuePrev = output.getElement(i - 1, tmp)[j];
 				const valueNext = output.getElement(i + 1, tmp)[j];
 
-
-
 				if (sampler.getInterpolation() === 'LINEAR') {
 					// Prune keyframes that are linearly interpolated from prev/next keyframes.
 					if (Math.abs(value - lerp(valuePrev, valueNext, timeMix)) > options.tolerance) {
