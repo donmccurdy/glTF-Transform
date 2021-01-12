@@ -41,31 +41,31 @@ export declare module GLTF {
 		/**
 		* Scalar
 		*/
-		SCALAR = "SCALAR",
+		SCALAR = 'SCALAR',
 		/**
 		* Vector2
 		*/
-		VEC2 = "VEC2",
+		VEC2 = 'VEC2',
 		/**
 		* Vector3
 		*/
-		VEC3 = "VEC3",
+		VEC3 = 'VEC3',
 		/**
 		* Vector4
 		*/
-		VEC4 = "VEC4",
+		VEC4 = 'VEC4',
 		/**
 		* Matrix2x2
 		*/
-		MAT2 = "MAT2",
+		MAT2 = 'MAT2',
 		/**
 		* Matrix3x3
 		*/
-		MAT3 = "MAT3",
+		MAT3 = 'MAT3',
 		/**
 		* Matrix4x4
 		*/
-		MAT4 = "MAT4",
+		MAT4 = 'MAT4',
 	}
 	/**
 	* The name of the node's TRS property to modify, or the weights of the Morph Targets it instantiates
@@ -74,19 +74,19 @@ export declare module GLTF {
 		/**
 		* Translation
 		*/
-		TRANSLATION = "translation",
+		TRANSLATION = 'translation',
 		/**
 		* Rotation
 		*/
-		ROTATION = "rotation",
+		ROTATION = 'rotation',
 		/**
 		* Scale
 		*/
-		SCALE = "scale",
+		SCALE = 'scale',
 		/**
 		* Weights
 		*/
-		WEIGHTS = "weights",
+		WEIGHTS = 'weights',
 	}
 	/**
 	* Interpolation algorithm
@@ -95,15 +95,15 @@ export declare module GLTF {
 		/**
 		* The animated values are linearly interpolated between keyframes
 		*/
-		LINEAR = "LINEAR",
+		LINEAR = 'LINEAR',
 		/**
 		* The animated values remain constant to the output of the first keyframe, until the next keyframe
 		*/
-		STEP = "STEP",
+		STEP = 'STEP',
 		/**
 		* The animation's interpolation is computed using a cubic spline with specified tangents
 		*/
-		CUBICSPLINE = "CUBICSPLINE",
+		CUBICSPLINE = 'CUBICSPLINE',
 	}
 	/**
 	* A camera's projection.  A node can reference a camera to apply a transform to place the camera in the scene
@@ -112,11 +112,11 @@ export declare module GLTF {
 		/**
 		* A perspective camera containing properties to create a perspective projection matrix
 		*/
-		PERSPECTIVE = "perspective",
+		PERSPECTIVE = 'perspective',
 		/**
 		* An orthographic camera containing properties to create an orthographic projection matrix
 		*/
-		ORTHOGRAPHIC = "orthographic",
+		ORTHOGRAPHIC = 'orthographic',
 	}
 	/**
 	* The alpha rendering mode of the material
@@ -125,15 +125,15 @@ export declare module GLTF {
 		/**
 		* The alpha value is ignored and the rendered output is fully opaque
 		*/
-		OPAQUE = "OPAQUE",
+		OPAQUE = 'OPAQUE',
 		/**
 		* The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value
 		*/
-		MASK = "MASK",
+		MASK = 'MASK',
 		/**
 		* The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator)
 		*/
-		BLEND = "BLEND",
+		BLEND = 'BLEND',
 	}
 	/**
 	* The type of the primitives to render

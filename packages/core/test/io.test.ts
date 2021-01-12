@@ -69,7 +69,7 @@ test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
-		t.ok(doc, `Read "${basepath}".`)
+		t.ok(doc, `Read "${basepath}".`);
 	});
 	t.end();
 });
@@ -81,7 +81,7 @@ test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
-		t.ok(doc, `Read "${basepath}".`)
+		t.ok(doc, `Read "${basepath}".`);
 	});
 	t.end();
 });

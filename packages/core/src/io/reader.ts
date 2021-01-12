@@ -1,5 +1,5 @@
-import { determinant, getRotation } from 'gl-matrix/mat4'
-import { length } from 'gl-matrix/vec3'
+import { determinant, getRotation } from 'gl-matrix/mat4';
+import { length } from 'gl-matrix/vec3';
 import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
@@ -301,7 +301,7 @@ export class GLTFReader {
 				});
 
 				mesh.addPrimitive(primitive);
-			})
+			});
 
 			return mesh;
 		});
@@ -407,7 +407,7 @@ export class GLTFReader {
 			if (nodeDef.camera !== undefined) node.setCamera(context.cameras[nodeDef.camera]);
 
 			if (nodeDef.skin !== undefined) node.setSkin(context.skins[nodeDef.skin]);
-		})
+		});
 
 		/** Animations. */
 
@@ -428,7 +428,7 @@ export class GLTFReader {
 
 				animation.addSampler(sampler);
 				return sampler;
-			})
+			});
 
 			const channels = animationDef.channels || [];
 			channels.forEach((channelDef) => {

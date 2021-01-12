@@ -28,12 +28,12 @@ test('@gltf-transform/core::mesh | primitive', t => {
 
 	prim.setAttribute('POSITION', acc1);
 	t.equals(prim.getAttribute('POSITION'), acc1, 'sets POSITION');
-	t.deepEqual(acc1.listParents().map(toType), ['Root', 'Primitive'], 'links POSITION')
+	t.deepEqual(acc1.listParents().map(toType), ['Root', 'Primitive'], 'links POSITION');
 
 	prim.setAttribute('NORMAL', acc2);
 	t.equals(prim.getAttribute('NORMAL'), acc2, 'sets NORMAL');
-	t.deepEqual(acc1.listParents().map(toType), ['Root', 'Primitive'], 'links NORMAL')
-	t.deepEqual(acc2.listParents().map(toType), ['Root', 'Primitive'], 'links NORMAL')
+	t.deepEqual(acc1.listParents().map(toType), ['Root', 'Primitive'], 'links NORMAL');
+	t.deepEqual(acc2.listParents().map(toType), ['Root', 'Primitive'], 'links NORMAL');
 
 	prim.setAttribute('POSITION', acc3);
 	t.equals(prim.getAttribute('POSITION'), acc3, 'overwrites POSITION');

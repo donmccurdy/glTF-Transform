@@ -56,7 +56,7 @@ test('@gltf-transform/core::node | traverse', t => {
 
 	let count = 0;
 	node.traverse((_) => count++);
-	t.equal(count, 3, 'traverses all nodes')
+	t.equal(count, 3, 'traverses all nodes');
 
 	t.end();
 });

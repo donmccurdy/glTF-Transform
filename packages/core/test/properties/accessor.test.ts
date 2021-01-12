@@ -73,7 +73,7 @@ test('@gltf-transform/core::accessor | getElementSize', t => {
 	t.equal(accessor.setType(GLTF.AccessorType.VEC4).getElementSize(), 4, 'vec4');
 	t.equal(accessor.setType(GLTF.AccessorType.MAT3).getElementSize(), 9, 'mat3');
 	t.equal(accessor.setType(GLTF.AccessorType.MAT4).getElementSize(), 16, 'mat4');
-	t.throws(() => accessor.setType('VEC5' as GLTF.AccessorType).getElementSize(), 'vec5 (throws)')
+	t.throws(() => accessor.setType('VEC5' as GLTF.AccessorType).getElementSize(), 'vec5 (throws)');
 	t.end();
 });
 
@@ -228,7 +228,7 @@ test('@gltf-transform/core::accessor | extras', t => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAccessor('A')
-		.setArray(new Uint8Array([1,2,3]))
+		.setArray(new Uint8Array([1, 2, 3]))
 		.setExtras({foo: 1, bar: 2})
 		.setBuffer(doc.createBuffer());
 

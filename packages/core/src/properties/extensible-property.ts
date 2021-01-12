@@ -25,7 +25,7 @@ export abstract class ExtensibleProperty extends Property {
 		other.extensions.forEach((link) => {
 			const extension = link.getChild();
 			this.setExtension(extension.extensionName, resolve(extension));
-		})
+		});
 
 		return this;
 	}

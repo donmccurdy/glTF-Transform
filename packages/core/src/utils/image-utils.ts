@@ -81,7 +81,7 @@ class ImageUtils {
 			// 0xFFC2 is progressive(SOF2)
 			next = view.getUint8(i + 1);
 			if (next === 0xC0 || next === 0xC1 || next === 0xC2) {
-				return [view.getUint16(i + 7, false), view.getUint16(i + 5, false)]
+				return [view.getUint16(i + 7, false), view.getUint16(i + 5, false)];
 			}
 
 			// move to the next block

@@ -48,7 +48,7 @@ test('@gltf-transform/core::skin', t => {
 
 	const sampler = doc.createAnimationSampler()
 		.setInput(doc.createAccessor().setArray(new Uint8Array([0, 1, 2])))
-		.setOutput(doc.createAccessor().setArray(new Uint8Array([0, 0, 0, 1, 1, 1, 2, 2, 2])))
+		.setOutput(doc.createAccessor().setArray(new Uint8Array([0, 0, 0, 1, 1, 1, 2, 2, 2])));
 	const channel = doc.createAnimationChannel()
 		.setSampler(sampler)
 		.setTargetNode(joints[0])
@@ -64,10 +64,10 @@ test('@gltf-transform/core::skin', t => {
 	t.deepEqual(jsonDoc.json.nodes[3], {
 		name: 'armature',
 		skin: 0,
-		children: [ 0, 1, 2 ],
-		translation: [ 0, 0, 0 ],
-		rotation: [ 0, 0, 0, 1 ],
-		scale: [ 1, 1, 1 ],
+		children: [0, 1, 2],
+		translation: [0, 0, 0],
+		rotation: [0, 0, 0, 1],
+		scale: [1, 1, 1],
 	}, 'attaches skin to node');
 
 	t.deepEqual(jsonDoc.json.skins[0], {

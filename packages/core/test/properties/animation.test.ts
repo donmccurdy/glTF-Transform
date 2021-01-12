@@ -32,7 +32,7 @@ test('@gltf-transform/core::animation', t => {
 	const channel = doc.createAnimationChannel()
 		.setTargetNode(ball)
 		.setTargetPath(GLTF.AnimationChannelTargetPath.TRANSLATION)
-		.setSampler(sampler)
+		.setSampler(sampler);
 
 	doc.createAnimation('BallBounce')
 		.addChannel(channel)

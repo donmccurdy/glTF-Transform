@@ -1,4 +1,4 @@
-import { fromRotationTranslationScale, getRotation, getScaling, getTranslation, multiply } from 'gl-matrix/mat4'
+import { fromRotationTranslationScale, getRotation, getScaling, getTranslation, multiply } from 'gl-matrix/mat4';
 import { PropertyType, mat4, vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
@@ -166,7 +166,7 @@ export class Node extends ExtensibleProperty {
 
 	/** Removes a node from this node's child node list. */
 	public removeChild(child: Node): this {
-		return this.removeGraphChild(this.children, child)
+		return this.removeGraphChild(this.children, child);
 	}
 
 	/** Lists all child nodes of this node. */

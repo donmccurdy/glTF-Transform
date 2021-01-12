@@ -10,7 +10,7 @@ const generateOne = function(): string {
     rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
   }
   return rtn;
-}
+};
 
 /**
  * Short ID generator.

@@ -103,7 +103,7 @@ export class GLTFWriter {
 			if (bufferViewTarget) bufferViewDef.target = bufferViewTarget;
 			json.bufferViews.push(bufferViewDef);
 
-			return {buffers, byteLength}
+			return {buffers, byteLength};
 		}
 
 		/**
@@ -379,7 +379,7 @@ export class GLTFWriter {
 		});
 
 		if (root.listAccessors().find((a) => !a.getBuffer())) {
-			logger.warn('Skipped writing one or more Accessors: no Buffer assigned.')
+			logger.warn('Skipped writing one or more Accessors: no Buffer assigned.');
 		}
 
 		/* Materials. */
@@ -605,7 +605,7 @@ export class GLTFWriter {
 					samplerDef.interpolation = sampler.getInterpolation();
 					samplerIndexMap.set(sampler, samplerIndex);
 					return samplerDef;
-				})
+				});
 
 			animationDef.channels = animation.listChannels()
 				.map((channel) => {
@@ -616,7 +616,7 @@ export class GLTFWriter {
 						path: channel.getTargetPath(),
 					};
 					return channelDef;
-				})
+				});
 
 			return animationDef;
 		});

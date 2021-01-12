@@ -8,16 +8,16 @@ export { TypedArray, TypedArrayConstructor, PropertyType, vec2, vec3, vec4, mat3
 export { GLTF } from './types/gltf';
 
 /** [[include:CONCEPTS.md]] */
-namespace Concepts {};
+namespace Concepts {}
 
 /** [[include:LIBRARY.md]] */
-namespace Library {};
+namespace Library {}
 
 /** [[include:EXTENSIONS.md]] */
-namespace Extensions {};
+namespace Extensions {}
 
 /** [[include:CONTRIBUTING.md]] */
-namespace Contributing {};
+namespace Contributing {}
 
 /**
  * # Commandline (CLI)
@@ -38,4 +38,4 @@ namespace Contributing {};
  * [[include:CLI_HELP.md]]
  * ```
  */
-namespace CLI {};
+namespace CLI {}
