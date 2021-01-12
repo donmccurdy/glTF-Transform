@@ -108,7 +108,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				if (texture.getMimeType() === 'image/ktx2') {
 					logger.debug('• Skipping, already KTX.');
 					return;
-				} else if (options.slots !== '*' && !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
+				} else if (options.slots !== '*'
+						&& !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
 					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`);
 					return;
 				}
@@ -184,17 +185,27 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 	const params = [];
 	params.push('--genmipmap');
 	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter);
-	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) params.push('--fscale', options.filterScale);
+	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
+		params.push('--fscale', options.filterScale);
+	}
 
 	if (options.mode === Mode.UASTC) {
 		params.push('--uastc', options.level);
-		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) params.push('--uastc_rdo_q', options.rdoQuality);
-		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) params.push('--uastc_rdo_d', options.rdoDictsize);
+		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) {
+			params.push('--uastc_rdo_q', options.rdoQuality);
+		}
+		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) {
+			params.push('--uastc_rdo_d', options.rdoDictsize);
+		}
 		if (options.zstd > 0) params.push('--zcmp', options.zstd);
 	} else {
 		params.push('--bcmp');
-		if (options.quality !== ETC1S_DEFAULTS.quality) params.push('--qlevel', options.quality);
-		if (options.compression !== ETC1S_DEFAULTS.compression) params.push('--clevel', options.compression);
+		if (options.quality !== ETC1S_DEFAULTS.quality) {
+			params.push('--qlevel', options.quality);
+		}
+		if (options.compression !== ETC1S_DEFAULTS.compression) {
+			params.push('--clevel', options.compression);
+		}
 		if (options.maxEndpoints) params.push('--max_endpoints', options.maxEndpoints);
 		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
 

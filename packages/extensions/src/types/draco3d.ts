@@ -52,7 +52,13 @@ export declare module DRACO {
 		GetAttributeByUniqueId: (mesh: Mesh, id: number) => Attribute;
 		GetFaceFromMesh: (mesh: Mesh, index: number, array: Array) => number;
 		GetTrianglesUInt32Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
-		GetAttributeDataArrayForAllPoints: (mesh: Mesh, attribute: Attribute, type: DataType, byteLength: number, ptr: number) => void;
+		GetAttributeDataArrayForAllPoints: (
+			mesh: Mesh,
+			attribute: Attribute,
+			type: DataType,
+			byteLength: number,
+			ptr: number
+		) => void;
 		GetAttributeFloatForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeInt8ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
 		GetAttributeInt16ForAllPoints: (mesh: Mesh, attribute: Attribute, array: Array) => void;
@@ -72,12 +78,48 @@ export declare module DRACO {
 	}
 	interface MeshBuilder {
 		AddFacesToMesh(mesh: Mesh, numFaces: number, faces: Uint16Array | Uint32Array): void;
-		AddUInt8Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
-		AddInt8Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
-		AddUInt16Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
-		AddInt16Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
-		AddUInt32Attribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
-		AddFloatAttribute(mesh: Mesh, attribute: number, count: number, itemSize: number, array: TypedArray): void;
+		AddUInt8Attribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
+		AddInt8Attribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
+		AddUInt16Attribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
+		AddInt16Attribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
+		AddUInt32Attribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
+		AddFloatAttribute(
+			mesh: Mesh,
+			attribute: number,
+			count: number,
+			itemSize: number,
+			array: TypedArray
+		): void;
 	}
 	interface Attribute {
 		num_components: () => number;

@@ -124,7 +124,8 @@ export abstract class PlatformIO {
 		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 
-		const binaryChunkData = BufferUtils.pad(Object.values(resources)[0] || new ArrayBuffer(0), 0x00);
+		const binaryChunkData
+			= BufferUtils.pad(Object.values(resources)[0] || new ArrayBuffer(0), 0x00);
 		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
 		const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
 

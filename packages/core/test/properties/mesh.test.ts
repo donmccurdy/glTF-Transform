@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Accessor, Document, GLTF, NodeIO } from '../../';
+import { Accessor, Document, GLTF, NodeIO, Property } from '../../';
 
 test('@gltf-transform/core::mesh', t => {
 	const doc = new Document();
@@ -24,7 +24,7 @@ test('@gltf-transform/core::mesh | primitive', t => {
 	const acc2 = doc.createAccessor('acc2');
 	const acc3 = doc.createAccessor('acc3');
 
-	const toType = (p) => p.propertyType;
+	const toType = (p: Property): string => p.propertyType;
 
 	prim.setAttribute('POSITION', acc1);
 	t.equals(prim.getAttribute('POSITION'), acc1, 'sets POSITION');
@@ -70,11 +70,23 @@ test('@gltf-transform/core::mesh | primitive targets', t => {
 
 	mesh.addPrimitive(prim);
 
-	const toType = (p) => p.propertyType;
+	const toType = (p: Property): string => p.propertyType;
 
-	t.deepEqual(acc1.listParents().map(toType), ['Root', 'PrimitiveTarget'], 'links target attributes');
-	t.deepEqual(acc2.listParents().map(toType), ['Root', 'PrimitiveTarget'], 'links target attributes');
-	t.deepEqual(acc3.listParents().map(toType), ['Root', 'PrimitiveTarget'], 'links target attributes');
+	t.deepEqual(
+		acc1.listParents().map(toType),
+		['Root', 'PrimitiveTarget'],
+		'links target attributes'
+	);
+	t.deepEqual(
+		acc2.listParents().map(toType),
+		['Root', 'PrimitiveTarget'],
+		'links target attributes'
+	);
+	t.deepEqual(
+		acc3.listParents().map(toType),
+		['Root', 'PrimitiveTarget'],
+		'links target attributes'
+	);
 
 	t.deepEqual(prim.listTargets(), [trg1, trg2, trg3], 'links targets');
 	t.deepEqual(trg1.listParents().map(toType), ['Primitive'], 'links targets');
@@ -85,7 +97,11 @@ test('@gltf-transform/core::mesh | primitive targets', t => {
 	const meshDef = jsonDoc.json.meshes[0];
 
 	t.deepEquals(meshDef.extras.targetNames, ['trg1', 'trg2', 'trg3'], 'writes target names');
-	t.deepEquals(meshDef.primitives[0].targets, [{POSITION: 0}, {POSITION: 1}, {POSITION: 2}], 'writes target accessors');
+	t.deepEquals(
+		meshDef.primitives[0].targets,
+		[{POSITION: 0}, {POSITION: 1}, {POSITION: 2}],
+		'writes target accessors'
+	);
 
 	t.end();
 });
@@ -131,7 +147,11 @@ test('@gltf-transform/core::mesh | extras', t => {
 	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
 	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
-	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips mesh extras');
+	t.deepEqual(
+		doc2.getRoot().listMeshes()[0].getExtras(),
+		{foo: 1, bar: 2},
+		'roundtrips mesh extras'
+	);
 
 	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const prim2 = doc2.getRoot().listMeshes()[0].listPrimitives()[0];
@@ -213,11 +233,35 @@ test('@gltf-transform/core::mesh | primitive i/o', t => {
 	const rtDoc = io.readBinary(io.writeBinary(doc));
 	const rtPrim = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
 
-	t.deepEquals(rtPrim.getAttribute('POSITION').getArray(), new Float32Array([0, 0, 0]),  'float32');
-	t.deepEquals(rtPrim.getAttribute('COLOR_0').getArray(), new Uint8Array([128, 128, 128]), 'uint8');
-	t.deepEquals(rtPrim.getAttribute('COLOR_1').getArray(), new Uint16Array([64, 64, 64]), 'uint16');
-	t.deepEquals(rtPrim.getAttribute('COLOR_2').getArray(), new Uint32Array([32, 32, 32]), 'uint32');
-	t.deepEquals(rtPrim.getAttribute('COLOR_3').getArray(), new Int16Array([16, 16, 16]), 'int8');
-	t.deepEquals(rtPrim.getAttribute('COLOR_4').getArray(), new Int8Array([8, 8, 8]), 'int8');
+	t.deepEquals(
+		rtPrim.getAttribute('POSITION').getArray(),
+		new Float32Array([0, 0, 0]),
+		'float32'
+	);
+	t.deepEquals(
+		rtPrim.getAttribute('COLOR_0').getArray(),
+		new Uint8Array([128, 128, 128]),
+		'uint8'
+	);
+	t.deepEquals(
+		rtPrim.getAttribute('COLOR_1').getArray(),
+		new Uint16Array([64, 64, 64]),
+		'uint16'
+	);
+	t.deepEquals(
+		rtPrim.getAttribute('COLOR_2').getArray(),
+		new Uint32Array([32, 32, 32]),
+		'uint32'
+	);
+	t.deepEquals(
+		rtPrim.getAttribute('COLOR_3').getArray(),
+		new Int16Array([16, 16, 16]),
+		'int8'
+	);
+	t.deepEquals(
+		rtPrim.getAttribute('COLOR_4').getArray(),
+		new Int8Array([8, 8, 8]),
+		'int8'
+	);
 	t.end();
 });

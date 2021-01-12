@@ -13,9 +13,10 @@ import { COPY_IDENTITY, Property } from './property';
  *
  * A _target_ is always a {@link Node}, in the core glTF spec. A _path_ is any property of that
  * Node that can be affected by animation: `translation`, `rotation`, `scale`, or `weights`. An
- * {@link Animation} affecting the positions and rotations of several {@link Node}s would contain one
- * channel for each Node-position or Node-rotation pair. The keyframe data for an AnimationChannel
- * is stored in an {@link AnimationSampler}, which must be attached to the same {@link Animation}.
+ * {@link Animation} affecting the positions and rotations of several {@link Node}s would contain
+ * one channel for each Node-position or Node-rotation pair. The keyframe data for an
+ * AnimationChannel is stored in an {@link AnimationSampler}, which must be attached to the same
+ * {@link Animation}.
  *
  * Usage:
  *

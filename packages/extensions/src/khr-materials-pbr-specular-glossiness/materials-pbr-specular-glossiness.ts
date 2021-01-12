@@ -46,7 +46,10 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 					const textureInfoDef = materialDef.extensions[NAME].specularGlossinessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					specGloss.setSpecularGlossinessTexture(texture);
-					context.setTextureInfo(specGloss.getSpecularGlossinessTextureInfo(), textureInfoDef);
+					context.setTextureInfo(
+						specGloss.getSpecularGlossinessTextureInfo(),
+						textureInfoDef
+					);
 				}
 			}
 		});
@@ -79,12 +82,14 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 					if (specGloss.getDiffuseTexture()) {
 						const texture = specGloss.getDiffuseTexture();
 						const textureInfo = specGloss.getDiffuseTextureInfo();
-						materialDef.extensions[NAME].diffuseTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].diffuseTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (specGloss.getSpecularGlossinessTexture()) {
 						const texture = specGloss.getSpecularGlossinessTexture();
 						const textureInfo = specGloss.getSpecularGlossinessTextureInfo();
-						materialDef.extensions[NAME].specularGlossinessTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].specularGlossinessTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

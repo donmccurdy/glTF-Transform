@@ -11,7 +11,7 @@ export interface MetalRoughOptions {}
  * Converts a spec/gloss PBR workflow to a metal/rough PBR workflow, relying on the IOR and
  * specular extensions to base glTF 2.0.
  */
-export function metalRough (options: MetalRoughOptions = {}) {
+export function metalRough (_options: MetalRoughOptions = {}) {
 
 	return async (doc: Document): Promise<void> => {
 
@@ -26,12 +26,14 @@ export function metalRough (options: MetalRoughOptions = {}) {
 
 		const iorExtension = doc.createExtension(MaterialsIOR) as MaterialsIOR;
 		const specExtension = doc.createExtension(MaterialsSpecular) as MaterialsSpecular;
-		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness) as MaterialsPBRSpecularGlossiness;
+		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness) as
+			MaterialsPBRSpecularGlossiness;
 
 		const inputTextures = new Set<Texture>();
 
 		for (const material of doc.getRoot().listMaterials()) {
-			const specGloss = material.getExtension('KHR_materials_pbrSpecularGlossiness') as PBRSpecularGlossiness;
+			const specGloss = material.getExtension('KHR_materials_pbrSpecularGlossiness') as
+				PBRSpecularGlossiness;
 			if (!specGloss) continue;
 
 			// Create specular extension.

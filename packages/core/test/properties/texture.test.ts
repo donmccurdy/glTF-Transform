@@ -101,8 +101,8 @@ test('@gltf-transform/core::texture | extras', t => {
 	const writerOptions = {isGLB: false, basename: 'test'};
 	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
 
-	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
-	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'storage');
+	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrip');
 
 	t.end();
 });

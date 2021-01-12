@@ -28,7 +28,9 @@ export class MaterialsClearcoat extends Extension {
 					clearcoat.setClearcoatFactor(materialDef.extensions[NAME].clearcoatFactor);
 				}
 				if (materialDef.extensions[NAME].clearcoatRoughnessFactor !== undefined) {
-					clearcoat.setClearcoatRoughnessFactor(materialDef.extensions[NAME].clearcoatRoughnessFactor);
+					clearcoat.setClearcoatRoughnessFactor(
+						materialDef.extensions[NAME].clearcoatRoughnessFactor
+					);
 				}
 
 				// Textures.
@@ -43,13 +45,19 @@ export class MaterialsClearcoat extends Extension {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatRoughnessTexture(texture);
-					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo(), textureInfoDef);
+					context.setTextureInfo(
+						clearcoat.getClearcoatRoughnessTextureInfo(),
+						textureInfoDef
+					);
 				}
 				if (materialDef.extensions[NAME].clearcoatNormalTexture !== undefined) {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatNormalTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatNormalTexture(texture);
-					context.setTextureInfo(clearcoat.getClearcoatNormalTextureInfo(), textureInfoDef);
+					context.setTextureInfo(
+						clearcoat.getClearcoatNormalTextureInfo(),
+						textureInfoDef
+					);
 					if (textureInfoDef.scale !== undefined) {
 						clearcoat.setClearcoatNormalScale(textureInfoDef.scale);
 					}
@@ -84,19 +92,23 @@ export class MaterialsClearcoat extends Extension {
 					if (clearcoat.getClearcoatTexture()) {
 						const texture = clearcoat.getClearcoatTexture();
 						const textureInfo = clearcoat.getClearcoatTextureInfo();
-						materialDef.extensions[NAME].clearcoatTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].clearcoatTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatRoughnessTexture()) {
 						const texture = clearcoat.getClearcoatRoughnessTexture();
 						const textureInfo = clearcoat.getClearcoatRoughnessTextureInfo();
-						materialDef.extensions[NAME].clearcoatRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].clearcoatRoughnessTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatNormalTexture()) {
 						const texture = clearcoat.getClearcoatNormalTexture();
 						const textureInfo = clearcoat.getClearcoatNormalTextureInfo();
-						materialDef.extensions[NAME].clearcoatNormalTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].clearcoatNormalTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 						if (clearcoat.getClearcoatNormalScale() !== 1) {
-							materialDef.extensions[NAME].clearcoatNormalTexture.scale = clearcoat.getClearcoatNormalScale();
+							materialDef.extensions[NAME].clearcoatNormalTexture.scale
+								= clearcoat.getClearcoatNormalScale();
 						}
 					}
 				}

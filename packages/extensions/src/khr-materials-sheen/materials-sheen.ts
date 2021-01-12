@@ -28,7 +28,9 @@ export class MaterialsSheen extends Extension {
 					sheen.setSheenColorFactor(materialDef.extensions[NAME].sheenColorFactor);
 				}
 				if (materialDef.extensions[NAME].sheenRoughnessFactor !== undefined) {
-					sheen.setSheenRoughnessFactor(materialDef.extensions[NAME].sheenRoughnessFactor);
+					sheen.setSheenRoughnessFactor(
+						materialDef.extensions[NAME].sheenRoughnessFactor
+					);
 				}
 
 				// Textures.
@@ -75,12 +77,14 @@ export class MaterialsSheen extends Extension {
 					if (sheen.getSheenColorTexture()) {
 						const texture = sheen.getSheenColorTexture();
 						const textureInfo = sheen.getSheenColorTextureInfo();
-						materialDef.extensions[NAME].sheenColorTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].sheenColorTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (sheen.getSheenRoughnessTexture()) {
 						const texture = sheen.getSheenRoughnessTexture();
 						const textureInfo = sheen.getSheenRoughnessTextureInfo();
-						materialDef.extensions[NAME].sheenRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].sheenRoughnessTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

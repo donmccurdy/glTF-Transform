@@ -28,7 +28,9 @@ export class MaterialsSpecular extends Extension {
 					specular.setSpecularFactor(materialDef.extensions[NAME].specularFactor);
 				}
 				if (materialDef.extensions[NAME].specularColorFactor !== undefined) {
-					specular.setSpecularColorFactor(materialDef.extensions[NAME].specularColorFactor);
+					specular.setSpecularColorFactor(
+						materialDef.extensions[NAME].specularColorFactor
+					);
 				}
 
 				// Textures.
@@ -69,7 +71,8 @@ export class MaterialsSpecular extends Extension {
 					if (specular.getSpecularTexture()) {
 						const texture = specular.getSpecularTexture();
 						const textureInfo = specular.getSpecularTextureInfo();
-						materialDef.extensions[NAME].specularTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].specularTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

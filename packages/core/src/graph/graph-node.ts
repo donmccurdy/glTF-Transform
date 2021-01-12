@@ -69,7 +69,9 @@ export abstract class GraphNode {
 	 *
 	 * @hidden
 	 */
-	protected addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): this {
+	protected addGraphChild(
+			links: Link<GraphNode, GraphNode>[],
+			link: Link<GraphNode, GraphNode>): this {
 		links.push(link);
 		link.onDispose(() => {
 			const remaining = links.filter((l) => l !== link);

@@ -2,7 +2,6 @@ require('source-map-support').install();
 
 import * as test from 'tape';
 import { Document, GLTF, NodeIO, Property, TextureInfo } from '../../';
-import { PlatformIO } from '../../dist/io/platform-io';
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
@@ -84,7 +83,7 @@ test('@gltf-transform/core::material | texture samplers', t => {
 	t.equal(mat.getBaseColorTextureInfo(), null, 'default baseColorTexture sampler');
 	t.equal(mat.getEmissiveTextureInfo(), null, 'default emissiveTexture sampler');
 	t.equal(mat.getNormalTextureInfo(), null, 'default normalTexture sampler');
-	t.equal(mat.getMetallicRoughnessTextureInfo(), null, 'default metallicRoughnessTexture sampler');
+	t.equal(mat.getMetallicRoughnessTextureInfo(), null, 'default metalRoughTexture sampler');
 	t.equal(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture sampler');
 
 	mat.setBaseColorTexture(baseColor)
@@ -97,13 +96,41 @@ test('@gltf-transform/core::material | texture samplers', t => {
 		.setMinFilter(TextureInfo.TextureMinFilter.LINEAR)
 		.setMagFilter(TextureInfo.TextureMagFilter.NEAREST);
 
-	t.equal(mat.getBaseColorTextureInfo().getWrapS(), TextureInfo.TextureWrapMode.REPEAT, 'wrapS');
-	t.equal(mat.getBaseColorTextureInfo().getWrapT(), TextureInfo.TextureWrapMode.CLAMP_TO_EDGE, 'wrapT');
-	t.equal(mat.getEmissiveTextureInfo().getMinFilter(), TextureInfo.TextureMinFilter.LINEAR, 'minFilter');
-	t.equal(mat.getEmissiveTextureInfo().getMagFilter(), TextureInfo.TextureMinFilter.NEAREST, 'magFilter');
-	t.equal(mat.getNormalTextureInfo(), null, 'unchanged normalTexture sampler');
-	t.equal(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture sampler');
-	t.equal(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture sampler');
+	t.equal(
+		mat.getBaseColorTextureInfo().getWrapS(),
+		TextureInfo.TextureWrapMode.REPEAT,
+		'wrapS'
+	);
+	t.equal(
+		mat.getBaseColorTextureInfo().getWrapT(),
+		TextureInfo.TextureWrapMode.CLAMP_TO_EDGE,
+		'wrapT'
+	);
+	t.equal(
+		mat.getEmissiveTextureInfo().getMinFilter(),
+		TextureInfo.TextureMinFilter.LINEAR,
+		'minFilter'
+	);
+	t.equal(
+		mat.getEmissiveTextureInfo().getMagFilter(),
+		TextureInfo.TextureMinFilter.NEAREST,
+		'magFilter'
+	);
+	t.equal(
+		mat.getNormalTextureInfo(),
+		null,
+		'unchanged normalTexture sampler'
+	);
+	t.equal(
+		mat.getMetallicRoughnessTextureInfo(),
+		null,
+		'unchanged metallicRoughnessTexture sampler'
+	);
+	t.equal(
+		mat.getOcclusionTextureInfo(),
+		null,
+		'unchanged occlusionTexture sampler'
+	);
 	t.end();
 });
 

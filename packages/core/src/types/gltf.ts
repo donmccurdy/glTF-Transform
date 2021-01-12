@@ -68,7 +68,8 @@ export declare module GLTF {
 		MAT4 = 'MAT4',
 	}
 	/**
-	* The name of the node's TRS property to modify, or the weights of the Morph Targets it instantiates
+	* The name of the node's TRS property to modify, or the weights of the Morph Targets it
+	* instantiates
 	*/
 	const enum AnimationChannelTargetPath {
 		/**
@@ -97,7 +98,8 @@ export declare module GLTF {
 		*/
 		LINEAR = 'LINEAR',
 		/**
-		* The animated values remain constant to the output of the first keyframe, until the next keyframe
+		* The animated values remain constant to the output of the first keyframe, until the next
+		* keyframe
 		*/
 		STEP = 'STEP',
 		/**
@@ -106,7 +108,8 @@ export declare module GLTF {
 		CUBICSPLINE = 'CUBICSPLINE',
 	}
 	/**
-	* A camera's projection.  A node can reference a camera to apply a transform to place the camera in the scene
+	* A camera's projection.  A node can reference a camera to apply a transform to place the
+	* camera in the scene
 	*/
 	const enum CameraType {
 		/**
@@ -127,11 +130,14 @@ export declare module GLTF {
 		*/
 		OPAQUE = 'OPAQUE',
 		/**
-		* The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value
+		* The rendered output is either fully opaque or fully transparent depending on the alpha
+		* value and the specified alpha cutoff value
 		*/
 		MASK = 'MASK',
 		/**
-		* The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator)
+		* The alpha value is used to composite the source and destination areas. The rendered
+		* output is combined with the background using the normal painting operation (i.e. the
+		* Porter and Duff over operator)
 		*/
 		BLEND = 'BLEND',
 	}
@@ -169,7 +175,8 @@ export declare module GLTF {
 		TRIANGLE_FAN = 6,
 	}
 	/**
-	* Magnification filter.  Valid values correspond to WebGL enums: 9728 (NEAREST) and 9729 (LINEAR)
+	* Magnification filter.  Valid values correspond to WebGL enums: 9728 (NEAREST) and 9729
+	* (LINEAR)
 	*/
 	const enum TextureMagFilter {
 		/**
@@ -235,12 +242,12 @@ export declare module GLTF {
 		* Dictionary object with extension-specific objects
 		*/
 		extensions?: {
-			[key: string]: any;
+			[key: string]: object;
 		};
 		/**
 		* Application-Specific data
 		*/
-		extras?: any;
+		extras?: object;
 	}
 	/**
 	* glTF Child of Root Property
@@ -256,7 +263,8 @@ export declare module GLTF {
 	*/
 	interface IAccessorSparseIndices extends IProperty {
 		/**
-		* The index of the bufferView with sparse indices. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target
+		* The index of the bufferView with sparse indices. Referenced bufferView can't have
+		* ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target
 		*/
 		bufferView: number;
 		/**
@@ -264,16 +272,19 @@ export declare module GLTF {
 		*/
 		byteOffset?: number;
 		/**
-		* The indices data type.  Valid values correspond to WebGL enums: 5121 (UNSIGNED_BYTE), 5123 (UNSIGNED_SHORT), 5125 (UNSIGNED_INT)
+		* The indices data type.  Valid values correspond to WebGL enums: 5121 (UNSIGNED_BYTE),
+		* 5123 (UNSIGNED_SHORT), 5125 (UNSIGNED_INT)
 		*/
 		componentType: AccessorComponentType;
 	}
 	/**
-	* Array of size accessor.sparse.count times number of components storing the displaced accessor attributes pointed by accessor.sparse.indices
+	* Array of size accessor.sparse.count times number of components storing the displaced accessor
+	* attributes pointed by accessor.sparse.indices
 	*/
 	interface IAccessorSparseValues extends IProperty {
 		/**
-		* The index of the bufferView with sparse values. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target
+		* The index of the bufferView with sparse values. Referenced bufferView can't have
+		* ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target
 		*/
 		bufferView: number;
 		/**
@@ -290,16 +301,21 @@ export declare module GLTF {
 		*/
 		count: number;
 		/**
-		* Index array of size count that points to those accessor attributes that deviate from their initialization value. Indices must strictly increase
+		* Index array of size count that points to those accessor attributes that deviate from
+		* their initialization value. Indices must strictly increase
 		*/
 		indices: IAccessorSparseIndices;
 		/**
-		* Array of size count times number of components, storing the displaced accessor attributes pointed by indices. Substituted values must have the same componentType and number of components as the base accessor
+		* Array of size count times number of components, storing the displaced accessor attributes
+		* pointed by indices. Substituted values must have the same componentType and number of
+		* components as the base accessor
 		*/
 		values: IAccessorSparseValues;
 	}
 	/**
-	* A typed view into a bufferView.  A bufferView contains raw binary data.  An accessor provides a typed view into a bufferView or a subset of a bufferView similar to how WebGL's vertexAttribPointer() defines an attribute in a buffer
+	* A typed view into a bufferView.  A bufferView contains raw binary data.  An accessor provides
+	* a typed view into a bufferView or a subset of a bufferView similar to how WebGL's
+	* vertexAttribPointer() defines an attribute in a buffer
 	*/
 	interface IAccessor extends IChildRootProperty {
 		/**
@@ -361,12 +377,14 @@ export declare module GLTF {
 		*/
 		node: number;
 		/**
-		* The name of the node's TRS property to modify, or the weights of the Morph Targets it instantiates
+		* The name of the node's TRS property to modify, or the weights of the Morph Targets it
+		* instantiates
 		*/
 		path: AnimationChannelTargetPath;
 	}
 	/**
-	* Combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target)
+	* Combines input and output accessors with an interpolation algorithm to define a keyframe
+	* graph (but not its target)
 	*/
 	interface IAnimationSampler extends IProperty {
 		/**
@@ -391,7 +409,8 @@ export declare module GLTF {
 		*/
 		channels: IAnimationChannel[];
 		/**
-		* An array of samplers that combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target)
+		* An array of samplers that combines input and output accessors with an interpolation
+		* algorithm to define a keyframe graph (but not its target)
 		*/
 		samplers: IAnimationSampler[];
 	}
@@ -421,7 +440,8 @@ export declare module GLTF {
 	*/
 	interface IBuffer extends IChildRootProperty {
 		/**
-		* The uri of the buffer.  Relative paths are relative to the .gltf file.  Instead of referencing an external file, the uri can also be a data-uri
+		* The uri of the buffer.  Relative paths are relative to the .gltf file.  Instead of
+		* referencing an external file, the uri can also be a data-uri
 		*/
 		uri?: string;
 		/**
@@ -497,7 +517,8 @@ export declare module GLTF {
 		znear: number;
 	}
 	/**
-	* A camera's projection.  A node can reference a camera to apply a transform to place the camera in the scene
+	* A camera's projection.  A node can reference a camera to apply a transform to place the
+	* camera in the scene
 	*/
 	interface ICamera extends IChildRootProperty {
 		/**
@@ -514,11 +535,14 @@ export declare module GLTF {
 		type: CameraType;
 	}
 	/**
-	* Image data used to create a texture. Image can be referenced by URI or bufferView index. mimeType is required in the latter case
+	* Image data used to create a texture. Image can be referenced by URI or bufferView index.
+	* mimeType is required in the latter case
 	*/
 	interface IImage extends IChildRootProperty {
 		/**
-		* The uri of the image.  Relative paths are relative to the .gltf file.  Instead of referencing an external file, the uri can also be a data-uri.  The image format must be jpg or png
+		* The uri of the image.  Relative paths are relative to the .gltf file.  Instead of
+		* referencing an external file, the uri can also be a data-uri.  The image format must be
+		* jpg or png
 		*/
 		uri?: string;
 		/**

@@ -29,11 +29,13 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 
 		if (other.diffuseTexture) {
 			this.setDiffuseTexture(resolve(other.diffuseTexture.getChild()));
-			this.getDiffuseTextureInfo().copy(resolve(other.diffuseTextureInfo.getChild()), resolve);
+			this.getDiffuseTextureInfo()
+				.copy(resolve(other.diffuseTextureInfo.getChild()), resolve);
 		}
 		if (other.specularGlossinessTexture) {
 			this.setSpecularGlossinessTexture(resolve(other.specularGlossinessTexture.getChild()));
-			this.getSpecularGlossinessTextureInfo().copy(resolve(other.specularGlossinessTextureInfo.getChild()), resolve);
+			this.getSpecularGlossinessTextureInfo()
+				.copy(resolve(other.specularGlossinessTextureInfo.getChild()), resolve);
 		}
 
 		return this;
@@ -129,12 +131,15 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularGlossinessTextureInfo(): TextureInfo {
-		return this.specularGlossinessTexture ? this.specularGlossinessTextureInfo.getChild() : null;
+		return this.specularGlossinessTexture
+			? this.specularGlossinessTextureInfo.getChild()
+			: null;
 	}
 
 	/** Spec/gloss texture; linear multiplier. */
 	public setSpecularGlossinessTexture(texture: Texture): this {
-		this.specularGlossinessTexture = this.graph.link('specularGlossinessTexture', this, texture);
+		this.specularGlossinessTexture
+			= this.graph.link('specularGlossinessTexture', this, texture);
 		return this;
 	}
 }

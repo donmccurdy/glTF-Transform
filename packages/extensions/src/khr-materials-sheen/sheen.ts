@@ -27,11 +27,13 @@ export class Sheen extends ExtensionProperty {
 
 		if (other.sheenColorTexture) {
 			this.setSheenColorTexture(resolve(other.sheenColorTexture.getChild()));
-			this.getSheenColorTextureInfo().copy(resolve(other.sheenColorTextureInfo.getChild()), resolve);
+			this.getSheenColorTextureInfo()
+				.copy(resolve(other.sheenColorTextureInfo.getChild()), resolve);
 		}
 		if (other.sheenRoughnessTexture) {
 			this.setSheenRoughnessTexture(resolve(other.sheenRoughnessTexture.getChild()));
-			this.getSheenRoughnessTextureInfo().copy(resolve(other.sheenRoughnessTextureInfo.getChild()), resolve);
+			this.getSheenRoughnessTextureInfo()
+				.copy(resolve(other.sheenRoughnessTextureInfo.getChild()), resolve);
 		}
 
 		return this;

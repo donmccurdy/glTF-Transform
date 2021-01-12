@@ -25,7 +25,9 @@ export class MaterialsTransmission extends Extension {
 				// Factors.
 
 				if (materialDef.extensions[NAME].transmissionFactor !== undefined) {
-					transmission.setTransmissionFactor(materialDef.extensions[NAME].transmissionFactor);
+					transmission.setTransmissionFactor(
+						materialDef.extensions[NAME].transmissionFactor
+					);
 				}
 
 				// Textures.
@@ -34,7 +36,10 @@ export class MaterialsTransmission extends Extension {
 					const textureInfoDef = materialDef.extensions[NAME].transmissionTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					transmission.setTransmissionTexture(texture);
-					context.setTextureInfo(transmission.getTransmissionTextureInfo(), textureInfoDef);
+					context.setTextureInfo(
+						transmission.getTransmissionTextureInfo(),
+						textureInfoDef
+					);
 				}
 			}
 		});
@@ -65,7 +70,8 @@ export class MaterialsTransmission extends Extension {
 					if (transmission.getTransmissionTexture()) {
 						const texture = transmission.getTransmissionTexture();
 						const textureInfo = transmission.getTransmissionTextureInfo();
-						materialDef.extensions[NAME].transmissionTexture = context.createTextureInfoDef(texture, textureInfo);
+						materialDef.extensions[NAME].transmissionTexture
+							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

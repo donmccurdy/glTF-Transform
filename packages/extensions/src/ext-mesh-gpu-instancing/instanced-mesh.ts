@@ -40,7 +40,9 @@ export class InstancedMesh extends ExtensionProperty {
 		if (!accessor) return this;
 
 		// Add next attribute.
-		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor) as AttributeLink;
+		const link = this.graph.linkAttribute(
+			semantic.toLowerCase(), this, accessor
+		) as AttributeLink;
 		link.semantic = semantic;
 		return this.addGraphChild(this.attributes, link);
 	}

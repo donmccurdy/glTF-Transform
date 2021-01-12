@@ -58,8 +58,9 @@ export class GLTFReader {
 		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				const extension = doc.createExtension(Extension as unknown as new (doc: Document) => Extension)
-					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
+				const extension = doc.createExtension(
+					Extension as unknown as new (doc: Document) => Extension
+				).setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
 
 				for (const key of extension.dependencies) {
 					extension.install(key, options.dependencies[key]);
@@ -422,7 +423,9 @@ export class GLTFReader {
 				const sampler = doc.createAnimationSampler()
 					.setInput(context.accessors[samplerDef.input])
 					.setOutput(context.accessors[samplerDef.output])
-					.setInterpolation(samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR);
+					.setInterpolation(
+						samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR
+					);
 
 				if (samplerDef.extras) sampler.setExtras(samplerDef.extras);
 
@@ -507,7 +510,9 @@ export class GLTFReader {
 function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
 	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
-	const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
+	const resource = bufferDef.uri
+		? jsonDoc.resources[bufferDef.uri]
+		: jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
@@ -558,7 +563,9 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
 function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
 	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
-	const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
+	const resource = bufferDef.uri
+		? jsonDoc.resources[bufferDef.uri]
+		: jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);

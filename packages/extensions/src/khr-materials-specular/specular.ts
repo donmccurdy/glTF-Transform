@@ -22,7 +22,8 @@ export class Specular extends ExtensionProperty {
 
 		if (other.specularTexture) {
 			this.setSpecularTexture(resolve(other.specularTexture.getChild()));
-			this.getSpecularTextureInfo().copy(resolve(other.specularTextureInfo.getChild()), resolve);
+			this.getSpecularTextureInfo()
+				.copy(resolve(other.specularTextureInfo.getChild()), resolve);
 		}
 
 		return this;

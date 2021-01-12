@@ -33,15 +33,18 @@ export class Clearcoat extends ExtensionProperty {
 
 		if (other.clearcoatTexture) {
 			this.setClearcoatTexture(resolve(other.clearcoatTexture.getChild()));
-			this.getClearcoatTextureInfo().copy(resolve(other.clearcoatTextureInfo.getChild()), resolve);
+			this.getClearcoatTextureInfo()
+				.copy(resolve(other.clearcoatTextureInfo.getChild()), resolve);
 		}
 		if (other.clearcoatRoughnessTexture) {
 			this.setClearcoatRoughnessTexture(resolve(other.clearcoatRoughnessTexture.getChild()));
-			this.getClearcoatRoughnessTextureInfo().copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()), resolve);
+			this.getClearcoatRoughnessTextureInfo()
+				.copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()), resolve);
 		}
 		if (other.clearcoatNormalTexture) {
 			this.setClearcoatNormalTexture(resolve(other.clearcoatNormalTexture.getChild()));
-			this.getClearcoatNormalTextureInfo().copy(resolve(other.clearcoatNormalTextureInfo.getChild()), resolve);
+			this.getClearcoatNormalTextureInfo()
+				.copy(resolve(other.clearcoatNormalTextureInfo.getChild()), resolve);
 		}
 
 		return this;
@@ -116,12 +119,15 @@ export class Clearcoat extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getClearcoatRoughnessTextureInfo(): TextureInfo {
-		return this.clearcoatRoughnessTexture ? this.clearcoatRoughnessTextureInfo.getChild() : null;
+		return this.clearcoatRoughnessTexture
+			? this.clearcoatRoughnessTextureInfo.getChild()
+			: null;
 	}
 
 	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
 	public setClearcoatRoughnessTexture(texture: Texture): this {
-		this.clearcoatRoughnessTexture = this.graph.link('clearcoatRoughnessTexture', this, texture);
+		this.clearcoatRoughnessTexture
+			= this.graph.link('clearcoatRoughnessTexture', this, texture);
 		return this;
 	}
 
