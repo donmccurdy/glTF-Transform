@@ -154,6 +154,10 @@ program
 	.help('Resample animations, losslessly deduplicating keyframes.')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--tolerance', 'Per-value tolerance to merge similar keyframes', {
+		validator: program.NUMBER,
+		default: 1e-4,
+	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(resample(options as unknown as ResampleOptions))

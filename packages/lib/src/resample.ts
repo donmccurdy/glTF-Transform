@@ -1,4 +1,4 @@
-import { AnimationSampler, Document, Transform } from '@gltf-transform/core';
+import { Accessor, AnimationSampler, Document, Root, Transform } from '@gltf-transform/core';
 
 const NAME = 'resample';
 
@@ -18,17 +18,32 @@ export const resample = (options: ResampleOptions): Transform => {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void => {
+		const accessorsVisited = new Set<Accessor>();
+		const accessorsCountPrev = doc.getRoot().listAccessors().length;
 		const logger = doc.getLogger();
 
-		// TODO(bug): input/output accessors shared among samplers may be
-		// overwritten in unsafe ways here.
 		for (const animation of doc.getRoot().listAnimations()) {
 			for (const sampler of animation.listSamplers()) {
 				if (sampler.getInterpolation() === 'STEP'
 					|| sampler.getInterpolation() === 'LINEAR') {
+					accessorsVisited.add(sampler.getInput());
+					accessorsVisited.add(sampler.getOutput());
 					optimize(sampler, options);
 				}
 			}
+		}
+
+		for (const accessor of Array.from(accessorsVisited.values())) {
+			const used = !!accessor.listParents()
+				.find((p) => !(p instanceof Root));
+			if (!used) accessor.dispose();
+		}
+
+		if (doc.getRoot().listAccessors().length > accessorsCountPrev) {
+			logger.warn(
+				`${NAME}: Resampling required copying accessors, some of which may be duplicates.`
+				+ ' Consider using "dedup" to consolidate any duplicates.'
+			);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
@@ -37,8 +52,8 @@ export const resample = (options: ResampleOptions): Transform => {
 };
 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
-	const input = sampler.getInput();
-	const output = sampler.getOutput();
+	const input = sampler.getInput().clone();
+	const output = sampler.getOutput().clone();
 	const stride = output.getElementSize();
 
 	const lastIndex = input.getCount() - 1;
@@ -95,10 +110,15 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 		writeIndex++;
 	}
 
-	// Truncate sampler input and output.
+	// If the sampler was optimized, truncate and save the results. If not, clean up.
 	if (writeIndex !== input.getCount()) {
 		input.setArray(input.getArray().slice(0, writeIndex));
 		output.setArray(output.getArray().slice(0, writeIndex * output.getElementSize()));
+		sampler.setInput(input);
+		sampler.setOutput(output);
+	} else {
+		input.dispose();
+		output.dispose();
 	}
 }
 
