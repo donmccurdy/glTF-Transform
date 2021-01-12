@@ -70,7 +70,7 @@ test('@gltf-transform/extensions::materials-specular | hex', t => {
 	const doc = new Document();
 	const specularExtension = doc.createExtension(MaterialsSpecular);
 	const specular = specularExtension.createSpecular()
-		.setSpecularColorHex(0x252525)
+		.setSpecularColorHex(0x252525);
 	t.equals(specular.getSpecularColorHex(), 0x252525, 'specularColorHex');
 	t.end();
 });

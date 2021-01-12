@@ -15,7 +15,7 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 		.setColor([1, 2, 0])
 		.setRange(50)
 		.setInnerConeAngle(0.5)
-		.setOuterConeAngle(0.75)
+		.setOuterConeAngle(0.75);
 
 	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
@@ -34,7 +34,7 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 			innerConeAngle: 0.5,
 			outerConeAngle: 0.75,
 		}]
-	}})
+	}});
 
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
@@ -63,7 +63,7 @@ test('@gltf-transform/extensions::lights-punctual | copy', t => {
 		.setColor([1, 2, 0])
 		.setRange(50)
 		.setInnerConeAngle(0.5)
-		.setOuterConeAngle(0.75)
+		.setOuterConeAngle(0.75);
 	doc.createNode().setExtension('KHR_lights_punctual', light);
 
 	const doc2 = doc.clone();
@@ -83,7 +83,7 @@ test('@gltf-transform/extensions::lights-punctual | hex', t => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
 	const light = lightsExtension.createLight()
-		.setColorHex(0x111111)
+		.setColorHex(0x111111);
 	t.equals(light.getColorHex(), 0x111111, 'colorHex');
 	t.end();
 });

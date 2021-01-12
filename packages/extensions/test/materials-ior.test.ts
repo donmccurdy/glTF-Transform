@@ -21,7 +21,7 @@ test('@gltf-transform/extensions::materials-ior', t => {
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
-	t.deepEqual(materialDef.extensions, {'KHR_materials_ior': {ior: 1.2,}}, 'writes ior extension');
+	t.deepEqual(materialDef.extensions, {'KHR_materials_ior': {ior: 1.2, }}, 'writes ior extension');
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsIOR.EXTENSION_NAME], 'writes extensionsUsed');
 
 	iorExtension.dispose();

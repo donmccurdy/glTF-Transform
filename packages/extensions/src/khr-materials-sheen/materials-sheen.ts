@@ -43,7 +43,7 @@ export class MaterialsSheen extends Extension {
 					const textureInfoDef = materialDef.extensions[NAME].sheenRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					sheen.setSheenRoughnessTexture(texture);
-					context.setTextureInfo(sheen.getSheenRoughnessTextureInfo(), textureInfoDef);;
+					context.setTextureInfo(sheen.getSheenRoughnessTextureInfo(), textureInfoDef);
 				}
 			}
 		});

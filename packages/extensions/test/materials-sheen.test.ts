@@ -67,7 +67,7 @@ test('@gltf-transform/extensions::materials-sheen | hex', t => {
 	const doc = new Document();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
 	const sheen = sheenExtension.createSheen()
-		.setSheenColorHex(0x252525)
+		.setSheenColorHex(0x252525);
 	t.equals(sheen.getSheenColorHex(), 0x252525, 'sheenColorHex');
 	t.end();
 });

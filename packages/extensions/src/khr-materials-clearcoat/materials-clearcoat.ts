@@ -43,7 +43,7 @@ export class MaterialsClearcoat extends Extension {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source];
 					clearcoat.setClearcoatRoughnessTexture(texture);
-					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo(), textureInfoDef);;
+					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo(), textureInfoDef);
 				}
 				if (materialDef.extensions[NAME].clearcoatNormalTexture !== undefined) {
 					const textureInfoDef = materialDef.extensions[NAME].clearcoatNormalTexture;

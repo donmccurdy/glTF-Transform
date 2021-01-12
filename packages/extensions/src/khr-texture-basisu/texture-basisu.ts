@@ -33,7 +33,7 @@ export class TextureBasisu extends Extension {
 					const imageIndex = context.imageIndexMap.get(texture);
 					jsonDoc.json.textures.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
-							textureDef.extensions = textureDef.extensions || {}
+							textureDef.extensions = textureDef.extensions || {};
 							textureDef.extensions[NAME] = {source: textureDef.source};
 							delete textureDef.source;
 						}

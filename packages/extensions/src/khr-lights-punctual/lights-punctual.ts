@@ -71,7 +71,7 @@ export class LightsPunctual extends Extension {
 			}
 
 			lightDefs.push(lightDef);
-			lightIndexMap.set(light, lightDefs.length - 1)
+			lightIndexMap.set(light, lightDefs.length - 1);
 		}
 
 		this.doc.getRoot()

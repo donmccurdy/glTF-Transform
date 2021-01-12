@@ -43,7 +43,7 @@ const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
 	encodeSpeed: 5,
 	method: EncoderMethod.EDGEBREAKER,
 	quantizationBits: DEFAULT_QUANTIZATION_BITS,
-}
+};
 
 export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
 	encoderModule = _encoderModule;
