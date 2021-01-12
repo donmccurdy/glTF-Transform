@@ -174,6 +174,7 @@ export class DracoMeshCompression extends Extension {
 
 	public write(context: WriterContext): this {
 		const dracoContext: DracoWriterContext = context.extensionData[NAME];
+
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			const meshDef = context.jsonDoc.json.meshes[context.meshIndexMap.get(mesh)];
 			for (let i = 0; i < mesh.listPrimitives().length; i++) {
@@ -190,6 +191,15 @@ export class DracoMeshCompression extends Extension {
 					attributes: encodedPrim.attributeIDs,
 				};
 			}
+		}
+
+		// Omit the extension if nothing was compressed.
+		if (!dracoContext.primitiveHashMap.size) {
+			const json = context.jsonDoc.json;
+			json.extensionsUsed = (json.extensionsUsed || [])
+				.filter((name) => name !== NAME);
+			json.extensionsRequired = (json.extensionsRequired || [])
+				.filter((name) => name !== NAME);
 		}
 
 		return this;

@@ -84,6 +84,11 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 			}
 		}
 	}, 'primitiveDef 4/4');
+	t.deepEquals(
+		jsonDoc.json.extensionsUsed,
+		['KHR_draco_mesh_compression'],
+		'included in extensionsUsed'
+	);
 
 	const roundtripDoc = io.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes()[0];
@@ -126,6 +131,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 		indices: 2,
 		attributes: {POSITION: 1},
 	}, 'primitiveDef 2/4');
+	t.notOk(jsonDoc.json.extensionsUsed, 'omitted from extensionsUsed');
 	t.end();
 });
 
