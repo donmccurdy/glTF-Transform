@@ -1,5 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/*
+	eslint-disable
+	@typescript-eslint/no-explicit-any,
+	@typescript-eslint/no-empty-function,
+	@typescript-eslint/no-unused-vars,
+	@typescript-eslint/explicit-module-boundary-types
+*/
 
 const DECORATOR_PREFIX = '__';
 
@@ -40,5 +45,4 @@ export function GraphChild (target: any, propertyKey: string): void {
  * @hidden
  * @category Graph
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function GraphChildList (target: any, propertyKey: string): void {}

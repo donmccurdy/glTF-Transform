@@ -45,7 +45,7 @@ export abstract class Property extends GraphNode {
 
 	protected readonly graph: PropertyGraph;
 
-	private _extras: object = {};
+	private _extras: Record<string, unknown> = {};
 	private _name = '';
 
 	/** @hidden */
@@ -83,13 +83,13 @@ export abstract class Property extends GraphNode {
 	 * Returns a reference to the Extras object, containing application-specific data for this
 	 * Property. Extras should be an Object, not a primitive value, for best portability.
 	 */
-	public getExtras(): object { return this._extras; }
+	public getExtras(): Record<string, unknown> { return this._extras; }
 
 	/**
 	 * Updates the Extras object, containing application-specific data for this Property. Extras
 	 * should be an Object, not a primitive value, for best portability.
 	 */
-	public setExtras(extras: object): this {
+	public setExtras(extras: Record<string, unknown>): this {
 		this._extras = extras;
 		return this;
 	}

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 /**
  * Module for glTF 2.0 Interface
@@ -242,12 +241,12 @@ export declare module GLTF {
 		 * Dictionary object with extension-specific objects
 		 */
 		extensions?: {
-			[key: string]: object;
+			[key: string]: Record<string, unknown>;
 		};
 		/**
 		 * Application-Specific data
 		 */
-		extras?: object;
+		extras?: Record<string, unknown>;
 	}
 	/**
 	 * glTF Child of Root Property

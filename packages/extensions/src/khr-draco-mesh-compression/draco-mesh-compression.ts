@@ -151,7 +151,7 @@ export class DracoMeshCompression extends Extension {
 				const attribute = prim.getAttribute(semantic);
 				const attributeDef = context.createAccessorDef(attribute);
 				attributeDef.count = encodedPrim.numVertices;
-				context.accessorIndexMap.set(attribute, context.jsonDoc.json.accessors.length)
+				context.accessorIndexMap.set(attribute, context.jsonDoc.json.accessors.length);
 				context.jsonDoc.json.accessors.push(attributeDef);
 			}
 
@@ -260,7 +260,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		const hashKey = primHashKeys.get(prim);
 		if (includedAccessors.get(prim.getIndices()) !== hashKey
 				|| prim.listAttributes().some((attr) => includedAccessors.get(attr) !== hashKey)) {
-			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`)
+			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`);
 		}
 	}
 
@@ -268,7 +268,9 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	for (const prim of Array.from(excluded)) {
 		if (includedAccessors.has(prim.getIndices())
 				|| prim.listAttributes().some((attr) => includedAccessors.has(attr))) {
-			throw new Error(`[${NAME}] Accessor cannot be shared by compressed and uncompressed primitives.`);
+			throw new Error(
+				`[${NAME}] Accessor cannot be shared by compressed and uncompressed primitives.`
+			);
 		}
 	}
 

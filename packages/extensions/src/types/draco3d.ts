@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 
 type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
 
 /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 export declare module DRACO {
 	interface Library {
-		createDecoderModule(object?: object): DecoderModule;
-		createEncoderModule(object?: object): EncoderModule;
+		createDecoderModule(object?: Record<string, unknown>): DecoderModule;
+		createEncoderModule(object?: Record<string, unknown>): EncoderModule;
 	}
 
 	interface DecoderModule {
