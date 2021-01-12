@@ -309,6 +309,8 @@ export class GLTFWriter {
 						const accessors = Array.from(parentAccessors)
 							.filter((a) => bufferAccessorsSet.has(a))
 							.filter((a) => context.getAccessorUsage(a) === usage);
+						if (!accessors.length) continue;
+
 						const result = usage === BufferViewUsage.ARRAY_BUFFER
 							? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
 							: concatAccessors(accessors, bufferIndex, bufferByteLength);
@@ -318,6 +320,8 @@ export class GLTFWriter {
 				} else {
 					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
 					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
+					if (!accessors.length) continue;
+
 					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
 						? BufferViewTarget.ELEMENT_ARRAY_BUFFER
 						: null;
