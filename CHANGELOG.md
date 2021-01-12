@@ -4,6 +4,14 @@
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/9)
 
+**Features:**
+
+- Add `EXT_mesh_gpu_instancing` extension.
+
+**Breaking changes:**
+
+- Stricter type checking.
+
 ## v0.8
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/8)
