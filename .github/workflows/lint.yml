@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: macos-latest # Better `headless-gl` support on macOS.
+    strategy:
+      matrix:
+        node-version: [12.x] # Latest prebuilt binary for `headless-gl`
+    env:
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install
+    - run: yarn dist
+    - run: yarn test
+    - run: yarn lint
