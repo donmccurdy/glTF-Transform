@@ -129,7 +129,8 @@ export class Document {
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as new(g: PropertyGraph, e?: Extension) => Property;
+					const PropertyClass = thisProp.constructor as
+						new(g: PropertyGraph, e?: Extension) => Property;
 					otherProp = thisProp instanceof ExtensionProperty
 						? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
 						: new PropertyClass(this._graph);

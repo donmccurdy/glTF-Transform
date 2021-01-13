@@ -12,7 +12,11 @@ test('@gltf-transform/extensions::mesh-quantization', t => {
 	let jsonDoc;
 
 	jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[MeshQuantization.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	quantizationExtension.dispose();
 

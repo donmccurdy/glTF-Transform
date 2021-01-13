@@ -26,7 +26,7 @@
     "@typescript-eslint/no-unused-vars": ["warn", {"argsIgnorePattern": "^_"}],
     "@typescript-eslint/no-var-requires": ["off"],
     "quotes": ["warn", "single"],
-    // "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}],
+    "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}],
     "semi": ["error"],
     "eqeqeq": ["warn"],
     "space-infix-ops": ["warn"],

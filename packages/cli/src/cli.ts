@@ -65,7 +65,11 @@ program
 		default: [],
 	})
 	.action(({args, options, logger}) => {
-		validate(args.input as string, options as unknown as ValidateOptions, logger as unknown as Logger);
+		validate(
+			args.input as string,
+			options as unknown as ValidateOptions,
+			logger as unknown as Logger
+		);
 	});
 
 program.command('', '\n\n──────────────────── 📦 PACKAGE ─────────────────────');
@@ -87,11 +91,15 @@ program
 		+ 'Usage:\n\n'
 		+ '  ▸ gltf-transform merge a.glb b.glb c.glb output.glb'
 	)
-	.argument('<path...>', 'Path to glTF 2.0 (.glb, .gltf) model(s). Final path is used to write output.')
-	.option('--partition', 'Whether to maintain separate buffers for each input file. Invalid for GLB output.', {
-		validator: program.BOOLEAN,
-		default: false,
-	})
+	.argument('<path...>', `${INPUT_DESC}(s). Final path is used to write output.`)
+	.option(
+		'--partition',
+		'Whether to keep separate buffers for each input file. Invalid for GLB output.',
+		{
+			validator: program.BOOLEAN,
+			default: false,
+		}
+	)
 	.action(({args, options, logger}) => {
 		const paths = typeof args.path === 'string'
 			? args.path.split(',')

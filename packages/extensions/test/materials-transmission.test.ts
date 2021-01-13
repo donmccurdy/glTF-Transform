@@ -17,17 +17,29 @@ test('@gltf-transform/extensions::materials-transmission', t => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_transmission', transmission);
 
-	t.equal(mat.getExtension('KHR_materials_transmission'), transmission, 'transmission is attached');
+	t.equal(
+		mat.getExtension('KHR_materials_transmission'),
+		transmission,
+		'transmission is attached'
+	);
 
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
-	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
+	t.deepEqual(
+		materialDef.pbrMetallicRoughness.baseColorFactor,
+		[1.0, 0.5, 0.5, 1.0],
+		'writes base color'
+	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_transmission': {
 		transmissionFactor: 0.9,
 		transmissionTexture: {index: 0, texCoord: 0},
 	}}, 'writes transmission extension');
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsTransmission.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[MaterialsTransmission.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	transmissionExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_transmission'), null, 'transmission is detached');
@@ -53,7 +65,8 @@ test('@gltf-transform/extensions::materials-transmission | copy', t => {
 		.setExtension('KHR_materials_transmission', transmission);
 
 	const doc2 = doc.clone();
-	const transmission2 = doc2.getRoot().listMaterials()[0].getExtension<Transmission>('KHR_materials_transmission');
+	const transmission2 = doc2.getRoot().listMaterials()[0]
+		.getExtension<Transmission>('KHR_materials_transmission');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsTransmission');
 	t.ok(transmission2, 'copy Transmission');
 	t.equals(transmission2.getTransmissionFactor(), 0.9, 'copy transmissionFactor');

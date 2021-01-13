@@ -25,7 +25,11 @@ test('@gltf-transform/cli::copy', async t => {
 		.then(() => {
 			const doc2 = io.read(output);
 			t.ok(doc2, 'roundtrip document');
-			t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
+			t.equal(
+				doc2.getRoot().listMaterials()[0].getName(),
+				'MyMaterial',
+				'roundtrip material'
+			);
 			t.end();
 		});
 });
