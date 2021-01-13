@@ -50,6 +50,8 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 };
 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
+	if (!['STEP', 'LINEAR'].includes(sampler.getInterpolation())) return;
+
 	const input = sampler.getInput().clone();
 	const output = sampler.getOutput().clone();
 
