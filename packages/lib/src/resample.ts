@@ -8,12 +8,12 @@ export interface ResampleOptions {tolerance?: number}
 const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
 
 /**
- * Removes equivalent sequential keyframes, common in morph target sequences and baked animations.
+ * Removes redundant sequential keyframes, common in morph target sequences and baked animations.
  * Based on THREE.KeyframeTrack.optimize().
  *
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */
-export const resample = (options: ResampleOptions): Transform => {
+export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform => {
 
 	options = {...DEFAULT_OPTIONS, ...options};
 
@@ -77,7 +77,7 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 				const valueNext = output.getElement(i + 1, tmp)[j];
 
 				if (sampler.getInterpolation() === 'LINEAR') {
-					// Prune keyframes that are linearly interpolated from prev/next keyframes.
+					// Prune keyframes that are colinear with prev/next keyframes.
 					if (Math.abs(value - lerp(valuePrev, valueNext, timeMix)) > options.tolerance) {
 						keep = true;
 						break;
