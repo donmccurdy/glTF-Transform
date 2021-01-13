@@ -12,7 +12,7 @@ export interface SequenceOptions {
 const DEFAULT_OPTIONS: SequenceOptions = {
 	name: '',
 	fps: 10,
-	pattern: null,
+	pattern: /.*/,
 	sort: true,
 };
 
@@ -30,7 +30,7 @@ export function sequence (options: SequenceOptions = DEFAULT_OPTIONS): Transform
 
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
-		const fps = options.fps;
+		const fps = options.fps as number;
 
 		// Collect sequence nodes.
 		const sequenceNodes = root.listNodes()

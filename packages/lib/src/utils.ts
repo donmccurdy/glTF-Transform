@@ -12,7 +12,7 @@ const savePixels = savePixelsNamespace['default'] as Function;
 export async function rewriteTexture(
 		source: Texture,
 		target: Texture,
-		fn: (pixels: ndarray, i: number, j: number) => void): Promise<Texture> {
+		fn: (pixels: ndarray, i: number, j: number) => void): Promise<Texture|null> {
 
 	if (!source) return null;
 

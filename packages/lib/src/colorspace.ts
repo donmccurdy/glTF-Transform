@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
+import { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/core';
 
 const NAME = 'colorspace';
 
@@ -41,7 +41,7 @@ export function colorspace (options: ColorspaceOptions): Transform {
 		}
 
 		function updatePrimitive(primitive: Primitive): void {
-			const color = [];
+			const color = [0, 0, 0] as vec3;
 			let attribute: Accessor;
 			for (let i = 0; (attribute = primitive.getAttribute(`COLOR_${i}`)); i++) {
 				if (converted.has(attribute)) continue;

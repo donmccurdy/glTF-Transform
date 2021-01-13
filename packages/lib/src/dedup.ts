@@ -91,12 +91,12 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 		mesh.listPrimitives().forEach((primitive) => {
 			primitive.listAttributes().forEach((accessor) => {
 				if (duplicateAttributes.has(accessor)) {
-					primitive.swap(accessor, duplicateAttributes.get(accessor));
+					primitive.swap(accessor, duplicateAttributes.get(accessor) as Accessor);
 				}
 			});
 			const indices = primitive.getIndices();
 			if (indices && duplicateIndices.has(indices)) {
-				primitive.swap(indices, duplicateIndices.get(indices));
+				primitive.swap(indices, duplicateIndices.get(indices) as Accessor);
 			}
 		});
 	});

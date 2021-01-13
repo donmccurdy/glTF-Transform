@@ -53,6 +53,8 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	const input = sampler.getInput().clone();
 	const output = sampler.getOutput().clone();
 
+	const tolerance = options.tolerance as number;
+
 	const lastIndex = input.getCount() - 1;
 	const tmp = [];
 
@@ -75,7 +77,7 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 
 				if (sampler.getInterpolation() === 'LINEAR') {
 					// Prune keyframes that are colinear with prev/next keyframes.
-					if (Math.abs(value - lerp(valuePrev, valueNext, timeMix)) > options.tolerance) {
+					if (Math.abs(value - lerp(valuePrev, valueNext, timeMix)) > tolerance) {
 						keep = true;
 						break;
 					}

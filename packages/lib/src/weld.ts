@@ -44,7 +44,7 @@ function weldOnly (doc: Document, prim: Primitive): void {
  * attributes are not considered when scoring vertex similarity, but are retained when merging.
  */
 function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): void {
-	const tolerance = Math.max(options.tolerance, Number.EPSILON);
+	const tolerance = Math.max(options.tolerance as number, Number.EPSILON);
 	const decimalShift = Math.log10(1 / tolerance);
 	const shiftFactor = Math.pow(10, decimalShift);
 

@@ -34,7 +34,7 @@ export function center (options: CenterOptions = DEFAULT_OPTIONS): Transform {
 				if (options.pivot === 'above') pivot[1] = bbox.max[1];
 				if (options.pivot === 'below') pivot[1] = bbox.min[1];
 			} else {
-				pivot = options.pivot;
+				pivot = options.pivot as vec3;
 			}
 
 			logger.debug(`${NAME}: Pivot "${pivot.join(', ')}".`);

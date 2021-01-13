@@ -45,7 +45,8 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 	return (doc: Document): void => {
 
 		const logger = doc.getLogger();
-		const {resolution, samples} = options;
+		const resolution = options.resolution as number;
+		const samples = options.samples as number;
 
 		logger.debug(`${NAME}: resolution = ${resolution}; samples = ${samples}`);
 
