@@ -2,7 +2,6 @@ import { Accessor, AnimationSampler, Document, Root, Transform } from '@gltf-tra
 
 const NAME = 'resample';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ResampleOptions {tolerance?: number}
 
 const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
@@ -34,8 +33,7 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 		}
 
 		for (const accessor of Array.from(accessorsVisited.values())) {
-			const used = !!accessor.listParents()
-				.find((p) => !(p instanceof Root));
+			const used = !!accessor.listParents().find((p) => !(p instanceof Root));
 			if (!used) accessor.dispose();
 		}
 
@@ -54,7 +52,6 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	const input = sampler.getInput().clone();
 	const output = sampler.getOutput().clone();
-	const stride = output.getElementSize();
 
 	const lastIndex = input.getCount() - 1;
 	const tmp = [];
@@ -71,7 +68,7 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 
 		// Remove unnecessary adjacent keyframes.
 		if (time !== timeNext && (i !== 1 || time !== input.getScalar(0))) {
-			for (let j = 0; j < stride; j++) {
+			for (let j = 0; j < output.getElementSize(); j++) {
 				const value = output.getElement(i, tmp)[j];
 				const valuePrev = output.getElement(i - 1, tmp)[j];
 				const valueNext = output.getElement(i + 1, tmp)[j];
