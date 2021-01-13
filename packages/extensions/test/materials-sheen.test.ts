@@ -22,13 +22,21 @@ test('@gltf-transform/extensions::materials-sheen', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
-	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
+	t.deepEqual(
+		materialDef.pbrMetallicRoughness.baseColorFactor,
+		[1.0, 0.5, 0.5, 1.0],
+		'writes base color'
+	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_sheen': {
 		sheenColorFactor: [0.9, 0.5, 0.8],
 		sheenRoughnessFactor: 0,
 		sheenColorTexture: {index: 0, texCoord: 0},
 	}}, 'writes sheen extension');
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsSheen.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[MaterialsSheen.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	sheenExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_sheen'), null, 'sheen is detached');

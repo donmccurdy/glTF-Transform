@@ -34,7 +34,8 @@ const TEXTURE_DATA = new Uint8Array([
 
 /**
  * Options:
- * - **gl**: Callback taking `(width, height)` as parameters, and returning a GL instance. Optional on web; Requires `headless-gl` in Node.js.
+ * - **gl**: Callback taking `(width, height)` as parameters, and returning a GL instance. Optional
+ * 		on web; Requires `headless-gl` in Node.js.
  * - **resolution**: Resolution of depth buffer. Default: 512.
  * - **samples**: Number of samples to draw. Default: 500.
  */
@@ -78,7 +79,9 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 
 			if (primitive.getMaterial().getOcclusionTexture()) {
 				// TODO: Duplicate the material if needed.
-				logger.warn(`${NAME}: Primitive already has AO. Is it sharing a material? Skipping.`);
+				logger.warn(
+					`${NAME}: Primitive already has AO. Is it sharing a material? Skipping.`
+				);
 				return;
 			}
 

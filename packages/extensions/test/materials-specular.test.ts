@@ -23,13 +23,21 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
-	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
+	t.deepEqual(
+		materialDef.pbrMetallicRoughness.baseColorFactor,
+		[1.0, 0.5, 0.5, 1.0],
+		'writes base color'
+	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_specular': {
 		specularFactor: 0.9,
 		specularColorFactor: [0.9, 0.5, 0.8],
 		specularTexture: {index: 0, texCoord: 0},
 	}}, 'writes specular extension');
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsSpecular.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[MaterialsSpecular.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	specularExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_specular'), null, 'specular is detached');
@@ -41,7 +49,11 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	const roundtripExt = roundtripMat.getExtension<Specular>('KHR_materials_specular');
 
 	t.equal(roundtripExt.getSpecularFactor(), 0.9, 'reads specularFactor');
-	t.deepEqual(roundtripExt.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'reads specularColorFactor');
+	t.deepEqual(
+		roundtripExt.getSpecularColorFactor(),
+		[0.9, 0.5, 0.8],
+		'reads specularColorFactor'
+	);
 	t.ok(roundtripExt.getSpecularTexture(), 'reads specularTexture');
 	t.end();
 });
@@ -57,7 +69,8 @@ test('@gltf-transform/extensions::materials-specular | copy', t => {
 		.setExtension('KHR_materials_specular', specular);
 
 	const doc2 = doc.clone();
-	const specular2 = doc2.getRoot().listMaterials()[0].getExtension<Specular>('KHR_materials_specular');
+	const specular2 = doc2.getRoot().listMaterials()[0]
+		.getExtension<Specular>('KHR_materials_specular');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsSpecular');
 	t.ok(specular2, 'copy Specular');
 	t.equals(specular2.getSpecularFactor(), 0.9, 'copy specularFactor');

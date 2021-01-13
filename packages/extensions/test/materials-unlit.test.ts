@@ -22,9 +22,17 @@ test('@gltf-transform/extensions::materials-unlit', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
-	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
+	t.deepEqual(
+		materialDef.pbrMetallicRoughness.baseColorFactor,
+		[1.0, 0.5, 0.5, 1.0],
+		'writes base color'
+	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_unlit': {}}, 'writes unlit extension');
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsUnlit.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[MaterialsUnlit.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	const rtDoc = new NodeIO().registerExtensions([MaterialsUnlit]).readJSON(jsonDoc);
 	const rtMat = rtDoc.getRoot().listMaterials()[0];

@@ -37,7 +37,9 @@ function partitionMeshes (doc: Document, logger: Logger, options: PartitionOptio
 	doc.getRoot().listMeshes()
 		.forEach((mesh, meshIndex) => {
 			if (Array.isArray(options.meshes) && !options.meshes.includes(mesh.getName())) {
-				logger.debug(`${NAME}: Skipping mesh at index ${meshIndex} with name "${mesh.getName()}".`);
+				logger.debug(
+					`${NAME}: Skipping mesh #${meshIndex} with name "${mesh.getName()}".`
+				);
 				return;
 			}
 
@@ -66,7 +68,9 @@ function partitionAnimations (doc: Document, logger: Logger, options: PartitionO
 	doc.getRoot().listAnimations()
 		.forEach((anim, animIndex) => {
 			if (Array.isArray(options.animations) && !options.animations.includes(anim.getName())) {
-				logger.debug(`${NAME}: Skipping animation at index ${animIndex} with name "${anim.getName()}".`);
+				logger.debug(
+					`${NAME}: Skipping animation #${animIndex} with name "${anim.getName()}".`
+				);
 				return;
 			}
 
