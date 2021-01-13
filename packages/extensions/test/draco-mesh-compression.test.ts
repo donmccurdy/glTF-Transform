@@ -3,7 +3,7 @@ require('source-map-support').install();
 import * as path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import * as test from 'tape';
-import { Accessor, Buffer, Document, GLTF, NodeIO, Primitive } from '@gltf-transform/core';
+import { Accessor, Buffer, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/lib';
 import { DracoMeshCompression } from '../';
 
@@ -41,7 +41,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
 	t.deepEquals(primitiveDefs[0], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
+		mode: Primitive.Mode.TRIANGLES,
 		indices: 0,
 		attributes: {POSITION: 1},
 		extensions: {
@@ -52,7 +52,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 		}
 	}, 'primitiveDef 1/4');
 	t.deepEquals(primitiveDefs[1], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
+		mode: Primitive.Mode.TRIANGLES,
 		indices: 0,
 		attributes: {POSITION: 1},
 		extensions: {
@@ -63,7 +63,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 		}
 	}, 'primitiveDef 2/4');
 	t.deepEquals(primitiveDefs[2], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
+		mode: Primitive.Mode.TRIANGLES,
 		indices: 2,
 		attributes: {POSITION: 3},
 		extensions: {
@@ -74,7 +74,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 		}
 	}, 'primitiveDef 3/4');
 	t.deepEquals(primitiveDefs[3], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
+		mode: Primitive.Mode.TRIANGLES,
 		indices: 2, // shared.
 		attributes: {POSITION: 3}, // shared.
 		extensions: {
@@ -111,7 +111,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	const prim2 = createMeshPrimitive(doc, buffer);
 
 	prim1.getIndices().dispose();
-	prim2.setMode(GLTF.MeshPrimitiveMode.TRIANGLE_FAN);
+	prim2.setMode(Primitive.Mode.TRIANGLE_FAN);
 
 	const mesh = doc.createMesh()
 		.addPrimitive(prim1)
@@ -123,11 +123,11 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
 	t.deepEquals(primitiveDefs[0], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLES,
+		mode: Primitive.Mode.TRIANGLES,
 		attributes: {POSITION: 0},
 	}, 'primitiveDef 1/2');
 	t.deepEquals(primitiveDefs[1], {
-		mode: GLTF.MeshPrimitiveMode.TRIANGLE_FAN,
+		mode: Primitive.Mode.TRIANGLE_FAN,
 		indices: 2,
 		attributes: {POSITION: 1},
 	}, 'primitiveDef 2/4');

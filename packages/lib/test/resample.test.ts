@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Accessor, Document, GLTF, Logger } from '@gltf-transform/core';
+import { Accessor, Document, Logger } from '@gltf-transform/core';
 import { resample } from '../';
 
 test('@gltf-transform/lib::resample', async t => {
@@ -26,13 +26,13 @@ test('@gltf-transform/lib::resample', async t => {
 		.setArray(outputArray);
 
 	const samplerA = doc.createAnimationSampler()
-		.setInterpolation(GLTF.AnimationSamplerInterpolation.STEP)
+		.setInterpolation('STEP')
 		.setInput(input)
 		.setOutput(output);
 	const samplerB = samplerA.clone()
-		.setInterpolation(GLTF.AnimationSamplerInterpolation.LINEAR);
+		.setInterpolation('LINEAR');
 	const samplerC = samplerA.clone()
-		.setInterpolation(GLTF.AnimationSamplerInterpolation.CUBICSPLINE);
+		.setInterpolation('CUBICSPLINE');
 
 	doc.createAnimation()
 		.addSampler(samplerA)

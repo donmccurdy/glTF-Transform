@@ -6,7 +6,7 @@ import { Accessor, Document, GLTF, NodeIO, TypedArray } from '../../';
 test('@gltf-transform/core::accessor | getScalar/setScalar', t => {
 	const accessor = new Document().createAccessor()
 		.setArray(new Float32Array([1, 2, 3, 4, 6]))
-		.setType(GLTF.AccessorType.SCALAR);
+		.setType(Accessor.Type.SCALAR);
 
 	accessor.setScalar(2, 500);
 	t.equal(accessor.getScalar(1), 2, 'getScalar');
@@ -17,7 +17,7 @@ test('@gltf-transform/core::accessor | getScalar/setScalar', t => {
 test('@gltf-transform/core::accessor | getElement/setElement', t => {
 	const accessor = new Document().createAccessor()
 		.setArray(new Float32Array([1, 2, 3, 4, 6, 7]))
-		.setType(GLTF.AccessorType.VEC2);
+		.setType(Accessor.Type.VEC2);
 
 	accessor.setElement(2, [300, 400]);
 	t.deepEqual(accessor.getElement(1, []), [3, 4], 'getElement');
@@ -29,7 +29,7 @@ test('@gltf-transform/core::accessor | normalized', t => {
 	const accessor = new Document().createAccessor()
 		.setArray(new Uint8Array([128, 255]))
 		.setNormalized(true)
-		.setType(GLTF.AccessorType.SCALAR);
+		.setType(Accessor.Type.SCALAR);
 
 	t.deepEqual(accessor.getMin([])[0].toFixed(2), '128.00', 'getMin');
 	t.deepLooseEqual(accessor.getMinNormalized([])[0].toFixed(2), '0.50', 'getMinNormalized');
@@ -121,12 +121,12 @@ test('@gltf-transform/core::accessor | getComponentSize', t => {
 test('@gltf-transform/core::accessor | getElementSize', t => {
 	const accessor = new Document().createAccessor();
 
-	t.equal(accessor.setType(GLTF.AccessorType.SCALAR).getElementSize(), 1, 'scalar');
-	t.equal(accessor.setType(GLTF.AccessorType.VEC2).getElementSize(), 2, 'vec2');
-	t.equal(accessor.setType(GLTF.AccessorType.VEC3).getElementSize(), 3, 'vec3');
-	t.equal(accessor.setType(GLTF.AccessorType.VEC4).getElementSize(), 4, 'vec4');
-	t.equal(accessor.setType(GLTF.AccessorType.MAT3).getElementSize(), 9, 'mat3');
-	t.equal(accessor.setType(GLTF.AccessorType.MAT4).getElementSize(), 16, 'mat4');
+	t.equal(accessor.setType('SCALAR').getElementSize(), 1, 'scalar');
+	t.equal(accessor.setType('VEC2').getElementSize(), 2, 'vec2');
+	t.equal(accessor.setType('VEC3').getElementSize(), 3, 'vec3');
+	t.equal(accessor.setType('VEC4').getElementSize(), 4, 'vec4');
+	t.equal(accessor.setType('MAT3').getElementSize(), 9, 'mat3');
+	t.equal(accessor.setType('MAT4').getElementSize(), 16, 'mat4');
 	t.throws(() => accessor.setType('VEC5' as GLTF.AccessorType).getElementSize(), 'vec5 (throws)');
 	t.end();
 });
@@ -271,7 +271,7 @@ test('@gltf-transform/core::accessor | minmax', t => {
 			1, 0, -1,
 			0, 0, -3,
 		]))
-		.setType(GLTF.AccessorType.VEC3);
+		.setType(Accessor.Type.VEC3);
 
 	t.deepEqual(accessor.getMin([]), [0, 0, -3], 'computes min, ignoring infinite and NaN');
 	t.deepEqual(accessor.getMax([]), [1, 0, 0], 'computes max, ignoring infinite and NaN');

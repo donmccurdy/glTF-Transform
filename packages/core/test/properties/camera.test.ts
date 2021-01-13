@@ -1,20 +1,20 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF, NodeIO } from '../../';
+import { Document, NodeIO } from '../../';
 
 test('@gltf-transform/core::camera', t => {
 	const doc = new Document();
 
 	doc.createCamera('p')
-		.setType(GLTF.CameraType.PERSPECTIVE)
+		.setType('perspective')
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
 		.setAspectRatio(.5);
 
 	doc.createCamera('o')
-		.setType(GLTF.CameraType.ORTHOGRAPHIC)
+		.setType('orthographic')
 		.setZNear(10)
 		.setZFar(100)
 		.setXMag(50)
@@ -54,13 +54,13 @@ test('@gltf-transform/core::camera | copy', t => {
 	const doc = new Document();
 
 	const a = doc.createCamera('MyPerspectiveCamera')
-		.setType(GLTF.CameraType.PERSPECTIVE)
+		.setType('perspective')
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
 		.setAspectRatio(.5);
 	const b = doc.createCamera('MyOrthoCamera')
-		.setType(GLTF.CameraType.ORTHOGRAPHIC)
+		.setType('orthographic')
 		.setZNear(10)
 		.setZFar(100)
 		.setXMag(50)

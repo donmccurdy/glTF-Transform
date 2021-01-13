@@ -4,235 +4,26 @@
  * Module for glTF 2.0 Interface
  */
 export declare module GLTF {
-	/**
-	 * The datatype of the components in the attribute
-	 */
-	const enum AccessorComponentType {
-		/**
-		 * Byte
-		 */
-		BYTE = 5120,
-		/**
-		 * Unsigned Byte
-		 */
-		UNSIGNED_BYTE = 5121,
-		/**
-		 * Short
-		 */
-		SHORT = 5122,
-		/**
-		 * Unsigned Short
-		 */
-		UNSIGNED_SHORT = 5123,
-		/**
-		 * Unsigned Int
-		 */
-		UNSIGNED_INT = 5125,
-		/**
-		 * Float
-		 */
-		FLOAT = 5126,
-	}
-	/**
-	 * Specifies if the attirbute is a scalar, vector, or matrix
-	 */
-	const enum AccessorType {
-		/**
-		 * Scalar
-		 */
-		SCALAR = 'SCALAR',
-		/**
-		 * Vector2
-		 */
-		VEC2 = 'VEC2',
-		/**
-		 * Vector3
-		 */
-		VEC3 = 'VEC3',
-		/**
-		 * Vector4
-		 */
-		VEC4 = 'VEC4',
-		/**
-		 * Matrix2x2
-		 */
-		MAT2 = 'MAT2',
-		/**
-		 * Matrix3x3
-		 */
-		MAT3 = 'MAT3',
-		/**
-		 * Matrix4x4
-		 */
-		MAT4 = 'MAT4',
-	}
-	/**
-	 * The name of the node's TRS property to modify, or the weights of the Morph Targets it
-	 * instantiates
-	 */
-	const enum AnimationChannelTargetPath {
-		/**
-		 * Translation
-		 */
-		TRANSLATION = 'translation',
-		/**
-		 * Rotation
-		 */
-		ROTATION = 'rotation',
-		/**
-		 * Scale
-		 */
-		SCALE = 'scale',
-		/**
-		 * Weights
-		 */
-		WEIGHTS = 'weights',
-	}
-	/**
-	 * Interpolation algorithm
-	 */
-	const enum AnimationSamplerInterpolation {
-		/**
-		 * The animated values are linearly interpolated between keyframes
-		 */
-		LINEAR = 'LINEAR',
-		/**
-		 * The animated values remain constant to the output of the first keyframe, until the next
-		 * keyframe
-		 */
-		STEP = 'STEP',
-		/**
-		 * The animation's interpolation is computed using a cubic spline with specified tangents
-		 */
-		CUBICSPLINE = 'CUBICSPLINE',
-	}
-	/**
-	 * A camera's projection.  A node can reference a camera to apply a transform to place the
-	 * camera in the scene
-	 */
-	const enum CameraType {
-		/**
-		 * A perspective camera containing properties to create a perspective projection matrix
-		 */
-		PERSPECTIVE = 'perspective',
-		/**
-		 * An orthographic camera containing properties to create an orthographic projection matrix
-		 */
-		ORTHOGRAPHIC = 'orthographic',
-	}
-	/**
-	 * The alpha rendering mode of the material
-	 */
-	const enum MaterialAlphaMode {
-		/**
-		 * The alpha value is ignored and the rendered output is fully opaque
-		 */
-		OPAQUE = 'OPAQUE',
-		/**
-		 * The rendered output is either fully opaque or fully transparent depending on the alpha
-		 * value and the specified alpha cutoff value
-		 */
-		MASK = 'MASK',
-		/**
-		 * The alpha value is used to composite the source and destination areas. The rendered
-		 * output is combined with the background using the normal painting operation (i.e. the
-		 * Porter and Duff over operator)
-		 */
-		BLEND = 'BLEND',
-	}
-	/**
-	 * The type of the primitives to render
-	 */
-	const enum MeshPrimitiveMode {
-		/**
-		 * Points
-		 */
-		POINTS = 0,
-		/**
-		 * Lines
-		 */
-		LINES = 1,
-		/**
-		 * Line Loop
-		 */
-		LINE_LOOP = 2,
-		/**
-		 * Line Strip
-		 */
-		LINE_STRIP = 3,
-		/**
-		 * Triangles
-		 */
-		TRIANGLES = 4,
-		/**
-		 * Triangle Strip
-		 */
-		TRIANGLE_STRIP = 5,
-		/**
-		 * Triangle Fan
-		 */
-		TRIANGLE_FAN = 6,
-	}
-	/**
-	 * Magnification filter.  Valid values correspond to WebGL enums: 9728 (NEAREST) and 9729
-	 * (LINEAR)
-	 */
-	const enum TextureMagFilter {
-		/**
-		 * Nearest
-		 */
-		NEAREST = 9728,
-		/**
-		 * Linear
-		 */
-		LINEAR = 9729,
-	}
-	/**
-	 * Minification filter.  All valid values correspond to WebGL enums
-	 */
-	const enum TextureMinFilter {
-		/**
-		 * Nearest
-		 */
-		NEAREST = 9728,
-		/**
-		 * Linear
-		 */
-		LINEAR = 9729,
-		/**
-		 * Nearest Mip-Map Nearest
-		 */
-		NEAREST_MIPMAP_NEAREST = 9984,
-		/**
-		 * Linear Mipmap Nearest
-		 */
-		LINEAR_MIPMAP_NEAREST = 9985,
-		/**
-		 * Nearest Mipmap Linear
-		 */
-		NEAREST_MIPMAP_LINEAR = 9986,
-		/**
-		 * Linear Mipmap Linear
-		 */
-		LINEAR_MIPMAP_LINEAR = 9987,
-	}
-	/**
-	 * S (U) wrapping mode.  All valid values correspond to WebGL enums
-	 */
-	const enum TextureWrapMode {
-		/**
-		 * Clamp to Edge
-		 */
-		CLAMP_TO_EDGE = 33071,
-		/**
-		 * Mirrored Repeat
-		 */
-		MIRRORED_REPEAT = 33648,
-		/**
-		 * Repeat
-		 */
-		REPEAT = 10497,
-	}
+	/** Data type of the values composing each element in the accessor. */
+	type AccessorComponentType = 5120 | 5121 | 5122 | 5123 | 5125 | 5126;
+	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
+	type AccessorType = 'SCALAR' | 'VEC2' | 'VEC3' | 'VEC4' | 'MAT2' | 'MAT3' | 'MAT4';
+	/** Name of the property to be modified by an animation channel. */
+	type AnimationChannelTargetPath = 'translation' | 'rotation' | 'scale' | 'weights';
+	/** Interpolation method. */
+	type AnimationSamplerInterpolation = 'LINEAR' | 'STEP' | 'CUBICSPLINE';
+	/** Projection type used by a camera. */
+	type CameraType = 'perspective' | 'orthographic';
+	/** The alpha rendering mode of the material. */
+	type MaterialAlphaMode = 'OPAQUE' | 'MASK' | 'BLEND';
+	/** The type of the GL primitives to render. */
+	type MeshPrimitiveMode = | 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	/** Magnification filter.  Values match to WebGL enums: 9728 (NEAREST) and 9729 (LINEAR). */
+	type TextureMagFilter = 9728 | 9729;
+	/** Minification filter.  All valid values correspond to WebGL enums. */
+	type TextureMinFilter = 9728 | 9729 | 9984 | 9985 | 9986 | 9987;
+	/** S (U) wrapping mode.  All valid values correspond to WebGL enums. */
+	type TextureWrapMode = 33071 | 33648 | 10497;
 	/**
 	 * glTF Property
 	 */

@@ -33,7 +33,7 @@ test('@gltf-transform/cli::toktx | resize', async t => {
 	t.end();
 });
 
-async function getParams(options: object, size: vec2): Promise<string> {
+async function getParams(options: Record<string, unknown>, size: vec2): Promise<string> {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const tex = doc.createTexture()
 		.setImage(new ArrayBuffer(10))

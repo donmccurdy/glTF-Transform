@@ -5,7 +5,12 @@ import validator from 'gltf-validator';
 import { Logger } from '@gltf-transform/core';
 import { formatHeader } from './util';
 
-export function validate(input: string, options, logger: Logger): void {
+export interface ValidateOptions {
+	limit: number;
+	ignore: string[];
+}
+
+export function validate(input: string, options: ValidateOptions, logger: Logger): void {
 	const buffer = fs.readFileSync(input);
 	return validator.validateBytes(new Uint8Array(buffer), {
 			maxIssues: options.limit,

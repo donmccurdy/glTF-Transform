@@ -1,4 +1,4 @@
-import { Document, GLTF, Transform } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, AnimationSampler, Document, Transform } from '@gltf-transform/core';
 
 const NAME = 'sequence';
 
@@ -66,14 +66,14 @@ export function sequence (options: SequenceOptions = DEFAULT_OPTIONS): Transform
 			const output = doc.createAccessor()
 				.setArray(new Float32Array(outputArray))
 				.setBuffer(animBuffer)
-				.setType(GLTF.AccessorType.VEC3);
+				.setType(Accessor.Type.VEC3);
 			const sampler = doc.createAnimationSampler()
-				.setInterpolation(GLTF.AnimationSamplerInterpolation.STEP)
+				.setInterpolation(AnimationSampler.Interpolation.STEP)
 				.setInput(input)
 				.setOutput(output);
 			const channel = doc.createAnimationChannel()
 				.setTargetNode(node)
-				.setTargetPath(GLTF.AnimationChannelTargetPath.SCALE)
+				.setTargetPath(AnimationChannel.TargetPath.SCALE)
 				.setSampler(sampler);
 			anim.addSampler(sampler).addChannel(channel);
 		});

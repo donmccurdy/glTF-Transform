@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, Property } from '../../';
+import { Accessor, Document, GLTF, NodeIO, Primitive, Property } from '../../';
 
 test('@gltf-transform/core::mesh', t => {
 	const doc = new Document();
@@ -201,7 +201,7 @@ test('@gltf-transform/core::mesh | primitive i/o', t => {
 	const buffer = doc.createBuffer();
 
 	prim
-		.setMode(GLTF.MeshPrimitiveMode.POINTS)
+		.setMode(Primitive.Mode.POINTS)
 		.setAttribute('POSITION', doc.createAccessor()
 			.setArray(new Float32Array([0, 0, 0]))
 			.setType(Accessor.Type.VEC3)

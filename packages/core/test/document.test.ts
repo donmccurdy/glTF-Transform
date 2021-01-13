@@ -23,7 +23,7 @@ test('@gltf-transform/core::document | clone', t => {
 	const rootNode = doc1.createNode('A')
 		.addChild(doc1.createNode('B')
 			.addChild(doc1.createNode('C')));
-	const scene = doc1.createScene('MyScene').addChild(rootNode);
+	doc1.createScene('MyScene').addChild(rootNode);
 
 
 	const doc2 = doc1.clone();

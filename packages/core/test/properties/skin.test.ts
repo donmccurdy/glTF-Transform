@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF, NodeIO } from '../../';
+import { Accessor, AnimationChannel, Document, NodeIO } from '../../';
 
 test('@gltf-transform/core::skin', t => {
 	const doc = new Document();
@@ -15,7 +15,7 @@ test('@gltf-transform/core::skin', t => {
 	doc.createBuffer('skinBuffer');
 
 	const ibm = doc.createAccessor('ibm')
-		.setType(GLTF.AccessorType.MAT4)
+		.setType(Accessor.Type.MAT4)
 		.setArray(new Float32Array([
 			1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -52,7 +52,7 @@ test('@gltf-transform/core::skin', t => {
 	const channel = doc.createAnimationChannel()
 		.setSampler(sampler)
 		.setTargetNode(joints[0])
-		.setTargetPath(GLTF.AnimationChannelTargetPath.TRANSLATION);
+		.setTargetPath(AnimationChannel.TargetPath.TRANSLATION);
 	doc.createAnimation()
 		.addChannel(channel)
 		.addSampler(sampler);

@@ -51,7 +51,7 @@ import { COPY_IDENTITY } from './property';
  * ```typescript
  * const accessor = doc.createAccessor('myData')
  * 	.setArray(new Float32Array([1,2,3,4,5,6,7,8,9,10,11,12]))
- * 	.setType(GLTF.AccessorType.VEC3)
+ * 	.setType(Accessor.Type.VEC3)
  * 	.setBuffer(doc.listBuffers()[0]);
  *
  * accessor.getCount();        // → 4
@@ -88,7 +88,7 @@ export class Accessor extends ExtensibleProperty {
 	private _array: TypedArray = null;
 
 	/** @hidden Type of element represented. */
-	private _type: GLTF.AccessorType = GLTF.AccessorType.SCALAR;
+	private _type: GLTF.AccessorType = Accessor.Type.SCALAR;
 
 	/** @hidden Numeric type of each component in an element. */
 	private _componentType: GLTF.AccessorComponentType = null;
@@ -124,36 +124,37 @@ export class Accessor extends ExtensibleProperty {
 	 * Static.
 	 */
 
-	/** Supported element types. */
-	public static Type = {
-		SCALAR: GLTF.AccessorType.SCALAR,
-		VEC2: GLTF.AccessorType.VEC2,
-		VEC3: GLTF.AccessorType.VEC3,
-		VEC4: GLTF.AccessorType.VEC4,
-		MAT3: GLTF.AccessorType.MAT3,
-		MAT4: GLTF.AccessorType.MAT4,
+	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
+	public static Type: Record<string, GLTF.AccessorType> = {
+		SCALAR: 'SCALAR',
+		VEC2: 'VEC2',
+		VEC3: 'VEC3',
+		VEC4: 'VEC4',
+		MAT2: 'MAT2',
+		MAT3: 'MAT3',
+		MAT4: 'MAT4',
 	}
 
-	/** Supported component types. */
-	public static ComponentType = {
-		BYTE: GLTF.AccessorComponentType.BYTE,
-		UNSIGNED_BYTE: GLTF.AccessorComponentType.UNSIGNED_BYTE,
-		SHORT: GLTF.AccessorComponentType.SHORT,
-		UNSIGNED_SHORT: GLTF.AccessorComponentType.UNSIGNED_SHORT,
-		UNSIGNED_INT: GLTF.AccessorComponentType.UNSIGNED_INT,
-		FLOAT: GLTF.AccessorComponentType.FLOAT,
+	/** Data type of the values composing each element in the accessor. */
+	public static ComponentType: Record<string, GLTF.AccessorComponentType> = {
+		BYTE: 5120,
+		UNSIGNED_BYTE: 5121,
+		SHORT: 5122,
+		UNSIGNED_SHORT: 5123,
+		UNSIGNED_INT: 5125,
+		FLOAT: 5126,
 	}
 
 	/** Returns size of a given element type, in components. */
 	public static getElementSize(type: GLTF.AccessorType): number {
 		switch (type) {
-			case GLTF.AccessorType.SCALAR: return 1;
-			case GLTF.AccessorType.VEC2: return 2;
-			case GLTF.AccessorType.VEC3: return 3;
-			case GLTF.AccessorType.VEC4: return 4;
-			case GLTF.AccessorType.MAT2: return 4;
-			case GLTF.AccessorType.MAT3: return 9;
-			case GLTF.AccessorType.MAT4: return 16;
+			case Accessor.Type.SCALAR: return 1;
+			case Accessor.Type.VEC2: return 2;
+			case Accessor.Type.VEC3: return 3;
+			case Accessor.Type.VEC4: return 4;
+			case Accessor.Type.MAT2: return 4;
+			case Accessor.Type.MAT3: return 9;
+			case Accessor.Type.MAT4: return 16;
 			default:
 				throw new Error('Unexpected type: ' + type);
 		}
@@ -162,12 +163,12 @@ export class Accessor extends ExtensibleProperty {
 	/** Returns size of a given component type, in bytes. */
 	public static getComponentSize(componentType: GLTF.AccessorComponentType): number {
 		switch (componentType) {
-			case GLTF.AccessorComponentType.BYTE: return 1;
-			case GLTF.AccessorComponentType.UNSIGNED_BYTE: return 1;
-			case GLTF.AccessorComponentType.SHORT: return 2;
-			case GLTF.AccessorComponentType.UNSIGNED_SHORT: return 2;
-			case GLTF.AccessorComponentType.UNSIGNED_INT: return 4;
-			case GLTF.AccessorComponentType.FLOAT: return 4;
+			case Accessor.ComponentType.BYTE: return 1;
+			case Accessor.ComponentType.UNSIGNED_BYTE: return 1;
+			case Accessor.ComponentType.SHORT: return 2;
+			case Accessor.ComponentType.UNSIGNED_SHORT: return 2;
+			case Accessor.ComponentType.UNSIGNED_INT: return 4;
+			case Accessor.ComponentType.FLOAT: return 4;
 			default:
 				throw new Error('Unexpected component type: ' + componentType);
 		}
@@ -408,24 +409,24 @@ export class Accessor extends ExtensibleProperty {
 }
 
 /**************************************************************************************************
- * Array utilities.
+ * Accessor utilities.
  */
 
 /** @hidden */
 function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 	switch (array.constructor) {
 		case Float32Array:
-			return GLTF.AccessorComponentType.FLOAT;
+			return Accessor.ComponentType.FLOAT;
 		case Uint32Array:
-			return GLTF.AccessorComponentType.UNSIGNED_INT;
+			return Accessor.ComponentType.UNSIGNED_INT;
 		case Uint16Array:
-			return GLTF.AccessorComponentType.UNSIGNED_SHORT;
+			return Accessor.ComponentType.UNSIGNED_SHORT;
 		case Uint8Array:
-			return GLTF.AccessorComponentType.UNSIGNED_BYTE;
+			return Accessor.ComponentType.UNSIGNED_BYTE;
 		case Int16Array:
-			return GLTF.AccessorComponentType.SHORT;
+			return Accessor.ComponentType.SHORT;
 		case Int8Array:
-			return GLTF.AccessorComponentType.BYTE;
+			return Accessor.ComponentType.BYTE;
 		default:
 			throw new Error('Unknown accessor componentType.');
 	}

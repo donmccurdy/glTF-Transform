@@ -1,4 +1,4 @@
-import { GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
+import { Accessor, GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 
@@ -72,21 +72,21 @@ export function initDecoderModule (_decoderModule: DRACO.DecoderModule): void {
 	decoderModule = _decoderModule;
 
 	COMPONENT_ARRAY = {
-		[GLTF.AccessorComponentType.FLOAT]: Float32Array,
-		[GLTF.AccessorComponentType.UNSIGNED_INT]: Uint32Array,
-		[GLTF.AccessorComponentType.UNSIGNED_SHORT]: Uint16Array,
-		[GLTF.AccessorComponentType.UNSIGNED_BYTE]: Uint8Array,
-		[GLTF.AccessorComponentType.SHORT]: Int16Array,
-		[GLTF.AccessorComponentType.BYTE]: Int8Array,
+		[Accessor.ComponentType.FLOAT]: Float32Array,
+		[Accessor.ComponentType.UNSIGNED_INT]: Uint32Array,
+		[Accessor.ComponentType.UNSIGNED_SHORT]: Uint16Array,
+		[Accessor.ComponentType.UNSIGNED_BYTE]: Uint8Array,
+		[Accessor.ComponentType.SHORT]: Int16Array,
+		[Accessor.ComponentType.BYTE]: Int8Array,
 	};
 
 	DATA_TYPE = {
-		[GLTF.AccessorComponentType.FLOAT]: decoderModule.DT_FLOAT32,
-		[GLTF.AccessorComponentType.UNSIGNED_INT]: decoderModule.DT_UINT32,
-		[GLTF.AccessorComponentType.UNSIGNED_SHORT]: decoderModule.DT_UINT16,
-		[GLTF.AccessorComponentType.UNSIGNED_BYTE]: decoderModule.DT_UINT8,
-		[GLTF.AccessorComponentType.SHORT]: decoderModule.DT_INT16,
-		[GLTF.AccessorComponentType.BYTE]: decoderModule.DT_INT8,
+		[Accessor.ComponentType.FLOAT]: decoderModule.DT_FLOAT32,
+		[Accessor.ComponentType.UNSIGNED_INT]: decoderModule.DT_UINT32,
+		[Accessor.ComponentType.UNSIGNED_SHORT]: decoderModule.DT_UINT16,
+		[Accessor.ComponentType.UNSIGNED_BYTE]: decoderModule.DT_UINT8,
+		[Accessor.ComponentType.SHORT]: decoderModule.DT_INT16,
+		[Accessor.ComponentType.BYTE]: decoderModule.DT_INT8,
 	};
 }
 

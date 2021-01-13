@@ -24,7 +24,7 @@ import { COPY_IDENTITY, Property } from './property';
  * // Create accessor containing input times, in seconds.
  * const input = doc.createAccessor('bounceTimes')
  * 	.setArray(new Float32Array([0, 1, 2]))
- * 	.setType(GLTF.AccessorType.SCALAR);
+ * 	.setType(Accessor.Type.SCALAR);
  *
  * // Create accessor containing output values, in local units.
  * const output = doc.createAccessor('bounceValues')
@@ -33,7 +33,7 @@ import { COPY_IDENTITY, Property } from './property';
  * 		0, 1, 0, // y = 1
  * 		0, 0, 0, // y = 0
  * 	]))
- * 	.setType(GLTF.AccessorType.VEC3);
+ * 	.setType(Accessor.Type.VEC3);
  *
  * // Create sampler.
  * const sampler = doc.createAnimationSampler('bounce')
@@ -49,7 +49,7 @@ export class AnimationSampler extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
 	private _interpolation: GLTF.AnimationSamplerInterpolation
-		= GLTF.AnimationSamplerInterpolation.LINEAR;
+		= AnimationSampler.Interpolation.LINEAR;
 
 	@GraphChild private input: Link<AnimationSampler, Accessor> = null;
 	@GraphChild private output: Link<AnimationSampler, Accessor> = null;
@@ -63,6 +63,20 @@ export class AnimationSampler extends Property {
 		if (other.output) this.setOutput(resolve(other.output.getChild()));
 
 		return this;
+	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
+
+	/** Interpolation method. */
+	public static Interpolation: Record<string, GLTF.AnimationSamplerInterpolation> = {
+		/** Animated values are linearly interpolated between keyframes. */
+		LINEAR: 'LINEAR',
+		/** Animated values remain constant from one keyframe until the next keyframe. */
+		STEP: 'STEP',
+		/** Animated values are interpolated according to given cubic spline tangents. */
+		CUBICSPLINE: 'CUBICSPLINE',
 	}
 
 	/** Interpolation mode: `STEP`, `LINEAR`, or `CUBICSPLINE`. */

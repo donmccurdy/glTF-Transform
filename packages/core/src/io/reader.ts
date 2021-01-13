@@ -4,7 +4,7 @@ import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../const
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
-import { Accessor } from '../properties';
+import { Accessor, AnimationSampler, Camera } from '../properties';
 import { GLTF } from '../types/gltf';
 import { FileUtils, ImageUtils, Logger } from '../utils';
 import { ReaderContext } from './reader-context';
@@ -315,7 +315,7 @@ export class GLTFReader {
 
 			if (cameraDef.extras) camera.setExtras(cameraDef.extras);
 
-			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
+			if (cameraDef.type === Camera.Type.PERSPECTIVE) {
 				camera
 					.setZNear(cameraDef.perspective.znear)
 					.setZFar(cameraDef.perspective.zfar)
@@ -424,7 +424,7 @@ export class GLTFReader {
 					.setInput(context.accessors[samplerDef.input])
 					.setOutput(context.accessors[samplerDef.output])
 					.setInterpolation(
-						samplerDef.interpolation || GLTF.AnimationSamplerInterpolation.LINEAR
+						samplerDef.interpolation || AnimationSampler.Interpolation.LINEAR
 					);
 
 				if (samplerDef.extras) sampler.setExtras(samplerDef.extras);
@@ -528,22 +528,22 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
 			const byteOffset = accessorByteOffset + i * byteStride + j * componentSize;
 			let value: number;
 			switch (accessorDef.componentType) {
-				case GLTF.AccessorComponentType.FLOAT:
+				case Accessor.ComponentType.FLOAT:
 					value = view.getFloat32(byteOffset, true);
 					break;
-				case GLTF.AccessorComponentType.UNSIGNED_INT:
+				case Accessor.ComponentType.UNSIGNED_INT:
 					value = view.getUint32(byteOffset, true);
 					break;
-				case GLTF.AccessorComponentType.UNSIGNED_SHORT:
+				case Accessor.ComponentType.UNSIGNED_SHORT:
 					value = view.getUint16(byteOffset, true);
 					break;
-				case GLTF.AccessorComponentType.UNSIGNED_BYTE:
+				case Accessor.ComponentType.UNSIGNED_BYTE:
 					value = view.getUint8(byteOffset);
 					break;
-				case GLTF.AccessorComponentType.SHORT:
+				case Accessor.ComponentType.SHORT:
 					value = view.getInt16(byteOffset, true);
 					break;
-				case GLTF.AccessorComponentType.BYTE:
+				case Accessor.ComponentType.BYTE:
 					value = view.getInt8(byteOffset);
 					break;
 				default:
@@ -580,17 +580,17 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): T
 	const start = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
 
 	switch (accessorDef.componentType) {
-		case GLTF.AccessorComponentType.FLOAT:
+		case Accessor.ComponentType.FLOAT:
 			return new Float32Array(resource, start, accessorDef.count * elementSize);
-		case GLTF.AccessorComponentType.UNSIGNED_INT:
+		case Accessor.ComponentType.UNSIGNED_INT:
 			return new Uint32Array(resource, start, accessorDef.count * elementSize);
-		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
+		case Accessor.ComponentType.UNSIGNED_SHORT:
 			return new Uint16Array(resource, start, accessorDef.count * elementSize);
-		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
+		case Accessor.ComponentType.UNSIGNED_BYTE:
 			return new Uint8Array(resource, start, accessorDef.count * elementSize);
-		case GLTF.AccessorComponentType.SHORT:
+		case Accessor.ComponentType.SHORT:
 			return new Int16Array(resource, start, accessorDef.count * elementSize);
-		case GLTF.AccessorComponentType.BYTE:
+		case Accessor.ComponentType.BYTE:
 			return new Int8Array(resource, start, accessorDef.count * elementSize);
 		default:
 			throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);

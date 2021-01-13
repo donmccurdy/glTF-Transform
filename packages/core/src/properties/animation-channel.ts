@@ -26,7 +26,7 @@ import { COPY_IDENTITY, Property } from './property';
  * 	.find((node) => node.getName() === 'Cog');
  *
  * const channel = doc.createAnimationChannel('cogRotation')
- * 	.setTargetPath(GLTF.AnimationChannelTargetPath.ROTATION)
+ * 	.setTargetPath('rotation')
  * 	.setTargetNode(node)
  * 	.setSampler(rotateSampler);
  * ```
@@ -50,6 +50,22 @@ export class AnimationChannel extends Property {
 
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
+
+	/** Name of the property to be modified by an animation channel. */
+	public static TargetPath: Record<string, GLTF.AnimationChannelTargetPath> = {
+		TRANSLATION: 'translation',
+		ROTATION: 'rotation',
+		SCALE: 'scale',
+		WEIGHTS: 'weights',
+	}
+
+	/**********************************************************************************************
+	 * Properties.
+	 */
 
 	/**
 	 * Path (property) animated on the target {@link Node}. Supported values include:

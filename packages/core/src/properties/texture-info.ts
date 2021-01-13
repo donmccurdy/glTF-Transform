@@ -30,31 +30,8 @@ export class TextureInfo extends ExtensibleProperty {
 	// Sampler properties are also attached to TextureInfo, for simplicity.
 	private _magFilter: GLTF.TextureMagFilter = null;
 	private _minFilter: GLTF.TextureMinFilter = null;
-	private _wrapS: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
-	private _wrapT: GLTF.TextureWrapMode = GLTF.TextureWrapMode.REPEAT;
-
-	/** UV wrapping mode. Values correspond to WebGL enums. */
-	public static TextureWrapMode = {
-		CLAMP_TO_EDGE: GLTF.TextureWrapMode.CLAMP_TO_EDGE,
-		MIRRORED_REPEAT: GLTF.TextureWrapMode.MIRRORED_REPEAT,
-		REPEAT: GLTF.TextureWrapMode.REPEAT,
-	}
-
-	/** Magnification filter. Values correspond to WebGL enums. */
-	public static TextureMagFilter = {
-		NEAREST: GLTF.TextureMagFilter.NEAREST,
-		LINEAR: GLTF.TextureMagFilter.LINEAR,
-	}
-
-	/** Minification filter. Values correspond to WebGL enums. */
-	public static TextureMinFilter = {
-		NEAREST: GLTF.TextureMinFilter.NEAREST,
-		LINEAR: GLTF.TextureMinFilter.LINEAR,
-		NEAREST_MIPMAP_NEAREST: GLTF.TextureMinFilter.NEAREST_MIPMAP_NEAREST,
-		LINEAR_MIPMAP_NEAREST: GLTF.TextureMinFilter.LINEAR_MIPMAP_NEAREST,
-		NEAREST_MIPMAP_LINEAR: GLTF.TextureMinFilter.NEAREST_MIPMAP_LINEAR,
-		LINEAR_MIPMAP_LINEAR: GLTF.TextureMinFilter.LINEAR_MIPMAP_LINEAR,
-	}
+	private _wrapS: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
+	private _wrapT: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -66,6 +43,33 @@ export class TextureInfo extends ExtensibleProperty {
 		this._wrapT = other._wrapT;
 
 		return this;
+	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
+
+	/** UV wrapping mode. Values correspond to WebGL enums. */
+	public static WrapMode: Record<string, GLTF.TextureWrapMode> = {
+		CLAMP_TO_EDGE: 33071,
+		MIRRORED_REPEAT: 33648,
+		REPEAT: 10497,
+	}
+
+	/** Magnification filter. Values correspond to WebGL enums. */
+	public static MagFilter: Record<string, GLTF.TextureMagFilter> = {
+		NEAREST: 9728,
+		LINEAR: 9729,
+	}
+
+	/** Minification filter. Values correspond to WebGL enums. */
+	public static MinFilter: Record<string, GLTF.TextureMinFilter> = {
+		NEAREST: 9728,
+		LINEAR: 9729,
+		NEAREST_MIPMAP_NEAREST: 9984,
+		LINEAR_MIPMAP_NEAREST: 9985,
+		NEAREST_MIPMAP_LINEAR: 9986,
+		LINEAR_MIPMAP_LINEAR: 9987,
 	}
 
 	/**********************************************************************************************

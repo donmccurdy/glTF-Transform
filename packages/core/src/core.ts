@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-namespace */
+
 export { Document, Transform } from './document';
+export { JSONDocument } from './json-document';
 export { Extension } from './extension';
 export { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Property, Material, Mesh, Node, Primitive, PrimitiveTarget, Root, Scene, Skin, Texture, TextureInfo, AttributeLink, IndexLink, COPY_IDENTITY } from './properties';
 export { Graph, GraphChild, GraphChildList, Link } from './graph/';

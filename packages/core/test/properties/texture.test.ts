@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, NodeIO, TextureInfo } from '../../';
+import { Document, JSONDocument, NodeIO, TextureInfo } from '../../';
 
 test('@gltf-transform/core::texture | read', t => {
 	const jsonDoc = {
@@ -31,7 +31,7 @@ test('@gltf-transform/core::texture | read', t => {
 	};
 
 	const io = new NodeIO();
-	const doc = io.readJSON(jsonDoc);
+	const doc = io.readJSON(jsonDoc as unknown as JSONDocument);
 	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
@@ -63,7 +63,7 @@ test('@gltf-transform/core::texture | write', t => {
 	doc.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
-		.setWrapS(TextureInfo.TextureWrapMode.CLAMP_TO_EDGE);
+		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = new NodeIO();
 	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});

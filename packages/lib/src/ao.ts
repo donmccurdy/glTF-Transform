@@ -1,9 +1,11 @@
 import * as geoaoNamespace from 'geo-ambient-occlusion';
 import * as reglNamespace from 'regl';
-import { Document, GLTF, Primitive, Transform } from '@gltf-transform/core';
+import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = 'ao';
+// eslint-disable-next-line @typescript-eslint/ban-types
 const geoao = geoaoNamespace['default'] as Function;
+// eslint-disable-next-line @typescript-eslint/ban-types
 const REGL = reglNamespace['default'] as Function;
 
 interface GLFactory {
@@ -98,7 +100,7 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 			const buffer = doc.getRoot().listBuffers()[0] || doc.createBuffer('');
 			const uv2 = doc.createAccessor('uv2', buffer)
 			.setArray(uv2Data)
-			.setType(GLTF.AccessorType.VEC2);
+			.setType(Accessor.Type.VEC2);
 
 			primitive.setAttribute('TEXCOORD_1', uv2);
 			if (!primitive.getAttribute['TEXCOORD_0']) {
