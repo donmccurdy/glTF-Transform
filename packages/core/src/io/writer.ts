@@ -2,7 +2,7 @@ import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, AttributeLink, IndexLink, Property } from '../properties';
+import { Accessor, AnimationSampler, AttributeLink, Camera, IndexLink, Material, Property } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger } from '../utils';
 import { UniqueURIGenerator, WriterContext } from './writer-context';
@@ -161,22 +161,22 @@ export class GLTFWriter {
 							i * byteStride + vertexByteOffset + j * componentSize;
 						const value = array[i * elementSize + j];
 						switch (componentType) {
-							case GLTF.AccessorComponentType.FLOAT:
+							case Accessor.ComponentType.FLOAT:
 								view.setFloat32(viewByteOffset, value, true);
 								break;
-							case GLTF.AccessorComponentType.BYTE:
+							case Accessor.ComponentType.BYTE:
 								view.setInt8(viewByteOffset, value);
 								break;
-							case GLTF.AccessorComponentType.SHORT:
+							case Accessor.ComponentType.SHORT:
 								view.setInt16(viewByteOffset, value, true);
 								break;
-							case GLTF.AccessorComponentType.UNSIGNED_BYTE:
+							case Accessor.ComponentType.UNSIGNED_BYTE:
 								view.setUint8(viewByteOffset, value);
 								break;
-							case GLTF.AccessorComponentType.UNSIGNED_SHORT:
+							case Accessor.ComponentType.UNSIGNED_SHORT:
 								view.setUint16(viewByteOffset, value, true);
 								break;
-							case GLTF.AccessorComponentType.UNSIGNED_INT:
+							case Accessor.ComponentType.UNSIGNED_INT:
 								view.setUint32(viewByteOffset, value, true);
 								break;
 							default:
@@ -398,7 +398,7 @@ export class GLTFWriter {
 			// Program state & blending.
 
 			materialDef.alphaMode = material.getAlphaMode();
-			if (material.getAlphaMode() === GLTF.MaterialAlphaMode.MASK) {
+			if (material.getAlphaMode() === Material.AlphaMode.MASK) {
 				materialDef.alphaCutoff = material.getAlphaCutoff();
 			}
 			materialDef.doubleSided = material.getDoubleSided();
@@ -525,7 +525,7 @@ export class GLTFWriter {
 		json.cameras = root.listCameras().map((camera, index) => {
 			const cameraDef = context.createPropertyDef(camera) as GLTF.ICamera;
 			cameraDef.type = camera.getType();
-			if (cameraDef.type === GLTF.CameraType.PERSPECTIVE) {
+			if (cameraDef.type === Camera.Type.PERSPECTIVE) {
 				cameraDef.perspective = {
 					znear: camera.getZNear(),
 					zfar: camera.getZFar(),

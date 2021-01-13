@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Accessor, Document, GLTF } from '@gltf-transform/core';
+import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { unweld } from '../';
 
 test('@gltf-transform/lib::unweld', async t => {
@@ -31,14 +31,14 @@ test('@gltf-transform/lib::unweld', async t => {
 	const prim1 = doc.createPrimitive()
 		.setIndices(indices1)
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES);
+		.setMode(Primitive.Mode.TRIANGLES);
 	const prim2 = doc.createPrimitive()
 		.setIndices(indices2)
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES);
+		.setMode(Primitive.Mode.TRIANGLES);
 	const prim3 = doc.createPrimitive()
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLE_FAN);
+		.setMode(Primitive.Mode.TRIANGLE_FAN);
 	doc.createMesh()
 		.addPrimitive(prim1)
 		.addPrimitive(prim2)

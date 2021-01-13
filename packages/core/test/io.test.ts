@@ -24,7 +24,7 @@ const SAMPLE_GLTF = {
 	scenes: [{name: 'Default Scene'}],
 };
 
-function mockFetch(response: object): void {
+function mockFetch(response: unknown): void {
 	global['fetch'] = (): Promise<unknown> => Promise.resolve(response);
 }
 

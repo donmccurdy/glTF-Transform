@@ -1,8 +1,9 @@
 import Table from 'cli-table';
+import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
 
-export function inspect (jsonDoc, io, logger): void {
+export function inspect (jsonDoc: JSONDocument, io: NodeIO | WebIO, logger: Logger): void {
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
 	const extensionsRequired = jsonDoc.json.extensionsRequired || [];

@@ -1,6 +1,6 @@
 import { Extension, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants';
-import { Light, LightType } from './light';
+import { Light } from './light';
 
 const NAME = KHR_LIGHTS_PUNCTUAL;
 
@@ -74,7 +74,7 @@ export class LightsPunctual extends Extension {
 
 			if (light.getName()) lightDef['name'] = light.getName();
 
-			if (light.getType() === LightType.SPOT) {
+			if (light.getType() === Light.Type.SPOT) {
 				lightDef['innerConeAngle'] = light.getInnerConeAngle();
 				lightDef['outerConeAngle'] = light.getOuterConeAngle();
 			}

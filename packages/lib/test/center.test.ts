@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF } from '@gltf-transform/core';
+import { Accessor, Document } from '@gltf-transform/core';
 import { bounds, center } from '../';
 
 test('@gltf-transform/lib::center', async t => {
@@ -9,7 +9,7 @@ test('@gltf-transform/lib::center', async t => {
 	const doc = new Document();
 	const position = doc.createAccessor()
 		.setArray(new Float32Array([0, 0, 0, 1, 1, 1]))
-		.setType(GLTF.AccessorType.VEC3);
+		.setType(Accessor.Type.VEC3);
 	const prim = doc.createPrimitive()
 		.setAttribute('POSITION', position);
 	const mesh = doc.createMesh().addPrimitive(prim);

@@ -36,7 +36,7 @@ export class Camera extends ExtensibleProperty {
 
 	// Common.
 
-	private _type: GLTF.CameraType = GLTF.CameraType.PERSPECTIVE;
+	private _type: GLTF.CameraType = Camera.Type.PERSPECTIVE;
 	private _znear: number;
 	private _zfar: number;
 
@@ -62,6 +62,17 @@ export class Camera extends ExtensibleProperty {
 		this._ymag = other._ymag;
 
 		return this;
+	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
+
+	public static Type: Record<string, GLTF.CameraType> = {
+		/** A perspective camera representing a perspective projection matrix. */
+		PERSPECTIVE: 'perspective',
+		/** An orthographic camera representing an orthographic projection matrix. */
+		ORTHOGRAPHIC: 'orthographic',
 	}
 
 	/**********************************************************************************************

@@ -10,7 +10,7 @@ import { AOOptions, CenterOptions, DedupOptions, PartitionOptions, ResampleOptio
 import { inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
-import { validate } from './validate';
+import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
 
@@ -48,7 +48,7 @@ program
 	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
 		io.setLogger(logger as unknown as Logger);
-		inspect(io.readAsJSON(args.input as string), io, logger);
+		inspect(io.readAsJSON(args.input as string), io, logger as unknown as Logger);
 	});
 
 // VALIDATE
@@ -65,7 +65,7 @@ program
 		default: [],
 	})
 	.action(({args, options, logger}) => {
-		validate(args.input as string, options, logger as unknown as Logger);
+		validate(args.input as string, options as unknown as ValidateOptions, logger as unknown as Logger);
 	});
 
 program.command('', '\n\n──────────────────── 📦 PACKAGE ─────────────────────');

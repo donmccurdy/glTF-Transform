@@ -1,9 +1,11 @@
 import * as getPixelsNamespace from 'get-pixels';
 import * as ndarray from 'ndarray';
 import * as savePixelsNamespace from 'save-pixels';
-import { BufferUtils, GLTF, Primitive, Texture } from '@gltf-transform/core';
+import { BufferUtils, Primitive, Texture } from '@gltf-transform/core';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const getPixels = getPixelsNamespace['default'] as Function;
+// eslint-disable-next-line @typescript-eslint/ban-types
 const savePixels = savePixelsNamespace['default'] as Function;
 
 /** Maps pixels from source to target textures, with a per-pixel callback. */
@@ -15,6 +17,7 @@ export async function rewriteTexture(
 	if (!source) return null;
 
 	const pixels: ndarray = await new Promise((resolve, reject) => {
+		// eslint-disable-next-line @typescript-eslint/ban-types
 		(getPixels as unknown as Function)(
 			Buffer.from(source.getImage()),
 			source.getMimeType(),
@@ -42,22 +45,22 @@ export async function rewriteTexture(
 export function getGLPrimitiveCount(prim: Primitive): number {
 	// Reference: https://www.khronos.org/opengl/wiki/Primitive
 	switch (prim.getMode()) {
-		case GLTF.MeshPrimitiveMode.POINTS:
+		case Primitive.Mode.POINTS:
 			return prim.getAttribute('POSITION').getCount();
-		case GLTF.MeshPrimitiveMode.LINES:
+		case Primitive.Mode.LINES:
 			return prim.getIndices()
 				? prim.getIndices().getCount() / 2
 				: prim.getAttribute('POSITION').getCount() / 2;
-		case GLTF.MeshPrimitiveMode.LINE_LOOP:
+		case Primitive.Mode.LINE_LOOP:
 			return prim.getAttribute('POSITION').getCount();
-		case GLTF.MeshPrimitiveMode.LINE_STRIP:
+		case Primitive.Mode.LINE_STRIP:
 			return prim.getAttribute('POSITION').getCount() - 1;
-		case GLTF.MeshPrimitiveMode.TRIANGLES:
+		case Primitive.Mode.TRIANGLES:
 			return prim.getIndices()
 				? prim.getIndices().getCount() / 3
 				: prim.getAttribute('POSITION').getCount() / 3;
-		case GLTF.MeshPrimitiveMode.TRIANGLE_STRIP:
-		case GLTF.MeshPrimitiveMode.TRIANGLE_FAN:
+		case Primitive.Mode.TRIANGLE_STRIP:
+		case Primitive.Mode.TRIANGLE_FAN:
 			return prim.getAttribute('POSITION').getCount() - 2;
 		default:
 			throw new Error('Unexpected mode: ' + prim.getMode());

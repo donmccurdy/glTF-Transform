@@ -1,4 +1,4 @@
-import { Accessor, Document, Extension, GLB_BUFFER, GLTF, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
@@ -221,7 +221,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 			if (!prim.getIndices()) {
 				excluded.add(prim);
 				logger.warn(`[${NAME}] Skipping Draco compression on non-indexed primitive.`);
-			} else if (prim.getMode() !== GLTF.MeshPrimitiveMode.TRIANGLES) {
+			} else if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
 				excluded.add(prim);
 				logger.warn(`[${NAME}] Skipping Draco compression on non-TRIANGLES primitive.`);
 			} else {

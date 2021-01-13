@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF } from '@gltf-transform/core';
+import { Accessor, Document } from '@gltf-transform/core';
 import { colorspace } from '../';
 
 test('@gltf-transform/lib::colorspace', t => {
@@ -18,8 +18,8 @@ test('@gltf-transform/lib::colorspace', t => {
 
 	const accessor1 = doc.createAccessor('#1');
 	const accessor2 = doc.createAccessor('#2');
-	accessor1.setType(GLTF.AccessorType.VEC3).setArray(new Float32Array([...input, ...input]));
-	accessor2.setType(GLTF.AccessorType.VEC4).setArray(new Float32Array([...input, 0.5]));
+	accessor1.setType(Accessor.Type.VEC3).setArray(new Float32Array([...input, ...input]));
+	accessor2.setType(Accessor.Type.VEC4).setArray(new Float32Array([...input, 0.5]));
 
 	primitive1
 		.setAttribute('COLOR_0', accessor1)

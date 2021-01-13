@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Document, GLTF, NodeIO } from '../../';
+import { Accessor, Document, NodeIO } from '../../';
 
 test('@gltf-transform/core::animation', t => {
 	const doc = new Document();
@@ -12,7 +12,7 @@ test('@gltf-transform/core::animation', t => {
 
 	const input = doc.createAccessor('times')
 		.setArray(new Float32Array([0, 1, 2]))
-		.setType(GLTF.AccessorType.SCALAR)
+		.setType(Accessor.Type.SCALAR)
 		.setBuffer(buffer);
 
 	const output = doc.createAccessor('values')
@@ -21,17 +21,17 @@ test('@gltf-transform/core::animation', t => {
 			0, 1, 0,
 			0, 0, 0,
 		]))
-		.setType(GLTF.AccessorType.VEC3)
+		.setType(Accessor.Type.VEC3)
 		.setBuffer(buffer);
 
 	const sampler = doc.createAnimationSampler()
 		.setInput(input)
 		.setOutput(output)
-		.setInterpolation(GLTF.AnimationSamplerInterpolation.LINEAR);
+		.setInterpolation('LINEAR');
 
 	const channel = doc.createAnimationChannel()
 		.setTargetNode(ball)
-		.setTargetPath(GLTF.AnimationChannelTargetPath.TRANSLATION)
+		.setTargetPath('translation')
 		.setSampler(sampler);
 
 	doc.createAnimation('BallBounce')
@@ -108,7 +108,7 @@ test('@gltf-transform/core::animationChannel | copy', t => {
 test('@gltf-transform/core::animationSampler | copy', t => {
 	const doc = new Document();
 	const a = doc.createAnimationSampler('MySampler')
-		.setInterpolation(GLTF.AnimationSamplerInterpolation.STEP)
+		.setInterpolation('STEP')
 		.setInput(doc.createAccessor())
 		.setOutput(doc.createAccessor());
 	const b = doc.createAnimationSampler().copy(a);

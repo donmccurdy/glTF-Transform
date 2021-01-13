@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import * as test from 'tape';
-import { Accessor, Document, GLTF } from '@gltf-transform/core';
+import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
 test('@gltf-transform/lib::weld | tolerance=0', async t => {
@@ -24,11 +24,11 @@ test('@gltf-transform/lib::weld | tolerance=0', async t => {
 		]));
 	const prim1 = doc.createPrimitive()
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES);
+		.setMode(Primitive.Mode.TRIANGLES);
 	const prim2 = doc.createPrimitive()
 		.setIndices(indices)
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES);
+		.setMode(Primitive.Mode.TRIANGLES);
 	doc.createMesh()
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
@@ -85,7 +85,7 @@ test('@gltf-transform/lib::weld | tolerance>0', async t => {
 
 	const prim1 = doc.createPrimitive()
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES);
+		.setMode(Primitive.Mode.TRIANGLES);
 
 	const prim2Indices = doc.createAccessor()
 		.setArray(new Uint32Array([
@@ -97,7 +97,7 @@ test('@gltf-transform/lib::weld | tolerance>0', async t => {
 	const prim2 = doc.createPrimitive()
 		.setIndices(prim2Indices)
 		.setAttribute('POSITION', position)
-		.setMode(GLTF.MeshPrimitiveMode.TRIANGLES)
+		.setMode(Primitive.Mode.TRIANGLES)
 		.addTarget(prim2Target);
 	doc.createMesh()
 		.addPrimitive(prim1)

@@ -47,7 +47,7 @@ export class Primitive extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
 	/** @hidden GPU draw mode. */
-	private _mode: GLTF.MeshPrimitiveMode = GLTF.MeshPrimitiveMode.TRIANGLES;
+	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
 
 	@GraphChild private material: Link<Primitive, Material> = null;
 	@GraphChild private indices: Link<Primitive, Accessor> = null;
@@ -72,6 +72,24 @@ export class Primitive extends ExtensibleProperty {
 
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
+
+	public static Mode: Record<string, GLTF.MeshPrimitiveMode> = {
+		POINTS: 0,
+		LINES: 1,
+		LINE_LOOP: 2,
+		LINE_STRIP: 3,
+		TRIANGLES: 4,
+		TRIANGLE_STRIP: 5,
+		TRIANGLE_FAN: 6,
+	}
+
+	/**********************************************************************************************
+	 * Primitive data.
+	 */
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
 	public getIndices(): Accessor {
@@ -139,6 +157,10 @@ export class Primitive extends ExtensibleProperty {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * Mode.
+	 */
+
 	/**
 	 * Returns the GPU draw mode (`TRIANGLES`, `LINES`, `POINTS`...) as a WebGL enum value.
 	 *
@@ -157,6 +179,10 @@ export class Primitive extends ExtensibleProperty {
 		this._mode = mode;
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * Morph targets.
+	 */
 
 	/** Lists all morph targets associated with the primitive. */
 	public listTargets(): PrimitiveTarget[] {
