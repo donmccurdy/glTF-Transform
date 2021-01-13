@@ -12,6 +12,7 @@
 **Breaking changes:**
 
 - Stricter type checking.
+- Enum values moved from `GLTF.*` to static properties of the relevant class. Primitive enum values are now allowed.
 
 ## v0.8
 
