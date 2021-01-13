@@ -12,7 +12,7 @@ const DEFAULT_OPTIONS: PartitionOptions =  {
 	meshes: true,
 };
 
-const partition = (options: PartitionOptions): Transform => {
+const partition = (options: PartitionOptions = DEFAULT_OPTIONS): Transform => {
 
 	options = {...DEFAULT_OPTIONS, ...options};
 

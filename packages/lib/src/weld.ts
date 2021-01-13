@@ -1,9 +1,9 @@
-import { Accessor, Document, Logger, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
+import { Accessor, Document, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils';
 
 const NAME = 'weld';
 
-export interface WeldOptions {tolerance: number}
+export interface WeldOptions {tolerance?: number}
 
 const DEFAULT_OPTIONS: WeldOptions = {tolerance: 1e-4};
 

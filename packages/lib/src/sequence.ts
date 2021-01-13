@@ -23,7 +23,7 @@ const DEFAULT_OPTIONS: SequenceOptions = {
  * - **pattern**: Pattern (regex) used to filter nodes for the sequence. Required.
  * - **sort**: Whether to sort the nodes by name, or use original order. Default true.
  */
-export function sequence (options: SequenceOptions): Transform {
+export function sequence (options: SequenceOptions = DEFAULT_OPTIONS): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void => {
