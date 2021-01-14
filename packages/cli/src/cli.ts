@@ -44,7 +44,13 @@ program.command('', '\n\n──────────────────�
 // INSPECT
 program
 	.command('inspect', 'Inspect the contents of the model')
-	.help('Inspect the contents of the model.')
+	.help(`
+Inspect the contents of the model, printing a table with properties and
+statistics for scenes, meshes, materials, textures, and animations contained
+by the file. This data is useful for understanding how much of a file's size
+is comprised of geometry vs. textures, which extensions are needed when loading
+the file, and which material properties are being used.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
 		io.setLogger(logger as unknown as Logger);
@@ -54,7 +60,22 @@ program
 // VALIDATE
 program
 	.command('validate', 'Validate the model against the glTF spec')
-	.help('Validate the model with official glTF validator.')
+	.help(`
+Validate the model with official glTF validator. The validator detects whether
+a file conforms correctly to the glTF specification, and is useful for
+debugging issues with a model. Validation errors typically suggest a problem
+in the authoring process, and can be reported as bugs on the software used to
+export the file. Certain lower-priority issues are not technically invalid, but
+may indicate an unintended situation in the file, like unused data not attached
+to any particular scene.
+
+For more details about the official validation suite used here, see:
+https://github.com/KhronosGroup/glTF-Validator
+
+Example:
+
+  ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.option('--limit <limit>', 'Limit number of issues to display', {
 		validator: program.NUMBER,
@@ -78,7 +99,24 @@ program.command('', '\n\n──────────────────�
 program
 	.command('copy', 'Copy the model with minimal changes')
 	.alias('cp')
-	.help('Copy the model with minimal changes.')
+	.help(`
+Copy the model from <input> to <output> with minimal changes. Unlike filesystem
+\`cp\`, this command does parse the file into glTF-Transform's internal
+representation before serializing it to disk again. No other intentional
+changes are made, so copying a model can be a useful first step to confirm that
+glTF-Transform is reading and writing the model correctly when debugging issues
+in a larger script doing more complex processing of the file. Copying may also
+be used to ensure consistent data layout across glTF files from different
+exporters, e.g. if your engine always requires interleaved vertex attributes.
+
+While vertex data remains byte-for-byte the same before and after copying, and
+scene, node, material, and other properties are also preserved losslessly,
+certain aspects of data layout may change slightly with this process:
+
+- Vertex attributes within a mesh are interleaved.
+- Accessors are organized into buffer views according to usage.
+- Draco compression is removed to avoid a lossy decompress/compress round trip.
+`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) => Session.create(io, logger, args.input, args.output).transform());
@@ -86,11 +124,15 @@ program
 // MERGE
 program
 	.command('merge', 'Merge two or more models into one')
-	.help(''
-		+ 'Merge two or more models into one, each in a separate Scene.\n\n'
-		+ 'Usage:\n\n'
-		+ '  ▸ gltf-transform merge a.glb b.glb c.glb output.glb'
-	)
+	.help(`
+Merge two or more models into one, each in a separate Scene. Optionally, the
+binary data for each model may be kept in a separate buffer with the
+--partition flag.
+
+Example:
+
+  ▸ gltf-transform merge a.glb b.glb c.glb output.glb
+	`.trim())
 	.argument('<path...>', `${INPUT_DESC}(s). Final path is used to write output.`)
 	.option(
 		'--partition',
@@ -112,7 +154,12 @@ program
 // PARTITION
 program
 	.command('partition', 'Partition binary data into separate .bin files')
-	.help('Partition binary data for meshes or animations into separate .bin files.')
+	.help(`
+Partition binary data for meshes or animations into separate .bin files. In
+engines that support lazy-loading resources within glTF files, this allows
+restructuring the data to minimize initial load time, fetching additional
+resources as needed. Partitioning is supported only for .gltf, not .glb, files.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--animations', 'Partition each animation into a separate .bin file', {
@@ -132,8 +179,11 @@ program
 program
 	.command('weld', 'Index geometry and optionally merge similar vertices')
 	.help(`
-Index geometry and optionally merge similar vertices. With --tolerance=0,
-geometry is indexed in place, without merging.`.trim())
+Index geometry and optionally merge similar vertices. When merged and indexed,
+data is shared more efficiently between vertices. File size can be reduced, and
+the GPU can sometimes use the vertex cache more efficiently. With --tolerance=0,
+geometry is indexed in place, without merging.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--tolerance', 'Per-attribute tolerance to merge similar vertices', {
@@ -148,7 +198,12 @@ geometry is indexed in place, without merging.`.trim())
 // UNWELD
 program
 	.command('unweld', 'De-index geometry, disconnecting any shared vertices')
-	.help('De-index geometry, disconnecting any shared vertices.')
+	.help(`
+De-index geometry, disconnecting any shared vertices. This tends to increase
+the file size of the geometry and decrease efficiency, and so is not
+recommended unless disconnected vertices ("vertex soup") are required for some
+paricular software application.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, options, logger}) =>
@@ -159,7 +214,17 @@ program
 // RESAMPLE
 program
 	.command('resample', 'Resample animations, losslessly deduplicating keyframes')
-	.help('Resample animations, losslessly deduplicating keyframes.')
+	.help(`
+Resample animations, losslessly deduplicating keyframes. Exporters sometimes
+need to "bake" animations, writing data for 20-30 frames per second, in order
+to correctly represent IK constraints and other animation techniques. These
+additional keyframes are often redundant — particularly with morph targets —
+as engines can interpolate animation at 60–120 FPS even with sparse keyframes.
+
+The resampling process removes redundant keyframes from animations using STEP
+and LINEAR interpolation. Resampling is nearly lossless, with configurable
+--tolerance, and should have no visible effect on animation playback.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--tolerance', 'Per-value tolerance to merge similar keyframes', {
@@ -176,14 +241,24 @@ program.command('', '\n\n──────────────────�
 // AMBIENT OCCLUSION
 program
 	.command('ao', 'Bake per-vertex ambient occlusion')
-	.help('Bake per-vertex ambient occlusion.')
+	.help(`
+Bake per-vertex ambient occlusion. Because AO is sampled only at vertices, this
+technique is not as realistic as AO baked in software like Blender. However,
+it's very compact (only a single 1x256 texture and a UV set are needed) and may
+look fine on certain models, particularly those with dense geometry or voxel
+styles.
+
+Higher values of --samples and --resolution will increase visual quality and
+require more time to complete, but the size of the resulting file will not
+be affected.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--resolution <n>', 'AO resolution', {
+	.option('--resolution <n>', 'Resolution used internally for sampling', {
 		validator: program.NUMBER,
 		default: 512,
 	})
-	.option('--samples <n>', 'Number of samples', {
+	.option('--samples <n>', 'Sample count', {
 		validator: program.NUMBER,
 		default: 500,
 	})
@@ -195,7 +270,18 @@ program
 // METALROUGH
 program
 	.command('metalrough', 'Convert materials from spec/gloss to metal/rough')
-	.help('Convert materials from spec/gloss to metal/rough.')
+	.help(`
+Convert materials from spec/gloss to metal/rough. In general, the metal/rough
+workflow is better supported, more compact, and more future-proof. All features
+of the spec/gloss workflow can be converted to metal/rough, as long as the
+KHR_materials_specular and KHR_materials_ior extensions are supported. When one
+or both of those extensions are not supported, metallic materials may require
+further adjustments after the conversion.
+
+This conversion rewrites spec/gloss textures, and the resulting textures may
+have less optimal compression than the original. Ideally, lossless PNG textures
+should be used as input, and then compressed after this conversion.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) =>
@@ -206,7 +292,16 @@ program
 // UNLIT
 program
 	.command('unlit', 'Convert materials from metal/rough to unlit')
-	.help('Convert materials to an unlit, shadeless model.')
+	.help(`
+Convert materials to an unlit, shadeless model. Unlit materials are not
+affected by scene lighting, and can be rendered very efficiently on less
+capable mobile devices. If device framerate is high when an object occupies a
+small part of the viewport, and low when that object fills the viewport, it's
+likely that the GPU is fragment shader bound, and a simpler material (such as
+an unlit material) may improve performance.
+
+Unlit materials are also helpful for non-physically-based visual styles.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) =>
@@ -217,7 +312,12 @@ program
 // CENTER
 program
 	.command('center', 'Centers the scene at the origin, or above/below it')
-	.help('Centers the scene at the origin, or above/below it.')
+	.help(`
+Centers the scene at the origin, or above/below it. When loading a model into
+a larger scene, or into an augmented reality context, it's often best to ensure
+the model's pivot is centered beneath the object. For objects meant to be
+attached a surface, like a ceiling fan, the pivot may be located above instead.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--pivot <pivot>', 'Method used to determine the scene pivot', {
@@ -232,7 +332,16 @@ program
 // SEQUENCE
 program
 	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
-	.help('Animate nodes\' visibilities as a flipboard sequence.')
+	.help(`
+Animate nodes' visibilities as a flipboard sequence. An example workflow
+would be to create a .glb containing one geometry for each frame of a complex
+animation that can't be represented as TRS, skinning, or morph targets. The
+sequence function generates a new animation, playing back each mesh matching
+the given pattern, at a specific framerate. Displaying a sequence of textures
+is also supported, but note that texture memory usage may be quite high and
+so this workflow is not a replacement for video playback.
+	`.trim())
+
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--name <name>', 'Name of new animation', {
@@ -262,7 +371,16 @@ program.command('', '\n\n──────────────────�
 // DEDUP
 program
 	.command('dedup', 'Deduplicate accessors and textures')
-	.help('Deduplicate accessors and textures.')
+	.help(`
+Deduplicate accessors and textures. Some exporters or pipeline processing may
+lead to multiple accessors or textures within a file containing redundant
+copies of the same information. This functions scans for these cases and
+merges the duplicates where possible, reducing file size. The process may be
+very slow on large files with many accessors.
+
+Deduplication early in a pipeline may also help other optimizations, like
+compression and instancing, to be more effective.
+	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
@@ -295,8 +413,8 @@ Both speed options affect the encoder's choice of algorithms. For example, a
 requirement for fast decoding may prevent the encoder from using the best
 compression methods even if the encoding speed is set to 0. In general, the
 faster of the two options limits the choice of features that can be used by the
-encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow the
-encoder to choose the optimal method out of the available features for the
+encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow
+the encoder to choose the optimal method out of the available features for the
 given --decodeSpeed.`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -341,7 +459,17 @@ given --decodeSpeed.`.trim())
 // GZIP
 program
 	.command('gzip', 'Compress the model with gzip')
-	.help('Compress the model with gzip.')
+	.help(`
+Compress the model with gzip. Gzip is a general-purpose file compression
+technique, not specific to glTF models. On the web, decompression is
+handled automatically by the web browser, without any intervention from the
+client application.
+
+When the model contains resources that are already effectively compressed, like
+JPEG textures or Draco geometry, gzip is unlikely to add much further benefit
+and can be skipped. Other compression strategies, like Meshopt and quantization,
+work best when combined with gzip.
+`)
 	.argument('<input>', INPUT_DESC)
 	.action(({args, logger}) => {
 		const inBuffer = fs.readFileSync(args.input as string);
