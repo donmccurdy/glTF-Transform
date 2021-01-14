@@ -356,7 +356,7 @@ A few notes about this extension:
 </details>
 
 <details>
-<summary><b>KHR_materials_volume</b></summary>
+<summary><b>KHR_materials_volume</b> <mark><i>(experimental)</i></mark></summary>
 
 - *Specification: [KHR_materials_volume](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_volume/)*
 - *Source: [packages/extensions/src/khr-materials-volume/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-volume)*
