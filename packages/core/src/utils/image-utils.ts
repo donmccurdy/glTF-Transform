@@ -17,7 +17,7 @@ const PNG_FRIED_CHUNK_NAME = 'CgBI';
  * @category Utilities
  */
 class ImageUtils {
-	/** Returns [conservative] estimate of the dimensions of the image. */
+	/** Returns the dimensions of the image. */
 	public static getSize (buffer: ArrayBuffer, mimeType: string): vec2 {
 		switch (mimeType) {
 			case 'image/png': return this._getSizePNG(buffer);
@@ -28,7 +28,11 @@ class ImageUtils {
 		}
 	}
 
-	/** Returns [conservative] estimate of the number of channels in the image. */
+	/**
+	 * Returns a conservative estimate of the number of channels in the image. For some image
+	 * formats, the method may return 4 indicating the possibility of an alpha channel, without
+	 * the ability to guarantee that an alpha channel is present.
+	 */
 	public static getChannels (buffer: ArrayBuffer, mimeType: string): number {
 		switch (mimeType) {
 			case 'image/png': return 4;
@@ -39,7 +43,7 @@ class ImageUtils {
 		}
 	}
 
-	/** Returns [conservative] estimate of the GPU memory required by this image. */
+	/** Returns a conservative estimate of the GPU memory required by this image. */
 	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number {
 		if (mimeType === 'image/ktx2') {
 			const view = new DataView(buffer);
