@@ -39,7 +39,7 @@ import { COPY_IDENTITY, Property } from './property';
  * const sampler = doc.createAnimationSampler('bounce')
  * 	.setInput(input)
  * 	.setOutput(output)
- * 	.setInterpolation(GLTF.AnimationSamplerInterpolation.LINEAR);
+ * 	.setInterpolation('LINEAR');
  * ```
  *
  * Reference

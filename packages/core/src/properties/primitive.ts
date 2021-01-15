@@ -77,13 +77,28 @@ export class Primitive extends ExtensibleProperty {
 	 * Static.
 	 */
 
+	/** Type of primitives to render. All valid values correspond to WebGL enums. */
 	public static Mode: Record<string, GLTF.MeshPrimitiveMode> = {
+		/** Draw single points. */
 		POINTS: 0,
+		/** Draw lines. Each vertex connects to the one after it. */
 		LINES: 1,
+		/**
+		 * Draw lines. Each set of two vertices is treated as a separate line segment.
+		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
+		 */
 		LINE_LOOP: 2,
+		/** Draw a connected group of line segments from the first vertex to the last,  */
 		LINE_STRIP: 3,
+		/** Draw triangles. Each set of three vertices creates a separate triangle. */
 		TRIANGLES: 4,
+		/** Draw a connected strip of triangles. */
 		TRIANGLE_STRIP: 5,
+		/**
+		 * Draw a connected group of triangles. Each vertex connects to the previous and the first
+		 * vertex in the fan.
+		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
+		 */
 		TRIANGLE_FAN: 6,
 	}
 

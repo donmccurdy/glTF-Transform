@@ -51,24 +51,35 @@ export class TextureInfo extends ExtensibleProperty {
 
 	/** UV wrapping mode. Values correspond to WebGL enums. */
 	public static WrapMode: Record<string, GLTF.TextureWrapMode> = {
+		/** */
 		CLAMP_TO_EDGE: 33071,
+		/** */
 		MIRRORED_REPEAT: 33648,
+		/** */
 		REPEAT: 10497,
 	}
 
 	/** Magnification filter. Values correspond to WebGL enums. */
 	public static MagFilter: Record<string, GLTF.TextureMagFilter> = {
+		/** */
 		NEAREST: 9728,
+		/** */
 		LINEAR: 9729,
 	}
 
 	/** Minification filter. Values correspond to WebGL enums. */
 	public static MinFilter: Record<string, GLTF.TextureMinFilter> = {
+		/** */
 		NEAREST: 9728,
+		/** */
 		LINEAR: 9729,
+		/** */
 		NEAREST_MIPMAP_NEAREST: 9984,
+		/** */
 		LINEAR_MIPMAP_NEAREST: 9985,
+		/** */
 		NEAREST_MIPMAP_LINEAR: 9986,
+		/** */
 		LINEAR_MIPMAP_LINEAR: 9987,
 	}
 

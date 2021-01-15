@@ -57,9 +57,13 @@ export class AnimationChannel extends Property {
 
 	/** Name of the property to be modified by an animation channel. */
 	public static TargetPath: Record<string, GLTF.AnimationChannelTargetPath> = {
+		/** Channel targets {@link Node.setTranslation}. */
 		TRANSLATION: 'translation',
+		/** Channel targets {@link Node.setRotation}. */
 		ROTATION: 'rotation',
+		/** Channel targets {@link Node.setScale}. */
 		SCALE: 'scale',
+		/** Channel targets {@link Node.setWeights}, affecting {@link PrimitiveTarget} weights. */
 		WEIGHTS: 'weights',
 	}
 

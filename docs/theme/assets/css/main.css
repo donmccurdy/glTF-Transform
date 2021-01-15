@@ -1799,6 +1799,27 @@ html.minimal .tsd-generator,
     margin: 0 3px 0 5px;
 }
 
+/** Enum styles are too sprawling. */
+.tsd-parent-kind-object-literal {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.tsd-parent-kind-object-literal .tsd-sources {
+    display: none;
+}
+
+.tsd-parent-kind-object-literal .tsd-signature.tsd-kind-icon {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.tsd-parent-kind-object-literal .tsd-comment.tsd-typography p {
+    margin-bottom: 0.3em;
+}
+
 blockquote {
   border-left: 6px solid #ccc;
   padding-left: 1em;

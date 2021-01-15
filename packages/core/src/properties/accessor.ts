@@ -19,32 +19,13 @@ import { COPY_IDENTITY } from './property';
  * `"VEC3"`, `"VEC4"`, `"MAT3"`, or `"MAT4"`. The element type can be determined with the
  * {@link getType}() method, and the number of elements in the accessor determine its
  * {@link getCount}(). The number of components in an element — e.g. 9 for `"MAT3"` — are its
- * {@link getElementSize}().
- *
- * | `type`     | Components |
- * |:----------:|:----------:|
- * | `"SCALAR"` | 1          |
- * | `"VEC2"`   | 2          |
- * | `"VEC3"`   | 3          |
- * | `"VEC4"`   | 4          |
- * | `"MAT2"`   | 4          |
- * | `"MAT3"`   | 9          |
- * | `"MAT4"`   | 16         |
+ * {@link getElementSize}(). See {@link Accessor.Type}.
  *
  * *Components* are the numeric values within an element — e.g. `.x` and `.y` for `"VEC2"`. Various
  * component types are available: `BYTE`, `UNSIGNED_BYTE`, `SHORT`, `UNSIGNED_SHORT`,
  * `UNSIGNED_INT`, and `FLOAT`. The component type can be determined with the
  * {@link getComponentType} method, and the number of bytes in each component determine its
- * {@link getComponentSize}. Component types are identified by WebGL enum values, below.
- *
- * | `componentType`         | Bytes |
- * |:-----------------------:|:-----:|
- * | `5120` (BYTE)           | 1     |
- * | `5121` (UNSIGNED_BYTE)  | 1     |
- * | `5122` (SHORT)          | 2     |
- * | `5123` (UNSIGNED_SHORT) | 2     |
- * | `5125` (UNSIGNED_INT)   | 4     |
- * | `5126` (FLOAT)          | 4     |
+ * {@link getComponentSize}. See {@link Accessor.ComponentType}.
  *
  * Usage:
  *
@@ -126,22 +107,53 @@ export class Accessor extends ExtensibleProperty {
 
 	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
 	public static Type: Record<string, GLTF.AccessorType> = {
+		/** Scalar, having 1 value per element. */
 		SCALAR: 'SCALAR',
+		/** 2-component vector, having 2 components per element. */
 		VEC2: 'VEC2',
+		/** 3-component vector, having 3 components per element. */
 		VEC3: 'VEC3',
+		/** 4-component vector, having 4 components per element. */
 		VEC4: 'VEC4',
+		/** 2x2 matrix, having 4 components per element. */
 		MAT2: 'MAT2',
+		/** 3x3 matrix, having 9 components per element. */
 		MAT3: 'MAT3',
+		/** 4x3 matrix, having 16 components per element. */
 		MAT4: 'MAT4',
 	}
 
 	/** Data type of the values composing each element in the accessor. */
 	public static ComponentType: Record<string, GLTF.AccessorComponentType> = {
+		/**
+		 * 1-byte signed integer, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array Int8Array}.
+		 */
 		BYTE: 5120,
+		/**
+		 * 1-byte unsigned integer, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array Uint8Array}.
+		 */
 		UNSIGNED_BYTE: 5121,
+		/**
+		 * 2-byte signed integer, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array Uint16Array}.
+		 */
 		SHORT: 5122,
+		/**
+		 * 2-byte unsigned integer, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array Uint16Array}.
+		 */
 		UNSIGNED_SHORT: 5123,
+		/**
+		 * 4-byte unsigned integer, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array Uint32Array}.
+		 */
 		UNSIGNED_INT: 5125,
+		/**
+		 * 4-byte floating point number, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array Float32Array}.
+		 */
 		FLOAT: 5126,
 	}
 
