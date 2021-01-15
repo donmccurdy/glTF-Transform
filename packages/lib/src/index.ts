@@ -6,6 +6,7 @@ export * from './dedup';
 export * from './inspect';
 export * from './metal-rough';
 export * from './partition';
+export * from './prune';
 export * from './resample';
 export * from './sequence';
 export * from './unweld';
