@@ -238,17 +238,40 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	// For each compressed Primitive, create a hash key identifying its accessors. Map each
 	// compressed Primitive and Accessor to this hash key.
 	const includedAccessors = new Map<Accessor, string>();
-	const primHashKeys = new Map<Primitive, string>();
+	const includedHashKeys = new Set<string>();
+	const primToHashKey = new Map<Primitive, string>();
 	for (const prim of Array.from(included)) {
-		const hashElements = [];
+		let hashKey = createHashKey(prim, accessorIndices);
 
-		hashElements.push(accessorIndices.get(prim.getIndices()));
-		for (const attribute of prim.listAttributes()) {
-			hashElements.push(accessorIndices.get(attribute));
+		// If accessors of an identical primitive have already been checked, we're done.
+		if (includedHashKeys.has(hashKey)) {
+			primToHashKey.set(prim, hashKey);
+			continue;
 		}
 
-		const hashKey = hashElements.sort().join('|');
-		primHashKeys.set(prim, hashKey);
+		// If any accessors are already in use, but the same hashKey hasn't been written, then we
+		// need to create copies of these accessors for the current encoded primitive. We can't
+		// reuse the same compressed accessor for two encoded primitives, because Draco might
+		// change the vertex count, change the vertex order, or cause other conflicts.
+		if (includedAccessors.has(prim.getIndices())) {
+			const dstIndices = prim.getIndices().clone();
+			accessorIndices.set(dstIndices, doc.getRoot().listAccessors().length - 1);
+			prim.swap(prim.getIndices(), dstIndices);
+		}
+		for (const attribute of prim.listAttributes()) {
+			if (includedAccessors.has(attribute)) {
+				const dstAttribute = attribute.clone();
+				accessorIndices.set(dstAttribute, doc.getRoot().listAccessors().length - 1);
+				prim.swap(attribute, dstAttribute);
+			}
+		}
+
+		// With conflicts resolved, compute the hash key again.
+		hashKey = createHashKey(prim, accessorIndices);
+
+		// Commit the primitive and its accessors to the hash key.
+		includedHashKeys.add(hashKey);
+		primToHashKey.set(prim, hashKey);
 		includedAccessors.set(prim.getIndices(), hashKey);
 		for (const attribute of prim.listAttributes()) {
 			includedAccessors.set(attribute, hashKey);
@@ -267,7 +290,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 
 	// For each compressed Primitive, ensure that Accessors are mapped only to the same hash key.
 	for (const prim of Array.from(included)) {
-		const hashKey = primHashKeys.get(prim);
+		const hashKey = primToHashKey.get(prim);
 		if (includedAccessors.get(prim.getIndices()) !== hashKey
 				|| prim.listAttributes().some((attr) => includedAccessors.get(attr) !== hashKey)) {
 			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`);
@@ -284,5 +307,16 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		}
 	}
 
-	return primHashKeys;
+	return primToHashKey;
+}
+
+function createHashKey(prim: Primitive, indexMap: Map<Accessor, number>): string {
+	const hashElements = [];
+
+	hashElements.push(indexMap.get(prim.getIndices()));
+	for (const attribute of prim.listAttributes()) {
+		hashElements.push(indexMap.get(attribute));
+	}
+
+	return hashElements.sort().join('|');
 }

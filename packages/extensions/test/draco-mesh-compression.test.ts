@@ -130,7 +130,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 		mode: Primitive.Mode.TRIANGLE_FAN,
 		indices: 2,
 		attributes: {POSITION: 1},
-	}, 'primitiveDef 2/4');
+	}, 'primitiveDef 2/2');
 	t.notOk(jsonDoc.json.extensionsUsed, 'omitted from extensionsUsed');
 	t.end();
 });
@@ -152,7 +152,33 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 		.addPrimitive(prim2);
 
 	const io = await createNodeIO();
-	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'fail on mixed indices');
+	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
+
+	// The two primitives have different indices, and must be encoded as entirely separate buffer
+	// views. The shared attribute accessor is cloned.
+	t.deepEquals(primitiveDefs[0], {
+		mode: Primitive.Mode.TRIANGLES,
+		indices: 0,
+		attributes: {POSITION: 1},
+		extensions: {
+			'KHR_draco_mesh_compression': {
+				bufferView: 0,
+				attributes: {POSITION: 0}
+			}
+		}
+	}, 'primitiveDef 1/2');
+	t.deepEquals(primitiveDefs[1], {
+		mode: Primitive.Mode.TRIANGLES,
+		indices: 2,
+		attributes: {POSITION: 3},
+		extensions: {
+			'KHR_draco_mesh_compression': {
+				bufferView: 1,
+				attributes: {POSITION: 0}
+			}
+		}
+	}, 'primitiveDef 2/2');
 	t.end();
 });
 
@@ -181,7 +207,33 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 		.addPrimitive(prim2);
 
 	const io = await createNodeIO();
-	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'fail on mixed attributes');
+	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
+
+	// The two primitives have different attributes, and must be encoded as entirely separate
+	// buffer views. The shared indices accessor is cloned.
+	t.deepEquals(primitiveDefs[0], {
+		mode: Primitive.Mode.TRIANGLES,
+		indices: 0,
+		attributes: {POSITION: 1},
+		extensions: {
+			'KHR_draco_mesh_compression': {
+				bufferView: 0,
+				attributes: {POSITION: 0}
+			}
+		}
+	}, 'primitiveDef 1/2');
+	t.deepEquals(primitiveDefs[1], {
+		mode: Primitive.Mode.TRIANGLES,
+		indices: 2,
+		attributes: {POSITION: 3, COLOR_0: 4},
+		extensions: {
+			'KHR_draco_mesh_compression': {
+				bufferView: 1,
+				attributes: {POSITION: 0, COLOR_0: 1}
+			}
+		}
+	}, 'primitiveDef 2/2');
 	t.end();
 });
 
