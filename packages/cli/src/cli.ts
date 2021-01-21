@@ -39,7 +39,7 @@ program
 	.version(require('../package.json').version)
 	.description('Commandline interface for the glTF-Transform SDK.');
 
-program.command('', '\n\n──────────────────── 🔎 INSPECT ─────────────────────');
+program.command('', '\n\n🔎 INSPECT ──────────────────────────────────────────');
 
 // INSPECT
 program
@@ -93,7 +93,7 @@ Example:
 		);
 	});
 
-program.command('', '\n\n──────────────────── 📦 PACKAGE ─────────────────────');
+program.command('', '\n\n📦 PACKAGE ──────────────────────────────────────────');
 
 // COPY
 program
@@ -175,6 +175,163 @@ resources as needed. Partitioning is supported only for .gltf, not .glb, files.
 			.transform(partition(options as PartitionOptions))
 	);
 
+// DEDUP
+program
+	.command('dedup', 'Deduplicate accessors and textures')
+	.help(`
+Deduplicate accessors and textures. Some exporters or pipeline processing may
+lead to multiple accessors or textures within a file containing redundant
+copies of the same information. This functions scans for these cases and
+merges the duplicates where possible, reducing file size. The process may be
+very slow on large files with many accessors.
+
+Deduplication early in a pipeline may also help other optimizations, like
+compression and instancing, to be more effective.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--accessors <accessors>', 'Remove duplicate accessors', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.option('--textures <textures>', 'Remove duplicate textures', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(dedup(options as unknown as DedupOptions))
+	);
+
+// PRUNE
+program
+	.command('prune', 'Removes unreferenced properties from the file')
+	.help(`
+Removes properties from the file if they are not referenced by a Scene. Helpful
+when cleaning up after complex workflows or a faulty exporter. This function
+may (conservatively) fail to identify some unused extension properties, such as
+lights, but it will not remove anything that is still in use, even if used by
+an extension. Animations are considered unused if they do not target any nodes
+that are children of a scene.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(prune(options as unknown as PruneOptions))
+	);
+
+// GZIP
+program
+	.command('gzip', 'Compress the model with lossless gzip')
+	.help(`
+Compress the model with gzip. Gzip is a general-purpose file compression
+technique, not specific to glTF models. On the web, decompression is
+handled automatically by the web browser, without any intervention from the
+client application.
+
+When the model contains resources that are already effectively compressed, like
+JPEG textures or Draco geometry, gzip is unlikely to add much further benefit
+and can be skipped. Other compression strategies, like Meshopt and quantization,
+work best when combined with gzip.
+`)
+	.argument('<input>', INPUT_DESC)
+	.action(({args, logger}) => {
+		const inBuffer = fs.readFileSync(args.input as string);
+		return gzip(inBuffer)
+			.then((outBuffer) => {
+				const fileName = args.input + '.gz';
+				const inSize = formatBytes(inBuffer.byteLength);
+				const outSize = formatBytes(outBuffer.byteLength);
+				fs.writeFileSync(fileName, outBuffer);
+				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
+			});
+	});
+
+program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
+
+// CENTER
+program
+	.command('center', 'Centers the scene at the origin, or above/below it')
+	.help(`
+Centers the scene at the origin, or above/below it. When loading a model into
+a larger scene, or into an augmented reality context, it's often best to ensure
+the model's pivot is centered beneath the object. For objects meant to be
+attached a surface, like a ceiling fan, the pivot may be located above instead.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--pivot <pivot>', 'Method used to determine the scene pivot', {
+		validator: ['center', 'above', 'below'],
+		default: 'center',
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(center({...options} as CenterOptions))
+	);
+
+program.command('', '\n\n🕋 GEOMETRY ─────────────────────────────────────────');
+
+// DRACO
+program
+	.command('draco', 'Compress mesh geometry with Draco')
+	.help(`
+Compress mesh geometry with the Draco library. This type of compression affects
+only geometry data — animation and textures are not compressed.
+
+Two compression methods are available: 'edgebreaker' and 'sequential'. The
+edgebreaker method will give higher compression in general, but changes the
+order of the model's vertices. To preserve index order, use sequential
+compression. When a mesh uses morph targets, or a high decoding speed is
+selected, sequential compression will automatically be chosen.
+
+Both speed options affect the encoder's choice of algorithms. For example, a
+requirement for fast decoding may prevent the encoder from using the best
+compression methods even if the encoding speed is set to 0. In general, the
+faster of the two options limits the choice of features that can be used by the
+encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow
+the encoder to choose the optimal method out of the available features for the
+given --decodeSpeed.`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--method <method>', 'Compression method.', {
+		validator: ['edgebreaker', 'sequential'],
+		default: 'edgebreaker',
+	})
+	.option('--encodeSpeed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
+	.option('--decodeSpeed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
+	.option('--quantizePosition <bits>', 'Quantization bits for POSITION, 1-16.', {
+		validator: program.NUMBER,
+		default: 14,
+	})
+	.option('--quantizeNormal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+		validator: program.NUMBER,
+		default: 10,
+	})
+	.option('--quantizeColor <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+		validator: program.NUMBER,
+		default: 8,
+	})
+	.option('--quantizeTexcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+		validator: program.NUMBER,
+		default: 12,
+	})
+	.option('--quantizeGeneric <bits>', 'Quantization bits for other attributes, 1-16.', {
+		validator: program.NUMBER,
+		default: 12,
+	})
+	.action(({args, options, logger}) =>
+		// Include a lossless weld — Draco requires indices.
+		Session.create(io, logger, args.input, args.output)
+			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
+	);
+
 // WELD
 program
 	.command('weld', 'Index geometry and optionally merge similar vertices')
@@ -211,32 +368,7 @@ paricular software application.
 			.transform(unweld(options as unknown as UnweldOptions))
 	);
 
-// RESAMPLE
-program
-	.command('resample', 'Resample animations, losslessly deduplicating keyframes')
-	.help(`
-Resample animations, losslessly deduplicating keyframes. Exporters sometimes
-need to "bake" animations, writing data for 20-30 frames per second, in order
-to correctly represent IK constraints and other animation techniques. These
-additional keyframes are often redundant — particularly with morph targets —
-as engines can interpolate animation at 60–120 FPS even with sparse keyframes.
-
-The resampling process removes redundant keyframes from animations using STEP
-and LINEAR interpolation. Resampling is nearly lossless, with configurable
---tolerance, and should have no visible effect on animation playback.
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--tolerance', 'Per-value tolerance to merge similar keyframes', {
-		validator: program.NUMBER,
-		default: 1e-4,
-	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(resample(options as unknown as ResampleOptions))
-	);
-
-program.command('', '\n\n───────────────────── ✨ STYLE ──────────────────────');
+program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
 
 // AMBIENT OCCLUSION
 program
@@ -309,197 +441,7 @@ Unlit materials are also helpful for non-physically-based visual styles.
 			.transform(unlit())
 	);
 
-// CENTER
-program
-	.command('center', 'Centers the scene at the origin, or above/below it')
-	.help(`
-Centers the scene at the origin, or above/below it. When loading a model into
-a larger scene, or into an augmented reality context, it's often best to ensure
-the model's pivot is centered beneath the object. For objects meant to be
-attached a surface, like a ceiling fan, the pivot may be located above instead.
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--pivot <pivot>', 'Method used to determine the scene pivot', {
-		validator: ['center', 'above', 'below'],
-		default: 'center',
-	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(center({...options} as CenterOptions))
-	);
-
-// SEQUENCE
-program
-	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
-	.help(`
-Animate nodes' visibilities as a flipboard sequence. An example workflow
-would be to create a .glb containing one geometry for each frame of a complex
-animation that can't be represented as TRS, skinning, or morph targets. The
-sequence function generates a new animation, playing back each mesh matching
-the given pattern, at a specific framerate. Displaying a sequence of textures
-is also supported, but note that texture memory usage may be quite high and
-so this workflow is not a replacement for video playback.
-	`.trim())
-
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--name <name>', 'Name of new animation', {
-		validator: program.STRING,
-		default: '',
-	})
-	.option('--pattern <pattern>', 'Pattern for node names (case-insensitive glob)', {
-		validator: program.STRING,
-		required: true,
-	})
-	.option('--fps <fps>', 'FPS (frames / second)', {
-		validator: program.NUMBER,
-		default: 10,
-	})
-	.option('--sort <sort>', 'Order sequence by node name', {
-		validator: program.BOOLEAN,
-		default: true,
-	})
-	.action(({args, options, logger}) => {
-		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
-		return Session.create(io, logger, args.input, args.output)
-			.transform(sequence({...options, pattern} as SequenceOptions));
-	});
-
-program.command('', '\n\n──────────────────── ⏩ OPTIMIZE ────────────────────');
-
-// DEDUP
-program
-	.command('dedup', 'Deduplicate accessors and textures')
-	.help(`
-Deduplicate accessors and textures. Some exporters or pipeline processing may
-lead to multiple accessors or textures within a file containing redundant
-copies of the same information. This functions scans for these cases and
-merges the duplicates where possible, reducing file size. The process may be
-very slow on large files with many accessors.
-
-Deduplication early in a pipeline may also help other optimizations, like
-compression and instancing, to be more effective.
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--accessors <accessors>', 'Remove duplicate accessors', {
-		validator: program.BOOLEAN,
-		default: true,
-	})
-	.option('--textures <textures>', 'Remove duplicate textures', {
-		validator: program.BOOLEAN,
-		default: true,
-	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(dedup(options as unknown as DedupOptions))
-	);
-
-// PRUNE
-program
-	.command('prune', 'Removes unreferenced properties from the file')
-	.help(`
-Removes properties from the file if they are not referenced by a Scene. Helpful
-when cleaning up after complex workflows or a faulty exporter. This function
-may (conservatively) fail to identify some unused extension properties, such as
-lights, but it will not remove anything that is still in use, even if used by
-an extension. Animations are considered unused if they do not target any nodes
-that are children of a scene.
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(prune(options as unknown as PruneOptions))
-	);
-
-// DRACO
-program
-	.command('draco', 'Compress mesh geometry with Draco')
-	.help(`
-Compress mesh geometry with the Draco library. This type of compression affects
-only geometry data — animation and textures are not compressed.
-
-Two compression methods are available: 'edgebreaker' and 'sequential'. The
-edgebreaker method will give higher compression in general, but changes the
-order of the model's vertices. To preserve index order, use sequential
-compression. When a mesh uses morph targets, or a high decoding speed is
-selected, sequential compression will automatically be chosen.
-
-Both speed options affect the encoder's choice of algorithms. For example, a
-requirement for fast decoding may prevent the encoder from using the best
-compression methods even if the encoding speed is set to 0. In general, the
-faster of the two options limits the choice of features that can be used by the
-encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow
-the encoder to choose the optimal method out of the available features for the
-given --decodeSpeed.`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--method <method>', 'Compression method.', {
-		validator: ['edgebreaker', 'sequential'],
-		default: 'edgebreaker',
-	})
-	.option('--encodeSpeed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
-		validator: program.NUMBER,
-		default: 5,
-	})
-	.option('--decodeSpeed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
-		validator: program.NUMBER,
-		default: 5,
-	})
-	.option('--quantizePosition <bits>', 'Quantization bits for POSITION, 1-16.', {
-		validator: program.NUMBER,
-		default: 14,
-	})
-	.option('--quantizeNormal <bits>', 'Quantization bits for NORMAL, 1-16.', {
-		validator: program.NUMBER,
-		default: 10,
-	})
-	.option('--quantizeColor <bits>', 'Quantization bits for COLOR_*, 1-16.', {
-		validator: program.NUMBER,
-		default: 8,
-	})
-	.option('--quantizeTexcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
-		validator: program.NUMBER,
-		default: 12,
-	})
-	.option('--quantizeGeneric <bits>', 'Quantization bits for other attributes, 1-16.', {
-		validator: program.NUMBER,
-		default: 12,
-	})
-	.action(({args, options, logger}) =>
-		// Include a lossless weld — Draco requires indices.
-		Session.create(io, logger, args.input, args.output)
-			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
-	);
-
-// GZIP
-program
-	.command('gzip', 'Compress the model with gzip')
-	.help(`
-Compress the model with gzip. Gzip is a general-purpose file compression
-technique, not specific to glTF models. On the web, decompression is
-handled automatically by the web browser, without any intervention from the
-client application.
-
-When the model contains resources that are already effectively compressed, like
-JPEG textures or Draco geometry, gzip is unlikely to add much further benefit
-and can be skipped. Other compression strategies, like Meshopt and quantization,
-work best when combined with gzip.
-`)
-	.argument('<input>', INPUT_DESC)
-	.action(({args, logger}) => {
-		const inBuffer = fs.readFileSync(args.input as string);
-		return gzip(inBuffer)
-			.then((outBuffer) => {
-				const fileName = args.input + '.gz';
-				const inSize = formatBytes(inBuffer.byteLength);
-				const outSize = formatBytes(outBuffer.byteLength);
-				fs.writeFileSync(fileName, outBuffer);
-				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
-			});
-	});
+program.command('', '\n\n🖼  TEXTURE ──────────────────────────────────────────');
 
 const BASIS_SUMMARY = `
 Compresses textures in the given file to .ktx2 GPU textures using the
@@ -683,6 +625,70 @@ for textures where the quality is sufficient.`.trim()),
 		Session.create(io, logger, args.input, args.output)
 			.transform(toktx({mode: Mode.UASTC, ...options}))
 	);
+
+program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
+
+// RESAMPLE
+program
+	.command('resample', 'Resample animations, losslessly deduplicating keyframes')
+	.help(`
+Resample animations, losslessly deduplicating keyframes. Exporters sometimes
+need to "bake" animations, writing data for 20-30 frames per second, in order
+to correctly represent IK constraints and other animation techniques. These
+additional keyframes are often redundant — particularly with morph targets —
+as engines can interpolate animation at 60–120 FPS even with sparse keyframes.
+
+The resampling process removes redundant keyframes from animations using STEP
+and LINEAR interpolation. Resampling is nearly lossless, with configurable
+--tolerance, and should have no visible effect on animation playback.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--tolerance', 'Per-value tolerance to merge similar keyframes', {
+		validator: program.NUMBER,
+		default: 1e-4,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(resample(options as unknown as ResampleOptions))
+	);
+
+// SEQUENCE
+program
+	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
+	.help(`
+Animate nodes' visibilities as a flipboard sequence. An example workflow
+would be to create a .glb containing one geometry for each frame of a complex
+animation that can't be represented as TRS, skinning, or morph targets. The
+sequence function generates a new animation, playing back each mesh matching
+the given pattern, at a specific framerate. Displaying a sequence of textures
+is also supported, but note that texture memory usage may be quite high and
+so this workflow is not a replacement for video playback.
+	`.trim())
+
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--name <name>', 'Name of new animation', {
+		validator: program.STRING,
+		default: '',
+	})
+	.option('--pattern <pattern>', 'Pattern for node names (case-insensitive glob)', {
+		validator: program.STRING,
+		required: true,
+	})
+	.option('--fps <fps>', 'FPS (frames / second)', {
+		validator: program.NUMBER,
+		default: 10,
+	})
+	.option('--sort <sort>', 'Order sequence by node name', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.action(({args, options, logger}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		return Session.create(io, logger, args.input, args.output)
+			.transform(sequence({...options, pattern} as SequenceOptions));
+	});
 
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
