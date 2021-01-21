@@ -62,7 +62,7 @@ class ImageUtils {
 		}
 
 		const resolution = this.getSize(buffer, mimeType);
-		const channels = this.getChannels(buffer, mimeType);
+		const channels = 4; // See https://github.com/donmccurdy/glTF-Transform/issues/151.
 		return resolution ? resolution[0] * resolution[1] * channels : null;
 	}
 

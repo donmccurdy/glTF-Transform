@@ -45,6 +45,9 @@ test('@gltf-transform/core::image-utils | png', {skip: !IS_NODEJS}, t => {
 	t.deepEquals(ImageUtils.getSize(png, 'image/png'), [256, 256], 'png');
 	t.deepEquals(ImageUtils.getSize(fried, 'image/png'), [12, 12], 'png (fried)');
 	t.equals(ImageUtils.getChannels(png, 'image/png'), 4, 'png');
+	t.equals(ImageUtils.getChannels(fried, 'image/png'), 4, 'png');
+	t.equals(ImageUtils.getMemSize(png, 'image/png'), 256 * 256 * 4, 'png');
+	t.equals(ImageUtils.getMemSize(fried, 'image/png'), 12 * 12 * 4, 'png');
 	t.end();
 });
 
@@ -53,8 +56,10 @@ test('@gltf-transform/core::image-utils | jpeg', {skip: !IS_NODEJS}, t => {
 	const buffer = new ArrayBuffer(100);
 	const view = new DataView(buffer);
 
-	t.deepEquals(ImageUtils.getSize(jpg, 'image/jpeg'), [256, 256], 'jpg');
-	t.equals(ImageUtils.getChannels(jpg, 'image/jpeg'), 3, 'jpg');
+	t.deepEquals(ImageUtils.getSize(jpg, 'image/jpeg'), [256, 256], 'jpg size');
+	t.equals(ImageUtils.getChannels(jpg, 'image/jpeg'), 3, 'jpg channels');
+	// See https://github.com/donmccurdy/glTF-Transform/issues/151.
+	t.equals(ImageUtils.getMemSize(jpg, 'image/jpeg'), 256 * 256 * 4, 'jpg memory size');
 
 	view.setUint16(4, 1000, false);
 	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'oob');
