@@ -1,4 +1,4 @@
-import { Document, Mesh, Node, Transform } from '@gltf-transform/core';
+import { Document, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
 
 const NAME = 'instance';
@@ -8,7 +8,7 @@ export interface InstanceOptions {}
 
 const DEFAULT_OPTIONS: InstanceOptions = {};
 
-/** TODO */
+/** Creates instance batches (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
 export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transform {
 
 	return (doc: Document): void => {
@@ -28,28 +28,40 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 				meshInstances.set(mesh, (meshInstances.get(mesh) || new Set<Node>()).add(node));
 			});
 
-			// For each batch, write Node TRS properties to instance attributes.
+			// For each Mesh, create an InstancedMesh and collect transforms.
 			for (const mesh of Array.from(meshInstances.keys())) {
 				const nodes = Array.from(meshInstances.get(mesh));
 				if (nodes.length < 2) continue;
 				if (nodes.some((node) => node.getSkin())) continue;
 
 				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
+				const batchTranslation = batch.getAttribute('TRANSLATION');
+				const batchRotation = batch.getAttribute('ROTATION');
+				const batchScale = batch.getAttribute('SCALE');
+
 				const batchNode = doc.createNode()
 					.setMesh(mesh)
 					.setExtension('EXT_mesh_gpu_instancing', batch);
-
 				scene.addChild(batchNode);
 
+				let needsTranslation = false;
+				let needsRotation = false;
+				let needsScale = false;
+
+				// For each Node, write TRS properties into instance attributes.
 				for (let i = 0; i < nodes.length; i++) {
+					let t: vec3, r: vec4, s: vec3;
 					const node = nodes[i];
 
-					// TODO(bug): Don't use TRS attributes that aren't needed.
-					batch.getAttribute('TRANSLATION').setElement(i, node.getWorldTranslation());
-					batch.getAttribute('ROTATION').setElement(i, node.getWorldRotation());
-					batch.getAttribute('SCALE').setElement(i, node.getWorldScale());
+					batchTranslation.setElement(i, t = node.getWorldTranslation());
+					batchRotation.setElement(i, r = node.getWorldRotation());
+					batchScale.setElement(i, s = node.getWorldScale());
 
-					// Clean up the node.
+					if (!eq(t, [0, 0, 0])) needsTranslation = true;
+					if (!eq(r, [0, 0, 0, 1])) needsRotation = true;
+					if (!eq(s, [1, 1, 1])) needsScale = true;
+
+					// Clean up the old node.
 					if (!node.listChildren().length
 						&& !node.getCamera()
 						&& !node.listExtensions().length) {
@@ -58,6 +70,10 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 						node.setMesh(null);
 					}
 				}
+
+				if (!needsTranslation) batchTranslation.dispose();
+				if (!needsRotation) batchRotation.dispose();
+				if (!needsScale) batchScale.dispose();
 
 				numBatches++;
 				numInstances += nodes.length;
@@ -102,4 +118,12 @@ function createBatch(
 		.setAttribute('TRANSLATION', batchTranslation)
 		.setAttribute('ROTATION', batchRotation)
 		.setAttribute('SCALE', batchScale);
+}
+
+function eq(a: number[], b: number[]): boolean {
+	if (a.length !== b.length) return false;
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
 }
