@@ -4,6 +4,7 @@ export * from './center';
 export * from './colorspace';
 export * from './dedup';
 export * from './inspect';
+export * from './instance';
 export * from './metal-rough';
 export * from './partition';
 export * from './prune';
