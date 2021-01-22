@@ -8,13 +8,17 @@ export interface InstanceOptions {}
 
 const DEFAULT_OPTIONS: InstanceOptions = {};
 
-/** Creates instance batches (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
+/** Creates GPU instances (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
 export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transform {
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const batchExtension = doc.createExtension(MeshGPUInstancing);
+
+		if (root.listAnimations().length) {
+			throw new Error(`${NAME}: Instancing is not currently supported for animated models.`);
+		}
 
 		let numBatches = 0;
 		let numInstances = 0;
@@ -122,8 +126,11 @@ function createBatch(
 
 function eq(a: number[], b: number[]): boolean {
 	if (a.length !== b.length) return false;
+
+	const eps = 10e-6;
 	for (let i = 0; i < a.length; i++) {
-		if (a[i] !== b[i]) return false;
+		if (Math.abs(a[i] - b[i]) > eps) return false;
 	}
+
 	return true;
 }

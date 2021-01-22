@@ -272,9 +272,22 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 
 // INSTANCE
 program
-	.command('instance', 'TODO')
+	.command('instance', 'Creates GPU instancesfrom shared Mesh references')
 	.help(`
-TODO
+For meshes reused by more than one node in a scene, this command creates an
+EXT_mesh_gpu_instancing extension to aid with GPU instancing. In engines that
+support the extension, this may allow GPU instancing to be used, reducing draw
+calls and improving framerate.
+
+Engines may use GPU instancing with or without the presence of this extension,
+and are strongly encouraged to do so. However, particularly when loading a
+model at runtime, the extension provides useful context allowing the engine to
+use this technique efficiently.
+
+Instanced meshes cannot be animated, and must share the same materials. For
+further details, see:
+
+https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)

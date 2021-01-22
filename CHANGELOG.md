@@ -6,8 +6,9 @@
 
 **Features:**
 
-- Add 'resample' transform.
+- Add 'instance' transform.
 - Add 'prune' transform.
+- Add 'resample' transform.
 - Add `KHR_materials_volume` extension.
 - Add `EXT_mesh_gpu_instancing` extension.
 
