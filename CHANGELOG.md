@@ -16,6 +16,7 @@
 
 - Stricter type checking.
 - Enum values moved from `GLTF.*` to static properties of the relevant class. Primitive enum values are now allowed.
+- 'dedup' transform takes a `propertyTypes: string[]` array, rather than boolean flags for each property type.
 
 ## v0.8
 

@@ -1,15 +1,13 @@
-import { Accessor, BufferUtils, Document, Logger, Material, Texture, Transform } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Document, Logger, Material, PropertyType, Texture, Transform } from '@gltf-transform/core';
 
 const NAME = 'dedup';
 
 export interface DedupOptions {
-	accessors?: boolean;
-	textures?: boolean;
+	propertyTypes: string[];
 }
 
 const DEFAULT_OPTIONS: DedupOptions = {
-	accessors: true,
-	textures: true
+	propertyTypes: [PropertyType.ACCESSOR, PropertyType.TEXTURE],
 };
 
 /**
@@ -20,11 +18,18 @@ const DEFAULT_OPTIONS: DedupOptions = {
 export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
+	const propertyTypes = new Set(options.propertyTypes);
+	for (const propertyType of options.propertyTypes) {
+		if (!DEFAULT_OPTIONS.propertyTypes.includes(propertyType)) {
+			throw new Error(`${NAME}: Unsupported deduplication on type "${propertyType}".`);
+		}
+	}
+
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
-		if (options.accessors !== false) dedupAccessors(logger, doc);
-		if (options.textures !== false) dedupImages(logger, doc);
+		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
+		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	};

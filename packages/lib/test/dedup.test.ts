@@ -3,7 +3,7 @@ require('source-map-support').install();
 import * as path from 'path';
 import { createCanvas } from 'canvas';
 import * as test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
 
 test('@gltf-transform/lib::dedup | accessors', t => {
@@ -11,7 +11,7 @@ test('@gltf-transform/lib::dedup | accessors', t => {
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
-	dedup({accessors: false})(doc);
+	dedup({propertyTypes: [PropertyType.TEXTURE]})(doc);
 
 	t.equal(doc.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
 
@@ -34,7 +34,7 @@ test('@gltf-transform/lib::dedup | textures', t => {
 
 	t.equal(doc.getRoot().listTextures().length, 2, 'begins with duplicate textures');
 
-	dedup({textures: false})(doc);
+	dedup({propertyTypes: [PropertyType.ACCESSOR]})(doc);
 
 	t.equal(doc.getRoot().listTextures().length, 2, 'has no effect when disabled');
 
