@@ -11,6 +11,7 @@
 - Add 'resample' transform.
 - Add `KHR_materials_volume` extension.
 - Add `EXT_mesh_gpu_instancing` extension.
+- Add `--format={pretty,csv,md}` output options for CLI `inspect` command.
 
 **Breaking changes:**
 
