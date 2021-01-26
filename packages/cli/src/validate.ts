@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import Table from 'cli-table';
+import * as Table from 'cli-table3';
 import validator from 'gltf-validator';
 import { Logger } from '@gltf-transform/core';
 import { formatHeader } from './util';

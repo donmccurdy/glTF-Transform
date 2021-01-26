@@ -1,4 +1,4 @@
-import Table from 'cli-table';
+import * as Table from 'cli-table3';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
