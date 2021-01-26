@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, variant, weld } from '@gltf-transform/lib';
 import { inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -299,6 +299,28 @@ https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(instance({...options} as InstanceOptions))
+	);
+
+// VARIANT
+program
+	.command('variant', 'TODO')
+	.help(`
+TODO
+
+https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants.
+	`.trim())
+	.argument('<path...>', `${INPUT_DESC}(s). Final path is used to write output.`)
+	.action(({args, options, logger}) => {
+		const paths = typeof args.path === 'string'
+			? args.path.split(',')
+			: args.path as string[];
+		const output = paths.pop();
+		return Session.create(io, logger, '', output)
+			.transform(
+				merge({io, paths, partition: !!options.partition}),
+				variant(),
+			);
+	}
 	);
 
 program.command('', '\n\n🕋 GEOMETRY ─────────────────────────────────────────');

@@ -11,4 +11,5 @@ export * from './prune';
 export * from './resample';
 export * from './sequence';
 export * from './unweld';
+export * from './variant';
 export * from './weld';
