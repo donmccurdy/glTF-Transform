@@ -7,7 +7,7 @@ import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, weld } from '@gltf-transform/lib';
-import { inspect } from './inspect';
+import { InspectFormat, inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
@@ -50,11 +50,22 @@ statistics for scenes, meshes, materials, textures, and animations contained
 by the file. This data is useful for understanding how much of a file's size
 is comprised of geometry vs. textures, which extensions are needed when loading
 the file, and which material properties are being used.
+
+Use --format=csv or --format=md for alternative display formats.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
-	.action(({args, logger}) => {
+	.option('--format <format>', 'Table output format', {
+		validator: [InspectFormat.PRETTY, InspectFormat.CSV, InspectFormat.MD],
+		default: InspectFormat.PRETTY
+	})
+	.action(async ({args, options, logger}) => {
 		io.setLogger(logger as unknown as Logger);
-		inspect(io.readAsJSON(args.input as string), io, logger as unknown as Logger);
+		await inspect(
+			io.readAsJSON(args.input as string),
+			io,
+			logger as unknown as Logger,
+			options.format as InspectFormat
+		);
 	});
 
 // VALIDATE
