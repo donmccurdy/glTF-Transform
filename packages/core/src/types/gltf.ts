@@ -578,7 +578,7 @@ export declare module GLTF {
 		/**
 		 * The index of the image used by this texture
 		 */
-		source: number;
+		source?: number;
 	}
 	/**
 	 * Reference to a texture

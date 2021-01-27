@@ -28,8 +28,8 @@ export class DracoMeshCompression extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 	public static readonly EncoderMethod = EncoderMethod;
 
-	private _decoderModule: DRACO.DecoderModule;
-	private _encoderModule: DRACO.EncoderModule;
+	private _decoderModule: DRACO.DecoderModule | null = null;
+	private _encoderModule: DRACO.EncoderModule | null = null;
 	private _encoderOptions: EncoderOptions = {};
 
 	public install(key: string, dependency: unknown): this {
@@ -60,16 +60,17 @@ export class DracoMeshCompression extends Extension {
 
 		try {
 
-		for (const meshDef of jsonDoc.json.meshes) {
+		const meshDefs = jsonDoc.json.meshes || [];
+		for (const meshDef of meshDefs) {
 			for (const primDef of meshDef.primitives) {
 				if (!primDef.extensions || !primDef.extensions[NAME]) continue;
 
 				const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
 				let [decoder, dracoMesh] = dracoMeshes.get(dracoDef.bufferView) || [];
 
-				if (!dracoMesh) {
-					const bufferViewDef = jsonDoc.json.bufferViews[dracoDef.bufferView];
-					const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+				if (!dracoMesh || !decoder) {
+					const bufferViewDef = jsonDoc.json.bufferViews![dracoDef.bufferView];
+					const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 					const resource = bufferDef.uri
 						? jsonDoc.resources[bufferDef.uri]
 						: jsonDoc.resources[GLB_BUFFER];
@@ -87,7 +88,7 @@ export class DracoMeshCompression extends Extension {
 				// Attributes.
 				for (const semantic in primDef.attributes) {
 					const accessorDef =
-						context.jsonDoc.json.accessors[primDef.attributes[semantic]];
+						context.jsonDoc.json.accessors![primDef.attributes[semantic]];
 					const dracoAttribute =
 						decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
 					const attributeArray =
@@ -97,7 +98,7 @@ export class DracoMeshCompression extends Extension {
 
 				// Indices.
 				const indicesArray = decodeIndex(decoder, dracoMesh);
-				context.accessors[primDef.indices].setArray(indicesArray);
+				context.accessors[primDef.indices!].setArray(indicesArray);
 			}
 		}
 
@@ -128,6 +129,7 @@ export class DracoMeshCompression extends Extension {
 
 		for (const prim of Array.from(primitiveHashMap.keys())) {
 			const primHash = primitiveHashMap.get(prim);
+			if (!primHash) throw new Error('Unexpected primitive.');
 
 			// Reuse an existing EncodedPrimitive, if possible.
 			if (primitiveEncodingMap.has(primHash)) {

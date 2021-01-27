@@ -10,9 +10,10 @@ export class TextureWebP extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	public preread(context: ReaderContext): this {
-		context.jsonDoc.json.textures.forEach((textureDef) => {
+		const textureDefs = context.jsonDoc.json.textures || [];
+		textureDefs.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
-				textureDef.source = textureDef.extensions[NAME]['source'];
+				textureDef.source = (textureDef.extensions[NAME] as {source: number}).source;
 			}
 		});
 		return this;
@@ -31,7 +32,8 @@ export class TextureWebP extends Extension {
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/webp') {
 					const imageIndex = context.imageIndexMap.get(texture);
-					jsonDoc.json.textures.forEach((textureDef) => {
+					const textureDefs = jsonDoc.json.textures || [];
+					textureDefs.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {};
 							textureDef.extensions[NAME] = {source: textureDef.source};

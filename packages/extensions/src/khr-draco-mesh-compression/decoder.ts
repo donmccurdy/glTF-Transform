@@ -11,9 +11,8 @@ let COMPONENT_ARRAY: {[key: number]: TypedArrayConstructor};
 let DATA_TYPE: {[key: number]: DRACO.DataType};
 
 export function decodeGeometry(decoder: DRACO.Decoder, data: Int8Array): DRACO.Mesh {
-	let buffer: DRACO.DecoderBuffer;
+	const buffer = new decoderModule.DecoderBuffer();
 	try {
-		buffer = new decoderModule.DecoderBuffer();
 		buffer.Init(data, data.length);
 
 		const geometryType = decoder.GetEncodedGeometryType(buffer);

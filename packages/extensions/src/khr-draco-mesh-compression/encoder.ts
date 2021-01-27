@@ -66,7 +66,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	const dracoBuffer = new encoderModule.DracoInt8Array();
 
 	for (const semantic of prim.listSemantics()) {
-		const attribute = prim.getAttribute(semantic);
+		const attribute = prim.getAttribute(semantic)!;
 		const attributeEnum = getAttributeEnum(semantic);
 		const addAttributeFn = ADD_ATTRIBUTE_FN[attribute.getComponentType()];
 		const attributeID: number = builder[addAttributeFn](
@@ -86,13 +86,16 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 		);
 	}
 
+	const indices = prim.getIndices();
+	if (!indices) throw new Error('Primitive must have indices.');
+
 	builder.AddFacesToMesh(
 		mesh,
-		prim.getIndices().getCount() / 3,
-		prim.getIndices().getArray() as unknown as Uint32Array
+		indices.getCount() / 3,
+		indices.getArray() as unknown as Uint32Array
 	);
 
-	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
+	encoder.SetSpeedOptions(options.encodeSpeed!, options.decodeSpeed!);
 	encoder.SetTrackEncodedProperties(true);
 
 	// Preserve vertex order for primitives with morph targets.

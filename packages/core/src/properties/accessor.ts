@@ -72,7 +72,7 @@ export class Accessor extends ExtensibleProperty {
 	private _type: GLTF.AccessorType = Accessor.Type.SCALAR;
 
 	/** @hidden Numeric type of each component in an element. */
-	private _componentType: GLTF.AccessorComponentType | null = null;
+	private _componentType: GLTF.AccessorComponentType = Accessor.ComponentType.FLOAT;
 
 	/** @hidden Whether data in the raw array should be considered normalized. */
 	private _normalized = false;
@@ -309,7 +309,7 @@ export class Accessor extends ExtensibleProperty {
 	 * Component type (float32, uint16, etc.). This value is determined automatically, and can only
 	 * be modified by replacing the underlying array.
 	 */
-	public getComponentType(): GLTF.AccessorComponentType | null {
+	public getComponentType(): GLTF.AccessorComponentType {
 		return this._componentType;
 	}
 
@@ -335,8 +335,8 @@ export class Accessor extends ExtensibleProperty {
 		this._normalized = normalized;
 
 		if (normalized) {
-			this._out = (c: number): number => MathUtils.denormalize(c, this._componentType!);
-			this._in = (f: number): number => MathUtils.normalize(f, this._componentType!);
+			this._out = (c: number): number => MathUtils.denormalize(c, this._componentType);
+			this._in = (f: number): number => MathUtils.normalize(f, this._componentType);
 		} else {
 			this._out = MathUtils.identity;
 			this._in = MathUtils.identity;
@@ -409,7 +409,7 @@ export class Accessor extends ExtensibleProperty {
 
 	/** Assigns the raw typed array underlying this accessor. */
 	public setArray(array: TypedArray): this {
-		this._componentType = arrayToComponentType(array);
+		this._componentType = array ? arrayToComponentType(array) : Accessor.ComponentType.FLOAT;
 		this._array = array;
 		return this;
 	}
