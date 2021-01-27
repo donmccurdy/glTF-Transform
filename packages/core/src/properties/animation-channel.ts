@@ -36,9 +36,9 @@ import { COPY_IDENTITY, Property } from './property';
  */
 export class AnimationChannel extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
-	private _targetPath: GLTF.AnimationChannelTargetPath = null;
-	@GraphChild private targetNode: Link<AnimationChannel, Node> = null;
-	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> = null;
+	private _targetPath: GLTF.AnimationChannelTargetPath | null = null;
+	@GraphChild private targetNode: Link<AnimationChannel, Node> | null = null;
+	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> | null = null;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -75,7 +75,7 @@ export class AnimationChannel extends Property {
 	 * Path (property) animated on the target {@link Node}. Supported values include:
 	 * `translation`, `rotation`, `scale`, or `weights`.
 	 */
-	public getTargetPath(): GLTF.AnimationChannelTargetPath {
+	public getTargetPath(): GLTF.AnimationChannelTargetPath | null {
 		return this._targetPath;
 	}
 
@@ -89,7 +89,7 @@ export class AnimationChannel extends Property {
 	}
 
 	/** Target {@link Node} animated by the channel. */
-	public getTargetNode(): Node {
+	public getTargetNode(): Node | null {
 		return this.targetNode ? this.targetNode.getChild() : null;
 	}
 
@@ -103,7 +103,7 @@ export class AnimationChannel extends Property {
 	 * Keyframe data input/output values for the channel. Must be attached to the same
 	 * {@link Animation}.
 	 */
-	public getSampler(): AnimationSampler {
+	public getSampler(): AnimationSampler | null {
 		return this.sampler ? this.sampler.getChild() : null;
 	}
 

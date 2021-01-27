@@ -61,7 +61,7 @@ export class Buffer extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.BUFFER;
 
 	/** @hidden URI (or filename) of the buffer. */
-	private _uri: string;
+	private _uri = '';
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);

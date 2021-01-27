@@ -62,11 +62,11 @@ export class Graph<T extends GraphNode> {
 		Array.from(links)
 			.filter((link) => link.getChild() === prevChild)
 			.forEach((link) => {
-				this._childRefs.get(prevChild).delete(link);
+				this._childRefs.get(prevChild)!.delete(link);
 
 				link.setChild(nextChild);
 				if (!this._childRefs.has(nextChild)) this._childRefs.set(nextChild, new Set());
-				this._childRefs.get(nextChild).add(link);
+				this._childRefs.get(nextChild)!.add(link);
 			});
 		return this;
 	}
@@ -77,7 +77,10 @@ export class Graph<T extends GraphNode> {
 	* @param a Owner
 	* @param b Resource
 	*/
-	public link<A extends T, B extends T>(name: string, a: A, b: B): Link<A, B> {
+	public link<A extends T>(name: string, a: A, b: null): null;
+	public link<A extends T, B extends T>(name: string, a: A, b: B): Link<A, B>;
+	public link<A extends T, B extends T>(name: string, a: A, b: B | null): Link<A, B> | null;
+	public link<A extends T, B extends T>(name: string, a: A, b: B | null): Link<A, B> | null {
 		// If there's no resource, return a null link. Avoids a lot of boilerplate in node setters.
 		if (!b) return null;
 
@@ -91,11 +94,11 @@ export class Graph<T extends GraphNode> {
 
 		const parent = link.getParent();
 		if (!this._parentRefs.has(parent)) this._parentRefs.set(parent, new Set());
-		this._parentRefs.get(parent).add(link);
+		this._parentRefs.get(parent)!.add(link);
 
 		const child = link.getChild();
 		if (!this._childRefs.has(child)) this._childRefs.set(child, new Set());
-		this._childRefs.get(child).add(link);
+		this._childRefs.get(child)!.add(link);
 
 		link.onDispose(() => this.unlink(link));
 		return link;
@@ -109,8 +112,8 @@ export class Graph<T extends GraphNode> {
 	*/
 	private unlink(link: Link<T, T>): this {
 		this._links.delete(link);
-		this._parentRefs.get(link.getParent()).delete(link);
-		this._childRefs.get(link.getChild()).delete(link);
+		this._parentRefs.get(link.getParent())!.delete(link);
+		this._childRefs.get(link.getChild())!.delete(link);
 		return this;
 	}
 }

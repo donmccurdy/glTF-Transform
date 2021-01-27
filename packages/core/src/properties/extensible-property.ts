@@ -34,7 +34,7 @@ export abstract class ExtensibleProperty extends Property {
 	 * Returns an {@link ExtensionProperty} attached to this Property, if any. *Not available on
 	 * {@link Root} properties.*
 	 */
-	public getExtension<Prop extends ExtensionProperty>(name: string): Prop {
+	public getExtension<Prop extends ExtensionProperty>(name: string): Prop | null {
 		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
 		const link = this.extensions.find((link) => link.getChild().extensionName === name);
 		return link ? link.getChild() as Prop : null;
@@ -46,7 +46,7 @@ export abstract class ExtensibleProperty extends Property {
 	 * {@link Root} properties.*
 	 */
 	public setExtension<Prop extends ExtensionProperty>(
-			name: string, extensionProperty: Prop): this {
+			name: string, extensionProperty: Prop | null): this {
 		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
 
 		// Remove previous extension.

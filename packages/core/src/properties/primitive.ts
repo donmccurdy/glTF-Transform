@@ -49,8 +49,8 @@ export class Primitive extends ExtensibleProperty {
 	/** @hidden GPU draw mode. */
 	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
 
-	@GraphChild private material: Link<Primitive, Material> = null;
-	@GraphChild private indices: Link<Primitive, Accessor> = null;
+	@GraphChild private material: Link<Primitive, Material> | null = null;
+	@GraphChild private indices: Link<Primitive, Accessor> | null = null;
 	@GraphChildList private attributes: AttributeLink[] = [];
 	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
 
@@ -64,7 +64,7 @@ export class Primitive extends ExtensibleProperty {
 
 		this.clearGraphChildList(this.attributes);
 		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)));
+			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
 		});
 
 		this.clearGraphChildList(this.targets);
@@ -107,7 +107,7 @@ export class Primitive extends ExtensibleProperty {
 	 */
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
-	public getIndices(): Accessor {
+	public getIndices(): Accessor | null {
 		return this.indices ? this.indices.getChild() : null;
 	}
 
@@ -116,13 +116,13 @@ export class Primitive extends ExtensibleProperty {
 	 * each set of three indices define a triangle. The front face has a counter-clockwise (CCW)
 	 * winding order.
 	 */
-	public setIndices(indices: Accessor): this {
+	public setIndices(indices: Accessor | null): this {
 		this.indices = this.graph.linkIndex('index', this, indices);
 		return this;
 	}
 
 	/** Returns a vertex attribute as an {@link Accessor}. */
-	public getAttribute(semantic: string): Accessor {
+	public getAttribute(semantic: string): Accessor | null {
 		const link = this.attributes.find((link) => link.semantic === semantic);
 		return link ? link.getChild() : null;
 	}
@@ -131,7 +131,7 @@ export class Primitive extends ExtensibleProperty {
 	 * Sets a vertex attribute to an {@link Accessor}. All attributes must have the same vertex
 	 * count.
 	 */
-	public setAttribute(semantic: string, accessor: Accessor): this {
+	public setAttribute(semantic: string, accessor: Accessor | null): this {
 		// Remove previous attribute.
 		const prevAccessor = this.getAttribute(semantic);
 		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
@@ -164,10 +164,12 @@ export class Primitive extends ExtensibleProperty {
 	}
 
 	/** Returns the material used to render the primitive. */
-	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
+	public getMaterial(): Material | null {
+		return this.material ? this.material.getChild() : null;
+	}
 
 	/** Sets the material used to render the primitive. */
-	public setMaterial(material: Material): this {
+	public setMaterial(material: Material | null): this {
 		this.material = this.graph.link('material', this, material);
 		return this;
 	}

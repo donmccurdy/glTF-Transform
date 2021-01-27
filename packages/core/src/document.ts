@@ -142,9 +142,14 @@ export class Document {
 		}
 
 		// 4. Assemble the links between Properties.
-		const resolve = (p: Property): Property => propertyMap.get(p);
+		const resolve = (p: Property): Property => {
+			const resolved = propertyMap.get(p);
+			if (!resolved) throw new Error('Could resolve property.');
+			return resolved;
+		};
 		for (const otherProp of visited) {
 			const thisProp = propertyMap.get(otherProp);
+			if (!thisProp) throw new Error('Could resolve property.');
 			thisProp.copy(otherProp, resolve);
 		}
 
@@ -281,7 +286,7 @@ export class Document {
 	}
 
 	/** Creates a new {@link Accessor} attached to this document's {@link Root}. */
-	createAccessor(name = '', buffer: Buffer = null): Accessor {
+	createAccessor(name = '', buffer: Buffer | null = null): Accessor {
 		if (!buffer) {
 			buffer = this.getRoot().listBuffers()[0];
 		}

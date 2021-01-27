@@ -31,4 +31,5 @@ export const uuid = function(): string {
 		return id;
 	}
   }
+  return '';
 };

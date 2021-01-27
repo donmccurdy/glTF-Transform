@@ -51,8 +51,8 @@ export class AnimationSampler extends Property {
 	private _interpolation: GLTF.AnimationSamplerInterpolation
 		= AnimationSampler.Interpolation.LINEAR;
 
-	@GraphChild private input: Link<AnimationSampler, Accessor> = null;
-	@GraphChild private output: Link<AnimationSampler, Accessor> = null;
+	@GraphChild private input: Link<AnimationSampler, Accessor> | null = null;
+	@GraphChild private output: Link<AnimationSampler, Accessor> | null = null;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -91,12 +91,12 @@ export class AnimationSampler extends Property {
 	}
 
 	/** Times for each keyframe, in seconds. */
-	public getInput(): Accessor {
+	public getInput(): Accessor | null {
 		return this.input ? this.input.getChild() : null;
 	}
 
 	/** Times for each keyframe, in seconds. */
-	public setInput(input: Accessor): this {
+	public setInput(input: Accessor | null): this {
 		this.input = this.graph.link('input', this, input);
 		return this;
 	}
@@ -105,7 +105,7 @@ export class AnimationSampler extends Property {
 	 * Values for each keyframe. For `CUBICSPLINE` interpolation, output also contains in/out
 	 * tangents.
 	 */
-	public getOutput(): Accessor {
+	public getOutput(): Accessor | null {
 		return this.output ? this.output.getChild() : null;
 	}
 
@@ -113,7 +113,7 @@ export class AnimationSampler extends Property {
 	 * Values for each keyframe. For `CUBICSPLINE` interpolation, output also contains in/out
 	 * tangents.
 	 */
-	public setOutput(output: Accessor): this {
+	public setOutput(output: Accessor | null): this {
 		this.output = this.graph.link('output', this, output);
 		return this;
 	}

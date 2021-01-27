@@ -43,13 +43,11 @@ export abstract class Property extends GraphNode {
 	/** Property type. */
 	public abstract readonly propertyType: string;
 
-	protected readonly graph: PropertyGraph;
-
 	private _extras: Record<string, unknown> = {};
 	private _name = '';
 
 	/** @hidden */
-	constructor(graph: PropertyGraph, name = '') {
+	constructor(protected readonly graph: PropertyGraph, name = '') {
 		super(graph);
 		this._name = name;
 	}

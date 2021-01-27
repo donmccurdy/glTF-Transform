@@ -44,11 +44,11 @@ export class Node extends ExtensibleProperty {
 	private _weights: number[] = [];
 
 	/** @hidden Internal reference to node's parent, omitted from {@link Graph}. */
-	public _parent: SceneNode = null;
+	public _parent: SceneNode | null = null;
 
-	@GraphChild private camera: Link<Node, Camera> = null;
-	@GraphChild private mesh: Link<Node, Mesh> = null;
-	@GraphChild private skin: Link<Node, Skin> = null;
+	@GraphChild private camera: Link<Node, Camera> | null = null;
+	@GraphChild private mesh: Link<Node, Mesh> | null = null;
+	@GraphChild private skin: Link<Node, Skin> | null = null;
 	@GraphChildList private children: Link<Node, Node>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
@@ -131,13 +131,13 @@ export class Node extends ExtensibleProperty {
 		// Build ancestor chain.
 		const ancestors: Node[] = [];
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		for (let node: SceneNode = this; node instanceof Node; node = node._parent) {
+		for (let node: SceneNode | null = this; node instanceof Node; node = node._parent) {
 			ancestors.push(node);
 		}
 
 		// Compute world matrix.
-		let ancestor: Node;
-		const worldMatrix = ancestors.pop().getMatrix();
+		let ancestor: Node | undefined;
+		const worldMatrix = ancestors.pop()!.getMatrix();
 		while ((ancestor = ancestors.pop())) {
 			multiply(worldMatrix, worldMatrix, ancestor.getMatrix());
 		}
@@ -178,7 +178,7 @@ export class Node extends ExtensibleProperty {
 	 * Returns the unique parent ({@link Scene}, {@link Node}, or null) of this node in the scene
 	 * hierarchy. Unrelated to {@link Property.listParents}, which lists all resource references.
 	 */
-	public getParent(): SceneNode {
+	public getParent(): SceneNode | null {
 		return this._parent;
 	}
 
@@ -187,31 +187,31 @@ export class Node extends ExtensibleProperty {
 	 */
 
 	/** Returns the {@link Mesh}, if any, instantiated at this node. */
-	public getMesh(): Mesh { return this.mesh ? this.mesh.getChild() : null; }
+	public getMesh(): Mesh | null { return this.mesh ? this.mesh.getChild() : null; }
 
 	/**
 	 * Sets a {@link Mesh} to be instantiated at this node. A single mesh may be instatiated by
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
-	public setMesh(mesh: Mesh): this {
+	public setMesh(mesh: Mesh | null): this {
 		this.mesh = this.graph.link('mesh', this, mesh);
 		return this;
 	}
 
 	/** Returns the {@link Camera}, if any, instantiated at this node. */
-	public getCamera(): Camera { return this.camera ? this.camera.getChild() : null; }
+	public getCamera(): Camera | null { return this.camera ? this.camera.getChild() : null; }
 
 	/** Sets a {@link Camera} to be instantiated at this node. */
-	public setCamera(camera: Camera): this {
+	public setCamera(camera: Camera | null): this {
 		this.camera = this.graph.link('camera', this, camera);
 		return this;
 	}
 
 	/** Returns the {@link Skin}, if any, instantiated at this node. */
-	public getSkin(): Skin { return this.skin ? this.skin.getChild() : null; }
+	public getSkin(): Skin | null { return this.skin ? this.skin.getChild() : null; }
 
 	/** Sets a {@link Skin} to be instantiated at this node. */
-	public setSkin(skin: Skin): this {
+	public setSkin(skin: Skin | null): this {
 		this.skin = this.graph.link('skin', this, skin);
 		return this;
 	}
@@ -246,7 +246,7 @@ export class Node extends ExtensibleProperty {
 }
 
 interface SceneNode {
-	_parent?: SceneNode;
+	_parent?: SceneNode | null;
 	addChild(node: Node): this;
 	removeChild(node: Node): this;
 }

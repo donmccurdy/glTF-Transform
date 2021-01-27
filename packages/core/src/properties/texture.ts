@@ -27,7 +27,7 @@ export class Texture extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.TEXTURE;
 
 	/** @hidden Raw image data for this texture. */
-	private _image: ArrayBuffer = null;
+	private _image: ArrayBuffer | null = null;
 
 	/** @hidden Image MIME type. Required if URI is not set. */
 	private _mimeType = '';
@@ -88,7 +88,7 @@ export class Texture extends ExtensibleProperty {
 	 */
 
 	/** Returns the raw image data for this texture. */
-	public getImage(): ArrayBuffer { return this._image; }
+	public getImage(): ArrayBuffer | null { return this._image; }
 
 	/** Sets the raw image data for this texture. */
 	public setImage(image: ArrayBuffer): this {
@@ -97,7 +97,8 @@ export class Texture extends ExtensibleProperty {
 	}
 
 	/** Returns the size, in pixels, of this texture. */
-	public getSize(): vec2 {
+	public getSize(): vec2 | null {
+		if (!this._image) return null;
 		return ImageUtils.getSize(this._image, this.getMimeType());
 	}
 }

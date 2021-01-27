@@ -28,8 +28,8 @@ export class TextureInfo extends ExtensibleProperty {
 	private _texCoord = 0;
 
 	// Sampler properties are also attached to TextureInfo, for simplicity.
-	private _magFilter: GLTF.TextureMagFilter = null;
-	private _minFilter: GLTF.TextureMinFilter = null;
+	private _magFilter: GLTF.TextureMagFilter | null = null;
+	private _minFilter: GLTF.TextureMinFilter | null = null;
 	private _wrapS: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
 	private _wrapT: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
 
@@ -101,19 +101,19 @@ export class TextureInfo extends ExtensibleProperty {
 	*/
 
 	/** Returns the magnification filter applied to the texture. */
-	public getMagFilter(): GLTF.TextureMagFilter { return this._magFilter; }
+	public getMagFilter(): GLTF.TextureMagFilter | null { return this._magFilter; }
 
 	/** Sets the magnification filter applied to the texture. */
-	public setMagFilter(magFilter: GLTF.TextureMagFilter): this {
+	public setMagFilter(magFilter: GLTF.TextureMagFilter | null): this {
 		this._magFilter = magFilter;
 		return this;
 	}
 
 	/** Sets the minification filter applied to the texture. */
-	public getMinFilter(): GLTF.TextureMinFilter { return this._minFilter; }
+	public getMinFilter(): GLTF.TextureMinFilter | null { return this._minFilter; }
 
 	/** Returns the minification filter applied to the texture. */
-	public setMinFilter(minFilter: GLTF.TextureMinFilter): this {
+	public setMinFilter(minFilter: GLTF.TextureMinFilter | null): this {
 		this._minFilter = minFilter;
 		return this;
 	}

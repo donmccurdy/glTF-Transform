@@ -37,18 +37,18 @@ export class Camera extends ExtensibleProperty {
 	// Common.
 
 	private _type: GLTF.CameraType = Camera.Type.PERSPECTIVE;
-	private _znear: number;
-	private _zfar: number;
+	private _znear = 0.1;
+	private _zfar = 100;
 
 	// Perspective.
 
-	private _aspectRatio: number;
-	private _yfov: number;
+	private _aspectRatio: number | null = null;
+	private _yfov: number = Math.PI * 2 * 50 / 360; // 50º
 
 	// Orthographic.
 
-	private _xmag: number;
-	private _ymag: number;
+	private _xmag = 1;
+	private _ymag = 1;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -120,13 +120,13 @@ export class Camera extends ExtensibleProperty {
 	 * Floating-point aspect ratio of the field of view. When undefined, the aspect ratio of the
 	 * canvas is used.
 	 */
-	public getAspectRatio(): number { return this._aspectRatio; }
+	public getAspectRatio(): number | null { return this._aspectRatio; }
 
 	/**
 	 * Floating-point aspect ratio of the field of view. When undefined, the aspect ratio of the
 	 * canvas is used.
 	 */
-	public setAspectRatio(aspectRatio: number): this {
+	public setAspectRatio(aspectRatio: number | null): this {
 		this._aspectRatio = aspectRatio;
 		return this;
 	}

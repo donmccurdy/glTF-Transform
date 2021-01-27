@@ -30,14 +30,14 @@ export class PrimitiveTarget extends Property {
 
 		this.clearGraphChildList(this.attributes);
 		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)));
+			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
 		});
 
 		return this;
 	}
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */
-	public getAttribute(semantic: string): Accessor {
+	public getAttribute(semantic: string): Accessor | null {
 		const link = this.attributes.find((link) => link.semantic === semantic);
 		return link ? link.getChild() : null;
 	}
@@ -45,7 +45,7 @@ export class PrimitiveTarget extends Property {
 	/**
 	 * Sets a morph target vertex attribute to an {@link Accessor}.
 	 */
-	public setAttribute(semantic: string, accessor: Accessor): this {
+	public setAttribute(semantic: string, accessor: Accessor | null): this {
 		// Remove previous attribute.
 		const prevAccessor = this.getAttribute(semantic);
 		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);

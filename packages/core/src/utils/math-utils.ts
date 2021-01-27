@@ -19,6 +19,8 @@ export class MathUtils {
 				return Math.max(c / 32767.0, -1.0);
 			case 5120:
 				return Math.max(c / 127.0, -1.0);
+			default:
+				throw new Error('Invalid component type.');
 		}
 
 	}
@@ -36,6 +38,8 @@ export class MathUtils {
 				return Math.round(f * 32767.0);
 			case 5120:
 				return Math.round(f * 127.0);
+			default:
+				throw new Error('Invalid component type.');
 		}
 	}
 }

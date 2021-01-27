@@ -19,8 +19,8 @@ import { COPY_IDENTITY } from './property';
 export class Skin extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.SKIN;
 
-	@GraphChild private skeleton: Link<Skin, Node> = null;
-	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> = null;
+	@GraphChild private skeleton: Link<Skin, Node> | null = null;
+	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> | null = null;
 	@GraphChildList private joints: Link<Skin, Node>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
@@ -41,7 +41,7 @@ export class Skin extends ExtensibleProperty {
 	 * {@link Node} used as a skeleton root. The node must be the closest common root of the joints
 	 * hierarchy or a direct or indirect parent node of the closest common root.
 	 */
-	public getSkeleton(): Node {
+	public getSkeleton(): Node | null {
 		return this.skeleton ? this.skeleton.getChild() : null;
 	}
 
@@ -49,7 +49,7 @@ export class Skin extends ExtensibleProperty {
 	 * {@link Node} used as a skeleton root. The node must be the closest common root of the joints
 	 * hierarchy or a direct or indirect parent node of the closest common root.
 	 */
-	public setSkeleton(skeleton: Node): this {
+	public setSkeleton(skeleton: Node | null): this {
 		this.skeleton = this.graph.link('skeleton', this, skeleton);
 		return this;
 	}
@@ -59,7 +59,7 @@ export class Skin extends ExtensibleProperty {
 	 * that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were
 	 * pre-applied.
 	 */
-	public getInverseBindMatrices(): Accessor {
+	public getInverseBindMatrices(): Accessor | null {
 		return this.inverseBindMatrices ? this.inverseBindMatrices.getChild() : null;
 	}
 
@@ -68,7 +68,7 @@ export class Skin extends ExtensibleProperty {
 	 * that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were
 	 * pre-applied.
 	 */
-	public setInverseBindMatrices(inverseBindMatrices: Accessor): this {
+	public setInverseBindMatrices(inverseBindMatrices: Accessor | null): this {
 		this.inverseBindMatrices
 			= this.graph.link('inverseBindMatrices', this, inverseBindMatrices);
 		return this;
