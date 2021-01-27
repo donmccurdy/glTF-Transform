@@ -9,6 +9,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { material } from './transforms/material';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -412,6 +413,60 @@ paricular software application.
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
 
+// MATERIAL
+program
+	.command('material', 'TODO')
+	.help(`
+TODO
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <glob>', 'Pattern for material names (case-insensitive glob)', {validator: program.STRING})
+	// Core.
+	.option('--baseColor <color>', 'Base color, sRGB hex color', {validator: program.STRING})
+	.option('--baseColorTexture <image>', 'Base color, texture', {validator: program.STRING})
+	.option('--alpha <float>', 'Alpha, [0-1]', {validator: program.NUMBER})
+	.option('--alphaMode <mode>', 'Alpha mode', {validator: ['OPAQUE', 'BLEND', 'MASK']})
+	.option('--alphaCutoff <float>', 'Alpha cutoff for --alphaMode=MASK, [0-1]', {validator: program.NUMBER})
+	.option('--doubleSided <boolean>', 'Double-sided, [true | false]', {validator: program.BOOLEAN})
+	.option('--normalTexture <image>', 'Normal map, texture', {validator: program.STRING})
+	.option('--emissive <color>', 'Emissive color, sRGB hex color', {validator: program.STRING})
+	.option('--emissiveTexture <image>', 'Emissive color, texture', {validator: program.STRING})
+	.option('--occlusionTexture <image>', 'Occlusion (R), texture', {validator: program.STRING})
+	.option('--roughness <float>', 'Roughness, [0-1]', {validator: program.NUMBER})
+	.option('--metallic <float>', 'Metallic, [0-1]', {validator: program.NUMBER})
+	.option('--roughnessMetallicTexture <image>', 'Roughness (G) and metallic (B), texture', {validator: program.STRING})
+	// Clearcoat.
+	.option('--clearcoat <float>', 'Clearcoat, [0-1]', {validator: program.NUMBER})
+	.option('--clearcoatTexture <image>', 'Clearcoat, texture', {validator: program.STRING})
+	.option('--clearcoatRoughness <float>', 'Clearcoat roughness, [0-1]', {validator: program.NUMBER})
+	.option('--clearcoatRoughnessTexture <image>', 'Clearcoat roughness, texture', {validator: program.STRING})
+	.option('--clearcoatNormalTexture <image>', 'Clearcoat normal map, texture', {validator: program.STRING})
+	// Transmission.
+	.option('--transmission <float>', 'TODO', {validator: program.NUMBER})
+	.option('--transmissionTexture <image>', 'TODO', {validator: program.STRING})
+	// IOR.
+	.option('--ior <float>', 'Index of refraction', {validator: program.NUMBER})
+	// Specular.
+	.option('--specular <float>', 'TODO', {validator: program.NUMBER})
+	.option('--specularColor <string>', 'TODO', {validator: program.STRING})
+	.option('--specularTexture <image>', 'TODO', {validator: program.STRING})
+	// Sheen.
+	.option('--sheenColor <color>', 'TODO', {validator: program.STRING})
+	.option('--sheenRoughness <float>', 'TODO', {validator: program.NUMBER})
+	.option('--sheenColorTexture <image>', 'TODO', {validator: program.STRING})
+	.option('--sheenRoughnessTexture <image>', 'TODO', {validator: program.STRING})
+	// Volume.
+	.option('--thickness <color>', 'TODO', {validator: program.STRING})
+	.option('--thicknessTexture <image>', 'TODO', {validator: program.STRING})
+	.option('--attenuationDistance <float>', 'TODO', {validator: program.NUMBER})
+	.option('--attenuationColor <color>', 'TODO', {validator: program.STRING})
+	.action(({args, logger, options}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		return Session.create(io, logger, args.input, args.output)
+			.transform(material({...options, pattern}));
+	});
+
 // AMBIENT OCCLUSION
 program
 	.command('ao', 'Bake per-vertex ambient occlusion')
@@ -714,7 +769,7 @@ so this workflow is not a replacement for video playback.
 		validator: program.STRING,
 		default: '',
 	})
-	.option('--pattern <pattern>', 'Pattern for node names (case-insensitive glob)', {
+	.option('--pattern <glob>', 'Pattern for node names (case-insensitive glob)', {
 		validator: program.STRING,
 		required: true,
 	})
