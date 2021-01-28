@@ -12,7 +12,7 @@ export class Transform extends ExtensionProperty {
 	private _offset: vec2 = [0, 0];
 	private _rotation = 0;
 	private _scale: vec2 = [1, 1];
-	private _texCoord: number = undefined;
+	private _texCoord: number | null = null;
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -43,7 +43,7 @@ export class Transform extends ExtensionProperty {
 		return this;
 	}
 
-	public getTexCoord(): number { return this._texCoord; }
+	public getTexCoord(): number | null { return this._texCoord; }
 	public setTexCoord(texCoord: number): this {
 		this._texCoord = texCoord;
 		return this;

@@ -12,7 +12,7 @@ export class Volume extends ExtensionProperty {
 	private _attenuationDistance = Infinity;
 	private _attenuationColor = [1, 1, 1] as vec3;
 
-	@GraphChild private thicknessTexture: Link<this, Texture> = null;
+	@GraphChild private thicknessTexture: Link<this, Texture> | null = null;
 	@GraphChild private thicknessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('thicknessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -62,7 +62,7 @@ export class Volume extends ExtensionProperty {
 	 * Texture that defines the thickness, stored in the G channel. This will be multiplied by
 	 * thicknessFactor.
 	 */
-	public getThicknessTexture(): Texture {
+	public getThicknessTexture(): Texture | null {
 		return this.thicknessTexture ? this.thicknessTexture.getChild() : null;
 	}
 
@@ -70,7 +70,7 @@ export class Volume extends ExtensionProperty {
 	 * Settings affecting the material's use of its thickness texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
-	public getThicknessTextureInfo(): TextureInfo {
+	public getThicknessTextureInfo(): TextureInfo | null {
 		return this.thicknessTexture ? this.thicknessTextureInfo.getChild() : null;
 	}
 
@@ -78,7 +78,7 @@ export class Volume extends ExtensionProperty {
 	 * Texture that defines the thickness, stored in the G channel. This will be multiplied by
 	 * thicknessFactor.
 	 */
-	public setThicknessTexture(texture: Texture): this {
+	public setThicknessTexture(texture: Texture | null): this {
 		this.thicknessTexture = this.graph.link('thicknessTexture', this, texture);
 		return this;
 	}

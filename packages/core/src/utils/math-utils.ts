@@ -6,6 +6,17 @@ export class MathUtils {
 		return v;
 	}
 
+	public static eq(a: number[], b: number[]): boolean {
+		if (a.length !== b.length) return false;
+
+		const eps = 10e-6;
+		for (let i = 0; i < a.length; i++) {
+			if (Math.abs(a[i] - b[i]) > eps) return false;
+		}
+
+		return true;
+	}
+
 	public static denormalize(c: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {

@@ -87,3 +87,24 @@ test('@gltf-transform/extensions::lights-punctual | hex', t => {
 	t.equals(light.getColorHex(), 0x111111, 'colorHex');
 	t.end();
 });
+
+test('@gltf-transform/extensions::lights-punctual | i/o', t => {
+	const doc = new Document();
+	const lightsExtension = doc.createExtension(LightsPunctual);
+	const light = lightsExtension.createLight()
+		.setType(Light.Type.POINT)
+		.setIntensity(2.0);
+
+	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
+
+	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
+
+	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const nodeDef = jsonDoc.json.nodes[0];
+
+	t.deepEqual(nodeDef.extensions, {'KHR_lights_punctual': {light: 0}}, 'attaches light');
+	t.deepEqual(jsonDoc.json.extensions, {'KHR_lights_punctual': {
+		lights: [{type: 'point', intensity: 2}] // omit range!
+	}});
+	t.end();
+});

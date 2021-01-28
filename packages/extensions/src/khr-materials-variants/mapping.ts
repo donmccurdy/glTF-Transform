@@ -9,7 +9,7 @@ export class Mapping extends ExtensionProperty {
 	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
 
-	@GraphChild private material: Link<this, Material> = null;
+	@GraphChild private material: Link<this, Material> | null = null;
 	@GraphChildList private variants: Link<this, Variant>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
@@ -26,10 +26,12 @@ export class Mapping extends ExtensionProperty {
 	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */
-	public getMaterial(): Material { return this.material ? this.material.getChild() : null; }
+	public getMaterial(): Material | null {
+		return this.material ? this.material.getChild() : null;
+	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */
-	public setMaterial(material: Material): this {
+	public setMaterial(material: Material | null): this {
 		this.material = this.graph.link('material', this, material);
 		return this;
 	}

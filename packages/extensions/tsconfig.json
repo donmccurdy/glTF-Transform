@@ -5,6 +5,6 @@
     "outDir": "dist"
     // "noImplicitAny": true,
     // "strictNullChecks": true,
-    // "strictPropertyInitialization": true,
+    // "strictPropertyInitialization": true
   }
 }

@@ -29,7 +29,7 @@
     "quotes": ["warn", "single"],
     "max-len": ["warn", {"code": 100, "tabWidth": 4, "ignoreUrls": true, "ignorePattern": "^import|^export"}],
     "semi": ["error"],
-    "eqeqeq": ["warn"],
+    "eqeqeq": ["warn", "smart"],
     "space-infix-ops": ["warn"],
     "array-bracket-spacing": ["warn"],
     "no-irregular-whitespace": ["warn"],

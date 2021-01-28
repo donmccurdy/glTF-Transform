@@ -12,11 +12,11 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	private _specularFactor: vec3 = [1.0, 1.0, 1.0];
 	private _glossinessFactor = 1.0;
 
-	@GraphChild private diffuseTexture: Link<this, Texture> = null;
+	@GraphChild private diffuseTexture: Link<this, Texture> | null = null;
 	@GraphChild private diffuseTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('diffuseTextureInfo', this, new TextureInfo(this.graph));
 
-	@GraphChild private specularGlossinessTexture: Link<this, Texture> = null;
+	@GraphChild private specularGlossinessTexture: Link<this, Texture> | null = null;
 	@GraphChild private specularGlossinessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('specularGlossinessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -29,12 +29,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 
 		if (other.diffuseTexture) {
 			this.setDiffuseTexture(resolve(other.diffuseTexture.getChild()));
-			this.getDiffuseTextureInfo()
+			this.getDiffuseTextureInfo()!
 				.copy(resolve(other.diffuseTextureInfo.getChild()), resolve);
 		}
 		if (other.specularGlossinessTexture) {
 			this.setSpecularGlossinessTexture(resolve(other.specularGlossinessTexture.getChild()));
-			this.getSpecularGlossinessTextureInfo()
+			this.getSpecularGlossinessTextureInfo()!
 				.copy(resolve(other.specularGlossinessTextureInfo.getChild()), resolve);
 		}
 
@@ -73,7 +73,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Diffuse texture; linear multiplier. Alternative to baseColorTexture used within the
 	 * spec/gloss PBR workflow.
 	 */
-	public getDiffuseTexture(): Texture {
+	public getDiffuseTexture(): Texture | null {
 		return this.diffuseTexture ? this.diffuseTexture.getChild() : null;
 	}
 
@@ -81,12 +81,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Settings affecting the material's use of its diffuse texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
-	public getDiffuseTextureInfo(): TextureInfo {
+	public getDiffuseTextureInfo(): TextureInfo | null {
 		return this.diffuseTexture ? this.diffuseTextureInfo.getChild() : null;
 	}
 
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
-	public setDiffuseTexture(texture: Texture): this {
+	public setDiffuseTexture(texture: Texture | null): this {
 		this.diffuseTexture = this.graph.link('diffuseTexture', this, texture);
 		return this;
 	}
@@ -122,7 +122,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 */
 
 	/** Spec/gloss texture; linear multiplier. */
-	public getSpecularGlossinessTexture(): Texture {
+	public getSpecularGlossinessTexture(): Texture | null {
 		return this.specularGlossinessTexture ? this.specularGlossinessTexture.getChild() : null;
 	}
 
@@ -130,14 +130,14 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * Settings affecting the material's use of its spec/gloss texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
-	public getSpecularGlossinessTextureInfo(): TextureInfo {
+	public getSpecularGlossinessTextureInfo(): TextureInfo | null {
 		return this.specularGlossinessTexture
 			? this.specularGlossinessTextureInfo.getChild()
 			: null;
 	}
 
 	/** Spec/gloss texture; linear multiplier. */
-	public setSpecularGlossinessTexture(texture: Texture): this {
+	public setSpecularGlossinessTexture(texture: Texture | null): this {
 		this.specularGlossinessTexture
 			= this.graph.link('specularGlossinessTexture', this, texture);
 		return this;

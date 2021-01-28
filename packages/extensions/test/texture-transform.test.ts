@@ -119,3 +119,39 @@ test('@gltf-transform/extensions::texture-transform | clone', t => {
 
 	t.end();
 });
+
+
+test('@gltf-transform/extensions::texture-transform | i/o', t => {
+	const doc = new Document();
+	const transformExtension = doc.createExtension(TextureTransform);
+	const tex1 = doc.createTexture();
+
+	const mat = doc.createMaterial();
+	mat.setBaseColorTexture(tex1)
+		.getBaseColorTextureInfo()
+		.setExtension('KHR_texture_transform', transformExtension.createTransform()
+			.setScale([100, 100]));
+	mat.setEmissiveTexture(tex1)
+		.getEmissiveTextureInfo()
+		.setExtension('KHR_texture_transform', transformExtension.createTransform()
+			.setTexCoord(0)
+			.setOffset([.5, .5])
+			.setRotation(Math.PI));
+
+	const jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	const materialDef = jsonDoc.json.materials[0];
+	const baseColorTextureInfoDef = materialDef.pbrMetallicRoughness.baseColorTexture;
+	const emissiveTextureInfoDef = materialDef.emissiveTexture;
+
+	t.deepEqual(
+		baseColorTextureInfoDef.extensions,
+		{'KHR_texture_transform': {scale: [100, 100]}}, // omit texCoord!
+		'base color texture info'
+	);
+	t.deepEqual(
+		emissiveTextureInfoDef.extensions,
+		{'KHR_texture_transform': {texCoord: 0, offset: [.5, .5], rotation: Math.PI}},
+		'emissive texture info'
+	);
+	t.end();
+});

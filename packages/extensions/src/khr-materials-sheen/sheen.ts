@@ -11,11 +11,11 @@ export class Sheen extends ExtensionProperty {
 	private _sheenColorFactor: vec3 = [0.0, 0.0, 0.0];
 	private _sheenRoughnessFactor = 0.0;
 
-	@GraphChild private sheenColorTexture: Link<this, Texture> = null;
+	@GraphChild private sheenColorTexture: Link<this, Texture> | null = null;
 	@GraphChild private sheenColorTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('sheenColorTextureInfo', this, new TextureInfo(this.graph));
 
-	@GraphChild private sheenRoughnessTexture: Link<this, Texture> = null;
+	@GraphChild private sheenRoughnessTexture: Link<this, Texture> | null = null;
 	@GraphChild private sheenRoughnessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('sheenRoughnessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -27,12 +27,12 @@ export class Sheen extends ExtensionProperty {
 
 		if (other.sheenColorTexture) {
 			this.setSheenColorTexture(resolve(other.sheenColorTexture.getChild()));
-			this.getSheenColorTextureInfo()
+			this.getSheenColorTextureInfo()!
 				.copy(resolve(other.sheenColorTextureInfo.getChild()), resolve);
 		}
 		if (other.sheenRoughnessTexture) {
 			this.setSheenRoughnessTexture(resolve(other.sheenRoughnessTexture.getChild()));
-			this.getSheenRoughnessTextureInfo()
+			this.getSheenRoughnessTextureInfo()!
 				.copy(resolve(other.sheenRoughnessTextureInfo.getChild()), resolve);
 		}
 
@@ -70,7 +70,7 @@ export class Sheen extends ExtensionProperty {
 	/**
 	 * Sheen color texture, in sRGB colorspace.
 	 */
-	public getSheenColorTexture(): Texture {
+	public getSheenColorTexture(): Texture | null {
 		return this.sheenColorTexture ? this.sheenColorTexture.getChild() : null;
 	}
 
@@ -78,12 +78,12 @@ export class Sheen extends ExtensionProperty {
 	 * Settings affecting the material's use of its sheen color texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
-	public getSheenColorTextureInfo(): TextureInfo {
+	public getSheenColorTextureInfo(): TextureInfo | null {
 		return this.sheenColorTexture ? this.sheenColorTextureInfo.getChild() : null;
 	}
 
 	/** Sets sheen color texture. See {@link getSheenColorTexture}. */
-	public setSheenColorTexture(texture: Texture): this {
+	public setSheenColorTexture(texture: Texture | null): this {
 		this.sheenColorTexture = this.graph.link('sheenColorTexture', this, texture);
 		return this;
 	}
@@ -105,7 +105,7 @@ export class Sheen extends ExtensionProperty {
 	 * Sheen roughness texture; linear multiplier. The `a` channel of this texture specifies
 	 * roughness, independent of the base layer's roughness.
 	 */
-	public getSheenRoughnessTexture(): Texture {
+	public getSheenRoughnessTexture(): Texture | null {
 		return this.sheenRoughnessTexture ? this.sheenRoughnessTexture.getChild() : null;
 	}
 
@@ -113,7 +113,7 @@ export class Sheen extends ExtensionProperty {
 	 * Settings affecting the material's use of its sheen roughness texture. If no texture is
 	 * attached, {@link TextureInfo} is `null`.
 	 */
-	public getSheenRoughnessTextureInfo(): TextureInfo {
+	public getSheenRoughnessTextureInfo(): TextureInfo | null {
 		return this.sheenRoughnessTexture ? this.sheenRoughnessTextureInfo.getChild() : null;
 	}
 
@@ -121,7 +121,7 @@ export class Sheen extends ExtensionProperty {
 	 * Sets sheen roughness texture.  The `a` channel of this texture specifies
 	 * roughness, independent of the base layer's roughness.
 	 */
-	public setSheenRoughnessTexture(texture: Texture): this {
+	public setSheenRoughnessTexture(texture: Texture | null): this {
 		this.sheenRoughnessTexture = this.graph.link('sheenRoughnessTexture', this, texture);
 		return this;
 	}

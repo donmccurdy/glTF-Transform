@@ -1,4 +1,4 @@
-import { Extension, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, MathUtils, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants';
 import { Light } from './light';
 
@@ -65,12 +65,11 @@ export class LightsPunctual extends Extension {
 
 		for (const property of this.properties) {
 			const light = property as Light;
-			const lightDef = {
-				type: light.getType(),
-				color: light.getColor(),
-				intensity: light.getIntensity(),
-				range: light.getRange(),
-			};
+			const lightDef = {type: light.getType()} as LightDef;
+
+			if (!MathUtils.eq(light.getColor(), [1, 1, 1])) lightDef.color = light.getColor();
+			if (light.getIntensity() !== 1) lightDef.intensity = light.getIntensity();
+			if (light.getRange() != null) lightDef.range = light.getRange()!;
 
 			if (light.getName()) lightDef['name'] = light.getName();
 

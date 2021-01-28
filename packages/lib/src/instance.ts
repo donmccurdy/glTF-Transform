@@ -1,4 +1,4 @@
-import { Document, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
+import { Document, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
 
 const NAME = 'instance';
@@ -61,9 +61,9 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 					batchRotation.setElement(i, r = node.getWorldRotation());
 					batchScale.setElement(i, s = node.getWorldScale());
 
-					if (!eq(t, [0, 0, 0])) needsTranslation = true;
-					if (!eq(r, [0, 0, 0, 1])) needsRotation = true;
-					if (!eq(s, [1, 1, 1])) needsScale = true;
+					if (!MathUtils.eq(t, [0, 0, 0])) needsTranslation = true;
+					if (!MathUtils.eq(r, [0, 0, 0, 1])) needsRotation = true;
+					if (!MathUtils.eq(s, [1, 1, 1])) needsScale = true;
 
 					// Clean up the old node.
 					if (!node.listChildren().length
@@ -122,15 +122,4 @@ function createBatch(
 		.setAttribute('TRANSLATION', batchTranslation)
 		.setAttribute('ROTATION', batchRotation)
 		.setAttribute('SCALE', batchScale);
-}
-
-function eq(a: number[], b: number[]): boolean {
-	if (a.length !== b.length) return false;
-
-	const eps = 10e-6;
-	for (let i = 0; i < a.length; i++) {
-		if (Math.abs(a[i] - b[i]) > eps) return false;
-	}
-
-	return true;
 }

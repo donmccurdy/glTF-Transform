@@ -11,7 +11,7 @@ export class Specular extends ExtensionProperty {
 	private _specularFactor = 1.0;
 	private _specularColorFactor: vec3 = [1.0, 1.0, 1.0];
 
-	@GraphChild private specularTexture: Link<this, Texture> = null;
+	@GraphChild private specularTexture: Link<this, Texture> | null = null;
 	@GraphChild private specularTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('specularTextureInfo', this, new TextureInfo(this.graph));
 
@@ -76,7 +76,7 @@ export class Specular extends ExtensionProperty {
 	 * encoded in sRGB) and the specular factor (A). Will be multiplied by specularFactor and
 	 * specularColorFactor.
 	 */
-	public getSpecularTexture(): Texture {
+	public getSpecularTexture(): Texture | null {
 		return this.specularTexture ? this.specularTexture.getChild() : null;
 	}
 
@@ -84,12 +84,12 @@ export class Specular extends ExtensionProperty {
 	 * Settings affecting the material's use of its specular texture. If no texture is attached,
 	 * {@link TextureInfo} is `null`.
 	 */
-	public getSpecularTextureInfo(): TextureInfo {
+	public getSpecularTextureInfo(): TextureInfo | null {
 		return this.specularTexture ? this.specularTextureInfo.getChild() : null;
 	}
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */
-	public setSpecularTexture(texture: Texture): this {
+	public setSpecularTexture(texture: Texture | null): this {
 		this.specularTexture = this.graph.link('specularTexture', this, texture);
 		return this;
 	}
