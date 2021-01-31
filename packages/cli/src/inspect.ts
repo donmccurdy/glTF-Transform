@@ -55,7 +55,8 @@ export async function inspect (
 			continue;
 		}
 
-		const formattedRecords = properties.map(formatPropertyReport);
+		const formattedRecords = properties
+			.map((property, index) => formatPropertyReport(property, index, format));
 		const formattedRows = formattedRecords.map((p) => Object.values(p));
 		const head = Object.keys(formattedRecords[0]);
 		console.log(await formatTable(format, head, formattedRows));
@@ -88,16 +89,16 @@ async function formatTable(
 
 }
 
-function formatPropertyReport(property, index) {
+function formatPropertyReport(property, index, format: InspectFormat) {
 	const row = {'#': index};
 	for (const key in property) {
 		const value = property[key];
 		if (Array.isArray(value)) {
 			row[key] = value.join(', ');
-		} else if (key.match(/size/i)) {
+		} else if (key.match(/size/i) && format !== InspectFormat.CSV) {
 			row[key] = value > 0 ? formatBytes(value) : '';
 		} else if (typeof value === 'number') {
-			row[key] = formatLong(value);
+			row[key] = format !== InspectFormat.CSV ? formatLong(value) : value;
 		} else if (typeof value === 'boolean') {
 			row[key] = value ? '✓' : '';
 		} else {
