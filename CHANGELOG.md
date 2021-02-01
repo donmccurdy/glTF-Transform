@@ -1,6 +1,14 @@
 # Changelog
 
-## v0.9 — 🚧 Unreleased
+## v0.10 — 🚧 Unreleased
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10)
+
+**Features:**
+
+**Breaking changes:**
+
+## v0.9
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/9)
 
