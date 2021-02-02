@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -408,6 +408,19 @@ paricular software application.
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(unweld(options as unknown as UnweldOptions))
+	);
+
+// TANGENTS
+program
+	.command('tangents', 'Computes vertex tangents with MikkTSpace standard')
+	.help(`
+TODO
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(tangents())
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
