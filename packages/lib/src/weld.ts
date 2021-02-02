@@ -15,6 +15,8 @@ export function weld (options: WeldOptions = DEFAULT_OPTIONS): Transform {
 	options = {...DEFAULT_OPTIONS, ...options};
 
 	return (doc: Document): void => {
+		const logger = doc.getLogger();
+
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				if (options.tolerance === 0) {
@@ -24,6 +26,8 @@ export function weld (options: WeldOptions = DEFAULT_OPTIONS): Transform {
 				}
 			}
 		}
+
+		logger.debug(`${NAME}: Complete.`);
 	};
 }
 

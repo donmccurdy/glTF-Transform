@@ -49,6 +49,8 @@ export function unweld (_options: UnweldOptions = DEFAULT_OPTIONS): Transform {
 				if (indices.listParents().length === 1) indices.dispose();
 			}
 		}
+
+		logger.debug(`${NAME}: Complete.`);
 	};
 }
 
