@@ -14,8 +14,9 @@ import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
 
-// Use require() so microbundle doesn't compile this.
+// Use require() so microbundle doesn't compile these.
 const draco3d = require('draco3dgltf');
+const mikktspace = require('mikktspace');
 
 const programReady = new Promise<void>((resolve) => {
 	Promise.all([
@@ -412,15 +413,28 @@ paricular software application.
 
 // TANGENTS
 program
-	.command('tangents', 'Computes vertex tangents with MikkTSpace standard')
+	.command('tangents', 'Generates MikkTSpace vertex tangents')
 	.help(`
-TODO
+Generates MikkTSpace vertex tangents.
+
+In some situations normal maps may appear incorrectly, displaying hard edges
+at seams, or unexpectedly inverted insets and extrusions. The issue is most
+commonly caused by a mismatch between the software used to bake the normal map
+and the pixel shader or other code used to render it. While this may be a
+frustration to an artist/designer, it is not always possible for the rendering
+engine to reconstruct the tangent space used by the authoring software.
+
+Most normal map bakers use the MikkTSpace standard (http://www.mikktspace.com/)
+to generate vertex tangents while creating a normal map, and the technique is
+recommended by the glTF 2.0 specification. Generating vertex tangents with this
+tool may resolve rendering issues related to normal maps in engines that cannot
+compute MikkTSpace tangents at runtime.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(tangents())
+			.transform(tangents(mikktspace))
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');

@@ -1,20 +1,26 @@
-import { Document, Logger, Primitive, Transform } from '@gltf-transform/core';
+import { Accessor, Document, Logger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
 
 const NAME = 'tangents';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface TangentsOptions {}
+export interface TangentsOptions {
+	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array,
+}
 
-const DEFAULT_OPTIONS: TangentsOptions = {};
+const DEFAULT_OPTIONS: TangentsOptions = {
+	generateTangents: null,
+};
 
-export function tangents (_options: TangentsOptions = DEFAULT_OPTIONS): Transform {
-	_options = {...DEFAULT_OPTIONS, ..._options};
+export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform {
+	options = {...DEFAULT_OPTIONS, ...options};
 
-	// TODO(cleanup): Package this up.
-	const mikktspace = require('mikktspace');
+	if (!options.generateTangents) {
+		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
+	}
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
+		const attributeIDs = new Map<TypedArray, string>();
+		const tangentCache = new Map<string, Accessor>();
 		let modified = 0;
 
 		for (const mesh of doc.getRoot().listMeshes()) {
@@ -24,23 +30,49 @@ export function tangents (_options: TangentsOptions = DEFAULT_OPTIONS): Transfor
 			for (let i = 0; i < meshPrimitives.length; i++) {
 				const prim = meshPrimitives[i];
 
-
+				// Skip primitives for which we can't compute tangents.
 				if (!filterPrimitive(prim, logger, meshName, i)) continue;
 
-				// TODO(bug): Ensure Float32Array, or support all.
-				// TODO(bug): Cache P/N/T set, reuse existing tangents.
+				// Compute UUIDs for each attribute.
+
+				const position = prim.getAttribute('POSITION').getArray();
+				const positionID = attributeIDs.get(position) || uuid();
+				attributeIDs.set(position, positionID);
+
+				const normal = prim.getAttribute('NORMAL').getArray();
+				const normalID = attributeIDs.get(normal) || uuid();
+				attributeIDs.set(normal, normalID);
+
+				const texcoord = prim.getAttribute('TEXCOORD_0').getArray();
+				const texcoordID = attributeIDs.get(texcoord) || uuid();
+				attributeIDs.set(texcoord, texcoordID);
+
+				// If we've already computed tangents for this pos/norm/uv set, reuse them.
+				const attributeHash = `${positionID}|${normalID}|${texcoordID}`;
+				let tangent = tangentCache.get(attributeHash);
+				if (tangent) {
+					logger.debug(`${NAME}: Found cache for primitive ${i} of mesh "${meshName}".`);
+					prim.setAttribute('TANGENT', tangent);
+					modified++;
+					continue;
+				}
+
+				// Otherwise, generate tangents with the 'mikktspace' WASM library.
+				logger.debug(`${NAME}: Generating for primitive ${i} of mesh "${meshName}".`);
 				const tangentBuffer = prim.getAttribute('POSITION').getBuffer();
-				const tangentArray = mikktspace.computeVertexTangents(
-					prim.getAttribute('POSITION').getArray(),
-					prim.getAttribute('NORMAL').getArray(),
-					prim.getAttribute('TEXCOORD_0').getArray()
+				const tangentArray = options.generateTangents(
+					position instanceof Float32Array ? position : new Float32Array(position),
+					normal instanceof Float32Array ? normal : new Float32Array(normal),
+					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord)
 				);
-				const tangent = doc.createAccessor()
+
+				tangent = doc.createAccessor()
 					.setBuffer(tangentBuffer)
 					.setArray(tangentArray)
 					.setType('VEC4');
 				prim.setAttribute('TANGENT', tangent);
 
+				tangentCache.set(attributeHash, tangent);
 				modified++;
 			}
 		}
