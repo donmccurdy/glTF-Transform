@@ -63,6 +63,7 @@ export class WebIO extends PlatformIO {
 	/** @hidden */
 	private _readGLTF (uri: string): Promise<JSONDocument> {
 		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
+		const dir = _dirname(uri);
 		return fetch(uri, this._fetchConfig)
 		.then((response) => response.json())
 		.then((json: GLTF.IGLTF) => {
@@ -72,7 +73,7 @@ export class WebIO extends PlatformIO {
 			const pendingResources: Array<Promise<void>> = [...images, ...buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
 				if (resource.uri) {
-					return fetch(resource.uri, this._fetchConfig)
+					return fetch(_resolve(dir, resource.uri), this._fetchConfig)
 					.then((response) => response.arrayBuffer())
 					.then((arrayBuffer) => {
 						jsonDoc.resources[resource.uri] = arrayBuffer;
@@ -89,4 +90,31 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.arrayBuffer())
 			.then((arrayBuffer) => this.binaryToJSON(arrayBuffer));
 	}
+}
+
+function _dirname(path: string): string {
+	const index = path.lastIndexOf('/');
+	if (index === - 1) return './';
+	return path.substr(0, index + 1);
+}
+
+function _resolve(base: string, path: string) {
+	if (!_isRelative(path)) return path;
+
+	const stack = base.split('/');
+	const parts = path.split('/');
+	stack.pop();
+	for (let i = 0; i < parts.length; i++) {
+		if (parts[i] === '.') continue;
+		if (parts[i] === '..') {
+			stack.pop();
+		} else {
+			stack.push(parts[i]);
+		}
+	}
+	return stack.join('/');
+}
+
+function _isRelative(path: string): boolean {
+	return !/^(?:[a-zA-Z]+:)?\//.test(path);
 }
