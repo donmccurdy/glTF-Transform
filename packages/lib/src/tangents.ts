@@ -4,10 +4,12 @@ const NAME = 'tangents';
 
 export interface TangentsOptions {
 	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array,
+	overwrite?: boolean,
 }
 
 const DEFAULT_OPTIONS: TangentsOptions = {
 	generateTangents: null,
+	overwrite: false,
 };
 
 export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform {
@@ -31,7 +33,7 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				const prim = meshPrimitives[i];
 
 				// Skip primitives for which we can't compute tangents.
-				if (!filterPrimitive(prim, logger, meshName, i)) continue;
+				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite)) continue;
 
 				// Compute UUIDs for each attribute.
 
@@ -46,6 +48,10 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				const texcoord = prim.getAttribute('TEXCOORD_0').getArray();
 				const texcoordID = attributeIDs.get(texcoord) || uuid();
 				attributeIDs.set(texcoord, texcoordID);
+
+				// Dispose of previous TANGENT accessor if only used by this primitive (and Root).
+				const prevTangent = prim.getAttribute('TANGENT');
+				if (prevTangent && prevTangent.listParents().length === 2) prevTangent.dispose();
 
 				// If we've already computed tangents for this pos/norm/uv set, reuse them.
 				const attributeHash = `${positionID}|${normalID}|${texcoordID}`;
@@ -66,6 +72,9 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord)
 				);
 
+				// See: https://github.com/KhronosGroup/glTF-Sample-Models/issues/174
+				for (let i = 3; i < tangentArray.length; i += 4) tangentArray[i] *= -1;
+
 				tangent = doc.createAccessor()
 					.setBuffer(tangentBuffer)
 					.setArray(tangentArray)
@@ -85,7 +94,13 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 	};
 }
 
-function filterPrimitive(prim: Primitive, logger: Logger, meshName: string, i: number): boolean {
+function filterPrimitive(
+		prim: Primitive,
+		logger: Logger,
+		meshName: string,
+		i: number,
+		overwrite: boolean): boolean {
+
 	if (prim.getMode() !== Primitive.Mode.TRIANGLES
 			|| !prim.getAttribute('POSITION')
 			|| !prim.getAttribute('NORMAL')
@@ -97,7 +112,7 @@ function filterPrimitive(prim: Primitive, logger: Logger, meshName: string, i: n
 		return false;
 	}
 
-	if (prim.getAttribute('TANGENT')) {
+	if (prim.getAttribute('TANGENT') && !overwrite) {
 		logger.debug(
 			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": TANGENT found.`
 		);

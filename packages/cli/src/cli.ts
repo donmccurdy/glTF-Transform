@@ -432,9 +432,13 @@ compute MikkTSpace tangents at runtime.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(({args, logger}) =>
+	.option('--overwrite', 'Overwrite existing vertex tangents', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
+	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(tangents(mikktspace))
+			.transform(tangents({generateTangents: mikktspace.generateTangents, ...options}))
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
