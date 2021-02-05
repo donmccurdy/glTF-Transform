@@ -6199,6 +6199,11 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
+mikktspace@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-0.0.2.tgz#2b721c6ff713dc6660e3fc6b7e157616125d7995"
+  integrity sha512-IeSAACCxgSPnWiZoFMBQvuSt5DGmLtKv6ji1PgFL9MG+tBGrdQVhegZbviOzI3TNRrrTMUzNzHSEATOEyiXNyg==
+
 mime-db@1.45.0:
   version "1.45.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.45.0.tgz#cceeda21ccd7c3a745eba2decd55d4b73e7879ea"
