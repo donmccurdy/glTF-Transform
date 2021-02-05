@@ -33,7 +33,7 @@
     "coveralls": "^3.0.11",
     "draco3dgltf": "^1.4.1",
     "eslint": "^6.8.0",
-    "gl": "^4.5.0",
+    "gl": "^4.9.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "^3.20.2",
     "microbundle": "^0.12.0",

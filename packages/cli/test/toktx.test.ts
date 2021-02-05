@@ -43,7 +43,7 @@ async function getParams(options: Record<string, unknown>, size: vec2): Promise<
 	let actualParams: string[];
 	mockSpawnSync((_, params: string[]) => {
 		actualParams = params;
-		fs.writeFileSync(params[params.length - 2], new ArrayBuffer(8));
+		fs.writeFileSync(params[params.length - 2], Buffer.from(new ArrayBuffer(8)));
 		return {status: 0};
 	});
 	mockCommandExistsSync(() => true);
