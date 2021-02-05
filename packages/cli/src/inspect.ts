@@ -1,14 +1,9 @@
-import * as CLITable from 'cli-table3';
-import * as stringifyNamespace from 'csv-stringify';
-import * as mdTableNamespace from 'markdown-table';
+import CLITable from 'cli-table3';
+import stringify from 'csv-stringify';
+import mdTable from 'markdown-table';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-const stringify = stringifyNamespace['default'] as Function;
-// eslint-disable-next-line @typescript-eslint/ban-types
-const mdTable = mdTableNamespace['default'] as Function;
 
 export enum InspectFormat {
 	PRETTY = 'pretty',

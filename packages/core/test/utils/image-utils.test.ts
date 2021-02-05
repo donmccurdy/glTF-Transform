@@ -3,7 +3,7 @@ require('source-map-support').install();
 const IS_NODEJS = typeof window === 'undefined';
 
 import { createCanvas } from 'canvas';
-import * as test from 'tape';
+import test from 'tape';
 import { BufferUtils, ImageUtils } from '../../';
 
 let fs, path;

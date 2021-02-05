@@ -4,6 +4,7 @@
     "paths": {
       "@gltf-transform/*": ["*/src"]
     },
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "target": "es6",

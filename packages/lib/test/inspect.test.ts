@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
-import * as path from 'path';
-import * as test from 'tape';
+import path from 'path';
+import test from 'tape';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { inspect } from '../';
 

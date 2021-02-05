@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as Table from 'cli-table3';
+import fs from 'fs';
+import path from 'path';
+import CLITable from 'cli-table3';
 import validator from 'gltf-validator';
 import { Logger } from '@gltf-transform/core';
 import { formatHeader } from './util';
@@ -35,7 +35,7 @@ function printIssueSection(header: string, severity, report, logger: Logger): vo
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {
-		const table = new Table({head: ['code', 'message', 'severity', 'pointer']});
+		const table = new CLITable({head: ['code', 'message', 'severity', 'pointer']});
 		table.push(...messages.map((m) => Object.values(m)));
 		console.log(table.toString());
 	} else {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import * as fs from 'fs';
-import * as minimatch from 'minimatch';
+import fs from 'fs';
+import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';

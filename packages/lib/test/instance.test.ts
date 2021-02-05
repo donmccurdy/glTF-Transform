@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Document, Logger } from '@gltf-transform/core';
 import { InstancedMesh } from '@gltf-transform/extensions';
 import { instance } from '../';

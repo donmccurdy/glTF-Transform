@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 const IS_NODEJS = typeof window === 'undefined';
 
-import * as test from 'tape';
+import test from 'tape';
 import { BufferUtils, NodeIO, WebIO } from '../';
 
 let fs, glob, path;

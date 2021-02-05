@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
-import * as fs from 'fs';
-import * as test from 'tape';
+import fs from 'fs';
+import test from 'tape';
 import { Document, Logger, vec2 } from '@gltf-transform/core';
 import { Mode, mockCommandExistsSync, mockSpawnSync, toktx } from '../';
 

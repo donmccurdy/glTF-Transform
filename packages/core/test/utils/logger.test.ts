@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Logger } from '../../';
 
 test('@gltf-transform/core::logger', t => {

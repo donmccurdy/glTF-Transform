@@ -1,12 +1,7 @@
-import * as getPixelsNamespace from 'get-pixels';
-import * as ndarray from 'ndarray';
-import * as savePixelsNamespace from 'save-pixels';
+import getPixels from 'get-pixels';
+import ndarray from 'ndarray';
+import savePixels from 'save-pixels';
 import { BufferUtils, Primitive, Texture } from '@gltf-transform/core';
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-const getPixels = getPixelsNamespace['default'] as Function;
-// eslint-disable-next-line @typescript-eslint/ban-types
-const savePixels = savePixelsNamespace['default'] as Function;
 
 /** Maps pixels from source to target textures, with a per-pixel callback. */
 export async function rewriteTexture(

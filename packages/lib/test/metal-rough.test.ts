@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
-import * as ndarray from 'ndarray';
-import * as savePixels from 'save-pixels';
-import * as test from 'tape';
+import ndarray from 'ndarray';
+import savePixels from 'save-pixels';
+import test from 'tape';
 import { BufferUtils, Document } from '@gltf-transform/core';
 import { IOR, MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, Specular } from '@gltf-transform/extensions';
 import { metalRough } from '../';

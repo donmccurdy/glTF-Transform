@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { FileUtils } from '../../';
 
 test('@gltf-transform/core::file-utils | basename', t => {

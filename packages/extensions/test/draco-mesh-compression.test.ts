@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
-import * as path from 'path';
+import path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
-import * as test from 'tape';
+import test from 'tape';
 import { Accessor, Buffer, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/lib';
 import { DracoMeshCompression } from '../';

@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Document, Property } from '../../';
 
 const toType = (p: Property): string => p.propertyType;

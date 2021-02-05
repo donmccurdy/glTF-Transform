@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
-import * as path from 'path';
-import * as gl from 'gl';
-import * as test from 'tape';
+import path from 'path';
+import gl from 'gl';
+import test from 'tape';
 import { NodeIO } from '@gltf-transform/core';
 import { ao } from '../';
 

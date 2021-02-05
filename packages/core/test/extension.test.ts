@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Document, Extension, ExtensionProperty, NodeIO, PropertyType, WriterContext } from '../';
 
 const EXTENSION_NAME = 'TEST_node_gizmo';

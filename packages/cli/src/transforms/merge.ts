@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { BufferUtils, Document, FileUtils, ImageUtils, NodeIO, Transform } from '@gltf-transform/core';
 
 const NAME = 'merge';

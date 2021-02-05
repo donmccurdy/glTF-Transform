@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
-import * as path from 'path';
+import path from 'path';
 import { createCanvas } from 'canvas';
-import * as test from 'tape';
+import test from 'tape';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
 

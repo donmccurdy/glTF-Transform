@@ -46,7 +46,7 @@ respectively, and must be provided by the application:
 import { NodeIO } from '@gltf-transform/core';
 import { DracoMeshCompression } from '@gltf-transform/extensions';
 
-import * as draco3d from 'draco3dgltf';
+import draco3d from 'draco3dgltf';
 
 // ...
 
@@ -638,7 +638,7 @@ installing dependencies:
 import { NodeIO } from '@gltf-transform/core';
 import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
 
-import * as draco3d from 'draco3dgltf';
+import draco3d from 'draco3dgltf';
 
 // ...
 

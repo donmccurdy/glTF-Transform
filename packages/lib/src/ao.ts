@@ -1,12 +1,8 @@
-import * as geoaoNamespace from 'geo-ambient-occlusion';
-import * as reglNamespace from 'regl';
+import geoao from 'geo-ambient-occlusion';
+import REGL from 'regl';
 import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 
 const NAME = 'ao';
-// eslint-disable-next-line @typescript-eslint/ban-types
-const geoao = geoaoNamespace['default'] as Function;
-// eslint-disable-next-line @typescript-eslint/ban-types
-const REGL = reglNamespace['default'] as Function;
 
 interface GLFactory {
 	(w: number, h: number): WebGLRenderingContext;

@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Accessor, Document, NodeIO } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '../';
 

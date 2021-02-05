@@ -1,6 +1,6 @@
 require('source-map-support').install();
 
-import * as test from 'tape';
+import test from 'tape';
 import { Accessor, Document, NodeIO } from '../../';
 
 test('@gltf-transform/core::animation', t => {
