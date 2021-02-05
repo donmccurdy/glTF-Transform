@@ -26,22 +26,46 @@ test('@gltf-transform/lib::sequence', async t => {
 	);
 	t.equals(anim.listChannels()[0].getTargetPath(), 'scale', 'channels target scale');
 	t.equals(anim.listSamplers().length, 4, 'creates one sampler per node');
-	t.deepEquals(anim.listSamplers()[0].getInput().getArray(), [0, 1], 'input #1');
-	t.deepEquals(anim.listSamplers()[0].getOutput().getArray(), [1, 1, 1, 0, 0, 0], 'output #1');
-	t.deepEquals(anim.listSamplers()[1].getInput().getArray(), [0, 1, 2], 'input #2');
+	t.deepEquals(
+		anim.listSamplers()[0].getInput().getArray(),
+		new Float32Array([0, 1]),
+		'input #1'
+	);
+	t.deepEquals(
+		anim.listSamplers()[0].getOutput().getArray(),
+		new Float32Array([1, 1, 1, 0, 0, 0]),
+		'output #1'
+	);
+	t.deepEquals(
+		anim.listSamplers()[1].getInput().getArray(),
+		new Float32Array([0, 1, 2]),
+		'input #2'
+	);
 	t.deepEquals(
 		anim.listSamplers()[1].getOutput().getArray(),
-		[0, 0, 0, 1, 1, 1, 0, 0, 0],
+		new Float32Array([0, 0, 0, 1, 1, 1, 0, 0, 0]),
 		'output #2'
 	);
-	t.deepEquals(anim.listSamplers()[2].getInput().getArray(), [1, 2, 3], 'input #3');
+	t.deepEquals(
+		anim.listSamplers()[2].getInput().getArray(),
+		new Float32Array([1, 2, 3]),
+		'input #3'
+	);
 	t.deepEquals(
 		anim.listSamplers()[2].getOutput().getArray(),
-		[0, 0, 0, 1, 1, 1, 0, 0, 0],
+		new Float32Array([0, 0, 0, 1, 1, 1, 0, 0, 0]),
 		'output #3'
 	);
-	t.deepEquals(anim.listSamplers()[3].getInput().getArray(), [2, 3], 'input #4');
-	t.deepEquals(anim.listSamplers()[3].getOutput().getArray(), [0, 0, 0, 1, 1, 1], 'output #4');
+	t.deepEquals(
+		anim.listSamplers()[3].getInput().getArray(),
+		new Float32Array([2, 3]),
+		'input #4'
+	);
+	t.deepEquals(
+		anim.listSamplers()[3].getOutput().getArray(),
+		new Float32Array([0, 0, 0, 1, 1, 1]),
+		'output #4'
+	);
 
 	t.end();
 });

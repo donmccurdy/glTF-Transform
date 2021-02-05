@@ -193,9 +193,9 @@ test('@gltf-transform/core::accessor | interleaved', t => {
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
 
-	t.deepEqual(arrays[0], [0, 1, 2, 3, 4, 5], 'accessor 1, vec3');
-	t.deepEqual(arrays[1], [10, 20, 40, 50], 'accessor 2, vec2');
-	t.deepEqual(arrays[2], [100, 200, 400, 500], 'accessor 3, vec2');
+	t.deepEqual(arrays[0], new Uint16Array([0, 1, 2, 3, 4, 5]), 'accessor 1, vec3');
+	t.deepEqual(arrays[1], new Uint16Array([10, 20, 40, 50]), 'accessor 2, vec2');
+	t.deepEqual(arrays[2], new Uint16Array([100, 200, 400, 500]), 'accessor 3, vec2');
 	t.end();
 });
 

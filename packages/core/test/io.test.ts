@@ -22,7 +22,7 @@ const SAMPLE_GLB = 'data:application/octet-stream;base64,Z2xURgIAAACABgAA3AMAAEp
 
 function mockFetch(response: unknown): string[] {
 	const paths = [];
-	global['fetch'] = (path: string): Promise<unknown> => {
+	(global['fetch'] as unknown) = (path: string): Promise<unknown> => {
 		paths.push(path);
 		return Promise.resolve(response);
 	};

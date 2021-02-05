@@ -5,7 +5,7 @@ jobs:
     runs-on: macos-latest # Better `headless-gl` support on macOS.
     strategy:
       matrix:
-        node-version: [12.x] # Latest prebuilt binary for `headless-gl`
+        node-version: [12.x, 14.x] # Latest prebuilt binaries for `headless-gl`
     env:
       CI: true
     steps:
@@ -23,9 +23,9 @@ jobs:
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+        key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('./yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-yarn-
+          ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
     # Test.
     - run: yarn install

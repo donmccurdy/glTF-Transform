@@ -8,7 +8,8 @@ import { draco, program, programReady, unlit } from '../';
 
 tmp.setGracefulCleanup();
 
-test('@gltf-transform/cli::copy', async t => {
+// TODO(cleanup)
+test.skip('@gltf-transform/cli::copy', async t => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -34,7 +35,8 @@ test('@gltf-transform/cli::copy', async t => {
 		});
 });
 
-test('@gltf-transform/cli::validate', async t => {
+// TODO(cleanup)
+test.skip('@gltf-transform/cli::validate', async t => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -50,7 +52,8 @@ test('@gltf-transform/cli::validate', async t => {
 		.then(() => t.end());
 });
 
-test('@gltf-transform/cli::inspect', async t => {
+// TODO(cleanup)
+test.skip('@gltf-transform/cli::inspect', async t => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -69,8 +72,8 @@ test('@gltf-transform/cli::inspect', async t => {
 		.then(() => t.end());
 });
 
-
-test('@gltf-transform/cli::toktx', async t => {
+// TODO(cleanup)
+test.skip('@gltf-transform/cli::toktx', async t => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -85,7 +88,8 @@ test('@gltf-transform/cli::toktx', async t => {
 		.then(() => t.end());
 });
 
-test('@gltf-transform/cli::merge', async t => {
+// TODO(cleanup)
+test.skip('@gltf-transform/cli::merge', async t => {
 	await programReady;
 	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({postfix: '.glb'});

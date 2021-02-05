@@ -24,7 +24,7 @@
     "@gltf-transform/core": "^0.9.1",
     "@gltf-transform/extensions": "^0.9.1",
     "@gltf-transform/lib": "^0.9.1",
-    "@types/node": "^14.14.6",
+    "@types/node": "^14.14.25",
     "cli-table3": "^0.6.0",
     "command-exists": "^1.2.9",
     "csv-stringify": "^5.6.1",

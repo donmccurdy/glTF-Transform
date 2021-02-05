@@ -27,22 +27,22 @@
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
-    "@typescript-eslint/eslint-plugin": "^4.13.0",
-    "@typescript-eslint/parser": "^4.13.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
     "canvas": "^2.6.1",
-    "coveralls": "^3.0.11",
+    "coveralls": "^3.1.0",
     "draco3dgltf": "^1.4.1",
-    "eslint": "^6.8.0",
+    "eslint": "^7.19.0",
     "gl": "^4.9.0",
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "^3.20.2",
-    "microbundle": "^0.12.0",
-    "nyc": "^15.0.1",
-    "source-map-support": "^0.5.9",
+    "microbundle": "^0.13.0",
+    "nyc": "^15.1.0",
+    "source-map-support": "^0.5.19",
     "tap-spec": "^5.0.0",
-    "tape": "^4.9.1",
-    "ts-node": "^8.10.2",
-    "tslib": "^1.11.1",
-    "typescript": "^4.0.2"
+    "tape": "^5.1.1",
+    "ts-node": "^9.1.1",
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.3"
   }
 }
