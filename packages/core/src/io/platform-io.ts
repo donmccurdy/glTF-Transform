@@ -98,6 +98,14 @@ export abstract class PlatformIO {
 		const binaryByteLength = binaryChunkHeader[0];
 		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
+		// Check for external references, which currently aren't supported.
+		if (json.buffers && json.buffers.length > 1) {
+			throw new Error('GLB must have exactly 1 buffer.');
+		} else if (json.images
+				&& json.images.find((imageDef) => imageDef.bufferView === undefined)) {
+			throw new Error('GLB images must be stored in a buffer view.');
+		}
+
 		return {json, resources: {[GLB_BUFFER]: binary}};
 	}
 

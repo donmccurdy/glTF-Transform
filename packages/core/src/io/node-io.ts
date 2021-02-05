@@ -105,7 +105,12 @@ export class NodeIO extends PlatformIO {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
-			if (!resource.uri) return; // Skip image.bufferView.
+			if (!resource.uri) {
+				if (resource['bufferView'] === undefined) {
+					throw new Error('Missing resource URI.');
+				}
+				return;
+			}
 
 			if (!resource.uri.match(/data:/)) {
 				const absURI = this._path.resolve(dir, resource.uri);
