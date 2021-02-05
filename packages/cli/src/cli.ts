@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
 import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -14,8 +14,9 @@ import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
 
-// Use require() so microbundle doesn't compile this.
+// Use require() so microbundle doesn't compile these.
 const draco3d = require('draco3dgltf');
+const mikktspace = require('mikktspace');
 
 const programReady = new Promise<void>((resolve) => {
 	Promise.all([
@@ -408,6 +409,36 @@ paricular software application.
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(unweld(options as unknown as UnweldOptions))
+	);
+
+// TANGENTS
+program
+	.command('tangents', 'Generates MikkTSpace vertex tangents')
+	.help(`
+Generates MikkTSpace vertex tangents.
+
+In some situations normal maps may appear incorrectly, displaying hard edges
+at seams, or unexpectedly inverted insets and extrusions. The issue is most
+commonly caused by a mismatch between the software used to bake the normal map
+and the pixel shader or other code used to render it. While this may be a
+frustration to an artist/designer, it is not always possible for the rendering
+engine to reconstruct the tangent space used by the authoring software.
+
+Most normal map bakers use the MikkTSpace standard (http://www.mikktspace.com/)
+to generate vertex tangents while creating a normal map, and the technique is
+recommended by the glTF 2.0 specification. Generating vertex tangents with this
+tool may resolve rendering issues related to normal maps in engines that cannot
+compute MikkTSpace tangents at runtime.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--overwrite', 'Overwrite existing vertex tangents', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(tangents({generateTangents: mikktspace.generateTangents, ...options}))
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');

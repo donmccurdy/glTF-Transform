@@ -10,5 +10,6 @@ export * from './partition';
 export * from './prune';
 export * from './resample';
 export * from './sequence';
+export * from './tangents';
 export * from './unweld';
 export * from './weld';
