@@ -135,11 +135,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				// COMPRESS: Run `toktx` CLI tool.
 
-				const {status, error} = spawnSync('toktx', params, {stdio: [process.stderr]});
+				const {status, stderr} = spawnSync('toktx', params, {stdio: [process.stderr]});
 
 				if (status !== 0) {
-					logger.error('• Texture compression failed.');
-					throw error || new Error('Texture compression failed');
+					logger.error(`• Texture compression failed:\n\n${stderr.toString()}`);
+					throw new Error('Texture compression failed');
 				}
 
 				// PACK: Replace image data in the glTF asset.
