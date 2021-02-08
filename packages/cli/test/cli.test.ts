@@ -8,8 +8,7 @@ import { draco, program, programReady, unlit } from '../';
 
 tmp.setGracefulCleanup();
 
-// TODO(cleanup)
-test.skip('@gltf-transform/cli::copy', async t => {
+test('@gltf-transform/cli::copy', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -21,7 +20,7 @@ test.skip('@gltf-transform/cli::copy', async t => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	io.write(input, doc);
 
-	program
+	return program
 		.exec(['copy', input, output])
 		.then(() => {
 			const doc2 = io.read(output);
@@ -31,12 +30,10 @@ test.skip('@gltf-transform/cli::copy', async t => {
 				'MyMaterial',
 				'roundtrip material'
 			);
-			t.end();
 		});
 });
 
-// TODO(cleanup)
-test.skip('@gltf-transform/cli::validate', async t => {
+test('@gltf-transform/cli::validate', async (_t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -47,13 +44,11 @@ test.skip('@gltf-transform/cli::validate', async t => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	io.write(input, doc);
 
-	program
-		.exec(['validate', input], {silent: true})
-		.then(() => t.end());
+	return program
+		.exec(['validate', input], {silent: true});
 });
 
-// TODO(cleanup)
-test.skip('@gltf-transform/cli::inspect', async t => {
+test('@gltf-transform/cli::inspect', async (_t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -67,13 +62,11 @@ test.skip('@gltf-transform/cli::inspect', async t => {
 	doc.createAnimation();
 	io.write(input, doc);
 
-	program
-		.exec(['inspect', input], {silent: true})
-		.then(() => t.end());
+	return program
+		.exec(['inspect', input], {silent: true});
 });
 
-// TODO(cleanup)
-test.skip('@gltf-transform/cli::toktx', async t => {
+test('@gltf-transform/cli::toktx', async (_t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({postfix: '.glb'});
@@ -83,13 +76,11 @@ test.skip('@gltf-transform/cli::toktx', async t => {
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(doc.createBuffer());
 	io.write(input, doc);
 
-	program
-		.exec(['etc1s', input, output], {silent: true})
-		.then(() => t.end());
+	return program
+		.exec(['etc1s', input, output], {silent: true});
 });
 
-// TODO(cleanup)
-test.skip('@gltf-transform/cli::merge', async t => {
+test('@gltf-transform/cli::merge', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({postfix: '.glb'});
@@ -111,7 +102,7 @@ test.skip('@gltf-transform/cli::merge', async t => {
 
 	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
 
-	program
+	return program
 		// https://github.com/mattallty/Caporal.js/issues/195
 		.exec(['merge', [inputA, inputB, inputC, output].join(',')], {silent: true})
 		.then(() => {
@@ -120,11 +111,10 @@ test.skip('@gltf-transform/cli::merge', async t => {
 			const texName = doc.getRoot().listTextures()[0].getName();
 			t.deepEquals(sceneNames, ['SceneA', 'SceneB'], 'merge scenes');
 			t.equals(texName, FileUtils.basename(inputC), 'merge textures');
-			t.end();
 		});
 });
 
-test('@gltf-transform/cli::draco', async t => {
+test('@gltf-transform/cli::draco', async (t) => {
 	const doc = new Document();
 	await doc.transform(draco({method: 'edgebreaker'}));
 	await doc.transform(draco({method: 'sequential'}));
@@ -133,7 +123,7 @@ test('@gltf-transform/cli::draco', async t => {
 	t.end();
 });
 
-test('@gltf-transform/cli::unlit', async t => {
+test('@gltf-transform/cli::unlit', async (t) => {
 	const doc = new Document();
 	doc.createMaterial();
 	await doc.transform(unlit());
