@@ -17,6 +17,7 @@
 - Add 'instance' transform.
 - Add 'prune' transform.
 - Add 'resample' transform.
+- Add 'tangents' transform.
 - Add `KHR_materials_volume` extension.
 - Add `EXT_mesh_gpu_instancing` extension.
 - Add `--format={pretty,csv,md}` output options for CLI `inspect` command.
@@ -25,6 +26,7 @@
 
 - Stricter type checking.
 - Enum values moved from `GLTF.*` to static properties of the relevant class. Primitive enum values are now allowed.
+- Enable esModuleInterop in TS config.
 - 'dedup' transform takes a `propertyTypes: string[]` array, rather than boolean flags for each property type.
 
 ## v0.8
