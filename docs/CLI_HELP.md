@@ -1,5 +1,5 @@
 
-  gltf-transform 0.9.1 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.9.2 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -33,6 +33,7 @@
     draco                                Compress mesh geometry with Draco                      
     weld                                 Index geometry and optionally merge similar vertices   
     unweld                               De-index geometry, disconnecting any shared vertices   
+    tangents                             Generates MikkTSpace vertex tangents                   
                                                                                                 
                                                                                                 
                                          ✨ MATERIAL ─────────────────────────────────────────  
