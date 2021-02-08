@@ -14,12 +14,12 @@
 
 **Features:**
 
-- Add 'instance' transform.
-- Add 'prune' transform.
-- Add 'resample' transform.
-- Add 'tangents' transform.
-- Add `KHR_materials_volume` extension.
-- Add `EXT_mesh_gpu_instancing` extension.
+- Add 'instance' transform. (https://github.com/donmccurdy/glTF-Transform/pull/169)
+- Add 'prune' transform. (https://github.com/donmccurdy/glTF-Transform/pull/162)
+- Add 'resample' transform. (https://github.com/donmccurdy/glTF-Transform/pull/158)
+- Add 'tangents' transform. (https://github.com/donmccurdy/glTF-Transform/pull/175)
+- Add `KHR_materials_volume` extension. (https://github.com/donmccurdy/glTF-Transform/pull/161)
+- Add `EXT_mesh_gpu_instancing` extension. (https://github.com/donmccurdy/glTF-Transform/pull/115)
 - Add `--format={pretty,csv,md}` output options for CLI `inspect` command.
 
 **Breaking changes:**
