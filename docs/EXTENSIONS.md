@@ -318,7 +318,7 @@ so on.
 import { MaterialsVariants } from '@gltf-transform/extensions';
 
 // Create an Extension attached to the Document.
-const variantsExtension = document.createExtension(MaterialsVariants);
+const variantExtension = document.createExtension(MaterialsVariants);
 
 // Create some Variant states.
 const healthyVariant = variantExtension.createVariant('Healthy');
