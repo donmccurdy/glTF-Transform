@@ -541,10 +541,10 @@ program
 			.replace('{DETAILS}', `
 ETC1S, one of the two Basis Universal bitstreams, offers lower size and lower
 quality than UASTC. In some cases it may be useful to increase the resolution
-of the texture slightly, to minimize compression artifacts while still
-retaining a smaller filesize. Consider using less aggressive compression
-settings for normal maps than for other texture types: you may want to use
-UASTC for normal maps and ETC1S for other textures, for example.`.trim()),
+of the texture, to minimize compression artifacts while still retaining an
+overall smaller filesize. Consider using less aggressive compression settings
+for normal maps than for other texture types: you may want to use UASTC for
+normal maps and ETC1S for other textures, for example.`.trim()),
 		{sectionName: 'SUMMARY'}
 	)
 	.argument('<input>', INPUT_DESC)
@@ -692,7 +692,7 @@ for textures where the quality is sufficient.`.trim()),
 		+ ' Compression level range is 1 - 22, or 0 is uncompressed.'
 		+ ' Lower values=faster but give less compression. Values above 20'
 		+ ' should be used with caution as they require more memory.',
-		{validator: program.NUMBER, default: 0}
+		{validator: program.NUMBER, default: 18}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
