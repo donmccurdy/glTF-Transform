@@ -144,7 +144,7 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 			mimeType: texture.getMimeType(),
 			resolution: resolution ? resolution.join('x') : '',
 			size: texture.getImage().byteLength,
-			memSize: ImageUtils.getMemSize(texture.getImage(), texture.getMimeType()),
+			gpuSize: ImageUtils.getMemSize(texture.getImage(), texture.getMimeType()),
 		};
 	});
 
@@ -236,7 +236,7 @@ interface TextureReport {
 	mimeType: string;
 	resolution: string;
 	size: number;
-	memSize: number;
+	gpuSize: number;
 }
 
 interface AnimationReport {

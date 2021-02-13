@@ -62,8 +62,17 @@ class ImageUtils {
 		}
 
 		const resolution = this.getSize(buffer, mimeType);
+		if (!resolution) return null;
+
+		let uncompressedBytes = 0;
 		const channels = 4; // See https://github.com/donmccurdy/glTF-Transform/issues/151.
-		return resolution ? resolution[0] * resolution[1] * channels : null;
+		while (resolution[0] > 1 || resolution[1] > 1) {
+			uncompressedBytes += resolution[0] * resolution[1] * channels;
+			resolution[0] = Math.max(Math.floor(resolution[0] / 2), 1);
+			resolution[1] = Math.max(Math.floor(resolution[1] / 2), 1);
+		}
+		uncompressedBytes += 1 * 1 * channels;
+		return uncompressedBytes;
 	}
 
 	/** @hidden Returns the size of a JPEG image. */
