@@ -20,15 +20,17 @@ export async function inspect (
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
 	const extensionsRequired = jsonDoc.json.extensionsRequired || [];
-	const table = new CLITable();
-	table.push(
-		{generator: jsonDoc.json.asset.generator || ''},
-		{version: jsonDoc.json.asset.version},
-		{extensionsUsed: extensionsUsed.join(', ') || 'none'},
-		{extensionsRequired: extensionsRequired.join(', ') || 'none'},
-	);
-	console.log(formatHeader('info'));
-	console.log(table.toString() + '\n');
+	console.log(formatHeader('metadata'));
+	console.log(await formatTable(
+		format,
+		['key', 'value'],
+		[
+			['version', jsonDoc.json.asset.version],
+			['generator', jsonDoc.json.asset.generator || ''],
+			['extensionsUsed', extensionsUsed.join(', ') || 'none'],
+			['extensionsRequired', extensionsRequired.join(', ') || 'none'],
+		]
+	));
 
 	// Parse.
 	let doc;
