@@ -23,7 +23,7 @@ namespace Extensions {}
 namespace Contributing {}
 
 /**
- * # Commandline (CLI)
+ * # CLI
  *
  * For easier access to its library, glTF-Transform offers a command-line interface (CLI). The
  * CLI supports many of the features of the `@gltf-transform/lib` package, and some general tools
