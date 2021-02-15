@@ -30,7 +30,7 @@ export async function inspect (
 			['extensionsUsed', extensionsUsed.join(', ') || 'none'],
 			['extensionsRequired', extensionsRequired.join(', ') || 'none'],
 		]
-	));
+	) + '\n\n');
 
 	// Parse.
 	let doc;
