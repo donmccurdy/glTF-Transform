@@ -6243,10 +6243,10 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-mikktspace@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-0.0.2.tgz#2b721c6ff713dc6660e3fc6b7e157616125d7995"
-  integrity sha512-IeSAACCxgSPnWiZoFMBQvuSt5DGmLtKv6ji1PgFL9MG+tBGrdQVhegZbviOzI3TNRrrTMUzNzHSEATOEyiXNyg==
+mikktspace@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-0.1.2.tgz#7c0ac8057b5a1e825b29ff7ad5c1b0966d756b6d"
+  integrity sha512-OlAy8p6f/xvQvy4PIf+74fxrrGsVw5qW7pShQiO9sDyrwvV1kiBEQVkhE0fsUn4j5Linb6wlZTF3kMskUk7ztA==
 
 mime-db@1.45.0:
   version "1.45.0"

@@ -37,7 +37,7 @@
     "gltf-validator": "^2.0.0-dev.2.7",
     "lerna": "^3.20.2",
     "microbundle": "^0.13.0",
-    "mikktspace": "^0.0.2",
+    "mikktspace": "^0.1.2",
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.19",
     "tap-spec": "^5.0.0",
