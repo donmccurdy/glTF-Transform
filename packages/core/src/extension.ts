@@ -60,6 +60,10 @@ export abstract class Extension implements ExtensionPropertyParent {
 		}
 	}
 
+	/** Performs first-time setup for the extension. Must be idempotent. */
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	public static register(): void {}
+
 	/**
 	 * Indicates to the client whether it is OK to load the asset when this extension is not
 	 * recognized. Optional extensions are generally preferred, if there is not a good reason
