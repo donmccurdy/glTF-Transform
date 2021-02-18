@@ -92,7 +92,7 @@ test('@gltf-transform/core::image-utils | webp', {skip: !IS_NODEJS}, t => {
 	t.deepEquals(ImageUtils.getSize(webpLossy, 'image/webp'), [256, 256], 'size (lossy)');
 	t.deepEquals(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');
 	t.equals(ImageUtils.getChannels(webpLossy, 'image/webp'), 4, 'channels');
-	t.equals(ImageUtils.getChannels(webpLossless, 'image/fake'), 4, 'channels (other)');
+	t.equals(ImageUtils.getChannels(webpLossless, 'image/fake'), null, 'channels (other)');
 	t.equals(ImageUtils.getMemSize(webpLossy, 'image/webp'), 349524, 'gpuSize');
 	t.end();
 });
@@ -102,7 +102,7 @@ test('@gltf-transform/core::image-utils | ktx2', {skip: !IS_NODEJS}, t => {
 
 	t.throws(() => ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), 'corrupt file');
 	t.deepEquals(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
-	t.equals(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
+	t.equals(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
 	t.equals(ImageUtils.getMemSize(ktx2, 'image/ktx2'), 65536, 'gpuSize');
 	t.end();
 });

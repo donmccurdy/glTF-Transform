@@ -34,7 +34,10 @@ export abstract class PlatformIO {
 
 	/** Registers extensions, enabling I/O class to read and write glTF assets requiring them. */
 	public registerExtensions(extensions: typeof Extension[]): this {
-		this._extensions.push(...extensions);
+		for (const extension of extensions) {
+			this._extensions.push(extension);
+			extension.register();
+		}
 		return this;
 	}
 
