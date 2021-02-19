@@ -101,3 +101,37 @@ test('@gltf-transform/core::node | extras', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::node | identity transforms', t => {
+	const io = new NodeIO();
+	const doc = new Document();
+
+	doc.createNode('A');
+	doc.createNode('B').setTranslation([1, 2, 1]);
+	doc.createNode('C').setTranslation([1, 2, 1]).setRotation([1, 0, 0, 0]).setScale([1, 2, 1]);
+
+	const writerOptions = {isGLB: false, basename: 'test'};
+	const { nodes } = io.writeJSON(doc, writerOptions).json;
+
+	const a = nodes.find((n) => n.name === 'A');
+	const b = nodes.find((n) => n.name === 'B');
+	const c = nodes.find((n) => n.name === 'C');
+
+	t.deepEqual(a, {
+		name: 'a',
+	}, 'exclude identity transforms');
+
+	t.deepEqual(b, {
+		name: 'B',
+		translation: [1, 2, 1],
+	}, 'has only set transform info');
+
+	t.deepEqual(c, {
+		name: 'C',
+		translation: [1, 2, 1],
+		rotation: [1, 0, 0, 0],
+		scale: [1, 2, 1],
+	}, 'has transform info');
+
+	t.end();
+});
