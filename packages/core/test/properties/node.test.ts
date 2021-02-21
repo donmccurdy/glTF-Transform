@@ -117,8 +117,10 @@ test('@gltf-transform/core::node | identity transforms', t => {
 	const b = nodes.find((n) => n.name === 'B');
 	const c = nodes.find((n) => n.name === 'C');
 
+	console.warn(b);
+
 	t.deepEqual(a, {
-		name: 'a',
+		name: 'A',
 	}, 'exclude identity transforms');
 
 	t.deepEqual(b, {
