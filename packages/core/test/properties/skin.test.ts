@@ -65,9 +65,6 @@ test('@gltf-transform/core::skin', t => {
 		name: 'armature',
 		skin: 0,
 		children: [0, 1, 2],
-		translation: [0, 0, 0],
-		rotation: [0, 0, 0, 1],
-		scale: [1, 1, 1],
 	}, 'attaches skin to node');
 
 	t.deepEqual(jsonDoc.json.skins[0], {
