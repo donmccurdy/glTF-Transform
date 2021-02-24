@@ -89,24 +89,29 @@ export class NodeIO extends PlatformIO {
 		const buffer: Buffer = this._fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
 		this.lastReadBytes = arrayBuffer.byteLength;
-		return this.binaryToJSON(arrayBuffer);
+		const jsonDoc = this._binaryToJSON(arrayBuffer);
+		this._readResources(jsonDoc, this._path.dirname(uri), true);
+		return jsonDoc;
 	}
 
 	/** @hidden */
 	private _readGLTF (uri: string): JSONDocument {
 		this.lastReadBytes = 0;
-		const dir = this._path.dirname(uri);
 		const jsonContent = this._fs.readFileSync(uri, 'utf8');
 		this.lastReadBytes += jsonContent.length;
-		const jsonDoc = {
-			json: JSON.parse(jsonContent),
-			resources: {}
-		} as JSONDocument;
+		const jsonDoc = {json: JSON.parse(jsonContent), resources: {}} as JSONDocument;
+		this._readResources(jsonDoc, this._path.dirname(uri), false);
+		return jsonDoc;
+	}
+
+	/** @hidden */
+	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): void {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
-		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
+		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
 			if (!resource.uri) {
-				if (resource['bufferView'] === undefined) {
+				const isGLBBuffer = isGLB && index === images.length;
+				if (resource['bufferView'] === undefined && !isGLBBuffer) {
 					throw new Error('Missing resource URI.');
 				}
 				return;
@@ -123,7 +128,6 @@ export class NodeIO extends PlatformIO {
 				resource.uri = resourceUUID;
 			}
 		});
-		return jsonDoc;
 	}
 
 	/** @hidden */

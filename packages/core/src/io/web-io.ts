@@ -52,7 +52,8 @@ export class WebIO extends PlatformIO {
 
 	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
 	public readAsJSON (uri: string): Promise<JSONDocument> {
-		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
+		const isGLB = uri.match(/^data:application\/octet-stream;/)
+			|| new URL(uri, window.location.href).pathname.match(/\.glb$/);
 		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
 	}
 
@@ -63,29 +64,12 @@ export class WebIO extends PlatformIO {
 	/** @hidden */
 	private _readGLTF (uri: string): Promise<JSONDocument> {
 		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
-		const dir = _dirname(uri);
 		return fetch(uri, this._fetchConfig)
 		.then((response) => response.json())
-		.then((json: GLTF.IGLTF) => {
+		.then(async (json: GLTF.IGLTF) => {
 			jsonDoc.json = json;
-			const images = json.images || [];
-			const buffers = json.buffers || [];
-			const pendingResources: Array<Promise<void>> = [...images, ...buffers]
-			.map((resource: GLTF.IBuffer|GLTF.IImage) => {
-				if (!resource.uri) {
-					if (resource['bufferView'] === undefined) {
-						throw new Error('Missing resource URI.');
-					}
-					return;
-				}
-
-				return fetch(_resolve(dir, resource.uri), this._fetchConfig)
-					.then((response) => response.arrayBuffer())
-					.then((arrayBuffer) => {
-						jsonDoc.resources[resource.uri] = arrayBuffer;
-					});
-			});
-			return Promise.all(pendingResources).then(() => jsonDoc);
+			await this._readResources(jsonDoc, _dirname(uri), false);
+			return jsonDoc;
 		});
 	}
 
@@ -93,7 +77,35 @@ export class WebIO extends PlatformIO {
 	private _readGLB (uri: string): Promise<JSONDocument> {
 		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
-			.then((arrayBuffer) => this.binaryToJSON(arrayBuffer));
+			.then(async (arrayBuffer) => {
+				const jsonDoc = this._binaryToJSON(arrayBuffer);
+				await this._readResources(jsonDoc, _dirname(uri), true);
+				return jsonDoc;
+			});
+	}
+
+	/** @hidden */
+	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): Promise<void> {
+		const json = jsonDoc.json;
+		const images = json.images || [];
+		const buffers = json.buffers || [];
+		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
+		.map((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
+			if (!resource.uri) {
+				const isGLBBuffer = isGLB && index === images.length;
+				if (resource['bufferView'] === undefined && !isGLBBuffer) {
+					throw new Error('Missing resource URI.');
+				}
+				return;
+			}
+
+			return fetch(_resolve(dir, resource.uri), this._fetchConfig)
+				.then((response) => response.arrayBuffer())
+				.then((arrayBuffer) => {
+					jsonDoc.resources[resource.uri] = arrayBuffer;
+				});
+		});
+		return Promise.all(pendingResources).then(() => undefined);
 	}
 }
 
