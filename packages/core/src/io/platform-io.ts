@@ -75,6 +75,22 @@ export abstract class PlatformIO {
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
 	public binaryToJSON(glb: ArrayBuffer): JSONDocument {
+		const jsonDoc = this._binaryToJSON(glb);
+		const json = jsonDoc.json;
+
+		// Check for external references, which can't be resolved by this method.
+		if (json.buffers && json.buffers.length > 1) {
+			throw new Error('Cannot resolve external buffers with binaryToJSON().');
+		} else if (json.images
+				&& json.images.find((imageDef) => imageDef.bufferView === undefined)) {
+			throw new Error('Cannot resolve external images with binaryToJSON().');
+		}
+
+		return jsonDoc;
+	}
+
+	/** @hidden For internal use by WebIO and NodeIO. Does not warn about external resources. */
+	protected _binaryToJSON(glb: ArrayBuffer): JSONDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
 		if (header[0] !== 0x46546C67) {
@@ -100,14 +116,6 @@ export abstract class PlatformIO {
 		const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
 		const binaryByteLength = binaryChunkHeader[0];
 		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
-
-		// Check for external references, which currently aren't supported.
-		if (json.buffers && json.buffers.length > 1) {
-			throw new Error('GLB must have exactly 1 buffer.');
-		} else if (json.images
-				&& json.images.find((imageDef) => imageDef.bufferView === undefined)) {
-			throw new Error('GLB images must be stored in a buffer view.');
-		}
 
 		return {json, resources: {[GLB_BUFFER]: binary}};
 	}
