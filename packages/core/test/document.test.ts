@@ -9,10 +9,32 @@ test('@gltf-transform/core::document | transform', async t => {
 	await doc.transform(
 		(c) => c.createTexture(''),
 		(c) => c.createBuffer(''),
+		(c) => c.createScene(''),
+		(c) => c.setDefaultScene(0),
 	);
 
-	t.equals(doc.getRoot().listTextures().length, 1, 'transform 1');
-	t.equals(doc.getRoot().listBuffers().length, 1, 'transform 2');
+	t.equals(doc.getRoot().listTextures().length, 1, 'transform textures');
+	t.equals(doc.getRoot().listBuffers().length, 1, 'transform buffers');
+	t.equals(doc.getRoot().listScenes().length, 1, 'transform scenes');
+	t.equals(doc.getRoot().getDefaultScene(), 0, 'transform default scene');
+
+	t.end();
+});
+
+test('@gltf-transform/core::document | empty-transform', async t => {
+	// Empty transform should preserve the document structure
+	const doc = new Document();
+	doc.createNode('test');
+	doc.createScene('test');
+
+	await doc.transform();
+	t.equals(doc.getRoot().listNodes().length, 1, 'preserve nodes');
+	t.equals(doc.getRoot().listScenes().length, 1, 'preserve scenes');
+	t.equals(doc.getRoot().getDefaultScene(), null, 'preserve empty default scene');
+
+	doc.setDefaultScene(0);
+	await doc.transform();
+	t.equals(doc.getRoot().getDefaultScene(), 0, 'preserve non-empty default scene');
 
 	t.end();
 });
@@ -61,6 +83,12 @@ test('@gltf-transform/core::document | clone', t => {
 		doc1.getRoot().listMaterials()[0],
 		'does not reference old material'
 	);
+
+	t.equal(doc2.getRoot().getDefaultScene(), null, 'transfer empty default scene');
+	doc1.setDefaultScene(0);
+	const doc3 = doc1.clone();
+
+	t.equal(doc3.getRoot().getDefaultScene(), 0, 'transfer non-empty default scene');
 
 	t.end();
 });

@@ -153,6 +153,9 @@ export class Document {
 			thisProp.copy(otherProp, resolve);
 		}
 
+		// 5. Copy default scene
+		this.setDefaultScene(other.getRoot().getDefaultScene());
+
 		return this;
 	}
 
@@ -301,4 +304,10 @@ export class Document {
 		this._root._addBuffer(buffer);
 		return buffer;
 	}
+
+	/** Sets the default scene in the document's {@link Root}. */
+	setDefaultScene(sceneId?: number): void {
+		this._root._setDefaultScene(sceneId);
+	}
+
 }

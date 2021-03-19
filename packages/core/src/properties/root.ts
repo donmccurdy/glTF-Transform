@@ -68,6 +68,8 @@ export class Root extends Property {
 	@GraphChildList private skins: Link<Root, Skin>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
 
+	private scene?: number;
+
 	constructor (graph: PropertyGraph) {
 		super(graph);
 		graph.on('clone', (target) => this._addChildOfRoot(target));
@@ -178,6 +180,21 @@ export class Root extends Property {
 	/** Lists all {@link Scene} properties associated with this root. */
 	public listScenes(): Scene[] {
 		return this.scenes.map((p) => p.getChild());
+	}
+
+
+	/**
+	 * Set the default scene ID associated with this root.
+	 * @hidden
+	 */
+	public _setDefaultScene(sceneId?: number): this {
+		this.scene = sceneId;
+		return this;
+	}
+
+	/** Get the default scene ID associated with this root. */
+	public getDefaultScene(): number | undefined {
+		return this.scene;
 	}
 
 	/**********************************************************************************************

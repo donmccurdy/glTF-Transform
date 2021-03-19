@@ -661,6 +661,8 @@ export class GLTFWriter {
 			return sceneDef;
 		});
 
+		json.scene = root.getDefaultScene();
+
 		/* Extensions (2/2). */
 
 		json.extensionsUsed = root.listExtensionsUsed().map((ext) => ext.extensionName);
