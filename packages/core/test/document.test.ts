@@ -30,7 +30,7 @@ test('@gltf-transform/core::document | empty-transform', async t => {
 	await doc.transform();
 	t.equals(doc.getRoot().listNodes().length, 1, 'preserve nodes');
 	t.equals(doc.getRoot().listScenes().length, 1, 'preserve scenes');
-	t.equals(doc.getRoot().getDefaultScene(), null, 'preserve empty default scene');
+	t.equals(doc.getRoot().getDefaultScene(), undefined, 'preserve empty default scene');
 
 	doc.setDefaultScene(0);
 	await doc.transform();
@@ -84,7 +84,7 @@ test('@gltf-transform/core::document | clone', t => {
 		'does not reference old material'
 	);
 
-	t.equal(doc2.getRoot().getDefaultScene(), null, 'transfer empty default scene');
+	t.equal(doc2.getRoot().getDefaultScene(), undefined, 'transfer empty default scene');
 	doc1.setDefaultScene(0);
 	const doc3 = doc1.clone();
 

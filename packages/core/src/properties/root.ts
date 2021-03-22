@@ -100,6 +100,8 @@ export class Root extends Property {
 		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
 		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
 
+		this.setDefaultScene(other.scene)
+
 		return this;
 	}
 
@@ -185,9 +187,8 @@ export class Root extends Property {
 
 	/**
 	 * Set the default scene ID associated with this root.
-	 * @hidden
 	 */
-	public _setDefaultScene(sceneId?: number): this {
+	public setDefaultScene(sceneId?: number): this {
 		this.scene = sceneId;
 		return this;
 	}

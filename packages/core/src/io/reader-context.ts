@@ -20,7 +20,6 @@ export class ReaderContext {
 	public skins: Skin[] = [];
 	public animations: Animation[] = [];
 	public scenes: Scene[] = [];
-	public scene?: number;
 
 	constructor (public readonly jsonDoc: JSONDocument) {}
 

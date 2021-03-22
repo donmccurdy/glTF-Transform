@@ -465,8 +465,7 @@ export class GLTFReader {
 			return scene;
 		});
 
-		context.scene = json?.scene;
-		doc.setDefaultScene(context.scene);
+		doc.setDefaultScene(json?.scene);
 
 		/** Extensions (2/2). */
 
