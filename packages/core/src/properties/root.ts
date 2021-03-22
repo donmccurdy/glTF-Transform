@@ -100,7 +100,7 @@ export class Root extends Property {
 		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
 		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
 
-		this.setDefaultScene(other.scene)
+		this.setDefaultScene(other.scene);
 
 		return this;
 	}
