@@ -97,3 +97,9 @@ export enum PropertyType {
 	TEXTURE = 'Texture',
 	TEXTURE_INFO = 'TextureInfo',
 }
+
+/** Vertex layout method. */
+export enum VertexLayout {
+	INTERLEAVED = 'interleaved',
+	SEPARATE = 'separate',
+}
