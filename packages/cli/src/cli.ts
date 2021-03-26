@@ -4,7 +4,7 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
+import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
@@ -781,6 +781,14 @@ so this workflow is not a replacement for video playback.
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
 
+program.option('-vl, --vertex-layout <layout>', 'Vertex layout method', {
+	global: true,
+	default: VertexLayout.INTERLEAVED,
+	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
+	action: ({options}) => {
+		io.setVertexLayout(options.vertexLayout as VertexLayout);
+	},
+});
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 

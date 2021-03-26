@@ -138,6 +138,7 @@ export class NodeIO extends PlatformIO {
 			isGLB: false,
 			logger: this._logger,
 			dependencies: this._dependencies,
+			vertexLayout: this._vertexLayout,
 		});
 		const {_fs: fs, _path: path} = this;
 		const dir = path.dirname(uri);
