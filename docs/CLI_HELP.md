@@ -1,5 +1,5 @@
 
-  gltf-transform 0.9.4 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.9.5-alpha.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -56,4 +56,6 @@
     -h, --help                           Display global help or command-related help.           
     -V, --version                        Display version.                                       
     -v, --verbose                        Verbose mode: will also output debug messages.         
+    -vl, --vertex-layout <layout>        Vertex layout method                                   
+                                         one of "interleaved","separate", default: "interleaved"
 
