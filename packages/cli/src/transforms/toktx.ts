@@ -52,8 +52,11 @@ export interface ETC1SOptions extends GlobalOptions {
 
 export interface UASTCOptions extends GlobalOptions {
 	level: number;
-	rdoQuality: number;
-	rdoDictSize: number;
+	rdo: number;
+	rdoDictionarySize: number;
+	rdoBlockScale: number;
+	rdoStdDev: number;
+	rdoMultithreading: boolean;
 }
 
 const GLOBAL_DEFAULTS = {
@@ -71,8 +74,11 @@ export const ETC1S_DEFAULTS = {
 
 export const UASTC_DEFAULTS = {
 	level: 2,
-	rdoQuality: 1,
-	rdoDictsize: 32768,
+	rdo: 0,
+	rdoDictionarySize: 32768,
+	rdoBlockScale: 10.0,
+	rdoStdDev: 18.0,
+	rdoMultithreading: true,
 	...GLOBAL_DEFAULTS,
 };
 
@@ -191,11 +197,20 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 
 	if (options.mode === Mode.UASTC) {
 		params.push('--uastc', options.level);
-		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) {
-			params.push('--uastc_rdo_q', options.rdoQuality);
+		if (options.rdo !== UASTC_DEFAULTS.rdo) {
+			params.push('--uastc_rdo_l', options.rdo);
 		}
-		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) {
-			params.push('--uastc_rdo_d', options.rdoDictsize);
+		if (options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
+			params.push('--uastc_rdo_d', options.rdoDictionarySize);
+		}
+		if (options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
+			params.push('--uastc_rdo_b', options.rdoBlockScale);
+		}
+		if (options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
+			params.push('--uastc_rdo_s', options.rdoStdDev);
+		}
+		if (!options.rdoMultithreading) {
+			params.push('--uastc_rdo_m');
 		}
 		if (options.zstd > 0) params.push('--zcmp', options.zstd);
 	} else {

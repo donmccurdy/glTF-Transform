@@ -671,25 +671,43 @@ for textures where the quality is sufficient.`.trim()),
 		{validator: program.BOOLEAN}
 	)
 	.option(
-		'--rdo-quality <uastc_rdo_q>',
+		'--rdo <uastc_rdo_l>',
 		'Enable UASTC RDO post-processing and optionally set UASTC RDO'
-		+ ' quality scalar to <quality>.  Lower values yield higher'
+		+ ' quality scalar (lambda).  Lower values yield higher'
 		+ ' quality/larger LZ compressed files, higher values yield lower'
-		+ ' quality/smaller LZ compressed files. A good range to try is [.2-4].'
-		+ ' Full range is .001 to 10.0.',
-		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoQuality}
+		+ ' quality/smaller LZ compressed files. A good range to try is [.25, 10].'
+		+ ' For normal maps, try [.25, .75]. Full range is [.001, 10.0].',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdo}
 	)
 	.option(
-		'--rdo-dictsize <uastc_rdo_d>',
+		'--rdo-dictionary-size <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower'
-		+ ' values=faster, but give less compression. Possible range is 256'
-		+ ' to 65536.',
-		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictsize}
+		+ ' values=faster, but give less compression. Possible range is [256, 65536].',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize}
+	)
+	.option(
+		'--rdo-block-scale <uastc_rdo_b>',
+		'Set UASTC RDO max smooth block error scale. Range is [1.0, 300.0].'
+		+ ' Default is 10.0, 1.0 is disabled. Larger values suppress more'
+		+ ' artifacts (and allocate more bits) on smooth blocks.',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale}
+	)
+	.option(
+		'--rdo-std-dev <uastc_rdo_s>',
+		'Set UASTC RDO max smooth block standard deviation. Range is'
+		+ ' [.01, 65536.0]. Default is 18.0. Larger values expand the range'
+		+ ' of blocks considered smooth.',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoStdDev}
+	)
+	.option(
+		'--rdo-multithreading <uastc_rdo_m>',
+		'Enable RDO multithreading (slightly lower compression, non-deterministic).',
+		{validator: program.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading}
 	)
 	.option(
 		'--zstd <compressionLevel>',
 		'Supercompress the data with Zstandard.'
-		+ ' Compression level range is 1 - 22, or 0 is uncompressed.'
+		+ ' Compression level range is [1, 22], or 0 is uncompressed.'
 		+ ' Lower values=faster but give less compression. Values above 20'
 		+ ' should be used with caution as they require more memory.',
 		{validator: program.NUMBER, default: 18}
