@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/extensions",
-  "version": "0.9.5-alpha.0",
+  "version": "0.9.5",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Adds extension support to @gltf-transform/core",
   "main": "dist/extensions.js",
@@ -21,7 +21,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.9.5-alpha.0",
+    "@gltf-transform/core": "^0.9.5",
     "ktx-parse": "^0.0.5"
   },
   "files": [
