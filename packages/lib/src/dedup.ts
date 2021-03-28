@@ -1,4 +1,4 @@
-import { Accessor, BufferUtils, Document, Logger, Material, PropertyType, Texture, Transform } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Document, Logger, Material, Mesh, PropertyType, Texture, Transform } from '@gltf-transform/core';
 
 const NAME = 'dedup';
 
@@ -7,12 +7,13 @@ export interface DedupOptions {
 }
 
 const DEFAULT_OPTIONS: DedupOptions = {
-	propertyTypes: [PropertyType.ACCESSOR, PropertyType.TEXTURE],
+	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE],
 };
 
 /**
  * Options:
  * - **accessors**: Whether to remove duplicate accessors. Default `true`.
+ * - **meshes**: Whether to remove duplicate meshes. Default `true`.
  * - **textures**: Whether to remove duplicate textures. Default `true`.
  */
 export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transform {
@@ -29,6 +30,7 @@ export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transfo
 		const logger = doc.getLogger();
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
+		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
 		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -107,6 +109,54 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	});
 	Array.from(duplicateIndices.keys()).forEach((indices) => indices.dispose());
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
+}
+
+function dedupMeshes(logger: Logger, doc: Document): void {
+	const root = doc.getRoot();
+
+	// Create Accessor -> ID lookup table.
+	const accessorIndices = new Map<Accessor, number>();
+	root.listAccessors().forEach((accessor, index) => {
+		accessorIndices.set(accessor, index);
+	});
+
+	// For each mesh, create a hashkey.
+	const numMeshes = root.listMeshes().length;
+	const uniqueMeshes = new Map<string, Mesh>();
+	for (const src of root.listMeshes()) {
+		// For each mesh, create a hashkey.
+		const srcKeyItems = [];
+		for (const prim of src.listPrimitives()) {
+			const primKeyItems = [];
+			for (const semantic of prim.listSemantics()) {
+				const attribute = prim.getAttribute(semantic);
+				primKeyItems.push(semantic + ':' + accessorIndices.get(attribute));
+			}
+			if (prim.getIndices()) {
+				primKeyItems.push('indices:' + accessorIndices.get(prim.getIndices()));
+			}
+			srcKeyItems.push(primKeyItems.join(','));
+		}
+
+		// If another mesh exists with the same key, replace all instances with that, and dispose
+		// of the duplicate. If not, just cache it.
+		const meshKey = srcKeyItems.join(';');
+		if (uniqueMeshes.has(meshKey)) {
+			const targetMesh = uniqueMeshes.get(meshKey);
+			src.listParents().forEach((parent) => {
+				if (parent.propertyType !== PropertyType.ROOT) {
+					parent.swap(src, targetMesh);
+				}
+			});
+			src.dispose();
+		} else {
+			uniqueMeshes.set(meshKey, src);
+		}
+	}
+
+	logger.debug(
+		`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`
+	);
 }
 
 function dedupImages(logger: Logger, doc: Document): void {
