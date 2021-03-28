@@ -100,6 +100,15 @@ export enum PropertyType {
 
 /** Vertex layout method. */
 export enum VertexLayout {
+	/**
+	 * Stores vertex attributes in a single buffer view per mesh primitive. Interleaving vertex
+	 * data may improve performance by reducing page-thrashing in GPU memory.
+	 */
 	INTERLEAVED = 'interleaved',
+
+	/**
+	 * Stores each vertex attribute in a separate buffer view. May decrease performance by causing
+	 * page-thrashing in GPU memory. Some 3D engines may prefer this layout, e.g. for simplicity.
+	 */
 	SEPARATE = 'separate',
 }
