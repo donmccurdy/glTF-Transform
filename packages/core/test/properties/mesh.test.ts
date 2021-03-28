@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, Primitive, Property } from '../../';
+import { Accessor, Document, GLTF, NodeIO, Primitive, Property, VertexLayout } from '../../';
 
 test('@gltf-transform/core::mesh', t => {
 	const doc = new Document();
@@ -262,6 +262,57 @@ test('@gltf-transform/core::mesh | primitive i/o', t => {
 		rtPrim.getAttribute('COLOR_4').getArray(),
 		new Int8Array([8, 8, 8]),
 		'int8'
+	);
+	t.end();
+});
+
+test('@gltf-transform/core::mesh | primitive vertex layout', t => {
+	const doc = new Document();
+	const prim = doc.createPrimitive();
+	const buffer = doc.createBuffer();
+
+	prim
+		.setMode(Primitive.Mode.POINTS)
+		.setAttribute('POSITION', doc.createAccessor()
+			.setArray(new Float32Array([0, 0, 0]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_0', doc.createAccessor()
+			.setArray(new Uint8Array([128, 128, 128]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_1', doc.createAccessor()
+			.setArray(new Uint16Array([64, 64, 64]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer))
+		.setAttribute('COLOR_2', doc.createAccessor()
+			.setArray(new Uint32Array([32, 32, 32]))
+			.setType(Accessor.Type.VEC3)
+			.setBuffer(buffer));
+
+	doc.createMesh().addPrimitive(prim);
+
+	const io = new NodeIO();
+
+	io.setVertexLayout(VertexLayout.INTERLEAVED);
+	const interleavedJSON = io.binaryToJSON(io.writeBinary(doc));
+	t.deepEquals(
+		interleavedJSON.json.bufferViews,
+		[{buffer: 0, target: 34962, byteOffset: 0, byteLength: 36, byteStride: 36}],
+		'interleaved buffer byte length'
+	);
+
+	io.setVertexLayout(VertexLayout.SEPARATE);
+	const separateJSON = io.binaryToJSON(io.writeBinary(doc));
+	t.deepEquals(
+		separateJSON.json.bufferViews,
+		[
+			{buffer: 0, target: 34962, byteOffset: 0, byteLength: 12},
+			{buffer: 0, target: 34962, byteOffset: 12, byteLength: 4},
+			{buffer: 0, target: 34962, byteOffset: 16, byteLength: 8},
+			{buffer: 0, target: 34962, byteOffset: 24, byteLength: 12},
+		],
+		'separate buffer byte length'
 	);
 	t.end();
 });
