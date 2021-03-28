@@ -341,31 +341,31 @@ given --decodeSpeed.`.trim())
 		validator: ['edgebreaker', 'sequential'],
 		default: 'edgebreaker',
 	})
-	.option('--encodeSpeed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
+	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
 		default: 5,
 	})
-	.option('--decodeSpeed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
+	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
 		default: 5,
 	})
-	.option('--quantizePosition <bits>', 'Quantization bits for POSITION, 1-16.', {
+	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
 		validator: program.NUMBER,
 		default: 14,
 	})
-	.option('--quantizeNormal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
 		validator: program.NUMBER,
 		default: 10,
 	})
-	.option('--quantizeColor <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
 		validator: program.NUMBER,
 		default: 8,
 	})
-	.option('--quantizeTexcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
 		validator: program.NUMBER,
 		default: 12,
 	})
-	.option('--quantizeGeneric <bits>', 'Quantization bits for other attributes, 1-16.', {
+	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
 		default: 12,
 	})
