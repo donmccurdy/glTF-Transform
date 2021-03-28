@@ -48,6 +48,10 @@ export abstract class PlatformIO {
 		return this;
 	}
 
+	/**
+	 * Sets the vertex layout method used by this I/O instance. Defaults to
+	 * VertexLayout.INTERLEAVED.
+	 */
 	public setVertexLayout(layout: VertexLayout): this {
 		this._vertexLayout = layout;
 		return this;
