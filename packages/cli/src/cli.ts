@@ -206,6 +206,10 @@ compression and instancing, to be more effective.
 		validator: program.BOOLEAN,
 		default: true,
 	})
+	.option('--meshes <meshes>', 'Remove duplicate meshes', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.option('--textures <textures>', 'Remove duplicate textures', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -213,6 +217,7 @@ compression and instancing, to be more effective.
 	.action(({args, options, logger}) => {
 		const propertyTypes: string[] = [];
 		if (options.accessors) propertyTypes.push(PropertyType.ACCESSOR);
+		if (options.meshes) propertyTypes.push(PropertyType.MESH);
 		if (options.textures) propertyTypes.push(PropertyType.TEXTURE);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(dedup({propertyTypes}));
