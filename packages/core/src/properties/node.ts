@@ -1,7 +1,8 @@
-import { fromRotationTranslationScale, getRotation, getScaling, getTranslation, multiply } from 'gl-matrix/mat4';
+import { multiply } from 'gl-matrix/mat4';
 import { PropertyType, mat4, vec3, vec4 } from '../constants';
 import { GraphChild, GraphChildList } from '../graph/graph-decorators';
 import { Link } from '../graph/graph-links';
+import { MathUtils } from '../utils';
 import { Camera } from './camera';
 import { ExtensibleProperty } from './extensible-property';
 import { Mesh } from './mesh';
@@ -104,7 +105,9 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the local matrix of this node. */
 	public getMatrix(): mat4 {
-		return fromRotationTranslationScale([], this._rotation, this._translation, this._scale);
+		return MathUtils.compose(
+			this._translation, this._rotation, this._scale, [] as unknown as mat4
+		);
 	}
 
 	/**********************************************************************************************
@@ -113,17 +116,23 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the translation (position) of this node in world space. */
 	public getWorldTranslation(): vec3 {
-		return getTranslation([], this.getWorldMatrix());
+		const t = [0, 0, 0] as vec3;
+		MathUtils.decompose(this.getWorldMatrix(), t, [0, 0, 0, 1], [1, 1, 1]);
+		return t;
 	}
 
 	/** Returns the rotation (quaternion) of this node in world space. */
 	public getWorldRotation(): vec4 {
-		return getRotation([], this.getWorldMatrix());
+		const r = [0, 0, 0, 1] as vec4;
+		MathUtils.decompose(this.getWorldMatrix(), [0, 0, 0], r, [1, 1, 1]);
+		return r;
 	}
 
 	/** Returns the scale of this node in world space. */
 	public getWorldScale(): vec3 {
-		return getScaling([], this.getWorldMatrix());
+		const s = [1, 1, 1] as vec3;
+		MathUtils.decompose(this.getWorldMatrix(), [0, 0, 0], [0, 0, 0, 1], s);
+		return s;
 	}
 
 	/** Returns the world matrix of this node. */
@@ -246,6 +255,7 @@ export class Node extends ExtensibleProperty {
 }
 
 interface SceneNode {
+	propertyType: PropertyType;
 	_parent?: SceneNode | null;
 	addChild(node: Node): this;
 	removeChild(node: Node): this;
