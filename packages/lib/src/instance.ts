@@ -1,4 +1,4 @@
-import { Document, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
+import { Document, Logger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
 
 const NAME = 'instance';
@@ -33,6 +33,7 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 			});
 
 			// For each Mesh, create an InstancedMesh and collect transforms.
+			const modifiedNodes = [];
 			for (const mesh of Array.from(meshInstances.keys())) {
 				const nodes = Array.from(meshInstances.get(mesh));
 				if (nodes.length < 2) continue;
@@ -65,19 +66,16 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 					if (!MathUtils.eq(r, [0, 0, 0, 1])) needsRotation = true;
 					if (!MathUtils.eq(s, [1, 1, 1])) needsScale = true;
 
-					// Clean up the old node.
-					if (!node.listChildren().length
-						&& !node.getCamera()
-						&& !node.listExtensions().length) {
-						node.dispose();
-					} else {
-						node.setMesh(null);
-					}
+					// Mark the node for cleanup.
+					node.setMesh(null);
+					modifiedNodes.push(node);
 				}
 
 				if (!needsTranslation) batchTranslation.dispose();
 				if (!needsRotation) batchRotation.dispose();
 				if (!needsScale) batchScale.dispose();
+
+				pruneUnusedNodes(modifiedNodes, logger);
 
 				numBatches++;
 				numInstances += nodes.length;
@@ -96,6 +94,28 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 		logger.debug(`${NAME}: Complete.`);
 	};
 
+}
+
+function pruneUnusedNodes(nodes: Node[], logger: Logger): void {
+	let node: Node;
+	let unusedNodes = 0;
+	while ((node = nodes.pop())) {
+		if (node.listChildren().length
+				|| node.getCamera()
+				|| node.getMesh()
+				|| node.getSkin()
+				|| node.listExtensions().length) {
+			continue;
+		}
+		const nodeParent = node.getParent();
+		if (nodeParent instanceof Node) {
+			nodes.push(nodeParent);
+		}
+		node.dispose();
+		unusedNodes++;
+	}
+
+	logger.debug(`${NAME}: Removed ${unusedNodes} unused nodes.`);
 }
 
 function createBatch(
