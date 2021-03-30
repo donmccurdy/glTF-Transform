@@ -1,105 +1,153 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Transform, TypedArray, vec2, vec3 } from '@gltf-transform/core';
+import { Accessor, Animation, Document, GLTF, Mesh, Node, Transform, vec2, vec3 } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
 
 const NAME = 'quantize';
 
-interface QuantizeOptions {
-	position?: 8 | 16;
-	normal?: 8 | 16;
-	texcoord?: 8 | 16;
+type TypedArrayConstructor = Int8ArrayConstructor
+	| Int16ArrayConstructor
+	| Uint8ArrayConstructor
+	| Uint16ArrayConstructor;
+const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[];
+
+export interface QuantizeOptions {
+	excludeAttributes?: string[];
+	position?: number;
+	normal?: number;
+	texcoord?: number;
+	color?: number;
+	weight?: number;
+	generic?: number;
 }
 
-const DEFAULT_OPTIONS: QuantizeOptions =  {
-	position: 16,
-	normal: 8,
-	texcoord: 16,
+export const QUANTIZE_DEFAULTS: QuantizeOptions =  {
+	excludeAttributes: [],
+	position: 14,
+	normal: 10,
+	texcoord: 12,
+	color: 8,
+	weight: 8,
+	generic: 12,
 };
 
-const quantize = (options: QuantizeOptions): Transform => {
+/**
+ * Quantize vertex attributes with `KHR_mesh_quantization`.
+ *
+ * References:
+ * - https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_mesh_quantization
+ * - http://www.aclockworkberry.com/normal-unpacking-quantization-errors/
+ * - https://www.mathworks.com/help/dsp/ref/uniformencoder.html
+ * - https://oroboro.com/compressed-unit-vectors/
+ */
+const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
-	options = {...DEFAULT_OPTIONS, ...options};
+	options = {...QUANTIZE_DEFAULTS, ...options};
 
 	return (doc: Document): void => {
+		const logger = doc.getLogger();
 
 		doc.createExtension(MeshQuantization).setRequired(true);
 
-		const logger = doc.getLogger();
-
-		const tmpAttribute = doc.createAccessor('_TMP');
-
-		try {
-
-			for (const mesh of doc.getRoot().listMeshes()) {
-				const min = [Infinity, Infinity, Infinity] as vec3;
-				const max = [-Infinity, -Infinity, -Infinity] as vec3;
-				const positions = mesh.listPrimitives()
-					.map((prim) => prim.getAttribute('POSITION'));
-				flatBounds<vec3>(min, max, positions);
-				const scale = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2]);
-				const isSkinnedMesh = !!mesh.listPrimitives()
-					.find((prim) => prim.getAttribute('JOINTS_0'));
-				// eslint-disable-next-line max-len
-				logger.debug(`${NAME}: Quantizing "${mesh.getName()}" ... scale=${scale.toFixed(5)}`);
-
-				for (const primitive of mesh.listPrimitives()) {
-					for (const semantic of primitive.listSemantics()) {
-						const attribute = primitive.getAttribute(semantic);
-						if (semantic === 'POSITION') {
-							if (isSkinnedMesh) {
-								// TODO(feat): Apply transforms to IBMs for skinned mesh.
-								logger.warn(`${NAME}: Skipping skinned mesh, not yet supported.`);
-								continue;
-							}
-							const bits = options.position;
-							const vertexScale = scale ? 1 / scale : 0;
-							logger.debug(`max before: ${attribute.getMaxNormalized([]).map(n => n.toFixed(3))}`);
-							quantizeAttribute(attribute, tmpAttribute, bits === 8 ? Uint8Array : Uint16Array, bits, false, min, vertexScale);
-							logger.debug(`max after: ${attribute.getMaxNormalized([]).map(n => n.toFixed(3))}`);
-						} else if (semantic === 'NORMAL') {
-							// TODO(feat): Implement.
-						} else if (semantic === 'TANGENT') {
-							// TODO(feat): Implement.
-						} else if (semantic.startsWith('COLOR_')) {
-							// quantizeAttribute(attribute, tmpAttribute, Uint8Array, 8, true);
-						} else if (semantic.startsWith('TEXCOORD_')) {
-							// const bits = options.texcoord;
-							// const uvMin = attribute.getMinNormalized([]);
-							// const uvMax = attribute.getMaxNormalized([]);
-							// if (Math.min(...uvMin) < 0 || Math.max(...uvMax) > 1) {
-							// 	// TODO(feat): Implement KHR_texture_transform and quantize UVs outside of [0,1].
-							// 	logger.warn(`${NAME}: Skipping ${semantic} attribute; quantize transform does not yet support KHR_texture_transform.`);
-							// 	continue;
-							// }
-							// quantizeAttribute(attribute, tmpAttribute, bits === 8 ? Uint8Array : Uint16Array, bits, true);
-						} else if (semantic.startsWith('JOINTS_')) {
-							const bits = Math.max(...attribute.getMax([])) <= 255 ? 8 : 16;
-							quantizeAttribute(attribute, tmpAttribute, bits === 8 ? Uint8Array : Uint16Array, bits, false);
-						} else if (semantic.startsWith('WEIGHTS_')) {
-							// TODO(feat): Normalize and uncomment.
-							// quantizeAttribute(attribute, tmpAttribute, Uint8Array, 8, true);
-						}
-					}
-
-					if (primitive.listTargets().length) {
-						// TODO(feat): Quantize morph targets.
-						logger.warn(`${NAME}: Skipping morph targets; quantize transform does not yet affect them.`);
-					}
-				}
-
-				if (!isSkinnedMesh && mesh.listPrimitives().length) {
-					transformMeshParents(doc, mesh, min, scale / ((1 << options.position) - 1));
-				}
-			}
-
-		} finally {
-
-			tmpAttribute.dispose();
-
+		for (const mesh of doc.getRoot().listMeshes()) {
+			quantizeMesh(doc, mesh, options);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
 	};
 
+};
+
+function quantizeMesh(
+		doc: Document,
+		mesh: Mesh,
+		options: QuantizeOptions): void {
+
+	const logger = doc.getLogger();
+	const {nodeRemap, nodeOffset, nodeScale} = getNodeQuantizationTransforms(mesh);
+
+	for (const primitive of mesh.listPrimitives()) {
+		for (const semantic of primitive.listSemantics()) {
+			if (options.excludeAttributes.includes(semantic)) continue;
+
+			const attribute = primitive.getAttribute(semantic);
+			const min = attribute.getMinNormalized([]);
+			const max = attribute.getMinNormalized([]);
+
+			let bits: number;
+			let ctor: TypedArrayConstructor;
+
+			// TODO(cleanup): Factor this out into a method or mapping.
+			if (semantic === 'POSITION') {
+				bits = options.position;
+				ctor = bits <= 8 ? Int8Array : Int16Array;
+			} else if (semantic === 'NORMAL' || semantic === 'TANGENT') {
+				bits = options.normal;
+				ctor = bits <= 8 ? Int8Array : Int16Array;
+			} else if (semantic.startsWith('COLOR_')) {
+				bits = options.color;
+				ctor = bits <= 8 ? Uint8Array : Uint16Array;
+			} else if (semantic.startsWith('TEXCOORD_')) {
+				if (min.some(v => v < 0) || max.some(v => v > 1)) {
+					logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+					continue;
+				}
+				bits = options.texcoord;
+				ctor = bits <= 8 ? Uint8Array : Uint16Array;
+			} else if (semantic.startsWith('JOINTS_')) {
+				bits = Math.max(...attribute.getMax([])) <= 255 ? 8 : 16;
+				ctor = bits <= 8 ? Uint8Array : Uint16Array;
+				if (attribute.getComponentSize() > bits / 8) {
+					attribute.setArray(new ctor(attribute.getArray()));
+				}
+				continue;
+			} else if (semantic.startsWith('WEIGHTS_')) {
+				if (min.some(v => v < 0) || max.some(v => v > 1)) {
+					logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+					continue;
+				}
+				bits = options.weight;
+				ctor = bits <= 8 ? Uint8Array : Uint16Array;
+			} else if (semantic.startsWith('_')) {
+				if (min.some(v => v < -1) || max.some(v => v > 1)) {
+					logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+					continue;
+				}
+				bits = options.generic;
+				ctor = min.some(v => v < 0)
+					? (ctor = bits <= 8 ? Int8Array : Int16Array)
+					: (ctor = bits <= 8 ? Uint8Array : Uint16Array);
+			}
+
+			if (bits < 8 || bits > 16) {
+				throw new Error(`${NAME}: Quantization bits must be 8–16, inclusive.`);
+			}
+
+			// No changes if the storage is already as good as requested bit depth.
+			if (attribute.getComponentSize() <= bits / 8) return;
+
+			// Write quantization transform for position data into mesh parents.
+			if (semantic === 'POSITION') {
+				transformMeshParents(doc, mesh, nodeOffset || [0, 0, 0], nodeScale || [1, 1, 1]);
+				for (let i = 0, el = [], il = attribute.getCount(); i < il; i++) {
+					attribute.setElement(i, nodeRemap(attribute.getElement(i, el)));
+				}
+			}
+
+			// Quantize the vertex attribute.
+			quantizeAttribute(attribute, ctor, bits);
+			attribute.setNormalized(true);
+
+			// If we're storing normalized data quantized to fewer bits than the component storage
+			// would allow, scale up by a power of two accordingly.
+			if (bits < ctor.BYTES_PER_ELEMENT * 8) {
+				const elScale = Math.pow(2, ctor.BYTES_PER_ELEMENT * 8 - bits);
+				for (let i = 0, el = [], il = attribute.getCount(); i < il; i++) {
+					attribute.getElement(i, el);
+					for (let j = 0; j < el.length; j++) el[j] *= elScale;
+					attribute.setElement(i, el);
+				}
+			}
+		}
+	}
 }
 
 /** Computes total min and max of all Accessors in a list. */
@@ -121,8 +169,38 @@ function flatBounds<T = vec2 | vec3>(targetMin: T, targetMax: T, accessors: Acce
 	}
 }
 
+/** Computes node quantization transforms in local space. */
+function getNodeQuantizationTransforms(mesh: Mesh): {
+	nodeRemap: (v: number[]) => number[], nodeOffset: vec3, nodeScale: vec3
+} {
+	const positions = mesh.listPrimitives()
+		.map((prim) => prim.getAttribute('POSITION'));
+
+	if (!positions.some((p) => !!p)) return {nodeRemap: null, nodeOffset: null, nodeScale: null};
+
+	const positionMin = [Infinity, Infinity, Infinity] as vec3;
+	const positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
+	flatBounds<vec3>(positionMin, positionMax, positions);
+	const nodeRemap = (v: number[]) => [
+		(-1) + (1 - (-1)) * (v[0] - positionMin[0]) / (positionMax[0] - positionMin[0]),
+		(-1) + (1 - (-1)) * (v[1] - positionMin[1]) / (positionMax[1] - positionMin[1]),
+		(-1) + (1 - (-1)) * (v[2] - positionMin[2]) / (positionMax[2] - positionMin[2]),
+	];
+	const nodeOffset: vec3 = [
+		positionMin[0] + (positionMax[0] - positionMin[0]) / 2,
+		positionMin[1] + (positionMax[1] - positionMin[1]) / 2,
+		positionMin[2] + (positionMax[2] - positionMin[2]) / 2,
+	];
+	const nodeScale: vec3 = [
+		(positionMax[0] - positionMin[0]) / 2,
+		(positionMax[1] - positionMin[1]) / 2,
+		(positionMax[2] - positionMin[2]) / 2,
+	];
+	return {nodeRemap, nodeOffset, nodeScale};
+}
+
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
-function transformMeshParents(doc: Document, mesh: Mesh, offset: vec3, scale: number): void {
+function transformMeshParents(doc: Document, mesh: Mesh, offset: vec3, scale: vec3): void {
 	for (const parent of mesh.listParents()) {
 		if (parent instanceof Node) {
 			const isParentNode = parent.listChildren().length > 0;
@@ -141,7 +219,7 @@ function transformMeshParents(doc: Document, mesh: Mesh, offset: vec3, scale: nu
 			const s = targetNode.getScale();
 			targetNode
 				.setTranslation([t[0] + offset[0], t[1] + offset[1], t[2] + offset[2]])
-				.setScale([s[0] * scale, s[1] * scale, s[2] * scale]);
+				.setScale([s[0] * scale[0], s[1] * scale[1], s[2] * scale[2]]);
 		}
 	}
 }
@@ -149,57 +227,21 @@ function transformMeshParents(doc: Document, mesh: Mesh, offset: vec3, scale: nu
 /** Quantizes an attribute to the given parameters. */
 function quantizeAttribute(
 		attribute: Accessor,
-		tmpAttribute: Accessor,
-		ctor: new(n: number) => TypedArray,
-		bits: number,
-		normalized: boolean,
-		offset: vec3 = null,
-		scale: number = null,
+		ctor: TypedArrayConstructor,
+		bits: number
 	): void {
 
-	if (attribute.getComponentSize() <= bits / 8) return;
+	const dstArray = new ctor(attribute.getArray().length);
+	const dstScale = (Math.pow(2, bits) - 1) * (SIGNED_INT.includes(ctor) ? 0.5 : 1);
 
-	const prevArray = attribute.getArray();
-	const nextArray = new ctor(prevArray.length);
-
-	// console.log(`norm=${normalized}, offset=${offset}, scale=${scale}`);
-
-	tmpAttribute
-		.setType(attribute.getType())
-		.setArray(nextArray)
-		.setNormalized(normalized);
-
-	const pos = [];
-	for (let i = 0; i < attribute.getCount(); i++) {
-		attribute.getElement(i, pos);
-		// console.log('(' + pos + ' - ' + offset +  ') * ' + scale);
-		if (offset !== null && scale !== null) {
-			pos[0] = floatToInt((pos[0] - offset[0]) * scale, tmpAttribute.getComponentType());
-			pos[1] = floatToInt((pos[1] - offset[1]) * scale, tmpAttribute.getComponentType());
-			pos[2] = floatToInt((pos[2] - offset[2]) * scale, tmpAttribute.getComponentType());
+	for (let i = 0, di = 0, el = []; i < attribute.getCount(); i++) {
+		attribute.getElement(i, el);
+		for (let j = 0; j < el.length; j++) {
+			dstArray[di++] = (el[j] * dstScale) | 0; // truncate integer.
 		}
-		tmpAttribute.setElement(i, pos);
 	}
 
-	attribute
-		.setArray(nextArray)
-		.setNormalized(normalized);
-}
-
-// TODO(cleanup): Import function from /core.
-function floatToInt(f: number, componentType: GLTF.AccessorComponentType): number {
-	switch (componentType) {
-		case GLTF.AccessorComponentType.FLOAT:
-			return f;
-		case GLTF.AccessorComponentType.UNSIGNED_SHORT:
-			return Math.round(f * 65535.0);
-		case GLTF.AccessorComponentType.UNSIGNED_BYTE:
-			return Math.round(f * 255.0);
-		case GLTF.AccessorComponentType.SHORT:
-			return Math.round(f * 32767.0);
-		case GLTF.AccessorComponentType.BYTE:
-			return Math.round(f * 127.0);
-	}
+	attribute.setArray(dstArray);
 }
 
 export { quantize };
