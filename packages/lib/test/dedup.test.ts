@@ -21,6 +21,21 @@ test('@gltf-transform/lib::dedup | accessors', t => {
 	t.end();
 });
 
+test('@gltf-transform/lib::dedup | meshes', t => {
+	const io = new NodeIO();
+	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+	t.equal(doc.getRoot().listMeshes().length, 501, 'begins with duplicate meshes');
+
+	dedup({propertyTypes: [PropertyType.ACCESSOR]})(doc);
+
+	t.equal(doc.getRoot().listMeshes().length, 501, 'has no effect when disabled');
+
+	dedup()(doc);
+
+	t.equal(doc.getRoot().listMeshes().length, 1, 'prunes duplicate meshes');
+	t.end();
+});
+
 test('@gltf-transform/lib::dedup | textures', t => {
 	const doc = new Document();
 
