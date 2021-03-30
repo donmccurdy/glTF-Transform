@@ -8,7 +8,7 @@ import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
-import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -348,31 +348,31 @@ given --decodeSpeed.`.trim())
 	})
 	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
-		default: 5,
+		default: DRACO_DEFAULTS.encodeSpeed,
 	})
 	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
-		default: 5,
+		default: DRACO_DEFAULTS.decodeSpeed,
 	})
 	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
 		validator: program.NUMBER,
-		default: 14,
+		default: DRACO_DEFAULTS.quantizePosition,
 	})
 	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
 		validator: program.NUMBER,
-		default: 10,
+		default: DRACO_DEFAULTS.quantizeNormal,
 	})
 	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
 		validator: program.NUMBER,
-		default: 8,
+		default: DRACO_DEFAULTS.quantizeColor,
 	})
 	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
 		validator: program.NUMBER,
-		default: 12,
+		default: DRACO_DEFAULTS.quantizeTexcoord,
 	})
 	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
-		default: 12,
+		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
 	.action(({args, options, logger}) =>
 		// Include a lossless weld — Draco requires indices.
