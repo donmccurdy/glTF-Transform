@@ -322,6 +322,8 @@ export class GLTFWriter {
 
 						if (usage !== BufferViewUsage.ARRAY_BUFFER
 								|| options.vertexLayout === VertexLayout.INTERLEAVED) {
+							// Case 1: Non-vertex data OR interleaved vertex data.
+
 							// Instanced data is not interleaved, see:
 							// https://github.com/KhronosGroup/glTF/pull/1888
 							const result = usage === BufferViewUsage.ARRAY_BUFFER
@@ -330,12 +332,15 @@ export class GLTFWriter {
 							bufferByteLength += result.byteLength;
 							buffers.push(...result.buffers);
 						} else {
+							// Case 2: Non-interleaved vertex data.
+
 							for (const accessor of accessors) {
-								const result = concatAccessors(
+								// We 'interleave' a single accessor because the method pads to
+								// 4-byte boundaries, which concatAccessors() does not.
+								const result = interleaveAccessors(
 									[accessor],
 									bufferIndex,
 									bufferByteLength,
-									BufferViewTarget.ARRAY_BUFFER
 								);
 								bufferByteLength += result.byteLength;
 								buffers.push(...result.buffers);

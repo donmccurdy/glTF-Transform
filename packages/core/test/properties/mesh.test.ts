@@ -307,10 +307,10 @@ test('@gltf-transform/core::mesh | primitive vertex layout', t => {
 	t.deepEquals(
 		separateJSON.json.bufferViews,
 		[
-			{buffer: 0, target: 34962, byteOffset: 0, byteLength: 12},
-			{buffer: 0, target: 34962, byteOffset: 12, byteLength: 4},
-			{buffer: 0, target: 34962, byteOffset: 16, byteLength: 8},
-			{buffer: 0, target: 34962, byteOffset: 24, byteLength: 12},
+			{buffer: 0, target: 34962, byteOffset: 0, byteLength: 12, byteStride: 12},
+			{buffer: 0, target: 34962, byteOffset: 12, byteLength: 4, byteStride: 4},
+			{buffer: 0, target: 34962, byteOffset: 16, byteLength: 8, byteStride: 8},
+			{buffer: 0, target: 34962, byteOffset: 24, byteLength: 12, byteStride: 12},
 		],
 		'separate buffer byte length'
 	);
