@@ -227,7 +227,7 @@ compression and instancing, to be more effective.
 
 // PRUNE
 program
-	.command('prune', 'Removes unreferenced properties from the file')
+	.command('prune', 'Remove unreferenced properties from the file')
 	.help(`
 Removes properties from the file if they are not referenced by a Scene. Helpful
 when cleaning up after complex workflows or a faulty exporter. This function
@@ -274,9 +274,9 @@ program.command('', '\n\n🌍 SCENE ──────────────�
 
 // CENTER
 program
-	.command('center', 'Centers the scene at the origin, or above/below it')
+	.command('center', 'Center the scene at the origin, or above/below it')
 	.help(`
-Centers the scene at the origin, or above/below it. When loading a model into
+Center the scene at the origin, or above/below it. When loading a model into
 a larger scene, or into an augmented reality context, it's often best to ensure
 the model's pivot is centered beneath the object. For objects meant to be
 attached a surface, like a ceiling fan, the pivot may be located above instead.
@@ -294,7 +294,7 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 
 // INSTANCE
 program
-	.command('instance', 'Creates GPU instances from shared Mesh references')
+	.command('instance', 'Create GPU instances from shared Mesh references')
 	.help(`
 For meshes reused by more than one node in a scene, this command creates an
 EXT_mesh_gpu_instancing extension to aid with GPU instancing. In engines that
@@ -472,7 +472,7 @@ paricular software application.
 
 // TANGENTS
 program
-	.command('tangents', 'Generates MikkTSpace vertex tangents')
+	.command('tangents', 'Generate MikkTSpace vertex tangents')
 	.help(`
 Generates MikkTSpace vertex tangents.
 
