@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -354,23 +354,23 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.decodeSpeed,
 	})
-	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
+	.option('-qp, --quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizePosition,
 	})
-	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+	.option('-qn, --quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeNormal,
 	})
-	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+	.option('-qc, --quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeColor,
 	})
-	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+	.option('-qt, --quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeTexcoord,
 	})
-	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
+	.option('-qg, --quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
@@ -378,6 +378,60 @@ given --decodeSpeed.`.trim())
 		// Include a lossless weld — Draco requires indices.
 		Session.create(io, logger, args.input, args.output)
 			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
+	);
+
+// QUANTIZE
+program
+	.command('quantize', 'Quantize mesh vertex attributes')
+	.help(`
+Quantization is a simple type of compression taking 32-bit float vertex
+attributes and storing them as 16-bit or 8-bit integers. A quantization factor
+restoring the original value (with some error) is applied on the GPU, although
+node scales and positions may also be changed to account for the quantization.
+
+Quantized vertex attributes require less space, both on disk and on the GPU.
+Most vertex attribute types can be quantized from 8–16 bits, but are always
+stored in 8- or 16-bit accessors. While a value quantized to 12 bits still
+occupies 16 bits on disk, gzip (or other lossless compression) will be more
+effective on values quantized to lower bit depths. As a result, the default
+bit depths used by this command are generally between 8 and 16 bits.
+
+Bit depths for indices and JOINTS_* are determined automatically.
+
+Requires KHR_mesh_quantization support.`.trim())
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('-qp, --quantize-position <bits>', 'Precision for POSITION attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizePosition,
+	})
+	.option('-qn, --quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeNormal,
+	})
+	.option('-qt, --quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeTexcoord,
+	})
+	.option('-qc, --quantize-color <bits>', 'Precision for COLOR_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeColor,
+	})
+	.option('-qw, --quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeWeight,
+	})
+	.option('-qg, --quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeGeneric,
+	})
+	.option('--exclude-attributes <attributes>', 'Attributes (e.g. "COLOR_0") to exclude.', {
+		validator: program.ARRAY,
+		default: QUANTIZE_DEFAULTS.excludeAttributes,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(quantize(options))
 	);
 
 // WELD
