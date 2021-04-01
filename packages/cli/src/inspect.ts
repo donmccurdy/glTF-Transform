@@ -58,7 +58,7 @@ export async function inspect (
 		const rows = formattedRecords.map((p) => Object.values(p));
 		const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
 		console.log(await formatTable(format, header, rows));
-		if (footnotes.length) console.log(footnotes.join('\n'));
+		if (footnotes.length) console.log('\n' + footnotes.join('\n'));
 		if (report[type].warnings) {
 			report[type].warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
 		}
