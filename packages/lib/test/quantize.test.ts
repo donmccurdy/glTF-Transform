@@ -225,6 +225,31 @@ test('@gltf-transform/lib::quantize | custom', async t => {
 	t.end();
 });
 
+test('@gltf-transform/lib::quantize | indices', async t => {
+	const doc = new Document();
+	createFloatAttribute(doc, 'POSITION', VEC2, new Float32Array([
+		0.00, 0.00, 0.50, 0.50, 0.75, 0.25,
+	]));
+	const indices = doc.createAccessor()
+		.setType('SCALAR')
+		.setArray(new Uint32Array([0, 1, 2, 3, 4, 5, 6, 7]));
+	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	prim.setIndices(indices);
+	const indicesCopy = indices.clone();
+
+	await doc.transform(quantize());
+
+	if (indicesCopy.getNormalized() || !(indicesCopy.getArray() instanceof Uint32Array)) {
+		t.fail('Backup copy of indices was modified');
+	}
+
+	t.notOk(indices.getNormalized(), 'indices → not normalized');
+	t.ok(indices.getArray() instanceof Uint16Array, 'indices → Uint16Array');
+	elementPairs(indices, indicesCopy, round(8))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `indices value #${i + 1}`));
+	t.end();
+});
+
 /* UTILITIES */
 
 /** Creates a rounding function for given decimal precision. */

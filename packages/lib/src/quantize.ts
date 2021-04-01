@@ -64,11 +64,11 @@ function quantizeMesh(
 	const logger = doc.getLogger();
 	const {nodeRemap, nodeOffset, nodeScale} = getNodeQuantizationTransforms(mesh);
 
-	for (const primitive of mesh.listPrimitives()) {
-		for (const semantic of primitive.listSemantics()) {
+	for (const prim of mesh.listPrimitives()) {
+		for (const semantic of prim.listSemantics()) {
 			if (options.excludeAttributes.includes(semantic)) continue;
 
-			const attribute = primitive.getAttribute(semantic);
+			const attribute = prim.getAttribute(semantic);
 			const min = attribute.getMinNormalized([]);
 			const max = attribute.getMinNormalized([]);
 
@@ -135,6 +135,12 @@ function quantizeMesh(
 			// Quantize the vertex attribute.
 			quantizeAttribute(attribute, ctor, bits);
 			attribute.setNormalized(true);
+		}
+
+		if (prim.getIndices()
+				&& prim.listAttributes().length
+				&& prim.listAttributes()[0]!.getCount() < 65535) {
+			prim.getIndices().setArray(new Uint16Array(prim.getIndices().getArray()));
 		}
 	}
 }
