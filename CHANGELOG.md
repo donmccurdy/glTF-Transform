@@ -18,6 +18,7 @@
 - Add 'prune' transform. [#162](https://github.com/donmccurdy/glTF-Transform/pull/162)
 - Add 'resample' transform. [#158](https://github.com/donmccurdy/glTF-Transform/pull/158)
 - Add 'tangents' transform. [#175](https://github.com/donmccurdy/glTF-Transform/pull/175)
+- Add 'quantize' transform. [#59](https://github.com/donmccurdy/glTF-Transform/pull/59)
 - Add `KHR_materials_volume` extension. [#161](https://github.com/donmccurdy/glTF-Transform/pull/161)
 - Add `EXT_mesh_gpu_instancing` extension. [#115](https://github.com/donmccurdy/glTF-Transform/pull/115)
 - Add `--format={pretty,csv,md}` output options for CLI `inspect` command.
