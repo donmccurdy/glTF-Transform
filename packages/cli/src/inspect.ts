@@ -54,9 +54,11 @@ export async function inspect (
 
 		const formattedRecords = properties
 			.map((property, index) => formatPropertyReport(property, index, format));
-		const formattedRows = formattedRecords.map((p) => Object.values(p));
-		const head = Object.keys(formattedRecords[0]);
-		console.log(await formatTable(format, head, formattedRows));
+		const header = Object.keys(formattedRecords[0]);
+		const rows = formattedRecords.map((p) => Object.values(p));
+		const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
+		console.log(await formatTable(format, header, rows));
+		if (footnotes.length) console.log(footnotes.join('\n'));
 		if (report[type].warnings) {
 			report[type].warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
 		}
@@ -103,4 +105,28 @@ function formatPropertyReport(property, index, format: InspectFormat) {
 		}
 	}
 	return row;
+}
+
+function getFootnotes(type: string, rows: string[][], header: string[]): string[] {
+	const footnotes = [];
+	if (type === 'meshes') {
+		for (let i = 0; i < header.length; i++) {
+			if (header[i] === 'size') header[i] += '¹';
+		}
+		footnotes.push(''
+			+ '¹ size estimates GPU memory required by a mesh, in isolation. If accessors are\n'
+			+ '  shared by other mesh primitives, but the meshes themselves are not reused, then\n'
+			+ '  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".'
+		);
+	}
+	if (type === 'textures') {
+		for (let i = 0; i < header.length; i++) {
+			if (header[i] === 'gpuSize') header[i] += '¹';
+		}
+		footnotes.push(''
+			+ '¹ gpuSize estimates minimum GPU memory allocation. Older devices may require\n'
+			+ '  additional memory for GPU compression formats.'
+		);
+	}
+	return footnotes;
 }
