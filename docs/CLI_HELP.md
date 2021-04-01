@@ -1,5 +1,5 @@
 
-  gltf-transform 0.9.6 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.9.7 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -31,6 +31,7 @@
                                                                                                 
                                          🕋 GEOMETRY ─────────────────────────────────────────  
     draco                                Compress mesh geometry with Draco                      
+    quantize                             Quantize mesh vertex attributes                        
     weld                                 Index geometry and optionally merge similar vertices   
     unweld                               De-index geometry, disconnecting any shared vertices   
     tangents                             Generates MikkTSpace vertex tangents                   
