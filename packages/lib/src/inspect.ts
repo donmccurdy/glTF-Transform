@@ -1,4 +1,4 @@
-import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture } from '@gltf-transform/core';
+import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 import { bounds } from './bounds';
 import { getGLPrimitiveCount } from './utils';
 
@@ -35,27 +35,22 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 			.length;
 		let glPrimitives = 0;
 		let verts = 0;
-		let indexed = 0;
-		const componentTypes: Set<string> = new Set();
-		const semantics: Set<string> = new Set();
+		const semantics = new Set<string>();
+		const meshIndices = new Set<string>();
 		const meshAccessors: Set<Accessor> = new Set();
 
 		mesh.listPrimitives().forEach((prim) => {
-			prim.listSemantics().forEach((s) => semantics.add(s));
-			for (const attr of prim.listAttributes()) {
-				componentTypes.add(attr.getArray().constructor.name);
+			for (const semantic of prim.listSemantics()) {
+				const attr = prim.getAttribute(semantic);
+				semantics.add(semantic + ':' + arrayToType(attr.getArray()));
 				meshAccessors.add(attr);
 			}
 			for (const targ of prim.listTargets()) {
-				for (const attr of targ.listAttributes()) {
-					componentTypes.add(attr.getArray().constructor.name);
-					meshAccessors.add(attr);
-				}
+				targ.listAttributes().forEach((attr) => meshAccessors.add(attr));
 			}
 			if (prim.getIndices()) {
 				const indices = prim.getIndices();
-				componentTypes.add(indices.getArray().constructor.name);
-				indexed++;
+				meshIndices.add(arrayToType(indices.getArray()));
 				meshAccessors.add(indices);
 			}
 			verts += prim.getAttribute('POSITION').getCount();
@@ -74,8 +69,7 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 			primitives: mesh.listPrimitives().length,
 			glPrimitives: glPrimitives,
 			vertices: verts,
-			indexed: mesh.listPrimitives().length === indexed,
-			components: Array.from(componentTypes).sort().map((s) => s.replace('Array', '')),
+			indices: Array.from(meshIndices).sort(),
 			attributes: Array.from(semantics).sort(),
 			instances: instances,
 			size: size,
@@ -210,11 +204,10 @@ interface SceneReport {
 interface MeshReport {
 	name: string;
 	primitives: number;
-	indexed: boolean;
 	mode: string[];
 	vertices: number;
 	glPrimitives: number;
-	components: string[];
+	indices: string[];
 	attributes: string[];
 	instances: number;
 	size: number;
@@ -264,4 +257,8 @@ function toPrecision(v: number[]): number[] {
 		if (v[i].toFixed) v[i] = Number(v[i].toFixed(5));
 	}
 	return v;
+}
+
+function arrayToType(array: TypedArray): string {
+	return array.constructor.name.replace('Array', '').toLowerCase();
 }
