@@ -111,8 +111,32 @@ test('@gltf-transform/lib::quantize | normal', async t => {
 
 	t.ok(normal.getNormalized(), 'normal → normalized');
 	t.ok(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
-	elementPairs(normal, normalCopy, round(1))
+	elementPairs(normal, normalCopy, round(2))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `normal value #${i + 1}`));
+	t.end();
+});
+
+test('@gltf-transform/lib::quantize | tangent', async t => {
+	const doc = new Document();
+	const tangent = createFloatAttribute(doc, 'TANGENT', VEC4, new Float32Array([
+		-0.19211, -0.93457, 0.29946, 1.0,
+		-0.08526, -0.99393, 0.06957, -1.0,
+		0.82905, -0.39715, 0.39364, 1.0,
+		0.37303, -0.68174, 0.62934, 1.0,
+		-0.06048, 0.04752, 0.99704, -1.0
+	]));
+	const tangentCopy = tangent.clone();
+
+	await doc.transform(quantize({normal: 12}));
+
+	if (tangentCopy.getNormalized() || !(tangentCopy.getArray() instanceof Float32Array)) {
+		t.fail('Backup copy of tangents was modified');
+	}
+
+	t.ok(tangent.getNormalized(), 'tangent → normalized');
+	t.ok(tangent.getArray() instanceof Int16Array, 'tangent → Int16Array');
+	elementPairs(tangent, tangentCopy, round(2))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `tangent value #${i + 1}`));
 	t.end();
 });
 
@@ -168,11 +192,11 @@ test('@gltf-transform/lib::quantize | skinning', async t => {
 
 	t.notOk(joints.getNormalized(), 'joints → normalized');
 	t.ok(joints.getArray() instanceof Uint8Array, 'joints → Uint8Array');
-	elementPairs(joints, jointsCopy, round(1))
+	elementPairs(joints, jointsCopy, round(6))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `joints value #${i + 1}`));
 	t.ok(weights.getNormalized(), 'weights → normalized');
 	t.ok(weights.getArray() instanceof Uint16Array, 'weights → Uint16Array');
-	elementPairs(weights, weightsCopy, round(1))
+	elementPairs(weights, weightsCopy, round(6))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `weights value #${i + 1}`));
 	t.end();
 });
@@ -196,7 +220,7 @@ test('@gltf-transform/lib::quantize | custom', async t => {
 
 	t.ok(temp.getNormalized(), 'custom → normalized');
 	t.ok(temp.getArray() instanceof Uint16Array, 'custom → Uint16Array');
-	elementPairs(temp, tempCopy, round(1))
+	elementPairs(temp, tempCopy, round(3))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `custom value #${i + 1}`));
 	t.end();
 });

@@ -135,17 +135,6 @@ function quantizeMesh(
 			// Quantize the vertex attribute.
 			quantizeAttribute(attribute, ctor, bits);
 			attribute.setNormalized(true);
-
-			// If we're storing normalized data quantized to fewer bits than the component storage
-			// would allow, scale up by a power of two accordingly.
-			if (bits < ctor.BYTES_PER_ELEMENT * 8) {
-				const elScale = Math.pow(2, ctor.BYTES_PER_ELEMENT * 8 - bits);
-				for (let i = 0, el = [], il = attribute.getCount(); i < il; i++) {
-					attribute.getElement(i, el);
-					for (let j = 0; j < el.length; j++) el[j] *= elScale;
-					attribute.setElement(i, el);
-				}
-			}
 		}
 	}
 }
@@ -232,12 +221,18 @@ function quantizeAttribute(
 	): void {
 
 	const dstArray = new ctor(attribute.getArray().length);
-	const dstScale = (Math.pow(2, bits) - 1) * (SIGNED_INT.includes(ctor) ? 0.5 : 1);
+
+	// Assume data is within [-1, 1] or [0, 1]. Quantization scale is derived from the given bit
+	// depth. An additional storage scale is applied to fill the component bit depth. So, while
+	// 12-bit and 16-bit quantization have the same size in GPU memory, the former will be compress
+	// better under gzip and other lossless compression techniques.
+	const quantScale = (Math.pow(2, bits) * (SIGNED_INT.includes(ctor) ? 0.5 : 1));
+	const storeScale = Math.pow(2, ctor.BYTES_PER_ELEMENT * 8 - bits);
 
 	for (let i = 0, di = 0, el = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
 		for (let j = 0; j < el.length; j++) {
-			dstArray[di++] = (el[j] * dstScale) | 0; // truncate integer.
+			dstArray[di++] = Math.round(el[j] * quantScale) * storeScale - 1 * Math.sign(el[j]);
 		}
 	}
 
