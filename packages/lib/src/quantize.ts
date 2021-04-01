@@ -11,22 +11,22 @@ const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[
 
 export interface QuantizeOptions {
 	excludeAttributes?: string[];
-	position?: number;
-	normal?: number;
-	texcoord?: number;
-	color?: number;
-	weight?: number;
-	generic?: number;
+	quantizePosition?: number;
+	quantizeNormal?: number;
+	quantizeTexcoord?: number;
+	quantizeColor?: number;
+	quantizeWeight?: number;
+	quantizeGeneric?: number;
 }
 
 export const QUANTIZE_DEFAULTS: QuantizeOptions =  {
 	excludeAttributes: [],
-	position: 14,
-	normal: 10,
-	texcoord: 12,
-	color: 8,
-	weight: 8,
-	generic: 12,
+	quantizePosition: 14,
+	quantizeNormal: 10,
+	quantizeTexcoord: 12,
+	quantizeColor: 8,
+	quantizeWeight: 8,
+	quantizeGeneric: 12,
 };
 
 /**
@@ -240,20 +240,20 @@ function getQuantizationSettings(
 	let ctor: TypedArrayConstructor;
 
 	if (semantic === 'POSITION') {
-		bits = options.position;
+		bits = options.quantizePosition;
 		ctor = bits <= 8 ? Int8Array : Int16Array;
 	} else if (semantic === 'NORMAL' || semantic === 'TANGENT') {
-		bits = options.normal;
+		bits = options.quantizeNormal;
 		ctor = bits <= 8 ? Int8Array : Int16Array;
 	} else if (semantic.startsWith('COLOR_')) {
-		bits = options.color;
+		bits = options.quantizeColor;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('TEXCOORD_')) {
 		if (min.some(v => v < 0) || max.some(v => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.texcoord;
+		bits = options.quantizeTexcoord;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('JOINTS_')) {
 		bits = Math.max(...attribute.getMax([])) <= 255 ? 8 : 16;
@@ -267,14 +267,14 @@ function getQuantizationSettings(
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.weight;
+		bits = options.quantizeWeight;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('_')) {
 		if (min.some(v => v < -1) || max.some(v => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.generic;
+		bits = options.quantizeGeneric;
 		ctor = min.some(v => v < 0)
 			? (ctor = bits <= 8 ? Int8Array : Int16Array)
 			: (ctor = bits <= 8 ? Uint8Array : Uint16Array);

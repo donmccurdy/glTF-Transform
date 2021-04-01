@@ -47,7 +47,7 @@ test('@gltf-transform/lib::quantize | position', async t => {
 	const mesh = doc.getRoot().listMeshes()[0];
 	const node = doc.createNode().setMesh(mesh);
 
-	await doc.transform(quantize({position: 14}));
+	await doc.transform(quantize({quantizePosition: 14}));
 
 	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of positions was modified');
@@ -79,7 +79,7 @@ test('@gltf-transform/lib::quantize | texcoord', async t => {
 	]));
 	const uvCopy = uv.clone();
 
-	await doc.transform(quantize({texcoord: 12}));
+	await doc.transform(quantize({quantizeTexcoord: 12}));
 
 	if (uvCopy.getNormalized() || !(uvCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of UVs was modified');
@@ -103,7 +103,7 @@ test('@gltf-transform/lib::quantize | normal', async t => {
 	]));
 	const normalCopy = normal.clone();
 
-	await doc.transform(quantize({normal: 12}));
+	await doc.transform(quantize({quantizeNormal: 12}));
 
 	if (normalCopy.getNormalized() || !(normalCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of normals was modified');
@@ -127,7 +127,7 @@ test('@gltf-transform/lib::quantize | tangent', async t => {
 	]));
 	const tangentCopy = tangent.clone();
 
-	await doc.transform(quantize({normal: 12}));
+	await doc.transform(quantize({quantizeNormal: 12}));
 
 	if (tangentCopy.getNormalized() || !(tangentCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of tangents was modified');
@@ -151,7 +151,7 @@ test('@gltf-transform/lib::quantize | color', async t => {
 	]));
 	const colorCopy = color.clone();
 
-	await doc.transform(quantize({color: 8}));
+	await doc.transform(quantize({quantizeColor: 8}));
 
 	if (colorCopy.getNormalized() || !(colorCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of colors was modified');
@@ -182,7 +182,7 @@ test.skip('@gltf-transform/lib::quantize | skinning', async t => {
 	]));
 	const weightsCopy = weights.clone();
 
-	await doc.transform(quantize({weight: 10}));
+	await doc.transform(quantize({quantizeWeight: 10}));
 
 	if (jointsCopy.getNormalized() || !(jointsCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of joints was modified');
@@ -213,7 +213,7 @@ test('@gltf-transform/lib::quantize | custom', async t => {
 	]));
 	const tempCopy = temp.clone();
 
-	await doc.transform(quantize({generic: 10}));
+	await doc.transform(quantize({quantizeGeneric: 10}));
 
 	if (tempCopy.getNormalized() || !(tempCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of custom attribute was modified');
