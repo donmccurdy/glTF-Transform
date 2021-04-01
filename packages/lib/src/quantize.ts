@@ -48,6 +48,14 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		doc.createExtension(MeshQuantization).setRequired(true);
 
 		for (const mesh of doc.getRoot().listMeshes()) {
+			// TODO(feat): Apply node transform to IBM?
+			const isSkinnedMesh = mesh.listPrimitives()
+				.some((prim) => prim.getAttribute('JOINTS_0'));
+			if (isSkinnedMesh) {
+				logger.warn(`${NAME}: Quantization for skinned mesh not yet implemented.`);
+				continue;
+			}
+
 			const nodeTransform = getNodeTransform(mesh);
 			transformMeshParents(doc, mesh, nodeTransform);
 
