@@ -23,7 +23,6 @@
   "dependencies": {
     "@gltf-transform/core": "^0.9.7",
     "@gltf-transform/extensions": "^0.9.7",
-    "@types/ndarray": "^1.0.8",
     "geo-ambient-occlusion": "^3.0.2",
     "get-pixels": "^3.3.2",
     "gl-matrix": "^3.3.0",

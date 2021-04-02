@@ -49,35 +49,39 @@ export async function inspect (
 
 	// Detailed report.
 	const report = inspectDoc(doc);
-	await reportSection('scenes', report.scenes);
-	await reportSection('meshes', report.meshes);
-	await reportSection('materials', report.materials);
-	await reportSection('textures', report.textures);
-	await reportSection('animations', report.animations);
+	await reportSection('scenes', format, logger, report.scenes);
+	await reportSection('meshes', format, logger, report.meshes);
+	await reportSection('materials', format, logger, report.materials);
+	await reportSection('textures', format, logger, report.textures);
+	await reportSection('animations', format, logger, report.animations);
+}
 
-	async function reportSection(type: string, section: InspectPropertyReport<AnyPropertyReport>) {
-		const properties = section.properties;
+async function reportSection(
+		type: string,
+		format: InspectFormat,
+		logger: Logger,
+		section: InspectPropertyReport<AnyPropertyReport>) {
+	const properties = section.properties;
 
-		console.log(formatHeader(type));
-		if (!properties.length) {
-			console.log(`No ${type} found.\n`);
-			return;
-		}
-
-		const formattedRecords = properties
-			.map((property: AnyPropertyReport, index: number) => {
-				return formatPropertyReport(property, index, format);
-			});
-		const header = Object.keys(formattedRecords[0]);
-		const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
-		const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
-		console.log(await formatTable(format, header, rows));
-		if (footnotes.length) console.log('\n' + footnotes.join('\n'));
-		if (section.warnings) {
-			section.warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
-		}
-		console.log('\n');
+	console.log(formatHeader(type));
+	if (!properties.length) {
+		console.log(`No ${type} found.\n`);
+		return;
 	}
+
+	const formattedRecords = properties
+		.map((property: AnyPropertyReport, index: number) => {
+			return formatPropertyReport(property, index, format);
+		});
+	const header = Object.keys(formattedRecords[0]);
+	const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
+	const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
+	console.log(await formatTable(format, header, rows));
+	if (footnotes.length) console.log('\n' + footnotes.join('\n'));
+	if (section.warnings) {
+		section.warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
+	}
+	console.log('\n');
 }
 
 async function formatTable(

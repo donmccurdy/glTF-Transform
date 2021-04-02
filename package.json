@@ -26,6 +26,12 @@
     "docs:deploy": "yarn run docs && vercel --prod"
   },
   "devDependencies": {
+    "@types/command-exists": "^1.2.0",
+    "@types/gl-matrix": "^3.2.0",
+    "@types/markdown-table": "^2.0.0",
+    "@types/ndarray": "^1.0.8",
+    "@types/node": "^14.14.37",
+    "@types/node-gzip": "^1.1.0",
     "@types/tape": "^4.13.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
