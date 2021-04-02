@@ -1,5 +1,3 @@
-import { determinant, getRotation } from 'gl-matrix/mat4';
-import { length } from 'gl-matrix/vec3';
 import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
