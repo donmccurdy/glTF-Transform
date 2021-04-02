@@ -201,7 +201,14 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 	}
 }
 
-/** Quantizes an attribute to the given parameters. */
+/**
+ * Quantizes an attribute to the given parameters.
+ *
+ * Uniformly remap 32-bit floats to reduced-precision 8- or 16-bit integers, so
+ * that there are only 2^N unique values, for N within [8, 16].
+ *
+ * See: https://github.com/donmccurdy/glTF-Transform/issues/208
+ */
 function quantizeAttribute(
 		attribute: Accessor,
 		ctor: TypedArrayConstructor,
@@ -210,17 +217,25 @@ function quantizeAttribute(
 
 	const dstArray = new ctor(attribute.getArray().length);
 
-	// Assume data is within [-1, 1] or [0, 1]. Quantization scale is derived from the given bit
-	// depth. An additional storage scale is applied to fill the component bit depth. So, while
-	// 12-bit and 16-bit quantization have the same size in GPU memory, the former will be compress
-	// better under gzip and other lossless compression techniques.
-	const quantScale = (Math.pow(2, bits) * (SIGNED_INT.includes(ctor) ? 0.5 : 1));
-	const storeScale = Math.pow(2, ctor.BYTES_PER_ELEMENT * 8 - bits);
+	const signBits = SIGNED_INT.includes(ctor) ? 1 : 0;
+	const quantBits = bits - signBits;
+	const storageBits = ctor.BYTES_PER_ELEMENT * 8 - signBits;
+
+	const scale = Math.pow(2, quantBits) - 1;
+	const lo = storageBits - quantBits;
+	const hi = 2 * quantBits - storageBits;
 
 	for (let i = 0, di = 0, el = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
 		for (let j = 0; j < el.length; j++) {
-			dstArray[di++] = Math.round(el[j] * quantScale) * storeScale - 1 * Math.sign(el[j]);
+			// Map [0.0 ... 1.0] to [0 ... scale].
+			let value = Math.round(Math.abs(el[j]) * scale);
+
+			// Replicate msb to missing lsb.
+			value = (value << lo) | (value >> hi);
+
+			// Restore sign.
+			dstArray[di++] = value * Math.sign(el[j]);
 		}
 	}
 
