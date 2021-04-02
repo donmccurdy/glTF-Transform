@@ -1,4 +1,5 @@
-import { ReadonlyMat4, mat4 as glMat4, vec3 as glVec3 } from 'gl-matrix';
+import { determinant, getRotation } from 'gl-matrix/mat4';
+import { length } from 'gl-matrix/vec3';
 import { mat4, vec3, vec4 } from '../constants';
 import { GLTF } from '../types/gltf';
 
@@ -72,12 +73,12 @@ export class MathUtils {
 			dstTranslation: vec3,
 			dstRotation: vec4,
 			dstScale: vec3): void {
-		let sx = glVec3.length([srcMat[0], srcMat[1], srcMat[2]]);
-		const sy = glVec3.length([srcMat[4], srcMat[5], srcMat[6]]);
-		const sz = glVec3.length([srcMat[8], srcMat[9], srcMat[10]]);
+		let sx = length([srcMat[0], srcMat[1], srcMat[2]]);
+		const sy = length([srcMat[4], srcMat[5], srcMat[6]]);
+		const sz = length([srcMat[8], srcMat[9], srcMat[10]]);
 
 		// if determine is negative, we need to invert one scale
-		const det = glMat4.determinant(srcMat);
+		const det = determinant(srcMat);
 		if (det < 0) sx = - sx;
 
 		dstTranslation[0] = srcMat[12];
@@ -103,7 +104,7 @@ export class MathUtils {
 		_m1[9] *= invSZ;
 		_m1[10] *= invSZ;
 
-		glMat4.getRotation(dstRotation, _m1 as unknown as ReadonlyMat4);
+		getRotation(dstRotation, _m1);
 
 		dstScale[0] = sx;
 		dstScale[1] = sy;
