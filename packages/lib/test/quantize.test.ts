@@ -61,7 +61,7 @@ test('@gltf-transform/lib::quantize | position', async t => {
 	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
 	t.deepEquals(node.getTranslation(), [OX + 128, OY + 128, OZ + 128], 'node offset');
 	t.deepEquals(node.getScale(), [128, 128, 128], 'node scale');
-	elementPairs(position, positionCopy, round(3))
+	elementPairs(position, positionCopy, round(6))
 		.map(([a, b]) => [a, expectedRemap(b)])
 		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
 	t.end();
