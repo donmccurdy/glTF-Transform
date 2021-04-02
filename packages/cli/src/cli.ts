@@ -354,23 +354,23 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.decodeSpeed,
 	})
-	.option('-qp, --quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
+	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizePosition,
 	})
-	.option('-qn, --quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeNormal,
 	})
-	.option('-qc, --quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeColor,
 	})
-	.option('-qt, --quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeTexcoord,
 	})
-	.option('-qg, --quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
+	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
@@ -401,27 +401,27 @@ Bit depths for indices and JOINTS_* are determined automatically.
 Requires KHR_mesh_quantization support.`.trim())
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
-	.option('-qp, --quantize-position <bits>', 'Precision for POSITION attributes.', {
+	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizePosition,
 	})
-	.option('-qn, --quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
+	.option('--quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeNormal,
 	})
-	.option('-qt, --quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
+	.option('--quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeTexcoord,
 	})
-	.option('-qc, --quantize-color <bits>', 'Precision for COLOR_* attributes.', {
+	.option('--quantize-color <bits>', 'Precision for COLOR_* attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeColor,
 	})
-	.option('-qw, --quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
+	.option('--quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeWeight,
 	})
-	.option('-qg, --quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
+	.option('--quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeGeneric,
 	})
@@ -840,7 +840,7 @@ so this workflow is not a replacement for video playback.
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
 
-program.option('-vl, --vertex-layout <layout>', 'Vertex layout method', {
+program.option('--vertex-layout <layout>', 'Vertex layout method', {
 	global: true,
 	default: VertexLayout.INTERLEAVED,
 	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
