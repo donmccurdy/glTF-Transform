@@ -222,6 +222,8 @@ function quantizeAttribute(
 	const storageBits = ctor.BYTES_PER_ELEMENT * 8 - signBits;
 
 	const scale = Math.pow(2, quantBits) - 1;
+	const lo = storageBits - quantBits;
+	const hi = 2 * quantBits - storageBits;
 
 	for (let i = 0, di = 0, el = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
@@ -230,7 +232,7 @@ function quantizeAttribute(
 			let value = Math.round(Math.abs(el[j]) * scale);
 
 			// Replicate msb to missing lsb.
-			value = (value << (storageBits - quantBits)) | (value >> (2 * quantBits - storageBits));
+			value = (value << lo) | (value >> hi);
 
 			// Restore sign.
 			dstArray[di++] = value * Math.sign(el[j]);
