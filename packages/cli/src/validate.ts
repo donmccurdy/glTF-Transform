@@ -10,12 +10,20 @@ export interface ValidateOptions {
 	ignore: string[];
 }
 
+interface ValidatorReport {
+	issues: {messages: ValidatorMessage[]};
+}
+
+interface ValidatorMessage {
+	severity: number;
+}
+
 export function validate(input: string, options: ValidateOptions, logger: Logger): void {
 	const buffer = fs.readFileSync(input);
 	return validator.validateBytes(new Uint8Array(buffer), {
 			maxIssues: options.limit,
 			ignoredIssues: options.ignore,
-			externalResourceFunction: (uri) =>
+			externalResourceFunction: (uri: string) =>
 			new Promise((resolve, reject) => {
 				uri = path.resolve(path.dirname(input), decodeURIComponent(uri));
 				fs.readFile(uri, (err, data) => {
@@ -23,7 +31,7 @@ export function validate(input: string, options: ValidateOptions, logger: Logger
 					err ? reject(err.toString()) : resolve(data);
 				});
 			})
-		}).then((report) => {
+		}).then((report: ValidatorReport) => {
 			printIssueSection('error', 0, report, logger);
 			printIssueSection('warning', 1, report, logger);
 			printIssueSection('info', 2, report, logger);
@@ -31,7 +39,11 @@ export function validate(input: string, options: ValidateOptions, logger: Logger
 		});
 }
 
-function printIssueSection(header: string, severity, report, logger: Logger): void {
+function printIssueSection(
+		header: string,
+		severity: number,
+		report: ValidatorReport,
+		logger: Logger): void {
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {

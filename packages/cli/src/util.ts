@@ -13,7 +13,7 @@ export function mockSpawnSync (_spawnSync: unknown): void {
 	spawnSync = _spawnSync;
 }
 
-export function mockCommandExistsSync (_commandExistsSync: unknown): void {
+export function mockCommandExistsSync (_commandExistsSync: (n: string) => boolean): void {
 	commandExistsSync = _commandExistsSync;
 }
 

@@ -2,7 +2,7 @@ import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, Typed
 import { bounds } from './bounds';
 import { getGLPrimitiveCount } from './utils';
 
-export function inspect (doc: Document): Report {
+export function inspect (doc: Document): InspectReport {
 	return {
 		scenes: listScenes(doc),
 		meshes: listMeshes(doc),
@@ -13,7 +13,7 @@ export function inspect (doc: Document): Report {
 }
 
 /** List scenes. */
-function listScenes (doc): PropertyReport<SceneReport> {
+function listScenes (doc): InspectPropertyReport<InspectSceneReport> {
 	const scenes = doc.getRoot().listScenes().map((scene) => {
 		const root = scene.listChildren()[0];
 		const sceneBounds = bounds(scene);
@@ -28,8 +28,8 @@ function listScenes (doc): PropertyReport<SceneReport> {
 }
 
 /** List meshes. */
-function listMeshes (doc: Document): PropertyReport<MeshReport> {
-	const meshes: MeshReport[] = doc.getRoot().listMeshes().map((mesh) => {
+function listMeshes (doc: Document): InspectPropertyReport<InspectMeshReport> {
+	const meshes: InspectMeshReport[] = doc.getRoot().listMeshes().map((mesh) => {
 		const instances = mesh.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
@@ -80,8 +80,8 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 }
 
 /** List materials. */
-function listMaterials (doc: Document): PropertyReport<MaterialReport> {
-	const materials: MaterialReport[] = doc.getRoot().listMaterials().map((material) => {
+function listMaterials (doc: Document): InspectPropertyReport<InspectMaterialReport> {
+	const materials: InspectMaterialReport[] = doc.getRoot().listMaterials().map((material) => {
 		const instances = material.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
@@ -117,8 +117,8 @@ function listMaterials (doc: Document): PropertyReport<MaterialReport> {
 }
 
 /** List textures. */
-function listTextures (doc: Document): PropertyReport<TextureReport> {
-	const textures: TextureReport[] = doc.getRoot().listTextures().map((texture) => {
+function listTextures (doc: Document): InspectPropertyReport<InspectTextureReport> {
+	const textures: InspectTextureReport[] = doc.getRoot().listTextures().map((texture) => {
 		const instances = texture.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
@@ -146,8 +146,8 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 }
 
 /** List animations. */
-function listAnimations (doc: Document): PropertyReport<AnimationReport> {
-	const animations: AnimationReport[] = doc.getRoot().listAnimations().map((anim) => {
+function listAnimations (doc: Document): InspectPropertyReport<InspectAnimationReport> {
+	const animations: InspectAnimationReport[] = doc.getRoot().listAnimations().map((anim) => {
 		let minTime = Infinity;
 		let maxTime = -Infinity;
 		anim.listSamplers().forEach((sampler) => {
@@ -180,28 +180,28 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 	return {properties: animations};
 }
 
-interface Report {
-	scenes: PropertyReport<SceneReport>;
-	meshes: PropertyReport<MeshReport>;
-	materials: PropertyReport<MaterialReport>;
-	textures: PropertyReport<TextureReport>;
-	animations: PropertyReport<AnimationReport>;
+export interface InspectReport {
+	scenes: InspectPropertyReport<InspectSceneReport>;
+	meshes: InspectPropertyReport<InspectMeshReport>;
+	materials: InspectPropertyReport<InspectMaterialReport>;
+	textures: InspectPropertyReport<InspectTextureReport>;
+	animations: InspectPropertyReport<InspectAnimationReport>;
 }
 
-interface PropertyReport<T> {
+export interface InspectPropertyReport<T> {
 	properties: T[];
 	errors?: string[];
 	warnings?: string[];
 }
 
-interface SceneReport {
+export interface InspectSceneReport {
 	name: string;
 	rootName: string;
 	bboxMin: number[];
 	bboxMax: number[];
 }
 
-interface MeshReport {
+export interface InspectMeshReport {
 	name: string;
 	primitives: number;
 	mode: string[];
@@ -213,7 +213,7 @@ interface MeshReport {
 	size: number;
 }
 
-interface MaterialReport {
+export interface InspectMaterialReport {
 	name: string;
 	instances: number;
 	textures: string[];
@@ -221,7 +221,7 @@ interface MaterialReport {
 	doubleSided: boolean;
 }
 
-interface TextureReport {
+export interface InspectTextureReport {
 	name: string;
 	uri: string;
 	slots: string[];
@@ -232,7 +232,7 @@ interface TextureReport {
 	gpuSize: number;
 }
 
-interface AnimationReport {
+export interface InspectAnimationReport {
 	name: string;
 	channels: number;
 	samplers: number;

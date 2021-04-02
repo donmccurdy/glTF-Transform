@@ -769,7 +769,7 @@ for textures where the quality is sufficient.`.trim()),
 		+ ' Compression level range is [1, 22], or 0 is uncompressed.'
 		+ ' Lower values=faster but give less compression. Values above 20'
 		+ ' should be used with caution as they require more memory.',
-		{validator: program.NUMBER, default: 18}
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.zstd}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)

@@ -2,7 +2,7 @@ import CLITable from 'cli-table3';
 import stringify from 'csv-stringify';
 import mdTable from 'markdown-table';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
-import { inspect as inspectDoc } from '@gltf-transform/lib';
+import { InspectAnimationReport, InspectMaterialReport, InspectMeshReport, InspectPropertyReport, InspectSceneReport, InspectTextureReport, inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
 
 export enum InspectFormat {
@@ -10,6 +10,12 @@ export enum InspectFormat {
 	CSV = 'csv',
 	MD = 'md'
 }
+
+type AnyPropertyReport = InspectSceneReport
+	| InspectMeshReport
+	| InspectMaterialReport
+	| InspectTextureReport
+	| InspectAnimationReport;
 
 export async function inspect (
 		jsonDoc: JSONDocument,
@@ -43,24 +49,32 @@ export async function inspect (
 
 	// Detailed report.
 	const report = inspectDoc(doc);
-	for (const type in report) {
-		const properties = report[type].properties;
+	await reportSection('scenes', report.scenes);
+	await reportSection('meshes', report.meshes);
+	await reportSection('materials', report.materials);
+	await reportSection('textures', report.textures);
+	await reportSection('animations', report.animations);
+
+	async function reportSection(type: string, section: InspectPropertyReport<AnyPropertyReport>) {
+		const properties = section.properties;
 
 		console.log(formatHeader(type));
 		if (!properties.length) {
 			console.log(`No ${type} found.\n`);
-			continue;
+			return;
 		}
 
 		const formattedRecords = properties
-			.map((property, index) => formatPropertyReport(property, index, format));
+			.map((property: AnyPropertyReport, index: number) => {
+				return formatPropertyReport(property, index, format);
+			});
 		const header = Object.keys(formattedRecords[0]);
-		const rows = formattedRecords.map((p) => Object.values(p));
+		const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
 		const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
 		console.log(await formatTable(format, header, rows));
 		if (footnotes.length) console.log('\n' + footnotes.join('\n'));
-		if (report[type].warnings) {
-			report[type].warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
+		if (section.warnings) {
+			section.warnings.forEach((warning) => logger.warn(formatParagraph(warning)));
 		}
 		console.log('\n');
 	}
@@ -88,14 +102,17 @@ async function formatTable(
 
 }
 
-function formatPropertyReport(property, index, format: InspectFormat) {
-	const row = {'#': index};
+function formatPropertyReport(
+		property: AnyPropertyReport,
+		index: number,
+		format: InspectFormat): Record<string, string> {
+	const row: Record<string, string|number> = {'#': index};
 	for (const key in property) {
-		const value = property[key];
+		const value = (property as unknown as Record<string, string | number>)[key];
 		if (Array.isArray(value)) {
 			row[key] = value.join(', ');
 		} else if (key.match(/size/i) && format !== InspectFormat.CSV) {
-			row[key] = value > 0 ? formatBytes(value) : '';
+			row[key] = value > 0 ? formatBytes(value as number) : '';
 		} else if (typeof value === 'number') {
 			row[key] = format !== InspectFormat.CSV ? formatLong(value) : value;
 		} else if (typeof value === 'boolean') {
@@ -104,7 +121,7 @@ function formatPropertyReport(property, index, format: InspectFormat) {
 			row[key] = value;
 		}
 	}
-	return row;
+	return row as Record<string, string>;
 }
 
 function getFootnotes(type: string, rows: string[][], header: string[]): string[] {

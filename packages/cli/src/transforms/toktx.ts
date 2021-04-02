@@ -48,15 +48,20 @@ interface GlobalOptions {
 export interface ETC1SOptions extends GlobalOptions {
 	quality?: number;
 	compression?: number;
+	maxEndpoints?: number;
+	maxSelectors?: number;
+	rdoOff?: boolean;
+	rdoThreshold?: number;
 }
 
 export interface UASTCOptions extends GlobalOptions {
-	level: number;
-	rdo: number;
-	rdoDictionarySize: number;
-	rdoBlockScale: number;
-	rdoStdDev: number;
-	rdoMultithreading: boolean;
+	level?: number;
+	rdo?: number;
+	rdoDictionarySize?: number;
+	rdoBlockScale?: number;
+	rdoStdDev?: number;
+	rdoMultithreading?: boolean;
+	zstd?: number;
 }
 
 const GLOBAL_DEFAULTS = {
@@ -79,6 +84,7 @@ export const UASTC_DEFAULTS = {
 	rdoBlockScale: 10.0,
 	rdoStdDev: 18.0,
 	rdoMultithreading: true,
+	zstd: 18,
 	...GLOBAL_DEFAULTS,
 };
 
@@ -187,7 +193,11 @@ function getTextureSlots (doc: Document, texture: Texture): string[] {
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
-function createParams (slots: string[], size: vec2, logger: Logger, options): string[] {
+function createParams (
+		slots: string[],
+		size: vec2,
+		logger: Logger,
+		options: ETC1SOptions | UASTCOptions): (string|number)[] {
 	const params = [];
 	params.push('--genmipmap');
 	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter);
@@ -196,39 +206,41 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 	}
 
 	if (options.mode === Mode.UASTC) {
-		params.push('--uastc', options.level);
-		if (options.rdo !== UASTC_DEFAULTS.rdo) {
-			params.push('--uastc_rdo_l', options.rdo);
+		const _options = options as UASTCOptions;
+		params.push('--uastc', _options.level);
+		if (_options.rdo !== UASTC_DEFAULTS.rdo) {
+			params.push('--uastc_rdo_l', _options.rdo);
 		}
-		if (options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
-			params.push('--uastc_rdo_d', options.rdoDictionarySize);
+		if (_options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
+			params.push('--uastc_rdo_d', _options.rdoDictionarySize);
 		}
-		if (options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
-			params.push('--uastc_rdo_b', options.rdoBlockScale);
+		if (_options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
+			params.push('--uastc_rdo_b', _options.rdoBlockScale);
 		}
-		if (options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
-			params.push('--uastc_rdo_s', options.rdoStdDev);
+		if (_options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
+			params.push('--uastc_rdo_s', _options.rdoStdDev);
 		}
-		if (!options.rdoMultithreading) {
+		if (!_options.rdoMultithreading) {
 			params.push('--uastc_rdo_m');
 		}
-		if (options.zstd > 0) params.push('--zcmp', options.zstd);
+		if (_options.zstd > 0) params.push('--zcmp', _options.zstd);
 	} else {
+		const _options = options as ETC1SOptions;
 		params.push('--bcmp');
-		if (options.quality !== ETC1S_DEFAULTS.quality) {
-			params.push('--qlevel', options.quality);
+		if (_options.quality !== ETC1S_DEFAULTS.quality) {
+			params.push('--qlevel', _options.quality);
 		}
-		if (options.compression !== ETC1S_DEFAULTS.compression) {
-			params.push('--clevel', options.compression);
+		if (_options.compression !== ETC1S_DEFAULTS.compression) {
+			params.push('--clevel', _options.compression);
 		}
-		if (options.maxEndpoints) params.push('--max_endpoints', options.maxEndpoints);
-		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
+		if (_options.maxEndpoints) params.push('--max_endpoints', _options.maxEndpoints);
+		if (_options.maxSelectors) params.push('--max_selectors', _options.maxSelectors);
 
-		if (options.rdoOff) {
+		if (_options.rdoOff) {
 			params.push('--no_endpoint_rdo', '--no_selector_rdo');
-		} else if (options.rdoThreshold) {
-			params.push('--endpoint_rdo_threshold', options.rdoThreshold);
-			params.push('--selector_rdo_threshold', options.rdoThreshold);
+		} else if (_options.rdoThreshold) {
+			params.push('--endpoint_rdo_threshold', _options.rdoThreshold);
+			params.push('--selector_rdo_threshold', _options.rdoThreshold);
 		}
 
 		if (slots.find((slot) => minimatch(slot, '*normal*', {nocase: true}))) {
