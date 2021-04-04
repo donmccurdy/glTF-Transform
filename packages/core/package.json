@@ -5,7 +5,7 @@
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
   "main": "dist/core.js",
   "module": "dist/core.modern.js",
-  "source": "src/index.ts",
+  "source": "src/core.ts",
   "types": "dist/core.d.ts",
   "sideEffects": false,
   "scripts": {
