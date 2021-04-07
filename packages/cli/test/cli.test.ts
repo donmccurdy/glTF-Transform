@@ -66,20 +66,6 @@ test('@gltf-transform/cli::inspect', async (_t) => {
 		.exec(['inspect', input], {silent: true});
 });
 
-test('@gltf-transform/cli::toktx', async (_t) => {
-	await programReady;
-	const io = new NodeIO();
-	const input = tmp.tmpNameSync({postfix: '.glb'});
-	const output = tmp.tmpNameSync({postfix: '.glb'});
-
-	const doc = new Document();
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(doc.createBuffer());
-	io.write(input, doc);
-
-	return program
-		.exec(['etc1s', input, output], {silent: true});
-});
-
 test('@gltf-transform/cli::merge', async (t) => {
 	await programReady;
 	const io = new NodeIO();
