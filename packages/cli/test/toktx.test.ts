@@ -42,6 +42,10 @@ async function getParams(options: Record<string, unknown>, size: vec2): Promise<
 
 	let actualParams: string[];
 	mockSpawnSync((_, params: string[]) => {
+		// Mock `toktx` version check.
+		if (params.join() === '--version') return {status: 0, stdout: 'v4.0.0'};
+
+		// Mock `toktx` compression.
 		actualParams = params;
 		fs.writeFileSync(params[params.length - 2], Buffer.from(new ArrayBuffer(8)));
 		return {status: 0};
