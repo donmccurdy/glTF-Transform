@@ -34,6 +34,7 @@
     "mikktspace": "^0.1.2",
     "minimatch": "^3.0.4",
     "node-gzip": "^1.1.2",
+    "semver": "^7.3.5",
     "tmp": "^0.2.1"
   },
   "files": [

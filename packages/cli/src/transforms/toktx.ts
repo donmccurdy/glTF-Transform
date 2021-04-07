@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const minimatch = require('minimatch');
+const semver = require('semver');
 const tmp = require('tmp');
 
 import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Texture, Transform, vec2 } from '@gltf-transform/core';
@@ -8,6 +9,8 @@ import { TextureBasisu } from '@gltf-transform/extensions';
 import { commandExistsSync, formatBytes, spawnSync } from '../util';
 
 tmp.setGracefulCleanup();
+
+const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
 
 /**********************************************************************************************
  * Interfaces.
@@ -98,9 +101,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
-		if (!commandExistsSync('toktx') && !process.env.CI) {
-			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
-		}
+		// Confirm recent version of KTX-Software is installed.
+		checkKTXSoftware(logger);
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
@@ -186,10 +188,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 /** Returns names of all texture slots using the given texture. */
 function getTextureSlots (doc: Document, texture: Texture): string[] {
-	return doc.getGraph().getLinks()
+	const slots = doc.getGraph().getLinks()
 		.filter((link) => link.getChild() === texture)
 		.map((link) => link.getName())
 		.filter((slot) => slot !== 'texture');
+	return Array.from(new Set(slots));
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
@@ -250,7 +253,13 @@ function createParams (
 
 	if (slots.length
 			&& !slots.find((slot) => minimatch(slot, '*{color,emissive}*', {nocase: true}))) {
-		params.push('--linear');
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
+		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
+	}
+
+	if (slots.length === 1 && slots[0] === 'occlusionTexture') {
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
+		params.push('--target_type', 'R');
 	}
 
 	let width: number;
@@ -274,6 +283,25 @@ function createParams (
 	}
 
 	return params;
+}
+
+function checkKTXSoftware(logger: Logger): void {
+	if (!commandExistsSync('toktx') && !process.env.CI) {
+		throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
+	}
+
+	const {status, stdout, stderr} = spawnSync('toktx', ['--version'], {encoding: 'utf-8'});
+
+	const version = ((stdout || stderr) as string)
+		.replace(/toktx\s+/, '').replace(/~\d+/, '').trim();
+
+	if (status !== 0 || !semver.valid(semver.clean(version))) {
+		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
+	} else if (semver.lt(semver.clean(version), KTX_SOFTWARE_VERSION_MIN)) {
+		throw new Error(`Requires KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
+	} else {
+		logger.debug(`Found KTX-Software ${version}.`);
+	}
 }
 
 function isPowerOfTwo (value: number): boolean {
