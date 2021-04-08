@@ -123,8 +123,7 @@ function listTextures (doc: Document): InspectPropertyReport<InspectTextureRepor
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
-		const slots = doc.getGraph().getLinks()
-			.filter((link) => link.getChild() === texture)
+		const slots = doc.getGraph().listParentLinks(texture)
 			.map((link) => link.getName())
 			.filter((name) => name !== 'texture');
 
