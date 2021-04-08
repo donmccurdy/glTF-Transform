@@ -142,7 +142,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	/** Spec/gloss texture; linear multiplier. */
 	public setSpecularGlossinessTexture(texture: Texture | null): this {
 		this.specularGlossinessTexture
-			= this.graph.linkTexture('specularGlossinessTexture', R | G | B, this, texture);
+			= this.graph.linkTexture('specularGlossinessTexture', R | G | B | A, this, texture);
 		return this;
 	}
 }
