@@ -1,5 +1,7 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo } from '@gltf-transform/core';
+import { COPY_IDENTITY, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants';
+
+const { R } = TextureChannel;
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class Transmission extends ExtensionProperty {
@@ -10,7 +12,7 @@ export class Transmission extends ExtensionProperty {
 
 	private _transmissionFactor = 0.0;
 
-	@GraphChild private transmissionTexture: Link<this, Texture> | null = null;
+	@GraphChild private transmissionTexture: TextureLink | null = null;
 	@GraphChild private transmissionTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('transmissionTextureInfo', this, new TextureInfo(this.graph));
 
@@ -66,7 +68,7 @@ export class Transmission extends ExtensionProperty {
 
 	/** Sets transmission texture. See {@link getTransmissionTexture}. */
 	public setTransmissionTexture(texture: Texture | null): this {
-		this.transmissionTexture = this.graph.link('transmissionTexture', this, texture);
+		this.transmissionTexture = this.graph.linkTexture('transmissionTexture', R, this, texture);
 		return this;
 	}
 }

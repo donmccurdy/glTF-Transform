@@ -1,5 +1,7 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
+
+const { R, G, B, A } = TextureChannel;
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class Specular extends ExtensionProperty {
@@ -11,7 +13,7 @@ export class Specular extends ExtensionProperty {
 	private _specularFactor = 1.0;
 	private _specularColorFactor: vec3 = [1.0, 1.0, 1.0];
 
-	@GraphChild private specularTexture: Link<this, Texture> | null = null;
+	@GraphChild private specularTexture: TextureLink | null = null;
 	@GraphChild private specularTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('specularTextureInfo', this, new TextureInfo(this.graph));
 
@@ -90,7 +92,8 @@ export class Specular extends ExtensionProperty {
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */
 	public setSpecularTexture(texture: Texture | null): this {
-		this.specularTexture = this.graph.link('specularTexture', this, texture);
+		this.specularTexture =
+			this.graph.linkTexture('specularTexture', R | G | B | A, this, texture);
 		return this;
 	}
 }

@@ -1,7 +1,9 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO, Property, TextureInfo } from '../../';
+import { Document, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
+
+const { R, G, B, A } = TextureChannel;
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
@@ -225,6 +227,40 @@ test('@gltf-transform/core::material | texture info linking', t => {
 	mat.dispose();
 	t.equals(baseColorTextureInfo.isDisposed(), true, 'textureInfo disposed with material');
 
+	t.end();
+});
+
+test('@gltf-transform/core::material | texture channels', t => {
+	const doc = new Document();
+	const graph = doc.getGraph();
+
+	const baseColorTexture = doc.createTexture('baseColorTexture');
+	const normalTexture = doc.createTexture('normalTexture');
+	const occlusionTexture = doc.createTexture('occlusionTexture');
+	const metallicRoughnessTexture = doc.createTexture('metallicRoughnessTexture');
+
+	const mat = doc.createMaterial('mat')
+		.setBaseColorTexture(baseColorTexture)
+		.setNormalTexture(normalTexture)
+		.setOcclusionTexture(occlusionTexture)
+		.setMetallicRoughnessTexture(metallicRoughnessTexture);
+
+	function getChannels(texture: Texture): number {
+		let mask = 0x0000;
+		for (const link of graph.listParentLinks(texture)) {
+			if (link instanceof TextureLink) mask |= link.channels;
+		}
+		return mask;
+	}
+
+	t.equals(getChannels(baseColorTexture), R | G | B | A, 'baseColorTexture channels');
+	t.equals(getChannels(normalTexture), R | G | B, 'normalTexture channels');
+	t.equals(getChannels(occlusionTexture), R, 'occlusionTexture channels');
+	t.equals(getChannels(metallicRoughnessTexture), G | B, 'metallicRoughnessTexture channels');
+
+	mat.setMetallicRoughnessTexture(occlusionTexture);
+
+	t.equals(getChannels(occlusionTexture), R | G | B, 'O/R/M channels');
 	t.end();
 });
 

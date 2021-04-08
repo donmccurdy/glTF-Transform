@@ -1,5 +1,7 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants';
+
+const { R, G, B, A } = TextureChannel;
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class Sheen extends ExtensionProperty {
@@ -11,11 +13,11 @@ export class Sheen extends ExtensionProperty {
 	private _sheenColorFactor: vec3 = [0.0, 0.0, 0.0];
 	private _sheenRoughnessFactor = 0.0;
 
-	@GraphChild private sheenColorTexture: Link<this, Texture> | null = null;
+	@GraphChild private sheenColorTexture: TextureLink | null = null;
 	@GraphChild private sheenColorTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('sheenColorTextureInfo', this, new TextureInfo(this.graph));
 
-	@GraphChild private sheenRoughnessTexture: Link<this, Texture> | null = null;
+	@GraphChild private sheenRoughnessTexture: TextureLink | null = null;
 	@GraphChild private sheenRoughnessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('sheenRoughnessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -84,7 +86,8 @@ export class Sheen extends ExtensionProperty {
 
 	/** Sets sheen color texture. See {@link getSheenColorTexture}. */
 	public setSheenColorTexture(texture: Texture | null): this {
-		this.sheenColorTexture = this.graph.link('sheenColorTexture', this, texture);
+		this.sheenColorTexture =
+			this.graph.linkTexture('sheenColorTexture', R | G | B, this, texture);
 		return this;
 	}
 
@@ -122,7 +125,8 @@ export class Sheen extends ExtensionProperty {
 	 * roughness, independent of the base layer's roughness.
 	 */
 	public setSheenRoughnessTexture(texture: Texture | null): this {
-		this.sheenRoughnessTexture = this.graph.link('sheenRoughnessTexture', this, texture);
+		this.sheenRoughnessTexture =
+			this.graph.linkTexture('sheenRoughnessTexture', A, this, texture);
 		return this;
 	}
 }

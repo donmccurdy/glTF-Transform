@@ -1,5 +1,7 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo, vec3, vec4 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3, vec4 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
+
+const { R, G, B, A } = TextureChannel;
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class PBRSpecularGlossiness extends ExtensionProperty {
@@ -12,11 +14,11 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	private _specularFactor: vec3 = [1.0, 1.0, 1.0];
 	private _glossinessFactor = 1.0;
 
-	@GraphChild private diffuseTexture: Link<this, Texture> | null = null;
+	@GraphChild private diffuseTexture: TextureLink | null = null;
 	@GraphChild private diffuseTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('diffuseTextureInfo', this, new TextureInfo(this.graph));
 
-	@GraphChild private specularGlossinessTexture: Link<this, Texture> | null = null;
+	@GraphChild private specularGlossinessTexture: TextureLink | null = null;
 	@GraphChild private specularGlossinessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('specularGlossinessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -87,7 +89,8 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
 	public setDiffuseTexture(texture: Texture | null): this {
-		this.diffuseTexture = this.graph.link('diffuseTexture', this, texture);
+		this.diffuseTexture =
+			this.graph.linkTexture('diffuseTexture', R | G | B | A, this, texture);
 		return this;
 	}
 
@@ -139,7 +142,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	/** Spec/gloss texture; linear multiplier. */
 	public setSpecularGlossinessTexture(texture: Texture | null): this {
 		this.specularGlossinessTexture
-			= this.graph.link('specularGlossinessTexture', this, texture);
+			= this.graph.linkTexture('specularGlossinessTexture', R | G | B | A, this, texture);
 		return this;
 	}
 }

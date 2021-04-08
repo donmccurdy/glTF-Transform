@@ -112,3 +112,11 @@ export enum VertexLayout {
 	 */
 	SEPARATE = 'separate',
 }
+
+/** Texture channels. */
+export enum TextureChannel {
+	R = 0x1000,
+	G = 0x0100,
+	B = 0x0010,
+	A = 0x0001,
+}

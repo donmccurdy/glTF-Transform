@@ -4,13 +4,15 @@ const minimatch = require('minimatch');
 const semver = require('semver');
 const tmp = require('tmp');
 
-import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Texture, Transform, vec2 } from '@gltf-transform/core';
+import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Texture, TextureChannel, TextureLink, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { commandExistsSync, formatBytes, spawnSync } from '../util';
 
 tmp.setGracefulCleanup();
 
 const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
+
+const { R, G } = TextureChannel;
 
 /**********************************************************************************************
  * Interfaces.
@@ -112,6 +114,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			.listTextures()
 			.forEach((texture, textureIndex) => {
 				const slots = getTextureSlots(doc, texture);
+				const channels = getTextureChannels(doc, texture);
 				const textureLabel = texture.getURI()
 					|| texture.getName()
 					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
@@ -141,7 +144,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				fs.writeFileSync(inPath, Buffer.from(texture.getImage()));
 
 				const params = [
-					...createParams(slots, texture.getSize(), logger, options),
+					...createParams(slots, channels, texture.getSize(), logger, options),
 					outPath,
 					inPath
 				];
@@ -188,16 +191,26 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 /** Returns names of all texture slots using the given texture. */
 function getTextureSlots (doc: Document, texture: Texture): string[] {
-	const slots = doc.getGraph().getLinks()
-		.filter((link) => link.getChild() === texture)
-		.map((link) => link.getName())
-		.filter((slot) => slot !== 'texture');
+	const root = doc.getRoot();
+	const slots = doc.getGraph().listParentLinks(texture)
+		.filter((link) => link.getParent() !== root)
+		.map((link) => link.getName());
 	return Array.from(new Set(slots));
+}
+
+/** Returns bit mask of all texture channels used by the given texture. */
+function getTextureChannels (doc: Document, texture: Texture): number {
+	let mask = 0x0000;
+	for (const link of doc.getGraph().listParentLinks(texture)) {
+		if (link instanceof TextureLink) mask |= link.channels;
+	}
+	return mask;
 }
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
 function createParams (
 		slots: string[],
+		channels: number,
 		size: vec2,
 		logger: Logger,
 		options: ETC1SOptions | UASTCOptions): (string|number)[] {
@@ -257,9 +270,10 @@ function createParams (
 		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
 	}
 
-	if (slots.length === 1 && slots[0] === 'occlusionTexture') {
-		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
+	if (channels === R) {
 		params.push('--target_type', 'R');
+	} else if (channels === G || channels === (R | G)) {
+		params.push('--target_type', 'RG');
 	}
 
 	let width: number;

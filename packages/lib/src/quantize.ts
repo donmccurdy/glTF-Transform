@@ -92,8 +92,8 @@ function quantizePrimitive(
 		if (attribute.getComponentSize() <= bits / 8) continue;
 
 		// Avoid quantizing accessors used for multiple purposes.
-		const usage = doc.getGraph().getLinks()
-			.filter((link) => link.getChild() === attribute && link.getParent() !== root)
+		const usage = doc.getGraph().listParentLinks(attribute)
+			.filter((link) => link.getParent() !== root)
 			.map((link) => link.getName());
 		if (new Set(usage).size > 1) {
 			logger.warn(`${NAME}: Skipping ${semantic}; attribute usage conflict.`);

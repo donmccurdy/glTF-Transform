@@ -2,8 +2,11 @@ require('source-map-support').install();
 
 import fs from 'fs';
 import test from 'tape';
-import { Document, Logger, vec2 } from '@gltf-transform/core';
+import { Document, Logger, TextureChannel, vec2 } from '@gltf-transform/core';
+import { MaterialsClearcoat } from '@gltf-transform/extensions';
 import { Mode, mockCommandExistsSync, mockSpawnSync, toktx } from '../';
+
+const { R, G } = TextureChannel;
 
 test('@gltf-transform/cli::toktx | resize', async t => {
 	t.equals(
@@ -30,15 +33,41 @@ test('@gltf-transform/cli::toktx | resize', async t => {
 		'5x3+powerOfTwo → 4x4'
 	);
 
+	t.equals(
+		await getParams({mode: Mode.ETC1S}, [508, 508], R),
+		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type R',
+		'channels → R'
+	);
+
+	t.equals(
+		await getParams({mode: Mode.ETC1S}, [508, 508], G),
+		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type RG',
+		'channels → RG'
+	);
+
 	t.end();
 });
 
-async function getParams(options: Record<string, unknown>, size: vec2): Promise<string> {
+async function getParams(
+	options: Record<string, unknown>, size: vec2, channels = 0
+): Promise<string> {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const tex = doc.createTexture()
 		.setImage(new ArrayBuffer(10))
 		.setMimeType('image/png');
 	tex.getSize = (): vec2 => size;
+
+	// Assign texture to materials so that the given channels are in use.
+	if (channels === R) {
+		doc.createMaterial().setOcclusionTexture(tex);
+	} else if (channels === G) {
+		const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+		const clearcoat = clearcoatExtension.createClearcoat()
+			.setClearcoatRoughnessTexture(tex);
+		doc.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
+	} else if (channels !== 0x0000) {
+		throw new Error('Unimplemented channels setting');
+	}
 
 	let actualParams: string[];
 	mockSpawnSync((_, params: string[]) => {

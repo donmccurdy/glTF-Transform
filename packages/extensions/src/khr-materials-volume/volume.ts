@@ -1,5 +1,7 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureInfo, vec3 } from '@gltf-transform/core';
+import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants';
+
+const { G } = TextureChannel;
 
 /** Documentation in {@link EXTENSIONS.md}. */
 export class Volume extends ExtensionProperty {
@@ -12,7 +14,7 @@ export class Volume extends ExtensionProperty {
 	private _attenuationDistance = Infinity;
 	private _attenuationColor = [1, 1, 1] as vec3;
 
-	@GraphChild private thicknessTexture: Link<this, Texture> | null = null;
+	@GraphChild private thicknessTexture: TextureLink | null = null;
 	@GraphChild private thicknessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('thicknessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -79,7 +81,7 @@ export class Volume extends ExtensionProperty {
 	 * thicknessFactor.
 	 */
 	public setThicknessTexture(texture: Texture | null): this {
-		this.thicknessTexture = this.graph.link('thicknessTexture', this, texture);
+		this.thicknessTexture = this.graph.linkTexture('thicknessTexture', G, this, texture);
 		return this;
 	}
 
