@@ -30,6 +30,7 @@
     "draco3dgltf": "^1.4.1",
     "gl": "^4.9.0",
     "gltf-validator": "^2.0.0-dev.3.2",
+    "ktx-parse": "^0.2.1",
     "markdown-table": "^2.0.0",
     "mikktspace": "^0.1.2",
     "minimatch": "^3.0.4",
