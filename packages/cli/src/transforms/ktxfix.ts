@@ -1,4 +1,4 @@
-import { KTX2Primaries, read, write } from 'ktx-parse'; // TODO(dependency)
+import { KTX2Primaries, read, write } from 'ktx-parse';
 import { Document, Transform } from '@gltf-transform/core';
 import { getTextureSlots, isTextureLinear } from '../util';
 
