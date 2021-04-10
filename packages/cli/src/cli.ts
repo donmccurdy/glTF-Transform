@@ -8,7 +8,7 @@ import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -774,6 +774,24 @@ for textures where the quality is sufficient.`.trim()),
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(toktx({mode: Mode.UASTC, ...options}))
+	);
+
+// KTXFIX
+program
+	.command('ktxfix', 'Fixes common issues in KTX texture metadata')
+	.help(`
+Certain KTX texture metadata was written incorrectly in early (pre-release)
+software. In particular, viewers may misinterpret color primaries as sRGB
+incorrectly when a texture exhibits this issue.
+
+This command determines correct color primaries based on usage in the glTF
+file, and updates the KTX texture accordingly. The change is lossless, and
+affects only the container metadata.`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(ktxfix())
 	);
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');

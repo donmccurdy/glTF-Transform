@@ -2,7 +2,7 @@
 const { spawnSync: _spawnSync } = require('child_process');
 
 import { sync as _commandExistsSync } from 'command-exists';
-import { Document, FileUtils, Logger, NodeIO, Transform } from '@gltf-transform/core';
+import { Document, FileUtils, Logger, NodeIO, Texture, TextureLink, Transform } from '@gltf-transform/core';
 
 // Mock for tests.
 
@@ -17,7 +17,7 @@ export function mockCommandExistsSync (_commandExistsSync: (n: string) => boolea
 	commandExistsSync = _commandExistsSync;
 }
 
-// Utilities.
+// Formatting.
 
 export function formatLong(x: number): string {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -45,6 +45,26 @@ export function formatHeader(title: string): string {
 	return ''
 		+ '\n ' + title.toUpperCase()
 		+ '\n ────────────────────────────────────────────';
+}
+
+// Textures.
+
+/** Returns names of all texture slots using the given texture. */
+export function getTextureSlots (doc: Document, texture: Texture): string[] {
+	const root = doc.getRoot();
+	const slots = doc.getGraph().listParentLinks(texture)
+		.filter((link) => link.getParent() !== root)
+		.map((link) => link.getName());
+	return Array.from(new Set(slots));
+}
+
+/** Returns bit mask of all texture channels used by the given texture. */
+export function getTextureChannels (doc: Document, texture: Texture): number {
+	let mask = 0x0000;
+	for (const link of doc.getGraph().listParentLinks(texture)) {
+		if (link instanceof TextureLink) mask |= link.channels;
+	}
+	return mask;
 }
 
 /** Helper class for managing a CLI command session. */

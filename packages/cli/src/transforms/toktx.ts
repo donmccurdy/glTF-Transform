@@ -4,9 +4,9 @@ const minimatch = require('minimatch');
 const semver = require('semver');
 const tmp = require('tmp');
 
-import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Texture, TextureChannel, TextureLink, Transform, vec2 } from '@gltf-transform/core';
+import { BufferUtils, Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { commandExistsSync, formatBytes, spawnSync } from '../util';
+import { commandExistsSync, formatBytes, getTextureChannels, getTextureSlots, spawnSync } from '../util';
 
 tmp.setGracefulCleanup();
 
@@ -188,24 +188,6 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 /**********************************************************************************************
  * Utilities.
  */
-
-/** Returns names of all texture slots using the given texture. */
-function getTextureSlots (doc: Document, texture: Texture): string[] {
-	const root = doc.getRoot();
-	const slots = doc.getGraph().listParentLinks(texture)
-		.filter((link) => link.getParent() !== root)
-		.map((link) => link.getName());
-	return Array.from(new Set(slots));
-}
-
-/** Returns bit mask of all texture channels used by the given texture. */
-function getTextureChannels (doc: Document, texture: Texture): number {
-	let mask = 0x0000;
-	for (const link of doc.getGraph().listParentLinks(texture)) {
-		if (link instanceof TextureLink) mask |= link.channels;
-	}
-	return mask;
-}
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
 function createParams (
