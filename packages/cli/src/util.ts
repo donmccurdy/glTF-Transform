@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { spawnSync: _spawnSync } = require('child_process');
-const minimatch = require('minimatch');
 
 import { sync as _commandExistsSync } from 'command-exists';
 import { Document, FileUtils, Logger, NodeIO, Texture, TextureLink, Transform } from '@gltf-transform/core';
@@ -66,11 +65,6 @@ export function getTextureChannels (doc: Document, texture: Texture): number {
 		if (link instanceof TextureLink) mask |= link.channels;
 	}
 	return mask;
-}
-
-export function isTextureLinear (slots: string[]): boolean {
-	return slots.length
-		&& !slots.find((slot) => minimatch(slot, '*{color,emissive}*', {nocase: true}));
 }
 
 /** Helper class for managing a CLI command session. */
