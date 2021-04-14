@@ -1,5 +1,5 @@
 
-  gltf-transform 0.9.9 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.9.10 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -46,6 +46,7 @@
                                          🖼  TEXTURE ──────────────────────────────────────────  
     etc1s                                KTX + Basis ETC1S texture compression                  
     uastc                                KTX + Basis UASTC texture compression                  
+    ktxfix                               Fixes common issues in KTX texture metadata            
                                                                                                 
                                                                                                 
                                          ⏯  ANIMATION ────────────────────────────────────────  
