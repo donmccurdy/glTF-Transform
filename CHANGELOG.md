@@ -1,12 +1,24 @@
 # Changelog
 
-## v0.10 — 🚧 Unreleased
+## v0.11 — 🚧 Unreleased
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/11)
+
+**Features:**
+
+**Breaking changes:**
+
+## v0.10
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10)
 
 **Features:**
 
+- Add 'ktxfix' command in CLI. [#222](https://github.com/donmccurdy/glTF-Transform/pull/222)
+
 **Breaking changes:**
+
+- Material extensions now track RGBA channel usage of each texture, allowing improvements in KTX 2.0 support. [#221](https://github.com/donmccurdy/glTF-Transform/pull/221)
 
 ## v0.9
 
