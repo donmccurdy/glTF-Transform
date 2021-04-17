@@ -6609,10 +6609,10 @@ ndarray-pack@^1.1.1:
     cwise-compiler "^1.1.2"
     ndarray "^1.0.13"
 
-ndarray-pixels@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-0.1.2.tgz#4ebc85a675c8bd3eca4ba5869c14bb55dd336287"
-  integrity sha512-dGN6VWDaN4xT7BpZs6KyOgx334SxZPUXfun2ww7gtJwGZVidCX0j+85JBYMUj7ennEtEIWF2ABpQRJzuIAKlUw==
+ndarray-pixels@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-0.1.3.tgz#9752667c4de91aff752a78df6e90231a90e3b6d9"
+  integrity sha512-MPzgo9IoXwqi9UxzlHM6vihY6KG3dM2ba7sdY4eo7AzqE+hF/44RcGnQNx/4se+nNrCxsiPudY9YHgqz76wkMQ==
   dependencies:
     "@types/ndarray" "^1.0.8"
     "@types/ndarray-ops" "^1.2.0"
