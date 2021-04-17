@@ -7,6 +7,7 @@
   "module": "dist/lib.modern.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "dist": "microbundle --format modern,cjs",
     "watch": "microbundle watch --format modern,cjs"
@@ -36,7 +37,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "1ebf68281c043a7bf76b9d1075c6f2913fe2e996",
+  "gitHead": "29984ac49e9435ecff2fc4ba5350803c4c5efa31",
   "publishConfig": {
     "access": "public"
   }
