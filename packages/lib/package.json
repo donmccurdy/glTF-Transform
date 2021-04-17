@@ -24,11 +24,10 @@
     "@gltf-transform/core": "^0.10.1",
     "@gltf-transform/extensions": "^0.10.1",
     "geo-ambient-occlusion": "^3.0.2",
-    "get-pixels": "^3.3.2",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
-    "regl": "^2.1.0",
-    "save-pixels": "^2.3.4"
+    "ndarray-pixels": "^0.1.2",
+    "regl": "^2.1.0"
   },
   "files": [
     "dist/",

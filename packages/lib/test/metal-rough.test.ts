@@ -1,9 +1,9 @@
 require('source-map-support').install();
 
 import ndarray from 'ndarray';
-import savePixels from 'save-pixels';
+import { savePixels } from 'ndarray-pixels';
 import test from 'tape';
-import { BufferUtils, Document } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { IOR, MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, Specular } from '@gltf-transform/extensions';
 import { metalRough } from '../';
 
@@ -38,13 +38,7 @@ const ROUGH = ndarray(new Uint8Array([
 ]), [1, 4, 4]);
 
 async function ndarrayToImage (pixels): Promise<ArrayBuffer> {
-	return new Promise((resolve, reject) => {
-		const chunks = [];
-		savePixels(pixels, 'png')
-			.on('data', (d) => chunks.push(d))
-			.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks))))
-			.on('error', (e) => reject(e));
-	});
+	return (await savePixels(pixels, 'image/png')).buffer;
 }
 
 test('@gltf-transform/lib::metalRough | textures', async t => {
