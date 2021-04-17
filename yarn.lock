@@ -1971,7 +1971,14 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
-"@types/ndarray@^1.0.8":
+"@types/ndarray-ops@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/ndarray-ops/-/ndarray-ops-1.2.0.tgz#cb8d2303f975186b1503957f78ebc7b38f7917de"
+  integrity sha512-b6OQ2XKQHeiSpFPa8+YW0clLiwlo3V3C7PbbgHZmQ1yPzFAt0hB0BOJqqdOctjObM1i7A2hFxt0ywwVvFHW4+A==
+  dependencies:
+    "@types/ndarray" "*"
+
+"@types/ndarray@*", "@types/ndarray@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.8.tgz#16bf33233108840eb775b0ef4e430f9b26261d20"
   integrity sha512-8wGb5DXyo822V6MOdcbCDL6FLIYSUTonPpoL62pl78Kosnz5VChQAavPtMIftlWk6IIIaZyWq+eYhe2yG+QKXQ==
@@ -1997,6 +2004,11 @@
   version "14.14.37"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.37.tgz#a3dd8da4eb84a996c36e331df98d82abd76b516e"
   integrity sha512-XYmBiy+ohOR4Lh5jE379fV2IU+6Jn4g5qASinhitfyO71b/sCo6MKsMLF5tc7Zf2CE8hViVQyYSobJNke8OvUw==
+
+"@types/node@^14.14.41":
+  version "14.14.41"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.41.tgz#d0b939d94c1d7bd53d04824af45f1139b8c45615"
+  integrity sha512-dueRKfaJL4RTtSa7bWeTK1M+VH+Gns73oCgzvYfHZywRCoPSd8EkXBL0mZ9unPTveBn+D9phZBaxuzpwjWkW0g==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -6338,7 +6350,19 @@ mime-db@1.45.0:
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.45.0.tgz#cceeda21ccd7c3a745eba2decd55d4b73e7879ea"
   integrity sha512-CkqLUxUk15hofLoLyljJSrukZi8mAtgd+yE5uO4tqRZsdsAJKv0O+rFMhVDRJgozy+yG6md5KwuXhD4ocIoP+w==
 
-mime-types@^2.0.1, mime-types@^2.1.12, mime-types@~2.1.19:
+mime-db@1.47.0:
+  version "1.47.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.47.0.tgz#8cb313e59965d3c05cfbf898915a267af46a335c"
+  integrity sha512-QBmA/G2y+IfeS4oktet3qRZ+P5kPhCKRXxXnQEudYqUaEioAU1/Lq2us3D/t1Jfo4hE9REQPrbB7K5sOczJVIw==
+
+mime-types@^2.0.1:
+  version "2.1.30"
+  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.30.tgz#6e7be8b4c479825f85ed6326695db73f9305d62d"
+  integrity sha512-crmjA4bLtR8m9qLpHvgxSChT+XoSlZi8J4n/aIdn3z92e/U47Z0V/yl+Wh9W046GgFVAmoNR/fmdbZYcSSIUeg==
+  dependencies:
+    mime-db "1.47.0"
+
+mime-types@^2.1.12, mime-types@~2.1.19:
   version "2.1.28"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.28.tgz#1160c4757eab2c5363888e005273ecf79d2a0ecd"
   integrity sha512-0TO2yJ5YHYr7M2zzT7gDU1tbwHxEUWBCLt0lscSNpcdAfFyJOVEpRYNS7EXVcTLNj/25QO8gulHC5JtTzSE2UQ==
@@ -6584,6 +6608,19 @@ ndarray-pack@^1.1.1:
   dependencies:
     cwise-compiler "^1.1.2"
     ndarray "^1.0.13"
+
+ndarray-pixels@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-0.1.2.tgz#4ebc85a675c8bd3eca4ba5869c14bb55dd336287"
+  integrity sha512-dGN6VWDaN4xT7BpZs6KyOgx334SxZPUXfun2ww7gtJwGZVidCX0j+85JBYMUj7ennEtEIWF2ABpQRJzuIAKlUw==
+  dependencies:
+    "@types/ndarray" "^1.0.8"
+    "@types/ndarray-ops" "^1.2.0"
+    "@types/node" "^14.14.41"
+    get-pixels "^3.3.2"
+    ndarray "^1.0.19"
+    ndarray-ops "^1.2.2"
+    save-pixels "^2.3.4"
 
 ndarray@^1.0.13, ndarray@^1.0.18, ndarray@^1.0.19:
   version "1.0.19"
