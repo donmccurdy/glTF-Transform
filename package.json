@@ -21,7 +21,8 @@
     "preversion": "yarn run test",
     "version": "lerna run dist --parallel && gltf-transform -h > docs/CLI_HELP.md && git add -u docs",
     "postpublish": "git push && git push --tags && yarn run docs:deploy",
-    "docs": "typedoc packages/core/src/core.ts packages/extensions/src/extensions.ts packages/lib/src/index.ts --out docs/dist/ --name glTF-Transform --excludeNotDocumented --theme docs/theme --media docs/media --readme docs/INDEX.md --includes docs",
+    "docs": "typedoc packages/core/src/core.ts --out docs/dist/ --name glTF-Transform --excludeNotDocumented --theme docs/theme --media docs/media --readme docs/INDEX.md --includes docs",
+    "docs:experimental": "typedoc packages/core/src/core.ts packages/extensions/src/extensions.ts packages/lib/src/index.ts --out docs/dist/ --name glTF-Transform --excludeNotDocumented --theme docs/theme --media docs/media --readme docs/INDEX.md --includes docs",
     "docs:watch": "yarn docs --watch",
     "docs:deploy": "yarn docs && vercel --prod"
   },
