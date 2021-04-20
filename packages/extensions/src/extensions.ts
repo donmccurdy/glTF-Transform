@@ -1,3 +1,5 @@
+/** @module extensions */
+
 import { MeshGPUInstancing } from './ext-mesh-gpu-instancing';
 import { TextureWebP } from './ext-texture-webp';
 import { DracoMeshCompression } from './khr-draco-mesh-compression';

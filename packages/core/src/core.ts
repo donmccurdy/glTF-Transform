@@ -1,3 +1,5 @@
+/** @module core */
+
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-namespace */
 
 export { Document, Transform } from './document';

@@ -1,3 +1,5 @@
+/** @module lib */
+
 export * from './bounds';
 export * from './center';
 export * from './colorspace';
