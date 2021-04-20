@@ -1,0 +1,16 @@
+{
+  "public": "docs/dist/",
+  "redirects": [
+    {
+      "source": "/classes/accessor",
+      "destination": "/classes/core.accessor"
+    },
+    {
+      "source": "/:group/:type(\\w+)",
+      "destination": "/:group/core.:type"
+    }
+  ],
+  "rewrites": [
+    { "source": "/:page(concepts|contributing|library|extensions|cli)", "destination": "/modules/pages.:page.html" }
+  ]
+}

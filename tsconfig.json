@@ -22,5 +22,9 @@
     // are tightend by sub-package tsconfig. Global tsconfig affects unit tests, and
     // I consider those rules too strict for unit tests.
   },
-  "include": ["packages/*/src/**/*.ts"]
+  "include": [
+    "packages/*/src/**/*.ts",
+    // Included to allow TypeDoc to find `pages.ts` content.
+    "docs/*.ts"
+  ]
 }
