@@ -1,16 +1,14 @@
 {
-  "public": "docs/dist/",
   "redirects": [
     {
-      "source": "/classes/accessor",
-      "destination": "/classes/core.accessor"
-    },
-    {
-      "source": "/:group/:type(\\w+)",
-      "destination": "/:group/core.:type"
+      "source": "/:group/:type(\\w+){.html}?",
+      "destination": "/:group/core.:type.html"
     }
   ],
   "rewrites": [
-    { "source": "/:page(concepts|contributing|library|extensions|cli)", "destination": "/modules/pages.:page.html" }
+    {
+      "source": "/:page(concepts|contributing|library|extensions|cli){.html}?",
+      "destination": "/modules/pages.:page.html"
+    }
   ]
 }
