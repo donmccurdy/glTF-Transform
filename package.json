@@ -40,7 +40,7 @@
     "eslint": "^7.24.0",
     "gl": "^4.9.0",
     "gltf-validator": "^2.0.0-dev.2.7",
-    "lerna": "^3.20.2",
+    "lerna": "^4.0.0",
     "microbundle": "^0.13.0",
     "mikktspace": "^0.1.2",
     "nyc": "^15.1.0",
