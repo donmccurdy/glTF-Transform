@@ -767,8 +767,23 @@ for textures where the quality is sufficient.`.trim()),
 		'--zstd <compressionLevel>',
 		'Supercompress the data with Zstandard.'
 		+ ' Compression level range is [1, 22], or 0 is uncompressed.'
-		+ ' Lower values=faster but give less compression. Values above 20'
-		+ ' should be used with caution as they require more memory.',
+		+ ' Lower values decode faster but offer less compression. Values above'
+		+ ' 20 should be used with caution, requiring more memory to decompress:'
+		+ '\n\n'
+		// Sources:
+		// - https://news.ycombinator.com/item?id=13814475
+		// - https://github.com/facebook/zstd/blob/15a7a99653c78a57d1ccbf5c5b4571e62183bf4f/lib/compress/zstd_compress.c#L3250
+		+ 'Level | Window Size |'
+		+ '\n——————|—————————————|'
+		+ '\n1     | 256 KB      |'
+		+ '\n…     | …           |'
+		+ '\n10    | 2 MB        |'
+		+ '\n…     | …           |'
+		+ '\n18    | 8 MB        |'
+		+ '\n19    | 8 MB        |'
+		+ '\n20    | 34 MB       |'
+		+ '\n21    | 67 MB       |'
+		+ '\n22    | 134 MB      |',
 		{validator: program.NUMBER, default: UASTC_DEFAULTS.zstd}
 	)
 	.action(({args, options, logger}) =>
