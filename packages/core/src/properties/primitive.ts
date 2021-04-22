@@ -21,7 +21,7 @@ import { AttributeLink } from './property-links';
  * Primitives cannot be moved independently of other primitives within the same mesh, except
  * through the use of morph targets and skinning. If independent movement or other runtime
  * behavior is necessary (like raycasting or collisions) prefer to assign each primitive to a
- * different mesh. The number of GPU draw calls is typically not unaffected by grouping or
+ * different mesh. The number of GPU draw calls is typically not affected by grouping or
  * ungrouping primitives to a mesh.
  *
  * Each primitive may optionally be deformed by one or more morph targets, stored in a
