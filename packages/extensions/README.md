@@ -7,7 +7,8 @@
 Part of the glTF-Transform project.
 
 - GitHub: https://github.com/donmccurdy/glTF-Transform
-- Documentation: https://gltf-transform.donmccurdy.com/
+- Project Documentation: https://gltf-transform.donmccurdy.com/
+- Package Documentation: https://gltf-transform.donmccurdy.com/extensions.html
 
 ## Installation
 
@@ -32,7 +33,3 @@ const { KHRONOS_EXTENSIONS } = require('@gltf-transform/extensions');
 const io = new WebIO().registerExtensions(KHRONOS_EXTENSIONS);
 const document = await io.read('/model.glb');
 ```
-
-## API
-
-Full documentation, and a list of supported extensions, in [Extensions](https://gltf-transform.donmccurdy.com/extensions/).

@@ -6,7 +6,8 @@
 Part of the glTF-Transform project.
 
 - GitHub: https://github.com/donmccurdy/glTF-Transform
-- Documentation: https://gltf-transform.donmccurdy.com/
+- Project Documentation: https://gltf-transform.donmccurdy.com/
+- Package Documentation: https://gltf-transform.donmccurdy.com/cli.html
 
 ## Installation
 

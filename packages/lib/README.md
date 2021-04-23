@@ -7,7 +7,8 @@
 Part of the glTF-Transform project.
 
 - GitHub: https://github.com/donmccurdy/glTF-Transform
-- Documentation: https://gltf-transform.donmccurdy.com/
+- Project Documentation: https://gltf-transform.donmccurdy.com/
+- Package Documentation: https://gltf-transform.donmccurdy.com/library.html
 
 ## Installation
 
@@ -29,7 +30,3 @@ const { dedup } = require('@gltf-transform/lib');
 // Use.
 await document.transform(dedup({textures: true, accessors: false}));
 ```
-
-## API
-
-TODO(docs): Document lib API.
