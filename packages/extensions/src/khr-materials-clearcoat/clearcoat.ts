@@ -33,21 +33,29 @@ export class Clearcoat extends ExtensionProperty {
 		this._clearcoatRoughnessFactor = other._clearcoatRoughnessFactor;
 		this._clearcoatNormalScale = other._clearcoatNormalScale;
 
-		if (other.clearcoatTexture) {
-			this.setClearcoatTexture(resolve(other.clearcoatTexture.getChild()));
-			this.getClearcoatTextureInfo()!
-				.copy(resolve(other.clearcoatTextureInfo.getChild()), resolve);
-		}
-		if (other.clearcoatRoughnessTexture) {
-			this.setClearcoatRoughnessTexture(resolve(other.clearcoatRoughnessTexture.getChild()));
-			this.getClearcoatRoughnessTextureInfo()!
-				.copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()), resolve);
-		}
-		if (other.clearcoatNormalTexture) {
-			this.setClearcoatNormalTexture(resolve(other.clearcoatNormalTexture.getChild()));
-			this.getClearcoatNormalTextureInfo()!
-				.copy(resolve(other.clearcoatNormalTextureInfo.getChild()), resolve);
-		}
+		this.setClearcoatTexture(
+			other.clearcoatTexture
+				? resolve(other.clearcoatTexture.getChild())
+				: null
+		);
+		this.clearcoatTextureInfo.getChild()
+			.copy(resolve(other.clearcoatTextureInfo.getChild()), resolve);
+
+		this.setClearcoatRoughnessTexture(
+			other.clearcoatRoughnessTexture
+				? resolve(other.clearcoatRoughnessTexture.getChild())
+				: null
+		);
+		this.clearcoatRoughnessTextureInfo.getChild()
+			.copy(resolve(other.clearcoatRoughnessTextureInfo.getChild()), resolve);
+
+		this.setClearcoatNormalTexture(
+			other.clearcoatNormalTexture
+				? resolve(other.clearcoatNormalTexture.getChild())
+				: null
+		);
+		this.clearcoatNormalTextureInfo.getChild()
+			.copy(resolve(other.clearcoatNormalTextureInfo.getChild()), resolve);
 
 		return this;
 	}

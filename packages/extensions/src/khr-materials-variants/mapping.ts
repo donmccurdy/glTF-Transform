@@ -15,9 +15,7 @@ export class Mapping extends ExtensionProperty {
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		if (other.material) {
-			this.setMaterial(resolve(other.material.getChild()));
-		}
+		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
 
 		this.clearGraphChildList(this.variants);
 		other.variants.forEach((link) => this.addVariant(resolve(link.getChild())));

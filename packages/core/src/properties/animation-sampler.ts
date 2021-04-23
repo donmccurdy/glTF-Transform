@@ -59,8 +59,8 @@ export class AnimationSampler extends Property {
 
 		this._interpolation = other._interpolation;
 
-		if (other.input) this.setInput(resolve(other.input.getChild()));
-		if (other.output) this.setOutput(resolve(other.output.getChild()));
+		this.setInput(other.input ? resolve(other.input.getChild()) : null);
+		this.setOutput(other.output ? resolve(other.output.getChild()) : null);
 
 		return this;
 	}

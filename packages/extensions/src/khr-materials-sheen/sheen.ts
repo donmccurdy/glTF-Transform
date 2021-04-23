@@ -27,16 +27,21 @@ export class Sheen extends ExtensionProperty {
 		this._sheenColorFactor = other._sheenColorFactor;
 		this._sheenRoughnessFactor = other._sheenRoughnessFactor;
 
-		if (other.sheenColorTexture) {
-			this.setSheenColorTexture(resolve(other.sheenColorTexture.getChild()));
-			this.getSheenColorTextureInfo()!
-				.copy(resolve(other.sheenColorTextureInfo.getChild()), resolve);
-		}
-		if (other.sheenRoughnessTexture) {
-			this.setSheenRoughnessTexture(resolve(other.sheenRoughnessTexture.getChild()));
-			this.getSheenRoughnessTextureInfo()!
-				.copy(resolve(other.sheenRoughnessTextureInfo.getChild()), resolve);
-		}
+		this.setSheenColorTexture(
+			other.sheenColorTexture
+				? resolve(other.sheenColorTexture.getChild())
+				: null
+		);
+		this.sheenColorTextureInfo.getChild()
+			.copy(resolve(other.sheenColorTextureInfo.getChild()), resolve);
+
+		this.setSheenRoughnessTexture(
+			other.sheenRoughnessTexture
+				? resolve(other.sheenRoughnessTexture.getChild())
+				: null
+		);
+		this.sheenRoughnessTextureInfo.getChild()
+			.copy(resolve(other.sheenRoughnessTextureInfo.getChild()), resolve);
 
 		return this;
 	}

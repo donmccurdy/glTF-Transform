@@ -26,10 +26,10 @@ export class Skin extends ExtensibleProperty {
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		if (other.skeleton) this.setSkeleton(resolve(other.skeleton.getChild()));
-		if (other.inverseBindMatrices) {
-			this.setInverseBindMatrices(resolve(other.inverseBindMatrices.getChild()));
-		}
+		this.setSkeleton(other.skeleton ? resolve(other.skeleton.getChild()) : null);
+		this.setInverseBindMatrices(
+			other.inverseBindMatrices ? resolve(other.inverseBindMatrices.getChild()) : null
+		);
 
 		this.clearGraphChildList(this.joints);
 		other.joints.forEach((link) => this.addJoint(resolve(link.getChild())));

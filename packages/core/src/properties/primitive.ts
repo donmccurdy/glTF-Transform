@@ -59,8 +59,8 @@ export class Primitive extends ExtensibleProperty {
 
 		this._mode = other._mode;
 
-		if (other.indices) this.setIndices(resolve(other.indices.getChild()));
-		if (other.material) this.setMaterial(resolve(other.material.getChild()));
+		this.setIndices(other.indices ? resolve(other.indices.getChild()) : null);
+		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
 
 		this.clearGraphChildList(this.attributes);
 		other.listSemantics().forEach((semantic) => {

@@ -22,11 +22,13 @@ export class Specular extends ExtensionProperty {
 
 		this._specularFactor = other._specularFactor;
 
-		if (other.specularTexture) {
-			this.setSpecularTexture(resolve(other.specularTexture.getChild()));
-			this.getSpecularTextureInfo()
-				.copy(resolve(other.specularTextureInfo.getChild()), resolve);
-		}
+		this.setSpecularTexture(
+			other.specularTexture
+				? resolve(other.specularTexture.getChild())
+				: null
+		);
+		this.specularTextureInfo.getChild()
+			.copy(resolve(other.specularTextureInfo.getChild()), resolve);
 
 		return this;
 	}

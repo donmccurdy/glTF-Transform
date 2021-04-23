@@ -45,8 +45,8 @@ export class AnimationChannel extends Property {
 
 		this._targetPath = other._targetPath;
 
-		if (other.targetNode) this.setTargetNode(resolve(other.targetNode.getChild()));
-		if (other.sampler) this.setSampler(resolve(other.sampler.getChild()));
+		this.setTargetNode(other.targetNode ? resolve(other.targetNode.getChild()) : null);
+		this.setSampler(other.sampler ? resolve(other.sampler.getChild()) : null);
 
 		return this;
 	}
