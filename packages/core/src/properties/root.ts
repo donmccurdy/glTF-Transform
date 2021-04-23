@@ -1,6 +1,6 @@
 import { PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
-import { GraphChildList, Link } from '../graph/index';
+import { GraphChild, GraphChildList, Link } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
@@ -57,6 +57,8 @@ export class Root extends Property {
 
 	private readonly _extensions: Set<Extension> = new Set();
 
+	@GraphChild private defaultScene: Link<Root, Scene> | null = null;
+
 	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
 	@GraphChildList private animations: Link<Root, Animation>[] = [];
 	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
@@ -97,6 +99,10 @@ export class Root extends Property {
 		other.scenes.forEach((link) => this._addScene(resolve(link.getChild())));
 		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
 		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
+
+		if (other.defaultScene) {
+			this.setDefaultScene(resolve(other.defaultScene.getChild()));
+		}
 
 		return this;
 	}
@@ -178,6 +184,17 @@ export class Root extends Property {
 	/** Lists all {@link Scene} properties associated with this root. */
 	public listScenes(): Scene[] {
 		return this.scenes.map((p) => p.getChild());
+	}
+
+	/** Default {@link Scene} associated with this root. */
+	public setDefaultScene(defaultScene: Scene | null): this {
+		this.defaultScene = this.graph.link('scene', this, defaultScene);
+		return this;
+	}
+
+	/** Default {@link Scene} associated with this root. */
+	public getDefaultScene(): Scene | null {
+		return this.defaultScene ?  this.defaultScene.getChild() : null;
 	}
 
 	/**********************************************************************************************

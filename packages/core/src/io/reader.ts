@@ -463,6 +463,10 @@ export class GLTFReader {
 			return scene;
 		});
 
+		if (json.scene !== undefined) {
+			doc.getRoot().setDefaultScene(context.scenes[json.scene]);
+		}
+
 		/** Extensions (2/2). */
 
 		doc.getRoot()
