@@ -21,11 +21,13 @@ export class Transmission extends ExtensionProperty {
 
 		this._transmissionFactor = other._transmissionFactor;
 
-		if (other.transmissionTexture) {
-			this.setTransmissionTexture(resolve(other.transmissionTexture.getChild()));
-			this.getTransmissionTextureInfo()
-				.copy(resolve(other.transmissionTextureInfo.getChild()), resolve);
-		}
+		this.setTransmissionTexture(
+			other.transmissionTexture
+				? resolve(other.transmissionTexture.getChild())
+				: null
+		);
+		this.transmissionTextureInfo.getChild()
+			.copy(resolve(other.transmissionTextureInfo.getChild()), resolve);
 
 		return this;
 	}

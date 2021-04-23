@@ -25,11 +25,13 @@ export class Volume extends ExtensionProperty {
 		this._attenuationDistance = other._attenuationDistance;
 		this._attenuationColor = [...other._attenuationColor] as vec3;
 
-		if (other.thicknessTexture) {
-			this.setThicknessTexture(resolve(other.thicknessTexture.getChild()));
-			this.getThicknessTextureInfo()
-				.copy(resolve(other.thicknessTextureInfo.getChild()), resolve);
-		}
+		this.setThicknessTexture(
+			other.thicknessTexture
+				? resolve(other.thicknessTexture.getChild())
+				: null
+		);
+		this.thicknessTextureInfo.getChild()
+			.copy(resolve(other.thicknessTextureInfo.getChild()), resolve);
 
 		return this;
 	}

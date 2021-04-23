@@ -60,9 +60,9 @@ export class Node extends ExtensibleProperty {
 		this._scale = [...other._scale] as vec3;
 		this._weights = [...other._weights];
 
-		if (other.camera) this.setCamera(resolve(other.camera.getChild()));
-		if (other.mesh) this.setMesh(resolve(other.mesh.getChild()));
-		if (other.skin) this.setSkin(resolve(other.skin.getChild()));
+		this.setCamera(other.camera ? resolve(other.camera.getChild()) : null);
+		this.setMesh(other.mesh ? resolve(other.mesh.getChild()) : null);
+		this.setSkin(other.skin ? resolve(other.skin.getChild()) : null);
 
 		if (resolve !== COPY_IDENTITY) {
 			this.clearGraphChildList(this.children);

@@ -101,6 +101,12 @@ test('@gltf-transform/core::skin | copy', t => {
 	t.deepEqual(b.listJoints(), a.listJoints(), 'copy joints');
 	t.equal(b.getSkeleton(), a.getSkeleton(), 'copy skeleton');
 	t.equal(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
+
+	a.copy(doc.createSkin());
+
+	t.equal(a.getSkeleton(), null, 'unset skeleton');
+	t.equal(a.getInverseBindMatrices(), null, 'unset inverseBindMatrices');
+
 	t.end();
 });
 

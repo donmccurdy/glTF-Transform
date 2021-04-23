@@ -131,31 +131,37 @@ export class Material extends ExtensibleProperty {
 		this._roughnessFactor = other._roughnessFactor;
 		this._metallicFactor = other._metallicFactor;
 
-		if (other.baseColorTexture) {
-			this.setBaseColorTexture(resolve(other.baseColorTexture.getChild()));
-			this.getBaseColorTextureInfo()
-				.copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
-		}
-		if (other.emissiveTexture) {
-			this.setEmissiveTexture(resolve(other.emissiveTexture.getChild()));
-			this.getEmissiveTextureInfo()
-				.copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
-		}
-		if (other.normalTexture) {
-			this.setNormalTexture(resolve(other.normalTexture.getChild()));
-			this.getNormalTextureInfo()
-				.copy(resolve(other.normalTextureInfo.getChild()), resolve);
-		}
-		if (other.occlusionTexture) {
-			this.setOcclusionTexture(resolve(other.occlusionTexture.getChild()));
-			this.getOcclusionTextureInfo()
-				.copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
-		}
-		if (other.metallicRoughnessTexture) {
-			this.setMetallicRoughnessTexture(resolve(other.metallicRoughnessTexture.getChild()));
-			this.getMetallicRoughnessTextureInfo()
-				.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
-		}
+		this.setBaseColorTexture(
+			other.baseColorTexture ? resolve(other.baseColorTexture.getChild()) : null
+		);
+		this.baseColorTextureInfo.getChild()
+			.copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
+
+		this.setEmissiveTexture(
+			other.emissiveTexture ? resolve(other.emissiveTexture.getChild()) : null
+		);
+		this.emissiveTextureInfo.getChild()
+			.copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
+
+		this.setNormalTexture(
+			other.normalTexture ? resolve(other.normalTexture.getChild()) : null
+		);
+		this.normalTextureInfo.getChild()
+			.copy(resolve(other.normalTextureInfo.getChild()), resolve);
+
+		this.setOcclusionTexture(
+			other.occlusionTexture ? resolve(other.occlusionTexture.getChild()) : null
+		);
+		this.occlusionTextureInfo.getChild()
+			.copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
+
+		this.setMetallicRoughnessTexture(
+			other.metallicRoughnessTexture
+				? resolve(other.metallicRoughnessTexture.getChild())
+				: null
+		);
+		this.metallicRoughnessTextureInfo.getChild()
+			.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
 
 		return this;
 	}

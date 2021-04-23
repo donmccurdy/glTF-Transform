@@ -96,7 +96,8 @@ export class Accessor extends ExtensibleProperty {
 		this._out = other._out;
 
 		if (other._array) this._array = other._array.slice();
-		if (other.buffer) this.setBuffer(resolve(other.buffer.getChild()));
+
+		this.setBuffer(other.buffer ? resolve(other.buffer.getChild()) : null);
 
 		return this;
 	}
