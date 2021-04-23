@@ -448,8 +448,8 @@ export class GLTFReader {
 
 		/** Scenes. */
 
-		const scenesDefs = json.scenes || [];
-		context.scenes = scenesDefs.map((sceneDef) => {
+		const sceneDefs = json.scenes || [];
+		context.scenes = sceneDefs.map((sceneDef) => {
 			const scene = doc.createScene(sceneDef.name);
 
 			if (sceneDef.extras) scene.setExtras(sceneDef.extras);
@@ -463,7 +463,9 @@ export class GLTFReader {
 			return scene;
 		});
 
-		doc.setDefaultScene(json?.scene);
+		if (json.scene !== undefined) {
+			doc.getRoot().setDefaultScene(context.scenes[json.scene]);
+		}
 
 		/** Extensions (2/2). */
 

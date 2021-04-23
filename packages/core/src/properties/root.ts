@@ -1,6 +1,6 @@
 import { PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
-import { GraphChildList, Link } from '../graph/index';
+import { GraphChild, GraphChildList, Link } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
@@ -57,6 +57,8 @@ export class Root extends Property {
 
 	private readonly _extensions: Set<Extension> = new Set();
 
+	@GraphChild private defaultScene: Link<Root, Scene> | null = null;
+
 	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
 	@GraphChildList private animations: Link<Root, Animation>[] = [];
 	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
@@ -67,8 +69,6 @@ export class Root extends Property {
 	@GraphChildList private scenes: Link<Root, Scene>[] = [];
 	@GraphChildList private skins: Link<Root, Skin>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
-
-	private scene?: number;
 
 	constructor (graph: PropertyGraph) {
 		super(graph);
@@ -100,7 +100,9 @@ export class Root extends Property {
 		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
 		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
 
-		this.setDefaultScene(other.scene);
+		if (other.defaultScene) {
+			this.setDefaultScene(resolve(other.defaultScene.getChild()));
+		}
 
 		return this;
 	}
@@ -184,18 +186,15 @@ export class Root extends Property {
 		return this.scenes.map((p) => p.getChild());
 	}
 
-
-	/**
-	 * Set the default scene ID associated with this root.
-	 */
-	public setDefaultScene(sceneId?: number): this {
-		this.scene = sceneId;
+	/** Default {@link Scene} associated with this root. */
+	public setDefaultScene(defaultScene: Scene | null): this {
+		this.defaultScene = this.graph.link('scene', this, defaultScene);
 		return this;
 	}
 
-	/** Get the default scene ID associated with this root. */
-	public getDefaultScene(): number | undefined {
-		return this.scene;
+	/** Default {@link Scene} associated with this root. */
+	public getDefaultScene(): Scene | null {
+		return this.defaultScene ?  this.defaultScene.getChild() : null;
 	}
 
 	/**********************************************************************************************

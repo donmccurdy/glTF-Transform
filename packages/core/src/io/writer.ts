@@ -683,7 +683,9 @@ export class GLTFWriter {
 			return sceneDef;
 		});
 
-		json.scene = root.getDefaultScene();
+		if (root.getDefaultScene()) {
+			json.scene = root.listScenes().indexOf(root.getDefaultScene());
+		}
 
 		/* Extensions (2/2). */
 

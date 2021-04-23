@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Root } from '../../';
+import { Document, NodeIO, Root } from '../../';
 
 test('@gltf-transform/core::root', t => {
 	const doc = new Document();
@@ -41,6 +41,35 @@ test('@gltf-transform/core::root', t => {
 
 	t.throws(() => root2.clone(), 'no cloning');
 	t.throws(() => root2.copy(doc.getRoot()), 'no direct copy');
+	t.end();
+});
+
+test('@gltf-transform/core::root | default scene', t => {
+	const doc = new Document();
+	const root = doc.getRoot();
+	const sceneA = doc.createScene('A');
+	const sceneB = doc.createScene('B');
+	const io = new NodeIO();
+
+	t.equals(root.getDefaultScene(), null, 'default scene initially null');
+
+	root.setDefaultScene(sceneA);
+	t.equals(root.getDefaultScene(), sceneA, 'default scene = A');
+
+	sceneA.dispose();
+	t.equals(root.getDefaultScene(), null, 'default scene disposed');
+
+	root.setDefaultScene(sceneB);
+	t.equals(root.getDefaultScene(), sceneB, 'default scene = B');
+
+	t.equals(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
+
+	t.equals(
+		io.readJSON(io.writeJSON(doc, {})).getRoot().getDefaultScene().getName(),
+		'B',
+		'read / write persistence'
+	);
+
 	t.end();
 });
 
