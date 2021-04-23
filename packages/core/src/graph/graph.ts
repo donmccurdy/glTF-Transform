@@ -28,18 +28,29 @@ export class Graph<T extends GraphNode> {
 		return this;
 	}
 
+	/** Returns a list of all parent->child links on this graph. */
 	public getLinks(): Link<T, T>[] {
 		return Array.from(this._links);
 	}
 
-	public listParents(node: T): T[] {
-		const links = this._childRefs.get(node) || this._emptySet;
-		return Array.from(links).map((link) => link.getParent());
+	/** Returns a list of all links on the graph having the given node as their child. */
+	public listParentLinks(node: T): Link<T, T>[] {
+		return Array.from(this._childRefs.get(node) || this._emptySet);
 	}
 
+	/** Returns a list of parent nodes for the given child node. */
+	public listParents(node: T): T[] {
+		return this.listParentLinks(node).map((link) => link.getParent());
+	}
+
+	/** Returns a list of all links on the graph having the given node as their parent. */
+	public listChildLinks(node: T): Link<T, T>[] {
+		return Array.from(this._parentRefs.get(node) || this._emptySet);
+	}
+
+	/** Returns a list of child nodes for the given parent node. */
 	public listChildren(node: T): T[] {
-		const links = this._parentRefs.get(node) || this._emptySet;
-		return Array.from(links).map((link) => link.getChild());
+		return this.listChildLinks(node).map((link) => link.getChild());
 	}
 
 	public disconnectChildren(node: T): this {

@@ -1,4 +1,4 @@
-import { GLB_BUFFER, NAME, PropertyType, VERSION } from '../constants';
+import { GLB_BUFFER, NAME, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
@@ -23,6 +23,7 @@ export interface WriterOptions {
 	logger?: Logger;
 	basename?: string;
 	isGLB?: boolean;
+	vertexLayout?: VertexLayout,
 	dependencies?: {[key: string]: unknown};
 }
 
@@ -30,6 +31,7 @@ const DEFAULT_OPTIONS: WriterOptions = {
 	logger: Logger.DEFAULT_INSTANCE,
 	basename: '',
 	isGLB: true,
+	vertexLayout: VertexLayout.INTERLEAVED,
 	dependencies: {},
 };
 
@@ -311,19 +313,39 @@ export class GLTFWriter {
 			for (const usage in usageGroups) {
 				if (groupByParent.has(usage)) {
 					// Accessors grouped by (first) parent, including vertex and instance
-					// attributes. Instanced data is not interleaved, see:
-					// https://github.com/KhronosGroup/glTF/pull/1888
+					// attributes.
 					for (const parentAccessors of Array.from(accessorParents.values())) {
 						const accessors = Array.from(parentAccessors)
 							.filter((a) => bufferAccessorsSet.has(a))
 							.filter((a) => context.getAccessorUsage(a) === usage);
 						if (!accessors.length) continue;
 
-						const result = usage === BufferViewUsage.ARRAY_BUFFER
-							? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
-							: concatAccessors(accessors, bufferIndex, bufferByteLength);
-						bufferByteLength += result.byteLength;
-						buffers.push(...result.buffers);
+						if (usage !== BufferViewUsage.ARRAY_BUFFER
+								|| options.vertexLayout === VertexLayout.INTERLEAVED) {
+							// Case 1: Non-vertex data OR interleaved vertex data.
+
+							// Instanced data is not interleaved, see:
+							// https://github.com/KhronosGroup/glTF/pull/1888
+							const result = usage === BufferViewUsage.ARRAY_BUFFER
+								? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
+								: concatAccessors(accessors, bufferIndex, bufferByteLength);
+							bufferByteLength += result.byteLength;
+							buffers.push(...result.buffers);
+						} else {
+							// Case 2: Non-interleaved vertex data.
+
+							for (const accessor of accessors) {
+								// We 'interleave' a single accessor because the method pads to
+								// 4-byte boundaries, which concatAccessors() does not.
+								const result = interleaveAccessors(
+									[accessor],
+									bufferIndex,
+									bufferByteLength,
+								);
+								bufferByteLength += result.byteLength;
+								buffers.push(...result.buffers);
+							}
+						}
 					}
 				} else {
 					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
@@ -560,7 +582,7 @@ export class GLTFWriter {
 			if (!MathUtils.eq(node.getTranslation(), [0, 0, 0])) {
 				nodeDef.translation = node.getTranslation();
 			}
-			
+
 			if (!MathUtils.eq(node.getRotation(), [0, 0, 0, 1])) {
 				nodeDef.rotation = node.getRotation();
 			}

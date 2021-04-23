@@ -1,7 +1,6 @@
-import getPixels from 'get-pixels';
 import ndarray from 'ndarray';
-import savePixels from 'save-pixels';
-import { BufferUtils, Primitive, Texture } from '@gltf-transform/core';
+import { getPixels, savePixels } from 'ndarray-pixels';
+import { Primitive, Texture } from '@gltf-transform/core';
 
 /** Maps pixels from source to target textures, with a per-pixel callback. */
 export async function rewriteTexture(
@@ -11,14 +10,7 @@ export async function rewriteTexture(
 
 	if (!source) return null;
 
-	const pixels: ndarray = await new Promise((resolve, reject) => {
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		(getPixels as unknown as Function)(
-			Buffer.from(source.getImage()),
-			source.getMimeType(),
-			(err, pixels) => err ? reject(err) : resolve(pixels)
-		);
-	});
+	const pixels = await getPixels(new Uint8Array(source.getImage()), source.getMimeType());
 
 	for(let i = 0; i < pixels.shape[0]; ++i) {
 		for(let j = 0; j < pixels.shape[1]; ++j) {
@@ -26,14 +18,7 @@ export async function rewriteTexture(
 		}
 	}
 
-	const image: ArrayBuffer = await new Promise((resolve, reject) => {
-		const chunks: Buffer[] = [];
-		savePixels(pixels, 'png')
-			.on('data', (d) => chunks.push(d))
-			.on('end', () => resolve(BufferUtils.trim(Buffer.concat(chunks))))
-			.on('error', (e) => reject(e));
-	});
-
+	const image = (await savePixels(pixels, 'image/png')).buffer;
 	return target.setImage(image).setMimeType('image/png');
 }
 

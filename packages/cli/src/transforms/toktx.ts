@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const minimatch = require('minimatch');
+const semver = require('semver');
 const tmp = require('tmp');
 
-import { BufferUtils, Document, FileUtils, ImageUtils, Logger, Texture, Transform, vec2 } from '@gltf-transform/core';
+import { BufferUtils, Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { commandExistsSync, formatBytes, spawnSync } from '../util';
+import { commandExistsSync, formatBytes, getTextureChannels, getTextureSlots, spawnSync } from '../util';
 
 tmp.setGracefulCleanup();
+
+const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
+
+const { R, G } = TextureChannel;
 
 /**********************************************************************************************
  * Interfaces.
@@ -48,12 +53,20 @@ interface GlobalOptions {
 export interface ETC1SOptions extends GlobalOptions {
 	quality?: number;
 	compression?: number;
+	maxEndpoints?: number;
+	maxSelectors?: number;
+	rdoOff?: boolean;
+	rdoThreshold?: number;
 }
 
 export interface UASTCOptions extends GlobalOptions {
-	level: number;
-	rdoQuality: number;
-	rdoDictSize: number;
+	level?: number;
+	rdo?: number;
+	rdoDictionarySize?: number;
+	rdoBlockScale?: number;
+	rdoStdDev?: number;
+	rdoMultithreading?: boolean;
+	zstd?: number;
 }
 
 const GLOBAL_DEFAULTS = {
@@ -71,8 +84,12 @@ export const ETC1S_DEFAULTS = {
 
 export const UASTC_DEFAULTS = {
 	level: 2,
-	rdoQuality: 1,
-	rdoDictsize: 32768,
+	rdo: 0,
+	rdoDictionarySize: 32768,
+	rdoBlockScale: 10.0,
+	rdoStdDev: 18.0,
+	rdoMultithreading: true,
+	zstd: 18,
 	...GLOBAL_DEFAULTS,
 };
 
@@ -86,9 +103,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
-		if (!commandExistsSync('toktx') && !process.env.CI) {
-			throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
-		}
+		// Confirm recent version of KTX-Software is installed.
+		checkKTXSoftware(logger);
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
@@ -98,6 +114,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			.listTextures()
 			.forEach((texture, textureIndex) => {
 				const slots = getTextureSlots(doc, texture);
+				const channels = getTextureChannels(doc, texture);
 				const textureLabel = texture.getURI()
 					|| texture.getName()
 					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
@@ -127,7 +144,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				fs.writeFileSync(inPath, Buffer.from(texture.getImage()));
 
 				const params = [
-					...createParams(slots, texture.getSize(), logger, options),
+					...createParams(slots, channels, texture.getSize(), logger, options),
 					outPath,
 					inPath
 				];
@@ -172,16 +189,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
  * Utilities.
  */
 
-/** Returns names of all texture slots using the given texture. */
-function getTextureSlots (doc: Document, texture: Texture): string[] {
-	return doc.getGraph().getLinks()
-		.filter((link) => link.getChild() === texture)
-		.map((link) => link.getName())
-		.filter((slot) => slot !== 'texture');
-}
-
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
-function createParams (slots: string[], size: vec2, logger: Logger, options): string[] {
+function createParams (
+		slots: string[],
+		channels: number,
+		size: vec2,
+		logger: Logger,
+		options: ETC1SOptions | UASTCOptions): (string|number)[] {
 	const params = [];
 	params.push('--genmipmap');
 	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter);
@@ -190,30 +204,41 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 	}
 
 	if (options.mode === Mode.UASTC) {
-		params.push('--uastc', options.level);
-		if (options.rdoQuality !== UASTC_DEFAULTS.rdoQuality) {
-			params.push('--uastc_rdo_q', options.rdoQuality);
+		const _options = options as UASTCOptions;
+		params.push('--uastc', _options.level);
+		if (_options.rdo !== UASTC_DEFAULTS.rdo) {
+			params.push('--uastc_rdo_l', _options.rdo);
 		}
-		if (options.rdoDictsize !== UASTC_DEFAULTS.rdoDictsize) {
-			params.push('--uastc_rdo_d', options.rdoDictsize);
+		if (_options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
+			params.push('--uastc_rdo_d', _options.rdoDictionarySize);
 		}
-		if (options.zstd > 0) params.push('--zcmp', options.zstd);
+		if (_options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
+			params.push('--uastc_rdo_b', _options.rdoBlockScale);
+		}
+		if (_options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
+			params.push('--uastc_rdo_s', _options.rdoStdDev);
+		}
+		if (!_options.rdoMultithreading) {
+			params.push('--uastc_rdo_m');
+		}
+		if (_options.zstd > 0) params.push('--zcmp', _options.zstd);
 	} else {
+		const _options = options as ETC1SOptions;
 		params.push('--bcmp');
-		if (options.quality !== ETC1S_DEFAULTS.quality) {
-			params.push('--qlevel', options.quality);
+		if (_options.quality !== ETC1S_DEFAULTS.quality) {
+			params.push('--qlevel', _options.quality);
 		}
-		if (options.compression !== ETC1S_DEFAULTS.compression) {
-			params.push('--clevel', options.compression);
+		if (_options.compression !== ETC1S_DEFAULTS.compression) {
+			params.push('--clevel', _options.compression);
 		}
-		if (options.maxEndpoints) params.push('--max_endpoints', options.maxEndpoints);
-		if (options.maxSelectors) params.push('--max_selectors', options.maxSelectors);
+		if (_options.maxEndpoints) params.push('--max_endpoints', _options.maxEndpoints);
+		if (_options.maxSelectors) params.push('--max_selectors', _options.maxSelectors);
 
-		if (options.rdoOff) {
+		if (_options.rdoOff) {
 			params.push('--no_endpoint_rdo', '--no_selector_rdo');
-		} else if (options.rdoThreshold) {
-			params.push('--endpoint_rdo_threshold', options.rdoThreshold);
-			params.push('--selector_rdo_threshold', options.rdoThreshold);
+		} else if (_options.rdoThreshold) {
+			params.push('--endpoint_rdo_threshold', _options.rdoThreshold);
+			params.push('--selector_rdo_threshold', _options.rdoThreshold);
 		}
 
 		if (slots.find((slot) => minimatch(slot, '*normal*', {nocase: true}))) {
@@ -223,7 +248,14 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 
 	if (slots.length
 			&& !slots.find((slot) => minimatch(slot, '*{color,emissive}*', {nocase: true}))) {
-		params.push('--linear');
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
+		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
+	}
+
+	if (channels === R) {
+		params.push('--target_type', 'R');
+	} else if (channels === G || channels === (R | G)) {
+		params.push('--target_type', 'RG');
 	}
 
 	let width: number;
@@ -247,6 +279,25 @@ function createParams (slots: string[], size: vec2, logger: Logger, options): st
 	}
 
 	return params;
+}
+
+function checkKTXSoftware(logger: Logger): void {
+	if (!commandExistsSync('toktx') && !process.env.CI) {
+		throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
+	}
+
+	const {status, stdout, stderr} = spawnSync('toktx', ['--version'], {encoding: 'utf-8'});
+
+	const version = ((stdout || stderr) as string)
+		.replace(/toktx\s+/, '').replace(/~\d+/, '').trim();
+
+	if (status !== 0 || !semver.valid(semver.clean(version))) {
+		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
+	} else if (semver.lt(semver.clean(version), KTX_SOFTWARE_VERSION_MIN)) {
+		throw new Error(`Requires KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
+	} else {
+		logger.debug(`Found KTX-Software ${version}.`);
+	}
 }
 
 function isPowerOfTwo (value: number): boolean {

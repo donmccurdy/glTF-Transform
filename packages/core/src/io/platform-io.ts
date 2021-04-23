@@ -1,4 +1,4 @@
-import { GLB_BUFFER } from '../constants';
+import { GLB_BUFFER, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
@@ -25,6 +25,7 @@ export abstract class PlatformIO {
 	protected _logger = Logger.DEFAULT_INSTANCE;
 	protected _extensions: typeof Extension[] = [];
 	protected _dependencies: {[key: string]: unknown} = {};
+	protected _vertexLayout = VertexLayout.INTERLEAVED;
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
 	public setLogger(logger: Logger): this {
@@ -47,6 +48,15 @@ export abstract class PlatformIO {
 		return this;
 	}
 
+	/**
+	 * Sets the vertex layout method used by this I/O instance. Defaults to
+	 * VertexLayout.INTERLEAVED.
+	 */
+	public setVertexLayout(layout: VertexLayout): this {
+		this._vertexLayout = layout;
+		return this;
+	}
+
 	/**********************************************************************************************
 	 * JSON.
 	 */
@@ -65,6 +75,7 @@ export abstract class PlatformIO {
 		if (options.isGLB && doc.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
+		options.vertexLayout = this._vertexLayout;
 		options.dependencies = {...this._dependencies, ...options.dependencies};
 		return GLTFWriter.write(doc, options);
 	}
@@ -136,6 +147,7 @@ export abstract class PlatformIO {
 			isGLB: true,
 			logger: this._logger,
 			dependencies: this._dependencies,
+			vertexLayout: this._vertexLayout,
 		});
 
 		const jsonText = JSON.stringify(json);

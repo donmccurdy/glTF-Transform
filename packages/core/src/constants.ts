@@ -97,3 +97,26 @@ export enum PropertyType {
 	TEXTURE = 'Texture',
 	TEXTURE_INFO = 'TextureInfo',
 }
+
+/** Vertex layout method. */
+export enum VertexLayout {
+	/**
+	 * Stores vertex attributes in a single buffer view per mesh primitive. Interleaving vertex
+	 * data may improve performance by reducing page-thrashing in GPU memory.
+	 */
+	INTERLEAVED = 'interleaved',
+
+	/**
+	 * Stores each vertex attribute in a separate buffer view. May decrease performance by causing
+	 * page-thrashing in GPU memory. Some 3D engines may prefer this layout, e.g. for simplicity.
+	 */
+	SEPARATE = 'separate',
+}
+
+/** Texture channels. */
+export enum TextureChannel {
+	R = 0x1000,
+	G = 0x0100,
+	B = 0x0010,
+	A = 0x0001,
+}

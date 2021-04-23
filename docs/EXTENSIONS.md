@@ -121,9 +121,9 @@ material.setExtension('KHR_materials_clearcoat', clearcoat);
 </details>
 
 <details>
-<summary><b>KHR_materials_ior</b> <mark><i>(experimental)</i></mark></summary>
+<summary><b>KHR_materials_ior</b></summary>
 
-- *Draft specification: [KHR_materials_ior](https://github.com/KhronosGroup/glTF/pull/1718)*
+- *Specification: [KHR_materials_ior](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_ior/)*
 - *Source: [packages/extensions/src/khr-materials-ior/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-ior)*
 
 The dielectric BRDF of the metallic-roughness material in glTF uses a fixed value of 1.5 for the
@@ -211,9 +211,9 @@ material.setExtension('KHR_materials_sheen', sheen);
 </details>
 
 <details>
-<summary><b>KHR_materials_specular</b> <mark><i>(experimental)</i></mark></summary>
+<summary><b>KHR_materials_specular</b></summary>
 
-- *Draft specification: [KHR_materials_specular](https://github.com/KhronosGroup/glTF/pull/1719)*
+- *Specification: [KHR_materials_specular](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_specular/)*
 - *Source: [packages/extensions/src/khr-materials-specular/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-specular)*
 
 `KHR_materials_specular` allows users to configure the strength of the specular reflection in the
@@ -356,7 +356,7 @@ A few notes about this extension:
 </details>
 
 <details>
-<summary><b>KHR_materials_volume</b> <mark><i>(experimental)</i></mark></summary>
+<summary><b>KHR_materials_volume</b></summary>
 
 - *Specification: [KHR_materials_volume](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_volume/)*
 - *Source: [packages/extensions/src/khr-materials-volume/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-volume)*

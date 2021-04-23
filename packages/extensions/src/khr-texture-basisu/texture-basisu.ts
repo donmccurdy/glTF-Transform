@@ -1,4 +1,4 @@
-import { read as readKTX } from 'ktx-parse';
+import { KTX2Model, read as readKTX } from 'ktx-parse';
 import { Extension, ImageUtils, ImageUtilsFormat, PropertyType, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
 import { KHR_TEXTURE_BASISU } from '../constants';
 
@@ -12,9 +12,9 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 	getChannels (buffer: ArrayBuffer): number {
 		const container = readKTX(new Uint8Array(buffer));
 		const dfd = container.dataFormatDescriptor[0];
-		if (dfd.colorModel === 163 /* ETC1S */) {
+		if (dfd.colorModel === KTX2Model.ETC1S) {
 			return (dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xF) === 15) ? 4 : 3;
-		} else if (dfd.colorModel === 166 /* UASTC */) {
+		} else if (dfd.colorModel === KTX2Model.UASTC) {
 			return (dfd.samples[0].channelID & 0xF) === 3 ? 4 : 3;
 		} else {
 			throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);

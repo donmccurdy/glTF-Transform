@@ -1,12 +1,24 @@
 # Changelog
 
-## v0.10 — 🚧 Unreleased
+## v0.11 — 🚧 Unreleased
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/11)
+
+**Features:**
+
+**Breaking changes:**
+
+## v0.10
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10)
 
 **Features:**
 
+- Add 'ktxfix' command in CLI. [#222](https://github.com/donmccurdy/glTF-Transform/pull/222)
+
 **Breaking changes:**
+
+- Material extensions now track RGBA channel usage of each texture, allowing improvements in KTX 2.0 support. [#221](https://github.com/donmccurdy/glTF-Transform/pull/221)
 
 ## v0.9
 
@@ -18,9 +30,11 @@
 - Add 'prune' transform. [#162](https://github.com/donmccurdy/glTF-Transform/pull/162)
 - Add 'resample' transform. [#158](https://github.com/donmccurdy/glTF-Transform/pull/158)
 - Add 'tangents' transform. [#175](https://github.com/donmccurdy/glTF-Transform/pull/175)
+- Add 'quantize' transform. [#59](https://github.com/donmccurdy/glTF-Transform/pull/59)
 - Add `KHR_materials_volume` extension. [#161](https://github.com/donmccurdy/glTF-Transform/pull/161)
 - Add `EXT_mesh_gpu_instancing` extension. [#115](https://github.com/donmccurdy/glTF-Transform/pull/115)
 - Add `--format={pretty,csv,md}` output options for CLI `inspect` command.
+- Add `--vertex-layout={interleaved,separate}` options for CLI output.
 
 **Breaking changes:**
 
@@ -28,6 +42,7 @@
 - Enum values moved from `GLTF.*` to static properties of the relevant class. Primitive enum values are now allowed.
 - Enable esModuleInterop in TS config.
 - 'dedup' transform takes a `propertyTypes: string[]` array, rather than boolean flags for each property type.
+- 'draco' CLI command options renamed (hyphenated) for consistency.
 
 ## v0.8
 

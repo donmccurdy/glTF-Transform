@@ -1,8 +1,8 @@
-import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture } from '@gltf-transform/core';
+import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, TypedArray } from '@gltf-transform/core';
 import { bounds } from './bounds';
 import { getGLPrimitiveCount } from './utils';
 
-export function inspect (doc: Document): Report {
+export function inspect (doc: Document): InspectReport {
 	return {
 		scenes: listScenes(doc),
 		meshes: listMeshes(doc),
@@ -13,7 +13,7 @@ export function inspect (doc: Document): Report {
 }
 
 /** List scenes. */
-function listScenes (doc): PropertyReport<SceneReport> {
+function listScenes (doc): InspectPropertyReport<InspectSceneReport> {
 	const scenes = doc.getRoot().listScenes().map((scene) => {
 		const root = scene.listChildren()[0];
 		const sceneBounds = bounds(scene);
@@ -28,34 +28,29 @@ function listScenes (doc): PropertyReport<SceneReport> {
 }
 
 /** List meshes. */
-function listMeshes (doc: Document): PropertyReport<MeshReport> {
-	const meshes: MeshReport[] = doc.getRoot().listMeshes().map((mesh) => {
+function listMeshes (doc: Document): InspectPropertyReport<InspectMeshReport> {
+	const meshes: InspectMeshReport[] = doc.getRoot().listMeshes().map((mesh) => {
 		const instances = mesh.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 		let glPrimitives = 0;
 		let verts = 0;
-		let indexed = 0;
-		const componentTypes: Set<string> = new Set();
-		const semantics: Set<string> = new Set();
+		const semantics = new Set<string>();
+		const meshIndices = new Set<string>();
 		const meshAccessors: Set<Accessor> = new Set();
 
 		mesh.listPrimitives().forEach((prim) => {
-			prim.listSemantics().forEach((s) => semantics.add(s));
-			for (const attr of prim.listAttributes()) {
-				componentTypes.add(attr.getArray().constructor.name);
+			for (const semantic of prim.listSemantics()) {
+				const attr = prim.getAttribute(semantic);
+				semantics.add(semantic + ':' + arrayToType(attr.getArray()));
 				meshAccessors.add(attr);
 			}
 			for (const targ of prim.listTargets()) {
-				for (const attr of targ.listAttributes()) {
-					componentTypes.add(attr.getArray().constructor.name);
-					meshAccessors.add(attr);
-				}
+				targ.listAttributes().forEach((attr) => meshAccessors.add(attr));
 			}
 			if (prim.getIndices()) {
 				const indices = prim.getIndices();
-				componentTypes.add(indices.getArray().constructor.name);
-				indexed++;
+				meshIndices.add(arrayToType(indices.getArray()));
 				meshAccessors.add(indices);
 			}
 			verts += prim.getAttribute('POSITION').getCount();
@@ -74,8 +69,7 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 			primitives: mesh.listPrimitives().length,
 			glPrimitives: glPrimitives,
 			vertices: verts,
-			indexed: mesh.listPrimitives().length === indexed,
-			components: Array.from(componentTypes).sort().map((s) => s.replace('Array', '')),
+			indices: Array.from(meshIndices).sort(),
 			attributes: Array.from(semantics).sort(),
 			instances: instances,
 			size: size,
@@ -86,8 +80,8 @@ function listMeshes (doc: Document): PropertyReport<MeshReport> {
 }
 
 /** List materials. */
-function listMaterials (doc: Document): PropertyReport<MaterialReport> {
-	const materials: MaterialReport[] = doc.getRoot().listMaterials().map((material) => {
+function listMaterials (doc: Document): InspectPropertyReport<InspectMaterialReport> {
+	const materials: InspectMaterialReport[] = doc.getRoot().listMaterials().map((material) => {
 		const instances = material.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
@@ -123,14 +117,13 @@ function listMaterials (doc: Document): PropertyReport<MaterialReport> {
 }
 
 /** List textures. */
-function listTextures (doc: Document): PropertyReport<TextureReport> {
-	const textures: TextureReport[] = doc.getRoot().listTextures().map((texture) => {
+function listTextures (doc: Document): InspectPropertyReport<InspectTextureReport> {
+	const textures: InspectTextureReport[] = doc.getRoot().listTextures().map((texture) => {
 		const instances = texture.listParents()
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
-		const slots = doc.getGraph().getLinks()
-			.filter((link) => link.getChild() === texture)
+		const slots = doc.getGraph().listParentLinks(texture)
 			.map((link) => link.getName())
 			.filter((name) => name !== 'texture');
 
@@ -152,8 +145,8 @@ function listTextures (doc: Document): PropertyReport<TextureReport> {
 }
 
 /** List animations. */
-function listAnimations (doc: Document): PropertyReport<AnimationReport> {
-	const animations: AnimationReport[] = doc.getRoot().listAnimations().map((anim) => {
+function listAnimations (doc: Document): InspectPropertyReport<InspectAnimationReport> {
+	const animations: InspectAnimationReport[] = doc.getRoot().listAnimations().map((anim) => {
 		let minTime = Infinity;
 		let maxTime = -Infinity;
 		anim.listSamplers().forEach((sampler) => {
@@ -186,41 +179,40 @@ function listAnimations (doc: Document): PropertyReport<AnimationReport> {
 	return {properties: animations};
 }
 
-interface Report {
-	scenes: PropertyReport<SceneReport>;
-	meshes: PropertyReport<MeshReport>;
-	materials: PropertyReport<MaterialReport>;
-	textures: PropertyReport<TextureReport>;
-	animations: PropertyReport<AnimationReport>;
+export interface InspectReport {
+	scenes: InspectPropertyReport<InspectSceneReport>;
+	meshes: InspectPropertyReport<InspectMeshReport>;
+	materials: InspectPropertyReport<InspectMaterialReport>;
+	textures: InspectPropertyReport<InspectTextureReport>;
+	animations: InspectPropertyReport<InspectAnimationReport>;
 }
 
-interface PropertyReport<T> {
+export interface InspectPropertyReport<T> {
 	properties: T[];
 	errors?: string[];
 	warnings?: string[];
 }
 
-interface SceneReport {
+export interface InspectSceneReport {
 	name: string;
 	rootName: string;
 	bboxMin: number[];
 	bboxMax: number[];
 }
 
-interface MeshReport {
+export interface InspectMeshReport {
 	name: string;
 	primitives: number;
-	indexed: boolean;
 	mode: string[];
 	vertices: number;
 	glPrimitives: number;
-	components: string[];
+	indices: string[];
 	attributes: string[];
 	instances: number;
 	size: number;
 }
 
-interface MaterialReport {
+export interface InspectMaterialReport {
 	name: string;
 	instances: number;
 	textures: string[];
@@ -228,7 +220,7 @@ interface MaterialReport {
 	doubleSided: boolean;
 }
 
-interface TextureReport {
+export interface InspectTextureReport {
 	name: string;
 	uri: string;
 	slots: string[];
@@ -239,7 +231,7 @@ interface TextureReport {
 	gpuSize: number;
 }
 
-interface AnimationReport {
+export interface InspectAnimationReport {
 	name: string;
 	channels: number;
 	samplers: number;
@@ -264,4 +256,8 @@ function toPrecision(v: number[]): number[] {
 		if (v[i].toFixed) v[i] = Number(v[i].toFixed(5));
 	}
 	return v;
+}
+
+function arrayToType(array: TypedArray): string {
+	return array.constructor.name.replace('Array', '').toLowerCase();
 }

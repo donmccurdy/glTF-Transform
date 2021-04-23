@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { NodeIO } from '../../dist/core';
+import { NodeIO } from '../../';
 
 test('@gltf-transform/core::io | common', t => {
 	t.throws(() => new NodeIO().readJSON({

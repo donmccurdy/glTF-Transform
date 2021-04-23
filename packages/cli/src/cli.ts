@@ -4,11 +4,11 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType } from '@gltf-transform/core';
+import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
+import { AOOptions, CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, ao, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld } from '@gltf-transform/lib';
 import { InspectFormat, inspect } from './inspect';
-import { DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, merge, toktx, unlit } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -206,6 +206,10 @@ compression and instancing, to be more effective.
 		validator: program.BOOLEAN,
 		default: true,
 	})
+	.option('--meshes <meshes>', 'Remove duplicate meshes', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.option('--textures <textures>', 'Remove duplicate textures', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -213,6 +217,7 @@ compression and instancing, to be more effective.
 	.action(({args, options, logger}) => {
 		const propertyTypes: string[] = [];
 		if (options.accessors) propertyTypes.push(PropertyType.ACCESSOR);
+		if (options.meshes) propertyTypes.push(PropertyType.MESH);
 		if (options.textures) propertyTypes.push(PropertyType.TEXTURE);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(dedup({propertyTypes}));
@@ -222,7 +227,7 @@ compression and instancing, to be more effective.
 
 // PRUNE
 program
-	.command('prune', 'Removes unreferenced properties from the file')
+	.command('prune', 'Remove unreferenced properties from the file')
 	.help(`
 Removes properties from the file if they are not referenced by a Scene. Helpful
 when cleaning up after complex workflows or a faulty exporter. This function
@@ -269,9 +274,9 @@ program.command('', '\n\n🌍 SCENE ──────────────�
 
 // CENTER
 program
-	.command('center', 'Centers the scene at the origin, or above/below it')
+	.command('center', 'Center the scene at the origin, or above/below it')
 	.help(`
-Centers the scene at the origin, or above/below it. When loading a model into
+Center the scene at the origin, or above/below it. When loading a model into
 a larger scene, or into an augmented reality context, it's often best to ensure
 the model's pivot is centered beneath the object. For objects meant to be
 attached a surface, like a ceiling fan, the pivot may be located above instead.
@@ -289,7 +294,7 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 
 // INSTANCE
 program
-	.command('instance', 'Creates GPU instances from shared Mesh references')
+	.command('instance', 'Create GPU instances from shared Mesh references')
 	.help(`
 For meshes reused by more than one node in a scene, this command creates an
 EXT_mesh_gpu_instancing extension to aid with GPU instancing. In engines that
@@ -341,38 +346,92 @@ given --decodeSpeed.`.trim())
 		validator: ['edgebreaker', 'sequential'],
 		default: 'edgebreaker',
 	})
-	.option('--encodeSpeed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
+	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
-		default: 5,
+		default: DRACO_DEFAULTS.encodeSpeed,
 	})
-	.option('--decodeSpeed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
+	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
 		validator: program.NUMBER,
-		default: 5,
+		default: DRACO_DEFAULTS.decodeSpeed,
 	})
-	.option('--quantizePosition <bits>', 'Quantization bits for POSITION, 1-16.', {
+	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
 		validator: program.NUMBER,
-		default: 14,
+		default: DRACO_DEFAULTS.quantizePosition,
 	})
-	.option('--quantizeNormal <bits>', 'Quantization bits for NORMAL, 1-16.', {
+	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
 		validator: program.NUMBER,
-		default: 10,
+		default: DRACO_DEFAULTS.quantizeNormal,
 	})
-	.option('--quantizeColor <bits>', 'Quantization bits for COLOR_*, 1-16.', {
+	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
 		validator: program.NUMBER,
-		default: 8,
+		default: DRACO_DEFAULTS.quantizeColor,
 	})
-	.option('--quantizeTexcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
+	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
 		validator: program.NUMBER,
-		default: 12,
+		default: DRACO_DEFAULTS.quantizeTexcoord,
 	})
-	.option('--quantizeGeneric <bits>', 'Quantization bits for other attributes, 1-16.', {
+	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
 		validator: program.NUMBER,
-		default: 12,
+		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
 	.action(({args, options, logger}) =>
 		// Include a lossless weld — Draco requires indices.
 		Session.create(io, logger, args.input, args.output)
 			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
+	);
+
+// QUANTIZE
+program
+	.command('quantize', 'Quantize mesh vertex attributes')
+	.help(`
+Quantization is a simple type of compression taking 32-bit float vertex
+attributes and storing them as 16-bit or 8-bit integers. A quantization factor
+restoring the original value (with some error) is applied on the GPU, although
+node scales and positions may also be changed to account for the quantization.
+
+Quantized vertex attributes require less space, both on disk and on the GPU.
+Most vertex attribute types can be quantized from 8–16 bits, but are always
+stored in 8- or 16-bit accessors. While a value quantized to 12 bits still
+occupies 16 bits on disk, gzip (or other lossless compression) will be more
+effective on values quantized to lower bit depths. As a result, the default
+bit depths used by this command are generally between 8 and 16 bits.
+
+Bit depths for indices and JOINTS_* are determined automatically.
+
+Requires KHR_mesh_quantization support.`.trim())
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizePosition,
+	})
+	.option('--quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeNormal,
+	})
+	.option('--quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeTexcoord,
+	})
+	.option('--quantize-color <bits>', 'Precision for COLOR_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeColor,
+	})
+	.option('--quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeWeight,
+	})
+	.option('--quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
+		validator: program.NUMBER,
+		default: QUANTIZE_DEFAULTS.quantizeGeneric,
+	})
+	.option('--exclude-attributes <attributes>', 'Attributes (e.g. "COLOR_0") to exclude.', {
+		validator: program.ARRAY,
+		default: QUANTIZE_DEFAULTS.excludeAttributes,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(quantize(options))
 	);
 
 // WELD
@@ -413,7 +472,7 @@ paricular software application.
 
 // TANGENTS
 program
-	.command('tangents', 'Generates MikkTSpace vertex tangents')
+	.command('tangents', 'Generate MikkTSpace vertex tangents')
 	.help(`
 Generates MikkTSpace vertex tangents.
 
@@ -671,32 +730,83 @@ for textures where the quality is sufficient.`.trim()),
 		{validator: program.BOOLEAN}
 	)
 	.option(
-		'--rdo-quality <uastc_rdo_q>',
+		'--rdo <uastc_rdo_l>',
 		'Enable UASTC RDO post-processing and optionally set UASTC RDO'
-		+ ' quality scalar to <quality>.  Lower values yield higher'
+		+ ' quality scalar (lambda).  Lower values yield higher'
 		+ ' quality/larger LZ compressed files, higher values yield lower'
-		+ ' quality/smaller LZ compressed files. A good range to try is [.2-4].'
-		+ ' Full range is .001 to 10.0.',
-		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoQuality}
+		+ ' quality/smaller LZ compressed files. A good range to try is [.25, 10].'
+		+ ' For normal maps, try [.25, .75]. Full range is [.001, 10.0].',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdo}
 	)
 	.option(
-		'--rdo-dictsize <uastc_rdo_d>',
+		'--rdo-dictionary-size <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower'
-		+ ' values=faster, but give less compression. Possible range is 256'
-		+ ' to 65536.',
-		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictsize}
+		+ ' values=faster, but give less compression. Possible range is [256, 65536].',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize}
+	)
+	.option(
+		'--rdo-block-scale <uastc_rdo_b>',
+		'Set UASTC RDO max smooth block error scale. Range is [1.0, 300.0].'
+		+ ' Default is 10.0, 1.0 is disabled. Larger values suppress more'
+		+ ' artifacts (and allocate more bits) on smooth blocks.',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale}
+	)
+	.option(
+		'--rdo-std-dev <uastc_rdo_s>',
+		'Set UASTC RDO max smooth block standard deviation. Range is'
+		+ ' [.01, 65536.0]. Default is 18.0. Larger values expand the range'
+		+ ' of blocks considered smooth.',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.rdoStdDev}
+	)
+	.option(
+		'--rdo-multithreading <uastc_rdo_m>',
+		'Enable RDO multithreading (slightly lower compression, non-deterministic).',
+		{validator: program.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading}
 	)
 	.option(
 		'--zstd <compressionLevel>',
 		'Supercompress the data with Zstandard.'
-		+ ' Compression level range is 1 - 22, or 0 is uncompressed.'
-		+ ' Lower values=faster but give less compression. Values above 20'
-		+ ' should be used with caution as they require more memory.',
-		{validator: program.NUMBER, default: 18}
+		+ ' Compression level range is [1, 22], or 0 is uncompressed.'
+		+ ' Lower values decode faster but offer less compression. Values above'
+		+ ' 20 should be used with caution, requiring more memory to decompress:'
+		+ '\n\n'
+		// Sources:
+		// - https://news.ycombinator.com/item?id=13814475
+		// - https://github.com/facebook/zstd/blob/15a7a99653c78a57d1ccbf5c5b4571e62183bf4f/lib/compress/zstd_compress.c#L3250
+		+ 'Level | Window Size |'
+		+ '\n——————|—————————————|'
+		+ '\n1     | 256 KB      |'
+		+ '\n…     | …           |'
+		+ '\n10    | 2 MB        |'
+		+ '\n…     | …           |'
+		+ '\n18    | 8 MB        |'
+		+ '\n19    | 8 MB        |'
+		+ '\n20    | 34 MB       |'
+		+ '\n21    | 67 MB       |'
+		+ '\n22    | 134 MB      |',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.zstd}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(toktx({mode: Mode.UASTC, ...options}))
+	);
+
+// KTXFIX
+program
+	.command('ktxfix', 'Fixes common issues in KTX texture metadata')
+	.help(`
+Certain KTX texture metadata was written incorrectly in early (pre-release)
+software. In particular, viewers may misinterpret color primaries as sRGB
+incorrectly when a texture exhibits this issue.
+
+This command determines correct color primaries based on usage in the glTF
+file, and updates the KTX texture accordingly. The change is lossless, and
+affects only the container metadata.`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(ktxfix())
 	);
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
@@ -763,6 +873,14 @@ so this workflow is not a replacement for video playback.
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
 
+program.option('--vertex-layout <layout>', 'Vertex layout method', {
+	global: true,
+	default: VertexLayout.INTERLEAVED,
+	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
+	action: ({options}) => {
+		io.setVertexLayout(options.vertexLayout as VertexLayout);
+	},
+});
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 

@@ -1,12 +1,13 @@
 {
   "name": "@gltf-transform/lib",
-  "version": "0.9.3",
+  "version": "0.10.2",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Library of functions built on the core glTF-Transform API",
   "main": "dist/lib.js",
   "module": "dist/lib.modern.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "dist": "microbundle --format modern,cjs",
     "watch": "microbundle watch --format modern,cjs"
@@ -21,15 +22,13 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.9.3",
-    "@gltf-transform/extensions": "^0.9.3",
-    "@types/ndarray": "^1.0.8",
+    "@gltf-transform/core": "^0.10.2",
+    "@gltf-transform/extensions": "^0.10.2",
     "geo-ambient-occlusion": "^3.0.2",
-    "get-pixels": "^3.3.2",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
-    "regl": "^2.0.1",
-    "save-pixels": "^2.3.4"
+    "ndarray-pixels": "^0.1.5",
+    "regl": "^2.1.0"
   },
   "files": [
     "dist/",
@@ -38,7 +37,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "1ebf68281c043a7bf76b9d1075c6f2913fe2e996",
+  "gitHead": "29984ac49e9435ecff2fc4ba5350803c4c5efa31",
   "publishConfig": {
     "access": "public"
   }

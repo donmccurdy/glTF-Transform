@@ -1,11 +1,14 @@
-import { PropertyType, vec3, vec4 } from '../constants';
+import { PropertyType, TextureChannel, vec3, vec4 } from '../constants';
 import { GraphChild, Link } from '../graph/index';
 import { GLTF } from '../types/gltf';
 import { ColorUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
+import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
+
+const { R, G, B, A } = TextureChannel;
 
 /**
  * # Material
@@ -78,12 +81,12 @@ export class Material extends ExtensibleProperty {
 	private _metallicFactor = 1;
 
 	/** @hidden Base color / albedo texture. */
-	@GraphChild private baseColorTexture: Link<this, Texture> | null = null;
+	@GraphChild private baseColorTexture: TextureLink | null = null;
 	@GraphChild private baseColorTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('baseColorTextureInfo', this, new TextureInfo(this.graph));
 
 	/** @hidden Emissive texture. */
-	@GraphChild private emissiveTexture: Link<this, Texture> | null = null;
+	@GraphChild private emissiveTexture: TextureLink | null = null;
 	@GraphChild private emissiveTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('emissiveTextureInfo', this, new TextureInfo(this.graph));
 
@@ -92,7 +95,7 @@ export class Material extends ExtensibleProperty {
 	 * so PNG files are preferred.
 	 * @hidden
 	 */
-	@GraphChild private normalTexture: Link<this, Texture> | null = null;
+	@GraphChild private normalTexture: TextureLink | null = null;
 	@GraphChild private normalTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('normalTextureInfo', this, new TextureInfo(this.graph));
 
@@ -101,7 +104,7 @@ export class Material extends ExtensibleProperty {
 	 * texture to be packed with `metallicRoughnessTexture`, optionally.
 	 * @hidden
 	 */
-	@GraphChild private occlusionTexture: Link<this, Texture> | null = null;
+	@GraphChild private occlusionTexture: TextureLink | null = null;
 	@GraphChild private occlusionTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('occlusionTextureInfo', this, new TextureInfo(this.graph));
 
@@ -111,7 +114,7 @@ export class Material extends ExtensibleProperty {
 	 * `occlusionTexture`, optionally.
 	 * @hidden
 	*/
-	@GraphChild private metallicRoughnessTexture: Link<this, Texture> | null = null;
+	@GraphChild private metallicRoughnessTexture: TextureLink | null = null;
 	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('metallicRoughnessTextureInfo', this, new TextureInfo(this.graph));
 
@@ -307,7 +310,8 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture | null): this {
-		this.baseColorTexture = this.graph.link('baseColorTexture', this, texture);
+		this.baseColorTexture =
+			this.graph.linkTexture('baseColorTexture', R | G | B | A, this, texture);
 		return this;
 	}
 
@@ -364,7 +368,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture | null): this {
-		this.emissiveTexture = this.graph.link('emissiveTexture', this, texture);
+		this.emissiveTexture = this.graph.linkTexture('emissiveTexture', R | G | B, this, texture);
 		return this;
 	}
 
@@ -407,7 +411,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
 	public setNormalTexture(texture: Texture | null): this {
-		this.normalTexture = this.graph.link('normalTexture', this, texture);
+		this.normalTexture = this.graph.linkTexture('normalTexture', R | G | B, this, texture);
 		return this;
 	}
 
@@ -450,7 +454,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
 	public setOcclusionTexture(texture: Texture | null): this {
-		this.occlusionTexture = this.graph.link('occlusionTexture', this, texture);
+		this.occlusionTexture = this.graph.linkTexture('occlusionTexture', R, this, texture);
 		return this;
 	}
 
@@ -511,7 +515,8 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
 	public setMetallicRoughnessTexture(texture: Texture | null): this {
-		this.metallicRoughnessTexture = this.graph.link('metallicRoughnessTexture', this, texture);
+		this.metallicRoughnessTexture =
+			this.graph.linkTexture('metallicRoughnessTexture', G | B, this, texture);
 		return this;
 	}
 }

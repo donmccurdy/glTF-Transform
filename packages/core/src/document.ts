@@ -157,7 +157,7 @@ export class Document {
 	}
 
 	/**
-	 * Applies a series of modifications to this document. Each transformation is synchronous,
+	 * Applies a series of modifications to this document. Each transformation is asynchronous,
 	 * takes the {@link Document} as input, and returns nothing. Transforms are applied in the
 	 * order given, which may affect the final result.
 	 *

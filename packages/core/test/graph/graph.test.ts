@@ -84,3 +84,28 @@ test('@gltf-transform/core::graph | prevents cross-graph linking', t => {
 	t.throws(() => rootA.addNode(nodeB), 'prevents linking node from another graph, unused');
 	t.end();
 });
+
+test('@gltf-transform/core::graph | list connections', t => {
+	const graph = new Graph();
+	const root = new TestNode(graph);
+	const node1 = new TestNode(graph);
+	const node2 = new TestNode(graph);
+
+	node1.addNode(node2);
+	root.addNode(node1);
+
+	t.equal(graph.getLinks().length, 2, 'getLinks()');
+	t.deepEqual(
+		graph.listParentLinks(node1).map(link => link.getParent()), [root], 'listParentLinks(A)'
+	);
+	t.deepEqual(
+		graph.listChildLinks(node1).map(link => link.getChild()), [node2], 'listChildLinks(A)'
+	);
+	t.deepEqual(
+		graph.listParentLinks(node2).map(link => link.getParent()), [node1], 'listParentLinks(B)'
+	);
+	t.deepEqual(
+		graph.listChildLinks(node2).map(link => link.getChild()), [], 'listParentLinks(B)'
+	);
+	t.end();
+});

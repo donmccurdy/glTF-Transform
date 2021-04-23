@@ -26,9 +26,10 @@ export class ColorUtils {
 	 */
 	static hexToFactor<T = vec3 | vec4>(hex: number, target: T): T {
 		hex = Math.floor( hex );
-		target[0] = ( hex >> 16 & 255 ) / 255;
-		target[1] = ( hex >> 8 & 255 ) / 255;
-		target[2] = ( hex & 255 ) / 255;
+		const _target = target as unknown as vec3;
+		_target[0] = ( hex >> 16 & 255 ) / 255;
+		_target[1] = ( hex >> 8 & 255 ) / 255;
+		_target[2] = ( hex & 255 ) / 255;
 		return this.convertSRGBToLinear<T>(target, target);
 	}
 
@@ -47,10 +48,12 @@ export class ColorUtils {
 	 * @typeParam T vec3 or vec4 linear components.
 	 */
 	static convertSRGBToLinear<T = vec3 | vec4>(source: T, target: T): T {
+		const _source = source as unknown as vec3;
+		const _target = target as unknown as vec3;
 		for (let i = 0 ; i < 3; i++) {
-			target[i] = ( source[i] < 0.04045 )
-				? source[i] * 0.0773993808
-				: Math.pow( source[i] * 0.9478672986 + 0.0521327014, 2.4 );
+			_target[i] = ( _source[i] < 0.04045 )
+				? _source[i] * 0.0773993808
+				: Math.pow( _source[i] * 0.9478672986 + 0.0521327014, 2.4 );
 		}
 		return target;
 	}
@@ -60,10 +63,12 @@ export class ColorUtils {
 	 * @typeParam T vec3 or vec4 linear components.
 	 */
 	static convertLinearToSRGB<T = vec3 | vec4>(source: T, target: T): T {
+		const _source = source as unknown as vec3;
+		const _target = target as unknown as vec3;
 		for (let i = 0; i < 3; i++) {
-			target[i] = ( source[i] < 0.0031308 )
-				? source[i] * 12.92
-				: 1.055 * ( Math.pow( source[i], 0.41666 ) ) - 0.055;
+			_target[i] = ( _source[i] < 0.0031308 )
+				? _source[i] * 12.92
+				: 1.055 * ( Math.pow( _source[i], 0.41666 ) ) - 0.055;
 		}
 		return target;
 	}
