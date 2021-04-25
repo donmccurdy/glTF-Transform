@@ -1,4 +1,4 @@
-import { Accessor, Primitive } from '@gltf-transform/core';
+import { Accessor, GLTF, Primitive, TypedArray } from '@gltf-transform/core';
 import { DRACO } from '../types/draco3d';
 
 export let encoderModule: DRACO.EncoderModule;
@@ -68,13 +68,14 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	for (const semantic of prim.listSemantics()) {
 		const attribute = prim.getAttribute(semantic)!;
 		const attributeEnum = getAttributeEnum(semantic);
-		const addAttributeFn = ADD_ATTRIBUTE_FN[attribute.getComponentType()];
-		const attributeID: number = builder[addAttributeFn](
+		const attributeID: number = addAttribute(
+			builder,
+			attribute.getComponentType(),
 			mesh,
 			encoderModule[attributeEnum],
 			attribute.getCount(),
 			attribute.getElementSize(),
-			attribute.getArray(),
+			attribute.getArray()
 		);
 
 		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
@@ -137,11 +138,27 @@ function getAttributeEnum(semantic: string): AttributeEnum {
 	return AttributeEnum.GENERIC;
 }
 
-const ADD_ATTRIBUTE_FN = {
-	[Accessor.ComponentType.UNSIGNED_BYTE]: 'AddUInt8Attribute',
-	[Accessor.ComponentType.BYTE]: 'AddInt8Attribute',
-	[Accessor.ComponentType.UNSIGNED_SHORT]: 'AddUInt16Attribute',
-	[Accessor.ComponentType.SHORT]: 'AddInt16Attribute',
-	[Accessor.ComponentType.UNSIGNED_INT]: 'AddUInt32Attribute',
-	[Accessor.ComponentType.FLOAT]: 'AddFloatAttribute',
-};
+function addAttribute(
+	builder: DRACO.MeshBuilder,
+	componentType: GLTF.AccessorComponentType,
+	mesh: DRACO.Mesh,
+	attribute: number,
+	count: number,
+	itemSize: number,
+	array: TypedArray
+): number {
+	switch (componentType) {
+		case Accessor.ComponentType.UNSIGNED_BYTE:
+			return builder.AddUInt8Attribute(mesh, attribute, count, itemSize, array);
+		case Accessor.ComponentType.BYTE:
+			return builder.AddInt8Attribute(mesh, attribute, count, itemSize, array);
+		case Accessor.ComponentType.UNSIGNED_SHORT:
+			return builder.AddUInt16Attribute(mesh, attribute, count, itemSize, array);
+		case Accessor.ComponentType.SHORT:
+			return builder.AddInt16Attribute(mesh, attribute, count, itemSize, array);
+		case Accessor.ComponentType.UNSIGNED_INT:
+			return builder.AddUInt32Attribute(mesh, attribute, count, itemSize, array);
+		case Accessor.ComponentType.FLOAT:
+			return builder.AddFloatAttribute(mesh, attribute, count, itemSize, array);
+	}
+}

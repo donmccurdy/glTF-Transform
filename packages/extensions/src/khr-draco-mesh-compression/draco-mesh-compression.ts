@@ -175,7 +175,7 @@ export class DracoMeshCompression extends Extension {
 	}
 
 	public write(context: WriterContext): this {
-		const dracoContext: DracoWriterContext = context.extensionData[NAME];
+		const dracoContext: DracoWriterContext = context.extensionData[NAME] as DracoWriterContext;
 
 		for (const mesh of this.doc.getRoot().listMeshes()) {
 			const meshDef = context.jsonDoc.json.meshes[context.meshIndexMap.get(mesh)];

@@ -83,42 +83,42 @@ export declare module DRACO {
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 		AddInt8Attribute(
 			mesh: Mesh,
 			attribute: number,
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 		AddUInt16Attribute(
 			mesh: Mesh,
 			attribute: number,
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 		AddInt16Attribute(
 			mesh: Mesh,
 			attribute: number,
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 		AddUInt32Attribute(
 			mesh: Mesh,
 			attribute: number,
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 		AddFloatAttribute(
 			mesh: Mesh,
 			attribute: number,
 			count: number,
 			itemSize: number,
 			array: TypedArray
-		): void;
+		): number;
 	}
 	interface Attribute {
 		num_components: () => number;

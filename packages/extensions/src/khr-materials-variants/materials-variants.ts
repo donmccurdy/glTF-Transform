@@ -6,6 +6,23 @@ import { Variant } from './variant';
 
 const NAME = KHR_MATERIALS_VARIANTS;
 
+interface VariantsRootDef {
+	variants: VariantDef[];
+}
+
+interface VariantDef {
+	name?: string;
+}
+
+interface VariantPrimDef {
+	mappings: VariantMappingDef[];
+}
+
+interface VariantMappingDef {
+	material: number;
+	variants: number[];
+}
+
 /** Documentation in {@link EXTENSIONS.md}. */
 export class MaterialsVariants extends Extension {
 	public readonly extensionName = NAME;
@@ -34,7 +51,8 @@ export class MaterialsVariants extends Extension {
 		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
 		// Read all top-level variant names.
-		const variantDefs = jsonDoc.json.extensions[NAME]['variants'] || [];
+		const variantsRootDef = jsonDoc.json.extensions[NAME] as VariantsRootDef;
+		const variantDefs = variantsRootDef.variants || [];
 		const variants = variantDefs
 			.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
 
@@ -51,7 +69,8 @@ export class MaterialsVariants extends Extension {
 
 				const mappingList = this.createMappingList();
 
-				for (const mappingDef of primDef.extensions[NAME]['mappings']) {
+				const variantPrimDef = primDef.extensions[NAME] as VariantPrimDef;
+				for (const mappingDef of variantPrimDef.mappings) {
 					const mapping = this.createMapping();
 
 					if (mappingDef.material !== undefined) {
@@ -98,14 +117,14 @@ export class MaterialsVariants extends Extension {
 				const mappingList = prim.getExtension<MappingList>(NAME);
 
 				const mappingDefs = mappingList.listMappings().map((mapping) => {
-					const mappingDef = context.createPropertyDef(mapping);
+					const mappingDef = context.createPropertyDef(mapping) as VariantMappingDef;
 
 					if (mapping.getMaterial()) {
-						mappingDef['material'] =
+						mappingDef.material =
 							context.materialIndexMap.get(mapping.getMaterial());
 					}
 
-					mappingDef['variants'] = mapping.listVariants()
+					mappingDef.variants = mapping.listVariants()
 						.map((variant) => variantIndexMap.get(variant));
 
 					return mappingDef;
