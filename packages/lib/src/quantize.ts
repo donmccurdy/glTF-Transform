@@ -1,4 +1,4 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, vec2, vec3 } from '@gltf-transform/core';
+import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, vec3 } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
 
 const NAME = 'quantize';
@@ -102,7 +102,7 @@ function quantizePrimitive(
 
 		// Write quantization transform for position data into mesh parents.
 		if (semantic === 'POSITION') {
-			for (let i = 0, el = [], il = attribute.getCount(); i < il; i++) {
+			for (let i = 0, el: vec3 = [0, 0, 0], il = attribute.getCount(); i < il; i++) {
 				attribute.setElement(i, nodeRemap(attribute.getElement(i, el)));
 			}
 		}
@@ -127,13 +127,13 @@ interface NodeTransform {
 }
 
 /** Computes total min and max of all Accessors in a list. */
-function flatBounds<T = vec2 | vec3>(targetMin: T, targetMax: T, accessors: Accessor[]): void {
+function flatBounds(targetMin: number[], targetMax: number[], accessors: Accessor[]): void {
 	const elementSize = accessors[0].getElementSize();
 	for (let i = 0; i < elementSize; i++) targetMin[i] = Infinity;
 	for (let i = 0; i < elementSize; i++) targetMax[i] = -Infinity;
 
-	const tmpMin = [];
-	const tmpMax = [];
+	const tmpMin: number[] = [];
+	const tmpMax: number[] = [];
 
 	for (const accessor of accessors) {
 		accessor.getMinNormalized(tmpMin);
@@ -154,7 +154,7 @@ function getNodeTransform(mesh: Mesh): NodeTransform {
 
 	const positionMin = [Infinity, Infinity, Infinity] as vec3;
 	const positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
-	flatBounds<vec3>(positionMin, positionMax, positions);
+	flatBounds(positionMin, positionMax, positions);
 	const nodeRemap = (v: number[]) => [
 		(-1) + (1 - (-1)) * (v[0] - positionMin[0]) / (positionMax[0] - positionMin[0]),
 		(-1) + (1 - (-1)) * (v[1] - positionMin[1]) / (positionMax[1] - positionMin[1]),
@@ -225,7 +225,7 @@ function quantizeAttribute(
 	const lo = storageBits - quantBits;
 	const hi = 2 * quantBits - storageBits;
 
-	for (let i = 0, di = 0, el = []; i < attribute.getCount(); i++) {
+	for (let i = 0, di = 0, el: number[] = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
 		for (let j = 0; j < el.length; j++) {
 			// Map [0.0 ... 1.0] to [0 ... scale].

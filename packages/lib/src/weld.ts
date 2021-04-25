@@ -74,7 +74,7 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 		const index = srcIndices ? srcIndices.getScalar(i) : i;
 
 		const hashElements: number[] = [];
-		const el = [];
+		const el: number[] = [];
 		for (const attribute of prim.listAttributes()) {
 			for (let j = 0; j < attribute.getElementSize(); j++) {
 				hashElements.push(~ ~ (attribute.getElement(index, el)[j] * shiftFactor));

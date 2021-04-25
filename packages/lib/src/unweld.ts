@@ -71,7 +71,7 @@ function unweldAttribute(
 		new ArrayCtor(indices.getCount() * srcAttribute.getElementSize())
 	);
 
-	const el = [];
+	const el: number[] = [];
 	for (let i = 0; i < indices.getCount(); i++) {
 		dstAttribute.setElement(i, srcAttribute.getElement(indices.getScalar(i), el));
 	}

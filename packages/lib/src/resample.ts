@@ -58,7 +58,7 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	const tolerance = options.tolerance as number;
 
 	const lastIndex = input.getCount() - 1;
-	const tmp = [];
+	const tmp: number[] = [];
 
 	let writeIndex = 1;
 

@@ -13,7 +13,7 @@ export function inspect (doc: Document): InspectReport {
 }
 
 /** List scenes. */
-function listScenes (doc): InspectPropertyReport<InspectSceneReport> {
+function listScenes (doc: Document): InspectPropertyReport<InspectSceneReport> {
 	const scenes = doc.getRoot().listScenes().map((scene) => {
 		const root = scene.listChildren()[0];
 		const sceneBounds = bounds(scene);

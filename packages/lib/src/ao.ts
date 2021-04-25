@@ -61,7 +61,7 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 		.setImage(TEXTURE_DATA)
 		.setMimeType(TEXTURE_MIME_TYPE);
 
-		let regl;
+		let regl: REGL.Regl;
 		if (options.gl) {
 			const gl = options.gl(resolution, resolution);
 			gl.getExtension('OES_texture_float');
@@ -103,7 +103,7 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 			.setType(Accessor.Type.VEC2);
 
 			primitive.setAttribute('TEXCOORD_1', uv2);
-			if (!primitive.getAttribute['TEXCOORD_0']) {
+			if (!primitive.getAttribute('TEXCOORD_0')) {
 				primitive.setAttribute('TEXCOORD_0', uv2);
 			}
 
