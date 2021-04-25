@@ -4,13 +4,22 @@ import { Light } from './light';
 
 const NAME = KHR_LIGHTS_PUNCTUAL;
 
+interface LightsPunctualRootDef {
+	lights?: LightDef[];
+}
+
+interface LightsPunctualNodeDef {
+	light: number;
+}
+
 interface LightDef {
+	name?: string;
 	color?: vec3;
 	intensity?: number;
 	range?: number;
 	innerConeAngle?: number;
 	outerConeAngle?: number;
-	type: 'spot' | 'cone' | 'directional'
+	type: 'spot' | 'point' | 'directional'
 }
 
 /** Documentation in {@link EXTENSIONS.md}. */
@@ -27,7 +36,8 @@ export class LightsPunctual extends Extension {
 
 		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
-		const lightDefs = jsonDoc.json.extensions[NAME]['lights'] || [] as LightDef[];
+		const rootDef = jsonDoc.json.extensions[NAME] as LightsPunctualRootDef;
+		const lightDefs = rootDef.lights || [] as LightDef[];
 		const lights = lightDefs.map((lightDef) => {
 			const light = this.createLight()
 				.setName(lightDef.name || '')
@@ -49,7 +59,8 @@ export class LightsPunctual extends Extension {
 
 		jsonDoc.json.nodes.forEach((nodeDef, nodeIndex) => {
 			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
-			context.nodes[nodeIndex].setExtension(NAME, lights[nodeDef.extensions[NAME]['light']]);
+			const lightNodeDef = nodeDef.extensions[NAME] as LightsPunctualNodeDef;
+			context.nodes[nodeIndex].setExtension(NAME, lights[lightNodeDef.light]);
 		});
 
 		return this;

@@ -27,7 +27,7 @@ export class WriterContext {
 	public readonly imageBufferViews: ArrayBuffer[] = [];
 	public readonly otherBufferViews = new Map<Buffer, ArrayBuffer[]>();
 	public readonly otherBufferViewsIndexMap = new Map<ArrayBuffer, number>();
-	public readonly extensionData = {};
+	public readonly extensionData: {[key: string]: unknown} = {};
 
 	public bufferURIGenerator: UniqueURIGenerator;
 	public imageURIGenerator: UniqueURIGenerator;

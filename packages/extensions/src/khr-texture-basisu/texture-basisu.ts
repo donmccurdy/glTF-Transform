@@ -4,6 +4,10 @@ import { KHR_TEXTURE_BASISU } from '../constants';
 
 const NAME = KHR_TEXTURE_BASISU;
 
+interface BasisuDef {
+	source: number;
+}
+
 class KTX2ImageUtils implements ImageUtilsFormat {
 	getSize (buffer: ArrayBuffer): vec2 {
 		const container = readKTX(new Uint8Array(buffer));
@@ -57,7 +61,8 @@ export class TextureBasisu extends Extension {
 	public preread(context: ReaderContext): this {
 		context.jsonDoc.json.textures.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
-				textureDef.source = textureDef.extensions[NAME]['source'];
+				const basisuDef = textureDef.extensions[NAME] as BasisuDef;
+				textureDef.source = basisuDef.source;
 			}
 		});
 		return this;
