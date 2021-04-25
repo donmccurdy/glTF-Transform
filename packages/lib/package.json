@@ -37,7 +37,7 @@
     "package.json",
     "package-lock.json"
   ],
-  "gitHead": "29984ac49e9435ecff2fc4ba5350803c4c5efa31",
+  "gitHead": "9f80b1a7b25076e9b6d1dd5c4702daa3ce1b67ae",
   "publishConfig": {
     "access": "public"
   }
