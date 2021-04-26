@@ -50,7 +50,8 @@ function partitionMeshes (doc: Document, logger: Logger, options: PartitionOptio
 
 			mesh.listPrimitives()
 				.forEach((primitive) => {
-					if (primitive.getIndices()) primitive.getIndices().setBuffer(buffer);
+					const indices = primitive.getIndices();
+					if (indices) indices.setBuffer(buffer);
 					primitive.listAttributes()
 						.forEach((attribute) => attribute.setBuffer(buffer));
 					primitive.listTargets()
@@ -81,8 +82,10 @@ function partitionAnimations (doc: Document, logger: Logger, options: PartitionO
 
 			anim.listSamplers()
 				.forEach((sampler) => {
-					sampler.getInput().setBuffer(buffer);
-					sampler.getOutput().setBuffer(buffer);
+					const input = sampler.getInput();
+					const output = sampler.getOutput();
+					if (input) input.setBuffer(buffer);
+					if (output) output.setBuffer(buffer);
 				});
 		});
 }

@@ -34,9 +34,9 @@ export function weld (options: WeldOptions = DEFAULT_OPTIONS): Transform {
 /**  In-place weld, adds indices without changing number of vertices. */
 function weldOnly (doc: Document, prim: Primitive): void {
 	if (prim.getIndices()) return;
-	const position = prim.getAttribute('POSITION');
+	const buffer = prim.listAttributes()[0].getBuffer();
 	const indices = doc.createAccessor()
-		.setBuffer(position.getBuffer())
+		.setBuffer(buffer)
 		.setType(Accessor.Type.SCALAR)
 		.setArray(new Uint32Array(getGLPrimitiveCount(prim) * 3));
 	for (let i = 0; i < indices.getCount(); i++) indices.setScalar(i, i);
@@ -56,7 +56,7 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 	const srcIndices = prim.getIndices();
 	const vertexCount = srcIndices
 		? srcIndices.getCount()
-		: prim.getAttribute('POSITION').getCount();
+		: prim.listAttributes()[0].getCount();
 
 	// Prepare storage for new elements of each attribute.
 	const dstAttributes = new Map<Accessor, number[][]>();
@@ -86,11 +86,11 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 			dstIndicesArray.push(hashToIndex[hash]);
 		} else {
 			for (const attr of prim.listAttributes()) {
-				dstAttributes.get(attr).push(attr.getElement(index, []));
+				dstAttributes.get(attr)!.push(attr.getElement(index, []));
 			}
 			for (const target of prim.listTargets()) {
 				for (const attr of target.listAttributes()) {
-					dstAttributes.get(attr).push(attr.getElement(index, []));
+					dstAttributes.get(attr)!.push(attr.getElement(index, []));
 				}
 			}
 
@@ -100,20 +100,20 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 		}
 	}
 
-	const srcVertexCount = prim.getAttribute('POSITION').getCount();
-	const dstVertexCount = dstAttributes.get(prim.getAttribute('POSITION')).length;
+	const srcVertexCount = prim.listAttributes()[0].getCount();
+	const dstVertexCount = dstAttributes.get(prim.getAttribute('POSITION')!)!.length;
 	doc.getLogger().debug(`${NAME}: ${srcVertexCount} → ${dstVertexCount} vertices.`);
 
 	// Update the primitive.
 	for (const srcAttr of prim.listAttributes()) {
-		swapAttributes(prim, srcAttr, dstAttributes.get(srcAttr));
+		swapAttributes(prim, srcAttr, dstAttributes.get(srcAttr)!);
 
 		// Clean up.
 		if (srcAttr.listParents().length === 1) srcAttr.dispose();
 	}
 	for (const target of prim.listTargets()) {
 		for (const srcAttr of target.listAttributes()) {
-			swapAttributes(target, srcAttr, dstAttributes.get(srcAttr));
+			swapAttributes(target, srcAttr, dstAttributes.get(srcAttr)!);
 
 			// Clean up.
 			if (srcAttr.listParents().length === 1) srcAttr.dispose();
@@ -121,7 +121,7 @@ function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): vo
 	}
 	if (srcIndices) {
 		const dstIndicesTypedArray
-			= createArrayOfType(srcIndices.getArray(), dstIndicesArray.length);
+			= createArrayOfType(srcIndices.getArray()!, dstIndicesArray.length);
 		dstIndicesTypedArray.set(dstIndicesArray);
 		prim.setIndices(srcIndices.clone().setArray(dstIndicesTypedArray));
 
@@ -144,7 +144,7 @@ function swapAttributes(
 		srcAttr: Accessor,
 		dstAttrElements: number[][]): void {
 	const dstAttrArrayLength = dstAttrElements.length * srcAttr.getElementSize();
-	const dstAttrArray = createArrayOfType(srcAttr.getArray(), dstAttrArrayLength);
+	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstAttrArrayLength);
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
 
 	for (let i = 0; i < dstAttrElements.length; i++) {

@@ -9,7 +9,7 @@ declare module 'geo-ambient-occlusion' {
 		| Int8Array;
 
 	interface AmbientOcclusionOptions {
-		cells?: TypedArray,
+		cells?: TypedArray | null,
 		resolution?: number,
 		regl?: REGL.Regl,
 	}

@@ -47,9 +47,8 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	meshes.forEach((mesh) => {
 		mesh.listPrimitives().forEach((primitive) => {
 			primitive.listAttributes().forEach((accessor) => (attributeAccessors.add(accessor)));
-			if (primitive.getIndices()) {
-				indicesAccessors.add(primitive.getIndices());
-			}
+			const indices = primitive.getIndices();
+			if (indices) indicesAccessors.add(indices);
 		});
 	});
 
@@ -59,7 +58,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 
 		for (let i = 0; i < accessors.length; i++) {
 			const a = accessors[i];
-			const aData = a.getArray().slice().buffer;
+			const aData = a.getArray()!.slice().buffer;
 
 			if (duplicateAccessors.has(a)) continue;
 
@@ -73,7 +72,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 				if (a.getComponentType() !== b.getComponentType()) continue;
 				if (a.getCount() !== b.getCount()) continue;
 				if (a.getNormalized() !== b.getNormalized()) continue;
-				if (BufferUtils.equals(aData, b.getArray().slice().buffer)) {
+				if (BufferUtils.equals(aData, b.getArray()!.slice().buffer)) {
 					duplicateAccessors.set(b, a);
 				}
 			}
@@ -129,11 +128,12 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 		for (const prim of src.listPrimitives()) {
 			const primKeyItems = [];
 			for (const semantic of prim.listSemantics()) {
-				const attribute = prim.getAttribute(semantic);
+				const attribute = prim.getAttribute(semantic)!;
 				primKeyItems.push(semantic + ':' + accessorIndices.get(attribute));
 			}
-			if (prim.getIndices()) {
-				primKeyItems.push('indices:' + accessorIndices.get(prim.getIndices()));
+			const indices = prim.getIndices();
+			if (indices) {
+				primKeyItems.push('indices:' + accessorIndices.get(indices));
 			}
 			srcKeyItems.push(primKeyItems.join(','));
 		}
@@ -142,7 +142,7 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 		// of the duplicate. If not, just cache it.
 		const meshKey = srcKeyItems.join(';');
 		if (uniqueMeshes.has(meshKey)) {
-			const targetMesh = uniqueMeshes.get(meshKey);
+			const targetMesh = uniqueMeshes.get(meshKey)!;
 			src.listParents().forEach((parent) => {
 				if (parent.propertyType !== PropertyType.ROOT) {
 					parent.swap(src, targetMesh);
@@ -179,8 +179,13 @@ function dedupImages(logger: Logger, doc: Document): void {
 
 			// URIs are intentionally not compared.
 			if (a.getMimeType() !== b.getMimeType()) continue;
-			if (a.getSize()[0] !== b.getSize()[0]) continue;
-			if (a.getSize()[1] !== b.getSize()[1]) continue;
+
+			const aSize = a.getSize();
+			const bSize = b.getSize();
+			if (!aSize || !bSize) continue;
+			if (aSize[0] !== bSize[0]) continue;
+			if (aSize[1] !== bSize[1]) continue;
+			if (!aData || !bData) continue;
 			if (BufferUtils.equals(aData, bData)) {
 				duplicates.set(b, a);
 			}

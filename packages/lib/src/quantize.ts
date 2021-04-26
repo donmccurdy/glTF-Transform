@@ -57,6 +57,11 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 
 			const nodeTransform = getNodeTransform(mesh);
+			if (!nodeTransform) {
+				logger.warn(`${NAME}: Quantization skipped for empty mesh.`);
+				continue;
+			}
+
 			transformMeshParents(doc, mesh, nodeTransform);
 
 			for (const prim of mesh.listPrimitives()) {
@@ -82,9 +87,9 @@ function quantizePrimitive(
 	const nodeRemap = nodeTransform.nodeRemap;
 
 	for (const semantic of prim.listSemantics()) {
-		if (options.excludeAttributes.includes(semantic)) continue;
+		if (options.excludeAttributes!.includes(semantic)) continue;
 
-		const attribute = prim.getAttribute(semantic);
+		const attribute = prim.getAttribute(semantic)!;
 		const {bits, ctor} = getQuantizationSettings(semantic, attribute, logger, options);
 
 		if (!ctor) continue;
@@ -116,7 +121,8 @@ function quantizePrimitive(
 			&& prim.getIndices()
 			&& prim.listAttributes().length
 			&& prim.listAttributes()[0]!.getCount() < 65535) {
-		prim.getIndices().setArray(new Uint16Array(prim.getIndices().getArray()));
+		const indices = prim.getIndices()!;
+		indices.setArray(new Uint16Array(indices.getArray()!));
 	}
 }
 
@@ -146,11 +152,11 @@ function flatBounds(targetMin: number[], targetMax: number[], accessors: Accesso
 }
 
 /** Computes node quantization transforms in local space. */
-function getNodeTransform(mesh: Mesh): NodeTransform {
+function getNodeTransform(mesh: Mesh): NodeTransform | null {
 	const positions = mesh.listPrimitives()
-		.map((prim) => prim.getAttribute('POSITION'));
+		.map((prim) => prim.getAttribute('POSITION')!);
 
-	if (!positions.some((p) => !!p)) return {nodeRemap: null, nodeOffset: null, nodeScale: null};
+	if (!positions.some((p) => !!p)) return null;
 
 	const positionMin = [Infinity, Infinity, Infinity] as vec3;
 	const positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
@@ -215,7 +221,7 @@ function quantizeAttribute(
 		bits: number
 	): void {
 
-	const dstArray = new ctor(attribute.getArray().length);
+	const dstArray = new ctor(attribute.getArray()!.length);
 
 	const signBits = SIGNED_INT.includes(ctor) ? 1 : 0;
 	const quantBits = bits - signBits;
@@ -246,7 +252,7 @@ function getQuantizationSettings(
 		semantic: string,
 		attribute: Accessor,
 		logger: Logger,
-		options: QuantizeOptions): {bits: number; ctor?: TypedArrayConstructor} | null {
+		options: QuantizeOptions): {bits: number; ctor?: TypedArrayConstructor} {
 
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMinNormalized([]);
@@ -255,26 +261,26 @@ function getQuantizationSettings(
 	let ctor: TypedArrayConstructor;
 
 	if (semantic === 'POSITION') {
-		bits = options.quantizePosition;
+		bits = options.quantizePosition!;
 		ctor = bits <= 8 ? Int8Array : Int16Array;
 	} else if (semantic === 'NORMAL' || semantic === 'TANGENT') {
-		bits = options.quantizeNormal;
+		bits = options.quantizeNormal!;
 		ctor = bits <= 8 ? Int8Array : Int16Array;
 	} else if (semantic.startsWith('COLOR_')) {
-		bits = options.quantizeColor;
+		bits = options.quantizeColor!;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('TEXCOORD_')) {
 		if (min.some(v => v < 0) || max.some(v => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.quantizeTexcoord;
+		bits = options.quantizeTexcoord!;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('JOINTS_')) {
 		bits = Math.max(...attribute.getMax([])) <= 255 ? 8 : 16;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 		if (attribute.getComponentSize() > bits / 8) {
-			attribute.setArray(new ctor(attribute.getArray()));
+			attribute.setArray(new ctor(attribute.getArray()!));
 		}
 		return {bits: -1};
 	} else if (semantic.startsWith('WEIGHTS_')) {
@@ -282,17 +288,19 @@ function getQuantizationSettings(
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.quantizeWeight;
+		bits = options.quantizeWeight!;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('_')) {
 		if (min.some(v => v < -1) || max.some(v => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
 			return {bits: -1};
 		}
-		bits = options.quantizeGeneric;
+		bits = options.quantizeGeneric!;
 		ctor = min.some(v => v < 0)
 			? (ctor = bits <= 8 ? Int8Array : Int16Array)
 			: (ctor = bits <= 8 ? Uint8Array : Uint16Array);
+	} else {
+		throw new Error(`${NAME}: Unexpected semantic, "${semantic}".`);
 	}
 
 	return {bits, ctor};

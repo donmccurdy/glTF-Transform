@@ -8,7 +8,7 @@ export interface TangentsOptions {
 }
 
 const DEFAULT_OPTIONS: TangentsOptions = {
-	generateTangents: null,
+	generateTangents: undefined,
 	overwrite: false,
 };
 
@@ -33,19 +33,20 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				const prim = meshPrimitives[i];
 
 				// Skip primitives for which we can't compute tangents.
-				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite)) continue;
+				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite!)) continue;
+
+				// Nullability conditions checked by filterPrimitive() above.
+				const position = prim.getAttribute('POSITION')!.getArray()!;
+				const normal = prim.getAttribute('NORMAL')!.getArray()!;
+				const texcoord = prim.getAttribute('TEXCOORD_0')!.getArray()!;
 
 				// Compute UUIDs for each attribute.
-
-				const position = prim.getAttribute('POSITION').getArray();
 				const positionID = attributeIDs.get(position) || uuid();
 				attributeIDs.set(position, positionID);
 
-				const normal = prim.getAttribute('NORMAL').getArray();
 				const normalID = attributeIDs.get(normal) || uuid();
 				attributeIDs.set(normal, normalID);
 
-				const texcoord = prim.getAttribute('TEXCOORD_0').getArray();
 				const texcoordID = attributeIDs.get(texcoord) || uuid();
 				attributeIDs.set(texcoord, texcoordID);
 
@@ -65,8 +66,8 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 
 				// Otherwise, generate tangents with the 'mikktspace' WASM library.
 				logger.debug(`${NAME}: Generating for primitive ${i} of mesh "${meshName}".`);
-				const tangentBuffer = prim.getAttribute('POSITION').getBuffer();
-				const tangentArray = options.generateTangents(
+				const tangentBuffer = prim.getAttribute('POSITION')!.getBuffer();
+				const tangentArray = options.generateTangents!(
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
 					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord)

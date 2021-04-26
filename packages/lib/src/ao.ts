@@ -74,7 +74,11 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 		Array.from(primitives).forEach((primitive, index) => {
 			logger.debug(`${NAME}: Baking primitive ${index} / ${primitives.size}.`);
 
-			if (primitive.getMaterial().getOcclusionTexture()) {
+			const material = primitive.getMaterial();
+			const positionAttr = primitive.getAttribute('POSITION');
+			if (!material || !positionAttr) return;
+
+			if (material.getOcclusionTexture()) {
 				// TODO: Duplicate the material if needed.
 				logger.warn(
 					`${NAME}: Primitive already has AO. Is it sharing a material? Skipping.`
@@ -83,9 +87,9 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 			}
 
 			// Bake vertex AO.
-			const position = primitive.getAttribute('POSITION').getArray();
-			const cells = primitive.getIndices() ? primitive.getIndices().getArray() : undefined;
-			const aoSampler = geoao(position, {cells, resolution, regl});
+			const position = positionAttr.getArray();
+			const cells = primitive.getIndices() ? primitive.getIndices()!.getArray() : undefined;
+			const aoSampler = geoao(position!, {cells, resolution, regl});
 			for (let i = 0; i < samples; i++) aoSampler.sample();
 			const ao = aoSampler.report();
 			aoSampler.dispose();
@@ -107,7 +111,7 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 				primitive.setAttribute('TEXCOORD_0', uv2);
 			}
 
-			primitive.getMaterial().setOcclusionTexture(texture);
+			material.setOcclusionTexture(texture);
 		});
 
 		logger.debug(`${NAME}: Complete.`);
