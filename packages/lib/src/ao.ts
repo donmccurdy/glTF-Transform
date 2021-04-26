@@ -9,7 +9,7 @@ interface GLFactory {
 }
 
 export interface AOOptions {
-	gl?: GLFactory;
+	gl?: GLFactory | null;
 	resolution?: number;
 	samples?: number;
 }

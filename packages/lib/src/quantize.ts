@@ -78,7 +78,7 @@ function quantizePrimitive(
 		doc: Document,
 		prim: Primitive | PrimitiveTarget,
 		nodeTransform: NodeTransform | null,
-		options: QuantizeOptions): void {
+		options: Required<QuantizeOptions>): void {
 	const root = doc.getRoot();
 	const logger = doc.getLogger();
 	const nodeRemap = nodeTransform ? nodeTransform.nodeRemap : null;
@@ -252,7 +252,7 @@ function getQuantizationSettings(
 		semantic: string,
 		attribute: Accessor,
 		logger: Logger,
-		options: QuantizeOptions): {bits: number; ctor?: TypedArrayConstructor} {
+		options: Required<QuantizeOptions>): {bits: number; ctor?: TypedArrayConstructor} {
 
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMinNormalized([]);

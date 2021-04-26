@@ -47,7 +47,7 @@ function weldOnly (doc: Document, prim: Primitive): void {
  * Weld and merge, combining vertices that are similar on all vertex attributes. Morph target
  * attributes are not considered when scoring vertex similarity, but are retained when merging.
  */
-function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): void {
+function weldAndMerge (doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const tolerance = Math.max(options.tolerance, Number.EPSILON);
 	const decimalShift = Math.log10(1 / tolerance);
 	const shiftFactor = Math.pow(10, decimalShift);

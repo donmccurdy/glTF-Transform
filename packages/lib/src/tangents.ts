@@ -7,17 +7,16 @@ export interface TangentsOptions {
 	overwrite?: boolean,
 }
 
-const TANGENTS_DEFAULTS: Required<TangentsOptions> = {
-	generateTangents: undefined,
+const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
 	overwrite: false,
 };
 
 export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
-	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
-
-	if (!options.generateTangents) {
+	if (!_options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
 	}
+
+	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
