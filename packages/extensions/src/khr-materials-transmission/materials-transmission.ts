@@ -41,10 +41,10 @@ export class MaterialsTransmission extends Extension {
 
 				if (transmissionDef.transmissionTexture !== undefined) {
 					const textureInfoDef = transmissionDef.transmissionTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					transmission.setTransmissionTexture(texture);
 					context.setTextureInfo(
-						transmission.getTransmissionTextureInfo(),
+						transmission.getTransmissionTextureInfo()!,
 						textureInfoDef
 					);
 				}
@@ -62,8 +62,8 @@ export class MaterialsTransmission extends Extension {
 			.forEach((material) => {
 				const transmission = material.getExtension<Transmission>(NAME);
 				if (transmission) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -75,8 +75,8 @@ export class MaterialsTransmission extends Extension {
 					// Textures.
 
 					if (transmission.getTransmissionTexture()) {
-						const texture = transmission.getTransmissionTexture();
-						const textureInfo = transmission.getTransmissionTextureInfo();
+						const texture = transmission.getTransmissionTexture()!;
+						const textureInfo = transmission.getTransmissionTextureInfo()!;
 						transmissionDef.transmissionTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}

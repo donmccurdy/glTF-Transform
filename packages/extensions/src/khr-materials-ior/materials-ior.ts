@@ -46,8 +46,8 @@ export class MaterialsIOR extends Extension {
 			.forEach((material) => {
 				const ior = material.getExtension<IOR>(NAME);
 				if (ior) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.

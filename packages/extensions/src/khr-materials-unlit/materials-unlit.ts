@@ -31,8 +31,8 @@ export class MaterialsUnlit extends Extension {
 			.listMaterials()
 			.forEach((material) => {
 				if (material.getExtension<Unlit>(NAME)) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 					materialDef.extensions[NAME] = {};
 				}

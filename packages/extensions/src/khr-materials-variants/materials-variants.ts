@@ -108,24 +108,25 @@ export class MaterialsVariants extends Extension {
 
 		// For each mesh primitive, write its material/variant mappings.
 		for (const mesh of this.doc.getRoot().listMeshes()) {
-			const meshIndex = context.meshIndexMap.get(mesh);
+			const meshIndex = context.meshIndexMap.get(mesh)!;
 
 			mesh.listPrimitives().forEach((prim, primIndex) => {
-				if (!prim.getExtension(NAME)) return;
-
-				const primDef = context.jsonDoc.json.meshes[meshIndex].primitives[primIndex];
 				const mappingList = prim.getExtension<MappingList>(NAME);
+				if (!mappingList) return;
+
+				const primDef = context.jsonDoc.json.meshes![meshIndex].primitives[primIndex];
+
 
 				const mappingDefs = mappingList.listMappings().map((mapping) => {
 					const mappingDef = context.createPropertyDef(mapping) as VariantMappingDef;
 
-					if (mapping.getMaterial()) {
-						mappingDef.material =
-							context.materialIndexMap.get(mapping.getMaterial());
+					const material = mapping.getMaterial();
+					if (material) {
+						mappingDef.material = context.materialIndexMap.get(material)!;
 					}
 
 					mappingDef.variants = mapping.listVariants()
-						.map((variant) => variantIndexMap.get(variant));
+						.map((variant) => variantIndexMap.get(variant)!);
 
 					return mappingDef;
 				});

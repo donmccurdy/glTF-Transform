@@ -59,7 +59,7 @@ export class TextureBasisu extends Extension {
 	}
 
 	public preread(context: ReaderContext): this {
-		context.jsonDoc.json.textures.forEach((textureDef) => {
+		context.jsonDoc.json.textures!.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
 				const basisuDef = textureDef.extensions[NAME] as BasisuDef;
 				textureDef.source = basisuDef.source;
@@ -81,7 +81,7 @@ export class TextureBasisu extends Extension {
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/ktx2') {
 					const imageIndex = context.imageIndexMap.get(texture);
-					jsonDoc.json.textures.forEach((textureDef) => {
+					jsonDoc.json.textures!.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {};
 							textureDef.extensions[NAME] = {source: textureDef.source};

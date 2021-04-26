@@ -47,25 +47,25 @@ export class MaterialsClearcoat extends Extension {
 
 				if (clearcoatDef.clearcoatTexture !== undefined) {
 					const textureInfoDef = clearcoatDef.clearcoatTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					clearcoat.setClearcoatTexture(texture);
-					context.setTextureInfo(clearcoat.getClearcoatTextureInfo(), textureInfoDef);
+					context.setTextureInfo(clearcoat.getClearcoatTextureInfo()!, textureInfoDef);
 				}
 				if (clearcoatDef.clearcoatRoughnessTexture !== undefined) {
 					const textureInfoDef = clearcoatDef.clearcoatRoughnessTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					clearcoat.setClearcoatRoughnessTexture(texture);
 					context.setTextureInfo(
-						clearcoat.getClearcoatRoughnessTextureInfo(),
+						clearcoat.getClearcoatRoughnessTextureInfo()!,
 						textureInfoDef
 					);
 				}
 				if (clearcoatDef.clearcoatNormalTexture !== undefined) {
 					const textureInfoDef = clearcoatDef.clearcoatNormalTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					clearcoat.setClearcoatNormalTexture(texture);
 					context.setTextureInfo(
-						clearcoat.getClearcoatNormalTextureInfo(),
+						clearcoat.getClearcoatNormalTextureInfo()!,
 						textureInfoDef
 					);
 					if (textureInfoDef.scale !== undefined) {
@@ -86,8 +86,8 @@ export class MaterialsClearcoat extends Extension {
 			.forEach((material) => {
 				const clearcoat = material.getExtension<Clearcoat>(NAME);
 				if (clearcoat) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -100,20 +100,20 @@ export class MaterialsClearcoat extends Extension {
 					// Textures.
 
 					if (clearcoat.getClearcoatTexture()) {
-						const texture = clearcoat.getClearcoatTexture();
-						const textureInfo = clearcoat.getClearcoatTextureInfo();
+						const texture = clearcoat.getClearcoatTexture()!;
+						const textureInfo = clearcoat.getClearcoatTextureInfo()!;
 						clearcoatDef.clearcoatTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatRoughnessTexture()) {
-						const texture = clearcoat.getClearcoatRoughnessTexture();
-						const textureInfo = clearcoat.getClearcoatRoughnessTextureInfo();
+						const texture = clearcoat.getClearcoatRoughnessTexture()!;
+						const textureInfo = clearcoat.getClearcoatRoughnessTextureInfo()!;
 						clearcoatDef.clearcoatRoughnessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatNormalTexture()) {
-						const texture = clearcoat.getClearcoatNormalTexture();
-						const textureInfo = clearcoat.getClearcoatNormalTextureInfo();
+						const texture = clearcoat.getClearcoatNormalTexture()!;
+						const textureInfo = clearcoat.getClearcoatNormalTextureInfo()!;
 						clearcoatDef.clearcoatNormalTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 						if (clearcoat.getClearcoatNormalScale() !== 1) {

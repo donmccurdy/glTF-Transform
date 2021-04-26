@@ -46,15 +46,15 @@ export class MaterialsSheen extends Extension {
 
 				if (sheenDef.sheenColorTexture !== undefined) {
 					const textureInfoDef = sheenDef.sheenColorTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					sheen.setSheenColorTexture(texture);
-					context.setTextureInfo(sheen.getSheenColorTextureInfo(), textureInfoDef);
+					context.setTextureInfo(sheen.getSheenColorTextureInfo()!, textureInfoDef);
 				}
 				if (sheenDef.sheenRoughnessTexture !== undefined) {
 					const textureInfoDef = sheenDef.sheenRoughnessTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					sheen.setSheenRoughnessTexture(texture);
-					context.setTextureInfo(sheen.getSheenRoughnessTextureInfo(), textureInfoDef);
+					context.setTextureInfo(sheen.getSheenRoughnessTextureInfo()!, textureInfoDef);
 				}
 			}
 		});
@@ -70,8 +70,8 @@ export class MaterialsSheen extends Extension {
 			.forEach((material) => {
 				const sheen = material.getExtension<Sheen>(NAME);
 				if (sheen) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -84,14 +84,14 @@ export class MaterialsSheen extends Extension {
 					// Textures.
 
 					if (sheen.getSheenColorTexture()) {
-						const texture = sheen.getSheenColorTexture();
-						const textureInfo = sheen.getSheenColorTextureInfo();
+						const texture = sheen.getSheenColorTexture()!;
+						const textureInfo = sheen.getSheenColorTextureInfo()!;
 						sheenDef.sheenColorTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (sheen.getSheenRoughnessTexture()) {
-						const texture = sheen.getSheenRoughnessTexture();
-						const textureInfo = sheen.getSheenRoughnessTextureInfo();
+						const texture = sheen.getSheenRoughnessTexture()!;
+						const textureInfo = sheen.getSheenRoughnessTextureInfo()!;
 						sheenDef.sheenRoughnessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}

@@ -45,9 +45,9 @@ export class MaterialsSpecular extends Extension {
 
 				if (specularDef.specularTexture !== undefined) {
 					const textureInfoDef = specularDef.specularTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					specular.setSpecularTexture(texture);
-					context.setTextureInfo(specular.getSpecularTextureInfo(), textureInfoDef);
+					context.setTextureInfo(specular.getSpecularTextureInfo()!, textureInfoDef);
 				}
 			}
 		});
@@ -63,8 +63,8 @@ export class MaterialsSpecular extends Extension {
 			.forEach((material) => {
 				const specular = material.getExtension<Specular>(NAME);
 				if (specular) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -77,8 +77,8 @@ export class MaterialsSpecular extends Extension {
 					// Textures.
 
 					if (specular.getSpecularTexture()) {
-						const texture = specular.getSpecularTexture();
-						const textureInfo = specular.getSpecularTextureInfo();
+						const texture = specular.getSpecularTexture()!;
+						const textureInfo = specular.getSpecularTextureInfo()!;
 						specularDef.specularTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}

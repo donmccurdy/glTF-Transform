@@ -47,10 +47,10 @@ export class MaterialsVolume extends Extension {
 
 				if (volumeDef.thicknessTexture !== undefined) {
 					const textureInfoDef = volumeDef.thicknessTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					volume.setThicknessTexture(texture);
 					context.setTextureInfo(
-						volume.getThicknessTextureInfo(),
+						volume.getThicknessTextureInfo()!,
 						textureInfoDef
 					);
 				}
@@ -68,8 +68,8 @@ export class MaterialsVolume extends Extension {
 			.forEach((material) => {
 				const volume = material.getExtension<Volume>(NAME);
 				if (volume) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -83,8 +83,8 @@ export class MaterialsVolume extends Extension {
 					// Textures.
 
 					if (volume.getThicknessTexture()) {
-						const texture = volume.getThicknessTexture();
-						const textureInfo = volume.getThicknessTextureInfo();
+						const texture = volume.getThicknessTexture()!;
+						const textureInfo = volume.getThicknessTextureInfo()!;
 						volumeDef.thicknessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}

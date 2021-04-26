@@ -48,16 +48,16 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 
 				if (specGlossDef.diffuseTexture !== undefined) {
 					const textureInfoDef = specGlossDef.diffuseTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					specGloss.setDiffuseTexture(texture);
-					context.setTextureInfo(specGloss.getDiffuseTextureInfo(), textureInfoDef);
+					context.setTextureInfo(specGloss.getDiffuseTextureInfo()!, textureInfoDef);
 				}
 				if (specGlossDef.specularGlossinessTexture !== undefined) {
 					const textureInfoDef = specGlossDef.specularGlossinessTexture;
-					const texture = context.textures[textureDefs[textureInfoDef.index].source];
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					specGloss.setSpecularGlossinessTexture(texture);
 					context.setTextureInfo(
-						specGloss.getSpecularGlossinessTextureInfo(),
+						specGloss.getSpecularGlossinessTextureInfo()!,
 						textureInfoDef
 					);
 				}
@@ -75,8 +75,8 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 			.forEach((material) => {
 				const specGloss = material.getExtension<PBRSpecularGlossiness>(NAME);
 				if (specGloss) {
-					const materialIndex = context.materialIndexMap.get(material);
-					const materialDef = jsonDoc.json.materials[materialIndex];
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
 
 					// Factors.
@@ -90,14 +90,14 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 					// Textures.
 
 					if (specGloss.getDiffuseTexture()) {
-						const texture = specGloss.getDiffuseTexture();
-						const textureInfo = specGloss.getDiffuseTextureInfo();
+						const texture = specGloss.getDiffuseTexture()!;
+						const textureInfo = specGloss.getDiffuseTextureInfo()!;
 						specGlossDef.diffuseTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (specGloss.getSpecularGlossinessTexture()) {
-						const texture = specGloss.getSpecularGlossinessTexture();
-						const textureInfo = specGloss.getSpecularGlossinessTextureInfo();
+						const texture = specGloss.getSpecularGlossinessTexture()!;
+						const textureInfo = specGloss.getSpecularGlossinessTextureInfo()!;
 						specGlossDef.specularGlossinessTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}

@@ -259,7 +259,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		// need to create copies of these accessors for the current encoded primitive. We can't
 		// reuse the same compressed accessor for two encoded primitives, because Draco might
 		// change the vertex count, change the vertex order, or cause other conflicts.
-		if (includedAccessors.has(prim.getIndices())) {
+		if (includedAccessors.has(prim.getIndices()!)) {
 			const indices = prim.getIndices()!; // Condition for 'included' list.
 			const dstIndices = indices.clone();
 			accessorIndices.set(dstIndices, doc.getRoot().listAccessors().length - 1);
