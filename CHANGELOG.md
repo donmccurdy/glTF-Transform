@@ -8,7 +8,7 @@
 
 **Breaking changes:**
 
-- I/O `writeJSON` option `isGLB` changed to `format: Format.GLB`.
+- I/O `writeJSON` option `isGLB: true` changed to `format: Format.GLB`.
 
 ## v0.10
 
@@ -17,6 +17,7 @@
 **Features:**
 
 - Add 'ktxfix' command in CLI. [#222](https://github.com/donmccurdy/glTF-Transform/pull/222)
+- Add getter/setter for default [Scene](https://gltf-transform.donmccurdy.com/classes/root.html) on [Root](https://gltf-transform.donmccurdy.com/classes/root.html). #[202](202)
 
 **Breaking changes:**
 
