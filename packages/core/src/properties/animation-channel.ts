@@ -94,7 +94,7 @@ export class AnimationChannel extends Property {
 	}
 
 	/** Target {@link Node} animated by the channel. */
-	public setTargetNode(targetNode: Node): this {
+	public setTargetNode(targetNode: Node | null): this {
 		this.targetNode = this.graph.link('target.node', this, targetNode);
 		return this;
 	}
@@ -111,7 +111,7 @@ export class AnimationChannel extends Property {
 	 * Keyframe data input/output values for the channel. Must be attached to the same
 	 * {@link Animation}.
 	 */
-	public setSampler(sampler: AnimationSampler): this {
+	public setSampler(sampler: AnimationSampler | null): this {
 		this.sampler = this.graph.link('sampler', this, sampler);
 		return this;
 	}

@@ -100,12 +100,14 @@ export class ImageUtils {
 		if (!this.impls[mimeType]) return null;
 
 		if (this.impls[mimeType].getGPUByteLength) {
-			return this.impls[mimeType].getGPUByteLength(buffer);
+			return this.impls[mimeType].getGPUByteLength!(buffer);
 		}
 
 		let uncompressedBytes = 0;
 		const channels = 4; // See https://github.com/donmccurdy/glTF-Transform/issues/151.
 		const resolution = this.getSize(buffer, mimeType);
+		if (!resolution) return null;
+
 		while (resolution[0] > 1 || resolution[1] > 1) {
 			uncompressedBytes += resolution[0] * resolution[1] * channels;
 			resolution[0] = Math.max(Math.floor(resolution[0] / 2), 1);
@@ -118,7 +120,7 @@ export class ImageUtils {
 	/** Returns the preferred file extension for the given MIME type. */
 	public static mimeTypeToExtension(mimeType: string): string {
 		if (mimeType === 'image/jpeg') return 'jpg';
-		return mimeType.split('/').pop();
+		return mimeType.split('/').pop()!;
 	}
 
 	/** Returns the MIME type for the given file extension. */

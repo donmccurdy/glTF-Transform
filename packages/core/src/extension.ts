@@ -29,7 +29,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/** Official name of the extension. */
 	public static EXTENSION_NAME: string;
 	/** Official name of the extension. */
-	public readonly extensionName: string;
+	public readonly extensionName: string = '';
 	/**
 	 * Before reading, extension should be called for these {@link Property} types. *Most
 	 * extensions don't need to implement this.*

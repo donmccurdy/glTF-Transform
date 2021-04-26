@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Accessor, AnimationChannel, Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::skin', t => {
+test.only('@gltf-transform/core::skin', t => {
 	const doc = new Document();
 
 	const joints = [

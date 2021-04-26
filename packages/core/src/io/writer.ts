@@ -5,7 +5,7 @@ import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, AttributeLink, Camera, IndexLink, Material, Property } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger, MathUtils } from '../utils';
-import { UniqueURIGenerator, WriterContext } from './writer-context';
+import { WriterContext } from './writer-context';
 
 const BufferViewTarget = {
 	ARRAY_BUFFER: 34962,
@@ -27,7 +27,7 @@ export interface WriterOptions {
 	dependencies?: {[key: string]: unknown};
 }
 
-const DEFAULT_OPTIONS: WriterOptions = {
+const DEFAULT_OPTIONS: Required<WriterOptions> = {
 	logger: Logger.DEFAULT_INSTANCE,
 	basename: '',
 	isGLB: true,
@@ -37,21 +37,15 @@ const DEFAULT_OPTIONS: WriterOptions = {
 
 /** @hidden */
 export class GLTFWriter {
-	public static write(doc: Document, options: WriterOptions = DEFAULT_OPTIONS): JSONDocument {
+	public static write(doc: Document, _options: WriterOptions = DEFAULT_OPTIONS): JSONDocument {
+		const options = {...DEFAULT_OPTIONS, ..._options} as Required<WriterOptions>;
+
 		const root = doc.getRoot();
 		const jsonDoc = {json: {asset: root.getAsset()}, resources: {}} as JSONDocument;
+		const context = new WriterContext(doc, jsonDoc, options);
 		const logger = options.logger || Logger.DEFAULT_INSTANCE;
 		const json = jsonDoc.json;
 		json.asset.generator = `glTF-Transform ${VERSION}`;
-
-		/* Writer context. */
-
-		const context = new WriterContext(jsonDoc, options);
-		const numBuffers = root.listBuffers().length;
-		const numImages = root.listTextures().length;
-		context.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
-		context.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
-		context.logger = doc.getLogger();
 
 		/* Extensions (1/2). */
 
@@ -88,15 +82,15 @@ export class GLTFWriter {
 			// Create accessor definitions, determining size of final buffer view.
 			for (const accessor of accessors) {
 				const accessorDef = context.createAccessorDef(accessor);
-				accessorDef.bufferView = json.bufferViews.length;
+				accessorDef.bufferView = json.bufferViews!.length;
 
-				const data = BufferUtils.pad(accessor.getArray().buffer);
+				const data = BufferUtils.pad(accessor.getArray()!.buffer);
 				accessorDef.byteOffset = byteLength;
 				byteLength += data.byteLength;
 				buffers.push(data);
 
-				context.accessorIndexMap.set(accessor, json.accessors.length);
-				json.accessors.push(accessorDef);
+				context.accessorIndexMap.set(accessor, json.accessors!.length);
+				json.accessors!.push(accessorDef);
 			}
 
 			// Create buffer view definition.
@@ -107,7 +101,7 @@ export class GLTFWriter {
 				byteLength: bufferViewData.byteLength,
 			};
 			if (bufferViewTarget) bufferViewDef.target = bufferViewTarget;
-			json.bufferViews.push(bufferViewDef);
+			json.bufferViews!.push(bufferViewDef);
 
 			return {buffers, byteLength};
 		}
@@ -134,15 +128,15 @@ export class GLTFWriter {
 			// Create accessor definitions, determining size and stride of final buffer view.
 			for (const accessor of accessors) {
 				const accessorDef = context.createAccessorDef(accessor);
-				accessorDef.bufferView = json.bufferViews.length;
+				accessorDef.bufferView = json.bufferViews!.length;
 				accessorDef.byteOffset = byteStride;
 
 				const elementSize = accessor.getElementSize();
 				const componentSize = accessor.getComponentSize();
 				byteStride += BufferUtils.padNumber(elementSize * componentSize);
 
-				context.accessorIndexMap.set(accessor, json.accessors.length);
-				json.accessors.push(accessorDef);
+				context.accessorIndexMap.set(accessor, json.accessors!.length);
+				json.accessors!.push(accessorDef);
 			}
 
 			// Allocate interleaved buffer view.
@@ -157,7 +151,7 @@ export class GLTFWriter {
 					const elementSize = accessor.getElementSize();
 					const componentSize = accessor.getComponentSize();
 					const componentType = accessor.getComponentType();
-					const array = accessor.getArray();
+					const array = accessor.getArray()!;
 					for (let j = 0; j < elementSize; j++) {
 						const viewByteOffset =
 							i * byteStride + vertexByteOffset + j * componentSize;
@@ -197,7 +191,7 @@ export class GLTFWriter {
 				byteStride: byteStride,
 				target: BufferViewTarget.ARRAY_BUFFER,
 			};
-			json.bufferViews.push(bufferViewDef);
+			json.bufferViews!.push(bufferViewDef);
 
 			return {byteLength, buffers: [buffer]};
 		}
@@ -236,8 +230,9 @@ export class GLTFWriter {
 				imageDef.mimeType = texture.getMimeType();
 			}
 
-			if (texture.getImage()) {
-				context.createImageData(imageDef, texture.getImage(), texture);
+			const image = texture.getImage();
+			if (image) {
+				context.createImageData(imageDef, image, texture);
 			}
 
 			context.imageIndexMap.set(texture, textureIndex);
@@ -294,7 +289,8 @@ export class GLTFWriter {
 
 				// For accessor usage that requires grouping by parent (vertex and instance
 				// attributes) organize buffer views accordingly.
-				if (groupByParent.has(context.getAccessorUsage(accessor))) {
+				const usage = context.getAccessorUsage(accessor);
+				if (usage && groupByParent.has(usage)) {
 					const parent = accessorRefs[0].getParent();
 					const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
 					parentAccessors.add(accessor);
@@ -305,7 +301,7 @@ export class GLTFWriter {
 			// Write accessor groups to buffer views.
 
 			const buffers: ArrayBuffer[] = [];
-			const bufferIndex = json.buffers.length;
+			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
 			const usageGroups = context.listAccessorsByUsage();
@@ -354,7 +350,7 @@ export class GLTFWriter {
 
 					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
 						? BufferViewTarget.ELEMENT_ARRAY_BUFFER
-						: null;
+						: undefined;
 					const result = concatAccessors(
 						accessors, bufferIndex, bufferByteLength, target
 					);
@@ -366,7 +362,7 @@ export class GLTFWriter {
 			// We only support embedded images in GLB, so we know there is only one buffer.
 			if (context.imageBufferViews.length) {
 				for (let i = 0; i < context.imageBufferViews.length; i++) {
-					json.bufferViews[json.images[i].bufferView].byteOffset = bufferByteLength;
+					json.bufferViews![json.images![i].bufferView!].byteOffset = bufferByteLength;
 					bufferByteLength += context.imageBufferViews[i].byteLength;
 					buffers.push(context.imageBufferViews[i]);
 
@@ -380,13 +376,13 @@ export class GLTFWriter {
 			}
 
 			if (context.otherBufferViews.has(buffer)) {
-				for (const data of context.otherBufferViews.get(buffer)) {
-					json.bufferViews.push({
+				for (const data of context.otherBufferViews.get(buffer)!) {
+					json.bufferViews!.push({
 						buffer: bufferIndex,
 						byteOffset: bufferByteLength,
 						byteLength: data.byteLength,
 					});
-					context.otherBufferViewsIndexMap.set(data, json.bufferViews.length - 1);
+					context.otherBufferViewsIndexMap.set(data, json.bufferViews!.length - 1);
 					bufferByteLength += data.byteLength;
 					buffers.push(data);
 				}
@@ -412,7 +408,7 @@ export class GLTFWriter {
 			bufferDef.byteLength = bufferByteLength;
 			jsonDoc.resources[uri] = BufferUtils.concat(buffers);
 
-			json.buffers.push(bufferDef);
+			json.buffers!.push(bufferDef);
 		});
 
 		if (root.listAccessors().find((a) => !a.getBuffer())) {
@@ -443,21 +439,21 @@ export class GLTFWriter {
 			// Textures.
 
 			if (material.getBaseColorTexture()) {
-				const texture = material.getBaseColorTexture();
-				const textureInfo = material.getBaseColorTextureInfo();
+				const texture = material.getBaseColorTexture()!;
+				const textureInfo = material.getBaseColorTextureInfo()!;
 				materialDef.pbrMetallicRoughness.baseColorTexture
 					= context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getEmissiveTexture()) {
-				const texture = material.getEmissiveTexture();
-				const textureInfo = material.getEmissiveTextureInfo();
+				const texture = material.getEmissiveTexture()!;
+				const textureInfo = material.getEmissiveTextureInfo()!;
 				materialDef.emissiveTexture = context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getNormalTexture()) {
-				const texture = material.getNormalTexture();
-				const textureInfo = material.getNormalTextureInfo();
+				const texture = material.getNormalTexture()!;
+				const textureInfo = material.getNormalTextureInfo()!;
 				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
 					GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
@@ -467,8 +463,8 @@ export class GLTFWriter {
 			}
 
 			if (material.getOcclusionTexture()) {
-				const texture = material.getOcclusionTexture();
-				const textureInfo = material.getOcclusionTextureInfo();
+				const texture = material.getOcclusionTexture()!;
+				const textureInfo = material.getOcclusionTextureInfo()!;
 				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
 					GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
@@ -478,8 +474,8 @@ export class GLTFWriter {
 			}
 
 			if (material.getMetallicRoughnessTexture()) {
-				const texture = material.getMetallicRoughnessTexture();
-				const textureInfo = material.getMetallicRoughnessTextureInfo();
+				const texture = material.getMetallicRoughnessTexture()!;
+				const textureInfo = material.getMetallicRoughnessTextureInfo()!;
 				materialDef.pbrMetallicRoughness.metallicRoughnessTexture
 					= context.createTextureInfoDef(texture, textureInfo);
 			}
@@ -493,28 +489,30 @@ export class GLTFWriter {
 		json.meshes = root.listMeshes().map((mesh, index) => {
 			const meshDef = context.createPropertyDef(mesh) as GLTF.IMesh;
 
-			let targetNames: string[];
+			let targetNames: string[] | null = null;
 
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
 				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
 
 				primitiveDef.mode = primitive.getMode();
 
-				if (primitive.getMaterial()) {
-					primitiveDef.material = context.materialIndexMap.get(primitive.getMaterial());
+				const material = primitive.getMaterial();
+				if (material) {
+					primitiveDef.material = context.materialIndexMap.get(material);
 				}
 
 				if (Object.keys(primitive.getExtras()).length) {
 					primitiveDef.extras = primitive.getExtras();
 				}
 
-				if (primitive.getIndices()) {
-					primitiveDef.indices = context.accessorIndexMap.get(primitive.getIndices());
+				const indices = primitive.getIndices();
+				if (indices) {
+					primitiveDef.indices = context.accessorIndexMap.get(indices);
 				}
 
 				for (const semantic of primitive.listSemantics()) {
 					primitiveDef.attributes[semantic]
-						= context.accessorIndexMap.get(primitive.getAttribute(semantic));
+						= context.accessorIndexMap.get(primitive.getAttribute(semantic)!)!;
 				}
 
 				for (const target of primitive.listTargets()) {
@@ -522,7 +520,7 @@ export class GLTFWriter {
 
 					for (const semantic of target.listSemantics()) {
 						targetDef[semantic]
-							= context.accessorIndexMap.get(target.getAttribute(semantic));
+							= context.accessorIndexMap.get(target.getAttribute(semantic)!)!;
 					}
 
 					primitiveDef.targets = primitiveDef.targets || [];
@@ -559,8 +557,11 @@ export class GLTFWriter {
 					znear: camera.getZNear(),
 					zfar: camera.getZFar(),
 					yfov: camera.getYFov(),
-					aspectRatio: camera.getAspectRatio(),
 				};
+				const aspectRatio = camera.getAspectRatio();
+				if (aspectRatio !== null) {
+					cameraDef.perspective.aspectRatio = aspectRatio;
+				}
 			} else {
 				cameraDef.orthographic = {
 					znear: camera.getZNear(),
@@ -606,16 +607,17 @@ export class GLTFWriter {
 		json.skins = root.listSkins().map((skin, index) => {
 			const skinDef = context.createPropertyDef(skin) as GLTF.ISkin;
 
-			if (skin.getInverseBindMatrices()) {
-				skinDef.inverseBindMatrices
-					= context.accessorIndexMap.get(skin.getInverseBindMatrices());
+			const inverseBindMatrices = skin.getInverseBindMatrices();
+			if (inverseBindMatrices) {
+				skinDef.inverseBindMatrices = context.accessorIndexMap.get(inverseBindMatrices);
 			}
 
-			if (skin.getSkeleton()) {
-				skinDef.skeleton = context.nodeIndexMap.get(skin.getSkeleton());
+			const skeleton = skin.getSkeleton();
+			if (skeleton) {
+				skinDef.skeleton = context.nodeIndexMap.get(skeleton);
 			}
 
-			skinDef.joints = skin.listJoints().map((joint) => context.nodeIndexMap.get(joint));
+			skinDef.joints = skin.listJoints().map((joint) => context.nodeIndexMap.get(joint)!);
 
 			context.skinIndexMap.set(skin, index);
 			return skinDef;
@@ -624,23 +626,26 @@ export class GLTFWriter {
 		/** Node attachments. */
 
 		root.listNodes().forEach((node, index) => {
-			const nodeDef = json.nodes[index];
+			const nodeDef = json.nodes![index];
 
-			if (node.getMesh()) {
-				nodeDef.mesh = context.meshIndexMap.get(node.getMesh());
+			const mesh = node.getMesh();
+			if (mesh) {
+				nodeDef.mesh = context.meshIndexMap.get(mesh);
 			}
 
-			if (node.getCamera()) {
-				nodeDef.camera = context.cameraIndexMap.get(node.getCamera());
+			const camera = node.getCamera();
+			if (camera) {
+				nodeDef.camera = context.cameraIndexMap.get(camera);
 			}
 
-			if (node.getSkin()) {
-				nodeDef.skin = context.skinIndexMap.get(node.getSkin());
+			const skin = node.getSkin();
+			if (skin) {
+				nodeDef.skin = context.skinIndexMap.get(skin);
 			}
 
 			if (node.listChildren().length > 0) {
 				nodeDef.children = node.listChildren()
-					.map((node) => context.nodeIndexMap.get(node));
+					.map((node) => context.nodeIndexMap.get(node)!);
 			}
 		});
 
@@ -654,8 +659,8 @@ export class GLTFWriter {
 			animationDef.samplers = animation.listSamplers()
 				.map((sampler, samplerIndex) => {
 					const samplerDef = context.createPropertyDef(sampler) as GLTF.IAnimationSampler;
-					samplerDef.input = context.accessorIndexMap.get(sampler.getInput());
-					samplerDef.output = context.accessorIndexMap.get(sampler.getOutput());
+					samplerDef.input = context.accessorIndexMap.get(sampler.getInput()!)!;
+					samplerDef.output = context.accessorIndexMap.get(sampler.getOutput()!)!;
 					samplerDef.interpolation = sampler.getInterpolation();
 					samplerIndexMap.set(sampler, samplerIndex);
 					return samplerDef;
@@ -664,10 +669,10 @@ export class GLTFWriter {
 			animationDef.channels = animation.listChannels()
 				.map((channel) => {
 					const channelDef = context.createPropertyDef(channel) as GLTF.IAnimationChannel;
-					channelDef.sampler = samplerIndexMap.get(channel.getSampler());
+					channelDef.sampler = samplerIndexMap.get(channel.getSampler()!)!;
 					channelDef.target = {
-						node: context.nodeIndexMap.get(channel.getTargetNode()),
-						path: channel.getTargetPath(),
+						node: context.nodeIndexMap.get(channel.getTargetNode()!)!,
+						path: channel.getTargetPath()!,
 					};
 					return channelDef;
 				});
@@ -679,12 +684,13 @@ export class GLTFWriter {
 
 		json.scenes = root.listScenes().map((scene) => {
 			const sceneDef = context.createPropertyDef(scene) as GLTF.IScene;
-			sceneDef.nodes = scene.listChildren().map((node) => context.nodeIndexMap.get(node));
+			sceneDef.nodes = scene.listChildren().map((node) => context.nodeIndexMap.get(node)!);
 			return sceneDef;
 		});
 
-		if (root.getDefaultScene()) {
-			json.scene = root.listScenes().indexOf(root.getDefaultScene());
+		const defaultScene = root.getDefaultScene();
+		if (defaultScene) {
+			json.scene = root.listScenes().indexOf(defaultScene);
 		}
 
 		/* Extensions (2/2). */
@@ -714,7 +720,7 @@ function clean(object: Record<string, unknown>): void {
 		if (Array.isArray(value) && value.length === 0) {
 			unused.push(key);
 		} else if (value === null || value === '') {
-			unused.push(value);
+			unused.push(key);
 		}
 	}
 

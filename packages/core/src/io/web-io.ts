@@ -90,19 +90,21 @@ export class WebIO extends PlatformIO {
 		const images = json.images || [];
 		const buffers = json.buffers || [];
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
-		.map((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
-			if (!resource.uri) {
+		.map((resource: GLTF.IBuffer|GLTF.IImage, index: number): Promise<void> => {
+			const uri = resource.uri;
+
+			if (!uri) {
 				const isGLBBuffer = isGLB && index === images.length;
 				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
 					throw new Error('Missing resource URI.');
 				}
-				return;
+				return Promise.resolve();
 			}
 
-			return fetch(_resolve(dir, resource.uri), this._fetchConfig)
+			return fetch(_resolve(dir, uri), this._fetchConfig)
 				.then((response) => response.arrayBuffer())
 				.then((arrayBuffer) => {
-					jsonDoc.resources[resource.uri] = arrayBuffer;
+					jsonDoc.resources[uri] = arrayBuffer;
 				});
 		});
 		return Promise.all(pendingResources).then(() => undefined);

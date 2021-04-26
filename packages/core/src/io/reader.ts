@@ -93,7 +93,7 @@ export class GLTFReader {
 		// Accessor .count and .componentType properties are inferred dynamically.
 		const accessorDefs = json.accessors || [];
 		context.accessors = accessorDefs.map((accessorDef) => {
-			const buffer = context.bufferViewBuffers[accessorDef.bufferView];
+			const buffer = context.bufferViewBuffers[accessorDef.bufferView!];
 			const accessor = doc.createAccessor(accessorDef.name, buffer).setType(accessorDef.type);
 
 			if (accessorDef.extras) accessor.setExtras(accessorDef.extras);
@@ -135,8 +135,8 @@ export class GLTFReader {
 			if (imageDef.extras) texture.setExtras(imageDef.extras);
 
 			if (imageDef.bufferView !== undefined) {
-				const bufferViewDef = json.bufferViews[imageDef.bufferView];
-				const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+				const bufferViewDef = json.bufferViews![imageDef.bufferView];
+				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 				const bufferData = bufferDef.uri
 					? jsonDoc.resources[bufferDef.uri]
 					: jsonDoc.resources[GLB_BUFFER];
@@ -207,23 +207,23 @@ export class GLTFReader {
 
 			if (pbrDef.baseColorTexture !== undefined) {
 				const textureInfoDef = pbrDef.baseColorTexture;
-				const texture = context.textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 				material.setBaseColorTexture(texture);
-				context.setTextureInfo(material.getBaseColorTextureInfo(), textureInfoDef);
+				context.setTextureInfo(material.getBaseColorTextureInfo()!, textureInfoDef);
 			}
 
 			if (materialDef.emissiveTexture !== undefined) {
 				const textureInfoDef = materialDef.emissiveTexture;
-				const texture = context.textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 				material.setEmissiveTexture(texture);
-				context.setTextureInfo(material.getEmissiveTextureInfo(), textureInfoDef);
+				context.setTextureInfo(material.getEmissiveTextureInfo()!, textureInfoDef);
 			}
 
 			if (materialDef.normalTexture !== undefined) {
 				const textureInfoDef = materialDef.normalTexture;
-				const texture = context.textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 				material.setNormalTexture(texture);
-				context.setTextureInfo(material.getNormalTextureInfo(), textureInfoDef);
+				context.setTextureInfo(material.getNormalTextureInfo()!, textureInfoDef);
 				if (materialDef.normalTexture.scale !== undefined) {
 					material.setNormalScale(materialDef.normalTexture.scale);
 				}
@@ -231,9 +231,9 @@ export class GLTFReader {
 
 			if (materialDef.occlusionTexture !== undefined) {
 				const textureInfoDef = materialDef.occlusionTexture;
-				const texture = context.textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 				material.setOcclusionTexture(texture);
-				context.setTextureInfo(material.getOcclusionTextureInfo(), textureInfoDef);
+				context.setTextureInfo(material.getOcclusionTextureInfo()!, textureInfoDef);
 				if (materialDef.occlusionTexture.strength !== undefined) {
 					material.setOcclusionStrength(materialDef.occlusionTexture.strength);
 				}
@@ -241,9 +241,9 @@ export class GLTFReader {
 
 			if (pbrDef.metallicRoughnessTexture !== undefined) {
 				const textureInfoDef = pbrDef.metallicRoughnessTexture;
-				const texture = context.textures[textureDefs[textureInfoDef.index].source];
+				const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 				material.setMetallicRoughnessTexture(texture);
-				context.setTextureInfo(material.getMetallicRoughnessTextureInfo(), textureInfoDef);
+				context.setTextureInfo(material.getMetallicRoughnessTextureInfo()!, textureInfoDef);
 			}
 
 			return material;
@@ -315,17 +315,22 @@ export class GLTFReader {
 			if (cameraDef.extras) camera.setExtras(cameraDef.extras);
 
 			if (cameraDef.type === Camera.Type.PERSPECTIVE) {
-				camera
-					.setZNear(cameraDef.perspective.znear)
-					.setZFar(cameraDef.perspective.zfar)
-					.setYFov(cameraDef.perspective.yfov)
-					.setAspectRatio(cameraDef.perspective.aspectRatio);
+				const perspectiveDef = cameraDef.perspective!;
+				camera.setYFov(perspectiveDef.yfov);
+				camera.setZNear(perspectiveDef.znear);
+				if (perspectiveDef.zfar !== undefined) {
+					camera.setZFar(perspectiveDef.zfar);
+				}
+				if (perspectiveDef.aspectRatio !== undefined) {
+					camera.setAspectRatio(perspectiveDef.aspectRatio);
+				}
 			} else {
+				const orthoDef = cameraDef.orthographic!;
 				camera
-					.setZNear(cameraDef.orthographic.znear)
-					.setZFar(cameraDef.orthographic.zfar)
-					.setXMag(cameraDef.orthographic.xmag)
-					.setYMag(cameraDef.orthographic.ymag);
+					.setZNear(orthoDef.znear)
+					.setZFar(orthoDef.zfar)
+					.setXMag(orthoDef.xmag)
+					.setYMag(orthoDef.ymag);
 			}
 			return camera;
 		});
@@ -498,7 +503,7 @@ export class GLTFReader {
 			for (const extensionName of json.extensionsUsed) {
 				if (!options.extensions.find(
 						(extension) => extension.EXTENSION_NAME === extensionName)) {
-					options.logger.warn(`Missing optional extension, "${extensionName}".`);
+					options.logger!.warn(`Missing optional extension, "${extensionName}".`);
 				}
 			}
 		}
@@ -511,8 +516,8 @@ export class GLTFReader {
  * @hidden
  */
 function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
-	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
-	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
+	const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 	const resource = bufferDef.uri
 		? jsonDoc.resources[bufferDef.uri]
 		: jsonDoc.resources[GLB_BUFFER];
@@ -524,7 +529,7 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
 
 	const array = new TypedArray(accessorDef.count * elementSize);
 	const view = new DataView(resource, bufferViewDef.byteOffset, bufferViewDef.byteLength);
-	const byteStride = bufferViewDef.byteStride;
+	const byteStride = bufferViewDef.byteStride!;
 
 	for (let i = 0; i < accessorDef.count; i++) {
 		for (let j = 0; j < elementSize; j++) {
@@ -564,8 +569,8 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
  * @hidden
  */
 function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
-	const bufferViewDef = jsonDoc.json.bufferViews[accessorDef.bufferView];
-	const bufferDef = jsonDoc.json.buffers[bufferViewDef.buffer];
+	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
+	const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 	const resource = bufferDef.uri
 		? jsonDoc.resources[bufferDef.uri]
 		: jsonDoc.resources[GLB_BUFFER];
@@ -616,9 +621,10 @@ function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): Typ
 		array = new TypedArray(accessorDef.count * elementSize);
 	}
 
-	const count = accessorDef.sparse.count;
-	const indicesDef = {...accessorDef, ...accessorDef.sparse.indices, count, type: 'SCALAR'};
-	const valuesDef = {...accessorDef, ...accessorDef.sparse.values, count};
+	const sparseDef = accessorDef.sparse!;
+	const count = sparseDef.count;
+	const indicesDef = {...accessorDef, ...sparseDef.indices, count, type: 'SCALAR'};
+	const valuesDef = {...accessorDef, ...sparseDef.values, count};
 	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, jsonDoc);
 	const values = getAccessorArray(valuesDef, jsonDoc);
 

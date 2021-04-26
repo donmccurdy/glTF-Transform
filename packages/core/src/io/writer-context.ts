@@ -1,3 +1,4 @@
+import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
 import { GLTF } from '../types/gltf';
@@ -36,7 +37,18 @@ export class WriterContext {
 	private readonly _accessorUsageMap = new Map<Accessor, string>();
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
 
-	constructor (public readonly jsonDoc: JSONDocument, public readonly options: WriterOptions) {}
+	constructor (
+		doc: Document,
+		public readonly jsonDoc: JSONDocument,
+		public readonly options: Required<WriterOptions>
+	) {
+		const root = doc.getRoot();
+		const numBuffers = root.listBuffers().length;
+		const numImages = root.listTextures().length;
+		this.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
+		this.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
+		this.logger = doc.getLogger();
+	}
 
 	/**
 	 * Creates a TextureInfo definition, and any Texture or Sampler definitions it requires. If
@@ -52,8 +64,8 @@ export class WriterContext {
 
 		const samplerKey = JSON.stringify(samplerDef);
 		if (!this.samplerDefIndexMap.has(samplerKey)) {
-			this.samplerDefIndexMap.set(samplerKey, this.jsonDoc.json.samplers.length);
-			this.jsonDoc.json.samplers.push(samplerDef);
+			this.samplerDefIndexMap.set(samplerKey, this.jsonDoc.json.samplers!.length);
+			this.jsonDoc.json.samplers!.push(samplerDef);
 		}
 
 		const textureDef = {
@@ -63,8 +75,8 @@ export class WriterContext {
 
 		const textureKey = JSON.stringify(textureDef);
 		if (!this.textureDefIndexMap.has(textureKey)) {
-			this.textureDefIndexMap.set(textureKey, this.jsonDoc.json.textures.length);
-			this.jsonDoc.json.textures.push(textureDef);
+			this.textureDefIndexMap.set(textureKey, this.jsonDoc.json.textures!.length);
+			this.jsonDoc.json.textures!.push(textureDef);
 		}
 
 		const textureInfoDef = {
@@ -102,8 +114,8 @@ export class WriterContext {
 	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
 		if (this.options.isGLB) {
 			this.imageBufferViews.push(data);
-			imageDef.bufferView = this.jsonDoc.json.bufferViews.length;
-			this.jsonDoc.json.bufferViews.push({
+			imageDef.bufferView = this.jsonDoc.json.bufferViews!.length;
+			this.jsonDoc.json.bufferViews!.push({
 				buffer: 0,
 				byteOffset: -1, // determined while iterating buffers, in Writer.ts.
 				byteLength: data.byteLength
@@ -120,8 +132,8 @@ export class WriterContext {
 	 * buffer views with like accessors. This includes the specified buffer view "targets", but
 	 * also implicit usage like IBMs or instanced mesh attributes.
 	 */
-	getAccessorUsage(accessor: Accessor): string {
-		return this._accessorUsageMap.get(accessor);
+	getAccessorUsage(accessor: Accessor): string | null {
+		return this._accessorUsageMap.get(accessor) || null;
 	}
 
 	/**

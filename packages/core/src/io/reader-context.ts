@@ -30,11 +30,11 @@ export class ReaderContext {
 			textureInfo.setTexCoord(textureInfoDef.texCoord);
 		}
 
-		const textureDef = this.jsonDoc.json.textures[textureInfoDef.index];
+		const textureDef = this.jsonDoc.json.textures![textureInfoDef.index];
 
 		if (textureDef.sampler === undefined) return;
 
-		const samplerDef = this.jsonDoc.json.samplers[textureDef.sampler];
+		const samplerDef = this.jsonDoc.json.samplers![textureDef.sampler];
 
 		if (samplerDef.magFilter !== undefined) {
 			textureInfo.setMagFilter(samplerDef.magFilter);
