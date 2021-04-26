@@ -3,6 +3,7 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "dist",
+    "noImplicitAny": true,
     // "strict": true,
   }
 }

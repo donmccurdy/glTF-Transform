@@ -12,14 +12,15 @@
     "experimentalDecorators": true,
     "typeRoots": ["node_modules/@types"],
 
-    // Progress toward "strict": true.
+    // Components of "strict" mode.
     "alwaysStrict": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
-    // "strictNullChecks": true,
-    // "strictPropertyInitialization": true,
+
+    // Certain rules (noImplicitAny, strictNullChecks, strictPropertyInitialization)
+    // are tightend by sub-package tsconfig. Global tsconfig affects unit tests, and
+    // I consider those rules too strict for unit tests.
   },
   "include": ["packages/*/src/**/*.ts"]
 }
