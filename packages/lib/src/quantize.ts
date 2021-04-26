@@ -57,12 +57,9 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 
 			const nodeTransform = getNodeTransform(mesh);
-			if (!nodeTransform) {
-				logger.warn(`${NAME}: Quantization skipped for empty mesh.`);
-				continue;
-			}
+			if (nodeTransform) transformMeshParents(doc, mesh, nodeTransform);
 
-			transformMeshParents(doc, mesh, nodeTransform);
+
 
 			for (const prim of mesh.listPrimitives()) {
 				quantizePrimitive(doc, prim, nodeTransform, options);
@@ -80,11 +77,11 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 function quantizePrimitive(
 		doc: Document,
 		prim: Primitive | PrimitiveTarget,
-		nodeTransform: NodeTransform,
+		nodeTransform: NodeTransform | null,
 		options: QuantizeOptions): void {
 	const root = doc.getRoot();
 	const logger = doc.getLogger();
-	const nodeRemap = nodeTransform.nodeRemap;
+	const nodeRemap = nodeTransform ? nodeTransform.nodeRemap : null;
 
 	for (const semantic of prim.listSemantics()) {
 		if (options.excludeAttributes!.includes(semantic)) continue;
@@ -107,6 +104,9 @@ function quantizePrimitive(
 
 		// Write quantization transform for position data into mesh parents.
 		if (semantic === 'POSITION') {
+			if (!nodeRemap) {
+				throw new Error(`${NAME}: Failed precondition; missing node transform.`);
+			}
 			for (let i = 0, el: vec3 = [0, 0, 0], il = attribute.getCount(); i < il; i++) {
 				attribute.setElement(i, nodeRemap(attribute.getElement(i, el)));
 			}
