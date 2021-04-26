@@ -6,10 +6,12 @@ const NAME = 'instance';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface InstanceOptions {}
 
-const DEFAULT_OPTIONS: InstanceOptions = {};
+const INSTANCE_DEFAULTS: Required<InstanceOptions> = {};
 
 /** Creates GPU instances (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
-export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transform {
+export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...INSTANCE_DEFAULTS, ..._options} as Required<InstanceOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();

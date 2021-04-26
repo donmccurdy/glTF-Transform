@@ -5,10 +5,11 @@ const NAME = 'unweld';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnweldOptions {}
 
-const DEFAULT_OPTIONS: UnweldOptions = {};
+const UNWELD_DEFAULTS: UnweldOptions = {};
 
-export function unweld (_options: UnweldOptions = DEFAULT_OPTIONS): Transform {
-	_options = {...DEFAULT_OPTIONS, ..._options};
+export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...UNWELD_DEFAULTS, ..._options} as Required<UnweldOptions>;
 
 	return (doc: Document): void => {
 

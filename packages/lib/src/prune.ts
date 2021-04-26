@@ -4,13 +4,14 @@ const NAME = 'prune';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PruneOptions {}
-const DEFAULT_OPTIONS: PruneOptions = {};
+const PRUNE_DEFAULTS: Required<PruneOptions> = {};
 
 /**
  * Removes unused resources from a file, and may be helpful for cleaning up after other operations.
  */
-export const prune = function (_options: PruneOptions = DEFAULT_OPTIONS): Transform {
-	_options = {...DEFAULT_OPTIONS, ..._options};
+export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...PRUNE_DEFAULTS, ..._options} as Required<PruneOptions>;
 
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();

@@ -7,14 +7,14 @@ export interface PartitionOptions {
 	meshes?: boolean | Array<string>;
 }
 
-const DEFAULT_OPTIONS: PartitionOptions =  {
+const PARTITION_DEFAULTS: Required<PartitionOptions> =  {
 	animations: true,
 	meshes: true,
 };
 
-const partition = (options: PartitionOptions = DEFAULT_OPTIONS): Transform => {
+const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform => {
 
-	options = {...DEFAULT_OPTIONS, ...options};
+	const options = {...PARTITION_DEFAULTS, ..._options} as Required<PartitionOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();

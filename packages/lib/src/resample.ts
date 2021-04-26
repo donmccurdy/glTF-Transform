@@ -4,7 +4,7 @@ const NAME = 'resample';
 
 export interface ResampleOptions {tolerance?: number}
 
-const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
+const RESAMPLE_DEFAULTS: Required<ResampleOptions> =  {tolerance: 1e-4};
 
 /**
  * Removes redundant sequential keyframes, common in morph target sequences and baked animations.
@@ -12,9 +12,9 @@ const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
  *
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */
-export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform => {
+export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform => {
 
-	options = {...DEFAULT_OPTIONS, ...options};
+	const options = {...RESAMPLE_DEFAULTS, ..._options} as Required<ResampleOptions>;
 
 	return (doc: Document): void => {
 		const accessorsVisited = new Set<Accessor>();

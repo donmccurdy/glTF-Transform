@@ -14,7 +14,8 @@ export interface AOOptions {
 	samples?: number;
 }
 
-const DEFAULT_OPTIONS: AOOptions = {
+const AO_DEFAULTS: Required<AOOptions> = {
+	gl: null,
 	resolution: 512,
 	samples: 500,
 };
@@ -35,14 +36,14 @@ const TEXTURE_DATA = new Uint8Array([
  * - **resolution**: Resolution of depth buffer. Default: 512.
  * - **samples**: Number of samples to draw. Default: 500.
  */
-export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export function ao (_options: AOOptions = AO_DEFAULTS): Transform {
+	const options = {...AO_DEFAULTS, ..._options} as Required<AOOptions>;
 
 	return (doc: Document): void => {
 
 		const logger = doc.getLogger();
-		const resolution = options.resolution as number;
-		const samples = options.samples as number;
+		const resolution = options.resolution;
+		const samples = options.samples;
 
 		logger.debug(`${NAME}: resolution = ${resolution}; samples = ${samples}`);
 
