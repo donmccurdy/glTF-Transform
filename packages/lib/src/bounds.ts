@@ -8,10 +8,11 @@ export function bounds (node: Node | Scene): {min: vec3; max: vec3} {
 
 	for (const parent of parents) {
 		parent.traverse((node) => {
-			if (!node.getMesh()) return;
+			const mesh = node.getMesh();
+			if (!mesh) return;
 
 			// Compute mesh bounds and update result.
-			const meshBounds = getMeshBounds(node.getMesh(), node.getWorldMatrix());
+			const meshBounds = getMeshBounds(mesh, node.getWorldMatrix());
 			expandBounds(meshBounds.min, resultBounds);
 			expandBounds(meshBounds.max, resultBounds);
 		});
@@ -28,6 +29,8 @@ function getMeshBounds(mesh: Mesh, worldMatrix: mat4): {min: vec3; max: vec3} {
 	// so we need to compute the world AABB vertex by vertex here.
 	for (const prim of mesh.listPrimitives()) {
 		const position = prim.getAttribute('POSITION');
+		if (!position) continue;
+
 		let localPos: vec3 = [0, 0, 0];
 		let worldPos: vec3 = [0, 0, 0];
 		for (let i = 0; i < position.getCount(); i++) {

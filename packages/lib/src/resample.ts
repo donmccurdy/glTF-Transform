@@ -25,8 +25,8 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 			for (const sampler of animation.listSamplers()) {
 				if (sampler.getInterpolation() === 'STEP'
 					|| sampler.getInterpolation() === 'LINEAR') {
-					accessorsVisited.add(sampler.getInput());
-					accessorsVisited.add(sampler.getOutput());
+					accessorsVisited.add(sampler.getInput()!);
+					accessorsVisited.add(sampler.getOutput()!);
 					optimize(sampler, options);
 				}
 			}
@@ -52,8 +52,8 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	if (!['STEP', 'LINEAR'].includes(sampler.getInterpolation())) return;
 
-	const input = sampler.getInput().clone();
-	const output = sampler.getOutput().clone();
+	const input = sampler.getInput()!.clone();
+	const output = sampler.getOutput()!.clone();
 
 	const tolerance = options.tolerance as number;
 
@@ -113,8 +113,8 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 
 	// If the sampler was optimized, truncate and save the results. If not, clean up.
 	if (writeIndex !== input.getCount()) {
-		input.setArray(input.getArray().slice(0, writeIndex));
-		output.setArray(output.getArray().slice(0, writeIndex * output.getElementSize()));
+		input.setArray(input.getArray()!.slice(0, writeIndex));
+		output.setArray(output.getArray()!.slice(0, writeIndex * output.getElementSize()));
 		sampler.setInput(input);
 		sampler.setOutput(output);
 	} else {

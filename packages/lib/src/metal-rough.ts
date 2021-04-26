@@ -29,7 +29,7 @@ export function metalRough (_options: MetalRoughOptions = {}) {
 		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness) as
 			MaterialsPBRSpecularGlossiness;
 
-		const inputTextures = new Set<Texture>();
+		const inputTextures = new Set<Texture | null>();
 
 		for (const material of doc.getRoot().listMaterials()) {
 			const specGloss = material.getExtension('KHR_materials_pbrSpecularGlossiness') as
@@ -62,20 +62,20 @@ export function metalRough (_options: MetalRoughOptions = {}) {
 			const diffuseTexture = specGloss.getDiffuseTexture();
 			if (diffuseTexture) {
 				material.setBaseColorTexture(diffuseTexture);
-				material.getBaseColorTextureInfo().copy(specGloss.getDiffuseTextureInfo());
+				material.getBaseColorTextureInfo()!.copy(specGloss.getDiffuseTextureInfo()!);
 			}
 
 			// Move specular + gloss -> specular + roughness.
 			const sgTexture = specGloss.getSpecularGlossinessTexture();
 			if (sgTexture) {
 				// specularGlossiness -> specular.
-				const sgTextureInfo = specGloss.getSpecularGlossinessTextureInfo();
+				const sgTextureInfo = specGloss.getSpecularGlossinessTextureInfo()!;
 				const specularTexture = doc.createTexture();
 				await rewriteTexture(sgTexture, specularTexture, (pixels, i, j) => {
 					pixels.set(i, j, 3, 255); // Remove glossiness.
 				});
 				specular.setSpecularTexture(specularTexture);
-				specular.getSpecularTextureInfo().copy(sgTextureInfo);
+				specular.getSpecularTextureInfo()!.copy(sgTextureInfo);
 
 				// specularGlossiness -> roughness.
 				const glossinessFactor = specGloss.getGlossinessFactor();
@@ -89,7 +89,7 @@ export function metalRough (_options: MetalRoughOptions = {}) {
 					pixels.set(i, j, 3, 255);
 				});
 				material.setMetallicRoughnessTexture(metalRoughTexture);
-				material.getMetallicRoughnessTextureInfo().copy(sgTextureInfo);
+				material.getMetallicRoughnessTextureInfo()!.copy(sgTextureInfo);
 			} else {
 				specular.setSpecularColorFactor(specGloss.getSpecularFactor());
 				material.setRoughnessFactor(1 - specGloss.getGlossinessFactor());

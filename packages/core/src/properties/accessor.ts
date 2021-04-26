@@ -400,7 +400,7 @@ export class Accessor extends ExtensibleProperty {
 	public getBuffer(): Buffer | null { return this.buffer ? this.buffer.getChild() : null; }
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
-	public setBuffer(buffer: Buffer): this {
+	public setBuffer(buffer: Buffer | null): this {
 		this.buffer = this.graph.link('buffer', this, buffer);
 		return this;
 	}

@@ -41,24 +41,24 @@ function listMeshes (doc: Document): InspectPropertyReport<InspectMeshReport> {
 
 		mesh.listPrimitives().forEach((prim) => {
 			for (const semantic of prim.listSemantics()) {
-				const attr = prim.getAttribute(semantic);
-				semantics.add(semantic + ':' + arrayToType(attr.getArray()));
+				const attr = prim.getAttribute(semantic)!;
+				semantics.add(semantic + ':' + arrayToType(attr.getArray()!));
 				meshAccessors.add(attr);
 			}
 			for (const targ of prim.listTargets()) {
 				targ.listAttributes().forEach((attr) => meshAccessors.add(attr));
 			}
-			if (prim.getIndices()) {
-				const indices = prim.getIndices();
-				meshIndices.add(arrayToType(indices.getArray()));
+			const indices = prim.getIndices();
+			if (indices) {
+				meshIndices.add(arrayToType(indices.getArray()!));
 				meshAccessors.add(indices);
 			}
-			verts += prim.getAttribute('POSITION').getCount();
+			verts += prim.listAttributes()[0].getCount();
 			glPrimitives += getGLPrimitiveCount(prim);
 		});
 
 		let size = 0;
-		Array.from(meshAccessors).forEach((a) => (size += a.getArray().byteLength));
+		Array.from(meshAccessors).forEach((a) => (size += a.getArray()!.byteLength));
 
 		const modes = mesh.listPrimitives()
 			.map((prim) => MeshPrimitiveModeLabels[prim.getMode()]);
@@ -127,7 +127,7 @@ function listTextures (doc: Document): InspectPropertyReport<InspectTextureRepor
 			.map((link) => link.getName())
 			.filter((name) => name !== 'texture');
 
-		const resolution = ImageUtils.getSize(texture.getImage(), texture.getMimeType());
+		const resolution = ImageUtils.getSize(texture.getImage()!, texture.getMimeType());
 
 		return {
 			name: texture.getName(),
@@ -136,8 +136,8 @@ function listTextures (doc: Document): InspectPropertyReport<InspectTextureRepor
 			instances,
 			mimeType: texture.getMimeType(),
 			resolution: resolution ? resolution.join('x') : '',
-			size: texture.getImage().byteLength,
-			gpuSize: ImageUtils.getMemSize(texture.getImage(), texture.getMimeType()),
+			size: texture.getImage()!.byteLength,
+			gpuSize: ImageUtils.getMemSize(texture.getImage()!, texture.getMimeType()),
 		};
 	});
 
@@ -150,20 +150,26 @@ function listAnimations (doc: Document): InspectPropertyReport<InspectAnimationR
 		let minTime = Infinity;
 		let maxTime = -Infinity;
 		anim.listSamplers().forEach((sampler) => {
-			minTime = Math.min(minTime, sampler.getInput().getMin([])[0]);
-			maxTime = Math.max(maxTime, sampler.getInput().getMax([])[0]);
+			const input = sampler.getInput();
+			if (!input) return;
+			minTime = Math.min(minTime, input.getMin([])[0]);
+			maxTime = Math.max(maxTime, input.getMax([])[0]);
 		});
 
 		let size = 0;
 		let keyframes = 0;
 		const accessors: Set<Accessor> = new Set();
 		anim.listSamplers().forEach((sampler) => {
-			keyframes += sampler.getInput().getCount();
-			accessors.add(sampler.getInput());
-			accessors.add(sampler.getOutput());
+			const input = sampler.getInput();
+			const output = sampler.getOutput();
+			if (!input) return;
+			keyframes += input.getCount();
+			accessors.add(input);
+			if (!output) return;
+			accessors.add(output);
 		});
 		Array.from(accessors).forEach((accessor) => {
-			size += accessor.getArray().byteLength;
+			size += accessor.getArray()!.byteLength;
 		});
 
 		return {
@@ -228,7 +234,7 @@ export interface InspectTextureReport {
 	mimeType: string;
 	resolution: string;
 	size: number;
-	gpuSize: number;
+	gpuSize: number | null;
 }
 
 export interface InspectAnimationReport {
@@ -253,7 +259,7 @@ const MeshPrimitiveModeLabels = [
 /** Maps values in a vector to a finite precision. */
 function toPrecision(v: number[]): number[] {
 	for (let i = 0; i < v.length; i++) {
-		if (v[i].toFixed) v[i] = Number(v[i].toFixed(5));
+		if ((v[i] as number).toFixed) v[i] = Number(v[i].toFixed(5));
 	}
 	return v;
 }
