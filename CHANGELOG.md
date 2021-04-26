@@ -8,6 +8,8 @@
 
 **Breaking changes:**
 
+- I/O `writeJSON` option `isGLB` changed to `format: Format.GLB`.
+
 ## v0.10
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10)
