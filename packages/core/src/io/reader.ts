@@ -30,7 +30,8 @@ const DEFAULT_OPTIONS: ReaderOptions = {
 
 /** @hidden */
 export class GLTFReader {
-	public static read(jsonDoc: JSONDocument, options: ReaderOptions = DEFAULT_OPTIONS): Document {
+	public static read(jsonDoc: JSONDocument, _options: ReaderOptions = DEFAULT_OPTIONS): Document {
+		const options = {...DEFAULT_OPTIONS, ..._options} as Required<ReaderOptions>;
 		const {json} = jsonDoc;
 		const doc = new Document();
 
@@ -482,7 +483,7 @@ export class GLTFReader {
 		return doc;
 	}
 
-	private static validate(jsonDoc: JSONDocument, options: ReaderOptions): void {
+	private static validate(jsonDoc: JSONDocument, options: Required<ReaderOptions>): void {
 
 		const json = jsonDoc.json;
 
@@ -503,7 +504,7 @@ export class GLTFReader {
 			for (const extensionName of json.extensionsUsed) {
 				if (!options.extensions.find(
 						(extension) => extension.EXTENSION_NAME === extensionName)) {
-					options.logger!.warn(`Missing optional extension, "${extensionName}".`);
+					options.logger.warn(`Missing optional extension, "${extensionName}".`);
 				}
 			}
 		}

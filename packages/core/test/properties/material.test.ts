@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
+import { Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -335,7 +335,7 @@ test('@gltf-transform/core::material | i/o', t => {
 		.setOcclusionStrength(0.4);
 
 	const io = new NodeIO();
-	const rtDoc = io.readJSON(io.writeJSON(doc, {isGLB: true}));
+	const rtDoc = io.readJSON(io.writeJSON(doc, {format: Format.GLB}));
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 
 	t.ok(rtMat.getBaseColorTexture(), 'baseColorTexture');

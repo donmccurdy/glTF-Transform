@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Accessor, AnimationChannel, Document, NodeIO } from '../../';
 
-test.only('@gltf-transform/core::skin', t => {
+test('@gltf-transform/core::skin', t => {
 	const doc = new Document();
 
 	const joints = [
@@ -58,8 +58,10 @@ test.only('@gltf-transform/core::skin', t => {
 		.addSampler(sampler);
 
 	const io = new NodeIO();
-	const options = {basename: 'skinTest'};
+	const options = {basename: 'skinTest'}; // TODO: Defaults have changed!
 	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
+
+	console.log('JSONDOC', jsonDoc);
 
 	t.deepEqual(jsonDoc.json.nodes[3], {
 		name: 'armature',
@@ -115,8 +117,7 @@ test('@gltf-transform/core::skin | extras', t => {
 	const doc = new Document();
 	doc.createSkin('A').setExtras({foo: 1, bar: 2});
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc));
 
 	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');

@@ -1,4 +1,4 @@
-import { GLB_BUFFER, VertexLayout } from '../constants';
+import { Format, GLB_BUFFER, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
@@ -71,13 +71,17 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public writeJSON (doc: Document, options: WriterOptions): JSONDocument {
-		if (options.isGLB && doc.getRoot().listBuffers().length !== 1) {
+	public writeJSON (doc: Document, _options: Partial<WriterOptions> = {}): JSONDocument {
+		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length !== 1) {
 			throw new Error('GLB must have exactly 1 buffer.');
 		}
-		options.vertexLayout = this._vertexLayout;
-		options.dependencies = {...this._dependencies, ...options.dependencies};
-		return GLTFWriter.write(doc, options);
+		return GLTFWriter.write(doc, {
+			format: _options.format || Format.GLTF,
+			logger: _options.logger || this._logger,
+			vertexLayout: _options.vertexLayout || this._vertexLayout,
+			dependencies: {...this._dependencies, ..._options.dependencies},
+			basename: _options.basename || ''
+		} as Required<WriterOptions>);
 	}
 
 	/**********************************************************************************************
@@ -143,8 +147,8 @@ export abstract class PlatformIO {
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
 	public writeBinary(doc: Document): ArrayBuffer {
 		const {json, resources} = this.writeJSON(doc, {
+			format: Format.GLB,
 			basename: '',
-			isGLB: true,
 			logger: this._logger,
 			dependencies: this._dependencies,
 			vertexLayout: this._vertexLayout,

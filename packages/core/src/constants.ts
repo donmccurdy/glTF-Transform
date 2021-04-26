@@ -120,3 +120,8 @@ export enum TextureChannel {
 	B = 0x0010,
 	A = 0x0001,
 }
+
+export enum Format {
+	GLTF = 'GLTF',
+	GLB = 'GLB',
+}

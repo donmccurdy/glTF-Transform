@@ -93,8 +93,7 @@ test('@gltf-transform/core::node | extras', t => {
 	const doc = new Document();
 	doc.createNode('A').setExtras({foo: 1, bar: 2});
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, {basename: 'test'}));
 
 	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
 	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
@@ -110,8 +109,7 @@ test('@gltf-transform/core::node | identity transforms', t => {
 	doc.createNode('B').setTranslation([1, 2, 1]);
 	doc.createNode('C').setTranslation([1, 2, 1]).setRotation([1, 0, 0, 0]).setScale([1, 2, 1]);
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const { nodes } = io.writeJSON(doc, writerOptions).json;
+	const { nodes } = io.writeJSON(doc, {basename: 'test'}).json;
 
 	const a = nodes.find((n) => n.name === 'A');
 	const b = nodes.find((n) => n.name === 'B');

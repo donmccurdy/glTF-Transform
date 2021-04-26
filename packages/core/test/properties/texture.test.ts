@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, JSONDocument, NodeIO, TextureInfo } from '../../';
+import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '../../';
 
 test('@gltf-transform/core::texture | read', t => {
 	const jsonDoc = {
@@ -66,7 +66,7 @@ test('@gltf-transform/core::texture | write', t => {
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = new NodeIO();
-	const jsonDoc = io.writeJSON(doc, {basename: 'basename', isGLB: false});
+	const jsonDoc = io.writeJSON(doc, {basename: 'basename'});
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
@@ -98,8 +98,7 @@ test('@gltf-transform/core::texture | extras', t => {
 	const doc = new Document();
 	doc.createTexture('A').setExtras({foo: 1, bar: 2});
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc));
 
 	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'storage');
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrip');
@@ -117,7 +116,7 @@ test('@gltf-transform/core::texture | padding', t => {
 	doc.createTexture().setImage(new ArrayBuffer(21)).setMimeType('image/png');
 	doc.createTexture().setImage(new ArrayBuffer(20)).setMimeType('image/png');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, {isGLB: true, basename: 'test'});
+	const jsonDoc = new NodeIO().writeJSON(doc, {format: Format.GLB});
 
 	t.deepEqual(jsonDoc.json.images, [
 		{bufferView: 0, mimeType: 'image/png'},

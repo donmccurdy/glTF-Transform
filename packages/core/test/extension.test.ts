@@ -6,7 +6,9 @@ import { Document, Extension, ExtensionProperty, NodeIO, PropertyType, WriterCon
 const EXTENSION_NAME = 'TEST_node_gizmo';
 
 class GizmoExtension extends Extension {
+	static EXTENSION_NAME = EXTENSION_NAME;
 	extensionName = EXTENSION_NAME;
+
 	constructor(doc) {
 		super(doc);
 	}
@@ -106,7 +108,7 @@ test('@gltf-transform/core::extension | i/o', t => {
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
 	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
 
-	const options = {basename: 'extensionTest', isGLB: false};
+	const options = {basename: 'extensionTest'};
 
 	let jsonDoc;
 	let resultDoc;

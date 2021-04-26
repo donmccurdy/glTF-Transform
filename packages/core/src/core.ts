@@ -7,7 +7,7 @@ export { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera
 export { Graph, GraphChild, GraphChildList, Link } from './graph/';
 export { NodeIO, WebIO, ReaderContext, WriterContext } from './io/';
 export { BufferUtils, ColorUtils, FileUtils, ImageUtils, ImageUtilsFormat, Logger, MathUtils, uuid } from './utils/';
-export { TypedArray, TypedArrayConstructor, PropertyType, TextureChannel, VertexLayout, vec2, vec3, vec4, mat3, mat4, GLB_BUFFER } from './constants';
+export { TypedArray, TypedArrayConstructor, PropertyType, Format, TextureChannel, VertexLayout, vec2, vec3, vec4, mat3, mat4, GLB_BUFFER } from './constants';
 export { GLTF } from './types/gltf';
 
 /** [[include:CONCEPTS.md]] */

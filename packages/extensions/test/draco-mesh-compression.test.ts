@@ -3,7 +3,7 @@ require('source-map-support').install();
 import path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import test from 'tape';
-import { Accessor, Buffer, Document, NodeIO, Primitive } from '@gltf-transform/core';
+import { Accessor, Buffer, Document, Format, NodeIO, Primitive } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/lib';
 import { DracoMeshCompression } from '../';
 
@@ -36,7 +36,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	doc.createNode().setMesh(mesh);
 
 	const io = await createNodeIO();
-	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
@@ -118,7 +118,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 		.addPrimitive(prim2);
 
 	const io = await createNodeIO();
-	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
@@ -152,7 +152,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 		.addPrimitive(prim2);
 
 	const io = await createNodeIO();
-	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	// The two primitives have different indices, and must be encoded as entirely separate buffer
@@ -207,7 +207,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 		.addPrimitive(prim2);
 
 	const io = await createNodeIO();
-	const jsonDoc = io.writeJSON(doc, {isGLB: true});
+	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	// The two primitives have different attributes, and must be encoded as entirely separate
@@ -247,7 +247,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent'
 	doc.createMesh().addPrimitive(prim);
 
 	const io = await createNodeIO();
-	t.throws(() => io.writeJSON(doc, {isGLB: true}), 'invalid accessor reuse');
+	t.throws(() => io.writeJSON(doc, {format: Format.GLB}), 'invalid accessor reuse');
 	t.end();
 });
 

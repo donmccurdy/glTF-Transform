@@ -1,4 +1,4 @@
-import { GLB_BUFFER, NAME, PropertyType, VERSION, VertexLayout } from '../constants';
+import { Format, GLB_BUFFER, NAME, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
@@ -20,32 +20,24 @@ const BufferViewUsage = {
 };
 
 export interface WriterOptions {
+	format: Format;
 	logger?: Logger;
 	basename?: string;
-	isGLB?: boolean;
 	vertexLayout?: VertexLayout,
 	dependencies?: {[key: string]: unknown};
 }
 
-const DEFAULT_OPTIONS: Required<WriterOptions> = {
-	logger: Logger.DEFAULT_INSTANCE,
-	basename: '',
-	isGLB: true,
-	vertexLayout: VertexLayout.INTERLEAVED,
-	dependencies: {},
-};
-
 /** @hidden */
 export class GLTFWriter {
-	public static write(doc: Document, _options: WriterOptions = DEFAULT_OPTIONS): JSONDocument {
-		const options = {...DEFAULT_OPTIONS, ..._options} as Required<WriterOptions>;
+	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
 
 		const root = doc.getRoot();
 		const jsonDoc = {json: {asset: root.getAsset()}, resources: {}} as JSONDocument;
-		const context = new WriterContext(doc, jsonDoc, options);
-		const logger = options.logger || Logger.DEFAULT_INSTANCE;
 		const json = jsonDoc.json;
 		json.asset.generator = `glTF-Transform ${VERSION}`;
+
+		const context = new WriterContext(doc, jsonDoc, options);
+		const logger = options.logger || Logger.DEFAULT_INSTANCE;
 
 		/* Extensions (1/2). */
 
@@ -396,7 +388,7 @@ export class GLTFWriter {
 			// Assign buffer URI.
 
 			let uri: string;
-			if (options.isGLB) {
+			if (options.format === Format.GLB) {
 				uri = GLB_BUFFER;
 			} else {
 				uri = context.bufferURIGenerator.createURI(buffer, 'bin');

@@ -127,8 +127,7 @@ test('@gltf-transform/core::animation | extras', t => {
 		.addChannel(doc.createAnimationChannel().setExtras({channel: true}))
 		.addSampler(doc.createAnimationSampler().setExtras({sampler: true}));
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, {basename: 'test'}));
 
 	const anim = doc.getRoot().listAnimations()[0];
 	const anim2 = doc2.getRoot().listAnimations()[0];

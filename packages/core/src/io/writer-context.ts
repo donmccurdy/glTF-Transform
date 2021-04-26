@@ -1,3 +1,4 @@
+import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
@@ -112,7 +113,7 @@ export class WriterContext {
 	}
 
 	public createImageData(imageDef: GLTF.IImage, data: ArrayBuffer, texture: Texture): void {
-		if (this.options.isGLB) {
+		if (this.options.format === Format.GLB) {
 			this.imageBufferViews.push(data);
 			imageDef.bufferView = this.jsonDoc.json.bufferViews!.length;
 			this.jsonDoc.json.bufferViews!.push({

@@ -1,3 +1,4 @@
+import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
@@ -134,11 +135,11 @@ export class NodeIO extends PlatformIO {
 	private _writeGLTF (uri: string, doc: Document): void {
 		this.lastWriteBytes = 0;
 		const {json, resources} = GLTFWriter.write(doc, {
-			basename: FileUtils.basename(uri),
-			isGLB: false,
+			format: Format.GLTF,
 			logger: this._logger,
 			dependencies: this._dependencies,
 			vertexLayout: this._vertexLayout,
+			basename: FileUtils.basename(uri),
 		});
 		const {_fs: fs, _path: path} = this;
 		const dir = path.dirname(uri);

@@ -18,7 +18,7 @@ test('@gltf-transform/extensions::materials-clearcoat | factors', t => {
 		.setExtension('KHR_materials_clearcoat', clearcoat);
 
 	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
-	const roundtripDoc = io.readJSON(io.writeJSON(doc, {isGLB: false}));
+	const roundtripDoc = io.readJSON(io.writeJSON(doc));
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
 
@@ -89,7 +89,7 @@ test('@gltf-transform/extensions::materials-clearcoat | disabled', t => {
 	doc.createMaterial();
 
 	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
-	const roundtripDoc = io.readJSON(io.writeJSON(doc, {isGLB: false}));
+	const roundtripDoc = io.readJSON(io.writeJSON(doc));
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	t.equals(
 		roundtripMat.getExtension('KHR_materials_clearcoat'),

@@ -143,8 +143,7 @@ test('@gltf-transform/core::mesh | extras', t => {
 	doc.createMesh('A').setExtras({foo: 1, bar: 2})
 		.addPrimitive(doc.createPrimitive().setExtras({baz: 3}));
 
-	const writerOptions = {isGLB: false, basename: 'test'};
-	const doc2 = io.readJSON(io.writeJSON(doc, writerOptions));
+	const doc2 = io.readJSON(io.writeJSON(doc, {basename: 'test'}));
 
 	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), {foo: 1, bar: 2}, 'stores mesh extras');
 	t.deepEqual(
