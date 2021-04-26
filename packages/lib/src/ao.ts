@@ -9,12 +9,13 @@ interface GLFactory {
 }
 
 export interface AOOptions {
-	gl?: GLFactory;
+	gl?: GLFactory | null;
 	resolution?: number;
 	samples?: number;
 }
 
-const DEFAULT_OPTIONS: AOOptions = {
+const AO_DEFAULTS: Required<AOOptions> = {
+	gl: null,
 	resolution: 512,
 	samples: 500,
 };
@@ -35,14 +36,14 @@ const TEXTURE_DATA = new Uint8Array([
  * - **resolution**: Resolution of depth buffer. Default: 512.
  * - **samples**: Number of samples to draw. Default: 500.
  */
-export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export function ao (_options: AOOptions = AO_DEFAULTS): Transform {
+	const options = {...AO_DEFAULTS, ..._options} as Required<AOOptions>;
 
 	return (doc: Document): void => {
 
 		const logger = doc.getLogger();
-		const resolution = options.resolution as number;
-		const samples = options.samples as number;
+		const resolution = options.resolution;
+		const samples = options.samples;
 
 		logger.debug(`${NAME}: resolution = ${resolution}; samples = ${samples}`);
 
@@ -74,7 +75,11 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 		Array.from(primitives).forEach((primitive, index) => {
 			logger.debug(`${NAME}: Baking primitive ${index} / ${primitives.size}.`);
 
-			if (primitive.getMaterial().getOcclusionTexture()) {
+			const material = primitive.getMaterial();
+			const positionAttr = primitive.getAttribute('POSITION');
+			if (!material || !positionAttr) return;
+
+			if (material.getOcclusionTexture()) {
 				// TODO: Duplicate the material if needed.
 				logger.warn(
 					`${NAME}: Primitive already has AO. Is it sharing a material? Skipping.`
@@ -83,9 +88,9 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 			}
 
 			// Bake vertex AO.
-			const position = primitive.getAttribute('POSITION').getArray();
-			const cells = primitive.getIndices() ? primitive.getIndices().getArray() : undefined;
-			const aoSampler = geoao(position, {cells, resolution, regl});
+			const position = positionAttr.getArray();
+			const cells = primitive.getIndices() ? primitive.getIndices()!.getArray() : undefined;
+			const aoSampler = geoao(position!, {cells, resolution, regl});
 			for (let i = 0; i < samples; i++) aoSampler.sample();
 			const ao = aoSampler.report();
 			aoSampler.dispose();
@@ -107,7 +112,7 @@ export function ao (options: AOOptions = DEFAULT_OPTIONS): Transform {
 				primitive.setAttribute('TEXCOORD_0', uv2);
 			}
 
-			primitive.getMaterial().setOcclusionTexture(texture);
+			material.setOcclusionTexture(texture);
 		});
 
 		logger.debug(`${NAME}: Complete.`);

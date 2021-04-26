@@ -10,7 +10,10 @@ export async function rewriteTexture(
 
 	if (!source) return null;
 
-	const pixels = await getPixels(new Uint8Array(source.getImage()), source.getMimeType());
+	const srcImage = source.getImage();
+	if (!srcImage) return null;
+
+	const pixels = await getPixels(new Uint8Array(srcImage), source.getMimeType());
 
 	for(let i = 0; i < pixels.shape[0]; ++i) {
 		for(let j = 0; j < pixels.shape[1]; ++j) {
@@ -18,30 +21,33 @@ export async function rewriteTexture(
 		}
 	}
 
-	const image = (await savePixels(pixels, 'image/png')).buffer;
-	return target.setImage(image).setMimeType('image/png');
+	const dstImage = (await savePixels(pixels, 'image/png')).buffer;
+	return target.setImage(dstImage).setMimeType('image/png');
 }
 
 export function getGLPrimitiveCount(prim: Primitive): number {
+	const indices = prim.getIndices();
+	const position = prim.getAttribute('POSITION')!;
+
 	// Reference: https://www.khronos.org/opengl/wiki/Primitive
 	switch (prim.getMode()) {
 		case Primitive.Mode.POINTS:
-			return prim.getAttribute('POSITION').getCount();
+			return position.getCount();
 		case Primitive.Mode.LINES:
-			return prim.getIndices()
-				? prim.getIndices().getCount() / 2
-				: prim.getAttribute('POSITION').getCount() / 2;
+			return indices
+				? indices.getCount() / 2
+				: position.getCount() / 2;
 		case Primitive.Mode.LINE_LOOP:
-			return prim.getAttribute('POSITION').getCount();
+			return position.getCount();
 		case Primitive.Mode.LINE_STRIP:
-			return prim.getAttribute('POSITION').getCount() - 1;
+			return position.getCount() - 1;
 		case Primitive.Mode.TRIANGLES:
-			return prim.getIndices()
-				? prim.getIndices().getCount() / 3
-				: prim.getAttribute('POSITION').getCount() / 3;
+			return indices
+				? indices.getCount() / 3
+				: position.getCount() / 3;
 		case Primitive.Mode.TRIANGLE_STRIP:
 		case Primitive.Mode.TRIANGLE_FAN:
-			return prim.getAttribute('POSITION').getCount() - 2;
+			return position.getCount() - 2;
 		default:
 			throw new Error('Unexpected mode: ' + prim.getMode());
 	}

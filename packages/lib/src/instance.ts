@@ -6,10 +6,12 @@ const NAME = 'instance';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface InstanceOptions {}
 
-const DEFAULT_OPTIONS: InstanceOptions = {};
+const INSTANCE_DEFAULTS: Required<InstanceOptions> = {};
 
 /** Creates GPU instances (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
-export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transform {
+export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...INSTANCE_DEFAULTS, ..._options} as Required<InstanceOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -35,14 +37,14 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 			// For each Mesh, create an InstancedMesh and collect transforms.
 			const modifiedNodes = [];
 			for (const mesh of Array.from(meshInstances.keys())) {
-				const nodes = Array.from(meshInstances.get(mesh));
+				const nodes = Array.from(meshInstances.get(mesh)!);
 				if (nodes.length < 2) continue;
 				if (nodes.some((node) => node.getSkin())) continue;
 
 				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
-				const batchTranslation = batch.getAttribute('TRANSLATION');
-				const batchRotation = batch.getAttribute('ROTATION');
-				const batchScale = batch.getAttribute('SCALE');
+				const batchTranslation = batch.getAttribute('TRANSLATION')!;
+				const batchRotation = batch.getAttribute('ROTATION')!;
+				const batchScale = batch.getAttribute('SCALE')!;
 
 				const batchNode = doc.createNode()
 					.setMesh(mesh)
@@ -97,7 +99,7 @@ export function instance (_options: InstanceOptions = DEFAULT_OPTIONS): Transfor
 }
 
 function pruneUnusedNodes(nodes: Node[], logger: Logger): void {
-	let node: Node;
+	let node: Node | undefined;
 	let unusedNodes = 0;
 	while ((node = nodes.pop())) {
 		if (node.listChildren().length
@@ -123,7 +125,7 @@ function createBatch(
 		batchExtension: MeshGPUInstancing,
 		mesh: Mesh,
 		count: number): InstancedMesh {
-	const buffer = mesh.listPrimitives()[0].getAttribute('POSITION').getBuffer();
+	const buffer = mesh.listPrimitives()[0].getAttribute('POSITION')!.getBuffer();
 
 	const batchTranslation = doc.createAccessor()
 		.setType('VEC3')

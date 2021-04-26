@@ -19,7 +19,7 @@ export interface QuantizeOptions {
 	quantizeGeneric?: number;
 }
 
-export const QUANTIZE_DEFAULTS: QuantizeOptions =  {
+export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
 	excludeAttributes: [],
 	quantizePosition: 14,
 	quantizeNormal: 10,
@@ -38,9 +38,9 @@ export const QUANTIZE_DEFAULTS: QuantizeOptions =  {
  * - https://www.mathworks.com/help/dsp/ref/uniformencoder.html
  * - https://oroboro.com/compressed-unit-vectors/
  */
-const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
+const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
-	options = {...QUANTIZE_DEFAULTS, ...options};
+	const options = {...QUANTIZE_DEFAULTS, ..._options} as Required<QuantizeOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -57,7 +57,9 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 
 			const nodeTransform = getNodeTransform(mesh);
-			transformMeshParents(doc, mesh, nodeTransform);
+			if (nodeTransform) transformMeshParents(doc, mesh, nodeTransform);
+
+
 
 			for (const prim of mesh.listPrimitives()) {
 				quantizePrimitive(doc, prim, nodeTransform, options);
@@ -75,16 +77,16 @@ const quantize = (options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 function quantizePrimitive(
 		doc: Document,
 		prim: Primitive | PrimitiveTarget,
-		nodeTransform: NodeTransform,
-		options: QuantizeOptions): void {
+		nodeTransform: NodeTransform | null,
+		options: Required<QuantizeOptions>): void {
 	const root = doc.getRoot();
 	const logger = doc.getLogger();
-	const nodeRemap = nodeTransform.nodeRemap;
+	const nodeRemap = nodeTransform ? nodeTransform.nodeRemap : null;
 
 	for (const semantic of prim.listSemantics()) {
-		if (options.excludeAttributes.includes(semantic)) continue;
+		if (options.excludeAttributes!.includes(semantic)) continue;
 
-		const attribute = prim.getAttribute(semantic);
+		const attribute = prim.getAttribute(semantic)!;
 		const {bits, ctor} = getQuantizationSettings(semantic, attribute, logger, options);
 
 		if (!ctor) continue;
@@ -102,6 +104,9 @@ function quantizePrimitive(
 
 		// Write quantization transform for position data into mesh parents.
 		if (semantic === 'POSITION') {
+			if (!nodeRemap) {
+				throw new Error(`${NAME}: Failed precondition; missing node transform.`);
+			}
 			for (let i = 0, el: vec3 = [0, 0, 0], il = attribute.getCount(); i < il; i++) {
 				attribute.setElement(i, nodeRemap(attribute.getElement(i, el)));
 			}
@@ -116,7 +121,8 @@ function quantizePrimitive(
 			&& prim.getIndices()
 			&& prim.listAttributes().length
 			&& prim.listAttributes()[0]!.getCount() < 65535) {
-		prim.getIndices().setArray(new Uint16Array(prim.getIndices().getArray()));
+		const indices = prim.getIndices()!;
+		indices.setArray(new Uint16Array(indices.getArray()!));
 	}
 }
 
@@ -146,11 +152,11 @@ function flatBounds(targetMin: number[], targetMax: number[], accessors: Accesso
 }
 
 /** Computes node quantization transforms in local space. */
-function getNodeTransform(mesh: Mesh): NodeTransform {
+function getNodeTransform(mesh: Mesh): NodeTransform | null {
 	const positions = mesh.listPrimitives()
-		.map((prim) => prim.getAttribute('POSITION'));
+		.map((prim) => prim.getAttribute('POSITION')!);
 
-	if (!positions.some((p) => !!p)) return {nodeRemap: null, nodeOffset: null, nodeScale: null};
+	if (!positions.some((p) => !!p)) return null;
 
 	const positionMin = [Infinity, Infinity, Infinity] as vec3;
 	const positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
@@ -215,7 +221,7 @@ function quantizeAttribute(
 		bits: number
 	): void {
 
-	const dstArray = new ctor(attribute.getArray().length);
+	const dstArray = new ctor(attribute.getArray()!.length);
 
 	const signBits = SIGNED_INT.includes(ctor) ? 1 : 0;
 	const quantBits = bits - signBits;
@@ -246,7 +252,7 @@ function getQuantizationSettings(
 		semantic: string,
 		attribute: Accessor,
 		logger: Logger,
-		options: QuantizeOptions): {bits: number; ctor?: TypedArrayConstructor} | null {
+		options: Required<QuantizeOptions>): {bits: number; ctor?: TypedArrayConstructor} {
 
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMinNormalized([]);
@@ -274,7 +280,7 @@ function getQuantizationSettings(
 		bits = Math.max(...attribute.getMax([])) <= 255 ? 8 : 16;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 		if (attribute.getComponentSize() > bits / 8) {
-			attribute.setArray(new ctor(attribute.getArray()));
+			attribute.setArray(new ctor(attribute.getArray()!));
 		}
 		return {bits: -1};
 	} else if (semantic.startsWith('WEIGHTS_')) {
@@ -293,6 +299,8 @@ function getQuantizationSettings(
 		ctor = min.some(v => v < 0)
 			? (ctor = bits <= 8 ? Int8Array : Int16Array)
 			: (ctor = bits <= 8 ? Uint8Array : Uint16Array);
+	} else {
+		throw new Error(`${NAME}: Unexpected semantic, "${semantic}".`);
 	}
 
 	return {bits, ctor};

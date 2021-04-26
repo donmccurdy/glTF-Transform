@@ -5,10 +5,11 @@ const NAME = 'unweld';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnweldOptions {}
 
-const DEFAULT_OPTIONS: UnweldOptions = {};
+const UNWELD_DEFAULTS: UnweldOptions = {};
 
-export function unweld (_options: UnweldOptions = DEFAULT_OPTIONS): Transform {
-	_options = {...DEFAULT_OPTIONS, ..._options};
+export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...UNWELD_DEFAULTS, ..._options} as Required<UnweldOptions>;
 
 	return (doc: Document): void => {
 
@@ -59,13 +60,13 @@ function unweldAttribute(
 		indices: Accessor,
 		logger: Logger,
 		visited: Map<Accessor, Map<Accessor, Accessor>>): Accessor {
-	if (visited.has(srcAttribute) && visited.get(srcAttribute).has(indices)) {
+	if (visited.has(srcAttribute) && visited.get(srcAttribute)!.has(indices)) {
 		logger.debug(`${NAME}: Cache hit for reused attribute, "${srcAttribute.getName()}".`);
-		return visited.get(srcAttribute).get(indices);
+		return visited.get(srcAttribute)!.get(indices)!;
 	}
 
 	const dstAttribute = srcAttribute.clone();
-	const ArrayCtor = srcAttribute.getArray().constructor as
+	const ArrayCtor = srcAttribute.getArray()!.constructor as
 		new (len: number) => TypedArray;
 	dstAttribute.setArray(
 		new ArrayCtor(indices.getCount() * srcAttribute.getElementSize())
@@ -77,7 +78,7 @@ function unweldAttribute(
 	}
 
 	if (!visited.has(srcAttribute)) visited.set(srcAttribute, new Map());
-	visited.get(srcAttribute).set(indices, dstAttribute);
+	visited.get(srcAttribute)!.set(indices, dstAttribute);
 
 	return dstAttribute;
 }

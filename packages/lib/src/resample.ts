@@ -4,7 +4,7 @@ const NAME = 'resample';
 
 export interface ResampleOptions {tolerance?: number}
 
-const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
+const RESAMPLE_DEFAULTS: Required<ResampleOptions> =  {tolerance: 1e-4};
 
 /**
  * Removes redundant sequential keyframes, common in morph target sequences and baked animations.
@@ -12,9 +12,9 @@ const DEFAULT_OPTIONS: ResampleOptions =  {tolerance: 1e-4};
  *
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */
-export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform => {
+export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform => {
 
-	options = {...DEFAULT_OPTIONS, ...options};
+	const options = {...RESAMPLE_DEFAULTS, ..._options} as Required<ResampleOptions>;
 
 	return (doc: Document): void => {
 		const accessorsVisited = new Set<Accessor>();
@@ -25,8 +25,8 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 			for (const sampler of animation.listSamplers()) {
 				if (sampler.getInterpolation() === 'STEP'
 					|| sampler.getInterpolation() === 'LINEAR') {
-					accessorsVisited.add(sampler.getInput());
-					accessorsVisited.add(sampler.getOutput());
+					accessorsVisited.add(sampler.getInput()!);
+					accessorsVisited.add(sampler.getOutput()!);
 					optimize(sampler, options);
 				}
 			}
@@ -52,8 +52,8 @@ export const resample = (options: ResampleOptions = DEFAULT_OPTIONS): Transform 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	if (!['STEP', 'LINEAR'].includes(sampler.getInterpolation())) return;
 
-	const input = sampler.getInput().clone();
-	const output = sampler.getOutput().clone();
+	const input = sampler.getInput()!.clone();
+	const output = sampler.getOutput()!.clone();
 
 	const tolerance = options.tolerance as number;
 
@@ -113,8 +113,8 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 
 	// If the sampler was optimized, truncate and save the results. If not, clean up.
 	if (writeIndex !== input.getCount()) {
-		input.setArray(input.getArray().slice(0, writeIndex));
-		output.setArray(output.getArray().slice(0, writeIndex * output.getElementSize()));
+		input.setArray(input.getArray()!.slice(0, writeIndex));
+		output.setArray(output.getArray()!.slice(0, writeIndex * output.getElementSize()));
 		sampler.setInput(input);
 		sampler.setOutput(output);
 	} else {

@@ -7,17 +7,16 @@ export interface TangentsOptions {
 	overwrite?: boolean,
 }
 
-const DEFAULT_OPTIONS: TangentsOptions = {
-	generateTangents: null,
+const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
 	overwrite: false,
 };
 
-export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
-
-	if (!options.generateTangents) {
+export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
+	if (!_options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
 	}
+
+	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -35,17 +34,18 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				// Skip primitives for which we can't compute tangents.
 				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite)) continue;
 
-				// Compute UUIDs for each attribute.
+				// Nullability conditions checked by filterPrimitive() above.
+				const position = prim.getAttribute('POSITION')!.getArray()!;
+				const normal = prim.getAttribute('NORMAL')!.getArray()!;
+				const texcoord = prim.getAttribute('TEXCOORD_0')!.getArray()!;
 
-				const position = prim.getAttribute('POSITION').getArray();
+				// Compute UUIDs for each attribute.
 				const positionID = attributeIDs.get(position) || uuid();
 				attributeIDs.set(position, positionID);
 
-				const normal = prim.getAttribute('NORMAL').getArray();
 				const normalID = attributeIDs.get(normal) || uuid();
 				attributeIDs.set(normal, normalID);
 
-				const texcoord = prim.getAttribute('TEXCOORD_0').getArray();
 				const texcoordID = attributeIDs.get(texcoord) || uuid();
 				attributeIDs.set(texcoord, texcoordID);
 
@@ -65,7 +65,7 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 
 				// Otherwise, generate tangents with the 'mikktspace' WASM library.
 				logger.debug(`${NAME}: Generating for primitive ${i} of mesh "${meshName}".`);
-				const tangentBuffer = prim.getAttribute('POSITION').getBuffer();
+				const tangentBuffer = prim.getAttribute('POSITION')!.getBuffer();
 				const tangentArray = options.generateTangents(
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
