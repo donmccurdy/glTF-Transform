@@ -253,13 +253,14 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 			continue;
 		}
 
-		const indices = prim.getIndices()!; // Condition for 'included' list.
+
 
 		// If any accessors are already in use, but the same hashKey hasn't been written, then we
 		// need to create copies of these accessors for the current encoded primitive. We can't
 		// reuse the same compressed accessor for two encoded primitives, because Draco might
 		// change the vertex count, change the vertex order, or cause other conflicts.
-		if (includedAccessors.has(indices)) {
+		if (includedAccessors.has(prim.getIndices())) {
+			const indices = prim.getIndices()!; // Condition for 'included' list.
 			const dstIndices = indices.clone();
 			accessorIndices.set(dstIndices, doc.getRoot().listAccessors().length - 1);
 			prim.swap(indices, dstIndices);
@@ -278,7 +279,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		// Commit the primitive and its accessors to the hash key.
 		includedHashKeys.add(hashKey);
 		primToHashKey.set(prim, hashKey);
-		includedAccessors.set(indices, hashKey);
+		includedAccessors.set(prim.getIndices()!, hashKey);
 		for (const attribute of prim.listAttributes()) {
 			includedAccessors.set(attribute, hashKey);
 		}
