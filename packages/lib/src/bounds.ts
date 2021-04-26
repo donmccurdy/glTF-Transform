@@ -32,7 +32,7 @@ function getMeshBounds(mesh: Mesh, worldMatrix: mat4): {min: vec3; max: vec3} {
 		let worldPos: vec3 = [0, 0, 0];
 		for (let i = 0; i < position.getCount(); i++) {
 			localPos = position.getElement(i, localPos) as vec3;
-			worldPos = transformMat4(worldPos, localPos, worldMatrix);
+			worldPos = transformMat4(worldPos, localPos, worldMatrix) as vec3;
 			expandBounds(worldPos, meshBounds);
 		}
 	}

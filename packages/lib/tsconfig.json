@@ -2,8 +2,9 @@
   "extends": "../../tsconfig.json",
   "include": ["src/**/*"],
   "compilerOptions": {
+    "typeRoots": ["src/types"],
     "outDir": "dist",
-    // "noImplicitAny": true,
+    "noImplicitAny": true,
     // "strictNullChecks": true,
     // "strictPropertyInitialization": true,
   }
