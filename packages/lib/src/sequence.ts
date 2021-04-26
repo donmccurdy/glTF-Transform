@@ -9,7 +9,7 @@ export interface SequenceOptions {
 	sort?: boolean;
 }
 
-const DEFAULT_OPTIONS: SequenceOptions = {
+const SEQUENCE_DEFAULTS: Required<SequenceOptions> = {
 	name: '',
 	fps: 10,
 	pattern: /.*/,
@@ -23,14 +23,14 @@ const DEFAULT_OPTIONS: SequenceOptions = {
  * - **pattern**: Pattern (regex) used to filter nodes for the sequence. Required.
  * - **sort**: Whether to sort the nodes by name, or use original order. Default true.
  */
-export function sequence (options: SequenceOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
+	const options = {...SEQUENCE_DEFAULTS, ..._options} as Required<SequenceOptions>;
 
 	return (doc: Document): void => {
 
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
-		const fps = options.fps as number;
+		const fps = options.fps;
 
 		// Collect sequence nodes.
 		const sequenceNodes = root.listNodes()

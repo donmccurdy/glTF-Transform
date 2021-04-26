@@ -7,13 +7,14 @@ export interface CenterOptions {
 	pivot?: 'center' | 'above' | 'below' | vec3;
 }
 
-const DEFAULT_OPTIONS: CenterOptions = {pivot: 'center'};
+const CENTER_DEFAULTS: Required<CenterOptions> = {pivot: 'center'};
 
 /**
  * Options:
  * - **pivot**: Location on the model to be considered the pivot, and recentered at the origin.
  */
-export function center (options: CenterOptions = DEFAULT_OPTIONS): Transform {
+export function center (_options: CenterOptions = CENTER_DEFAULTS): Transform {
+	const options = {...CENTER_DEFAULTS, ..._options} as Required<CenterOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();

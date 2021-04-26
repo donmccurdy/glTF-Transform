@@ -6,7 +6,7 @@ export interface DedupOptions {
 	propertyTypes: string[];
 }
 
-const DEFAULT_OPTIONS: DedupOptions = {
+const DEDUP_DEFAULTS: Required<DedupOptions> = {
 	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE],
 };
 
@@ -16,12 +16,12 @@ const DEFAULT_OPTIONS: DedupOptions = {
  * - **meshes**: Whether to remove duplicate meshes. Default `true`.
  * - **textures**: Whether to remove duplicate textures. Default `true`.
  */
-export const dedup = function (options: DedupOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transform {
+	const options = {...DEDUP_DEFAULTS, ..._options} as Required<DedupOptions>;
 
 	const propertyTypes = new Set(options.propertyTypes);
 	for (const propertyType of options.propertyTypes) {
-		if (!DEFAULT_OPTIONS.propertyTypes.includes(propertyType)) {
+		if (!DEDUP_DEFAULTS.propertyTypes.includes(propertyType)) {
 			throw new Error(`${NAME}: Unsupported deduplication on type "${propertyType}".`);
 		}
 	}

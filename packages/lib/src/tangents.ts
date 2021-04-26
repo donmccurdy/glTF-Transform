@@ -7,13 +7,13 @@ export interface TangentsOptions {
 	overwrite?: boolean,
 }
 
-const DEFAULT_OPTIONS: TangentsOptions = {
+const TANGENTS_DEFAULTS: Required<TangentsOptions> = {
 	generateTangents: undefined,
 	overwrite: false,
 };
 
-export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
+	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
 
 	if (!options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
@@ -33,7 +33,7 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				const prim = meshPrimitives[i];
 
 				// Skip primitives for which we can't compute tangents.
-				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite!)) continue;
+				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite)) continue;
 
 				// Nullability conditions checked by filterPrimitive() above.
 				const position = prim.getAttribute('POSITION')!.getArray()!;
@@ -67,7 +67,7 @@ export function tangents (options: TangentsOptions = DEFAULT_OPTIONS): Transform
 				// Otherwise, generate tangents with the 'mikktspace' WASM library.
 				logger.debug(`${NAME}: Generating for primitive ${i} of mesh "${meshName}".`);
 				const tangentBuffer = prim.getAttribute('POSITION')!.getBuffer();
-				const tangentArray = options.generateTangents!(
+				const tangentArray = options.generateTangents(
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
 					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord)

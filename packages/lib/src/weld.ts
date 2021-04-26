@@ -5,14 +5,14 @@ const NAME = 'weld';
 
 export interface WeldOptions {tolerance?: number}
 
-const DEFAULT_OPTIONS: WeldOptions = {tolerance: 1e-4};
+const WELD_DEFAULTS: Required<WeldOptions> = {tolerance: 1e-4};
 
 /**
  * Options:
  * - **tolerance**: Per-attribute tolerance used when merging similar vertices.
  */
-export function weld (options: WeldOptions = DEFAULT_OPTIONS): Transform {
-	options = {...DEFAULT_OPTIONS, ...options};
+export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
+	const options = {...WELD_DEFAULTS, ..._options} as Required<WeldOptions>;
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -48,7 +48,7 @@ function weldOnly (doc: Document, prim: Primitive): void {
  * attributes are not considered when scoring vertex similarity, but are retained when merging.
  */
 function weldAndMerge (doc: Document, prim: Primitive, options: WeldOptions): void {
-	const tolerance = Math.max(options.tolerance as number, Number.EPSILON);
+	const tolerance = Math.max(options.tolerance, Number.EPSILON);
 	const decimalShift = Math.log10(1 / tolerance);
 	const shiftFactor = Math.pow(10, decimalShift);
 

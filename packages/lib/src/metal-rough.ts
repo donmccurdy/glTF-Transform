@@ -1,4 +1,4 @@
-import { Document, Texture } from '@gltf-transform/core';
+import { Document, Texture, Transform } from '@gltf-transform/core';
 import { MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness } from '@gltf-transform/extensions';
 import { rewriteTexture } from './utils';
 
@@ -7,11 +7,15 @@ const NAME = 'metalRough';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface MetalRoughOptions {}
 
+const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};
+
 /**
  * Converts a spec/gloss PBR workflow to a metal/rough PBR workflow, relying on the IOR and
  * specular extensions to base glTF 2.0.
  */
-export function metalRough (_options: MetalRoughOptions = {}) {
+export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const options = {...METALROUGH_DEFAULTS, ..._options} as Required<MetalRoughOptions>;
 
 	return async (doc: Document): Promise<void> => {
 
