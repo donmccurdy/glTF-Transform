@@ -36,7 +36,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
 }
 
 export function formatParagraph(str: string): string {
-	return str.match(/.{1,80}(\s|$)/g)
+	return str.match(/.{1,80}(\s|$)/g)!
 		.map((line) => line.trim())
 		.join('\n');
 }

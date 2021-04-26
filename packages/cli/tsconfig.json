@@ -3,7 +3,6 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "dist",
-    // "strictNullChecks": true,
-    // "strictPropertyInitialization": true,
+    "strict": true
   }
 }

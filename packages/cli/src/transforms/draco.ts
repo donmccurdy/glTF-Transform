@@ -24,6 +24,7 @@ export const DRACO_DEFAULTS: DracoCLIOptions = {
 };
 
 export const draco = (options: DracoCLIOptions): Transform => {
+	options = {...DRACO_DEFAULTS, ...options};
 	return (doc: Document): void => {
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)
@@ -34,11 +35,11 @@ export const draco = (options: DracoCLIOptions): Transform => {
 				encodeSpeed: options.encodeSpeed,
 				decodeSpeed: options.decodeSpeed,
 				quantizationBits: {
-					'POSITION': options.quantizePosition,
-					'NORMAL': options.quantizeNormal,
-					'COLOR': options.quantizeColor,
-					'TEX_COORD': options.quantizeTexcoord,
-					'GENERIC': options.quantizeGeneric,
+					'POSITION': options.quantizePosition!,
+					'NORMAL': options.quantizeNormal!,
+					'COLOR': options.quantizeColor!,
+					'TEX_COORD': options.quantizeTexcoord!,
+					'GENERIC': options.quantizeGeneric!,
 				}
 			});
 	};

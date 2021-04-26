@@ -15,7 +15,10 @@ export function ktxfix (): Transform {
 		for (const texture of doc.getRoot().listTextures()) {
 			if (texture.getMimeType() !== 'image/ktx2') continue;
 
-			const ktx = read(new Uint8Array(texture.getImage()));
+			const image = texture.getImage();
+			if (!image) continue;
+
+			const ktx = read(new Uint8Array(image));
 			const dfd = ktx.dataFormatDescriptor[0];
 			const slots = getTextureSlots(doc, texture);
 

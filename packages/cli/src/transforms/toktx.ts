@@ -131,6 +131,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				}
 
+				const image = texture.getImage();
+				const size = texture.getSize();
+				if (!image || !size) {
+					logger.warn('• Skipping, unreadable texture.');
+					return;
+				}
+
 				// PREPARE: Create temporary in/out paths for the 'toktx' CLI tool, and determine
 				// necessary commandline flags.
 
@@ -140,11 +147,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const inPath = tmp.tmpNameSync({postfix: '.' + extension});
 				const outPath = tmp.tmpNameSync({postfix: '.ktx2'});
 
-				const inBytes = texture.getImage().byteLength;
-				fs.writeFileSync(inPath, Buffer.from(texture.getImage()));
+				const inBytes = image.byteLength;
+				fs.writeFileSync(inPath, Buffer.from(image));
 
 				const params = [
-					...createParams(slots, channels, texture.getSize(), logger, options),
+					...createParams(slots, channels, size, logger, options),
 					outPath,
 					inPath
 				];
@@ -171,7 +178,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				numCompressed++;
 
-				const outBytes = texture.getImage().byteLength;
+				const outBytes = image.byteLength;
 				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
 			});
 
@@ -196,40 +203,40 @@ function createParams (
 		size: vec2,
 		logger: Logger,
 		options: ETC1SOptions | UASTCOptions): (string|number)[] {
-	const params = [];
+	const params: (string|number)[] = [];
 	params.push('--genmipmap');
-	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter);
+	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter!);
 	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
-		params.push('--fscale', options.filterScale);
+		params.push('--fscale', options.filterScale!);
 	}
 
 	if (options.mode === Mode.UASTC) {
 		const _options = options as UASTCOptions;
-		params.push('--uastc', _options.level);
+		params.push('--uastc', _options.level!);
 		if (_options.rdo !== UASTC_DEFAULTS.rdo) {
-			params.push('--uastc_rdo_l', _options.rdo);
+			params.push('--uastc_rdo_l', _options.rdo!);
 		}
 		if (_options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
-			params.push('--uastc_rdo_d', _options.rdoDictionarySize);
+			params.push('--uastc_rdo_d', _options.rdoDictionarySize!);
 		}
 		if (_options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
-			params.push('--uastc_rdo_b', _options.rdoBlockScale);
+			params.push('--uastc_rdo_b', _options.rdoBlockScale!);
 		}
 		if (_options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
-			params.push('--uastc_rdo_s', _options.rdoStdDev);
+			params.push('--uastc_rdo_s', _options.rdoStdDev!);
 		}
 		if (!_options.rdoMultithreading) {
 			params.push('--uastc_rdo_m');
 		}
-		if (_options.zstd > 0) params.push('--zcmp', _options.zstd);
+		if (_options.zstd && _options.zstd > 0) params.push('--zcmp', _options.zstd);
 	} else {
 		const _options = options as ETC1SOptions;
 		params.push('--bcmp');
 		if (_options.quality !== ETC1S_DEFAULTS.quality) {
-			params.push('--qlevel', _options.quality);
+			params.push('--qlevel', _options.quality!);
 		}
 		if (_options.compression !== ETC1S_DEFAULTS.compression) {
-			params.push('--clevel', _options.compression);
+			params.push('--clevel', _options.compression!);
 		}
 		if (_options.maxEndpoints) params.push('--max_endpoints', _options.maxEndpoints);
 		if (_options.maxSelectors) params.push('--max_selectors', _options.maxSelectors);
