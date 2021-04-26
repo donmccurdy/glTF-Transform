@@ -15,9 +15,9 @@
     // Progress toward "strict": true.
     "alwaysStrict": true,
     "strictFunctionTypes": true,
-    "noImplicitThis": true,
     "strictBindCallApply": true,
-    // "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
     // "strictNullChecks": true,
     // "strictPropertyInitialization": true,
   },
