@@ -188,8 +188,9 @@ export class Document {
 	 * extension is already enabled for this Document, the previous Extension reference is reused.
 	 */
 	createExtension<T extends Extension>(ctor: new (doc: Document) => T): T {
+		const extensionName = (ctor as unknown as {EXTENSION_NAME: 'string'}).EXTENSION_NAME;
 		const prevExtension = this.getRoot().listExtensionsUsed()
-			.find((ext) => ext.extensionName === ctor['EXTENSION_NAME']);
+			.find((ext) => ext.extensionName === extensionName);
 		return (prevExtension || new ctor(this)) as T;
 	}
 

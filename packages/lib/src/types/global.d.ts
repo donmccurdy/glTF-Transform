@@ -26,6 +26,8 @@ declare module 'geo-ambient-occlusion' {
 	): AmbientOcclusionSampler;
 }
 
+// See: https://github.com/toji/gl-matrix/issues/423
+
 declare module 'gl-matrix/vec4' {
 	import { vec4 } from 'gl-matrix';
 	export = vec4;

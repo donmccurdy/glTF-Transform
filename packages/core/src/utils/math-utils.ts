@@ -104,7 +104,7 @@ export class MathUtils {
 		_m1[9] *= invSZ;
 		_m1[10] *= invSZ;
 
-		getRotation(dstRotation, _m1);
+		getRotation(dstRotation, _m1 as mat4);
 
 		dstScale[0] = sx;
 		dstScale[1] = sy;

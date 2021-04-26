@@ -518,7 +518,7 @@ export class GLTFWriter {
 				}
 
 				for (const target of primitive.listTargets()) {
-					const targetDef = {};
+					const targetDef = {} as {[name: string]: number};
 
 					for (const semantic of target.listSemantics()) {
 						targetDef[semantic]
@@ -695,7 +695,7 @@ export class GLTFWriter {
 
 		//
 
-		clean(json);
+		clean(json as unknown as Record<string, unknown>);
 
 		return jsonDoc;
 	}
@@ -706,7 +706,7 @@ export class GLTFWriter {
  * @param object
  * @hidden
  */
-function clean(object): void {
+function clean(object: Record<string, unknown>): void {
 	const unused: string[] = [];
 
 	for (const key in object) {

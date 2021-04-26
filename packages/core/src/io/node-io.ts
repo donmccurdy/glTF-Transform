@@ -111,7 +111,7 @@ export class NodeIO extends PlatformIO {
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
 			if (!resource.uri) {
 				const isGLBBuffer = isGLB && index === images.length;
-				if (resource['bufferView'] === undefined && !isGLBBuffer) {
+				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
 					throw new Error('Missing resource URI.');
 				}
 				return;

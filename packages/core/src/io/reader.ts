@@ -286,7 +286,8 @@ export class GLTFReader {
 					primitive.setIndices(context.accessors[primitiveDef.indices]);
 				}
 
-				const targetNames = meshDef.extras && meshDef.extras.targetNames || [];
+				const targetNames: string[] =
+					meshDef.extras && meshDef.extras.targetNames as string[] || [];
 				const targetDefs = primitiveDef.targets || [];
 				targetDefs.forEach((targetDef, targetIndex) => {
 					const targetName = targetNames[targetIndex] || targetIndex.toString();
