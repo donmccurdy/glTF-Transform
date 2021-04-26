@@ -4,7 +4,7 @@ import { EXT_TEXTURE_WEBP } from '../constants';
 const NAME = EXT_TEXTURE_WEBP;
 
 class WEBPImageUtils implements ImageUtilsFormat {
-	getSize (buffer: ArrayBuffer): vec2 {
+	getSize (buffer: ArrayBuffer): vec2 | null {
 		// Reference: http://tools.ietf.org/html/rfc6386
 		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
 		const WEBP = BufferUtils.decodeText(buffer.slice(8, 12));

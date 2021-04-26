@@ -133,35 +133,37 @@ export class DracoMeshCompression extends Extension {
 
 			// Reuse an existing EncodedPrimitive, if possible.
 			if (primitiveEncodingMap.has(primHash)) {
-				primitiveEncodingMap.set(primHash, primitiveEncodingMap.get(primHash));
+				primitiveEncodingMap.set(primHash, primitiveEncodingMap.get(primHash)!);
 				continue;
 			}
+
+			const indices = prim.getIndices()!; // Condition for listDracoPrimitives().
+			const accessorDefs = context.jsonDoc.json.accessors!;
 
 			// Create a new EncodedPrimitive.
 			const encodedPrim = encodeGeometry(prim, this._encoderOptions);
 			primitiveEncodingMap.set(primHash, encodedPrim);
 
 			// Create indices definition, update count.
-			const indicesDef = context.createAccessorDef(prim.getIndices());
+			const indicesDef = context.createAccessorDef(indices);
 			indicesDef.count = encodedPrim.numIndices;
-			context.accessorIndexMap
-				.set(prim.getIndices(), context.jsonDoc.json.accessors.length);
-			context.jsonDoc.json.accessors.push(indicesDef);
+			context.accessorIndexMap.set(indices, accessorDefs.length);
+			accessorDefs.push(indicesDef);
 
 			// Create attribute definitions, update count.
 			for (const semantic of prim.listSemantics()) {
-				const attribute = prim.getAttribute(semantic);
+				const attribute = prim.getAttribute(semantic)!;
 				const attributeDef = context.createAccessorDef(attribute);
 				attributeDef.count = encodedPrim.numVertices;
-				context.accessorIndexMap.set(attribute, context.jsonDoc.json.accessors.length);
-				context.jsonDoc.json.accessors.push(attributeDef);
+				context.accessorIndexMap.set(attribute, accessorDefs.length);
+				accessorDefs.push(attributeDef);
 			}
 
 			// Map compressed buffer view to a Buffer.
-			const buffer = prim.getAttribute('POSITION').getBuffer()
+			const buffer = prim.getAttribute('POSITION')!.getBuffer()
 				|| this.doc.getRoot().listBuffers()[0];
 			if (!context.otherBufferViews.has(buffer)) context.otherBufferViews.set(buffer, []);
-			context.otherBufferViews.get(buffer).push(encodedPrim.data);
+			context.otherBufferViews.get(buffer)!.push(encodedPrim.data);
 		}
 
 		logger.debug(`[${NAME}] Compressed ${primitiveHashMap.size} primitives.`);
@@ -178,7 +180,7 @@ export class DracoMeshCompression extends Extension {
 		const dracoContext: DracoWriterContext = context.extensionData[NAME] as DracoWriterContext;
 
 		for (const mesh of this.doc.getRoot().listMeshes()) {
-			const meshDef = context.jsonDoc.json.meshes[context.meshIndexMap.get(mesh)];
+			const meshDef = context.jsonDoc.json.meshes![context.meshIndexMap.get(mesh)!];
 			for (let i = 0; i < mesh.listPrimitives().length; i++) {
 				const prim = mesh.listPrimitives()[i];
 				const primDef = meshDef.primitives[i];
@@ -186,7 +188,7 @@ export class DracoMeshCompression extends Extension {
 				const primHash = dracoContext.primitiveHashMap.get(prim);
 				if (!primHash) continue;
 
-				const encodedPrim = dracoContext.primitiveEncodingMap.get(primHash);
+				const encodedPrim = dracoContext.primitiveEncodingMap.get(primHash)!;
 				primDef.extensions = primDef.extensions || {};
 				primDef.extensions[NAME] = {
 					bufferView: context.otherBufferViewsIndexMap.get(encodedPrim.data),
@@ -251,14 +253,16 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 			continue;
 		}
 
+		const indices = prim.getIndices()!; // Condition for 'included' list.
+
 		// If any accessors are already in use, but the same hashKey hasn't been written, then we
 		// need to create copies of these accessors for the current encoded primitive. We can't
 		// reuse the same compressed accessor for two encoded primitives, because Draco might
 		// change the vertex count, change the vertex order, or cause other conflicts.
-		if (includedAccessors.has(prim.getIndices())) {
-			const dstIndices = prim.getIndices().clone();
+		if (includedAccessors.has(indices)) {
+			const dstIndices = indices.clone();
 			accessorIndices.set(dstIndices, doc.getRoot().listAccessors().length - 1);
-			prim.swap(prim.getIndices(), dstIndices);
+			prim.swap(indices, dstIndices);
 		}
 		for (const attribute of prim.listAttributes()) {
 			if (includedAccessors.has(attribute)) {
@@ -274,7 +278,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 		// Commit the primitive and its accessors to the hash key.
 		includedHashKeys.add(hashKey);
 		primToHashKey.set(prim, hashKey);
-		includedAccessors.set(prim.getIndices(), hashKey);
+		includedAccessors.set(indices, hashKey);
 		for (const attribute of prim.listAttributes()) {
 			includedAccessors.set(attribute, hashKey);
 		}
@@ -293,7 +297,8 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	// For each compressed Primitive, ensure that Accessors are mapped only to the same hash key.
 	for (const prim of Array.from(included)) {
 		const hashKey = primToHashKey.get(prim);
-		if (includedAccessors.get(prim.getIndices()) !== hashKey
+		const indices = prim.getIndices()!; // Condition for 'included' list.
+		if (includedAccessors.get(indices) !== hashKey
 				|| prim.listAttributes().some((attr) => includedAccessors.get(attr) !== hashKey)) {
 			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`);
 		}
@@ -301,7 +306,8 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 
 	// For each excluded Primitive, ensure that no Accessors are compressed.
 	for (const prim of Array.from(excluded)) {
-		if (includedAccessors.has(prim.getIndices())
+		const indices = prim.getIndices()!; // Condition for 'included' list.
+		if (includedAccessors.has(indices)
 				|| prim.listAttributes().some((attr) => includedAccessors.has(attr))) {
 			throw new Error(
 				`[${NAME}] Accessor cannot be shared by compressed and uncompressed primitives.`
@@ -314,8 +320,9 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 
 function createHashKey(prim: Primitive, indexMap: Map<Accessor, number>): string {
 	const hashElements = [];
+	const indices = prim.getIndices()!; // Condition for 'included' list.
 
-	hashElements.push(indexMap.get(prim.getIndices()));
+	hashElements.push(indexMap.get(indices));
 	for (const attribute of prim.listAttributes()) {
 		hashElements.push(indexMap.get(attribute));
 	}

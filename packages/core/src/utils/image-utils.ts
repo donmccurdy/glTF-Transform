@@ -2,9 +2,9 @@ import { vec2 } from '../constants';
 import { BufferUtils } from './buffer-utils';
 
 export interface ImageUtilsFormat {
-	getSize(buffer: ArrayBuffer): vec2;
-	getChannels(buffer: ArrayBuffer): number;
-	getGPUByteLength?(buffer: ArrayBuffer): number;
+	getSize(buffer: ArrayBuffer): vec2 | null;
+	getChannels(buffer: ArrayBuffer): number | null;
+	getGPUByteLength?(buffer: ArrayBuffer): number | null;
 }
 
 class JPEGImageUtils implements ImageUtilsFormat {
@@ -80,7 +80,7 @@ export class ImageUtils {
 	}
 
 	/** Returns the dimensions of the image. */
-	public static getSize (buffer: ArrayBuffer, mimeType: string): vec2 {
+	public static getSize (buffer: ArrayBuffer, mimeType: string): vec2 | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getSize(buffer);
 	}
@@ -90,13 +90,13 @@ export class ImageUtils {
 	 * formats, the method may return 4 indicating the possibility of an alpha channel, without
 	 * the ability to guarantee that an alpha channel is present.
 	 */
-	public static getChannels (buffer: ArrayBuffer, mimeType: string): number {
+	public static getChannels (buffer: ArrayBuffer, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getChannels(buffer);
 	}
 
 	/** Returns a conservative estimate of the GPU memory required by this image. */
-	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number {
+	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 
 		if (this.impls[mimeType].getGPUByteLength) {

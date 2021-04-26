@@ -75,7 +75,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 			encoderModule[attributeEnum],
 			attribute.getCount(),
 			attribute.getElementSize(),
-			attribute.getArray()
+			attribute.getArray()!
 		);
 
 		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
@@ -160,5 +160,7 @@ function addAttribute(
 			return builder.AddUInt32Attribute(mesh, attribute, count, itemSize, array);
 		case Accessor.ComponentType.FLOAT:
 			return builder.AddFloatAttribute(mesh, attribute, count, itemSize, array);
+		default:
+			throw new Error(`Unexpected component type, "${componentType}".`);
 	}
 }
