@@ -1942,14 +1942,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
-"@types/ndarray-ops@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/ndarray-ops/-/ndarray-ops-1.2.0.tgz#cb8d2303f975186b1503957f78ebc7b38f7917de"
-  integrity sha512-b6OQ2XKQHeiSpFPa8+YW0clLiwlo3V3C7PbbgHZmQ1yPzFAt0hB0BOJqqdOctjObM1i7A2hFxt0ywwVvFHW4+A==
-  dependencies:
-    "@types/ndarray" "*"
-
-"@types/ndarray@*", "@types/ndarray@^1.0.8":
+"@types/ndarray@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.8.tgz#16bf33233108840eb775b0ef4e430f9b26261d20"
   integrity sha512-8wGb5DXyo822V6MOdcbCDL6FLIYSUTonPpoL62pl78Kosnz5VChQAavPtMIftlWk6IIIaZyWq+eYhe2yG+QKXQ==
@@ -1971,10 +1964,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.3.tgz#6356df2647de9eac569f9a52eda3480fa9e70b4d"
   integrity sha512-01s+ac4qerwd6RHD+mVbOEsraDHSgUaefQlEdBbUolnQFjKwCr7luvAlEwW1RFojh67u0z4OUTjPn9LEl4zIkA==
 
-"@types/node@^14.14.41":
-  version "14.14.41"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.41.tgz#d0b939d94c1d7bd53d04824af45f1139b8c45615"
-  integrity sha512-dueRKfaJL4RTtSa7bWeTK1M+VH+Gns73oCgzvYfHZywRCoPSd8EkXBL0mZ9unPTveBn+D9phZBaxuzpwjWkW0g==
+"@types/node@^15.0.1":
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.0.1.tgz#ef34dea0881028d11398be5bf4e856743e3dc35a"
+  integrity sha512-TMkXt0Ck1y0KKsGr9gJtWGjttxlZnnvDtphxUOSd0bfaR6Q1jle+sPvrzNR1urqYTWMinoKvjKfXUGsumaO1PA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -3742,10 +3735,10 @@ eslint-visitor-keys@^2.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-2.0.0.tgz#21fdc8fbcd9c795cc0321f0563702095751511a8"
   integrity sha512-QudtT6av5WXels9WjIM7qz1XD1cWGvX4gGXvp/zBn9nXG02D0utdU3Em2m/QjTnrsk6bBjmCygl3rmj118msQQ==
 
-eslint@^7.24.0:
-  version "7.24.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.24.0.tgz#2e44fa62d93892bfdb100521f17345ba54b8513a"
-  integrity sha512-k9gaHeHiFmGCDQ2rEfvULlSLruz6tgfA8DEn+rY9/oYPFFTlz55mM/Q/Rij1b2Y42jwZiK3lXvNTw6w6TXzcKQ==
+eslint@^7.25.0:
+  version "7.25.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.25.0.tgz#1309e4404d94e676e3e831b3a3ad2b050031eb67"
+  integrity sha512-TVpSovpvCNpLURIScDRB6g5CYu/ZFq9GfX2hLNIV4dSBKxIWojeDODvYl3t0k0VtMxYeR8OXPCFE5+oHMlGfhw==
   dependencies:
     "@babel/code-frame" "7.12.11"
     "@eslint/eslintrc" "^0.4.0"
@@ -5778,10 +5771,10 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-mikktspace@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-0.1.2.tgz#7c0ac8057b5a1e825b29ff7ad5c1b0966d756b6d"
-  integrity sha512-OlAy8p6f/xvQvy4PIf+74fxrrGsVw5qW7pShQiO9sDyrwvV1kiBEQVkhE0fsUn4j5Linb6wlZTF3kMskUk7ztA==
+mikktspace@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-0.2.0.tgz#ed179cbc438769b86715094c06add2fa6fb8470d"
+  integrity sha512-k5A0sOezSYUykc9p8S6cgkVBxP81CxqhfyG94CbRTchzoluYP0fXmQOR6lLpd2heXz4Gf2SxMNw0z7dW6NuksA==
 
 mime-db@1.45.0:
   version "1.45.0"
@@ -6027,14 +6020,12 @@ ndarray-pack@^1.1.1:
     cwise-compiler "^1.1.2"
     ndarray "^1.0.13"
 
-ndarray-pixels@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-0.1.5.tgz#5c2ad86ce467c42867ce2772f77585b65e05ee7d"
-  integrity sha512-JFse+G3RckoGMl745rKgtChvDEVFphsbNHh8cq6UNsiduudtauhQIiosPVpzkx3fylHYLMRSuwz9F3NcOaIyrg==
+ndarray-pixels@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-0.1.6.tgz#c6d931d9ddc9de847f4a05f00d6b08e8f77bfd85"
+  integrity sha512-H8BBKTpPvs56I+LnH2fZD8Z0T6151PSK/Q2yCAIFxt39twe+Yv4vJn4aX2lKmHULDKEX6S+GS/lvvIQOI7Sugw==
   dependencies:
     "@types/ndarray" "^1.0.8"
-    "@types/ndarray-ops" "^1.2.0"
-    "@types/node" "^14.14.41"
     get-pixels "^3.3.2"
     ndarray "^1.0.19"
     ndarray-ops "^1.2.2"
