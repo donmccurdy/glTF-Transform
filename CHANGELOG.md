@@ -7,7 +7,7 @@
 **Features:**
 
 - Support for GLB files without binary data (e.g. just a node graph). [#245](https://github.com/donmccurdy/glTF-Transform/pull/245)
-- Improved type-checking throughout the library, with [TypeScript's strict checks](https://www.typescriptlang.org/tsconfig#strict)).
+- Improved type-checking throughout the library, with [TypeScript's strict checks](https://www.typescriptlang.org/tsconfig#strict).
 - Added API documentation for `@gltf-transform/extensions` and `@gltf-transform/functions`, with [Typedoc](https://github.com/TypeStrong/typedoc) v0.20. *(planned)*
 
 **Breaking changes:**
