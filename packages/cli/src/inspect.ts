@@ -1,9 +1,12 @@
-import CLITable from 'cli-table3';
-import stringify from 'csv-stringify';
-import mdTable from 'markdown-table';
+import * as CLITable from 'cli-table3';
+import * as stringify_ from 'csv-stringify';
+import * as mdTable_ from 'markdown-table';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { InspectAnimationReport, InspectMaterialReport, InspectMeshReport, InspectPropertyReport, InspectSceneReport, InspectTextureReport, inspect as inspectDoc } from '@gltf-transform/lib';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
+
+const stringify = stringify_;
+const mdTable = mdTable_;
 
 export enum InspectFormat {
 	PRETTY = 'pretty',
