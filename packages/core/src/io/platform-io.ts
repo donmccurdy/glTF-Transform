@@ -7,6 +7,11 @@ import { BufferUtils, Logger } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
+enum ChunkType {
+	JSON = 0x4E4F534A,
+	BIN = 0x004E4942
+}
+
 /**
  * # PlatformIO
  *
@@ -72,8 +77,8 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
 	public writeJSON (doc: Document, _options: Partial<WriterOptions> = {}): JSONDocument {
-		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length !== 1) {
-			throw new Error('GLB must have exactly 1 buffer.');
+		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
+			throw new Error('GLB must have 0–1 buffers.');
 		}
 		return GLTFWriter.write(doc, {
 			format: _options.format || Format.GLTF,
@@ -114,25 +119,36 @@ export abstract class PlatformIO {
 			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
 		}
 
-		// Decode and verify chunk headers.
+		// Decode JSON chunk.
+
 		const jsonChunkHeader = new Uint32Array(glb, 12, 2);
-		const jsonByteOffset = 20;
-		const jsonByteLength = jsonChunkHeader[0];
-		const binaryChunkHeader = new Uint32Array(glb, jsonByteOffset + jsonByteLength, 2);
-		if (jsonChunkHeader[1] !== 0x4E4F534A || binaryChunkHeader[1] !== 0x004E4942) {
-			throw new Error('Unexpected GLB layout.');
+		if (jsonChunkHeader[1] !== ChunkType.JSON) {
+			throw new Error('Missing required GLB JSON chunk.');
 		}
 
-		// Decode content.
+		const jsonByteOffset = 20;
+		const jsonByteLength = jsonChunkHeader[0];
 		const jsonText = BufferUtils.decodeText(
 			glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength)
 		);
 		const json = JSON.parse(jsonText) as GLTF.IGLTF;
-		const binaryByteOffset = jsonByteOffset + jsonByteLength + 8;
-		const binaryByteLength = binaryChunkHeader[0];
-		const binary = glb.slice(binaryByteOffset, binaryByteOffset + binaryByteLength);
 
-		return {json, resources: {[GLB_BUFFER]: binary}};
+		// Decode BIN chunk.
+
+		const binByteOffset = jsonByteOffset + jsonByteLength;
+		if (glb.byteLength <= binByteOffset) {
+			return {json, resources: {}};
+		}
+
+		const binChunkHeader = new Uint32Array(glb, binByteOffset, 2);
+		if (binChunkHeader[1] !== ChunkType.BIN) {
+			throw new Error('Expected GLB BIN in second chunk.');
+		}
+
+		const binByteLength = binChunkHeader[0];
+		const binBuffer = glb.slice(binByteOffset + 8, binByteOffset + 8 + binByteLength);
+
+		return {json, resources: {[GLB_BUFFER]: binBuffer}};
 	}
 
 	/**********************************************************************************************
@@ -154,20 +170,24 @@ export abstract class PlatformIO {
 			vertexLayout: this._vertexLayout,
 		});
 
+		const header = new Uint32Array([0x46546C67, 2, 12]);
+
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );
 		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
+		header[header.length - 1] += jsonChunk.byteLength;
 
-		const binaryChunkData
-			= BufferUtils.pad(Object.values(resources)[0] || new ArrayBuffer(0), 0x00);
-		const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004E4942]).buffer;
-		const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
+		const binBuffer = Object.values(resources)[0];
+		if (!binBuffer || !binBuffer.byteLength) {
+			return BufferUtils.concat([header.buffer, jsonChunk]);
+		}
 
-		const header = new Uint32Array([
-			0x46546C67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength
-		]).buffer;
+		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
+		const binChunkHeader = new Uint32Array([binChunkData.byteLength, 0x004E4942]).buffer;
+		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
+		header[header.length - 1] += binChunk.byteLength;
 
-		return BufferUtils.concat([header, jsonChunk, binaryChunk]);
+		return BufferUtils.concat([header.buffer, jsonChunk, binChunk]);
 	}
 }
