@@ -10,7 +10,7 @@ import { commandExistsSync, formatBytes, getTextureChannels, getTextureSlots, sp
 
 tmp.setGracefulCleanup();
 
-const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
+const KTX_SOFTWARE_VERSION_MIN = '4.0.0-1';
 
 const { R, G } = TextureChannel;
 
