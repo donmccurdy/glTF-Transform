@@ -301,7 +301,7 @@ function checkKTXSoftware(logger: Logger): void {
 	if (status !== 0 || !semver.valid(semver.clean(version))) {
 		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
 	} else if (semver.lt(semver.clean(version), KTX_SOFTWARE_VERSION_MIN)) {
-		throw new Error(`Requires KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
+		logger.warn(`Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
 		logger.debug(`Found KTX-Software ${version}.`);
 	}
