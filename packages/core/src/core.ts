@@ -26,8 +26,8 @@ namespace Contributing {}
  * # CLI
  *
  * For easier access to its library, glTF-Transform offers a command-line interface (CLI). The
- * CLI supports many of the features of the `@gltf-transform/functions` package, and some general tools
- * for inspecting and packing/unpacking glTF or GLB files.
+ * CLI supports many of the features of the `@gltf-transform/functions` package, and some general
+ * tools for inspecting and packing/unpacking glTF or GLB files.
  *
  * Installation:
  *
