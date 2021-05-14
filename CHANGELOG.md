@@ -12,7 +12,7 @@
 
 **Breaking changes:**
 
-- Renamed `@gltf-transform/lib` to `@gltf-transform/functions`. *(planned)*
+- Renamed `@gltf-transform/lib` to `@gltf-transform/functions`. [#249](https://github.com/donmccurdy/glTF-Transform/pull/249)
 - I/O `writeJSON` option `isGLB: true` changed to `format: Format.GLB`.
 
 ## v0.10
