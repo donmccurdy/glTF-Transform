@@ -16,7 +16,7 @@ glTF-Transform is modular:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
 - `@gltf-transform/extensions`: [Extensions](https://gltf-transform.donmccurdy.com/extensions.html) (optional glTF features) for the Core SDK.
-- `@gltf-transform/lib`: [Library](https://gltf-transform.donmccurdy.com/library.html) of common functions, written using the core API, that modify glTF files.
+- `@gltf-transform/functions`: [Functions](https://gltf-transform.donmccurdy.com/functions.html) for common glTF modifications, written using the core API.
 - `@gltf-transform/cli`: [Command-line interface](https://gltf-transform.donmccurdy.com/cli.html) to apply changes quickly or in batch.
 
 To get started, head over to the [documentation](https://gltf-transform.donmccurdy.com).

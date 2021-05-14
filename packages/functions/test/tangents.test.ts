@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { tangents } from '../';
 
-test('@gltf-transform/lib::tangents', async t => {
+test('@gltf-transform/functions::tangents', async t => {
 	const doc = new Document();
 	const positionArray = new Float32Array([1, 1, 1]);
 	const normalArray = new Uint16Array([0, 1, 0]);

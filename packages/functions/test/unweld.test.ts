@@ -4,7 +4,7 @@ import test from 'tape';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { unweld } from '../';
 
-test('@gltf-transform/lib::unweld', async t => {
+test('@gltf-transform/functions::unweld', async t => {
 	const doc = new Document();
 	const positionArray = new Float32Array([
 		0, 0, 0,

@@ -4,7 +4,7 @@ import test from 'tape';
 import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from '../src/utils';
 
-test('@gltf-transform/lib::utils | getGLPrimitiveCount', async t => {
+test('@gltf-transform/functions::utils | getGLPrimitiveCount', async t => {
 	const doc = new Document();
 
 	const indices = doc.createAccessor()

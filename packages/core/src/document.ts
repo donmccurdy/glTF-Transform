@@ -23,7 +23,7 @@ export type Transform = (doc: Document) => void;
  *
  * ```ts
  * import { Document } from '@gltf-transform/core';
- * import { dedup } from '@gltf-transform/lib';
+ * import { dedup } from '@gltf-transform/functions';
  *
  * const doc = new Document();
  *

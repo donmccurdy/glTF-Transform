@@ -6,7 +6,7 @@ import test from 'tape';
 import { NodeIO } from '@gltf-transform/core';
 import { ao } from '../';
 
-test('@gltf-transform/lib::ao', t => {
+test('@gltf-transform/functions::ao', t => {
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/chr_knight.glb'));
 	const root = doc.getRoot();

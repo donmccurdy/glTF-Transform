@@ -4,7 +4,7 @@ import test from 'tape';
 import { Accessor, Document } from '@gltf-transform/core';
 import { colorspace } from '../';
 
-test('@gltf-transform/lib::colorspace', t => {
+test('@gltf-transform/functions::colorspace', t => {
 	const input = [0.25882352941176473, 0.5215686274509804, 0.9568627450980393]; // sRGB
 	const expected = [0.054480276435339814, 0.23455058215026167, 0.9046611743890203]; // linear
 

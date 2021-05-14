@@ -6,7 +6,7 @@ import test from 'tape';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
 
-test('@gltf-transform/lib::dedup | accessors', t => {
+test('@gltf-transform/functions::dedup | accessors', t => {
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
@@ -21,7 +21,7 @@ test('@gltf-transform/lib::dedup | accessors', t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::dedup | meshes', t => {
+test('@gltf-transform/functions::dedup | meshes', t => {
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.equal(doc.getRoot().listMeshes().length, 501, 'begins with duplicate meshes');
@@ -36,7 +36,7 @@ test('@gltf-transform/lib::dedup | meshes', t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::dedup | textures', t => {
+test('@gltf-transform/functions::dedup | textures', t => {
 	const doc = new Document();
 
 	const canvas = createCanvas(100, 50);

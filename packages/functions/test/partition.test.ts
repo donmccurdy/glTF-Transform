@@ -5,7 +5,7 @@ import test from 'tape';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { partition } from '../';
 
-test('@gltf-transform/lib::partition', t => {
+test('@gltf-transform/functions::partition', t => {
 
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb'))
