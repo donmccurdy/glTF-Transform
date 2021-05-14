@@ -42,7 +42,7 @@ export class GLTFWriter {
 		/* Extensions (1/2). */
 
 		for (const extension of doc.getRoot().listExtensionsUsed()) {
-			for (const key of extension.dependencies) {
+			for (const key of extension.writeDependencies) {
 				extension.install(key, options.dependencies[key]);
 			}
 		}
