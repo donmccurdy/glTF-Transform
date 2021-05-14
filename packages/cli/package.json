@@ -29,6 +29,7 @@
     "command-exists": "^1.2.9",
     "csv-stringify": "^5.6.2",
     "draco3dgltf": "^1.4.1",
+    "geo-ambient-occlusion": "^3.0.4",
     "gl": "^4.9.0",
     "gltf-validator": "^2.0.0-dev.3.2",
     "ktx-parse": "^0.2.1",
@@ -36,6 +37,7 @@
     "mikktspace": "^0.2.0",
     "minimatch": "^3.0.4",
     "node-gzip": "^1.1.2",
+    "regl": "^2.1.0",
     "semver": "^7.3.5",
     "tmp": "^0.2.1"
   },
