@@ -5,7 +5,7 @@ import { Document, Logger } from '@gltf-transform/core';
 import { InstancedMesh } from '@gltf-transform/extensions';
 import { instance } from '../';
 
-test('@gltf-transform/lib::instance | translation', async t => {
+test('@gltf-transform/functions::instance | translation', async t => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -40,7 +40,7 @@ test('@gltf-transform/lib::instance | translation', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::instance | rotation', async t => {
+test('@gltf-transform/functions::instance | rotation', async t => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -76,7 +76,7 @@ test('@gltf-transform/lib::instance | rotation', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::instance | scale', async t => {
+test('@gltf-transform/functions::instance | scale', async t => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -111,7 +111,7 @@ test('@gltf-transform/lib::instance | scale', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::instance | scale', async t => {
+test('@gltf-transform/functions::instance | scale', async t => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();

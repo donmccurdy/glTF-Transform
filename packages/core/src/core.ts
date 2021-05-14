@@ -13,8 +13,8 @@ export { GLTF } from './types/gltf';
 /** [[include:CONCEPTS.md]] */
 namespace Concepts {}
 
-/** [[include:LIBRARY.md]] */
-namespace Library {}
+/** [[include:FUNCTIONS.md]] */
+namespace Functions {}
 
 /** [[include:EXTENSIONS.md]] */
 namespace Extensions {}
@@ -26,7 +26,7 @@ namespace Contributing {}
  * # CLI
  *
  * For easier access to its library, glTF-Transform offers a command-line interface (CLI). The
- * CLI supports many of the features of the `@gltf-transform/lib` package, and some general tools
+ * CLI supports many of the features of the `@gltf-transform/functions` package, and some general tools
  * for inspecting and packing/unpacking glTF or GLB files.
  *
  * Installation:

@@ -16,12 +16,12 @@ glTF-Transform is modular:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
 - `@gltf-transform/extensions`: [Extensions](/extensions.html) (optional glTF features) for the Core SDK.
-- `@gltf-transform/lib`: [Library](/library.html) of common functions, written using the core API, that modify glTF files.
+- `@gltf-transform/functions`: [Functions](/functions.html) for common glTF modifications, written using the core API.
 - `@gltf-transform/cli`: [Command-line interface](/cli.html) to apply changes quickly or in batch.
 
 ## Getting started
 
-To learn how glTF-Transform works, see [Concepts](/concepts.html). To get started developing with the SDK, see [SDK Installation](#sdk-installation) below. Visit the [Library](/library.html) for examples of functionality created with the SDK already. To use the commandline interface, see [Commandline (CLI)](/cli.html). If you're interested in contributing to or customizing the project, see [contributing](/contributing.html).
+To learn how glTF-Transform works, see [Concepts](/concepts.html). To get started developing with the SDK, see [SDK Installation](#sdk-installation) below. Find [Functions](/functions.html) for example scripts created with the SDK already. To use the commandline interface, see [Commandline (CLI)](/cli.html). If you're interested in contributing to or customizing the project, see [contributing](/contributing.html).
 
 ### SDK Installation
 

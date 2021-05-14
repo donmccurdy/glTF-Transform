@@ -6,7 +6,7 @@ import { quantize } from '../';
 
 const {VEC2, VEC3, VEC4} = Accessor.Type;
 
-test('@gltf-transform/lib::quantize | exclusions', async t => {
+test('@gltf-transform/functions::quantize | exclusions', async t => {
 	const doc = new Document();
 	const uv = createFloatAttribute(doc, 'TEXCOORD_0', Accessor.Type.VEC2, new Float32Array([
 		0.00, 0.00,
@@ -29,7 +29,7 @@ test('@gltf-transform/lib::quantize | exclusions', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | position', async t => {
+test('@gltf-transform/functions::quantize | position', async t => {
 	const doc = new Document();
 	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
 	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
@@ -67,7 +67,7 @@ test('@gltf-transform/lib::quantize | position', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | texcoord', async t => {
+test('@gltf-transform/functions::quantize | texcoord', async t => {
 	const doc = new Document();
 	const uv = createFloatAttribute(doc, 'TEXCOORD_0', VEC2, new Float32Array([
 		0.00, 0.00,
@@ -92,7 +92,7 @@ test('@gltf-transform/lib::quantize | texcoord', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | normal', async t => {
+test('@gltf-transform/functions::quantize | normal', async t => {
 	const doc = new Document();
 	const normal = createFloatAttribute(doc, 'NORMAL', VEC3, new Float32Array([
 		-0.19211, -0.93457, 0.29946,
@@ -116,7 +116,7 @@ test('@gltf-transform/lib::quantize | normal', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | tangent', async t => {
+test('@gltf-transform/functions::quantize | tangent', async t => {
 	const doc = new Document();
 	const tangent = createFloatAttribute(doc, 'TANGENT', VEC4, new Float32Array([
 		-0.19211, -0.93457, 0.29946, 1.0,
@@ -140,7 +140,7 @@ test('@gltf-transform/lib::quantize | tangent', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | color', async t => {
+test('@gltf-transform/functions::quantize | color', async t => {
 	const doc = new Document();
 	const color = createFloatAttribute(doc, 'COLOR_0', VEC3, new Float32Array([
 		0.19, 0.93, 0.29,
@@ -165,7 +165,7 @@ test('@gltf-transform/lib::quantize | color', async t => {
 });
 
 // TODO(feat): Apply node transform to IBM?
-test.skip('@gltf-transform/lib::quantize | skinning', async t => {
+test.skip('@gltf-transform/functions::quantize | skinning', async t => {
 	const doc = new Document();
 	const joints = createFloatAttribute(doc, 'JOINTS_0', VEC4, new Float32Array([
 		0, 0, 0, 0,
@@ -202,7 +202,7 @@ test.skip('@gltf-transform/lib::quantize | skinning', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | custom', async t => {
+test('@gltf-transform/functions::quantize | custom', async t => {
 	const doc = new Document();
 	const temp = createFloatAttribute(doc, '_TEMPERATURE', VEC3, new Float32Array([
 		0.19, 0.93, 0.29,
@@ -226,7 +226,7 @@ test('@gltf-transform/lib::quantize | custom', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::quantize | indices', async t => {
+test('@gltf-transform/functions::quantize | indices', async t => {
 	const doc = new Document();
 	createFloatAttribute(doc, 'POSITION', VEC2, new Float32Array([
 		0.00, 0.00, 0.50, 0.50, 0.75, 0.25,

@@ -56,7 +56,7 @@ strongly preferred.
 
 glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally.
 
-Suggestions and PRs for new [Library](/library.html) functions are also generally welcome.
+Suggestions and PRs for new [Functions](/functions.html) are also generally welcome.
 
 ### Releasing
 

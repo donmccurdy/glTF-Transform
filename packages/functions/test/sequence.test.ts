@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { sequence } from '../';
 
-test('@gltf-transform/lib::sequence', async t => {
+test('@gltf-transform/functions::sequence', async t => {
 
 	const doc = new Document();
 	const root = doc.getRoot();

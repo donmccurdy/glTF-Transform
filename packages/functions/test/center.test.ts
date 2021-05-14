@@ -2,9 +2,9 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Accessor, Document } from '@gltf-transform/core';
-import { bounds } from '../';
+import { bounds, center } from '../';
 
-test('@gltf-transform/lib::bounds', t => {
+test('@gltf-transform/functions::center', async t => {
 
 	const doc = new Document();
 	const position = doc.createAccessor()
@@ -19,10 +19,26 @@ test('@gltf-transform/lib::bounds', t => {
 		.setScale([5, 5, 5]);
 	const scene = doc.createScene().addChild(node);
 
+	await doc.transform((center({pivot: 'center'})));
+
 	t.deepEquals(bounds(scene), {
-		min: [100, 100, 100],
-		max: [105, 105, 105],
-	}, 'computes world bounds');
+		min: [-2.5, -2.5, -2.5],
+		max: [2.5, 2.5, 2.5],
+	}, 'center');
+
+	await doc.transform((center({pivot: 'above'})));
+
+	t.deepEquals(bounds(scene), {
+		min: [-2.5, -5.0, -2.5],
+		max: [2.5, 0.0, 2.5],
+	}, 'above');
+
+	await doc.transform((center({pivot: 'below'})));
+
+	t.deepEquals(bounds(scene), {
+		min: [-2.5, 0.0, -2.5],
+		max: [2.5, 5.0, 2.5],
+	}, 'below');
 
 	t.end();
 });

@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { prune } from '../';
 
-test('@gltf-transform/lib::prune', async t => {
+test('@gltf-transform/functions::prune', async t => {
 
 	const doc = new Document();
 

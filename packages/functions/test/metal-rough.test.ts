@@ -41,7 +41,7 @@ async function ndarrayToImage (pixels): Promise<ArrayBuffer> {
 	return (await savePixels(pixels, 'image/png')).buffer;
 }
 
-test('@gltf-transform/lib::metalRough | textures', async t => {
+test('@gltf-transform/functions::metalRough | textures', async t => {
 	const doc = new Document();
 	const baseColorTex = doc.createTexture()
 		.setImage(await ndarrayToImage(ZEROS))
@@ -96,7 +96,7 @@ test('@gltf-transform/lib::metalRough | textures', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::metalRough | factors', async t => {
+test('@gltf-transform/functions::metalRough | factors', async t => {
 	const doc = new Document();
 	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension.createPBRSpecularGlossiness()

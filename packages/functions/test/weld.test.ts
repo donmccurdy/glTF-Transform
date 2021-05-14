@@ -4,7 +4,7 @@ import test from 'tape';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
-test('@gltf-transform/lib::weld | tolerance=0', async t => {
+test('@gltf-transform/functions::weld | tolerance=0', async t => {
 	const doc = new Document();
 	const positionArray = new Float32Array([
 		0, 0, 0,
@@ -58,7 +58,7 @@ test('@gltf-transform/lib::weld | tolerance=0', async t => {
 	t.end();
 });
 
-test('@gltf-transform/lib::weld | tolerance>0', async t => {
+test('@gltf-transform/functions::weld | tolerance>0', async t => {
 	const doc = new Document();
 	const positionArray = new Float32Array([
 		0, 0, 0,

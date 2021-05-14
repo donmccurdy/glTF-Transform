@@ -5,7 +5,7 @@ import test from 'tape';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { inspect } from '../';
 
-test('@gltf-transform/lib::inspect', t => {
+test('@gltf-transform/functions::inspect', t => {
 
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb'))

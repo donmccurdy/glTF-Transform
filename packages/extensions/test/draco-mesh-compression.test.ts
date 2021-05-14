@@ -4,7 +4,7 @@ import path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import test from 'tape';
 import { Accessor, Buffer, Document, Format, NodeIO, Primitive } from '@gltf-transform/core';
-import { bounds } from '@gltf-transform/lib';
+import { bounds } from '@gltf-transform/functions';
 import { DracoMeshCompression } from '../';
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async t => {

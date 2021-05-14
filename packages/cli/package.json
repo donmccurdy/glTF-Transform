@@ -24,7 +24,7 @@
     "@caporal/core": "^2.0.2",
     "@gltf-transform/core": "^0.10.3",
     "@gltf-transform/extensions": "^0.10.3",
-    "@gltf-transform/lib": "^0.10.3",
+    "@gltf-transform/functions": "^0.10.3",
     "cli-table3": "^0.6.0",
     "command-exists": "^1.2.9",
     "csv-stringify": "^5.6.2",
