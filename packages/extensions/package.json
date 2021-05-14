@@ -10,7 +10,8 @@
   "sideEffects": false,
   "scripts": {
     "dist": "microbundle --format modern,cjs",
-    "watch": "microbundle watch --format modern,cjs"
+    "watch": "microbundle watch --format modern,cjs",
+    "watch:debug": "microbundle watch --no-compress --format modern,cjs"
   },
   "keywords": [
     "gltf",

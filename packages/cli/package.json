@@ -8,7 +8,8 @@
   "types": "dist/cli.d.ts",
   "scripts": {
     "dist": "microbundle --format cjs",
-    "watch": "microbundle watch --format cjs"
+    "watch": "microbundle watch --format cjs",
+    "watch:debug": "microbundle watch --no-compress --format cjs"
   },
   "bin": {
     "gltf-transform": "bin/cli.js"
