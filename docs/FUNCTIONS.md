@@ -14,12 +14,13 @@ Then, import some modules:
 
 ```typescript
 import { WebIO } from '@gltf-transform/core';
-import { ao, dedup } from '@gltf-transform/functions';
+import { dedup, prune, weld } from '@gltf-transform/functions';
 
 const doc = await new WebIO().readGLB('path/to/model.glb');
 await doc.transform(
-  ao({samples: 500}),
-  dedup({textures: true})
+  weld(),
+  prune(),
+  dedup({textures: true}),
 );
 ```
 
@@ -29,7 +30,6 @@ Transforms are functions applying a modification to the {@link Document}. This p
 
 | transform                           | compatibility | description                                                                                                                                                                     |
 |-------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [ao](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/functions/src/ao.ts)                 | Node.js, Web  | Bakes per-vertex ambient occlusion. Cheaper but lower-quality than AO baked with a UV map. Powered by [geo-ambient-occlusion](https://github.com/wwwtyro/geo-ambient-occlusion) |
 | [colorspace](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/functions/src/colorspace.ts) | Node.js, Web  | Vertex color colorspace correction.                                                                                                                                             |
 | [center](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/functions/src/center.ts)         | Node.js, Web  | Centers the {@link Scene} at the origin, or above/below it.                                                                                                                     |
 | [dedup](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/functions/src/dedup.ts)           | Node.js, Web  | Removes duplicate {@link Accessor} and {@link Texture} properties. Based on a [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).            |
