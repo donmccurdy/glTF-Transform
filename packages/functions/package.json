@@ -25,11 +25,9 @@
   "dependencies": {
     "@gltf-transform/core": "^0.10.3",
     "@gltf-transform/extensions": "^0.10.3",
-    "geo-ambient-occlusion": "^3.0.2",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
-    "ndarray-pixels": "^0.1.6",
-    "regl": "^2.1.0"
+    "ndarray-pixels": "^0.1.6"
   },
   "files": [
     "dist/",

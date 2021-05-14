@@ -1,31 +1,3 @@
-declare module 'geo-ambient-occlusion' {
-	import REGL from 'regl';
-
-	type TypedArray = Float32Array
-		| Uint32Array
-		| Uint16Array
-		| Uint8Array
-		| Int16Array
-		| Int8Array;
-
-	interface AmbientOcclusionOptions {
-		cells?: TypedArray | null,
-		resolution?: number,
-		regl?: REGL.Regl,
-	}
-
-	class AmbientOcclusionSampler {
-		public report(): Float32Array;
-		public sample(): void;
-		public dispose(): void;
-	}
-
-	export default function ambientOcclusion(
-		positions: TypedArray,
-		options?: AmbientOcclusionOptions
-	): AmbientOcclusionSampler;
-}
-
 // See: https://github.com/toji/gl-matrix/issues/423
 
 declare module 'gl-matrix/vec4' {
