@@ -8,7 +8,7 @@ import { bounds } from '@gltf-transform/lib';
 import { DracoMeshCompression } from '../';
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async t => {
-	const io = await createNodeIO();
+	const io = await createDecoderIO();
 	const doc = io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
 	const bbox = bounds(doc.getRoot().listScenes()[0]);
 	t.deepEquals(bbox.min.map(v => +v.toFixed(3)), [-0.5, -0.5, -0.5], 'decompress (min)');
@@ -35,7 +35,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 		.addPrimitive(prim2.clone());
 	doc.createNode().setMesh(mesh);
 
-	const io = await createNodeIO();
+	let io = await createEncoderIO();
 	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -90,6 +90,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 		'included in extensionsUsed'
 	);
 
+	io = await createDecoderIO();
 	const roundtripDoc = io.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes()[0];
 	const bbox = bounds(roundtripNode);
@@ -117,7 +118,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
-	const io = await createNodeIO();
+	const io = await createEncoderIO();
 	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -151,7 +152,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
-	const io = await createNodeIO();
+	const io = await createEncoderIO();
 	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -206,7 +207,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 		.addPrimitive(prim1)
 		.addPrimitive(prim2);
 
-	const io = await createNodeIO();
+	const io = await createEncoderIO();
 	const jsonDoc = io.writeJSON(doc, {format: Format.GLB});
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
@@ -246,7 +247,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent'
 		.setAttribute('POSITION', prim.getAttribute('POSITION')));
 	doc.createMesh().addPrimitive(prim);
 
-	const io = await createNodeIO();
+	const io = await createEncoderIO();
 	t.throws(() => io.writeJSON(doc, {format: Format.GLB}), 'invalid accessor reuse');
 	t.end();
 });
@@ -273,18 +274,35 @@ function createMeshPrimitive(doc: Document, buffer: Buffer): Primitive {
 
 }
 
-let _io: Promise<NodeIO>;
-async function createNodeIO(): Promise<NodeIO> {
-	_io = _io || Promise.all([
-		createDecoderModule(),
-		createEncoderModule()
-	]).then(([decoder, encoder]) => {
-		return new NodeIO()
-			.registerExtensions([DracoMeshCompression])
-			.registerDependencies({
-				'draco3d.decoder': decoder,
-				'draco3d.encoder': encoder,
-			});
-	});
-	return _io;
+// Helper functions to create I/O instaces initialized with Draco dependencies.
+// Create separate instances for encoding and decoding, to help test that
+// they work independently.
+
+let decoderIO: Promise<NodeIO>;
+let encoderIO: Promise<NodeIO>;
+
+async function createDecoderIO(): Promise<NodeIO> {
+	if (decoderIO) return decoderIO;
+
+	decoderIO = createDecoderModule()
+		.then((decoder) => {
+			return new NodeIO()
+				.registerExtensions([DracoMeshCompression])
+				.registerDependencies({'draco3d.decoder': decoder});
+		});
+
+	return decoderIO;
+}
+
+async function createEncoderIO(): Promise<NodeIO> {
+	if (encoderIO) return encoderIO;
+
+	encoderIO = createEncoderModule()
+		.then((encoder) => {
+			return new NodeIO()
+				.registerExtensions([DracoMeshCompression])
+				.registerDependencies({'draco3d.encoder': encoder});
+		});
+
+	return encoderIO;
 }

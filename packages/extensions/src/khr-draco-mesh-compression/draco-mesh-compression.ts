@@ -23,7 +23,8 @@ export class DracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly prereadTypes = [PropertyType.PRIMITIVE];
 	public readonly prewriteTypes = [PropertyType.ACCESSOR];
-	public readonly dependencies = ['draco3d.decoder', 'draco3d.encoder'];
+	public readonly readDependencies = ['draco3d.decoder'];
+	public readonly writeDependencies = ['draco3d.encoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
 	public static readonly EncoderMethod = EncoderMethod;

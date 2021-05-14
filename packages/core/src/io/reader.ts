@@ -61,7 +61,7 @@ export class GLTFReader {
 					Extension as unknown as new (doc: Document) => Extension
 				).setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
 
-				for (const key of extension.dependencies) {
+				for (const key of extension.readDependencies) {
 					extension.install(key, options.dependencies[key]);
 				}
 			}
