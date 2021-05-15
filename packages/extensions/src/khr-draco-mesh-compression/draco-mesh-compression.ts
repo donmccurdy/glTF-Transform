@@ -18,7 +18,60 @@ interface DracoWriterContext {
 	primitiveEncodingMap: Map<string, EncodedPrimitive>;
 }
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # DracoMeshCompression
+ *
+ * [`KHR_draco_mesh_compression`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/)
+ * provides advanced compression for mesh geometry.
+ *
+ * For models where geometry is a significant factor (>1 MB), Draco can reduce filesize by ~95%
+ * in many cases. When animation or textures are large, other complementary compression methods
+ * should be used as well. For geometry <1MB, the size of the WASM decoder library may outweigh
+ * size savings.
+ *
+ * Be aware that decompression happens before uploading to the GPU — this will add some latency to
+ * the parsing process, and means that compressing geometry with  Draco does _not_ affect runtime
+ * performance. To improve framerate, you'll need to simplify the geometry by reducing vertex count
+ * or draw calls — not just compress it. Finally, be aware that Draco compression is lossy:
+ * repeatedly compressing and decompressing a model in a pipeline will lose precision, so
+ * compression should generally be the last stage of an art workflow, and uncompressed original
+ * files should be kept.
+ *
+ * A decoder or encoder from the `draco3dgltf` npm module for Node.js (or
+ * [elsewhere for web](https://stackoverflow.com/a/66978236/1314762)) is required for reading and writing,
+ * and must be provided by the application.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { DracoMeshCompression } from '@gltf-transform/extensions';
+ *
+ * import draco3d from 'draco3dgltf';
+ *
+ * // ...
+ *
+ * const io = new NodeIO()
+ *	.registerExtensions([DracoMeshCompression])
+ *	.registerDependencies({
+ *		'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
+ *		'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
+ *	});
+ *
+ * // Read and decode.
+ * const doc = io.read('compressed.glb');
+ *
+ * // Write and encode.
+ * doc.createExtension(DracoMeshCompression)
+ * 	.setRequired(true)
+ * 	.setEncoderOptions({
+ * 		method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
+ * 		encodeSpeed: 5,
+ * 		decodeSpeed: 5,
+ * 	});
+ * io.write('compressed.glb', doc);
+ * ```
+ */
 export class DracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly prereadTypes = [PropertyType.PRIMITIVE];
