@@ -1,4 +1,4 @@
-/** @module lib */
+/** @module functions */
 
 export * from './bounds';
 export * from './center';
