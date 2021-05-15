@@ -21,133 +21,21 @@ as prescribed by the extension itself.
 
 *Khronos extensions are widely supported and recommended for general use.*
 
-<details>
-<summary><b>KHR_draco_mesh_compression</b></summary>
+- [KHR_draco_mesh_compression](/classes/extensions.dracomeshcompression.html)
+- [KHR_lights_punctual](/classes/extensions.lightspunctual.html)
+- [KHR_materials_clearcoat](/classes/extensions.materialsclearcoat.html)
+- [KHR_materials_ior](/classes/extensions.materialsior.html)
+- [KHR_materials_pbrSpecularGlossiness](/classes/extensions.materialspbrspecularglossiness.html)
+- [KHR_materials_sheen](/classes/extensions.materialssheen.html)
+- [KHR_materials_specular](/classes/extensions.materialsspecular.html)
+- [KHR_materials_transmission](/classes/extensions.materialstransmission.html)
+- [KHR_materials_unlit](/classes/extensions.materialsunlit.html)
+- [KHR_materials_variants](/classes/extensions.materialsvariants.html)
+- [KHR_materials_volume](/classes/extensions.materialsvolume.html)
+- [KHR_mesh_quantization](/classes/extensions.meshquantization.html)
+- [KHR_texture_basisu](/classes/extensions.texturebasisu.html)
+- [KHR_texture_transform](/classes/extensions.texturetransform.html)
 
-- *Specification: [KHR_draco_mesh_compression](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/)*
-- *Source: [packages/extensions/src/khr-draco-mesh-compression/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-draco-mesh-compression)*
-
-The `KHR_draco_mesh_compression` extension provides advanced compression for mesh geometry. For
-models where geometry is a significant factor (>1 MB), Draco can reduce filesize by ~95% in many
-cases. When animation or textures are large, other complementary compression methods should be used
-as well. For geometry <1MB, the size of the WASM decoder library may outweigh size savings.
-
-Be aware that decompression happens before uploading to the GPU — this will add some latency to the
-parsing process, and means that compressing geometry with  Draco does _not_ affect runtime
-performance. To improve framerate, you'll need to simplify the geometry by reducing vertex count or
-draw calls — not just compress it. Finally, be aware that Draco compression is lossy: repeatedly
-compressing and decompressing a model in a pipeline will lose precision, so compression should
-generally be the last stage of an art workflow, and uncompressed original files should be kept.
-
-A decoder or encoder from `draco3dgltf` npm module is required for reading and writing
-respectively, and must be provided by the application:
-
-```typescript
-import { NodeIO } from '@gltf-transform/core';
-import { DracoMeshCompression } from '@gltf-transform/extensions';
-
-import draco3d from 'draco3dgltf';
-
-// ...
-
-const io = new NodeIO()
-  .registerExtensions([DracoMeshCompression])
-  .registerDependencies({
-    'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
-    'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
-  });
-
-const doc = io.read('compressed.glb');
-```
-
-</details>
-
-<details>
-<summary><b>KHR_lights_punctual</b></summary>
-
-- *Specification: [KHR_lights_punctual](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_lights_punctual/)*
-- *Source: [packages/extensions/src/khr-lights-punctual/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-lights-punctual)*
-
-The `KHR_lights_punctual` extension defines three "punctual" light types: directional, point and
-spot. Punctual lights are defined as parameterized, infinitely small points that emit light in
-well-defined directions and intensities. Lights are referenced by nodes and inherit the transform
-of that node.
-
-```typescript
-import { LightsPunctual, Light, LightType } from '@gltf-transform/extensions';
-
-// Create an Extension attached to the Document.
-const lightsExtension = document.createExtension(LightsPunctual);
-
-// Create a Light property.
-const light = lightsExtension.createLight()
-  .setType(LightType.POINT)
-  .setIntensity(2.0)
-  .setColor([1.0, 0.0, 0.0]);
-
-// Attach the property to a Material.
-node.setExtension('KHR_lights_punctual', light);
-```
-
-</details>
-
-<details>
-<summary><b>KHR_materials_clearcoat</b></summary>
-
-- *Specification: [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/)*
-- *Source: [packages/extensions/src/khr-materials-clearcoat/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-clearcoat)*
-
-The `KHR_materials_clearcoat` extension defines a clear coating that can be layered on top of an
-existing glTF material definition. A clear coat is a common technique used in Physically-Based
-Rendering to represent a protective layer applied to a base material.
-
-The `MaterialsClearcoat` class provides a single {@link ExtensionProperty} type, `Clearcoat`, which
-may be attached to any {@link Material} instance. For example:
-
-```typescript
-import { MaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
-
-// Create an Extension attached to the Document.
-const clearcoatExtension = document.createExtension(MaterialsClearcoat);
-
-// Create a Clearcoat property.
-const clearcoat = clearcoatExtension.createClearcoat()
-  .setClearcoatFactor(1.0);
-
-// Attach the property to a Material.
-material.setExtension('KHR_materials_clearcoat', clearcoat);
-```
-
-</details>
-
-<details>
-<summary><b>KHR_materials_ior</b></summary>
-
-- *Specification: [KHR_materials_ior](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_ior/)*
-- *Source: [packages/extensions/src/khr-materials-ior/](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions/src/khr-materials-ior)*
-
-The dielectric BRDF of the metallic-roughness material in glTF uses a fixed value of 1.5 for the
-index of refraction. This is a good fit for many plastics and glass, but not for other materials
-like water or asphalt, sapphire or diamond. `KHR_materials_ior` allows users to set the index of
-refraction to a certain value.
-
-The `MaterialsIOR` class provides a single {@link ExtensionProperty} type, `IOR`, which
-may be attached to any {@link Material} instance. For example:
-
-```typescript
-import { MaterialsIOR, IOR } from '@gltf-transform/extensions';
-
-// Create an Extension attached to the Document.
-const iorExtension = document.createExtension(MaterialsIOR);
-
-// Create a IOR property.
-const ior = iorExtension.createIOR().setIOR(1.0);
-
-// Attach the property to a Material.
-material.setExtension('KHR_materials_ior', ior);
-```
-
-</details>
 
 <details>
 <summary><b>KHR_materials_pbrSpecularGlossiness</b></summary>

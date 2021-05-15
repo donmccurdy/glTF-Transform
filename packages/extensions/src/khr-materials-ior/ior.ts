@@ -1,7 +1,13 @@
 import { COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_IOR } from '../constants';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # IOR
+ *
+ * Defines index of refraction for a PBR material.
+ *
+ * Used by the {@link MaterialsIOR} extension.
+ */
 export class IOR extends ExtensionProperty {
 	public readonly propertyType = 'IOR';
 	public readonly parentTypes = [PropertyType.MATERIAL];

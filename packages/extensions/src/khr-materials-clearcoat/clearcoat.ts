@@ -3,7 +3,11 @@ import { KHR_MATERIALS_CLEARCOAT } from '../constants';
 
 const { R, G, B } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Clearcoat
+ *
+ * Defines clear coat for a PBR material. See {@link MaterialsClearcoat}.
+ */
 export class Clearcoat extends ExtensionProperty {
 	public readonly propertyType = 'Clearcoat';
 	public readonly parentTypes = [PropertyType.MATERIAL];

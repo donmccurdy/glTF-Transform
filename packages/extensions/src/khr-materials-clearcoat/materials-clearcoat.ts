@@ -12,7 +12,35 @@ interface ClearcoatDef {
 	clearcoatNormalTexture?: GLTF.IMaterialNormalTextureInfo;
 }
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # MaterialsClearcoat
+ *
+ * [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/)
+ * defines a clear coating on a glTF PBR material.
+ *
+ * A clear coat is a common technique used in Physically-Based
+ * Rendering for a protective layer applied to a base material.
+ * Commonly used to represent car paint, carbon fiber, or thin lacquers.
+ *
+ * Properties:
+ * - {@link Clearcoat}
+ *
+ * ### Example
+ *
+ * ```typescript
+ * import { MaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const clearcoatExtension = document.createExtension(MaterialsClearcoat);
+ *
+ * // Create Clearcoat property.
+ * const clearcoat = clearcoatExtension.createClearcoat()
+ *	.setClearcoatFactor(1.0);
+ *
+ * // Assign to a Material.
+ * material.setExtension('KHR_materials_clearcoat', clearcoat);
+ * ```
+ */
 export class MaterialsClearcoat extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
