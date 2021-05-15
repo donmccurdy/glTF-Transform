@@ -7,8 +7,9 @@ export interface ResampleOptions {tolerance?: number}
 const RESAMPLE_DEFAULTS: Required<ResampleOptions> =  {tolerance: 1e-4};
 
 /**
- * Removes redundant sequential keyframes, common in morph target sequences and baked animations.
- * Based on THREE.KeyframeTrack.optimize().
+ * Resample {@link Animation}s, losslessly deduplicating keyframes to reduce file size. Duplicate
+ * keyframes are commonly present in animation 'baked' by the authoring software to apply IK
+ * constraints or other software-specific features. Based on THREE.KeyframeTrack.optimize().
  *
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */

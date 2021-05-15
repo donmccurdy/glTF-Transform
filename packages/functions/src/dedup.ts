@@ -2,7 +2,10 @@ import { Accessor, BufferUtils, Document, Logger, Material, Mesh, PropertyType, 
 
 const NAME = 'dedup';
 
+
+
 export interface DedupOptions {
+	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
 	propertyTypes: string[];
 }
 
@@ -11,10 +14,18 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
 };
 
 /**
- * Options:
- * - **accessors**: Whether to remove duplicate accessors. Default `true`.
- * - **meshes**: Whether to remove duplicate meshes. Default `true`.
- * - **textures**: Whether to remove duplicate textures. Default `true`.
+ * Removes duplicate {@link Accessor}, {@link Mesh}, and {@link Texture} properties. Based on a
+ * [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
+ *
+ * Example:
+ *
+ * ```ts
+ * document.getRoot().listMeshes(); // → [Mesh, Mesh, Mesh]
+ *
+ * await document.transform(dedup({propertyTypes: [PropertyType.MESH]}));
+ *
+ * document.getRoot().listMeshes(); // → [Mesh]
+ * ```
  */
 export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	const options = {...DEDUP_DEFAULTS, ..._options} as Required<DedupOptions>;

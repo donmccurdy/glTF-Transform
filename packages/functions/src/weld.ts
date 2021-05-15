@@ -3,13 +3,16 @@ import { getGLPrimitiveCount } from './utils';
 
 const NAME = 'weld';
 
-export interface WeldOptions {tolerance?: number}
+/** Options for the {@link weld} function. */
+export interface WeldOptions {
+	/** Per-attribute tolerance used when merging similar vertices. */
+	tolerance?: number
+}
 
 const WELD_DEFAULTS: Required<WeldOptions> = {tolerance: 1e-4};
 
 /**
- * Options:
- * - **tolerance**: Per-attribute tolerance used when merging similar vertices.
+ * Index {@link Primitive}s and (optionally) merge similar vertices.
  */
 export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = {...WELD_DEFAULTS, ..._options} as Required<WeldOptions>;

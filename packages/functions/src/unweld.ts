@@ -2,11 +2,19 @@ import { Accessor, Document, Logger, Transform, TypedArray } from '@gltf-transfo
 
 const NAME = 'unweld';
 
+/** Options for the {@link unweld} function. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnweldOptions {}
 
 const UNWELD_DEFAULTS: UnweldOptions = {};
 
+/**
+ * De-index {@link Primitive}s, disconnecting any shared vertices. This operation will generally
+ * increase the number of vertices in a mesh, but may be helpful for some geometry operations or
+ * for creating hard edges.
+ *
+ * No options are currently implemented for this function.
+ */
 export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...UNWELD_DEFAULTS, ..._options} as Required<UnweldOptions>;

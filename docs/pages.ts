@@ -9,9 +9,6 @@
 /** [[include:CONCEPTS.md]] */
 export namespace Concepts {}
 
-/** [[include:FUNCTIONS.md]] */
-export namespace Functions {}
-
 /** [[include:EXTENSIONS.md]] */
 export namespace Extensions {}
 

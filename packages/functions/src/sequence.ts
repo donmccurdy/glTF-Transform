@@ -3,9 +3,13 @@ import { Accessor, AnimationChannel, AnimationSampler, Document, Transform } fro
 const NAME = 'sequence';
 
 export interface SequenceOptions {
+	/** Frames per second, where one node is shown each frame. Default 10. */
 	fps?: number;
+	/** Pattern (regex) used to filter nodes for the sequence. Required. */
 	pattern: RegExp;
+	/** Name of the new animation. */
 	name?: string;
+	/** Whether to sort the nodes by name, or use original order. Default true. */
 	sort?: boolean;
 }
 
@@ -17,11 +21,7 @@ const SEQUENCE_DEFAULTS: Required<SequenceOptions> = {
 };
 
 /**
- * Options:
- * - **name**: Name of the new animation.
- * - **fps**: Frames per second, where one node is shown each frame. Default 10.
- * - **pattern**: Pattern (regex) used to filter nodes for the sequence. Required.
- * - **sort**: Whether to sort the nodes by name, or use original order. Default true.
+ * Creates an {@link Animation} displaying each of the specified {@link Node}s sequentially.
  */
 export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
 	const options = {...SEQUENCE_DEFAULTS, ..._options} as Required<SequenceOptions>;
