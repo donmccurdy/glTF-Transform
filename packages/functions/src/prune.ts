@@ -7,7 +7,21 @@ export interface PruneOptions {}
 const PRUNE_DEFAULTS: Required<PruneOptions> = {};
 
 /**
- * Removes unused resources from a file, and may be helpful for cleaning up after other operations.
+ * Removes properties from the file if they are not referenced by a {@link Scene}. Commonly helpful
+ * for cleaning up after other operations, e.g. allowing a node to be detached and any unused
+ * meshes, materials, or other resources to be removed automatically.
+ *
+ * Example:
+ *
+ * ```
+ * document.getRoot().listMaterials(); // → [Material, Material]
+ *
+ * await document.transform(prune());
+ *
+ * document.getRoot().listMaterials(); // → [Material]
+ * ```
+ *
+ * No options are currently implemented for this function.
  */
 export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

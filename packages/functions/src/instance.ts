@@ -8,7 +8,10 @@ export interface InstanceOptions {}
 
 const INSTANCE_DEFAULTS: Required<InstanceOptions> = {};
 
-/** Creates GPU instances (with EXT_mesh_gpu_instancing) for shared {@link Mesh} references. */
+/**
+ * Creates GPU instances (with `EXT_mesh_gpu_instancing`) for shared {@link Mesh} references. No
+ * options are currently implemented for this function.
+ */
 export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...INSTANCE_DEFAULTS, ..._options} as Required<InstanceOptions>;

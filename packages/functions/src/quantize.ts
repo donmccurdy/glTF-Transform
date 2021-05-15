@@ -9,13 +9,21 @@ type TypedArrayConstructor = Int8ArrayConstructor
 	| Uint16ArrayConstructor;
 const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[];
 
+
+/** Options for the {@link quantize} function. */
 export interface QuantizeOptions {
 	excludeAttributes?: string[];
+	/** Quantization bits for `POSITION` attributes. */
 	quantizePosition?: number;
+	/** Quantization bits for `NORMAL` attributes. */
 	quantizeNormal?: number;
+	/** Quantization bits for `TEXCOORD_*` attributes. */
 	quantizeTexcoord?: number;
+	/** Quantization bits for `COLOR_*` attributes. */
 	quantizeColor?: number;
+	/** Quantization bits for `WEIGHT_*` attributes. */
 	quantizeWeight?: number;
+	/** Quantization bits for application-specific (`_*`) attributes. */
 	quantizeGeneric?: number;
 }
 
@@ -30,13 +38,16 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
 };
 
 /**
- * Quantize vertex attributes with `KHR_mesh_quantization`.
- *
  * References:
  * - https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_mesh_quantization
  * - http://www.aclockworkberry.com/normal-unpacking-quantization-errors/
  * - https://www.mathworks.com/help/dsp/ref/uniformencoder.html
  * - https://oroboro.com/compressed-unit-vectors/
+ */
+
+/**
+ * Quantizes vertex attributes with `KHR_mesh_quantization`, reducing the size and memory footprint
+ * of the file.
  */
 const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 

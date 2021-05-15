@@ -2,13 +2,16 @@ import { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/
 
 const NAME = 'colorspace';
 
+/** Options for the {@link colorspace} function. */
 export interface ColorspaceOptions {
+	/** Must be `"sRGB"`. Required. */
     inputEncoding: string;
 }
 
 /**
- * Options:
- * - **inputEncoding**: Currently accepts only `"sRGB"`. Required.
+ * Vertex color colorspace correction. The glTF format requires vertex colors to be stored
+ * as linear values, and this function provides a way to correct vertex colors that are
+ * (incorrectly) sRGB.
  */
 export function colorspace (options: ColorspaceOptions): Transform {
 

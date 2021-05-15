@@ -1,7 +1,15 @@
 import { transformMat4 } from 'gl-matrix/vec3';
 import { Mesh, Node, Scene, mat4, vec3 } from '@gltf-transform/core';
 
-/** Computes bounding box in world space for the given {@link Node} or {@link Scene}. */
+/**
+ * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.
+ *
+ * Example:
+ *
+ * ```ts
+ * const {min, max} = bounds(scene);
+ * ```
+ */
 export function bounds (node: Node | Scene): {min: vec3; max: vec3} {
 	const resultBounds = createBounds();
 	const parents = node instanceof Node ? [node] : node.listChildren();

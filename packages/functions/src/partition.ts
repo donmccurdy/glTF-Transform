@@ -12,6 +12,21 @@ const PARTITION_DEFAULTS: Required<PartitionOptions> =  {
 	meshes: true,
 };
 
+/**
+ * Partitions the binary payload of a glTF file so separate mesh or animation data is in separate
+ * `.bin` {@link Buffer}s. This technique may be useful for engines that support lazy-loading
+ * specific binary resources as needed over the application lifecycle.
+ *
+ * Example:
+ *
+ * ```ts
+ * document.getRoot().listBuffers(); // → [Buffer]
+ *
+ * await document.transform(partition({meshes: true}));
+ *
+ * document.getRoot().listBuffers(); // → [Buffer, Buffer, ...]
+ * ```
+ */
 const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform => {
 
 	const options = {...PARTITION_DEFAULTS, ..._options} as Required<PartitionOptions>;

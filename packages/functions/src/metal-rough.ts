@@ -10,8 +10,12 @@ export interface MetalRoughOptions {}
 const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};
 
 /**
- * Converts a spec/gloss PBR workflow to a metal/rough PBR workflow, relying on the IOR and
- * specular extensions to base glTF 2.0.
+ * Convert {@link Material}s from spec/gloss PBR workflow to metal/rough PBR workflow,
+ * removing `KHR_materials_pbrSpecularGlossiness` and adding `KHR_materials_ior` and
+ * `KHR_materials_specular`. The metal/rough PBR workflow is preferred for most use cases,
+ * and is a prerequisite for other advanced PBR extensions provided by glTF.
+ *
+ * No options are currently implemented for this function.
  */
 export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

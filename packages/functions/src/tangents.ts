@@ -2,8 +2,16 @@ import { Accessor, Document, Logger, Primitive, Transform, TypedArray, uuid } fr
 
 const NAME = 'tangents';
 
+/** Options for the {@link tangents} function. */
 export interface TangentsOptions {
+	/**
+	 * Callback function to generate tangents from position, uv, and normal attributes.
+	 * Generally, users will want to provide the `generateTangents` from the
+	 * [mikktspace](https://github.com/donmccurdy/mikktspace-wasm) library, which is not
+	 * included by default.
+	 */
 	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array,
+	/** Whether to overwrite existing `TANGENT` attributes. */
 	overwrite?: boolean,
 }
 
@@ -11,6 +19,22 @@ const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
 	overwrite: false,
 };
 
+/**
+ * Generates MikkTSpace vertex tangents for mesh primitives, which may fix rendering issues
+ * occuring with some baked normal maps. Requires access to the [mikktspace](https://github.com/donmccurdy/mikktspace-wasm)
+ * WASM package, or equivalent.
+ *
+ * Example:
+ *
+ * ```ts
+ * import { generateTangents } from 'mikktspace';
+ * import { tangents } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	tangents({generateTangents})
+ * );
+ * ```
+ */
 export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
 	if (!_options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);

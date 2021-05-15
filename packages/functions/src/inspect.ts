@@ -2,6 +2,7 @@ import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, Typed
 import { bounds } from './bounds';
 import { getGLPrimitiveCount } from './utils';
 
+/** Inspects the contents of a glTF file and returns a JSON report. */
 export function inspect (doc: Document): InspectReport {
 	return {
 		scenes: listScenes(doc),
