@@ -17,6 +17,12 @@ interface SheenDef {
  * [`KHR_materials_sheen`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_sheen/)
  * defines a velvet-like sheen layered on a glTF PBR material.
  *
+ * ![Illustration](/media/extensions/khr-materials-sheen.png)
+ *
+ * > _**Figure:** A cushion, showing high material roughness and low sheen roughness. Soft
+ * > highlights at edges of the material show backscattering from microfibers. Source: Khronos
+ * > Group._
+ *
  * A sheen layer is a common technique used in Physically-Based Rendering to represent
  * cloth and fabric materials.
  *

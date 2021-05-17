@@ -18,6 +18,15 @@ interface VolumeDef {
  * adds refraction, absorption, or scattering to a glTF PBR material already using transmission or
  * translucency.
  *
+ * ![Illustration](/media/extensions/khr-materials-volume.png)
+ *
+ * > _**Figure:** Base color changes the amount of light passing through the volume boundary
+ * > (left). The overall color of the object is the same everywhere, as if the object is covered
+ * > with a colored, transparent foil. Absorption changes the amount of light traveling through the
+ * > volume (right). The overall color depends on the distance the light traveled through it; at
+ * > small distances (tail of the dragon) less light is absorbed and the color is brighter than at
+ * > large distances. Source: Khronos Group._
+ *
  * By default, a glTF 2.0 material describes the scattering properties of a surface enclosing an
  * infinitely thin volume. The surface defined by the mesh represents a thin wall. The volume
  * extension makes it possible to turn the surface into an interface between volumes. The mesh to

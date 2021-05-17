@@ -18,6 +18,11 @@ interface ClearcoatDef {
  * [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/)
  * defines a clear coating on a glTF PBR material.
  *
+ * ![Illustration](/media/extensions/khr-materials-clearcoat.png)
+ *
+ * > _**Figure:** Comparison of a carbon-fiber material without clearcoat (left) and with clearcoat
+ * > (right). Source: [Filament](https://google.github.io/filament/Materials.html)._
+ *
  * A clear coat is a common technique used in Physically-Based
  * Rendering for a protective layer applied to a base material.
  * Commonly used to represent car paint, carbon fiber, or thin lacquers.
