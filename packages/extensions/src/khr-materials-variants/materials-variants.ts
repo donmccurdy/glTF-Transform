@@ -29,6 +29,10 @@ interface VariantMappingDef {
  * [`KHR_materials_variants`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants/)
  * defines alternate {@link Material} states for any {@link Primitive} in the scene.
  *
+ * ![Illustration](/media/extensions/khr-materials-variants.png)
+ *
+ * > _**Figure:** A sneaker, in three material variants. Source: Khronos Group._
+ *
  * Uses include product configurators, night/day states, healthy/damaged states, etc. The
  * `MaterialsVariants` class provides three {@link ExtensionProperty} types: `Variant`, `Mapping`,
  * and `MappingList`. When attached to {@link Primitive} properties, these offer flexible ways of
