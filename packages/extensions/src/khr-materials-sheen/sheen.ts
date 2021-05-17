@@ -3,7 +3,11 @@ import { KHR_MATERIALS_SHEEN } from '../constants';
 
 const { R, G, B, A } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Sheen
+ *
+ * Defines sheen on a PBR {@link Material}. See {@link MaterialsSheen}.
+ */
 export class Sheen extends ExtensionProperty {
 	public readonly propertyType = 'Sheen';
 	public readonly parentTypes = [PropertyType.MATERIAL];

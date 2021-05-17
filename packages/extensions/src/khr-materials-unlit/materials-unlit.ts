@@ -4,7 +4,39 @@ import { Unlit } from './unlit';
 
 const NAME = KHR_MATERIALS_UNLIT;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # MaterialsUnlit
+ *
+ * [`KHR_materials_unlit`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_unlit/)
+ * defines an unlit shading model for use in glTF 2.0 materials.
+ *
+ * Unlit (also "Shadeless" or "Constant") materials provide a simple alternative to the Physically
+ * Based Rendering (PBR) shading models provided by the core specification. Unlit materials are
+ * often useful for cheaper rendering on performance-contrained devices, e.g. mobile phones.
+ * Additionally, unlit materials can be very useful in achieving stylized, non-photo-realistic
+ * effects like hand painted illustrative styles or baked toon shaders.
+ *
+ * Properties:
+ * - {@link Unlit}
+ *
+ * ### Example
+ *
+ * The `MaterialsUnlit` class provides a single {@link ExtensionProperty} type, `Unlit`, which may
+ * be attached to any {@link Material} instance. For example:
+ *
+ * ```typescript
+ * import { MaterialsUnlit, Unlit } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const unlitExtension = document.createExtension(MaterialsUnlit);
+ *
+ * // Create an Unlit property.
+ * const unlit = unlitExtension.createUnlit();
+ *
+ * // Attach the property to a Material.
+ * material.setExtension('KHR_materials_unlit', unlit);
+ * ```
+ */
 export class MaterialsUnlit extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;

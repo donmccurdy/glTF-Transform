@@ -1,7 +1,11 @@
 import { Accessor, AttributeLink, COPY_IDENTITY, ExtensionProperty, GraphChildList, PropertyType } from '@gltf-transform/core';
 import { EXT_MESH_GPU_INSTANCING } from '../constants';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # InstancedMesh
+ *
+ * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link MeshGPUInstancing}.
+ */
 export class InstancedMesh extends ExtensionProperty {
 	public readonly propertyType = 'InstancedMesh';
 	public readonly parentTypes = [PropertyType.NODE];

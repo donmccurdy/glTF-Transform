@@ -3,7 +3,11 @@ import { KHR_MATERIALS_SPECULAR } from '../constants';
 
 const { R, G, B, A } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Specular
+ *
+ * Defines specular reflectivity on a PBR {@link Material}. See {@link MaterialsSpecular}.
+ */
 export class Specular extends ExtensionProperty {
 	public readonly propertyType = 'Specular';
 	public readonly parentTypes = [PropertyType.MATERIAL];

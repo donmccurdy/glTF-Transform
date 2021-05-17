@@ -9,7 +9,40 @@ interface TransmissionDef {
 	transmissionTexture?: GLTF.ITextureInfo;
 }
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # MaterialsTransmission
+ *
+ * [`KHR_materials_transmission`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_transmission/)
+ * provides a common type of optical transparency: infinitely-thin materials with no refraction,
+ * scattering, or dispersion.
+ *
+ * While default PBR materials using alpha blending become invisible as their opacity approaches
+ * zero, a transmissive material continues to reflect light in a glass-like manner, even at low
+ * transmission values. When combined with {@link MaterialsVolume}, transmission may be used for
+ * thicker materials and refractive effects.
+ *
+ * Properties:
+ * - {@link Transmission}
+ *
+ * ### Example
+ *
+ * The `MaterialsTransmission` class provides a single {@link ExtensionProperty} type,
+ * `Transmission`, which may be attached to any {@link Material} instance. For example:
+ *
+ * ```typescript
+ * import { MaterialsTransmission, Transmission } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const transmissionExtension = document.createExtension(MaterialsTransmission);
+ *
+ * // Create a Transmission property.
+ * const transmission = transmissionExtension.createTransmission()
+ * 	.setTransmissionFactor(1.0);
+ *
+ * // Attach the property to a Material.
+ * material.setExtension('KHR_materials_transmission', transmission);
+ * ```
+ */
 export class MaterialsTransmission extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;

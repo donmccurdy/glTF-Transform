@@ -3,7 +3,11 @@ import { KHR_MATERIALS_VOLUME } from '../constants';
 
 const { G } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Volume
+ *
+ * Defines volume on a PBR {@link Material}. See {@link MaterialsVolume}.
+ */
 export class Volume extends ExtensionProperty {
 	public readonly propertyType = 'Transmission';
 	public readonly parentTypes = [PropertyType.MATERIAL];
