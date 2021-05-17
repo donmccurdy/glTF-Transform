@@ -3,7 +3,11 @@ import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
 
 const { R, G, B, A } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # PBRSpecularGlossiness
+ *
+ * Converts a {@link Material} to a spec/gloss workflow. See {@link MaterialsPBRSpecularGlossiness}.
+ */
 export class PBRSpecularGlossiness extends ExtensionProperty {
 	public readonly propertyType = 'PBRSpecularGlossiness';
 	public readonly parentTypes = [PropertyType.MATERIAL];

@@ -3,7 +3,11 @@ import { KHR_MATERIALS_TRANSMISSION } from '../constants';
 
 const { R } = TextureChannel;
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Transmission
+ *
+ * Defines optical transmission on a PBR {@link Material}. See {@link MaterialsTransmission}.
+ */
 export class Transmission extends ExtensionProperty {
 	public readonly propertyType = 'Transmission';
 	public readonly parentTypes = [PropertyType.MATERIAL];

@@ -2,7 +2,11 @@ import { COPY_IDENTITY, ExtensionProperty, vec2 } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Transform
+ *
+ * Defines UV transform for a {@link TextureInfo}. See {@link TextureTransform}.
+ */
 export class Transform extends ExtensionProperty {
 	public readonly propertyType = 'Transform';
 	public readonly parentTypes = [PropertyType.TEXTURE_INFO];

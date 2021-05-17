@@ -31,6 +31,7 @@ export abstract class ExtensionProperty extends Property {
 	/** List of supported {@link Property} types. */
 	public abstract readonly parentTypes: string[];
 
+	/** @hidden */
 	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
 		this._extension.addExtensionProperty(this);

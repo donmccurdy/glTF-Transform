@@ -4,9 +4,7 @@ import { KHR_MATERIALS_IOR } from '../constants';
 /**
  * # IOR
  *
- * Defines index of refraction for a PBR material.
- *
- * Used by the {@link MaterialsIOR} extension.
+ * Defines index of refraction for a PBR {@link Material}. See {@link MaterialsIOR}.
  */
 export class IOR extends ExtensionProperty {
 	public readonly propertyType = 'IOR';

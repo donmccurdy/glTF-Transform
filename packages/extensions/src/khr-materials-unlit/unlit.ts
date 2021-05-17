@@ -2,7 +2,11 @@ import { ExtensionProperty } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_UNLIT } from '../constants';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Unlit
+ *
+ * Converts a PBR {@link Material} to an unlit shading model. See {@link MaterialsUnlit}.
+ */
 export class Unlit extends ExtensionProperty {
 	public readonly propertyType = 'Unlit';
 	public readonly parentTypes = [PropertyType.MATERIAL];

@@ -11,7 +11,42 @@ interface TransformDef {
 	texCoord?: number;
 }
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # TextureTransform
+ *
+ * [`KHR_texture_transform`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_texture_transform/)
+ * adds offset, rotation, and scale to {@link TextureInfo} properties.
+ *
+ * Affine UV transforms are useful for reducing the number of textures the GPU must load, improving
+ * performance when used in techniques like texture atlases. UV transforms cannot be animated at
+ * this time.
+ *
+ * Properties:
+ * - {@link Transform}
+ *
+ * ### Example
+ *
+ * The `TextureTransform` class provides a single {@link ExtensionProperty} type, `Transform`, which
+ * may be attached to any {@link TextureInfo} instance. For example:
+ *
+ * ```typescript
+ * import { TextureTransform } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const transformExtension = document.createExtension(TextureTransform)
+ * 	.setRequired(true);
+ *
+ * // Create a reusable Transform.
+ * const transform = transformExtension.createTransform()
+ * 	.setScale([100, 100]);
+ *
+ * // Apply the Transform to a Material's baseColorTexture.
+ * document.createMaterial()
+ * 	.setBaseColorTexture(myTexture)
+ * 	.getBaseColorTextureInfo()
+ * 	.setExtension('KHR_texture_transform', transform);
+ * ```
+ */
 export class TextureTransform extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;

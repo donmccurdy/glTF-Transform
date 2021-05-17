@@ -2,7 +2,11 @@ import { COPY_IDENTITY, ExtensionProperty, GraphChild, GraphChildList, Link, Mat
 import { KHR_MATERIALS_VARIANTS } from '../constants';
 import { Variant } from './variant';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Mapping
+ *
+ * Maps {@link Variant}s to {@link Material}s. See {@link MaterialsVariants}.
+ */
 export class Mapping extends ExtensionProperty {
 	public readonly propertyType = 'Mapping';
 	public readonly parentTypes = ['MappingList'];

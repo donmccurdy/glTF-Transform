@@ -4,7 +4,11 @@ import { KHR_LIGHTS_PUNCTUAL } from '../constants';
 
 type PunctualLightType = 'point' | 'spot' | 'directional';
 
-/** Documentation in {@link EXTENSIONS.md}. */
+/**
+ * # Light
+ *
+ * Defines a light attached to a {@link Node}. See {@link LightsPunctual}.
+ */
 export class Light extends ExtensionProperty {
 	public readonly propertyType = 'Light';
 	public readonly parentTypes = [PropertyType.NODE];
