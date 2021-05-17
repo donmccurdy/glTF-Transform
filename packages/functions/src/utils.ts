@@ -1,4 +1,4 @@
-import ndarray from 'ndarray';
+import { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import { Primitive, Texture } from '@gltf-transform/core';
 
@@ -6,7 +6,7 @@ import { Primitive, Texture } from '@gltf-transform/core';
 export async function rewriteTexture(
 		source: Texture,
 		target: Texture,
-		fn: (pixels: ndarray, i: number, j: number) => void): Promise<Texture|null> {
+		fn: (pixels: NdArray, i: number, j: number) => void): Promise<Texture|null> {
 
 	if (!source) return null;
 
