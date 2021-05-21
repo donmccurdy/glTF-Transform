@@ -111,8 +111,7 @@ export class GLTFReader {
 			if (accessorDef.sparse !== undefined) {
 				array = getSparseArray(accessorDef, jsonDoc);
 			} else {
-				// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
-				array = getAccessorArray(accessorDef, jsonDoc).slice();
+				array = getAccessorArray(accessorDef, jsonDoc);
 			}
 
 			accessor.setArray(array);
@@ -586,24 +585,12 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): T
 		return getInterleavedArray(accessorDef, jsonDoc);
 	}
 
-	const start = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
+	const byteOffset = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
+	const byteLength = accessorDef.count * elementSize * componentSize;
 
-	switch (accessorDef.componentType) {
-		case Accessor.ComponentType.FLOAT:
-			return new Float32Array(resource, start, accessorDef.count * elementSize);
-		case Accessor.ComponentType.UNSIGNED_INT:
-			return new Uint32Array(resource, start, accessorDef.count * elementSize);
-		case Accessor.ComponentType.UNSIGNED_SHORT:
-			return new Uint16Array(resource, start, accessorDef.count * elementSize);
-		case Accessor.ComponentType.UNSIGNED_BYTE:
-			return new Uint8Array(resource, start, accessorDef.count * elementSize);
-		case Accessor.ComponentType.SHORT:
-			return new Int16Array(resource, start, accessorDef.count * elementSize);
-		case Accessor.ComponentType.BYTE:
-			return new Int8Array(resource, start, accessorDef.count * elementSize);
-		default:
-			throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
-	}
+	// Might optimize this to avoid deep copy later, but it's useful for now and not a known
+	// bottleneck. See https://github.com/donmccurdy/glTF-Transform/issues/256.
+	return new TypedArray(resource.slice(byteOffset, byteOffset + byteLength));
 }
 
 /**
@@ -616,8 +603,7 @@ function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): Typ
 
 	let array: TypedArray;
 	if (accessorDef.bufferView !== undefined) {
-		// TODO(cleanup): Relying to much on ArrayBuffers: requires copying.
-		array = getAccessorArray(accessorDef, jsonDoc).slice();
+		array = getAccessorArray(accessorDef, jsonDoc);
 	} else {
 		array = new TypedArray(accessorDef.count * elementSize);
 	}
