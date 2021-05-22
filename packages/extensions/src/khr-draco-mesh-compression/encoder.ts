@@ -55,7 +55,7 @@ export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
 export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
-	const options = {...DEFAULT_ENCODER_OPTIONS, ..._options};
+	const options = {...DEFAULT_ENCODER_OPTIONS, ..._options} as Required<EncoderOptions>;
 	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits};
 
 	const encoder = new encoderModule.Encoder();
@@ -96,7 +96,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 		indices.getArray() as unknown as Uint32Array
 	);
 
-	encoder.SetSpeedOptions(options.encodeSpeed!, options.decodeSpeed!);
+	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
 	encoder.SetTrackEncodedProperties(true);
 
 	// Preserve vertex order for primitives with morph targets.
