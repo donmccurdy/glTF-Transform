@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/functions",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "repository": "github:donmccurdy/glTF-Transform",
   "description": "Functions for common glTF modifications, written using the core API",
   "main": "dist/functions.js",
@@ -23,8 +23,8 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "dependencies": {
-    "@gltf-transform/core": "^0.11.0",
-    "@gltf-transform/extensions": "^0.11.0",
+    "@gltf-transform/core": "^0.11.1",
+    "@gltf-transform/extensions": "^0.11.1",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
     "ndarray-pixels": "^0.1.6"
