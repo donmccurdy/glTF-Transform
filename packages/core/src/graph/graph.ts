@@ -5,7 +5,7 @@ import { GraphNode } from './graph-node';
  * A graph manages a network of {@link GraphNode} nodes, connected
  * by {@link @Link} edges.
  *
- * @internal
+ * @hidden
  * @category Graph
  */
 export class Graph<T extends GraphNode> {

@@ -21,7 +21,7 @@ const generateOne = function(): string {
  * with alterations.
  *
  * @category Utilities
- * @internal
+ * @hidden
  */
 export const uuid = function(): string {
   for (let retries = 0; retries < UNIQUE_RETRIES; retries++) {

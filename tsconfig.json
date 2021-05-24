@@ -9,6 +9,7 @@
     "lib": ["es6", "dom"],
     "target": "es6",
     "declaration": true,
+    "stripInternal": true,
     "experimentalDecorators": true,
     "typeRoots": ["node_modules/@types"],
 

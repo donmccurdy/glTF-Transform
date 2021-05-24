@@ -1,12 +1,14 @@
 import { vec2 } from '../constants';
 import { BufferUtils } from './buffer-utils';
 
+/** Implements support for an image format in the {@link ImageUtils} class. */
 export interface ImageUtilsFormat {
 	getSize(buffer: ArrayBuffer): vec2 | null;
 	getChannels(buffer: ArrayBuffer): number | null;
 	getGPUByteLength?(buffer: ArrayBuffer): number | null;
 }
 
+/** JPEG image support. */
 class JPEGImageUtils implements ImageUtilsFormat {
 	getSize (buffer: ArrayBuffer): vec2 {
 		// Skip 4 chars, they are for signature
@@ -42,6 +44,8 @@ class JPEGImageUtils implements ImageUtilsFormat {
 }
 
 /**
+ * PNG image support.
+ *
  * PNG signature: 'PNG\r\n\x1a\n'
  * PNG image header chunk name: 'IHDR'
  */
@@ -74,7 +78,7 @@ export class ImageUtils {
 		'image/png': new PNGImageUtils()
 	};
 
-	/** @internal */
+	/** Registers support for a new image format; useful for certain extensions. */
 	public static registerFormat(mimeType: string, impl: ImageUtilsFormat): void {
 		this.impls[mimeType] = impl;
 	}

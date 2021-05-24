@@ -6,6 +6,8 @@ import { GLTF } from '../types/gltf';
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used
  * by a {@link Writer} and its {@link Extension} implementations. Indices of all properties will be
  * consistent with the glTF file.
+ *
+ * @hidden
  */
 export class ReaderContext {
 	public buffers: Buffer[] = [];

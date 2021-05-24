@@ -34,7 +34,8 @@ version of the CLI, run `yarn link` within the `packages/cli` directory. Then
 Before adding new features or packages to the repository, please open an issue on GitHub to discuss
 your proposal. Some features may not fit the current scope of the project, or may be more than I am
 able to maintain long-term. Even if a feature does not end up in this repository, custom
-transform functions can be defined and used externally.
+extensions and functions can be defined and used externally. Changes including test coverage are
+strongly preferred.
 
 New features should be compatible with both Node.js and Web, though exceptions may be possible in
 certain situations. To accomplish that, any platform-specific resources (like instances of
@@ -49,8 +50,21 @@ I recommend compiling with Node.js v12.x, which is the latest version with a pre
 
 Runtime dependencies should be installed only to the sub-package in which they are needed. Any
 devDependencies are shared across all packages, and should be installed in the project root. Pull
-requests should omit any changes to `dist/*` artifacts. Changes including test coverage are
-strongly preferred.
+requests should omit any changes to `dist/*` artifacts.
+
+### Documentation
+
+Documentation and examples are written in JSDoc comments on the relevant classes and methods,
+processed with [TypeDoc](https://typedoc.org/), and rendered to a custom TypeDoc theme. Additions
+and clarification are welcome, and examples may be added inline alongside class documentation.
+Certain JSDoc tags have notable meanings within this project:
+
+- `@internal` methods and classes are (1) hidden from documentation, and (2) not included in
+  TypeScript definitions for the package. This code is intended only for use within the defining
+  package.
+- `@hidden` methods and classes are hidden from documentation, but still included in TypeScript
+  definitions for the package. This code is not intended for wide use, but may be necessary for
+  other packages in the glTF-Transform monorepo.
 
 ### Roadmap
 

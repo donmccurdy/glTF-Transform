@@ -41,10 +41,10 @@ export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
 
-	/** @internal */
+	/** @hidden */
 	public lastReadBytes = 0;
 
-	/** @internal */
+	/** @hidden */
 	public lastWriteBytes = 0;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */

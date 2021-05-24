@@ -2,7 +2,7 @@ import { ExtensibleProperty } from './extensible-property';
 import { Property } from './property';
 import { PropertyGraph } from './property-graph';
 
-/** @internal */
+/** @hidden */
 export interface ExtensionPropertyParent {
 	addExtensionProperty(ext: ExtensionProperty): this;
 	removeExtensionProperty(ext: ExtensionProperty): this;
@@ -31,7 +31,7 @@ export abstract class ExtensionProperty extends Property {
 	/** List of supported {@link Property} types. */
 	public abstract readonly parentTypes: string[];
 
-	/** @internal */
+	/** @hidden */
 	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
 		this._extension.addExtensionProperty(this);
@@ -42,7 +42,7 @@ export abstract class ExtensionProperty extends Property {
 		super.dispose();
 	}
 
-	/** @internal */
+	/** @hidden */
 	public _validateParent(parent: ExtensibleProperty): void {
 		if (!this.parentTypes.includes(parent.propertyType)) {
 			throw new Error(

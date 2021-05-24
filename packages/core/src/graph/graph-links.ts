@@ -8,7 +8,7 @@ import { GraphNode } from './graph-node';
  * that link. The resource does not hold a reference to the link or to the owner,
  * although that reverse lookup can be done on the graph.
  *
- * @internal
+ * @hidden
  * @category Graph
  */
 export class Link<Parent extends GraphNode, Child extends GraphNode> {
@@ -37,7 +37,6 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	 *
 	 * @internal Only {@link Graph} implementations may safely call this method directly. Use
 	 * 	{@link Property.swap} or {@link Graph.swapChild} instead.
-	 * @internal
 	 */
 	setChild(child: Child): this {
 		this._child = child;

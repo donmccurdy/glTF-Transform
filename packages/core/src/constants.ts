@@ -27,25 +27,25 @@ export interface ArrayProxy {
 
 /**
  * 2-dimensional vector.
- * @internal
+ * @hidden
  */
 export type vec2 = [number, number];
 
 /**
  * 3-dimensional vector.
- * @internal
+ * @hidden
  */
 export type vec3 = [number, number, number];
 
 /**
  * 4-dimensional vector, e.g. RGBA or a quaternion.
- * @internal
+ * @hidden
  */
 export type vec4 = [number, number, number, number];
 
 /**
  * 3x3 matrix, e.g. an affine transform of a 2D vector.
- * @internal
+ * @hidden
  */
 export type mat3 = [
 	number, number, number,
@@ -55,7 +55,7 @@ export type mat3 = [
 
 /**
  * 4x4 matrix, e.g. an affine transform of a 3D vector.
- * @internal
+ * @hidden
  */
 export type mat4 = [
 	number, number, number, number,
