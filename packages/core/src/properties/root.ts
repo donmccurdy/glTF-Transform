@@ -70,6 +70,7 @@ export class Root extends Property {
 	@GraphChildList private skins: Link<Root, Skin>[] = [];
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
 
+	/** @internal */
 	constructor (graph: PropertyGraph) {
 		super(graph);
 		graph.on('clone', (target) => this._addChildOfRoot(target));
