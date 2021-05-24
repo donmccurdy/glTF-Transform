@@ -45,47 +45,47 @@ const { R, G, B, A } = TextureChannel;
 export class Material extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.MATERIAL;
 
-	/** @hidden Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
+	/** @internal Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
 	private _alphaMode: GLTF.MaterialAlphaMode = Material.AlphaMode.OPAQUE;
 
-	/** @hidden Visibility threshold. Applied only when `.alphaMode='MASK'`. */
+	/** @internal Visibility threshold. Applied only when `.alphaMode='MASK'`. */
 	private _alphaCutoff = 0.5;
 
-	/** @hidden When true, both sides of each triangle are rendered. May decrease performance. */
+	/** @internal When true, both sides of each triangle are rendered. May decrease performance. */
 	private _doubleSided = false;
 
-	/** @hidden Base color / albedo; linear multiplier. */
+	/** @internal Base color / albedo; linear multiplier. */
 	private _baseColorFactor: vec4 = [1, 1, 1, 1];
 
-	/** @hidden Emissive color; linear multiplier. */
+	/** @internal Emissive color; linear multiplier. */
 	private _emissiveFactor: vec3 = [0, 0, 0];
 
-	/** @hidden Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
+	/** @internal Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
 	private _normalScale = 1;
 
-	/** @hidden (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionMap`. */
+	/** @internal (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionMap`. */
 	private _occlusionStrength = 1;
 
 	/**
 	 * Roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`.
-	 * @hidden
+	 * @internal
 	 */
 	private _roughnessFactor = 1;
 
 	/**
 	 * Metallic factor; linear multiplier. Affects metallic channel of
 	 * `metallicRoughnessTexture`.
-	 * @hidden
+	 * @internal
 	 */
 	private _metallicFactor = 1;
 
-	/** @hidden Base color / albedo texture. */
+	/** @internal Base color / albedo texture. */
 	@GraphChild private baseColorTexture: TextureLink | null = null;
 	@GraphChild private baseColorTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('baseColorTextureInfo', this, new TextureInfo(this.graph));
 
-	/** @hidden Emissive texture. */
+	/** @internal Emissive texture. */
 	@GraphChild private emissiveTexture: TextureLink | null = null;
 	@GraphChild private emissiveTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('emissiveTextureInfo', this, new TextureInfo(this.graph));
@@ -93,7 +93,7 @@ export class Material extends ExtensibleProperty {
 	/**
 	 * Normal (surface detail) texture. Normal maps often suffer artifacts with JPEG compression,
 	 * so PNG files are preferred.
-	 * @hidden
+	 * @internal
 	 */
 	@GraphChild private normalTexture: TextureLink | null = null;
 	@GraphChild private normalTextureInfo: Link<this, TextureInfo> =
@@ -102,7 +102,7 @@ export class Material extends ExtensibleProperty {
 	/**
 	 * (Ambient) Occlusion texture. Occlusion data is stored in the `.r` channel, allowing this
 	 * texture to be packed with `metallicRoughnessTexture`, optionally.
-	 * @hidden
+	 * @internal
 	 */
 	@GraphChild private occlusionTexture: TextureLink | null = null;
 	@GraphChild private occlusionTextureInfo: Link<this, TextureInfo> =
@@ -112,7 +112,7 @@ export class Material extends ExtensibleProperty {
 	 * Metallic/roughness PBR texture. Roughness data is stored in the `.g` channel and metallic
 	 * data is stored in the `.b` channel, allowing thist exture to be packed with
 	 * `occlusionTexture`, optionally.
-	 * @hidden
+	 * @internal
 	*/
 	@GraphChild private metallicRoughnessTexture: TextureLink | null = null;
 	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> =

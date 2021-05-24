@@ -12,7 +12,7 @@ type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF
  * Model class providing writing state to a {@link Writer} and its {@link Extension}
  * implementations.
  *
- * @hidden
+ * @internal
  */
 export class WriterContext {
 	public readonly accessorIndexMap = new Map<Accessor, number>();

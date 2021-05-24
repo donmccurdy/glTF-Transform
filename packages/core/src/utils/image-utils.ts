@@ -74,7 +74,7 @@ export class ImageUtils {
 		'image/png': new PNGImageUtils()
 	};
 
-	/** @hidden */
+	/** @internal */
 	public static registerFormat(mimeType: string, impl: ImageUtilsFormat): void {
 		this.impls[mimeType] = impl;
 	}

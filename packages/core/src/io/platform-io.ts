@@ -109,7 +109,7 @@ export abstract class PlatformIO {
 		return jsonDoc;
 	}
 
-	/** @hidden For internal use by WebIO and NodeIO. Does not warn about external resources. */
+	/** @internal For internal use by WebIO and NodeIO. Does not warn about external resources. */
 	protected _binaryToJSON(glb: ArrayBuffer): JSONDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);

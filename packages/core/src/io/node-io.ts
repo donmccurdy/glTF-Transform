@@ -41,10 +41,10 @@ export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
 
-	/** @hidden */
+	/** @internal */
 	public lastReadBytes = 0;
 
-	/** @hidden */
+	/** @internal */
 	public lastWriteBytes = 0;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
@@ -85,7 +85,7 @@ export class NodeIO extends PlatformIO {
 	 * Private.
 	 */
 
-	/** @hidden */
+	/** @internal */
 	private _readGLB (uri: string): JSONDocument {
 		const buffer: Buffer = this._fs.readFileSync(uri);
 		const arrayBuffer = BufferUtils.trim(buffer);
@@ -95,7 +95,7 @@ export class NodeIO extends PlatformIO {
 		return jsonDoc;
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _readGLTF (uri: string): JSONDocument {
 		this.lastReadBytes = 0;
 		const jsonContent = this._fs.readFileSync(uri, 'utf8');
@@ -105,7 +105,7 @@ export class NodeIO extends PlatformIO {
 		return jsonDoc;
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): void {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
@@ -131,7 +131,7 @@ export class NodeIO extends PlatformIO {
 		});
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _writeGLTF (uri: string, doc: Document): void {
 		this.lastWriteBytes = 0;
 		const {json, resources} = GLTFWriter.write(doc, {
@@ -153,7 +153,7 @@ export class NodeIO extends PlatformIO {
 		});
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _writeGLB (uri: string, doc: Document): void {
 		const buffer = Buffer.from(this.writeBinary(doc));
 		this._fs.writeFileSync(uri, buffer);

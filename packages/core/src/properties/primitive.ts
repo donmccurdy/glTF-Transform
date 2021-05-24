@@ -46,7 +46,7 @@ import { AttributeLink } from './property-links';
 export class Primitive extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
-	/** @hidden GPU draw mode. */
+	/** @internal GPU draw mode. */
 	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
 
 	@GraphChild private material: Link<Primitive, Material> | null = null;

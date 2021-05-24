@@ -65,7 +65,7 @@ export class Document {
 	/**
 	 * Returns the {@link Graph} representing connectivity of resources within this document.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	public getGraph(): PropertyGraph {
 		return this._graph;

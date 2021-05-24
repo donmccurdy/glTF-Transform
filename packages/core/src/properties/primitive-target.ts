@@ -22,7 +22,7 @@ import { AttributeLink } from './property-links';
 export class PrimitiveTarget extends Property {
 	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
-	/** @hidden Vertex attributes. */
+	/** @internal Vertex attributes. */
 	@GraphChildList private attributes: AttributeLink[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

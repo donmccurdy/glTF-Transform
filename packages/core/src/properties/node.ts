@@ -44,7 +44,7 @@ export class Node extends ExtensibleProperty {
 	private _scale: vec3 = [1, 1, 1];
 	private _weights: number[] = [];
 
-	/** @hidden Internal reference to node's parent, omitted from {@link Graph}. */
+	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
 	public _parent: SceneNode | null = null;
 
 	@GraphChild private camera: Link<Node, Camera> | null = null;

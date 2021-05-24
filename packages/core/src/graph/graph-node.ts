@@ -4,7 +4,7 @@ import { Link } from './graph-links';
 /**
  * Represents a node in a {@link Graph}.
  *
- * @hidden
+ * @internal
  * @category Graph
  */
 export abstract class GraphNode {
@@ -18,7 +18,7 @@ export abstract class GraphNode {
 	 * objects are both {@link GraphNode} instances and on the same graph, not that they are
 	 * semantically compatible.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	public canLink(other: GraphNode): boolean {
 		return this.graph === other.graph;
@@ -52,7 +52,7 @@ export abstract class GraphNode {
 	 * Transfers this object's references from the old node to the new one. The old node is fully
 	 * detached from this parent at the end of the process.
 	 *
-	 * @hidden This method works imperfectly with Root, Scene, and Node properties, which may
+	 * @internal This method works imperfectly with Root, Scene, and Node properties, which may
 	 * already hold equivalent links to the replacement object.
 	 */
 	public swap(old: GraphNode, replacement: GraphNode): this {
@@ -66,7 +66,7 @@ export abstract class GraphNode {
 	 * annotated with {@link @GraphChildList}. Properties are annotated and managed by
 	 * {@link @GraphChild} instead.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	protected addGraphChild(
 			links: Link<GraphNode, GraphNode>[],
@@ -83,7 +83,7 @@ export abstract class GraphNode {
 	/**
 	 * Removes a {@link GraphNode} from a {@link GraphChildList}.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): this {
 		const pruned = links.filter((link) => link.getChild() === child);
@@ -94,7 +94,7 @@ export abstract class GraphNode {
 	/**
 	 * Removes all {@link GraphNode}s from a {@link GraphChildList}.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	protected clearGraphChildList(links: Link<GraphNode, GraphNode>[]): this {
 		while (links.length > 0) links[0].dispose();
@@ -106,7 +106,7 @@ export abstract class GraphNode {
 	 *
 	 * Available publicly by {@link Property}'s `.listParents()`.
 	 *
-	 * @hidden
+	 * @internal
 	 */
 	protected listGraphParents(): GraphNode[] {
 		return this.graph.listParents(this) as GraphNode[];

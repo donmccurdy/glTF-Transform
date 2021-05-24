@@ -6,7 +6,7 @@ import { Primitive } from './primitive';
 import { Property } from './property';
 import { Texture } from './texture';
 
-/** @hidden */
+/** @internal */
 export class AttributeLink extends Link<Property, Accessor> {
 	public semantic = '';
 	public copy (other: this): this {
@@ -15,7 +15,7 @@ export class AttributeLink extends Link<Property, Accessor> {
 	}
 }
 
-/** @hidden */
+/** @internal */
 export class IndexLink extends Link<Primitive, Accessor> {
 	public copy (_other: this): this { return this; }
 }

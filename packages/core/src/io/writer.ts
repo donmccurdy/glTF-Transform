@@ -27,7 +27,7 @@ export interface WriterOptions {
 	dependencies?: {[key: string]: unknown};
 }
 
-/** @hidden */
+/** @internal */
 export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
 
@@ -702,7 +702,7 @@ export class GLTFWriter {
 /**
  * Removes empty and null values from an object.
  * @param object
- * @hidden
+ * @internal
  */
 function clean(object: Record<string, unknown>): void {
 	const unused: string[] = [];

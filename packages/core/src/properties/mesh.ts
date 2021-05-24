@@ -43,7 +43,7 @@ export class Mesh extends ExtensibleProperty {
 
 	private _weights: number[] = [];
 
-	/** @hidden Primitive GPU draw call list. */
+	/** @internal Primitive GPU draw call list. */
 	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

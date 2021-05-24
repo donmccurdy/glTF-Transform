@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS: ReaderOptions = {
 	dependencies: {},
 };
 
-/** @hidden */
+/** @internal */
 export class GLTFReader {
 	public static read(jsonDoc: JSONDocument, _options: ReaderOptions = DEFAULT_OPTIONS): Document {
 		const options = {...DEFAULT_OPTIONS, ..._options} as Required<ReaderOptions>;
@@ -513,7 +513,7 @@ export class GLTFReader {
 
 /**
  * Returns the contents of an interleaved accessor, as a typed array.
- * @hidden
+ * @internal
  */
 function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
@@ -566,7 +566,7 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
 
 /**
  * Returns the contents of an accessor, as a typed array.
- * @hidden
+ * @internal
  */
 function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
@@ -595,7 +595,7 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): T
 
 /**
  * Returns the contents of a sparse accessor, as a typed array.
- * @hidden
+ * @internal
  */
 function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];

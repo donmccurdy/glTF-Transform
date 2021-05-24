@@ -48,7 +48,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	protected required = false;
 	protected properties: Set<ExtensionProperty> = new Set();
 
-	/** @hidden */
+	/** @internal */
 	constructor (protected readonly doc: Document) {
 		doc.getRoot()._enableExtension(this);
 	}
@@ -88,13 +88,13 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * ExtensionPropertyParent implementation.
 	 */
 
-	/** @hidden */
+	/** @internal */
 	public addExtensionProperty(property: ExtensionProperty): this {
 		this.properties.add(property);
 		return this;
 	}
 
-	/** @hidden */
+	/** @internal */
 	public removeExtensionProperty(property: ExtensionProperty): this {
 		this.properties.delete(property);
 		return this;

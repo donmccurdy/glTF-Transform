@@ -9,7 +9,7 @@
 const DECORATOR_PREFIX = '__';
 
 /**
- * @hidden
+ * @internal
  * @category Graph
  */
 export function GraphChild (target: any, propertyKey: string): void {
@@ -42,7 +42,7 @@ export function GraphChild (target: any, propertyKey: string): void {
 }
 
 /**
- * @hidden
+ * @internal
  * @category Graph
  */
 export function GraphChildList (target: any, propertyKey: string): void {}

@@ -61,7 +61,7 @@ export class WebIO extends PlatformIO {
 	 * Private.
 	 */
 
-	/** @hidden */
+	/** @internal */
 	private _readGLTF (uri: string): Promise<JSONDocument> {
 		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
 		return fetch(uri, this._fetchConfig)
@@ -73,7 +73,7 @@ export class WebIO extends PlatformIO {
 		});
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _readGLB (uri: string): Promise<JSONDocument> {
 		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
@@ -84,7 +84,7 @@ export class WebIO extends PlatformIO {
 			});
 	}
 
-	/** @hidden */
+	/** @internal */
 	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): Promise<void> {
 		const json = jsonDoc.json;
 		const images = json.images || [];

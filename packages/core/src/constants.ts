@@ -3,11 +3,11 @@ declare const PACKAGE_VERSION: string;
 
 /**
  * Current version of the package.
- * @hidden
+ * @internal
  */
 export const VERSION = `v${PACKAGE_VERSION}`;
 
-/** @hidden */
+/** @internal */
 export const NAME = '@gltf-transform/core';
 
 /**
@@ -15,7 +15,8 @@ export const NAME = '@gltf-transform/core';
  * arrays or with three.js math objects' fromArray/toArray methods. For example, THREE.Vector2,
  * THREE.Vector3, THREE.Vector4, THREE.Quaternion, THREE.Matrix3, THREE.Matrix4, and THREE.Color.
  *
- * @hidden
+ * @internal
+ * @internal
  */
 export interface ArrayProxy {
 	/** Sets the value of the object from an array of values. */
@@ -26,25 +27,25 @@ export interface ArrayProxy {
 
 /**
  * 2-dimensional vector.
- * @hidden
+ * @internal
  */
 export type vec2 = [number, number];
 
 /**
  * 3-dimensional vector.
- * @hidden
+ * @internal
  */
 export type vec3 = [number, number, number];
 
 /**
  * 4-dimensional vector, e.g. RGBA or a quaternion.
- * @hidden
+ * @internal
  */
 export type vec4 = [number, number, number, number];
 
 /**
  * 3x3 matrix, e.g. an affine transform of a 2D vector.
- * @hidden
+ * @internal
  */
 export type mat3 = [
 	number, number, number,
@@ -54,7 +55,7 @@ export type mat3 = [
 
 /**
  * 4x4 matrix, e.g. an affine transform of a 3D vector.
- * @hidden
+ * @internal
  */
 export type mat4 = [
 	number, number, number, number,
@@ -63,18 +64,18 @@ export type mat4 = [
 	number, number, number, number,
 ];
 
-/** @hidden */
+/** @internal */
 export const GLB_BUFFER = '@glb.bin';
 
 /**
  * Abstraction representing any one of the typed array classes supported by glTF and JavaScript.
- * @hidden
+ * @internal
  */
 export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
 
 /**
  * Abstraction representing the typed array constructors supported by glTF and JavaScript.
- * @hidden
+ * @internal
  */
 export type TypedArrayConstructor = Float32ArrayConstructor | Uint32ArrayConstructor | Uint16ArrayConstructor | Uint8ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor;
 

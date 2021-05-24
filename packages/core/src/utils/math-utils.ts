@@ -3,7 +3,7 @@ import { length } from 'gl-matrix/vec3';
 import { mat4, vec3, vec4 } from '../constants';
 import { GLTF } from '../types/gltf';
 
-/** @hidden */
+/** @internal */
 export class MathUtils {
 	public static identity(v: number): number {
 		return v;

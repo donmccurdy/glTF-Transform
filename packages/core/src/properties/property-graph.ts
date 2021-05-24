@@ -7,7 +7,7 @@ import { Property } from './property';
 import { AttributeLink, IndexLink, TextureLink } from './property-links';
 import { Texture } from './texture';
 
-/** @hidden */
+/** @internal */
 export class PropertyGraph extends Graph<Property> {
 	public linkAttribute(name: string, a: Property, b: null): null;
 	public linkAttribute(name: string, a: Property, b: Accessor): AttributeLink;
