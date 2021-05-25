@@ -6052,6 +6052,14 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
+ndarray-lanczos@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/ndarray-lanczos/-/ndarray-lanczos-0.1.1.tgz#ba8aadecaf3c3c3955df994b529edcc5f3aaf5f2"
+  integrity sha512-KfWua98PU/K0tC/Uy6qryK/YWkjCG6b3tHgpLFnKNGN8TP66361OoIWXVgKOzvMy3zrQdpiB6RcVVFBLnbPZpg==
+  dependencies:
+    "@types/ndarray" "^1.0.9"
+    ndarray "^1.0.19"
+
 ndarray-ops@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/ndarray-ops/-/ndarray-ops-1.2.2.tgz#59e88d2c32a7eebcb1bc690fae141579557a614e"

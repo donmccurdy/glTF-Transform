@@ -4,9 +4,9 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType, VertexLayout } from '@gltf-transform/core';
+import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { AOOptions, DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ao, draco, ktxfix, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -574,6 +574,39 @@ Unlit materials are also helpful for non-physically-based visual styles.
 	);
 
 program.command('', '\n\n🖼  TEXTURE ──────────────────────────────────────────');
+
+// RESIZE
+program
+	.command('resize', 'Resize PNG or JPEG textures')
+	.help('Resize PNG or JPEG textures with Lanczos3 or Lanczos2 filtering.')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (regex) to match textures, by name or URI.', {
+		validator: program.STRING,
+	})
+	.option('--filter', 'Resampling filter', {
+		validator: [TextureResizeFilter.LANCZOS3, TextureResizeFilter.LANCZOS2],
+		default: TEXTURE_RESIZE_DEFAULTS.filter,
+	})
+	.option('--width <pixels>', 'Width (px) of output textures.', {
+		validator: program.NUMBER,
+		required: true
+	})
+	.option('--height <pixels>', 'Height (px) of output textures.', {
+		validator: program.NUMBER,
+		required: true
+	})
+	.action(async ({args, options, logger}) => {
+		const pattern = options.pattern
+			? minimatch.makeRe(String(options.pattern), {nocase: true})
+			: null;
+		return await Session.create(io, logger, args.input, args.output)
+			.transform(textureResize({
+				size: [options.width, options.height] as vec2,
+				filter: options.filter as TextureResizeFilter,
+				pattern,
+			}));
+	});
 
 const BASIS_SUMMARY = `
 Compresses textures in the given file to .ktx2 GPU textures using the
