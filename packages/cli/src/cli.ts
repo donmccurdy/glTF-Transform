@@ -578,7 +578,11 @@ program.command('', '\n\n🖼  TEXTURE ─────────────�
 // RESIZE
 program
 	.command('resize', 'Resize PNG or JPEG textures')
-	.help('Resize PNG or JPEG textures with Lanczos3 or Lanczos2 filtering.')
+	.help(`
+Resize PNG or JPEG textures with Lanczos3 (sharp) or Lanczos2 (smooth)
+filtering. Typically Lanczos3 is the best method, but Lanczos2 may be helpful
+to reduce ringing artifacts in some cases.
+`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--pattern <pattern>', 'Pattern (regex) to match textures, by name or URI.', {
