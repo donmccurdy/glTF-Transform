@@ -27,6 +27,7 @@
     "@gltf-transform/extensions": "^0.11.1",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
+    "ndarray-lanczos": "^0.1.1",
     "ndarray-pixels": "^0.1.6"
   },
   "files": [

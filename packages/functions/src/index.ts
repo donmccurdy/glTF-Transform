@@ -38,5 +38,6 @@ export * from './quantize';
 export * from './resample';
 export * from './sequence';
 export * from './tangents';
+export * from './texture-resize';
 export * from './unweld';
 export * from './weld';
