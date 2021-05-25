@@ -3,7 +3,7 @@ import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
-import { BufferUtils, Logger } from '../utils/';
+import { BufferUtils, FileUtils, Logger, uuid } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
@@ -63,11 +63,40 @@ export abstract class PlatformIO {
 	}
 
 	/**********************************************************************************************
+	 * Common.
+	 */
+
+	/** @internal */
+	protected _readResourcesInternal(jsonDoc: JSONDocument, isGLB: boolean): void {
+		const images = jsonDoc.json.images || [];
+		const buffers = jsonDoc.json.buffers || [];
+		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
+			if (!resource.uri) {
+				const isGLBBuffer = isGLB && index === images.length;
+				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
+					throw new Error('Missing resource URI.');
+				}
+				return;
+			}
+
+			if (resource.uri in jsonDoc.resources) return;
+
+			if (resource.uri.match(/data:/)) {
+				// Rewrite Data URIs to something short and unique.
+				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
+				jsonDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
+				resource.uri = resourceUUID;
+			}
+		});
+	}
+
+	/**********************************************************************************************
 	 * JSON.
 	 */
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public readJSON (jsonDoc: JSONDocument): Document {
+		this._readResourcesInternal(jsonDoc, GLB_BUFFER in jsonDoc.resources);
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
 			dependencies: this._dependencies,

@@ -2,7 +2,7 @@ import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
-import { BufferUtils, FileUtils, uuid } from '../utils/';
+import { BufferUtils, FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
 import { GLTFReader } from './reader';
 import { GLTFWriter } from './writer';
@@ -82,6 +82,23 @@ export class NodeIO extends PlatformIO {
 	}
 
 	/**********************************************************************************************
+	 * Protected.
+	 */
+
+	/** @internal */
+	protected _readResourcesExternal(jsonDoc: JSONDocument, dir: string): void {
+		const images = jsonDoc.json.images || [];
+		const buffers = jsonDoc.json.buffers || [];
+		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
+			if (resource.uri) {
+				const absURI = this._path.resolve(dir, resource.uri);
+				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
+				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
+			}
+		});
+	}
+
+	/**********************************************************************************************
 	 * Private.
 	 */
 
@@ -91,7 +108,8 @@ export class NodeIO extends PlatformIO {
 		const arrayBuffer = BufferUtils.trim(buffer);
 		this.lastReadBytes = arrayBuffer.byteLength;
 		const jsonDoc = this._binaryToJSON(arrayBuffer);
-		this._readResources(jsonDoc, this._path.dirname(uri), true);
+		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
+		this._readResourcesInternal(jsonDoc, true);
 		return jsonDoc;
 	}
 
@@ -101,34 +119,9 @@ export class NodeIO extends PlatformIO {
 		const jsonContent = this._fs.readFileSync(uri, 'utf8');
 		this.lastReadBytes += jsonContent.length;
 		const jsonDoc = {json: JSON.parse(jsonContent), resources: {}} as JSONDocument;
-		this._readResources(jsonDoc, this._path.dirname(uri), false);
+		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
+		this._readResourcesInternal(jsonDoc, false);
 		return jsonDoc;
-	}
-
-	/** @internal */
-	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): void {
-		const images = jsonDoc.json.images || [];
-		const buffers = jsonDoc.json.buffers || [];
-		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
-			if (!resource.uri) {
-				const isGLBBuffer = isGLB && index === images.length;
-				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
-					throw new Error('Missing resource URI.');
-				}
-				return;
-			}
-
-			if (!resource.uri.match(/data:/)) {
-				const absURI = this._path.resolve(dir, resource.uri);
-				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
-				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
-			} else {
-				// Rewrite Data URIs to something short and unique.
-				const resourceUUID = `__${uuid()}.${FileUtils.extension(resource.uri)}`;
-				jsonDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
-				resource.uri = resourceUUID;
-			}
-		});
 	}
 
 	/** @internal */
