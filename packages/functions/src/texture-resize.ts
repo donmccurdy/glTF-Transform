@@ -10,7 +10,7 @@ export interface TextureResizeOptions {
 	/** Output dimensions. */
 	size: vec2;
 	/** Resampling filter method. */
-	filter: TextureResizeFilter;
+	filter?: TextureResizeFilter;
 	/** Pattern identifying textures to resize, matched to name or URI. */
 	pattern?: RegExp | null;
 }
@@ -60,7 +60,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			const srcPixels = await getPixels(srcImage, texture.getMimeType());
 			const dstPixels = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 
-			logger.debug(`${NAME}: Resizing from ${texture.getSize()} to ${options.size}...`);
+			logger.debug(`${NAME}: Resizing from ${srcPixels.shape} to ${dstPixels.shape}...`);
 			options.filter === TextureResizeFilter.LANCZOS3
 				? lanczos3(srcPixels, dstPixels)
 				: lanczos2(srcPixels, dstPixels);
