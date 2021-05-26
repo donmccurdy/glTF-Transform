@@ -1,5 +1,5 @@
 
-  gltf-transform 0.11.1 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.11.2 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -44,6 +44,7 @@
                                                                                                 
                                                                                                 
                                          🖼  TEXTURE ──────────────────────────────────────────  
+    resize                               Resize PNG or JPEG textures                            
     etc1s                                KTX + Basis ETC1S texture compression                  
     uastc                                KTX + Basis UASTC texture compression                  
     ktxfix                               Fixes common issues in KTX texture metadata            
