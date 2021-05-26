@@ -15,7 +15,7 @@ export interface TextureResizeOptions {
 	pattern?: RegExp | null;
 }
 
-/** Resampling filter methods. */
+/** Resampling filter methods. LANCZOS3 is sharper, LANCZOS2 is smoother. */
 export enum TextureResizeFilter {
 	/** Lanczos3 (sharp) */
 	LANCZOS3 = 'lanczos3',
@@ -30,7 +30,8 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
 };
 
 /**
- * Resize PNG or JPEG {@link Texture}s, with {@link https://en.wikipedia.org/wiki/Lanczos_algorithm Lanczos filtering}.
+ * Resize PNG or JPEG {@link Texture Textures}, with {@link https://en.wikipedia.org/wiki/Lanczos_algorithm Lanczos filtering}.
+ * Implementation provided by {@link https://github.com/donmccurdy/ndarray-lanczos ndarray-lanczos} package.
  */
 export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DEFAULTS): Transform {
 	const options = {...TEXTURE_RESIZE_DEFAULTS, ..._options} as Required<TextureResizeOptions>;
