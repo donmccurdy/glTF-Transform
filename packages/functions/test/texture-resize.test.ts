@@ -1,7 +1,6 @@
 require('source-map-support').install();
 
 import path from 'path';
-import ndarray from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import test from 'tape';
 import { Document } from '@gltf-transform/core';
