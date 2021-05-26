@@ -15,8 +15,8 @@ interface SpecularGlossinessDef {
 /**
  * # MaterialsPBRSpecularGlossiness
  *
- * [`KHR_materials_pbrSpecularGlossiness`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_pbrSpecularGlossiness/) converts a PBR material from the default metal/rough workflow
- * to a spec/gloss workflow.
+ * [`KHR_materials_pbrSpecularGlossiness`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_pbrSpecularGlossiness/)
+ * converts a PBR material from the default metal/rough workflow to a spec/gloss workflow.
  *
  * > _**NOTICE:** The spec/gloss workflow does _not_ support other PBR extensions such as clearcoat,
  * > transmission, IOR, etc. For the complete PBR feature set and specular data, use the
@@ -33,7 +33,7 @@ interface SpecularGlossinessDef {
  * ### Example
  *
  * ```typescript
- * import { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '@gltf-transform/extensions';
+ * import { MaterialsPBRSpecularGlossiness } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
  * const specGlossExtension = document.createExtension(MaterialsPBRSpecularGlossiness);
