@@ -66,7 +66,7 @@ export class MathUtils {
 	 * @param srcMat Matrix element, to be decomposed to TRS properties.
 	 * @param dstTranslation Translation element, to be overwritten.
 	 * @param dstRotation Rotation element, to be overwritten.
-	 * @param dstScale Scale element, to be overwritten
+	 * @param dstScale Scale element, to be overwritten.
 	 */
 	public static decompose(
 			srcMat: mat4,
