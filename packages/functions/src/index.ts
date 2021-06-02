@@ -25,6 +25,7 @@
  * @module functions
  */
 
+export { bounds } from '@gltf-transform/core'; // backwards compatibility, remove in v0.12
 export * from './center';
 export * from './colorspace';
 export * from './dedup';
