@@ -374,6 +374,10 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
+	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
+		validator: ['mesh', 'scene'],
+		default: DRACO_DEFAULTS.quantizationVolume,
+	})
 	.action(({args, options, logger}) =>
 		// Include a lossless weld — Draco requires indices.
 		Session.create(io, logger, args.input, args.output)

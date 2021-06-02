@@ -156,6 +156,13 @@ export declare module DRACO {
 
 	interface Encoder {
 		SetAttributeQuantization(attribute: number, bits: number): void;
+		SetAttributeExplicitQuantization(
+			attribute: number,
+			bits: number,
+			itemSize: number,
+			origin: [number, number, number],
+			range: number
+		): void;
 		SetSpeedOptions(encodeSpeed: number, decodeSpeed: number): void;
 		SetEncodingMethod(method: number): void;
 		SetTrackEncodedProperties(track: boolean): void;

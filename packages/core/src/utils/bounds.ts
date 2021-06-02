@@ -1,5 +1,6 @@
 import { transformMat4 } from 'gl-matrix/vec3';
-import { Mesh, Node, Scene, mat4, vec3 } from '@gltf-transform/core';
+import { mat4, vec3 } from '../constants';
+import { Mesh, Node, Scene } from '../properties';
 
 /**
  * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.

@@ -25,7 +25,6 @@
  * @module functions
  */
 
-export * from './bounds';
 export * from './center';
 export * from './colorspace';
 export * from './dedup';

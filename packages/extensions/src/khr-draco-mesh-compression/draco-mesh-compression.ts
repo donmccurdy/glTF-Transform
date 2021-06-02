@@ -1,4 +1,4 @@
-import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext, bounds, vec3 } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
@@ -181,6 +181,15 @@ export class DracoMeshCompression extends Extension {
 		const primitiveHashMap = listDracoPrimitives(this.doc);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
 
+		let quantizationVolume: {min: vec3, max: vec3} | 'mesh' = 'mesh';
+		if (this._encoderOptions.quantizationVolume === 'scene') {
+			if (this.doc.getRoot().listScenes().length !== 1) {
+				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
+			} else {
+				quantizationVolume = bounds(this.doc.getRoot().listScenes().pop()!);
+			}
+		}
+
 		for (const prim of Array.from(primitiveHashMap.keys())) {
 			const primHash = primitiveHashMap.get(prim);
 			if (!primHash) throw new Error('Unexpected primitive.');
@@ -195,7 +204,7 @@ export class DracoMeshCompression extends Extension {
 			const accessorDefs = context.jsonDoc.json.accessors!;
 
 			// Create a new EncodedPrimitive.
-			const encodedPrim = encodeGeometry(prim, this._encoderOptions);
+			const encodedPrim = encodeGeometry(prim, {...this._encoderOptions, quantizationVolume});
 			primitiveEncodingMap.set(primHash, encodedPrim);
 
 			// Create indices definition, update count.
