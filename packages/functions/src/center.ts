@@ -1,5 +1,5 @@
 import { Document, Transform, vec3 } from '@gltf-transform/core';
-import { bounds } from './bounds';
+import { bounds } from '@gltf-transform/core';
 
 const NAME = 'center';
 
