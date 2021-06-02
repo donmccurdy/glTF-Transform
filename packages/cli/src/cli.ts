@@ -433,6 +433,10 @@ Requires KHR_mesh_quantization support.`.trim())
 		validator: program.ARRAY,
 		default: QUANTIZE_DEFAULTS.excludeAttributes,
 	})
+	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
+		validator: ['mesh', 'scene'],
+		default: QUANTIZE_DEFAULTS.quantizationVolume,
+	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(quantize(options))

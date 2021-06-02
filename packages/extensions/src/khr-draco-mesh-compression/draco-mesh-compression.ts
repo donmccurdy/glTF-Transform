@@ -1,3 +1,4 @@
+import { bbox } from 'core/dist/constants';
 import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext, bounds, vec3 } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
@@ -181,7 +182,7 @@ export class DracoMeshCompression extends Extension {
 		const primitiveHashMap = listDracoPrimitives(this.doc);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
 
-		let quantizationVolume: {min: vec3, max: vec3} | 'mesh' = 'mesh';
+		let quantizationVolume: bbox | 'mesh' = 'mesh';
 		if (this._encoderOptions.quantizationVolume === 'scene') {
 			if (this.doc.getRoot().listScenes().length !== 1) {
 				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);

@@ -1,6 +1,6 @@
 import { transformMat4 } from 'gl-matrix/vec3';
-import { mat4, vec3 } from '../constants';
-import { Mesh, Node, Scene } from '../properties';
+import { PropertyType, bbox, mat4, vec3 } from '../constants';
+import type { Mesh, Node, Scene } from '../properties';
 
 /**
  * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.
@@ -11,9 +11,9 @@ import { Mesh, Node, Scene } from '../properties';
  * const {min, max} = bounds(scene);
  * ```
  */
-export function bounds (node: Node | Scene): {min: vec3; max: vec3} {
+export function bounds (node: Node | Scene): bbox {
 	const resultBounds = createBounds();
-	const parents = node instanceof Node ? [node] : node.listChildren();
+	const parents = node.propertyType === PropertyType.NODE ? [node] : node.listChildren();
 
 	for (const parent of parents) {
 		parent.traverse((node) => {
@@ -31,7 +31,7 @@ export function bounds (node: Node | Scene): {min: vec3; max: vec3} {
 }
 
 /** Computes mesh bounds in local space. */
-function getMeshBounds(mesh: Mesh, worldMatrix: mat4): {min: vec3; max: vec3} {
+function getMeshBounds(mesh: Mesh, worldMatrix: mat4): bbox {
 	const meshBounds = createBounds();
 
 	// We can't transform a local AABB into world space and still have a tight AABB in world space,
@@ -53,7 +53,7 @@ function getMeshBounds(mesh: Mesh, worldMatrix: mat4): {min: vec3; max: vec3} {
 }
 
 /** Expands bounds of target by given source. */
-function expandBounds(point: vec3, target: {min: vec3; max: vec3}): void {
+function expandBounds(point: vec3, target: bbox): void {
 	for (let i = 0; i < 3; i++) {
 		target.min[i] = Math.min(point[i], target.min[i]);
 		target.max[i] = Math.max(point[i], target.max[i]);
@@ -61,7 +61,7 @@ function expandBounds(point: vec3, target: {min: vec3; max: vec3}): void {
 }
 
 /** Creates new bounds with min=Infinity, max=-Infinity. */
-function createBounds(): {min: vec3; max: vec3} {
+function createBounds(): bbox {
 	return {
 		min: [Infinity, Infinity, Infinity] as vec3,
 		max: [-Infinity, -Infinity, -Infinity] as vec3,

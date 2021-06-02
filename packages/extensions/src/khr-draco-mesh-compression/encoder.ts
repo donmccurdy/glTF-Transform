@@ -1,4 +1,4 @@
-import { Accessor, GLTF, Primitive, TypedArray, vec3 } from '@gltf-transform/core';
+import { Accessor, GLTF, Primitive, TypedArray, bbox } from '@gltf-transform/core';
 import { DRACO } from '../types/draco3d';
 
 export let encoderModule: DRACO.EncoderModule;
@@ -36,7 +36,7 @@ export interface EncoderOptions {
 	encodeSpeed?: number;
 	method?: EncoderMethod;
 	quantizationBits?: {[key: string]: number};
-	quantizationVolume?: 'mesh' | 'scene' | {min: vec3, max: vec3};
+	quantizationVolume?: 'mesh' | 'scene' | bbox;
 }
 
 const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {

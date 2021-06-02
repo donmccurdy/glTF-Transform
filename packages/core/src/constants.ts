@@ -65,6 +65,9 @@ export type mat4 = [
 ];
 
 /** @hidden */
+export type bbox = {min: vec3, max: vec3};
+
+/** @hidden */
 export const GLB_BUFFER = '@glb.bin';
 
 /**
