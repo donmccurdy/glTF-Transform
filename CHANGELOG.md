@@ -14,6 +14,8 @@
 
 **Features:**
 
+- Add `textureResize()` function. #[267](267)
+- Add `quantizationVolume: 'scene' | 'mesh'` option to `quantize()` and Draco compression. Fixes #257. #[272](272)
 - Support GLB files without binary data (e.g. just a node graph). [#245](https://github.com/donmccurdy/glTF-Transform/pull/245)
 - Improve type-checking throughout the library, with [TypeScript's strict checks](https://www.typescriptlang.org/tsconfig#strict).
 - Add API documentation for `@gltf-transform/extensions` and `@gltf-transform/functions`, with [Typedoc](https://github.com/TypeStrong/typedoc) v0.20.
