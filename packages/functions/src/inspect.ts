@@ -1,5 +1,4 @@
-import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, TypedArray } from '@gltf-transform/core';
-import { bounds } from './bounds';
+import { Accessor, Document, ExtensionProperty, GLTF, ImageUtils, Texture, TypedArray, bounds } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils';
 
 /** Inspects the contents of a glTF file and returns a JSON report. */

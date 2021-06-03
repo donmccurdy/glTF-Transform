@@ -1,4 +1,5 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, vec3 } from '@gltf-transform/core';
+import { bbox } from 'core/dist/constants';
+import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3 } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
 
 const NAME = 'quantize';
@@ -13,6 +14,8 @@ const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[
 /** Options for the {@link quantize} function. */
 export interface QuantizeOptions {
 	excludeAttributes?: string[];
+	/** Bounds for quantization grid. */
+	quantizationVolume?: 'mesh' | 'scene';
 	/** Quantization bits for `POSITION` attributes. */
 	quantizePosition?: number;
 	/** Quantization bits for `NORMAL` attributes. */
@@ -29,6 +32,7 @@ export interface QuantizeOptions {
 
 export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
 	excludeAttributes: [],
+	quantizationVolume: 'mesh',
 	quantizePosition: 14,
 	quantizeNormal: 10,
 	quantizeTexcoord: 12,
@@ -55,8 +59,18 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 	return (doc: Document): void => {
 		const logger = doc.getLogger();
+		const root = doc.getRoot();
 
 		doc.createExtension(MeshQuantization).setRequired(true);
+
+		let quantizationVolume: bbox | undefined = undefined;
+		if (options.quantizationVolume === 'scene') {
+			if (root.listScenes().length !== 1) {
+				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
+			} else {
+				quantizationVolume = bounds(root.listScenes().pop()!);
+			}
+		}
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			// TODO(feat): Apply node transform to IBM?
@@ -67,10 +81,8 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 				continue;
 			}
 
-			const nodeTransform = getNodeTransform(mesh);
+			const nodeTransform = getNodeTransform(mesh, quantizationVolume);
 			if (nodeTransform) transformMeshParents(doc, mesh, nodeTransform);
-
-
 
 			for (const prim of mesh.listPrimitives()) {
 				quantizePrimitive(doc, prim, nodeTransform, options);
@@ -163,15 +175,22 @@ function flatBounds(targetMin: number[], targetMax: number[], accessors: Accesso
 }
 
 /** Computes node quantization transforms in local space. */
-function getNodeTransform(mesh: Mesh): NodeTransform | null {
+function getNodeTransform(mesh: Mesh, volume?: bbox): NodeTransform | null {
 	const positions = mesh.listPrimitives()
 		.map((prim) => prim.getAttribute('POSITION')!);
 
 	if (!positions.some((p) => !!p)) return null;
 
-	const positionMin = [Infinity, Infinity, Infinity] as vec3;
-	const positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
-	flatBounds(positionMin, positionMax, positions);
+	// Set quantization volume.
+	let positionMin = [Infinity, Infinity, Infinity] as vec3;
+	let positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
+	if (volume) {
+		positionMin = [...volume.min];
+		positionMax = [...volume.max];
+	} else {
+		flatBounds(positionMin, positionMax, positions);
+	}
+
 	const nodeRemap = (v: number[]) => [
 		(-1) + (1 - (-1)) * (v[0] - positionMin[0]) / (positionMax[0] - positionMin[0]),
 		(-1) + (1 - (-1)) * (v[1] - positionMin[1]) / (positionMax[1] - positionMin[1]),

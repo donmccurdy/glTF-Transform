@@ -29,7 +29,7 @@ test('@gltf-transform/functions::quantize | exclusions', async t => {
 	t.end();
 });
 
-test('@gltf-transform/functions::quantize | position', async t => {
+test('@gltf-transform/functions::quantize | position + mesh volume', async t => {
 	const doc = new Document();
 	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
 	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
@@ -64,6 +64,78 @@ test('@gltf-transform/functions::quantize | position', async t => {
 	elementPairs(position, positionCopy, round(6))
 		.map(([a, b]) => [a, expectedRemap(b)])
 		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
+	t.end();
+});
+
+test('@gltf-transform/functions::quantize | position + scene volume', async t => {
+	const doc = new Document();
+
+	// Mesh #1.
+	let OX = 0, OY = 0, OZ = 0;
+	const position1 = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
+		// 256x256x256 box; origin <0, 0, 0>.
+		OX + 0, OY + 0, OZ + 0,
+		OX + 256, OY + 0, OZ + 0,
+		OX + 0, OY + 256, OZ + 0,
+		OX + 0, OY + 0, OZ + 256,
+		OX + 0, OY + 256, OZ + 256,
+		OX + 256, OY + 0, OZ + 256,
+		OX + 256, OY + 256, OZ + 0,
+		OX + 256, OY + 256, OZ + 256,
+	]));
+	const position1Copy = position1.clone();
+	const mesh1 = doc.getRoot().listMeshes().pop();
+	const node1 = doc.createNode().setMesh(mesh1);
+
+	// Mesh #2.
+	OX = 256, OY = 256, OZ = 0;
+	const position2 = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
+		// 256x256x256 box; origin <256, 256, 0>.
+		OX + 0, OY + 0, OZ + 0,
+		OX + 256, OY + 0, OZ + 0,
+		OX + 0, OY + 256, OZ + 0,
+		OX + 0, OY + 0, OZ + 256,
+		OX + 0, OY + 256, OZ + 256,
+		OX + 256, OY + 0, OZ + 256,
+		OX + 256, OY + 256, OZ + 0,
+		OX + 256, OY + 256, OZ + 256,
+	]));
+	const position2Copy = position2.clone();
+	const mesh2 = doc.getRoot().listMeshes().pop();
+	const node2 = doc.createNode().setMesh(mesh2);
+
+	doc.createScene()
+		.addChild(node1)
+		.addChild(node2);
+
+	await doc.transform(quantize({
+		quantizePosition: 14,
+		quantizationVolume: 'scene'
+	}));
+
+	if (position1Copy.getNormalized() || !(position1Copy.getArray() instanceof Float32Array)
+		|| position2Copy.getNormalized() || !(position2Copy.getArray() instanceof Float32Array)) {
+		t.fail('Backup copy of positions was modified');
+	}
+
+	const expectedRemap = (v: number[]): number[] => [
+		(v[0] - 256) / 256, (v[1] - 256) / 256, (v[2] - 128) / 128
+	];
+
+	t.ok(position1.getNormalized(), 'position1 → normalized');
+	t.ok(position2.getNormalized(), 'position2 → normalized');
+	t.ok(position1.getArray() instanceof Int16Array, 'position1 → Int16Array');
+	t.ok(position2.getArray() instanceof Int16Array, 'position2 → Int16Array');
+	t.deepEquals(node1.getTranslation(), [256, 256, 128], 'node1 offset');
+	t.deepEquals(node2.getTranslation(), [256, 256, 128], 'node2 offset');
+	t.deepEquals(node1.getScale(), [256, 256, 128], 'node1 scale');
+	t.deepEquals(node2.getScale(), [256, 256, 128], 'node2 scale');
+	elementPairs(position1, position1Copy, round(6))
+		.map(([a, b]) => [a, expectedRemap(b)])
+		.forEach(([a, b], i) => t.deepEquals(a, b, `position1 value #${i + 1}`));
+	elementPairs(position2, position2Copy, round(6))
+		.map(([a, b]) => [a, expectedRemap(b)])
+		.forEach(([a, b], i) => t.deepEquals(a, b, `position2 value #${i + 1}`));
 	t.end();
 });
 

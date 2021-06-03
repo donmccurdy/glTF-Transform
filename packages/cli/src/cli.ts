@@ -374,6 +374,10 @@ given --decodeSpeed.`.trim())
 		validator: program.NUMBER,
 		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
+	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
+		validator: ['mesh', 'scene'],
+		default: DRACO_DEFAULTS.quantizationVolume,
+	})
 	.action(({args, options, logger}) =>
 		// Include a lossless weld — Draco requires indices.
 		Session.create(io, logger, args.input, args.output)
@@ -428,6 +432,10 @@ Requires KHR_mesh_quantization support.`.trim())
 	.option('--exclude-attributes <attributes>', 'Attributes (e.g. "COLOR_0") to exclude.', {
 		validator: program.ARRAY,
 		default: QUANTIZE_DEFAULTS.excludeAttributes,
+	})
+	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
+		validator: ['mesh', 'scene'],
+		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)

@@ -10,6 +10,7 @@ export interface DracoCLIOptions {
 	quantizeColor?: number;
 	quantizeTexcoord?: number;
 	quantizeGeneric?: number;
+	quantizationVolume?: 'mesh' | 'scene';
 }
 
 export const DRACO_DEFAULTS: DracoCLIOptions = {
@@ -21,10 +22,11 @@ export const DRACO_DEFAULTS: DracoCLIOptions = {
 	quantizeColor: 8,
 	quantizeTexcoord: 12,
 	quantizeGeneric: 12,
+	quantizationVolume: 'mesh',
 };
 
-export const draco = (options: DracoCLIOptions): Transform => {
-	options = {...DRACO_DEFAULTS, ...options};
+export const draco = (_options: DracoCLIOptions): Transform => {
+	const options = {...DRACO_DEFAULTS, ..._options} as Required<DracoCLIOptions>;
 	return (doc: Document): void => {
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)
@@ -35,12 +37,13 @@ export const draco = (options: DracoCLIOptions): Transform => {
 				encodeSpeed: options.encodeSpeed,
 				decodeSpeed: options.decodeSpeed,
 				quantizationBits: {
-					'POSITION': options.quantizePosition!,
-					'NORMAL': options.quantizeNormal!,
-					'COLOR': options.quantizeColor!,
-					'TEX_COORD': options.quantizeTexcoord!,
-					'GENERIC': options.quantizeGeneric!,
-				}
+					'POSITION': options.quantizePosition,
+					'NORMAL': options.quantizeNormal,
+					'COLOR': options.quantizeColor,
+					'TEX_COORD': options.quantizeTexcoord,
+					'GENERIC': options.quantizeGeneric,
+				},
+				quantizationVolume: options.quantizationVolume
 			});
 	};
 };

@@ -1,4 +1,4 @@
-import { Accessor, GLTF, Primitive, TypedArray } from '@gltf-transform/core';
+import { Accessor, GLTF, Primitive, TypedArray, bbox } from '@gltf-transform/core';
 import { DRACO } from '../types/draco3d';
 
 export let encoderModule: DRACO.EncoderModule;
@@ -36,6 +36,7 @@ export interface EncoderOptions {
 	encodeSpeed?: number;
 	method?: EncoderMethod;
 	quantizationBits?: {[key: string]: number};
+	quantizationVolume?: 'mesh' | 'scene' | bbox;
 }
 
 const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
@@ -43,6 +44,7 @@ const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
 	encodeSpeed: 5,
 	method: EncoderMethod.EDGEBREAKER,
 	quantizationBits: DEFAULT_QUANTIZATION_BITS,
+	quantizationVolume: 'mesh',
 };
 
 export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
@@ -81,10 +83,28 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
 
 		attributeIDs[semantic] = attributeID;
-		encoder.SetAttributeQuantization(
-			encoderModule[attributeEnum],
-			options.quantizationBits[attributeEnum]
-		);
+		if (options.quantizationVolume === 'mesh' || semantic !== 'POSITION') {
+			encoder.SetAttributeQuantization(
+				encoderModule[attributeEnum],
+				options.quantizationBits[attributeEnum]
+			);
+		} else if (typeof options.quantizationVolume === 'object') {
+			const {quantizationVolume} = options;
+			const range = Math.max(
+				quantizationVolume.max[0] - quantizationVolume.min[0],
+				quantizationVolume.max[1] - quantizationVolume.min[1],
+				quantizationVolume.max[2] - quantizationVolume.min[2],
+			);
+			encoder.SetAttributeExplicitQuantization(
+				encoderModule[attributeEnum],
+				options.quantizationBits[attributeEnum],
+				attribute.getElementSize(),
+				quantizationVolume.min,
+				range
+			);
+		} else {
+			throw new Error('Invalid quantization volume state.');
+		}
 	}
 
 	const indices = prim.getIndices();

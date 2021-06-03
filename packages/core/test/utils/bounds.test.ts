@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Accessor, Document } from '@gltf-transform/core';
-import { bounds } from '../';
+import { bounds } from '../../';
 
 test('@gltf-transform/functions::bounds', t => {
 
