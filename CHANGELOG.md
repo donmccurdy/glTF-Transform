@@ -14,8 +14,8 @@
 
 **Features:**
 
-- Add `textureResize()` function. #[267](267)
-- Add `quantizationVolume: 'scene' | 'mesh'` option to `quantize()` and Draco compression. Fixes #257. #[272](272)
+- Add `textureResize()` function. [#267](https://github.com/donmccurdy/glTF-Transform/pull/267)
+- Add `quantizationVolume: 'scene' | 'mesh'` option to `quantize()` and Draco compression. Fixes [#257](https://github.com/donmccurdy/glTF-Transform/issues/257). [#272](https://github.com/donmccurdy/glTF-Transform/pull/272)
 - Support GLB files without binary data (e.g. just a node graph). [#245](https://github.com/donmccurdy/glTF-Transform/pull/245)
 - Improve type-checking throughout the library, with [TypeScript's strict checks](https://www.typescriptlang.org/tsconfig#strict).
 - Add API documentation for `@gltf-transform/extensions` and `@gltf-transform/functions`, with [Typedoc](https://github.com/TypeStrong/typedoc) v0.20.
@@ -33,7 +33,7 @@
 **Features:**
 
 - Add 'ktxfix' command in CLI. [#222](https://github.com/donmccurdy/glTF-Transform/pull/222)
-- Add getter/setter for default [Scene](https://gltf-transform.donmccurdy.com/classes/root.html) on [Root](https://gltf-transform.donmccurdy.com/classes/root.html). #[202](202)
+- Add getter/setter for default [Scene](https://gltf-transform.donmccurdy.com/classes/root.html) on [Root](https://gltf-transform.donmccurdy.com/classes/root.html). [#202](https://github.com/donmccurdy/glTF-Transform/pull/202)
 
 **Breaking changes:**
 
