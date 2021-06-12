@@ -2,7 +2,10 @@
   "name": "@gltf-transform/core",
   "version": "0.11.3",
   "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.donmccurdy.com/",
   "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
   "main": "dist/core.js",
   "module": "dist/core.modern.js",
   "source": "src/core.ts",
@@ -20,8 +23,6 @@
     "webgl",
     "threejs"
   ],
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
   "files": [
     "dist/",
     "src/",

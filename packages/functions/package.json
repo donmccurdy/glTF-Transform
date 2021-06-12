@@ -2,7 +2,10 @@
   "name": "@gltf-transform/functions",
   "version": "0.11.3",
   "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.donmccurdy.com/functions.html",
   "description": "Functions for common glTF modifications, written using the core API",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
   "main": "dist/functions.js",
   "module": "dist/functions.modern.js",
   "source": "src/index.ts",
@@ -20,8 +23,6 @@
     "webgl",
     "threejs"
   ],
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
   "dependencies": {
     "@gltf-transform/core": "^0.11.3",
     "@gltf-transform/extensions": "^0.11.3",

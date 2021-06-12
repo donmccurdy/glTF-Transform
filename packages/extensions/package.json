@@ -2,7 +2,10 @@
   "name": "@gltf-transform/extensions",
   "version": "0.11.3",
   "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.donmccurdy.com/extensions.html",
   "description": "Adds extension support to @gltf-transform/core",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
   "main": "dist/extensions.js",
   "module": "dist/extensions.modern.js",
   "source": "src/extensions.ts",
@@ -20,8 +23,6 @@
     "webgl",
     "threejs"
   ],
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
   "dependencies": {
     "@gltf-transform/core": "^0.11.3",
     "ktx-parse": "^0.2.1"

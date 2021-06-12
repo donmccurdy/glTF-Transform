@@ -2,7 +2,10 @@
   "name": "@gltf-transform/cli",
   "version": "0.11.3",
   "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.donmccurdy.com/cli.html",
   "description": "CLI interface to glTF Transform",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
   "main": "dist/cli.js",
   "source": "src/cli.ts",
   "types": "dist/cli.d.ts",
@@ -14,12 +17,6 @@
   "bin": {
     "gltf-transform": "bin/cli.js"
   },
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/donmccurdy/glTF-Transform/issues"
-  },
-  "homepage": "https://github.com/donmccurdy/glTF-Transform#readme",
   "dependencies": {
     "@caporal/core": "^2.0.2",
     "@gltf-transform/core": "^0.11.3",
