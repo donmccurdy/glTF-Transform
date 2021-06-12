@@ -15,6 +15,20 @@ export class Light extends ExtensionProperty {
 	public readonly extensionName = KHR_LIGHTS_PUNCTUAL;
 	public static EXTENSION_NAME = KHR_LIGHTS_PUNCTUAL;
 
+	/**********************************************************************************************
+	 * CONSTANTS.
+	 */
+
+	public static Type: Record<string, PunctualLightType> = {
+		POINT: 'point',
+		SPOT: 'spot',
+		DIRECTIONAL: 'directional',
+	}
+
+	/**********************************************************************************************
+	 * INSTANCE.
+	 */
+
 	private _color: vec3 = [1, 1, 1];
 	private _intensity = 1;
 	private _type: PunctualLightType = Light.Type.POINT;
@@ -35,16 +49,6 @@ export class Light extends ExtensionProperty {
 		this._outerConeAngle = other._outerConeAngle;
 
 		return this;
-	}
-
-	/**********************************************************************************************
-	 * STATIC.
-	 */
-
-	public static Type: Record<string, PunctualLightType> = {
-		POINT: 'point',
-		SPOT: 'spot',
-		DIRECTIONAL: 'directional',
 	}
 
 	/**********************************************************************************************

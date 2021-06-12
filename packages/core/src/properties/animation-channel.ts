@@ -36,6 +36,27 @@ import { COPY_IDENTITY, Property } from './property';
  */
 export class AnimationChannel extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
+
+	/**********************************************************************************************
+	 * Constants.
+	 */
+
+	/** Name of the property to be modified by an animation channel. */
+	public static TargetPath: Record<string, GLTF.AnimationChannelTargetPath> = {
+		/** Channel targets {@link Node.setTranslation}. */
+		TRANSLATION: 'translation',
+		/** Channel targets {@link Node.setRotation}. */
+		ROTATION: 'rotation',
+		/** Channel targets {@link Node.setScale}. */
+		SCALE: 'scale',
+		/** Channel targets {@link Node.setWeights}, affecting {@link PrimitiveTarget} weights. */
+		WEIGHTS: 'weights',
+	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
 	private _targetPath: GLTF.AnimationChannelTargetPath | null = null;
 	@GraphChild private targetNode: Link<AnimationChannel, Node> | null = null;
 	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> | null = null;
@@ -49,22 +70,6 @@ export class AnimationChannel extends Property {
 		this.setSampler(other.sampler ? resolve(other.sampler.getChild()) : null);
 
 		return this;
-	}
-
-	/**********************************************************************************************
-	 * Static.
-	 */
-
-	/** Name of the property to be modified by an animation channel. */
-	public static TargetPath: Record<string, GLTF.AnimationChannelTargetPath> = {
-		/** Channel targets {@link Node.setTranslation}. */
-		TRANSLATION: 'translation',
-		/** Channel targets {@link Node.setRotation}. */
-		ROTATION: 'rotation',
-		/** Channel targets {@link Node.setScale}. */
-		SCALE: 'scale',
-		/** Channel targets {@link Node.setWeights}, affecting {@link PrimitiveTarget} weights. */
-		WEIGHTS: 'weights',
 	}
 
 	/**********************************************************************************************

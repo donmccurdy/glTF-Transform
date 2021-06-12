@@ -45,6 +45,32 @@ const { R, G, B, A } = TextureChannel;
 export class Material extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.MATERIAL;
 
+	/**********************************************************************************************
+	 * Constants.
+	 */
+
+	public static AlphaMode: Record<string, GLTF.MaterialAlphaMode> = {
+		/**
+		 * The alpha value is ignored and the rendered output is fully opaque
+		 */
+		OPAQUE: 'OPAQUE',
+		/**
+		 * The rendered output is either fully opaque or fully transparent depending on the alpha
+		 * value and the specified alpha cutoff value
+		 */
+		MASK: 'MASK',
+		/**
+		 * The alpha value is used to composite the source and destination areas. The rendered
+		 * output is combined with the background using the normal painting operation (i.e. the
+		 * Porter and Duff over operator)
+		 */
+		BLEND: 'BLEND',
+	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
 	/** @internal Mode of the material's alpha channels. (`OPAQUE`, `BLEND`, or `MASK`) */
 	private _alphaMode: GLTF.MaterialAlphaMode = Material.AlphaMode.OPAQUE;
 
@@ -174,28 +200,6 @@ export class Material extends ExtensibleProperty {
 		this.occlusionTextureInfo.getChild().dispose();
 		this.metallicRoughnessTextureInfo.getChild().dispose();
 		super.dispose();
-	}
-
-	/**********************************************************************************************
-	 * Static.
-	 */
-
-	public static AlphaMode: Record<string, GLTF.MaterialAlphaMode> = {
-		/**
-		 * The alpha value is ignored and the rendered output is fully opaque
-		 */
-		OPAQUE: 'OPAQUE',
-		/**
-		 * The rendered output is either fully opaque or fully transparent depending on the alpha
-		 * value and the specified alpha cutoff value
-		 */
-		MASK: 'MASK',
-		/**
-		 * The alpha value is used to composite the source and destination areas. The rendered
-		 * output is combined with the background using the normal painting operation (i.e. the
-		 * Porter and Duff over operator)
-		 */
-		BLEND: 'BLEND',
 	}
 
 	/**********************************************************************************************

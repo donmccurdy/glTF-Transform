@@ -65,45 +65,8 @@ import { COPY_IDENTITY } from './property';
 export class Accessor extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.ACCESSOR;
 
-	/** @internal Raw data of the accessor. */
-	private _array: TypedArray | null = null;
-
-	/** @internal Type of element represented. */
-	private _type: GLTF.AccessorType = Accessor.Type.SCALAR;
-
-	/** @internal Numeric type of each component in an element. */
-	private _componentType: GLTF.AccessorComponentType = Accessor.ComponentType.FLOAT;
-
-	/** @internal Whether data in the raw array should be considered normalized. */
-	private _normalized = false;
-
-	/** @internal Inbound transform to normalized representation, if applicable. */
-	private _in = MathUtils.identity;
-
-	/** @internal Outbound transform from normalized representation, if applicable. */
-	private _out = MathUtils.identity;
-
-	/** @internal The {@link Buffer} to which this accessor's data will be written. */
-	@GraphChild private buffer: Link<Accessor, Buffer> | null = null;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._type = other._type;
-		this._componentType = other._componentType;
-		this._normalized = other._normalized;
-		this._in = other._in;
-		this._out = other._out;
-
-		if (other._array) this._array = other._array.slice();
-
-		this.setBuffer(other.buffer ? resolve(other.buffer.getChild()) : null);
-
-		return this;
-	}
-
 	/**********************************************************************************************
-	 * Static.
+	 * Constants.
 	 */
 
 	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
@@ -157,6 +120,51 @@ export class Accessor extends ExtensibleProperty {
 		 */
 		FLOAT: 5126,
 	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
+	/** @internal Raw data of the accessor. */
+	private _array: TypedArray | null = null;
+
+	/** @internal Type of element represented. */
+	private _type: GLTF.AccessorType = Accessor.Type.SCALAR;
+
+	/** @internal Numeric type of each component in an element. */
+	private _componentType: GLTF.AccessorComponentType = Accessor.ComponentType.FLOAT;
+
+	/** @internal Whether data in the raw array should be considered normalized. */
+	private _normalized = false;
+
+	/** @internal Inbound transform to normalized representation, if applicable. */
+	private _in = MathUtils.identity;
+
+	/** @internal Outbound transform from normalized representation, if applicable. */
+	private _out = MathUtils.identity;
+
+	/** @internal The {@link Buffer} to which this accessor's data will be written. */
+	@GraphChild private buffer: Link<Accessor, Buffer> | null = null;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._type = other._type;
+		this._componentType = other._componentType;
+		this._normalized = other._normalized;
+		this._in = other._in;
+		this._out = other._out;
+
+		if (other._array) this._array = other._array.slice();
+
+		this.setBuffer(other.buffer ? resolve(other.buffer.getChild()) : null);
+
+		return this;
+	}
+
+	/**********************************************************************************************
+	 * Static.
+	 */
 
 	/** Returns size of a given element type, in components. */
 	public static getElementSize(type: GLTF.AccessorType): number {

@@ -48,6 +48,25 @@ import { COPY_IDENTITY, Property } from './property';
 export class AnimationSampler extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
+
+	/**********************************************************************************************
+	 * Constants.
+	 */
+
+	/** Interpolation method. */
+	public static Interpolation: Record<string, GLTF.AnimationSamplerInterpolation> = {
+		/** Animated values are linearly interpolated between keyframes. */
+		LINEAR: 'LINEAR',
+		/** Animated values remain constant from one keyframe until the next keyframe. */
+		STEP: 'STEP',
+		/** Animated values are interpolated according to given cubic spline tangents. */
+		CUBICSPLINE: 'CUBICSPLINE',
+	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
 	private _interpolation: GLTF.AnimationSamplerInterpolation
 		= AnimationSampler.Interpolation.LINEAR;
 
@@ -68,16 +87,6 @@ export class AnimationSampler extends Property {
 	/**********************************************************************************************
 	 * Static.
 	 */
-
-	/** Interpolation method. */
-	public static Interpolation: Record<string, GLTF.AnimationSamplerInterpolation> = {
-		/** Animated values are linearly interpolated between keyframes. */
-		LINEAR: 'LINEAR',
-		/** Animated values remain constant from one keyframe until the next keyframe. */
-		STEP: 'STEP',
-		/** Animated values are interpolated according to given cubic spline tangents. */
-		CUBICSPLINE: 'CUBICSPLINE',
-	}
 
 	/** Interpolation mode: `STEP`, `LINEAR`, or `CUBICSPLINE`. */
 	public getInterpolation(): GLTF.AnimationSamplerInterpolation {

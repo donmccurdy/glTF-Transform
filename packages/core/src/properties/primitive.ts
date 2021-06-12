@@ -46,35 +46,8 @@ import { AttributeLink } from './property-links';
 export class Primitive extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
-	/** @internal GPU draw mode. */
-	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
-
-	@GraphChild private material: Link<Primitive, Material> | null = null;
-	@GraphChild private indices: Link<Primitive, Accessor> | null = null;
-	@GraphChildList private attributes: AttributeLink[] = [];
-	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._mode = other._mode;
-
-		this.setIndices(other.indices ? resolve(other.indices.getChild()) : null);
-		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
-
-		this.clearGraphChildList(this.attributes);
-		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
-		});
-
-		this.clearGraphChildList(this.targets);
-		other.targets.forEach((link) => this.addTarget(resolve(link.getChild())));
-
-		return this;
-	}
-
 	/**********************************************************************************************
-	 * Static.
+	 * Constants.
 	 */
 
 	/** Type of primitives to render. All valid values correspond to WebGL enums. */
@@ -100,6 +73,37 @@ export class Primitive extends ExtensibleProperty {
 		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
 		 */
 		TRIANGLE_FAN: 6,
+	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
+	/** @internal GPU draw mode. */
+	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
+
+	@GraphChild private material: Link<Primitive, Material> | null = null;
+	@GraphChild private indices: Link<Primitive, Accessor> | null = null;
+	@GraphChildList private attributes: AttributeLink[] = [];
+	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._mode = other._mode;
+
+		this.setIndices(other.indices ? resolve(other.indices.getChild()) : null);
+		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
+
+		this.clearGraphChildList(this.attributes);
+		other.listSemantics().forEach((semantic) => {
+			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
+		});
+
+		this.clearGraphChildList(this.targets);
+		other.targets.forEach((link) => this.addTarget(resolve(link.getChild())));
+
+		return this;
 	}
 
 	/**********************************************************************************************

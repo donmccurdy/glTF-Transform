@@ -25,28 +25,8 @@ import { COPY_IDENTITY } from './property';
 export class TextureInfo extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.TEXTURE_INFO;
 
-	private _texCoord = 0;
-
-	// Sampler properties are also attached to TextureInfo, for simplicity.
-	private _magFilter: GLTF.TextureMagFilter | null = null;
-	private _minFilter: GLTF.TextureMinFilter | null = null;
-	private _wrapS: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
-	private _wrapT: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._texCoord = other._texCoord;
-		this._magFilter = other._magFilter;
-		this._minFilter = other._minFilter;
-		this._wrapS = other._wrapS;
-		this._wrapT = other._wrapT;
-
-		return this;
-	}
-
 	/**********************************************************************************************
-	 * Static.
+	 * Constants.
 	 */
 
 	/** UV wrapping mode. Values correspond to WebGL enums. */
@@ -81,6 +61,30 @@ export class TextureInfo extends ExtensibleProperty {
 		NEAREST_MIPMAP_LINEAR: 9986,
 		/** */
 		LINEAR_MIPMAP_LINEAR: 9987,
+	}
+
+	/**********************************************************************************************
+	 * Instance.
+	 */
+
+	private _texCoord = 0;
+
+	// Sampler properties are also attached to TextureInfo, for simplicity.
+	private _magFilter: GLTF.TextureMagFilter | null = null;
+	private _minFilter: GLTF.TextureMinFilter | null = null;
+	private _wrapS: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
+	private _wrapT: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
+
+	public copy(other: this, resolve = COPY_IDENTITY): this {
+		super.copy(other, resolve);
+
+		this._texCoord = other._texCoord;
+		this._magFilter = other._magFilter;
+		this._minFilter = other._minFilter;
+		this._wrapS = other._wrapS;
+		this._wrapT = other._wrapT;
+
+		return this;
 	}
 
 	/**********************************************************************************************
