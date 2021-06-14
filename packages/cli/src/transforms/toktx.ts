@@ -178,7 +178,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				numCompressed++;
 
-				const outBytes = image.byteLength;
+				const outBytes = texture.getImage()!.byteLength;
 				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
 			});
 
