@@ -19,7 +19,19 @@
  * Import:
  *
  * ```typescript
- * import { center, quantize, weld } from '@gltf-transform/functions';
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { dedup, quantize, weld } from '@gltf-transform/functions';
+ *
+ * const io = new NodeIO();
+ * const document = io.read('input.glb');
+ *
+ * await document.transform(
+ * 	weld(),
+ * 	quantize(),
+ * 	dedup()
+ * );
+ *
+ * io.write('output.glb', document);
  * ```
  *
  * @module functions
