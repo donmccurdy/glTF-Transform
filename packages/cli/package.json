@@ -28,7 +28,7 @@
     "draco3dgltf": "^1.4.1",
     "geo-ambient-occlusion": "^3.0.4",
     "gl": "^4.9.0",
-    "gltf-validator": "^2.0.0-dev.3.2",
+    "gltf-validator": "^2.0.0-dev.3.4",
     "ktx-parse": "^0.2.1",
     "markdown-table": "^2.0.0",
     "mikktspace": "^0.2.0",
