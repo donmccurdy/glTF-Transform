@@ -41,9 +41,11 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 		const logger = doc.getLogger();
 
 		for (const texture of doc.getRoot().listTextures()) {
+			const name = texture.getName();
+			const uri = texture.getURI();
 			const match = !options.pattern
-				|| options.pattern.test(texture.getName())
-				|| options.pattern.test(texture.getURI());
+				|| options.pattern.test(name)
+				|| options.pattern.test(uri);
 			if (!match) continue;
 
 			if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
@@ -61,10 +63,18 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			const srcPixels = await getPixels(srcImage, texture.getMimeType());
 			const dstPixels = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 
-			logger.debug(`${NAME}: Resizing from ${srcPixels.shape} to ${dstPixels.shape}...`);
-			options.filter === TextureResizeFilter.LANCZOS3
-				? lanczos3(srcPixels, dstPixels)
-				: lanczos2(srcPixels, dstPixels);
+			logger.debug(
+				`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`
+			);
+
+			try {
+				options.filter === TextureResizeFilter.LANCZOS3
+					? lanczos3(srcPixels, dstPixels)
+					: lanczos2(srcPixels, dstPixels);
+			} catch (e) {
+				logger.warn(`${NAME}: Failed to resize "${uri || name}": "${e.message}".`);
+				continue;
+			}
 
 			texture.setImage((await savePixels(dstPixels, texture.getMimeType())).buffer);
 		}
