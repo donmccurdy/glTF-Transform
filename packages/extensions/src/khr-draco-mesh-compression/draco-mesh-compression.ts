@@ -151,9 +151,10 @@ export class DracoMeshCompression extends Extension {
 					context.accessors[primDef.attributes[semantic]].setArray(attributeArray);
 				}
 
-				// Indices.
-				const indicesArray = decodeIndex(decoder, dracoMesh);
-				context.accessors[primDef.indices!].setArray(indicesArray);
+				// Indices. Optional, see https://github.com/google/draco/issues/720.
+				if (primDef.indices !== undefined) {
+					context.accessors[primDef.indices].setArray(decodeIndex(decoder, dracoMesh));
+				}
 			}
 		}
 
