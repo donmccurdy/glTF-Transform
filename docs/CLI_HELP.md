@@ -1,5 +1,5 @@
 
-  gltf-transform 0.11.4 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.11.5 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
