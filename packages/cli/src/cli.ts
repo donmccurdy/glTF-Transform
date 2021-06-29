@@ -885,8 +885,8 @@ and LINEAR interpolation. Resampling is nearly lossless, with configurable
 program
 	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
 	.help(`
-Animate nodes' visibilities as a flipboard sequence. An example workflow
-would be to create a .glb containing one geometry for each frame of a complex
+Animate node visibilities as a flipboard sequence. An example workflow would
+be to create a .glb containing one geometry for each frame of a complex
 animation that can't be represented as TRS, skinning, or morph targets. The
 sequence function generates a new animation, playing back each mesh matching
 the given pattern, at a specific framerate. Displaying a sequence of textures
