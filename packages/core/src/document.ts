@@ -84,7 +84,7 @@ export class Document {
 	 * ```ts
 	 * doc
 	 * 	.setLogger(new Logger(Logger.Verbosity.SILENT))
-	 * 	.transform(split(), ao({samples: 50}));
+	 * 	.transform(dedup(), weld());
 	 * ```
 	 */
 	public setLogger(logger: Logger): Document {
@@ -165,7 +165,7 @@ export class Document {
 	 *
 	 * ```ts
 	 * await doc.transform(
-	 * 	ao({samples: 500}),
+	 * 	dedup(),
 	 * 	prune()
 	 * );
 	 * ```
