@@ -8,7 +8,7 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transfor
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { AOOptions, DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ao, draco, ktxfix, merge, toktx, unlit } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -509,35 +509,6 @@ compute MikkTSpace tangents at runtime.
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
-
-// AMBIENT OCCLUSION
-program
-	.command('ao', 'Bake per-vertex ambient occlusion')
-	.help(`
-Bake per-vertex ambient occlusion. Because AO is sampled only at vertices, this
-technique is not as realistic as AO baked in software like Blender. However,
-it's very compact (only a single 1x256 texture and a UV set are needed) and may
-look fine on certain models, particularly those with dense geometry or voxel
-styles.
-
-Higher values of --samples and --resolution will increase visual quality and
-require more time to complete, but the size of the resulting file will not
-be affected.
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.argument('<output>', OUTPUT_DESC)
-	.option('--resolution <n>', 'Resolution used internally for sampling', {
-		validator: program.NUMBER,
-		default: 512,
-	})
-	.option('--samples <n>', 'Sample count', {
-		validator: program.NUMBER,
-		default: 500,
-	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(ao({...options as unknown as AOOptions, gl: require('gl')}))
-	);
 
 // METALROUGH
 program
