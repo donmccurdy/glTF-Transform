@@ -561,6 +561,9 @@ program
 Resize PNG or JPEG textures with Lanczos3 (sharp) or Lanczos2 (smooth)
 filtering. Typically Lanczos3 is the best method, but Lanczos2 may be helpful
 to reduce ringing artifacts in some cases.
+
+Limits --width and --height are applied as maximum dimensions for each texture,
+preserving original aspect ratio. Texture dimensions are never increased.
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -571,11 +574,11 @@ to reduce ringing artifacts in some cases.
 		validator: [TextureResizeFilter.LANCZOS3, TextureResizeFilter.LANCZOS2],
 		default: TEXTURE_RESIZE_DEFAULTS.filter,
 	})
-	.option('--width <pixels>', 'Width (px) of output textures.', {
+	.option('--width <pixels>', 'Maximum width (px) of output textures.', {
 		validator: program.NUMBER,
 		required: true
 	})
-	.option('--height <pixels>', 'Height (px) of output textures.', {
+	.option('--height <pixels>', 'Maximum height (px) of output textures.', {
 		validator: program.NUMBER,
 		required: true
 	})

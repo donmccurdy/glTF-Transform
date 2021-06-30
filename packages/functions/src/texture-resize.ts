@@ -7,9 +7,13 @@ const NAME = 'textureResize';
 
 /** Options for the {@link textureResize} function. */
 export interface TextureResizeOptions {
-	/** Output dimensions. */
+	/**
+	 * Maximum width/height to enforce, preserving aspect ratio. For example,
+	 * a 4096x8192 texture, resized with limit [2048, 2048] will be reduced
+	 * to 1024x2048.
+	 */
 	size: vec2;
-	/** Resampling filter method. */
+	/** Resampling filter method. LANCZOS3 is sharper, LANCZOS2 is smoother. */
 	filter?: TextureResizeFilter;
 	/** Pattern identifying textures to resize, matched to name or URI. */
 	pattern?: RegExp | null;
@@ -24,7 +28,7 @@ export enum TextureResizeFilter {
 }
 
 export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
-	size: [512, 512],
+	size: [2048, 2048],
 	filter: TextureResizeFilter.LANCZOS3,
 	pattern: null
 };
@@ -53,15 +57,32 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 				continue;
 			}
 
-			const [w, h] = options.size;
-			if (w === texture.getSize()![0] && h === texture.getSize()![1]) {
-				logger.debug('Skipping texture already at target resolution.');
+			const [maxWidth, maxHeight] = options.size;
+			const [srcWidth, srcHeight] = texture.getSize()!;
+
+			if (srcWidth <= maxWidth && srcHeight <= maxHeight) {
+				logger.debug(`${NAME}: Skipping "${uri || name}", within size range.`);
 				continue;
+			}
+
+			let dstWidth = srcWidth;
+			let dstHeight = srcHeight;
+
+			if (dstWidth > maxWidth) {
+				dstWidth = maxWidth;
+				dstHeight = Math.floor(dstHeight * (dstWidth / srcWidth));
+			}
+
+			if (dstHeight > maxHeight) {
+				dstHeight = maxHeight;
+				dstWidth = Math.floor(dstWidth * (dstHeight / srcHeight));
 			}
 
 			const srcImage = new Uint8Array(texture.getImage() as ArrayBuffer);
 			const srcPixels = await getPixels(srcImage, texture.getMimeType());
-			const dstPixels = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
+			const dstPixels = ndarray(
+				new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]
+			);
 
 			logger.debug(
 				`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`
