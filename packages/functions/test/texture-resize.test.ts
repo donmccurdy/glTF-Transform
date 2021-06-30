@@ -30,12 +30,12 @@ test('@gltf-transform/functions::textureResize', async t => {
 		'match - resize down'
 	);
 
-	await document.transform(textureResize({size: [8, 8]}));
+	await document.transform(textureResize({size: [2, 4]}));
 
 	t.deepEqual(
 		(await getPixels(new Uint8Array(texture.getImage()), 'image/png')).shape,
-		[8, 8, 4],
-		'all - resize up'
+		[2, 2, 4],
+		'all - resize down with aspect ratio'
 	);
 
 	t.end();
