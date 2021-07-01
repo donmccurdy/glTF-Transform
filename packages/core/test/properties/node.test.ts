@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO } from '../../';
+import { Document, MathUtils, NodeIO, mat4, vec3, vec4 } from '../../';
 
 test('@gltf-transform/core::node | parent', t => {
 	const doc = new Document();
@@ -85,6 +85,27 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 	t.deepEquals(pos[1].toFixed(3), '0.000', 'inherit rotated position.y');
 	t.deepEquals(pos[2].toFixed(3), '0.000', 'inherit rotated position.z');
 
+	t.end();
+});
+
+test('@gltf-transform/core::node | setMatrix', t => {
+	const doc = new Document();
+	const node = doc.createNode('A').setTranslation([99, 99, 99]);
+
+	const pos = [1, 2, 3] as vec3;
+	const rot = [0, 0, 0, 1] as vec4;
+	const scl = [10, 10, 10] as vec3;
+	const mat = MathUtils.compose(pos, rot, scl, [] as unknown as mat4);
+
+	node.setMatrix(mat);
+
+	const posOut = node.getTranslation().map((v) => v.toFixed(1));
+	const rotOut = node.getRotation().map((v) => v.toFixed(1));
+	const sclOut = node.getScale().map((v) => v.toFixed(1));
+
+	t.deepEquals(posOut, ['1.0', '2.0', '3.0'], 'translation');
+	t.deepEquals(rotOut, ['0.0', '0.0', '0.0', '1.0'], 'rotation');
+	t.deepEquals(sclOut, ['10.0', '10.0', '10.0'], 'scale');
 	t.end();
 });
 

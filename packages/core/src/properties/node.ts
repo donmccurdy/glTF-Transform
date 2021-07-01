@@ -110,6 +110,12 @@ export class Node extends ExtensibleProperty {
 		);
 	}
 
+	/** Sets the local matrix of this node. Matrix will be decomposed to TRS properties. */
+	public setMatrix(matrix: mat4): this {
+		MathUtils.decompose(matrix, this._translation, this._rotation, this._scale);
+		return this;
+	}
+
 	/**********************************************************************************************
 	 * World transform.
 	 */
