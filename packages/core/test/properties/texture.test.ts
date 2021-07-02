@@ -96,7 +96,10 @@ test('@gltf-transform/core::texture | copy', t => {
 test('@gltf-transform/core::texture | extras', t => {
 	const io = new NodeIO();
 	const doc = new Document();
-	doc.createTexture('A').setExtras({foo: 1, bar: 2});
+	doc.createTexture('A')
+		.setExtras({foo: 1, bar: 2})
+		.setImage(new ArrayBuffer(10))
+		.setMimeType('image/png');
 
 	const doc2 = io.readJSON(io.writeJSON(doc));
 

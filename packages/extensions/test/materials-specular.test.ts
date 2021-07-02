@@ -12,7 +12,7 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	const specular = specularExtension.createSpecular()
 		.setSpecularFactor(0.9)
 		.setSpecularColorFactor([0.9, 0.5, .8])
-		.setSpecularTexture(doc.createTexture());
+		.setSpecularTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
 
 	const mat = doc.createMaterial('MyMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
