@@ -102,7 +102,7 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
 				const jsonDoc = this._binaryToJSON(arrayBuffer);
-				this._readResourcesInternal(jsonDoc, false);
+				this._readResourcesInternal(jsonDoc, true);
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
 				return jsonDoc;
 			});
