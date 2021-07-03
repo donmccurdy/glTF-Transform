@@ -1,5 +1,5 @@
 
-  gltf-transform 0.11.5 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.12.0-alpha.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -38,7 +38,6 @@
                                                                                                 
                                                                                                 
                                          ✨ MATERIAL ─────────────────────────────────────────  
-    ao                                   Bake per-vertex ambient occlusion                      
     metalrough                           Convert materials from spec/gloss to metal/rough       
     unlit                                Convert materials from metal/rough to unlit            
                                                                                                 
