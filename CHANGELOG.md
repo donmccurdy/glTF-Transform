@@ -1,12 +1,27 @@
 # Changelog
 
-## v0.12 — 🚧 Unreleased
+## v0.13 — 🚧 Unreleased
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
+
+**Features:**
+
+**Breaking changes:**
+
+## v0.12
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/12)
 
 **Features:**
 
+- Faster, smaller CLI installation. [#281](https://github.com/donmccurdy/glTF-Transform/pull/281)
+- Improved `textureResize()` API. [#282](https://github.com/donmccurdy/glTF-Transform/pull/282)
+- Add `node.setMatrix(...)`. [#270](https://github.com/donmccurdy/glTF-Transform/issues/270)
+- Parse in-memory Data URIs with `readJSON`. [#266](https://github.com/donmccurdy/glTF-Transform/pull/266)
+
 **Breaking changes:**
+
+- Remove ao() function and dependencies. [#281](https://github.com/donmccurdy/glTF-Transform/pull/281)
 
 ## v0.11
 
