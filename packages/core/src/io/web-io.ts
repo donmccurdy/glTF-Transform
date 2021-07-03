@@ -58,6 +58,28 @@ export class WebIO extends PlatformIO {
 	}
 
 	/**********************************************************************************************
+	 * Protected.
+	 */
+
+	/** @internal */
+	private _readResourcesExternal (jsonDoc: JSONDocument, dir: string): Promise<void> {
+		const images = jsonDoc.json.images || [];
+		const buffers = jsonDoc.json.buffers || [];
+		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
+			.map((resource: GLTF.IBuffer|GLTF.IImage): Promise<void> => {
+				const uri = resource.uri;
+				if (!uri) return Promise.resolve();
+
+				return fetch(_resolve(dir, uri), this._fetchConfig)
+					.then((response) => response.arrayBuffer())
+					.then((arrayBuffer) => {
+						jsonDoc.resources[uri] = arrayBuffer;
+					});
+			});
+		return Promise.all(pendingResources).then(() => undefined);
+	}
+
+	/**********************************************************************************************
 	 * Private.
 	 */
 
@@ -65,12 +87,13 @@ export class WebIO extends PlatformIO {
 	private _readGLTF (uri: string): Promise<JSONDocument> {
 		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
 		return fetch(uri, this._fetchConfig)
-		.then((response) => response.json())
-		.then(async (json: GLTF.IGLTF) => {
-			jsonDoc.json = json;
-			await this._readResources(jsonDoc, _dirname(uri), false);
-			return jsonDoc;
-		});
+			.then((response) => response.json())
+			.then(async (json: GLTF.IGLTF) => {
+				jsonDoc.json = json;
+				this._readResourcesInternal(jsonDoc, false);
+				await this._readResourcesExternal(jsonDoc, _dirname(uri));
+				return jsonDoc;
+			});
 	}
 
 	/** @internal */
@@ -79,35 +102,10 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
 				const jsonDoc = this._binaryToJSON(arrayBuffer);
-				await this._readResources(jsonDoc, _dirname(uri), true);
+				this._readResourcesInternal(jsonDoc, true);
+				await this._readResourcesExternal(jsonDoc, _dirname(uri));
 				return jsonDoc;
 			});
-	}
-
-	/** @internal */
-	private _readResources (jsonDoc: JSONDocument, dir: string, isGLB: boolean): Promise<void> {
-		const json = jsonDoc.json;
-		const images = json.images || [];
-		const buffers = json.buffers || [];
-		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
-		.map((resource: GLTF.IBuffer|GLTF.IImage, index: number): Promise<void> => {
-			const uri = resource.uri;
-
-			if (!uri) {
-				const isGLBBuffer = isGLB && index === images.length;
-				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
-					throw new Error('Missing resource URI.');
-				}
-				return Promise.resolve();
-			}
-
-			return fetch(_resolve(dir, uri), this._fetchConfig)
-				.then((response) => response.arrayBuffer())
-				.then((arrayBuffer) => {
-					jsonDoc.resources[uri] = arrayBuffer;
-				});
-		});
-		return Promise.all(pendingResources).then(() => undefined);
 	}
 }
 

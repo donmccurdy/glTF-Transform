@@ -319,11 +319,15 @@ test('@gltf-transform/core::material | i/o', t => {
 	const doc = new Document();
 	doc.createBuffer();
 
-	const baseColor = doc.createTexture('baseColor');
-	const emissive = doc.createTexture('emissive');
-	const normal = doc.createTexture('normal');
-	const metalRough = doc.createTexture('metalRough');
-	const occlusion = doc.createTexture('occlusion');
+	const createTexture = (name: string) => doc.createTexture(name)
+		.setImage(new ArrayBuffer(10))
+		.setMimeType('image/png');
+
+	const baseColor = createTexture('baseColor');
+	const emissive = createTexture('emissive');
+	const normal = createTexture('normal');
+	const metalRough = createTexture('metalRough');
+	const occlusion = createTexture('occlusion');
 
 	doc.createMaterial('mat')
 		.setBaseColorTexture(baseColor)
