@@ -3,7 +3,7 @@ declare const PACKAGE_VERSION: string;
 
 /**
  * Current version of the package.
- * @internal
+ * @hidden
  */
 export const VERSION = `v${PACKAGE_VERSION}`;
 
