@@ -12,7 +12,8 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	const specular = specularExtension.createSpecular()
 		.setSpecularFactor(0.9)
 		.setSpecularColorFactor([0.9, 0.5, .8])
-		.setSpecularTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
+		.setSpecularTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
+		.setSpecularColorTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
 
 	const mat = doc.createMaterial('MyMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
@@ -31,7 +32,8 @@ test('@gltf-transform/extensions::materials-specular', t => {
 	t.deepEqual(materialDef.extensions, {'KHR_materials_specular': {
 		specularFactor: 0.9,
 		specularColorFactor: [0.9, 0.5, 0.8],
-		specularTexture: {index: 0, texCoord: 0},
+		specularTexture: {index: 0},
+		specularColorTexture: {index: 1},
 	}}, 'writes specular extension');
 	t.deepEqual(
 		jsonDoc.json.extensionsUsed,
@@ -64,7 +66,8 @@ test('@gltf-transform/extensions::materials-specular | copy', t => {
 	const specular = specularExtension.createSpecular()
 		.setSpecularFactor(0.9)
 		.setSpecularColorFactor([0.9, 0.5, 0.8])
-		.setSpecularTexture(doc.createTexture('spec'));
+		.setSpecularTexture(doc.createTexture('spec'))
+		.setSpecularColorTexture(doc.createTexture('specColor'));
 	doc.createMaterial()
 		.setExtension('KHR_materials_specular', specular);
 
@@ -74,7 +77,11 @@ test('@gltf-transform/extensions::materials-specular | copy', t => {
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsSpecular');
 	t.ok(specular2, 'copy Specular');
 	t.equals(specular2.getSpecularFactor(), 0.9, 'copy specularFactor');
+	t.deepEquals(specular2.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'copy specularColorFactor');
 	t.equals(specular2.getSpecularTexture().getName(), 'spec', 'copy specularTexture');
+	t.equals(
+		specular2.getSpecularColorTexture().getName(), 'specColor', 'copy specularColorTexture'
+	);
 	t.end();
 });
 

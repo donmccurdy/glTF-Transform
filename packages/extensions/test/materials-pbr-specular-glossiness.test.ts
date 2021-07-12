@@ -31,7 +31,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 		diffuseFactor: [0.5, 0.5, 0.5, 0.9],
 		specularFactor: [0.9, 0.5, 0.8],
 		glossinessFactor: 0.5,
-		specularGlossinessTexture: {index: 0, texCoord: 0},
+		specularGlossinessTexture: {index: 0},
 	}}, 'writes specGloss extension');
 	t.deepEqual(
 		jsonDoc.json.extensionsUsed,

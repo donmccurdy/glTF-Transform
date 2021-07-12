@@ -30,7 +30,7 @@ test('@gltf-transform/extensions::materials-sheen', t => {
 	t.deepEqual(materialDef.extensions, {'KHR_materials_sheen': {
 		sheenColorFactor: [0.9, 0.5, 0.8],
 		sheenRoughnessFactor: 0,
-		sheenColorTexture: {index: 0, texCoord: 0},
+		sheenColorTexture: {index: 0},
 	}}, 'writes sheen extension');
 	t.deepEqual(
 		jsonDoc.json.extensionsUsed,
