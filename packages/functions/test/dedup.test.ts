@@ -5,6 +5,7 @@ import { createCanvas } from 'canvas';
 import test from 'tape';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
+import { MaterialsTransmission } from '@gltf-transform/extensions';
 
 test('@gltf-transform/functions::dedup | accessors', t => {
 	const io = new NodeIO();
@@ -38,14 +39,20 @@ test('@gltf-transform/functions::dedup | meshes', t => {
 
 test('@gltf-transform/functions::dedup | textures', t => {
 	const doc = new Document();
+	const transmissionExt = doc.createExtension(MaterialsTransmission);
 
 	const canvas = createCanvas(100, 50);
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = '#222222';
 	const buffer = canvas.toBuffer('image/png').slice().buffer;
 
-	doc.createTexture('copy 1').setMimeType('image/png').setImage(buffer);
-	doc.createTexture('copy 2').setMimeType('image/png').setImage(buffer.slice(0));
+	const tex1 = doc.createTexture('copy 1').setMimeType('image/png').setImage(buffer);
+	const tex2 = doc.createTexture('copy 2').setMimeType('image/png').setImage(buffer.slice(0));
+
+	const transmission = transmissionExt.createTransmission().setTransmissionTexture(tex2);
+	const mat = doc.createMaterial()
+		.setBaseColorTexture(tex1)
+		.setExtension('KHR_materials_transmission', transmission);
 
 	t.equal(doc.getRoot().listTextures().length, 2, 'begins with duplicate textures');
 
@@ -56,5 +63,7 @@ test('@gltf-transform/functions::dedup | textures', t => {
 	dedup()(doc);
 
 	t.equal(doc.getRoot().listTextures().length, 1, 'prunes duplicate textures');
+	t.equal(mat.getBaseColorTexture(), tex1, 'retains baseColorTexture');
+	t.equal(transmission.getTransmissionTexture(), tex1, 'retains transmissionTexture');
 	t.end();
 });
