@@ -32,9 +32,9 @@ export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
 
 		const root = doc.getRoot();
-		const jsonDoc = {json: {asset: root.getAsset()}, resources: {}} as JSONDocument;
-		const json = jsonDoc.json;
-		json.asset.generator = `glTF-Transform ${VERSION}`;
+		const asset = {...root.getAsset(), generator: `glTF-Transform ${VERSION}`};
+		const json = {asset} as GLTF.IGLTF;
+		const jsonDoc = {json, resources: {}} as JSONDocument;
 
 		const context = new WriterContext(doc, jsonDoc, options);
 		const logger = options.logger || Logger.DEFAULT_INSTANCE;
