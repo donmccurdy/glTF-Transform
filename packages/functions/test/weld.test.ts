@@ -37,7 +37,7 @@ test('@gltf-transform/functions::weld | tolerance=0', async t => {
 
 	t.deepEquals(
 		prim1.getIndices().getArray(),
-		new Uint32Array([0, 1, 2, 3, 4, 5]),
+		new Uint16Array([0, 1, 2, 3, 4, 5]),
 		'indices on prim1'
 	);
 	t.deepEquals(
@@ -107,7 +107,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async t => {
 
 	t.deepEquals(
 		prim1.getIndices().getArray(),
-		new Uint32Array([0, 1, 2, 0, 1, 2]),
+		new Uint16Array([0, 1, 2, 0, 1, 2]),
 		'indices on prim1'
 	);
 	t.deepEquals(
@@ -131,5 +131,33 @@ test('@gltf-transform/functions::weld | tolerance>0', async t => {
 		'morph targets on prim2'
 	);
 	t.equals(doc.getRoot().listAccessors().length, 5, 'keeps only needed accessors');
+	t.end();
+});
+
+test('@gltf-transform/functions::weld | u16 vs u32', async t => {
+	const doc = new Document();
+	const smArray = new Float32Array(65534 * 3);
+	const lgArray = new Float32Array(65535 * 3);
+	const smPosition = doc.createAccessor()
+		.setType(Accessor.Type.VEC3)
+		.setArray(smArray);
+	const lgPosition = doc.createAccessor()
+		.setType(Accessor.Type.VEC3)
+		.setArray(lgArray);
+	const smPrim = doc.createPrimitive()
+		.setAttribute('POSITION', smPosition)
+		.setMode(Primitive.Mode.TRIANGLES);
+	const lgPrim = doc.createPrimitive()
+		.setAttribute('POSITION', lgPosition)
+		.setMode(Primitive.Mode.TRIANGLES);
+	doc.createMesh()
+		.addPrimitive(smPrim)
+		.addPrimitive(lgPrim);
+
+	await doc.transform(weld({tolerance: 0}));
+
+	// 65535 is primitive restart; use 65534 as limit.
+	t.equals(smPrim.getIndices().getArray().constructor, Uint16Array, 'u16 <= 65534');
+	t.equals(lgPrim.getIndices().getArray().constructor, Uint32Array, 'u32 > 65534');
 	t.end();
 });

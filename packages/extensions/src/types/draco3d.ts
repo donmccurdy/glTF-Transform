@@ -50,6 +50,7 @@ export declare module DRACO {
 		DecodeBufferToMesh(buffer: DecoderBuffer, mesh: Mesh): Status;
 		GetAttributeByUniqueId: (mesh: Mesh, id: number) => Attribute;
 		GetFaceFromMesh: (mesh: Mesh, index: number, array: Array) => number;
+		GetTrianglesUInt16Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
 		GetTrianglesUInt32Array: (mesh: Mesh, byteLength: number, ptr: number) => void;
 		GetAttributeDataArrayForAllPoints: (
 			mesh: Mesh,

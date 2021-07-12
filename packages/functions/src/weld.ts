@@ -37,11 +37,16 @@ export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
 /**  In-place weld, adds indices without changing number of vertices. */
 function weldOnly (doc: Document, prim: Primitive): void {
 	if (prim.getIndices()) return;
-	const buffer = prim.listAttributes()[0].getBuffer();
+	const attr = prim.listAttributes()[0];
+	const numVertices = attr.getCount();
+	const buffer = attr.getBuffer();
+	const indicesArray = numVertices <= 65534
+		? new Uint16Array(getGLPrimitiveCount(prim) * 3)
+		: new Uint32Array(getGLPrimitiveCount(prim) * 3);
 	const indices = doc.createAccessor()
 		.setBuffer(buffer)
 		.setType(Accessor.Type.SCALAR)
-		.setArray(new Uint32Array(getGLPrimitiveCount(prim) * 3));
+		.setArray(indicesArray);
 	for (let i = 0; i < indices.getCount(); i++) indices.setScalar(i, i);
 	prim.setIndices(indices);
 }
@@ -131,7 +136,10 @@ function weldAndMerge (doc: Document, prim: Primitive, options: Required<WeldOpt
 		// Clean up.
 		if (srcIndices.listParents().length === 1) srcIndices.dispose();
 	} else {
-		prim.setIndices(doc.createAccessor().setArray(new Uint32Array(dstIndicesArray)));
+		const indicesArray = srcVertexCount <= 65534
+			? new Uint16Array(dstIndicesArray)
+			: new Uint32Array(dstIndicesArray);
+		prim.setIndices(doc.createAccessor().setArray(indicesArray));
 	}
 }
 
