@@ -1,5 +1,5 @@
 
-  gltf-transform 0.12.2 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.12.3 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -51,7 +51,7 @@
                                                                                                 
                                          ⏯  ANIMATION ────────────────────────────────────────  
     resample                             Resample animations, losslessly deduplicating keyframes
-    sequence                             Animate nodes' visibilities as a flipboard sequence    
+    sequence                             Animate node visibilities as a flipboard sequence      
 
   GLOBAL OPTIONS
 
