@@ -33,14 +33,22 @@ export function decodeGeometry(decoder: DRACO.Decoder, data: Int8Array): DRACO.M
 	}
 }
 
-export function decodeIndex(decoder: DRACO.Decoder, mesh: DRACO.Mesh): Uint32Array {
+export function decodeIndex(decoder: DRACO.Decoder, mesh: DRACO.Mesh): Uint16Array | Uint32Array {
 	const numFaces = mesh.num_faces();
 	const numIndices = numFaces * 3;
 	const byteLength = numIndices * Uint32Array.BYTES_PER_ELEMENT;
 
 	const ptr = decoderModule._malloc(byteLength);
-	decoder.GetTrianglesUInt32Array(mesh, byteLength, ptr);
-	const indices = new Uint32Array(decoderModule.HEAP32.buffer, ptr, numIndices).slice();
+	let indices: Uint16Array | Uint32Array;
+
+	if (mesh.num_points() <= 65534) {
+		decoder.GetTrianglesUInt16Array(mesh, byteLength, ptr);
+		indices = new Uint16Array(decoderModule.HEAP32.buffer, ptr, numIndices).slice();
+	} else {
+		decoder.GetTrianglesUInt32Array(mesh, byteLength, ptr);
+		indices = new Uint32Array(decoderModule.HEAP32.buffer, ptr, numIndices).slice();
+	}
+
 	decoderModule._free(ptr);
 
 	return indices;
