@@ -80,7 +80,9 @@ export class WriterContext {
 			this.jsonDoc.json.textures!.push(textureDef);
 		}
 
-		const textureInfoDef = {index: this.textureDefIndexMap.get(textureKey)} as GLTF.ITextureInfo;
+		const textureInfoDef = {
+			index: this.textureDefIndexMap.get(textureKey)
+		} as GLTF.ITextureInfo;
 
 		if (textureInfo.getTexCoord() !== 0) {
 			textureInfoDef.texCoord = textureInfo.getTexCoord();

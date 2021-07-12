@@ -121,7 +121,7 @@ export class Specular extends ExtensionProperty {
 	 * Only RGB channels are used here, but this texture may optionally be packed with a specular
 	 * factor (A) into a single texture.
 	 */
-	 public getSpecularColorTexture(): Texture | null {
+	public getSpecularColorTexture(): Texture | null {
 		return this.specularColorTexture ? this.specularColorTexture.getChild() : null;
 	}
 
