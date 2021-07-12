@@ -414,19 +414,29 @@ export class GLTFWriter {
 
 			// Program state & blending.
 
-			materialDef.alphaMode = material.getAlphaMode();
+			if (material.getAlphaMode() !== Material.AlphaMode.OPAQUE) {
+				materialDef.alphaMode = material.getAlphaMode();
+			}
 			if (material.getAlphaMode() === Material.AlphaMode.MASK) {
 				materialDef.alphaCutoff = material.getAlphaCutoff();
 			}
-			materialDef.doubleSided = material.getDoubleSided();
+			if (material.getDoubleSided()) materialDef.doubleSided = true;
 
 			// Factors.
 
 			materialDef.pbrMetallicRoughness = {};
-			materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor();
-			materialDef.emissiveFactor = material.getEmissiveFactor();
-			materialDef.pbrMetallicRoughness.roughnessFactor = material.getRoughnessFactor();
-			materialDef.pbrMetallicRoughness.metallicFactor = material.getMetallicFactor();
+			if (!MathUtils.eq(material.getBaseColorFactor(), [1, 1, 1, 1])) {
+				materialDef.pbrMetallicRoughness.baseColorFactor = material.getBaseColorFactor();
+			}
+			if (!MathUtils.eq(material.getEmissiveFactor(), [0, 0, 0])) {
+				materialDef.emissiveFactor = material.getEmissiveFactor();
+			}
+			if (material.getRoughnessFactor() !== 1) {
+				materialDef.pbrMetallicRoughness.roughnessFactor = material.getRoughnessFactor();
+			}
+			if (material.getMetallicFactor() !== 1) {
+				materialDef.pbrMetallicRoughness.metallicFactor = material.getMetallicFactor();
+			}
 
 			// Textures.
 

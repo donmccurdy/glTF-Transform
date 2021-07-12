@@ -83,7 +83,9 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 					pixels.set(i, j, 3, 255); // Remove glossiness.
 				});
 				specular.setSpecularTexture(specularTexture);
+				specular.setSpecularColorTexture(specularTexture);
 				specular.getSpecularTextureInfo()!.copy(sgTextureInfo);
+				specular.getSpecularColorTextureInfo()!.copy(sgTextureInfo);
 
 				// specularGlossiness -> roughness.
 				const glossinessFactor = specGloss.getGlossinessFactor();
