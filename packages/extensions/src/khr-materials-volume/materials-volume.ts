@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants';
 import { Volume } from './volume';
 
@@ -127,11 +127,17 @@ export class MaterialsVolume extends Extension {
 
 					// Factors.
 
-					const volumeDef = materialDef.extensions[NAME] = {
-						thicknessFactor: volume.getThicknessFactor(),
-						attenuationDistance: volume.getAttenuationDistance(),
-						attenuationColor: volume.getAttenuationColor(),
-					} as VolumeDef;
+					const volumeDef = materialDef.extensions[NAME] = {} as VolumeDef;
+
+					if (volume.getThicknessFactor() > 0) {
+						volumeDef.thicknessFactor = volume.getThicknessFactor();
+					}
+					if (Number.isFinite(volume.getAttenuationDistance())) {
+						volumeDef.attenuationDistance = volume.getAttenuationDistance();
+					}
+					if (!MathUtils.eq(volume.getAttenuationColor(), [1, 1, 1])) {
+						volumeDef.attenuationColor = volume.getAttenuationColor();
+					}
 
 					// Textures.
 

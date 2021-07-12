@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants';
 import { Specular } from './specular';
 
@@ -8,6 +8,7 @@ interface SpecularDef {
 	specularFactor?: number;
 	specularColorFactor?: vec3;
 	specularTexture?: GLTF.ITextureInfo;
+	specularColorTexture?: GLTF.ITextureInfo;
 }
 
 /**
@@ -68,9 +69,7 @@ export class MaterialsSpecular extends Extension {
 					specular.setSpecularFactor(specularDef.specularFactor);
 				}
 				if (specularDef.specularColorFactor !== undefined) {
-					specular.setSpecularColorFactor(
-						specularDef.specularColorFactor
-					);
+					specular.setSpecularColorFactor(specularDef.specularColorFactor);
 				}
 
 				// Textures.
@@ -80,6 +79,12 @@ export class MaterialsSpecular extends Extension {
 					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					specular.setSpecularTexture(texture);
 					context.setTextureInfo(specular.getSpecularTextureInfo()!, textureInfoDef);
+				}
+				if (specularDef.specularColorTexture !== undefined) {
+					const textureInfoDef = specularDef.specularColorTexture;
+					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
+					specular.setSpecularColorTexture(texture);
+					context.setTextureInfo(specular.getSpecularColorTextureInfo()!, textureInfoDef);
 				}
 			}
 		});
@@ -101,10 +106,14 @@ export class MaterialsSpecular extends Extension {
 
 					// Factors.
 
-					const specularDef = materialDef.extensions[NAME] = {
-						specularFactor: specular.getSpecularFactor(),
-						specularColorFactor: specular.getSpecularColorFactor(),
-					} as SpecularDef;
+					const specularDef = materialDef.extensions[NAME] = {} as SpecularDef;
+
+					if (specular.getSpecularFactor() !== 1) {
+						specularDef.specularFactor = specular.getSpecularFactor();
+					}
+					if (!MathUtils.eq(specular.getSpecularColorFactor(), [1, 1, 1])) {
+						specularDef.specularColorFactor = specular.getSpecularColorFactor();
+					}
 
 					// Textures.
 
@@ -112,6 +121,12 @@ export class MaterialsSpecular extends Extension {
 						const texture = specular.getSpecularTexture()!;
 						const textureInfo = specular.getSpecularTextureInfo()!;
 						specularDef.specularTexture
+							= context.createTextureInfoDef(texture, textureInfo);
+					}
+					if (specular.getSpecularColorTexture()) {
+						const texture = specular.getSpecularColorTexture()!;
+						const textureInfo = specular.getSpecularColorTextureInfo()!;
+						specularDef.specularColorTexture
 							= context.createTextureInfoDef(texture, textureInfo);
 					}
 				}

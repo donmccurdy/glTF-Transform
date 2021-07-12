@@ -31,7 +31,7 @@ test('@gltf-transform/extensions::materials-volume', t => {
 	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_volume': {
 		thicknessFactor: 0.9,
-		thicknessTexture: {index: 0, texCoord: 0},
+		thicknessTexture: {index: 0},
 		attenuationDistance: 2,
 		attenuationColor: [0.1, 0.2, 0.3]
 	}}, 'writes volume extension');

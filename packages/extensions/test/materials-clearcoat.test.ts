@@ -55,9 +55,9 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', t => {
 	t.deepEqual(materialDef.extensions, {'KHR_materials_clearcoat': {
 		clearcoatFactor: 0.9,
 		clearcoatRoughnessFactor: 0.1,
-		clearcoatTexture: {index: 0, texCoord: 0},
-		clearcoatRoughnessTexture: {index: 1, texCoord: 0},
-		clearcoatNormalTexture: {index: 2, texCoord: 0, scale: 2},
+		clearcoatTexture: {index: 0},
+		clearcoatRoughnessTexture: {index: 1},
+		clearcoatNormalTexture: {index: 2, scale: 2},
 	}}, 'writes clearcoat extension');
 	t.deepEqual(
 		jsonDoc.json.extensionsUsed,

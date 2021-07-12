@@ -33,7 +33,7 @@ test('@gltf-transform/extensions::materials-transmission', t => {
 	);
 	t.deepEqual(materialDef.extensions, {'KHR_materials_transmission': {
 		transmissionFactor: 0.9,
-		transmissionTexture: {index: 0, texCoord: 0},
+		transmissionTexture: {index: 0},
 	}}, 'writes transmission extension');
 	t.deepEqual(
 		jsonDoc.json.extensionsUsed,

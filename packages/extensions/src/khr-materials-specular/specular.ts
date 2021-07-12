@@ -20,11 +20,15 @@ export class Specular extends ExtensionProperty {
 	@GraphChild private specularTexture: TextureLink | null = null;
 	@GraphChild private specularTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('specularTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private specularColorTexture: TextureLink | null = null;
+	@GraphChild private specularColorTextureInfo: Link<this, TextureInfo> =
+		this.graph.link('specularColorTextureInfo', this, new TextureInfo(this.graph));
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
 		this._specularFactor = other._specularFactor;
+		this._specularColorFactor = other._specularColorFactor;
 
 		this.setSpecularTexture(
 			other.specularTexture
@@ -33,6 +37,14 @@ export class Specular extends ExtensionProperty {
 		);
 		this.specularTextureInfo.getChild()
 			.copy(resolve(other.specularTextureInfo.getChild()), resolve);
+
+		this.setSpecularColorTexture(
+			other.specularColorTexture
+				? resolve(other.specularColorTexture.getChild())
+				: null
+		);
+		this.specularColorTextureInfo.getChild()
+			.copy(resolve(other.specularColorTextureInfo.getChild()), resolve);
 
 		return this;
 	}
@@ -80,9 +92,8 @@ export class Specular extends ExtensionProperty {
 	 * the dielectric BRDF. A value of zero disables the specular reflection, resulting in a pure
 	 * diffuse material.
 	 *
-	 * A 4-channel texture that defines the F0 color of the specular reflection (RGB channels,
-	 * encoded in sRGB) and the specular factor (A). Will be multiplied by specularFactor and
-	 * specularColorFactor.
+	 * Only the alpha (A) channel is used for specular strength, but this texture may optionally
+	 * be packed with specular color (RGB) into a single texture.
 	 */
 	public getSpecularTexture(): Texture | null {
 		return this.specularTexture ? this.specularTexture.getChild() : null;
@@ -99,7 +110,33 @@ export class Specular extends ExtensionProperty {
 	/** Sets specular texture. See {@link getSpecularTexture}. */
 	public setSpecularTexture(texture: Texture | null): this {
 		this.specularTexture =
-			this.graph.linkTexture('specularTexture', R | G | B | A, this, texture);
+			this.graph.linkTexture('specularTexture', A, this, texture);
+		return this;
+	}
+
+	/**
+	 * Specular color texture; linear multiplier. Defines the F0 color of the specular reflection
+	 * (RGB channels, encoded in sRGB) in the the dielectric BRDF.
+	 *
+	 * Only RGB channels are used here, but this texture may optionally be packed with a specular
+	 * factor (A) into a single texture.
+	 */
+	public getSpecularColorTexture(): Texture | null {
+		return this.specularColorTexture ? this.specularColorTexture.getChild() : null;
+	}
+
+	/**
+	 * Settings affecting the material's use of its specular color texture. If no texture is
+	 * attached, {@link TextureInfo} is `null`.
+	 */
+	public getSpecularColorTextureInfo(): TextureInfo | null {
+		return this.specularColorTexture ? this.specularColorTextureInfo.getChild() : null;
+	}
+
+	/** Sets specular color texture. See {@link getSpecularColorTexture}. */
+	public setSpecularColorTexture(texture: Texture | null): this {
+		this.specularColorTexture =
+			this.graph.linkTexture('specularColorTexture', R | G | B, this, texture);
 		return this;
 	}
 }

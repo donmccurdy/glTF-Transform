@@ -81,9 +81,12 @@ export class WriterContext {
 		}
 
 		const textureInfoDef = {
-			index: this.textureDefIndexMap.get(textureKey),
-			texCoord: textureInfo.getTexCoord(),
+			index: this.textureDefIndexMap.get(textureKey)
 		} as GLTF.ITextureInfo;
+
+		if (textureInfo.getTexCoord() !== 0) {
+			textureInfoDef.texCoord = textureInfo.getTexCoord();
+		}
 
 		this.textureInfoDefMap.set(textureInfo, textureInfoDef);
 
