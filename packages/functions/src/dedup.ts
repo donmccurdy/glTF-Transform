@@ -1,4 +1,4 @@
-import { Accessor, BufferUtils, Document, Logger, Material, Mesh, PropertyType, Texture, Transform } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Document, Logger, Mesh, PropertyType, Root, Texture, Transform } from '@gltf-transform/core';
 
 const NAME = 'dedup';
 
@@ -209,8 +209,7 @@ function dedupImages(logger: Logger, doc: Document): void {
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
-			// Skip Root.
-			if (property instanceof Material) property.swap(src, dst);
+			if (!(property instanceof Root)) property.swap(src, dst);
 		});
 		src.dispose();
 	});
