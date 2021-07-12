@@ -857,7 +857,7 @@ and LINEAR interpolation. Resampling is nearly lossless, with configurable
 
 // SEQUENCE
 program
-	.command('sequence', 'Animate nodes\' visibilities as a flipboard sequence')
+	.command('sequence', 'Animate node visibilities as a flipboard sequence')
 	.help(`
 Animate node visibilities as a flipboard sequence. An example workflow would
 be to create a .glb containing one geometry for each frame of a complex
