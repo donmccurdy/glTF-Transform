@@ -2023,10 +2023,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/tape@4.13.0":
-  version "4.13.0"
-  resolved "https://registry.yarnpkg.com/@types/tape/-/tape-4.13.0.tgz#7a3f656f78a7eeee962fe4c8bedf016061e2d0ea"
-  integrity sha512-0V8cKowBdsiA9nbxAg7531sF2cdPZNiUogcfIUeUGm+bejUBE/bvibz3rH36iQP9bQjO/sOzFwU97/uC5mCyoA==
+"@types/tape@4.13.1":
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/@types/tape/-/tape-4.13.1.tgz#b789e28d0e7c558a08da8b8986298d46b71f6cf1"
+  integrity sha512-p6eHt3Yi7C9o7lpjchpVnfKb3ldFjHR/1sBaQdpuZnjAFtsc2UgsFlu+XKQH2l5pgt98oFcINYNTRAwWbrZjnw==
   dependencies:
     "@types/node" "*"
 
