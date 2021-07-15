@@ -1957,15 +1957,20 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
-"@types/ndarray@1.0.9", "@types/ndarray@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.9.tgz#f6cfc89a174d2eefc2a2a71b6944daf75018311a"
-  integrity sha512-/JhpsxXBJ7ThPzzirBvqQoUlau+aKBlRqPQDwW985ee85o+g4DtsOeeq/XNZLIXNwy7BxP09reSKTSKn7q8Bdw==
+"@types/ndarray@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.10.tgz#e2b04075731a9861ab4ea475a52af964d5847138"
+  integrity sha512-UMQxmWA9V0hHqMntIItRVVc6sHmut9E4tBIv811EBPucuyMbAG70KgEdrhnEoD5L3BrLTpnWiCSxQA1HnXfXbw==
 
 "@types/ndarray@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.8.tgz#16bf33233108840eb775b0ef4e430f9b26261d20"
   integrity sha512-8wGb5DXyo822V6MOdcbCDL6FLIYSUTonPpoL62pl78Kosnz5VChQAavPtMIftlWk6IIIaZyWq+eYhe2yG+QKXQ==
+
+"@types/ndarray@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.9.tgz#f6cfc89a174d2eefc2a2a71b6944daf75018311a"
+  integrity sha512-/JhpsxXBJ7ThPzzirBvqQoUlau+aKBlRqPQDwW985ee85o+g4DtsOeeq/XNZLIXNwy7BxP09reSKTSKn7q8Bdw==
 
 "@types/node-gzip@1.1.0":
   version "1.1.0"
