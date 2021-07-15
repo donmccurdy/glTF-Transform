@@ -40,7 +40,7 @@
     "draco3dgltf": "1.4.1",
     "eslint": "7.29.0",
     "gltf-validator": "2.0.0-dev.3.5",
-    "lerna": "^4.0.0",
+    "lerna": "4.0.0",
     "microbundle": "0.13.3",
     "mikktspace": "1.0.1",
     "nyc": "15.1.0",
