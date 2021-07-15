@@ -22,8 +22,22 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const accessorsCountPrev = doc.getRoot().listAccessors().length;
 		const logger = doc.getLogger();
 
+		let didSkipMorphTargets = false;
+
 		for (const animation of doc.getRoot().listAnimations()) {
+			// Skip morph targets, see https://github.com/donmccurdy/glTF-Transform/issues/290.
+			const morphTargetSamplers = new Set<AnimationSampler>();
+			for (const channel of animation.listChannels()) {
+				if (channel.getSampler() && channel.getTargetPath() === 'weights') {
+					morphTargetSamplers.add(channel.getSampler()!);
+				}
+			}
+
 			for (const sampler of animation.listSamplers()) {
+				if (morphTargetSamplers.has(sampler)) {
+					didSkipMorphTargets = true;
+					continue;
+				}
 				if (sampler.getInterpolation() === 'STEP'
 					|| sampler.getInterpolation() === 'LINEAR') {
 					accessorsVisited.add(sampler.getInput()!);
@@ -34,7 +48,7 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		}
 
 		for (const accessor of Array.from(accessorsVisited.values())) {
-			const used = !!accessor.listParents().find((p) => !(p instanceof Root));
+			const used = accessor.listParents().some((p) => !(p instanceof Root));
 			if (!used) accessor.dispose();
 		}
 
@@ -45,14 +59,16 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 			);
 		}
 
+		if (didSkipMorphTargets) {
+			logger.warn(`${NAME}: Skipped optimizing morph target keyframes, not yet supported.`);
+		}
+
 		logger.debug(`${NAME}: Complete.`);
 	};
 
 };
 
 function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
-	if (!['STEP', 'LINEAR'].includes(sampler.getInterpolation())) return;
-
 	const input = sampler.getInput()!.clone();
 	const output = sampler.getOutput()!.clone();
 
