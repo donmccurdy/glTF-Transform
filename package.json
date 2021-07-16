@@ -47,7 +47,7 @@
     "source-map-support": "0.5.19",
     "tap-spec": "5.0.0",
     "tape": "5.2.2",
-    "ts-node": "9.1.1",
+    "ts-node": "10.1.0",
     "typedoc": "0.21.4",
     "typescript": "4.3.4"
   }
