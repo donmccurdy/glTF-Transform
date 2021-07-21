@@ -90,7 +90,7 @@ export class NodeIO extends PlatformIO {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage) => {
-			if (resource.uri) {
+			if (resource.uri && !resource.uri.match(/data:/)) {
 				const absURI = this._path.resolve(dir, resource.uri);
 				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
 				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
