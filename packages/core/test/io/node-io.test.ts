@@ -18,33 +18,40 @@ function ensureDir(uri) {
 }
 
 test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
-	glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+	let count = 0;
+	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
 
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		t.ok(doc, `Read "${basepath}".`);
+		count++;
 	});
+	t.ok(count > 0, 'tests completed');
 	t.end();
 });
 
 test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
-	glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
+	let count = 0;
+	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
 
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
 		t.ok(doc, `Read "${basepath}".`);
+		count++;
 	});
+	t.ok(count > 0, 'tests completed');
 	t.end();
 });
 
 test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
-	glob.sync(path.join(__dirname, 'in', '**/*.gltf')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
-		const outputURI = path.join(__dirname, 'out', basepath);
+	let count = 0;
+	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
+		const outputURI = path.join(__dirname, '../out', basepath);
 
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
@@ -52,14 +59,17 @@ test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
 		ensureDir(outputURI);
 		io.write(outputURI.replace('.gltf', '.glb'), doc);
 		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
+		count++;
 	});
+	t.ok(count > 0, 'tests completed');
 	t.end();
 });
 
 test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
-	glob.sync(path.join(__dirname, 'in', '**/*.glb')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, 'in'), '');
-		const outputURI = path.join(__dirname, 'out', basepath);
+	let count = 0;
+	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
+		const outputURI = path.join(__dirname, '../out', basepath);
 
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
@@ -67,7 +77,9 @@ test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
 		ensureDir(outputURI);
 		io.write(outputURI.replace('.glb', '.gltf'), doc);
 		t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
+		count++;
 	});
+	t.ok(count > 0, 'tests completed');
 	t.end();
 });
 
