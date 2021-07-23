@@ -1,5 +1,4 @@
-import { bbox } from 'core/dist/constants';
-import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext, bounds } from '@gltf-transform/core';
+import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext, bounds, bbox } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import { DRACO } from '../types/draco3d';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
