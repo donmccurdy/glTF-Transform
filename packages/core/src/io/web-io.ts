@@ -90,7 +90,7 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.json())
 			.then(async (json: GLTF.IGLTF) => {
 				jsonDoc.json = json;
-				this._readResourcesInternal(jsonDoc, false);
+				this._readResourcesInternal(jsonDoc);
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
 				return jsonDoc;
 			});
@@ -102,7 +102,7 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
 				const jsonDoc = this._binaryToJSON(arrayBuffer);
-				this._readResourcesInternal(jsonDoc, true);
+				this._readResourcesInternal(jsonDoc);
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
 				return jsonDoc;
 			});

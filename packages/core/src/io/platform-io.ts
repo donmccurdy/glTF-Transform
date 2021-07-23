@@ -67,20 +67,9 @@ export abstract class PlatformIO {
 	 */
 
 	/** @internal */
-	protected _readResourcesInternal(jsonDoc: JSONDocument, isGLB: boolean): void {
-		const images = jsonDoc.json.images || [];
-		const buffers = jsonDoc.json.buffers || [];
-		[...images, ...buffers].forEach((resource: GLTF.IBuffer|GLTF.IImage, index: number) => {
-			if (!resource.uri) {
-				const isGLBBuffer = isGLB && index === images.length;
-				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
-					// TODO(DO NOT SUBMIT): There was a reason this threw an error...
-					console.warn('PlatformIO: Missing resource URI.');
-				}
-				return;
-			}
-
-			if (resource.uri in jsonDoc.resources) return;
+	protected _readResourcesInternal(jsonDoc: JSONDocument): void {
+		function resolveResource(resource: GLTF.IBuffer | GLTF.IImage) {
+			if (!resource.uri || (resource.uri in jsonDoc.resources)) return;
 
 			if (resource.uri.match(/data:/)) {
 				// Rewrite Data URIs to something short and unique.
@@ -88,7 +77,21 @@ export abstract class PlatformIO {
 				jsonDoc.resources[resourceUUID] = BufferUtils.createBufferFromDataURI(resource.uri);
 				resource.uri = resourceUUID;
 			}
+		}
+
+		// Unpack images.
+		const images = jsonDoc.json.images || [];
+		images.forEach((image: GLTF.IImage) => {
+			if (image.bufferView === undefined && image.uri === undefined) {
+				throw new Error('Missing resource URI or buffer view.');
+			}
+
+			resolveResource(image);
 		});
+
+		// Unpack buffers.
+		const buffers = jsonDoc.json.buffers || [];
+		buffers.forEach(resolveResource);
 	}
 
 	/**********************************************************************************************
@@ -97,7 +100,7 @@ export abstract class PlatformIO {
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public readJSON (jsonDoc: JSONDocument): Document {
-		this._readResourcesInternal(jsonDoc, GLB_BUFFER in jsonDoc.resources);
+		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
 			dependencies: this._dependencies,
