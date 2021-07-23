@@ -86,11 +86,14 @@ export class Session {
 			? this._io.read(this._input).setLogger(this._logger)
 			: new Document().setLogger(this._logger);
 
-		const dracoExtension = doc.getRoot().listExtensionsUsed()
-			.find((extension) => extension.extensionName === 'KHR_draco_mesh_compression');
-		if (dracoExtension) {
-			dracoExtension.dispose();
-			this._logger.warn('Decoding Draco compression. Further compression will be lossy.');
+		// Warn and remove lossy compression, to avoid increasing loss on round trip.
+		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
+			const extension = doc.getRoot().listExtensionsUsed()
+				.find((extension) => extension.extensionName === extensionName);
+			if (extension) {
+				extension.dispose();
+				this._logger.warn(`Decoded ${extensionName}. Further compression will be lossy.`);
+			}
 		}
 
 		await doc.transform(...transforms);

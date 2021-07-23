@@ -74,7 +74,8 @@ export abstract class PlatformIO {
 			if (!resource.uri) {
 				const isGLBBuffer = isGLB && index === images.length;
 				if ((resource as GLTF.IImage)['bufferView'] === undefined && !isGLBBuffer) {
-					throw new Error('Missing resource URI.');
+					// TODO(DO NOT SUBMIT): There was a reason this threw an error...
+					console.warn('PlatformIO: Missing resource URI.');
 				}
 				return;
 			}
