@@ -109,7 +109,7 @@ export class NodeIO extends PlatformIO {
 		this.lastReadBytes = arrayBuffer.byteLength;
 		const jsonDoc = this._binaryToJSON(arrayBuffer);
 		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
-		this._readResourcesInternal(jsonDoc, true);
+		this._readResourcesInternal(jsonDoc);
 		return jsonDoc;
 	}
 
@@ -120,7 +120,7 @@ export class NodeIO extends PlatformIO {
 		this.lastReadBytes += jsonContent.length;
 		const jsonDoc = {json: JSON.parse(jsonContent), resources: {}} as JSONDocument;
 		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
-		this._readResourcesInternal(jsonDoc, false);
+		this._readResourcesInternal(jsonDoc);
 		return jsonDoc;
 	}
 
