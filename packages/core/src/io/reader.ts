@@ -70,6 +70,9 @@ export class GLTFReader {
 		/** Buffers. */
 
 		const bufferDefs = json.buffers || [];
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.BUFFER))
+			.forEach((extension) => extension.preread(context, PropertyType.BUFFER));
 		context.buffers = bufferDefs.map((bufferDef) => {
 			const buffer = doc.createBuffer(bufferDef.name);
 
@@ -85,7 +88,17 @@ export class GLTFReader {
 		/** Buffer views. */
 
 		const bufferViewDefs = json.bufferViews || [];
-		context.bufferViewBuffers = bufferViewDefs.map((bufferViewDef) => {
+		context.bufferViewBuffers = bufferViewDefs.map((bufferViewDef, index) => {
+			if (!context.bufferViews[index]) {
+				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
+				const resource = bufferDef.uri
+					? jsonDoc.resources[bufferDef.uri]
+					: jsonDoc.resources[GLB_BUFFER];
+				const byteOffset = bufferViewDef.byteOffset || 0;
+				const bufferView = new Uint8Array(resource, byteOffset, bufferViewDef.byteLength);
+				context.bufferViews[index] = bufferView;
+			}
+
 			return context.buffers[bufferViewDef.buffer];
 		});
 
@@ -103,15 +116,15 @@ export class GLTFReader {
 				accessor.setNormalized(accessorDef.normalized);
 			}
 
-			// KHR_draco_mesh_compression.
+			// KHR_draco_mesh_compression and EXT_meshopt_compression.
 			if (accessorDef.bufferView === undefined && !accessorDef.sparse) return accessor;
 
 			let array: TypedArray;
 
 			if (accessorDef.sparse !== undefined) {
-				array = getSparseArray(accessorDef, jsonDoc);
+				array = getSparseArray(accessorDef, context);
 			} else {
-				array = getAccessorArray(accessorDef, jsonDoc);
+				array = getAccessorArray(accessorDef, context);
 			}
 
 			accessor.setArray(array);
@@ -515,12 +528,10 @@ export class GLTFReader {
  * Returns the contents of an interleaved accessor, as a typed array.
  * @internal
  */
-function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
+ function getInterleavedArray(accessorDef: GLTF.IAccessor, context: ReaderContext): TypedArray {
+	const jsonDoc = context.jsonDoc;
+	const bufferView = context.bufferViews[accessorDef.bufferView!];
 	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
-	const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
-	const resource = bufferDef.uri
-		? jsonDoc.resources[bufferDef.uri]
-		: jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
@@ -528,7 +539,7 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
 	const accessorByteOffset = accessorDef.byteOffset || 0;
 
 	const array = new TypedArray(accessorDef.count * elementSize);
-	const view = new DataView(resource, bufferViewDef.byteOffset, bufferViewDef.byteLength);
+	const view = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
 	const byteStride = bufferViewDef.byteStride!;
 
 	for (let i = 0; i < accessorDef.count; i++) {
@@ -568,12 +579,10 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument)
  * Returns the contents of an accessor, as a typed array.
  * @internal
  */
-function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
+function getAccessorArray(accessorDef: GLTF.IAccessor, context: ReaderContext): TypedArray {
+	const jsonDoc = context.jsonDoc;
+	const bufferView = context.bufferViews[accessorDef.bufferView!];
 	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
-	const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
-	const resource = bufferDef.uri
-		? jsonDoc.resources[bufferDef.uri]
-		: jsonDoc.resources[GLB_BUFFER];
 
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
@@ -582,28 +591,28 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): T
 
 	// Interleaved buffer view.
 	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  elementStride) {
-		return getInterleavedArray(accessorDef, jsonDoc);
+		return getInterleavedArray(accessorDef, context);
 	}
 
-	const byteOffset = (bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0);
+	const byteOffset = bufferView.byteOffset + (accessorDef.byteOffset || 0);
 	const byteLength = accessorDef.count * elementSize * componentSize;
 
 	// Might optimize this to avoid deep copy later, but it's useful for now and not a known
 	// bottleneck. See https://github.com/donmccurdy/glTF-Transform/issues/256.
-	return new TypedArray(resource.slice(byteOffset, byteOffset + byteLength));
+	return new TypedArray(bufferView.buffer.slice(byteOffset, byteOffset + byteLength));
 }
 
 /**
  * Returns the contents of a sparse accessor, as a typed array.
  * @internal
  */
-function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): TypedArray {
+function getSparseArray(accessorDef: GLTF.IAccessor, context: ReaderContext): TypedArray {
 	const TypedArray = ComponentTypeToTypedArray[accessorDef.componentType];
 	const elementSize = Accessor.getElementSize(accessorDef.type);
 
 	let array: TypedArray;
 	if (accessorDef.bufferView !== undefined) {
-		array = getAccessorArray(accessorDef, jsonDoc);
+		array = getAccessorArray(accessorDef, context);
 	} else {
 		array = new TypedArray(accessorDef.count * elementSize);
 	}
@@ -612,8 +621,8 @@ function getSparseArray(accessorDef: GLTF.IAccessor, jsonDoc: JSONDocument): Typ
 	const count = sparseDef.count;
 	const indicesDef = {...accessorDef, ...sparseDef.indices, count, type: 'SCALAR'};
 	const valuesDef = {...accessorDef, ...sparseDef.values, count};
-	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, jsonDoc);
-	const values = getAccessorArray(valuesDef, jsonDoc);
+	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, context);
+	const values = getAccessorArray(valuesDef, context);
 
 	// Override indices given in the sparse data.
 	for (let i = 0; i < indicesDef.count; i++) {

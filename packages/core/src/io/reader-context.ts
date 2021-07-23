@@ -11,6 +11,7 @@ import { GLTF } from '../types/gltf';
  */
 export class ReaderContext {
 	public buffers: Buffer[] = [];
+	public bufferViews: Uint8Array[] = [];
 	public bufferViewBuffers: Buffer[] = [];
 	public accessors: Accessor[] = [];
 	public textures: Texture[] = [];
