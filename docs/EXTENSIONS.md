@@ -40,6 +40,7 @@ as prescribed by the extension itself.
 
 - {@link TextureWebP EXT_texture_webp}
 - {@link MeshGPUInstancing EXT_mesh_gpu_instancing}
+- {@link MeshoptCompression EXT_meshopt_compression}
 
 ## Installation
 

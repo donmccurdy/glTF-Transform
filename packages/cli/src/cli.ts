@@ -17,17 +17,20 @@ let io: NodeIO;
 // Use require() so microbundle doesn't compile these.
 const draco3d = require('draco3dgltf');
 const mikktspace = require('mikktspace');
+const meshopt = require('../vendor/meshopt_decoder.js');
 
 const programReady = new Promise<void>((resolve) => {
 	Promise.all([
 		draco3d.createDecoderModule(),
-		draco3d.createEncoderModule()
-	]).then(([decoder, encoder]) => {
+		draco3d.createEncoderModule(),
+		meshopt.ready
+	]).then(([decoder, encoder, _]) => {
 		io = new NodeIO()
 			.registerExtensions(ALL_EXTENSIONS)
 			.registerDependencies({
 				'draco3d.decoder': decoder,
 				'draco3d.encoder': encoder,
+				'meshopt.decoder': meshopt,
 			});
 		resolve();
 	});
