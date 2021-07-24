@@ -1,6 +1,6 @@
 import { Extension, GLB_BUFFER, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { MeshoptDecoder } from './meshopt_decoder.module.js';
+import { MeshoptDecoder } from '../../vendor/meshopt_decoder.module';
 
 const NAME = EXT_MESHOPT_COMPRESSION;
 
@@ -15,10 +15,6 @@ enum MeshoptFilter {
 	OCTAHEDRAL = 'OCTAHEDRAL',
 	QUATERNION = 'QUATERNION',
 	EXPONENTIAL = 'EXPONENTIAL',
-}
-
-interface MeshoptBufferExtension {
-	fallback?: boolean;
 }
 
 interface MeshoptBufferViewExtension {
