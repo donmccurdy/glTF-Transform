@@ -124,9 +124,6 @@ export class MeshoptCompression extends Extension {
 	}
 
 	public read(_context: ReaderContext): this {
-		// Writes aren't implemented, so remove extension after unpacking.
-		this.dispose();
-
 		if (!this.isRequired()) return this;
 
 		// Replace fallback buffers.
