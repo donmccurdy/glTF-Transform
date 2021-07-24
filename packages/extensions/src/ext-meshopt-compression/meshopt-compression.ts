@@ -1,6 +1,6 @@
 import { Accessor, Buffer, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { MeshoptDecoder } from '../../vendor/meshopt_decoder.module';
+import type { MeshoptDecoder } from '../types/meshopt';
 
 const NAME = EXT_MESHOPT_COMPRESSION;
 
@@ -58,18 +58,22 @@ interface MeshoptBufferViewExtension {
  * compression should generally be the last stage of an art workflow, and uncompressed original
  * files should be kept.
  *
- * The meshopt decoder is included by default when this extension is installed in a {@link WebIO}
- * or {@link NodeIO} instance. Encoding/compression is not yet supported, but can be applied
- * with the [gltfpack](https://github.com/zeux/meshoptimizer/tree/master/gltf) tool.
+ * A [meshopt decoder](https://github.com/zeux/meshoptimizer/tree/master/js) is required for reading
+ * files, and must be provided by the application. Encoding/compression is not yet supported, but
+ * can be applied with the [gltfpack](https://github.com/zeux/meshoptimizer/tree/master/gltf) tool.
  *
  * ### Example
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { MeshoptCompression } from '@gltf-transform/extensions';
+ * import { MeshoptDecoder } from './path/to/meshopt_decoder.module.js';
+ *
+ * await MeshoptDecoder.ready;
  *
  * const io = new NodeIO()
- *	.registerExtensions([MeshoptCompression]);
+ *	.registerExtensions([MeshoptCompression])
+ *	.registerDependencies({'meshopt.decoder': MeshoptDecoder});
  *
  * // Read and decode.
  * const doc = io.read('compressed.glb');
@@ -78,21 +82,28 @@ interface MeshoptBufferViewExtension {
 export class MeshoptCompression extends Extension {
 	public readonly extensionName = NAME;
 	public readonly prereadTypes = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
+	public readonly readDependencies = ['meshopt.decoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
 
-	/** @internal */
+	private _decoder: MeshoptDecoder | null = null;
 	private _fallbackBufferMap = new Map<Buffer, Buffer>();
 
+	public install(key: string, dependency: unknown): this {
+		if (key === 'meshopt.decoder') {
+			this._decoder = dependency as MeshoptDecoder;
+		}
+		return this;
+	}
+
 	public preread(context: ReaderContext, propertyType: PropertyType): this {
-		if (!MeshoptDecoder.supported) {
+		if (!this._decoder) {
+			if (!this.isRequired()) return this;
+			throw new Error(`[${NAME}] Please install extension dependency, "meshopt.decoder".`);
+		}
+		if (!this._decoder.supported) {
 			if (!this.isRequired()) return this;
 			throw new Error(`[${NAME}]: Missing WASM support.`);
-		}
-
-		if (!MeshoptDecoder.ready) {
-			if (!this.isRequired()) return this;
-			throw new Error(`[${NAME}]: Decoder not ready.`);
 		}
 
 		if (propertyType === PropertyType.BUFFER) {
@@ -125,7 +136,7 @@ export class MeshoptCompression extends Extension {
 				: jsonDoc.resources[GLB_BUFFER];
 			const source = new Uint8Array(resource, byteOffset, byteLength);
 
-			MeshoptDecoder.decodeGltfBuffer(
+			this._decoder!.decodeGltfBuffer(
 				result, count, stride, source, meshoptDef.mode, meshoptDef.filter
 			);
 
