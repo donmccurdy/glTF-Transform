@@ -132,7 +132,8 @@ export abstract class PlatformIO {
 		const json = jsonDoc.json;
 
 		// Check for external references, which can't be resolved by this method.
-		if (json.buffers && json.buffers.length > 1) {
+		if (json.buffers
+				&& json.buffers.find((bufferDef) => bufferDef.uri !== undefined)) {
 			throw new Error('Cannot resolve external buffers with binaryToJSON().');
 		} else if (json.images
 				&& json.images.find((imageDef) => imageDef.bufferView === undefined)) {
