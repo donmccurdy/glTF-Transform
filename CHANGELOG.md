@@ -18,6 +18,7 @@
 - Improved `textureResize()` API. [#282](https://github.com/donmccurdy/glTF-Transform/pull/282)
 - Add `node.setMatrix(...)`. [#270](https://github.com/donmccurdy/glTF-Transform/issues/270)
 - Parse in-memory Data URIs with `readJSON`. [#266](https://github.com/donmccurdy/glTF-Transform/pull/266)
+- Add `EXT_meshopt_compression` extension (decode only). [#314](https://github.com/donmccurdy/glTF-Transform/pull/314)
 
 **Breaking changes:**
 
