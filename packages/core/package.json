@@ -39,6 +39,5 @@
   },
   "mangle": {
     "regex": "^_"
-  },
-  "gitHead": "9786b58c9a984c8d73cc270e718be0fc5d2cf743"
+  }
 }
