@@ -36,6 +36,7 @@ export abstract class GraphNode {
 		this.graph.disconnectChildren(this);
 		this.graph.disconnectParents(this);
 		this._disposed = true;
+		this.graph.emit('dispose', this);
 	}
 
 	/**

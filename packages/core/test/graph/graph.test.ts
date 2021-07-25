@@ -109,3 +109,26 @@ test('@gltf-transform/core::graph | list connections', t => {
 	);
 	t.end();
 });
+
+test('@gltf-transform/core::graph | dispose events', t => {
+	const graph = new Graph();
+	const node1 = new TestNode(graph);
+	const node2 = new TestNode(graph);
+
+	const disposed = [];
+
+	graph.on('dispose', (target) => disposed.push(target));
+
+	t.deepEqual(disposed, [], 'disposed: 0');
+	t.notOk(node1.isDisposed(), 'node1 active');
+	t.notOk(node2.isDisposed(), 'node2 active');
+
+	node2.dispose();
+	t.deepEqual(disposed, [node2], 'disposed: 1');
+
+	node1.dispose();
+	t.deepEqual(disposed, [node2, node1], 'disposed: 2');
+	t.ok(node1.isDisposed(), 'node1 disposed');
+	t.ok(node2.isDisposed(), 'node2 disposed');
+	t.end();
+});
