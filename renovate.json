@@ -1,1 +1,9 @@
-{"extends": ["github>donmccurdy/renovate-config"]}
+{
+	"extends": ["github>donmccurdy/renovate-config"],
+	"packageRules": [
+		{
+			"matchPackageNames": ["typedoc"],
+			"enabled": false
+		}
+	]
+}
