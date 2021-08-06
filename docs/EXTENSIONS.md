@@ -6,7 +6,7 @@ textures or scalar properties affecting the Material's appearance in a specific 
 
 Common extensions may be imported from the `@gltf-transform/extensions` package, or custom
 extensions may be created by extending the {@link Extension} base class. No extensions are included
-in th default `@gltf-transform/core` package, in order to (1) minimize the code size, and (2)
+in the default `@gltf-transform/core` package, in order to (1) minimize the code size, and (2)
 ensure that any extension can be implemented externally.
 
 Because extensions rely on the same underlying graph structure as the core specification,

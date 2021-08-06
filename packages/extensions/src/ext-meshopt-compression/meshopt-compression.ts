@@ -1,6 +1,6 @@
 import { Accessor, Buffer, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import type { MeshoptDecoder } from '../types/meshopt';
+import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
 const NAME = EXT_MESHOPT_COMPRESSION;
 
@@ -67,7 +67,7 @@ interface MeshoptBufferViewExtension {
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { MeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptDecoder } from './path/to/meshopt_decoder.module.js';
+ * import { MeshoptDecoder } from 'meshoptimizer';
  *
  * await MeshoptDecoder.ready;
  *
@@ -86,12 +86,16 @@ export class MeshoptCompression extends Extension {
 
 	public static readonly EXTENSION_NAME = NAME;
 
-	private _decoder: MeshoptDecoder | null = null;
+	private _decoder: typeof MeshoptDecoder | null = null;
+	private _encoder: typeof MeshoptEncoder | null = null;
 	private _fallbackBufferMap = new Map<Buffer, Buffer>();
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'meshopt.decoder') {
-			this._decoder = dependency as MeshoptDecoder;
+			this._decoder = dependency as typeof MeshoptDecoder;
+		}
+		if (key === 'meshopt.encoder') {
+			this._encoder = dependency as typeof MeshoptEncoder;
 		}
 		return this;
 	}
