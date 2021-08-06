@@ -52,3 +52,28 @@ export function getGLPrimitiveCount(prim: Primitive): number {
 			throw new Error('Unexpected mode: ' + prim.getMode());
 	}
 }
+
+export class SetMap<K, V> {
+	private _map = new Map<K, Set<V>>();
+	public get size(): number {
+		return this._map.size;
+	}
+	public has(k: K): boolean {
+		return this._map.has(k);
+	}
+	public add(k: K, v: V): this {
+		let entry = this._map.get(k);
+		if (!entry) {
+			entry = new Set();
+			this._map.set(k, entry);
+		}
+		entry.add(v);
+		return this;
+	}
+	public get(k: K): Set<V> {
+		return this._map.get(k) || new Set();
+	}
+	public keys(): Iterable<K> {
+		return this._map.keys();
+	}
+}
