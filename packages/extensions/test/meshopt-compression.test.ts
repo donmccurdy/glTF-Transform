@@ -5,9 +5,7 @@ import test from 'tape';
 import { NodeIO } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/functions';
 import { MeshoptCompression, MeshQuantization } from '../';
-
-// See: https://github.com/substack/tape/issues/514
-const MeshoptDecoder = require('../vendor/meshopt_decoder.js');
+import { MeshoptDecoder } from 'meshoptimizer';
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async t => {
 	await MeshoptDecoder.ready;
