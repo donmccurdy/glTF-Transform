@@ -2,9 +2,25 @@ import { AnimationChannel, Document, Graph, Property, PropertyType, Root, Transf
 
 const NAME = 'prune';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PruneOptions {}
-const PRUNE_DEFAULTS: Required<PruneOptions> = {};
+export interface PruneOptions {
+	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
+	propertyTypes?: string[];
+}
+const PRUNE_DEFAULTS: Required<PruneOptions> = {
+	propertyTypes: [
+		PropertyType.NODE,
+		PropertyType.SKIN,
+		PropertyType.MESH,
+		PropertyType.CAMERA,
+		PropertyType.PRIMITIVE,
+		PropertyType.PRIMITIVE_TARGET,
+		PropertyType.ANIMATION,
+		PropertyType.MATERIAL,
+		PropertyType.TEXTURE,
+		PropertyType.ACCESSOR,
+		PropertyType.BUFFER,
+	]
+};
 
 /**
  * Removes properties from the file if they are not referenced by a {@link Scene}. Commonly helpful
@@ -26,6 +42,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {};
 export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...PRUNE_DEFAULTS, ..._options} as Required<PruneOptions>;
+	const propertyTypes = options.propertyTypes;
 
 	return (doc: Document): void =>  {
 		const logger = doc.getLogger();
@@ -37,38 +54,44 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		// Prune top-down, so that low-level properties like accessors can be removed if the
 		// properties referencing them are removed.
 
-		root.listNodes().forEach(treeShake);
-		root.listSkins().forEach(treeShake);
-		root.listMeshes().forEach(treeShake);
-		root.listCameras().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.NODE)) root.listNodes().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.SKIN)) root.listSkins().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.MESH)) root.listMeshes().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.CAMERA)) root.listCameras().forEach(treeShake);
 
-		indirectTreeShake(graph, PropertyType.PRIMITIVE);
-		indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
+		if (propertyTypes.includes(PropertyType.PRIMITIVE)) {
+			indirectTreeShake(graph, PropertyType.PRIMITIVE);
+		}
+		if (propertyTypes.includes(PropertyType.PRIMITIVE_TARGET)) {
+			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
+		}
 
 		// Pruning animations is a bit more complicated:
 		// (1) Remove channels without target nodes.
 		// (2) Remove animations without channels.
 		// (3) Remove samplers orphaned in the process.
-		for (const anim of root.listAnimations()) {
-			for (const channel of anim.listChannels()) {
-				if (!channel.getTargetNode()) {
-					channel.dispose();
-					markDisposed(channel);
+		if (propertyTypes.includes(PropertyType.ANIMATION)) {
+			for (const anim of root.listAnimations()) {
+				for (const channel of anim.listChannels()) {
+					if (!channel.getTargetNode()) {
+						channel.dispose();
+						markDisposed(channel);
+					}
 				}
-			}
-			if (!anim.listChannels().length) {
-				const samplers = anim.listSamplers();
-				treeShake(anim);
-				samplers.forEach(treeShake);
-			} else {
-				anim.listSamplers().forEach(treeShake);
+				if (!anim.listChannels().length) {
+					const samplers = anim.listSamplers();
+					treeShake(anim);
+					samplers.forEach(treeShake);
+				} else {
+					anim.listSamplers().forEach(treeShake);
+				}
 			}
 		}
 
-		root.listMaterials().forEach(treeShake);
-		root.listTextures().forEach(treeShake);
-		root.listAccessors().forEach(treeShake);
-		root.listBuffers().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.MATERIAL)) root.listMaterials().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.TEXTURE)) root.listTextures().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.ACCESSOR)) root.listAccessors().forEach(treeShake);
+		if (propertyTypes.includes(PropertyType.BUFFER)) root.listBuffers().forEach(treeShake);
 
 		// TODO(bug): This process does not identify unused ExtensionProperty instances. That could
 		// be a future enhancement, either tracking unlinked properties as if they were connected
