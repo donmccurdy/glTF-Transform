@@ -53,8 +53,9 @@ export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform
 
 		const plan = preprocessPrimitives(doc);
 
-		for (const indices of plan.indicesToAttributes.keys()) {
-			let indicesArray = indices.getArray()!;
+		for (const srcIndices of plan.indicesToAttributes.keys()) {
+			const dstIndices = srcIndices.clone();
+			let indicesArray = dstIndices.getArray()!.slice();
 			if (!(indicesArray instanceof Uint32Array)) {
 				indicesArray = new Uint32Array(indicesArray);
 			}
@@ -62,18 +63,21 @@ export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform
 			// Compute optimal order.
 			const [remap, unique] = encoder.reorderMesh(
 				indicesArray,
-				plan.indicesToMode.get(indices) === Primitive.Mode.TRIANGLES,
+				plan.indicesToMode.get(srcIndices) === Primitive.Mode.TRIANGLES,
 				options.target === 'size'
 			);
 
-			indices.setArray(unique <= 65534 ? new Uint16Array( indicesArray ) : indicesArray);
+			dstIndices.setArray(unique <= 65534 ? new Uint16Array(indicesArray) : indicesArray);
 
 			// Update affected primitives.
-			for (const srcAttribute of plan.indicesToAttributes.get(indices)) {
+			for (const srcAttribute of plan.indicesToAttributes.get(srcIndices)) {
 				const dstAttribute = srcAttribute.clone();
 				remapAttribute(dstAttribute, remap, unique);
 				for (const prim of plan.attributesToPrimitives.get(srcAttribute)) {
-					if (prim.getIndices() === indices) {
+					if (prim.getIndices() === srcIndices) {
+						prim.swap(srcIndices, dstIndices);
+					}
+					if (prim.getIndices() === dstIndices) {
 						prim.swap(srcAttribute, dstAttribute);
 						for (const target of prim.listTargets()) {
 							target.swap(srcAttribute, dstAttribute);
