@@ -5,12 +5,6 @@ import { Accessor, Document, GLTF, Logger, Primitive } from '@gltf-transform/cor
 import { reorder } from '../';
 import { MeshoptEncoder } from 'meshoptimizer';
 
-// TODO cases:
-// - [x] no indices, no effect
-// - [x] same attributes, many indices
-// - [ ] same indices, many attributes
-// - [ ] morph targets
-
 const CUBE_INDICES = new Uint32Array([
 	4, 2, 5,
 	3, 1, 4,
@@ -101,6 +95,94 @@ test('@gltf-transform/functions::reorder | shared indices', async t => {
 		Array.from(prim2.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
 		'positions #2 reordered'
+	);
+	t.end();
+});
+
+test('@gltf-transform/functions::reorder | shared attributes', async t => {
+	// With shared attributes and unshared indices, attributes should be truncated.
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const indices1 = doc.createAccessor()
+		.setType('SCALAR')
+		.setArray(CUBE_INDICES.slice(0, 6));
+	const indices2 = doc.createAccessor()
+		.setType('SCALAR')
+		.setArray(CUBE_INDICES.slice(6, 9));
+	const indices3 = doc.createAccessor()
+		.setType('SCALAR')
+		.setArray(CUBE_INDICES.slice(9, 12));
+	const position = createFloatAttribute(doc, 'POSITION', Accessor.Type.VEC3, CUBE_POSITIONS);
+	const mesh = root.listMeshes()[0];
+	const prim1 = mesh.listPrimitives()[0].setIndices(indices1);
+	const prim2 = prim1.clone().setIndices(indices2);
+	const prim3 = prim1.clone().setIndices(indices3);
+	mesh.addPrimitive(prim2).addPrimitive(prim3);
+
+	await doc.transform(reorder({encoder: MeshoptEncoder}));
+
+	t.ok(
+		indices1.isDisposed() && indices2.isDisposed() && indices3.isDisposed(),
+		'indices disposed'
+	);
+	t.ok(position.isDisposed(), 'positions disposed');
+	t.deepEquals(prim1.getIndices().getCount(), 6, 'indices #1 reordered');
+	t.deepEquals(prim2.getIndices().getCount(), 3, 'indices #2 reordered');
+	t.deepEquals(prim3.getIndices().getCount(), 3, 'indices #3 reordered');
+	t.deepEquals(prim1.getAttribute('POSITION').getCount(), 5, 'positions #1 truncated');
+	t.deepEquals(prim2.getAttribute('POSITION').getCount(), 3, 'positions #2 truncated');
+	t.deepEquals(prim3.getAttribute('POSITION').getCount(), 3, 'positions #3 truncated');
+	t.end();
+});
+
+test('@gltf-transform/functions::reorder | morph targets', async t => {
+	// With shared indices and unshared attributes, indices should be cloned.
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const indices = doc.createAccessor()
+		.setType('SCALAR')
+		.setArray(CUBE_INDICES);
+	const position1 = createFloatAttribute(doc, 'POSITION', Accessor.Type.VEC3, CUBE_POSITIONS);
+	const position2 = createFloatAttribute(doc, '_TMP', Accessor.Type.VEC3, new Float32Array([
+		0.00, 0.00, 1.00,
+		0.00, 0.00, 2.00,
+		0.00, 0.00, 3.00,
+		0.00, 0.00, 4.00,
+		0.00, 0.00, 5.00,
+		0.00, 0.00, 6.00,
+	]));
+	const target = doc.createPrimitiveTarget().setAttribute('POSITION', position2.detach());
+	const prim = root.listMeshes()[0].listPrimitives()[0].setIndices(indices);
+	prim.addTarget(target);
+
+	await doc.transform(reorder({encoder: MeshoptEncoder}));
+
+	t.ok(indices !== prim.getIndices(), 'indices #1 cloned');
+	t.ok(indices.isDisposed(), 'original indices disposed');
+	t.ok(position1.isDisposed(), 'original positions disposed');
+	t.ok(position2.isDisposed(), 'original morph positions disposed');
+	t.deepEquals(
+		Array.from(prim.getIndices().getArray()),
+		Array.from(CUBE_INDICES_EXPECTED),
+		'indices reordered'
+	);
+	t.deepEquals(
+		Array.from(prim.getAttribute('POSITION').getArray()),
+		Array.from(CUBE_POSITIONS_EXPECTED),
+		'positions reordered'
+	);
+
+	t.deepEquals(
+		Array.from(target.getAttribute('POSITION').getArray()),
+		[
+			0, 0, 5.00,
+			0, 0, 3.00,
+			0, 0, 6.00,
+			0, 0, 2.00,
+			0, 0, 4.00,
+			0, 0, 1.00,
+		],
+		'morph positions reordered'
 	);
 	t.end();
 });
