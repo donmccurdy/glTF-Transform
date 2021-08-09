@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit } from './transforms';
 import { Session, formatBytes } from './util';
@@ -511,6 +511,30 @@ compute MikkTSpace tangents at runtime.
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(tangents({generateTangents: mikktspace.generateTangents, ...options}))
+	);
+
+// REORDER
+program
+	.command('reorder', 'Optimize vertex data for locality of reference')
+	.help(`
+Optimize vertex data for locality of reference.
+
+Choose whether the order should be optimal for transmission size (recommended for Web) or for GPU
+rendering performance. When optimizing for transmission size, reordering is expected to be a pre-
+processing step before applying Meshopt compression and lossless supercompression (such as gzip or
+brotli). Reordering will only reduce size when used in combination with other compression methods.
+
+Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--target', 'Whether to optimize for transmission size or GPU performance', {
+		validator: ['size', 'performance'],
+		default: 'size',
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(reorder({encoder: MeshoptEncoder, ...options}))
 	);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');

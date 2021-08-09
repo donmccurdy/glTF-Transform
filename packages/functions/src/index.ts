@@ -48,6 +48,7 @@ export * from './partition';
 export * from './prune';
 export * from './quantize';
 export * from './resample';
+export * from './reorder';
 export * from './sequence';
 export * from './tangents';
 export * from './texture-resize';
