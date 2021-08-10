@@ -1,12 +1,23 @@
 import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
-import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
+import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
 import { GLTF } from '../types/gltf';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
+
+enum BufferViewTarget {
+	ARRAY_BUFFER = 34962,
+	ELEMENT_ARRAY_BUFFER = 34963,
+}
+enum BufferViewUsage {
+	ARRAY_BUFFER = 'ARRAY_BUFFER',
+	ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
+	INVERSE_BIND_MATRICES = 'INVERSE_BIND_MATRICES',
+	OTHER = 'OTHER',
+}
 
 /**
  * Model class providing writing state to a {@link Writer} and its {@link Extension}
@@ -15,6 +26,20 @@ type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF
  * @hidden
  */
 export class WriterContext {
+	/** Explicit buffer view targets defined by glTF specification. */
+	public static readonly BufferViewTarget = BufferViewTarget;
+	/**
+	 * Implicit buffer view usage, not required by glTF specification, but nonetheless useful for
+	 * proper grouping of accessors into buffer views. Additional usages are defined by extensions,
+	 * like `EXT_mesh_gpu_instancing`.
+	 */
+	public static readonly BufferViewUsage = BufferViewUsage;
+	/** Maps usage type to buffer view target. Usages not mapped have undefined targets. */
+	public static readonly USAGE_TO_TARGET: {[key: string]: BufferViewTarget | undefined} = {
+		[BufferViewUsage.ARRAY_BUFFER]: BufferViewTarget.ARRAY_BUFFER,
+		[BufferViewUsage.ELEMENT_ARRAY_BUFFER]: BufferViewTarget.ELEMENT_ARRAY_BUFFER,
+	};
+
 	public readonly accessorIndexMap = new Map<Accessor, number>();
 	public readonly bufferIndexMap = new Map<Buffer, number>();
 	public readonly cameraIndexMap = new Map<Camera, number>();
@@ -36,7 +61,7 @@ export class WriterContext {
 	public imageURIGenerator: UniqueURIGenerator;
 	public logger: Logger;
 
-	private readonly _accessorUsageMap = new Map<Accessor, string>();
+	private readonly _accessorUsageMap = new Map<Accessor, BufferViewUsage | string>();
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
 	public readonly accessorParents = new Map<Property, Set<Accessor>>();
 
@@ -144,12 +169,29 @@ export class WriterContext {
 	}
 
 	/**
-	 * Returns usage for the given accessor, if any. Some accessor types must be grouped into
-	 * buffer views with like accessors. This includes the specified buffer view "targets", but
-	 * also implicit usage like IBMs or instanced mesh attributes.
+	 * Returns implicit usage type of the given accessor, related to grouping accessors into
+	 * buffer views. Usage is a superset of buffer view target, including ARRAY_BUFFER and
+	 * ELEMENT_ARRAY_BUFFER, but also usages that do not match GPU buffer view targets such as
+	* IBMs. Additional usages are defined by extensions, like `EXT_mesh_gpu_instancing`.
 	 */
-	getAccessorUsage(accessor: Accessor): string | null {
-		return this._accessorUsageMap.get(accessor) || null;
+	public getAccessorUsage(accessor: Accessor): BufferViewUsage | string {
+		const cachedUsage = this._accessorUsageMap.get(accessor);
+		if (cachedUsage) return cachedUsage;
+
+		for (const link of this._doc.getGraph().listParentLinks(accessor)) {
+			if (link.getName() === 'inverseBindMatrices') {
+				return WriterContext.BufferViewUsage.INVERSE_BIND_MATRICES;
+			}
+			if (link instanceof AttributeLink) {
+				return WriterContext.BufferViewUsage.ARRAY_BUFFER;
+			}
+			if (link instanceof IndexLink) {
+				return WriterContext.BufferViewUsage.ELEMENT_ARRAY_BUFFER;
+			}
+		}
+
+		// Group accessors with no specified usage into a miscellaneous buffer view.
+		return WriterContext.BufferViewUsage.OTHER;
 	}
 
 	/**
@@ -158,7 +200,7 @@ export class WriterContext {
 	 * also implicit usage like IBMs or instanced mesh attributes. If unspecified, an accessor
 	 * will be grouped with other accessors of unspecified usage.
 	 */
-	setAccessorUsage(accessor: Accessor, usage: string): this {
+	public addAccessorToUsageGroup(accessor: Accessor, usage: BufferViewUsage | string): this {
 		const prevUsage = this._accessorUsageMap.get(accessor);
 		if (prevUsage && prevUsage !== usage) {
 			throw new Error(`Accessor with usage "${prevUsage}" cannot be reused as "${usage}".`);
@@ -168,7 +210,7 @@ export class WriterContext {
 	}
 
 	/** Lists accessors grouped by usage. Accessors with unspecified usage are not included. */
-	listAccessorsByUsage(): {[key: string]: Accessor[]} {
+	public listAccessorUsageGroups(): {[key: string]: Accessor[]} {
 		const result = {} as {[key: string]: Accessor[]};
 		for (const [accessor, usage] of Array.from(this._accessorUsageMap.entries())) {
 			result[usage] = result[usage] || [];
