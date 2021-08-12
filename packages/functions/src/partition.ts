@@ -1,4 +1,5 @@
-import { Document, Logger, Transform } from '@gltf-transform/core';
+import { Document, Logger, PropertyType, Transform } from '@gltf-transform/core';
+import { prune } from './prune';
 
 const NAME = 'partition';
 
@@ -31,7 +32,7 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 
 	const options = {...PARTITION_DEFAULTS, ..._options} as Required<PartitionOptions>;
 
-	return (doc: Document): void => {
+	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		if (options.meshes !== false) partitionMeshes(doc, logger, options);
@@ -40,6 +41,8 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 		if (!options.meshes && !options.animations) {
 			logger.warn(`${NAME}: Select animations or meshes to create a partition.`);
 		}
+
+		await doc.transform(prune({propertyTypes: [PropertyType.BUFFER]}));
 
 		logger.debug(`${NAME}: Complete.`);
 	};

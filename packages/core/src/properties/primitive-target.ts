@@ -54,7 +54,7 @@ export class PrimitiveTarget extends Property {
 		if (!accessor) return this;
 
 		// Add next attribute.
-		const link = this.graph.linkAttribute(semantic.toLowerCase(), this, accessor);
+		const link = this.graph.linkAttribute(semantic, this, accessor);
 		link.semantic = semantic;
 		return this.addGraphChild(this.attributes, link);
 	}

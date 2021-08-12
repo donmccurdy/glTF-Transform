@@ -1,4 +1,4 @@
-import { Format, GLB_BUFFER, NAME, PropertyType, VERSION, VertexLayout } from '../constants';
+import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
@@ -100,15 +100,15 @@ export class GLTFWriter {
 
 		/**
 		 * Pack a group of accessors into an interleaved buffer view. Appends accessor and buffer
- 		 * view definitions to the root JSON lists. Buffer view target is implicitly attribute data.
- 		 *
- 		 * References:
+		 * view definitions to the root JSON lists. Buffer view target is implicitly attribute data.
+		 *
+		 * References:
 		 * - [Apple • Best Practices for Working with Vertex Data](https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
 		 * - [Khronos • Vertex Specification Best Practices](https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices)
- 		 *
- 		 * @param accessors Accessors to be included.
- 		 * @param bufferIndex Buffer to write to.
- 		 * @param bufferByteOffset Offset into the buffer, accounting for other buffer views.
+		 *
+		 * @param accessors Accessors to be included.
+		 * @param bufferIndex Buffer to write to.
+		 * @param bufferByteOffset Offset into the buffer, accounting for other buffer views.
 		 */
 		function interleaveAccessors(
 				accessors: Accessor[],
@@ -231,16 +231,12 @@ export class GLTFWriter {
 			return imageDef;
 		});
 
-		/* Buffers, buffer views, and accessors. */
+		/* Accessors. */
 
 		doc.getRoot().listExtensionsUsed()
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.ACCESSOR))
 			.forEach((extension) => extension.prewrite(context, PropertyType.ACCESSOR));
-
-		json.buffers = [];
-		root.listBuffers().forEach((buffer) => {
-			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
-
+		root.listAccessors().forEach((accessor) => {
 			// Attributes are grouped and interleaved in one buffer view per mesh primitive.
 			// Indices for all primitives are grouped into a single buffer view. IBMs are grouped
 			// into a single buffer view. Other usage (if specified by extensions) also goes into
@@ -249,46 +245,56 @@ export class GLTFWriter {
 			// Certain accessor usage should group data into buffer views by the accessor parent.
 			// The `accessorParents` map uses the first parent of each accessor for this purpose.
 			const groupByParent = context.accessorUsageGroupedByParent;
-			const accessorParents = new Map<Property, Set<Accessor>>();
+			const accessorParents = context.accessorParents;
+
+			// Skip if already written by an extension.
+			if (context.accessorIndexMap.has(accessor)) return;
+
+			// Assign usage for core accessor usage types (explicit targets and implicit usage).
+			const accessorRefs = accessorLinks.get(accessor) || [];
+			for (const link of accessorRefs) {
+				if (context.getAccessorUsage(accessor)) break;
+
+				if (link instanceof AttributeLink) {
+					context.setAccessorUsage(accessor, BufferViewUsage.ARRAY_BUFFER);
+				} else if (link instanceof IndexLink) {
+					context.setAccessorUsage(accessor, BufferViewUsage.ELEMENT_ARRAY_BUFFER);
+				} else if (link.getName() === 'inverseBindMatrices') {
+					context.setAccessorUsage(accessor, BufferViewUsage.INVERSE_BIND_MATRICES);
+				}
+			}
+
+			// Group accessors with no specified usage into a miscellaneous buffer view.
+			if (!context.getAccessorUsage(accessor)) {
+				context.setAccessorUsage(accessor, BufferViewUsage.OTHER);
+			}
+
+			// For accessor usage that requires grouping by parent (vertex and instance
+			// attributes) organize buffer views accordingly.
+			const usage = context.getAccessorUsage(accessor);
+			if (usage && groupByParent.has(usage)) {
+				const parent = accessorRefs[0].getParent();
+				const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
+				parentAccessors.add(accessor);
+				accessorParents.set(parent, parentAccessors);
+			}
+		});
+
+		/* Buffers, buffer views. */
+
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.prewriteTypes.includes(PropertyType.BUFFER))
+			.forEach((extension) => extension.prewrite(context, PropertyType.BUFFER));
+
+		json.buffers = [];
+		root.listBuffers().forEach((buffer, index) => {
+			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
+			const groupByParent = context.accessorUsageGroupedByParent;
+			const accessorParents = context.accessorParents;
 
 			const bufferAccessors = buffer.listParents()
 				.filter((property) => property instanceof Accessor) as Accessor[];
 			const bufferAccessorsSet = new Set(bufferAccessors);
-
-			// Categorize accessors by use.
-			for (const accessor of bufferAccessors) {
-				// Skip if already written by an extension.
-				if (context.accessorIndexMap.has(accessor)) continue;
-
-				// Assign usage for core accessor usage types (explicit targets and implicit usage).
-				const accessorRefs = accessorLinks.get(accessor) || [];
-				for (const link of accessorRefs) {
-					if (context.getAccessorUsage(accessor)) break;
-
-					if (link instanceof AttributeLink) {
-						context.setAccessorUsage(accessor, BufferViewUsage.ARRAY_BUFFER);
-					} else if (link instanceof IndexLink) {
-						context.setAccessorUsage(accessor, BufferViewUsage.ELEMENT_ARRAY_BUFFER);
-					} else if (link.getName() === 'inverseBindMatrices') {
-						context.setAccessorUsage(accessor, BufferViewUsage.INVERSE_BIND_MATRICES);
-					}
-				}
-
-				// Group accessors with no specified usage into a miscellaneous buffer view.
-				if (!context.getAccessorUsage(accessor)) {
-					context.setAccessorUsage(accessor, BufferViewUsage.OTHER);
-				}
-
-				// For accessor usage that requires grouping by parent (vertex and instance
-				// attributes) organize buffer views accordingly.
-				const usage = context.getAccessorUsage(accessor);
-				if (usage && groupByParent.has(usage)) {
-					const parent = accessorRefs[0].getParent();
-					const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
-					parentAccessors.add(accessor);
-					accessorParents.set(parent, parentAccessors);
-				}
-			}
 
 			// Write accessor groups to buffer views.
 
@@ -380,27 +386,24 @@ export class GLTFWriter {
 				}
 			}
 
-			if (!bufferByteLength) {
-				context.logger.warn(`${NAME}: Skipping empty buffer, "${buffer.getName()}".`);
-				return;
+			if (bufferByteLength) {
+				// Assign buffer URI.
+				let uri: string;
+				if (options.format === Format.GLB) {
+					uri = GLB_BUFFER;
+				} else {
+					uri = context.bufferURIGenerator.createURI(buffer, 'bin');
+					bufferDef.uri = uri;
+				}
+
+				// Write buffer views to buffer.
+				bufferDef.byteLength = bufferByteLength;
+				jsonDoc.resources[uri] = BufferUtils.concat(buffers);
 			}
 
-			// Assign buffer URI.
-
-			let uri: string;
-			if (options.format === Format.GLB) {
-				uri = GLB_BUFFER;
-			} else {
-				uri = context.bufferURIGenerator.createURI(buffer, 'bin');
-				bufferDef.uri = uri;
-			}
-
-			// Write buffer views to buffer.
-
-			bufferDef.byteLength = bufferByteLength;
-			jsonDoc.resources[uri] = BufferUtils.concat(buffers);
 
 			json.buffers!.push(bufferDef);
+			context.bufferIndexMap.set(buffer, index);
 		});
 
 		if (root.listAccessors().find((a) => !a.getBuffer())) {
