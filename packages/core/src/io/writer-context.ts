@@ -41,16 +41,16 @@ export class WriterContext {
 	public readonly accessorParents = new Map<Property, Set<Accessor>>();
 
 	constructor (
-		doc: Document,
+		private readonly _doc: Document,
 		public readonly jsonDoc: JSONDocument,
 		public readonly options: Required<WriterOptions>
 	) {
-		const root = doc.getRoot();
+		const root = _doc.getRoot();
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
 		this.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
 		this.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
-		this.logger = doc.getLogger();
+		this.logger = _doc.getLogger();
 	}
 
 	/**
@@ -111,9 +111,19 @@ export class WriterContext {
 		accessorDef.type = accessor.getType();
 		accessorDef.componentType = accessor.getComponentType();
 		accessorDef.count = accessor.getCount();
-		accessor.getMax((accessorDef.max = []));
-		accessor.getMin((accessorDef.min = []));
-		accessorDef.normalized = accessor.getNormalized();
+
+		const needsBounds = this._doc.getGraph()
+			.listParentLinks(accessor)
+			.some((link) => link.getName() === 'POSITION');
+		if (needsBounds) {
+			accessor.getMax((accessorDef.max = []));
+			accessor.getMin((accessorDef.min = []));
+		}
+
+		if (accessor.getNormalized()) {
+			accessorDef.normalized = accessor.getNormalized();
+		}
+
 		return accessorDef;
 	}
 
