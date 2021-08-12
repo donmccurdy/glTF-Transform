@@ -116,8 +116,8 @@ export class WriterContext {
 			.listParentLinks(accessor)
 			.some((link) => link.getName() === 'POSITION');
 		if (needsBounds) {
-			accessor.getMax((accessorDef.max = []));
-			accessor.getMin((accessorDef.min = []));
+			accessor.getMax((accessorDef.max = []).map(Math.fround));
+			accessor.getMin((accessorDef.min = []).map(Math.fround));
 		}
 
 		if (accessor.getNormalized()) {
