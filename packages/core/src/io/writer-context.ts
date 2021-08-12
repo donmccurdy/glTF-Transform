@@ -114,7 +114,7 @@ export class WriterContext {
 
 		const needsBounds = this._doc.getGraph()
 			.listParentLinks(accessor)
-			.some((link) => link.getName() === 'POSITION');
+			.some((link) => link.getName() === 'POSITION' || link.getName() === 'input');
 		if (needsBounds) {
 			accessorDef.max = accessor.getMax([]).map(Math.fround);
 			accessorDef.min = accessor.getMin([]).map(Math.fround);
