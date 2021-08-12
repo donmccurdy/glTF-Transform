@@ -16,6 +16,7 @@ type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF
  */
 export class WriterContext {
 	public readonly accessorIndexMap = new Map<Accessor, number>();
+	public readonly bufferIndexMap = new Map<Buffer, number>();
 	public readonly cameraIndexMap = new Map<Camera, number>();
 	public readonly skinIndexMap = new Map<Skin, number>();
 	public readonly materialIndexMap = new Map<Material, number>();
@@ -37,6 +38,7 @@ export class WriterContext {
 
 	private readonly _accessorUsageMap = new Map<Accessor, string>();
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
+	public readonly accessorParents = new Map<Property, Set<Accessor>>();
 
 	constructor (
 		doc: Document,
