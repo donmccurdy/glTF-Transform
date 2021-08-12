@@ -139,6 +139,73 @@ test('@gltf-transform/functions::quantize | position + scene volume', async t =>
 	t.end();
 });
 
+test('@gltf-transform/functions::quantize | position + skinned mesh', async t => {
+	const doc = new Document();
+	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
+	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
+		// 256x256x256 box; origin <200000, 500000, 0>.
+		OX + 0, OY + 0, OZ + 0,
+		OX + 256, OY + 0, OZ + 0,
+		OX + 0, OY + 256, OZ + 0,
+		OX + 0, OY + 0, OZ + 256,
+		OX + 0, OY + 256, OZ + 256,
+		OX + 256, OY + 0, OZ + 256,
+		OX + 256, OY + 256, OZ + 0,
+		OX + 256, OY + 256, OZ + 256,
+	]));
+	const positionCopy = position.clone();
+	const mesh = doc.getRoot().listMeshes()[0];
+	const ibm = doc.createAccessor()
+		.setType('MAT4')
+		.setArray(new Float32Array([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+		]));
+	const skin = doc.createSkin().setInverseBindMatrices(ibm);
+	const node = doc.createNode().setMesh(mesh).setSkin(skin);
+
+	await doc.transform(quantize({quantizePosition: 14}));
+
+	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
+		t.fail('Backup copy of positions was modified');
+	}
+
+	const expectedRemap = (v: number[]): number[] => [
+		(v[0] - OX - 128) / 128, (v[1] - OY - 128) / 128, (v[2] - OZ - 128) / 128
+	];
+
+	t.ok(position.getNormalized(), 'position → normalized');
+	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
+	t.deepEquals(node.getTranslation(), [0, 0, 0], 'node offset');
+	t.deepEquals(node.getScale(), [1, 1, 1], 'node scale');
+	t.ok(skin.isDisposed(), 'old skin disposed');
+	t.ok(ibm.isDisposed(), 'old IBMs disposed');
+	t.deepEqual(
+		Array.from(node.getSkin().getInverseBindMatrices().getArray()),
+		[
+			128, 0, 0, 0,
+			0, 128, 0, 0,
+			0, 0, 128, 0,
+			200128, 500128, 128, 1,
+			128, 0, 0, 0,
+			0, 128, 0, 0,
+			0, 0, 128, 0,
+			200128, 500128, 128, 1,
+		],
+		'skin IBMs'
+	);
+	elementPairs(position, positionCopy, round(6))
+		.map(([a, b]) => [a, expectedRemap(b)])
+		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
+	t.end();
+});
+
 test('@gltf-transform/functions::quantize | texcoord', async t => {
 	const doc = new Document();
 	const uv = createFloatAttribute(doc, 'TEXCOORD_0', VEC2, new Float32Array([

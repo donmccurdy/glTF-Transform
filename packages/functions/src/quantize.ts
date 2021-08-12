@@ -1,6 +1,7 @@
-import { bbox } from 'core/dist/constants';
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3 } from '@gltf-transform/core';
+import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3, mat4, Skin, bbox, PropertyType } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
+import { scale, translate } from 'gl-matrix/mat4';
+import { prune } from './prune';
 
 const NAME = 'quantize';
 
@@ -57,7 +58,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 	const options = {...QUANTIZE_DEFAULTS, ..._options} as Required<QuantizeOptions>;
 
-	return (doc: Document): void => {
+	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 
@@ -73,14 +74,6 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		}
 
 		for (const mesh of doc.getRoot().listMeshes()) {
-			// TODO(feat): Apply node transform to IBM?
-			const isSkinnedMesh = mesh.listPrimitives()
-				.some((prim) => prim.getAttribute('JOINTS_0'));
-			if (isSkinnedMesh) {
-				logger.warn(`${NAME}: Quantization for skinned mesh not yet implemented.`);
-				continue;
-			}
-
 			const nodeTransform = getNodeTransform(mesh, quantizationVolume);
 			if (nodeTransform) transformMeshParents(doc, mesh, nodeTransform);
 
@@ -91,6 +84,8 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 				}
 			}
 		}
+
+		await doc.transform(prune({propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN]}));
 
 		logger.debug(`${NAME}: Complete.`);
 	};
@@ -125,7 +120,7 @@ function quantizePrimitive(
 			continue;
 		}
 
-		// Write quantization transform for position data into mesh parents.
+		// Remap position data.
 		if (semantic === 'POSITION') {
 			if (!nodeRemap) {
 				throw new Error(`${NAME}: Failed precondition; missing node transform.`);
@@ -178,7 +173,6 @@ function flatBounds(targetMin: number[], targetMax: number[], accessors: Accesso
 function getNodeTransform(mesh: Mesh, volume?: bbox): NodeTransform | null {
 	const positions = mesh.listPrimitives()
 		.map((prim) => prim.getAttribute('POSITION')!);
-
 	if (!positions.some((p) => !!p)) return null;
 
 	// Set quantization volume.
@@ -219,8 +213,12 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 			const isParentNode = parent.listChildren().length > 0;
 			const isAnimated = !!parent.listParents().find((p) => p instanceof Animation);
 
-			let targetNode: Node;
+			if (parent.getSkin()) {
+				parent.setSkin(transformSkin(parent.getSkin()!, nodeTransform));
+				continue;
+			}
 
+			let targetNode: Node;
 			if (isParentNode || isAnimated) {
 				targetNode = doc.createNode('').setMesh(mesh);
 				parent.addChild(targetNode).setMesh(null);
@@ -235,6 +233,20 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 				.setScale([s[0] * scale[0], s[1] * scale[1], s[2] * scale[2]]);
 		}
 	}
+}
+
+/** Applies corrective scale and offset to skin IBMs. */
+function transformSkin(skin: Skin, nodeTransform: NodeTransform): Skin {
+	skin = skin.clone();
+	const inverseBindMatrices = skin.getInverseBindMatrices()!.clone();
+	const ibm = [] as unknown as mat4;
+	for (let i = 0, count = inverseBindMatrices.getCount(); i < count; i++) {
+		inverseBindMatrices.getElement(i, ibm);
+		translate(ibm, ibm, nodeTransform.nodeOffset);
+		scale(ibm, ibm, nodeTransform.nodeScale);
+		inverseBindMatrices.setElement(i, ibm);
+	}
+	return skin.setInverseBindMatrices(inverseBindMatrices);
 }
 
 /**
