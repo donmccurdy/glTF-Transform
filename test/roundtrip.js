@@ -3,7 +3,7 @@ const {execSync} = require('child_process');
 const {SOURCE, TARGET, VARIANTS} = require('./constants.js');
 
 /**
- * Generates a copy of each sample model using `gltf-transform repack`. Does
+ * Generates a copy of each sample model using `gltf-transform copy`. Does
  * not apply any meaningful edits to the files: this is intended to be a
  * lossless round trip test.
  */

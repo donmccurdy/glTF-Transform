@@ -25,7 +25,7 @@ INDEX.forEach((asset) => {
 
 		const src = path.join(SOURCE, asset.name, variant);
 		const dst = path.join(TARGET, asset.name, variant);
-		execSync(`cp -r ${src} ${dst}`);
+		execSync(`cp -r "${src}" "${dst}"`);
 	});
 });
 
@@ -38,7 +38,7 @@ function cleanDir(dir) {
 		if (!isSafe) {
 			throw new Error(`Path not safe: ${dir}`);
 		}
-		execSync(`rm -rf ${dir}`);
+		execSync(`rm -rf "${dir}"`);
 	}
 	fs.mkdirSync(dir);
 }
