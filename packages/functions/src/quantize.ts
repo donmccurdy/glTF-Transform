@@ -75,7 +75,9 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			const nodeTransform = getNodeTransform(mesh, quantizationVolume);
-			if (nodeTransform) transformMeshParents(doc, mesh, nodeTransform);
+			if (nodeTransform && !options.excludeAttributes.includes('POSITION')) {
+				transformMeshParents(doc, mesh, nodeTransform);
+			}
 
 			for (const prim of mesh.listPrimitives()) {
 				quantizePrimitive(doc, prim, nodeTransform, options);
@@ -102,7 +104,7 @@ function quantizePrimitive(
 	const nodeRemap = nodeTransform ? nodeTransform.nodeRemap : null;
 
 	for (const semantic of prim.listSemantics()) {
-		if (options.excludeAttributes!.includes(semantic)) continue;
+		if (options.excludeAttributes.includes(semantic)) continue;
 
 		const attribute = prim.getAttribute(semantic)!;
 		const {bits, ctor} = getQuantizationSettings(semantic, attribute, logger, options);
@@ -147,14 +149,13 @@ function quantizePrimitive(
 interface NodeTransform {
 	nodeRemap: (v: number[]) => number[];
 	nodeOffset: vec3;
-	nodeScale: vec3;
+	nodeScale: number;
 }
 
-/** Computes total min and max of all Accessors in a list. */
-function flatBounds(targetMin: number[], targetMax: number[], accessors: Accessor[]): void {
-	const elementSize = accessors[0].getElementSize();
-	for (let i = 0; i < elementSize; i++) targetMin[i] = Infinity;
-	for (let i = 0; i < elementSize; i++) targetMax[i] = -Infinity;
+/** Computes total min and max of all (vec3) Accessors in a list. */
+function flatBounds(accessors: Accessor[]): bbox {
+	const min = [Infinity, Infinity, Infinity] as vec3;
+	const max = [-Infinity, -Infinity, -Infinity] as vec3;
 
 	const tmpMin: number[] = [];
 	const tmpMax: number[] = [];
@@ -162,11 +163,13 @@ function flatBounds(targetMin: number[], targetMax: number[], accessors: Accesso
 	for (const accessor of accessors) {
 		accessor.getMinNormalized(tmpMin);
 		accessor.getMaxNormalized(tmpMax);
-		for (let i = 0; i < elementSize; i++) {
-			targetMin[i] = Math.min(targetMin[i], tmpMin[i]);
-			targetMax[i] = Math.max(targetMax[i], tmpMax[i]);
+		for (let i = 0; i < 3; i++) {
+			min[i] = Math.min(min[i], tmpMin[i]);
+			max[i] = Math.max(max[i], tmpMax[i]);
 		}
 	}
+
+	return {min, max};
 }
 
 /** Computes node quantization transforms in local space. */
@@ -175,30 +178,23 @@ function getNodeTransform(mesh: Mesh, volume?: bbox): NodeTransform | null {
 		.map((prim) => prim.getAttribute('POSITION')!);
 	if (!positions.some((p) => !!p)) return null;
 
-	// Set quantization volume.
-	let positionMin = [Infinity, Infinity, Infinity] as vec3;
-	let positionMax = [-Infinity, -Infinity, -Infinity] as vec3;
-	if (volume) {
-		positionMin = [...volume.min];
-		positionMax = [...volume.max];
-	} else {
-		flatBounds(positionMin, positionMax, positions);
-	}
+	const {min, max} = volume || flatBounds(positions);
 
-	const nodeRemap = (v: number[]) => [
-		(-1) + (1 - (-1)) * (v[0] - positionMin[0]) / (positionMax[0] - positionMin[0]),
-		(-1) + (1 - (-1)) * (v[1] - positionMin[1]) / (positionMax[1] - positionMin[1]),
-		(-1) + (1 - (-1)) * (v[2] - positionMin[2]) / (positionMax[2] - positionMin[2]),
-	];
+	// Uniform scale (https://github.com/donmccurdy/glTF-Transform/issues/328).
+	const nodeScale = Math.max(
+		(max[0] - min[0]) / 2,
+		(max[1] - min[1]) / 2,
+		(max[2] - min[2]) / 2,
+	);
 	const nodeOffset: vec3 = [
-		positionMin[0] + (positionMax[0] - positionMin[0]) / 2,
-		positionMin[1] + (positionMax[1] - positionMin[1]) / 2,
-		positionMin[2] + (positionMax[2] - positionMin[2]) / 2,
+		min[0] + nodeScale,
+		min[1] + nodeScale,
+		min[2] + nodeScale
 	];
-	const nodeScale: vec3 = [
-		(positionMax[0] - positionMin[0]) / 2,
-		(positionMax[1] - positionMin[1]) / 2,
-		(positionMax[2] - positionMin[2]) / 2,
+	const nodeRemap = (v: number[]) => [
+		-1 + (v[0] - min[0]) / nodeScale,
+		-1 + (v[1] - min[1]) / nodeScale,
+		-1 + (v[2] - min[2]) / nodeScale,
 	];
 	return {nodeRemap, nodeOffset, nodeScale};
 }
@@ -206,7 +202,7 @@ function getNodeTransform(mesh: Mesh, volume?: bbox): NodeTransform | null {
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
 function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTransform): void {
 	const offset = nodeTransform.nodeOffset || [0, 0, 0];
-	const scale = nodeTransform.nodeScale || [1, 1, 1];
+	const scale = nodeTransform.nodeScale || 1;
 
 	for (const parent of mesh.listParents()) {
 		if (parent instanceof Node) {
@@ -230,7 +226,7 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 			const s = targetNode.getScale();
 			targetNode
 				.setTranslation([t[0] + offset[0], t[1] + offset[1], t[2] + offset[2]])
-				.setScale([s[0] * scale[0], s[1] * scale[1], s[2] * scale[2]]);
+				.setScale([s[0] * scale, s[1] * scale, s[2] * scale]);
 		}
 	}
 }
@@ -238,12 +234,17 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 /** Applies corrective scale and offset to skin IBMs. */
 function transformSkin(skin: Skin, nodeTransform: NodeTransform): Skin {
 	skin = skin.clone();
+	const nodeScale = [
+		nodeTransform.nodeScale,
+		nodeTransform.nodeScale,
+		nodeTransform.nodeScale
+	] as vec3;
 	const inverseBindMatrices = skin.getInverseBindMatrices()!.clone();
 	const ibm = [] as unknown as mat4;
 	for (let i = 0, count = inverseBindMatrices.getCount(); i < count; i++) {
 		inverseBindMatrices.getElement(i, ibm);
 		translate(ibm, ibm, nodeTransform.nodeOffset);
-		scale(ibm, ibm, nodeTransform.nodeScale);
+		scale(ibm, ibm, nodeScale);
 		inverseBindMatrices.setElement(i, ibm);
 	}
 	return skin.setInverseBindMatrices(inverseBindMatrices);
