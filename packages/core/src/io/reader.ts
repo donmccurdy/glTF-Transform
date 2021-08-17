@@ -351,6 +351,11 @@ export class GLTFReader {
 		/** Nodes. */
 
 		const nodeDefs = json.nodes || [];
+
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.NODE))
+			.forEach((extension) => extension.preread(context, PropertyType.NODE));
+
 		context.nodes = nodeDefs.map((nodeDef) => {
 			const node = doc.createNode(nodeDef.name);
 
@@ -468,6 +473,11 @@ export class GLTFReader {
 		/** Scenes. */
 
 		const sceneDefs = json.scenes || [];
+
+		doc.getRoot().listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.SCENE))
+			.forEach((extension) => extension.preread(context, PropertyType.SCENE));
+
 		context.scenes = sceneDefs.map((sceneDef) => {
 			const scene = doc.createScene(sceneDef.name);
 
