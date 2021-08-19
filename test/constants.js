@@ -12,7 +12,7 @@ const SOURCE = path.resolve(__dirname, '../../glTF-Sample-Models/2.0/');
 const TARGET = path.resolve(__dirname, './out');
 
 /** Supported variants. */
-const VARIANTS = new Set(['glTF', 'glTF-Binary', 'glTF-Embedded']);
+const VARIANTS = new Set(['glTF-Binary']);
 
 /**
  * Assets to skip.

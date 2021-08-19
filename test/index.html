@@ -49,8 +49,8 @@ model-viewer {
                     el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
                     containerEl.appendChild(el.cloneNode());
 
-                    el.setAttribute('src', `./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.transformed.glb')}`);
-                    el.alt = el.title = `${asset.name} / ${variant} / ${filename} (TRANSFORMED)`;
+                    el.setAttribute('src', `./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.copy.glb')}`);
+                    el.alt = el.title = `${asset.name} / ${variant} / ${filename} (COPY)`;
                     containerEl.appendChild(el);
                 });
             });

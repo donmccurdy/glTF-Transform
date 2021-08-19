@@ -18,10 +18,13 @@ INDEX.forEach((asset, assetIndex) => {
 		if (!VARIANTS.has(variant)) return;
 
 		const src = path.join(SOURCE, asset.name, variant, filename);
-		const dst = path.join(TARGET, asset.name, variant, filename.replace(/\.(gltf|glb)$/, '.transformed.glb'));
+		const dst = path.join(TARGET, asset.name, variant, filename.replace(/\.(gltf|glb)$/, '.{v}.glb'));
 
 		try {
-			execSync(`gltf-transform copy ${src} ${dst}`);
+			execSync(`gltf-transform copy ${src} ${dst.replace('{v}', 'copy')}`);
+			execSync(`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-lo')} --quantizePosition 14 --quantizeTexcoord 12 --quantizeColor 8 --quantizeNormal 8`);
+			execSync(`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-hi')}`);
+			execSync(`gltf-transform draco ${src} ${dst.replace('{v}', 'draco')}`);
 			console.info(`    - ✅ ${variant}/${filename}`);
 		} catch (e) {
 			console.error(`    - ⛔️ ${variant}/${filename}: ${e.message}`);
