@@ -56,6 +56,9 @@ test('@gltf-transform/functions::quantize | mesh volume', async t => {
 	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
 	t.deepEquals(bboxMeshA, {min: [-1, -1, 0], max: [1, 1, 0]}, 'bbox - meshA');
 	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
+	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.equals(doc.getRoot().listAccessors().length, 2, 'total accessors');
+	t.equals(doc.getRoot().listSkins().length, 0, 'total skins');
 	t.end();
 });
 
@@ -95,125 +98,79 @@ test('@gltf-transform/functions::quantize | scene volume', async t => {
 	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
 	t.deepEquals(bboxMeshA, {min: [-.8, -.8, -1], max: [-.7, -.7, -1]}, 'bbox - meshA');
 	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
+	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.equals(doc.getRoot().listAccessors().length, 2, 'total accessors');
+	t.equals(doc.getRoot().listSkins().length, 0, 'total skins');
 	t.end();
 });
 
-// test.only('@gltf-transform/functions::quantize | skinned mesh', async t => {
-// 	const doc = new Document().setLogger(logger);
-// 	const scene = createScene(doc);
-// 	const nodeA = doc.getRoot().listNodes()[0];
-// 	const nodeB = doc.getRoot().listNodes()[1];
-// 	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
-// 	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
+test('@gltf-transform/functions::quantize | skinned mesh', async t => {
+	const doc = new Document().setLogger(logger);
+	const scene = createScene(doc);
+	const nodeA = doc.getRoot().listNodes()[0];
+	const nodeB = doc.getRoot().listNodes()[1];
+	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-// 	const bboxSceneCopy = bounds(scene);
-// 	const bboxNodeACopy = bounds(nodeA);
-// 	const bboxNodeBCopy = bounds(nodeB);
-// 	const bboxMeshACopy = primBounds(primA);
-// 	const bboxMeshBCopy = primBounds(primB);
+	const bboxSceneCopy = bounds(scene);
+	const bboxNodeACopy = bounds(nodeA);
+	const bboxNodeBCopy = bounds(nodeB);
+	const bboxMeshACopy = primBounds(primA);
+	const bboxMeshBCopy = primBounds(primB);
 
-// 	t.deepEquals(bboxSceneCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - scene');
-// 	t.deepEquals(bboxNodeACopy, {min: [20, 10, 0], max: [25, 15, 0]}, 'original bbox - nodeA');
-// 	t.deepEquals(bboxNodeBCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - nodeB');
-// 	t.deepEquals(bboxMeshACopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - meshA');
-// 	t.deepEquals(bboxMeshBCopy, {min: [0, 0, 0], max: [100, 100, 100]}, 'original bbox - meshB');
+	t.deepEquals(bboxSceneCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - scene');
+	t.deepEquals(bboxNodeACopy, {min: [20, 10, 0], max: [25, 15, 0]}, 'original bbox - nodeA');
+	t.deepEquals(bboxNodeBCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - nodeB');
+	t.deepEquals(bboxMeshACopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - meshA');
+	t.deepEquals(bboxMeshBCopy, {min: [0, 0, 0], max: [100, 100, 100]}, 'original bbox - meshB');
 
-// 	const ibm = doc.createAccessor()
-// 		.setType('MAT4')
-// 		.setArray(new Float32Array([
-// 			1, 0, 0, 0,
-// 			0, 1, 0, 0,
-// 			0, 0, 1, 0,
-// 			0, 0, 0, 1,
-// 			1, 0, 0, 0,
-// 			0, 1, 0, 0,
-// 			0, 0, 1, 0,
-// 			0, 0, 0, 1,
-// 		]));
-// 	nodeA.setSkin(doc.createSkin().setInverseBindMatrices(ibm));
+	const ibm = doc.createAccessor()
+		.setType('MAT4')
+		.setArray(new Float32Array([
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+		]));
+	nodeB.setSkin(doc.createSkin().setInverseBindMatrices(ibm));
 
-// 	await doc.transform(quantize({quantizePosition: 14}));
+	await doc.transform(quantize({quantizePosition: 14}));
 
-// 	const bboxScene = bounds(scene);
-// 	const bboxNodeA = bounds(nodeA);
-// 	const bboxNodeB = bounds(nodeB);
-// 	const bboxMeshA = primBounds(primA);
-// 	const bboxMeshB = primBounds(primB);
+	const bboxScene = bounds(scene);
+	const bboxNodeA = bounds(nodeA);
+	const bboxNodeB = bounds(nodeB);
+	const bboxMeshA = primBounds(primA);
+	const bboxMeshB = primBounds(primB);
 
-// 	t.deepEquals(bboxScene, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - scene');
-// 	t.deepEquals(bboxNodeA, {min: [20, 10, 0], max: [25, 15, 0]}, 'bbox - nodeA');
-// 	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
-// 	t.deepEquals(bboxMeshA, {min: [-1, -1, 0], max: [1, 1, 0]}, 'bbox - meshA');
-// 	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
-// 	t.end();
-// });
-
-// test('@gltf-transform/functions::quantize | position + skinned mesh', async t => {
-// 	const doc = new Document();
-// 	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
-// 	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
-// 		// 256x256x256 box; origin <200000, 500000, 0>.
-// 		OX + 0, OY + 0, OZ + 0,
-// 		OX + 256, OY + 0, OZ + 0,
-// 		OX + 0, OY + 256, OZ + 0,
-// 		OX + 0, OY + 0, OZ + 256,
-// 		OX + 0, OY + 256, OZ + 256,
-// 		OX + 256, OY + 0, OZ + 256,
-// 		OX + 256, OY + 256, OZ + 0,
-// 		OX + 256, OY + 256, OZ + 256,
-// 	]));
-// 	const positionCopy = position.clone();
-// 	const mesh = doc.getRoot().listMeshes()[0];
-// 	const ibm = doc.createAccessor()
-// 		.setType('MAT4')
-// 		.setArray(new Float32Array([
-// 			1, 0, 0, 0,
-// 			0, 1, 0, 0,
-// 			0, 0, 1, 0,
-// 			0, 0, 0, 1,
-// 			1, 0, 0, 0,
-// 			0, 1, 0, 0,
-// 			0, 0, 1, 0,
-// 			0, 0, 0, 1,
-// 		]));
-// 	const skin = doc.createSkin().setInverseBindMatrices(ibm);
-// 	const node = doc.createNode().setMesh(mesh).setSkin(skin);
-
-// 	await doc.transform(quantize({quantizePosition: 14}));
-
-// 	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
-// 		t.fail('Backup copy of positions was modified');
-// 	}
-
-// 	const expectedRemap = (v: number[]): number[] => [
-// 		(v[0] - OX - 128) / 128, (v[1] - OY - 128) / 128, (v[2] - OZ - 128) / 128
-// 	];
-
-// 	t.ok(position.getNormalized(), 'position → normalized');
-// 	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
-// 	t.deepEquals(node.getTranslation(), [0, 0, 0], 'node offset');
-// 	t.deepEquals(node.getScale(), [1, 1, 1], 'node scale');
-// 	t.ok(skin.isDisposed(), 'old skin disposed');
-// 	t.ok(ibm.isDisposed(), 'old IBMs disposed');
-// 	t.deepEqual(
-// 		Array.from(node.getSkin().getInverseBindMatrices().getArray()),
-// 		[
-// 			128, 0, 0, 0,
-// 			0, 128, 0, 0,
-// 			0, 0, 128, 0,
-// 			200128, 500128, 128, 1,
-// 			128, 0, 0, 0,
-// 			0, 128, 0, 0,
-// 			0, 0, 128, 0,
-// 			200128, 500128, 128, 1,
-// 		],
-// 		'skin IBMs'
-// 	);
-// 	elementPairs(position, positionCopy, round(6))
-// 		.map(([a, b]) => [a, expectedRemap(b)])
-// 		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
-// 	t.end();
-// });
+	// NodeA now affects scene bounds, because bounds() does not check IBMs.
+	t.deepEquals(bboxScene, {min: [-.5, -.5, -.5], max: [25, 15, .5]}, 'bbox - scene');
+	t.deepEquals(bboxNodeA, {min: [20, 10, 0], max: [25, 15, 0]}, 'bbox - nodeA');
+	t.deepEquals(bboxNodeB, {min: [-.5, -.5, -.5], max: [.5, .5, .5]}, 'bbox - nodeB');
+	t.deepEquals(bboxMeshA, {min: [-1, -1, 0], max: [1, 1, 0]}, 'bbox - meshA');
+	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
+	t.deepEquals(
+		Array.from(nodeB.getSkin().getInverseBindMatrices().getArray()),
+		[
+			50, 0, 0, 0,
+			0, 50, 0, 0,
+			0, 0, 50, 0,
+			50, 50, 50, 1,
+			50, 0, 0, 0,
+			0, 50, 0, 0,
+			0, 0, 50, 0,
+			50, 50, 50, 1,
+		],
+		'ibm - meshB'
+	);
+	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.equals(doc.getRoot().listAccessors().length, 3, 'total accessors');
+	t.equals(doc.getRoot().listSkins().length, 1, 'total skins');
+	t.end();
+});
 
 test('@gltf-transform/functions::quantize | attributes', async t => {
 	const doc = new Document().setLogger(logger);
