@@ -1,6 +1,7 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3, mat4, Skin, bbox, PropertyType } from '@gltf-transform/core';
+import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3, mat4, Skin, bbox, PropertyType, vec2, vec4 } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
-import { scale, translate } from 'gl-matrix/mat4';
+import { fromRotationTranslationScale, multiply as multiplyMat4 } from 'gl-matrix/mat4';
+import { dedup } from './dedup';
 import { prune } from './prune';
 
 const NAME = 'quantize';
@@ -64,6 +65,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		doc.createExtension(MeshQuantization).setRequired(true);
 
+		// If quantization volume is unified, compute it.
 		let quantizationVolume: bbox | undefined = undefined;
 		if (options.quantizationVolume === 'scene') {
 			if (root.listScenes().length !== 1) {
@@ -73,6 +75,10 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 		}
 
+		// Always use unified UV quantization grid.
+		// const uvTransform = getUVTransform(doc);
+
+		// Quantize mesh primitives.
 		for (const mesh of doc.getRoot().listMeshes()) {
 			const nodeTransform = getNodeTransform(mesh, quantizationVolume);
 			if (nodeTransform && !options.excludeAttributes.includes('POSITION')) {
@@ -80,14 +86,28 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 
 			for (const prim of mesh.listPrimitives()) {
-				quantizePrimitive(doc, prim, nodeTransform, options);
+				quantizePrimitive(doc, prim, nodeTransform, /*uvTransform,*/ options);
 				for (const target of prim.listTargets()) {
-					quantizePrimitive(doc, target, nodeTransform, options);
+					quantizePrimitive(doc, target, nodeTransform, /*uvTransform,*/ options);
 				}
 			}
 		}
 
-		await doc.transform(prune({propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN]}));
+		// Apply quantization transforms as TextureInfo transforms.
+		// const textureInfos = doc.getGraph().getLinks()
+		// 	.map((link) => link.getChild())
+		// 	.filter((child) => child instanceof TextureInfo) as TextureInfo[];
+		// for (const textureInfo of Array.from(new Set(textureInfos))) {
+		// 	const texCoord = textureInfo.getTexCoord();
+		// 	if (!options.excludeAttributes.includes(`TEXCOORD_${texCoord}`)) {
+		// 		// TODO(feat): Obtain existing transform, if any. Multiply mat3 results, and set.
+		// 	}
+		// }
+
+		await doc.transform(
+			prune({propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN]}),
+			dedup({propertyTypes: [PropertyType.ACCESSOR]}),
+		);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
@@ -97,44 +117,40 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 function quantizePrimitive(
 		doc: Document,
 		prim: Primitive | PrimitiveTarget,
-		nodeTransform: NodeTransform | null,
+		nodeTransform: VectorTransform<vec3>,
+		// uvTransform: VectorTransform<vec2> | null,
 		options: Required<QuantizeOptions>): void {
-	const root = doc.getRoot();
 	const logger = doc.getLogger();
-	const nodeRemap = nodeTransform ? nodeTransform.nodeRemap : null;
 
 	for (const semantic of prim.listSemantics()) {
 		if (options.excludeAttributes.includes(semantic)) continue;
 
-		const attribute = prim.getAttribute(semantic)!;
-		const {bits, ctor} = getQuantizationSettings(semantic, attribute, logger, options);
+		const srcAttribute = prim.getAttribute(semantic)!;
+		const {bits, ctor} = getQuantizationSettings(semantic, srcAttribute, logger, options);
 
 		if (!ctor) continue;
 		if (bits < 8 || bits > 16) throw new Error(`${NAME}: Requires bits = 8–16.`);
-		if (attribute.getComponentSize() <= bits / 8) continue;
+		if (srcAttribute.getComponentSize() <= bits / 8) continue;
 
-		// Avoid quantizing accessors used for multiple purposes.
-		const usage = doc.getGraph().listParentLinks(attribute)
-			.filter((link) => link.getParent() !== root)
-			.map((link) => link.getName());
-		if (new Set(usage).size > 1) {
-			logger.warn(`${NAME}: Skipping ${semantic}; attribute usage conflict.`);
-			continue;
-		}
+		const dstAttribute = srcAttribute.clone();
 
 		// Remap position data.
 		if (semantic === 'POSITION') {
-			if (!nodeRemap) {
-				throw new Error(`${NAME}: Failed precondition; missing node transform.`);
-			}
-			for (let i = 0, el: vec3 = [0, 0, 0], il = attribute.getCount(); i < il; i++) {
-				attribute.setElement(i, nodeRemap(attribute.getElement(i, el)));
+			for (let i = 0, el: vec3 = [0, 0, 0], il = dstAttribute.getCount(); i < il; i++) {
+				dstAttribute.setElement(i, nodeTransform.remap(dstAttribute.getElement(i, el)));
 			}
 		}
 
+		// Remap UV data.
+		// if (semantic.startsWith('TEXCOORD_')) {
+		// 	for (let i = 0, el: vec2 = [0, 0], il = dstAttribute.getCount(); i < il; i++) {
+		// 		dstAttribute.setElement(i, uvTransform!.remap(dstAttribute.getElement(i, el)));
+		// 	}
+		// }
+
 		// Quantize the vertex attribute.
-		quantizeAttribute(attribute, ctor, bits);
-		attribute.setNormalized(true);
+		quantizeAttribute(dstAttribute, ctor, bits);
+		prim.swap(srcAttribute, dstAttribute);
 	}
 
 	if (prim instanceof Primitive
@@ -146,16 +162,16 @@ function quantizePrimitive(
 	}
 }
 
-interface NodeTransform {
-	nodeRemap: (v: number[]) => number[];
-	nodeOffset: vec3;
-	nodeScale: number;
+interface VectorTransform<T = vec2|vec3|vec4> {
+	remap: (v: number[]) => number[];
+	offset: T;
+	scale: number;
 }
 
-/** Computes total min and max of all (vec3) Accessors in a list. */
-function flatBounds(accessors: Accessor[]): bbox {
-	const min = [Infinity, Infinity, Infinity] as vec3;
-	const max = [-Infinity, -Infinity, -Infinity] as vec3;
+/** Computes total min and max of all Accessors in a list. */
+function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): ({min: T, max: T}) {
+	const min: number[] = new Array(elementSize).fill(Infinity);
+	const max: number[] = new Array(elementSize).fill(-Infinity);
 
 	const tmpMin: number[] = [];
 	const tmpMax: number[] = [];
@@ -163,47 +179,108 @@ function flatBounds(accessors: Accessor[]): bbox {
 	for (const accessor of accessors) {
 		accessor.getMinNormalized(tmpMin);
 		accessor.getMaxNormalized(tmpMax);
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < elementSize; i++) {
 			min[i] = Math.min(min[i], tmpMin[i]);
 			max[i] = Math.max(max[i], tmpMax[i]);
 		}
 	}
 
-	return {min, max};
+	return {min, max} as unknown as {min: T, max: T};
 }
 
 /** Computes node quantization transforms in local space. */
-function getNodeTransform(mesh: Mesh, volume?: bbox): NodeTransform | null {
-	const positions = mesh.listPrimitives()
-		.map((prim) => prim.getAttribute('POSITION')!);
-	if (!positions.some((p) => !!p)) return null;
+function getNodeTransform(mesh: Mesh, volume?: bbox): VectorTransform<vec3> {
+	const {min, max} = volume || flatBounds(listPositionAttributes(mesh), 3);
 
-	const {min, max} = volume || flatBounds(positions);
-
-	// Uniform scale (https://github.com/donmccurdy/glTF-Transform/issues/328).
-	const nodeScale = Math.max(
-		(max[0] - min[0]) / 2,
+	// Scaling factor transforms [-1,1] box to the mesh AABB in local space.
+	// See: https://github.com/donmccurdy/glTF-Transform/issues/328
+	const scale = Math.max(
+		(max[0] - min[0]) / 2, // Divide because interval [-1,1] has length 2.
 		(max[1] - min[1]) / 2,
 		(max[2] - min[2]) / 2,
 	);
-	const nodeOffset: vec3 = [
-		min[0] + nodeScale,
-		min[1] + nodeScale,
-		min[2] + nodeScale
+
+	// Original center of the mesh, in local space.
+	const offset: vec3 = [
+		min[0] + (max[0] - min[0]) / 2,
+		min[1] + (max[1] - min[1]) / 2,
+		min[2] + (max[2] - min[2]) / 2,
 	];
-	const nodeRemap = (v: number[]) => [
-		-1 + (v[0] - min[0]) / nodeScale,
-		-1 + (v[1] - min[1]) / nodeScale,
-		-1 + (v[2] - min[2]) / nodeScale,
+
+	// Transforms mesh vertices to a [-1,1] AABB centered at the origin.
+	const remap = (v: number[]) => [
+		(v[0] - offset[0]) / scale,
+		(v[1] - offset[1]) / scale,
+		(v[2] - offset[2]) / scale,
 	];
-	return {nodeRemap, nodeOffset, nodeScale};
+
+	return {remap, offset, scale};
 }
 
-/** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
-function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTransform): void {
-	const offset = nodeTransform.nodeOffset || [0, 0, 0];
-	const scale = nodeTransform.nodeScale || 1;
+/** Computes UV quantization transform. */
+// function getUVTransform(document: Document): VectorTransform<vec2> | null {
+// 	const uvs = listUVAttributes(document);
+// 	if (uvs.length === 0) return null;
 
+// 	const {min, max} = flatBounds(uvs, 2);
+
+// 	// Scaling factor transforms [0,1] box to original AABB.
+// 	const scale = Math.max(
+// 		max[0] - min[0],
+// 		max[1] - min[1],
+// 	);
+
+// 	// Original center of UVs.
+// 	const offset: vec2 = [
+// 		min[0] + (max[0] - min[0]) / 2,
+// 		min[1] + (max[1] - min[1]) / 2,
+// 	];
+
+// 	// Transforms UVs to a [0,1] AABB.
+// 	const remap = (v: number[]) => [
+// 		(v[0] - offset[0]) / scale,
+// 		(v[1] - offset[1]) / scale,
+// 	];
+
+// 	return {remap, scale, offset};
+// }
+
+function listPositionAttributes(mesh: Mesh): Accessor[] {
+	const positions: Accessor[] = [];
+	for (const prim of mesh.listPrimitives()) {
+		const attribute = prim.getAttribute('POSITION');
+		if (attribute) positions.push(attribute);
+		for (const target of prim.listTargets()) {
+			const attribute = target.getAttribute('POSITION');
+			if (attribute) positions.push(attribute);
+		}
+	}
+	if (positions.length === 0) {
+		throw new Error(`${NAME}: Missing "POSITION" attribute.`);
+	}
+	return positions;
+}
+
+// function listUVAttributes(document: Document): Accessor[] {
+// 	const uvs: Accessor[] = [];
+// 	for (const mesh of document.getRoot().listMeshes()) {
+// 		for (const prim of mesh.listPrimitives()) {
+// 			let uv: Accessor | null, i = 0;
+// 			while ((uv = prim.getAttribute(`TEXCOORD_${i++}`))) {
+// 				uvs.push(uv);
+// 			}
+// 		}
+// 	}
+// 	return uvs;
+// }
+
+/** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
+function transformMeshParents(
+	doc: Document,
+	mesh: Mesh,
+	nodeTransform: VectorTransform<vec3>
+): void {
+	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
 		if (parent instanceof Node) {
 			const isParentNode = parent.listChildren().length > 0;
@@ -222,29 +299,22 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: NodeTran
 				targetNode = parent;
 			}
 
-			const t = targetNode.getTranslation();
-			const s = targetNode.getScale();
-			targetNode
-				.setTranslation([t[0] + offset[0], t[1] + offset[1], t[2] + offset[2]])
-				.setScale([s[0] * scale, s[1] * scale, s[2] * scale]);
+			const nodeMatrix = targetNode.getMatrix();
+			const localMatrix = multiplyMat4([] as unknown as mat4, nodeMatrix, transformMatrix);
+			targetNode.setMatrix(localMatrix as mat4);
 		}
 	}
 }
 
 /** Applies corrective scale and offset to skin IBMs. */
-function transformSkin(skin: Skin, nodeTransform: NodeTransform): Skin {
+function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
 	skin = skin.clone();
-	const nodeScale = [
-		nodeTransform.nodeScale,
-		nodeTransform.nodeScale,
-		nodeTransform.nodeScale
-	] as vec3;
+	const transformMatrix = fromTransform(nodeTransform);
 	const inverseBindMatrices = skin.getInverseBindMatrices()!.clone();
 	const ibm = [] as unknown as mat4;
 	for (let i = 0, count = inverseBindMatrices.getCount(); i < count; i++) {
 		inverseBindMatrices.getElement(i, ibm);
-		translate(ibm, ibm, nodeTransform.nodeOffset);
-		scale(ibm, ibm, nodeScale);
+		multiplyMat4(ibm, ibm, transformMatrix);
 		inverseBindMatrices.setElement(i, ibm);
 	}
 	return skin.setInverseBindMatrices(inverseBindMatrices);
@@ -288,7 +358,7 @@ function quantizeAttribute(
 		}
 	}
 
-	attribute.setArray(dstArray);
+	attribute.setArray(dstArray).setNormalized(true);
 }
 
 function getQuantizationSettings(
@@ -298,7 +368,7 @@ function getQuantizationSettings(
 		options: Required<QuantizeOptions>): {bits: number; ctor?: TypedArrayConstructor} {
 
 	const min = attribute.getMinNormalized([]);
-	const max = attribute.getMinNormalized([]);
+	const max = attribute.getMaxNormalized([]);
 
 	let bits: number;
 	let ctor: TypedArrayConstructor;
@@ -313,8 +383,9 @@ function getQuantizationSettings(
 		bits = options.quantizeColor;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('TEXCOORD_')) {
+		// TODO(feat): Implement...
 		if (min.some(v => v < 0) || max.some(v => v > 1)) {
-			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+			logger.warn(`${NAME}: Skipping ${semantic}; out of [0,1] range.`);
 			return {bits: -1};
 		}
 		bits = options.quantizeTexcoord;
@@ -328,14 +399,14 @@ function getQuantizationSettings(
 		return {bits: -1};
 	} else if (semantic.startsWith('WEIGHTS_')) {
 		if (min.some(v => v < 0) || max.some(v => v > 1)) {
-			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+			logger.warn(`${NAME}: Skipping ${semantic}; out of [0,1] range.`);
 			return {bits: -1};
 		}
 		bits = options.quantizeWeight;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('_')) {
 		if (min.some(v => v < -1) || max.some(v => v > 1)) {
-			logger.warn(`${NAME}: Skipping ${semantic}; out of supported range.`);
+			logger.warn(`${NAME}: Skipping ${semantic}; out of [-1,1] range.`);
 			return {bits: -1};
 		}
 		bits = options.quantizeGeneric;
@@ -347,6 +418,15 @@ function getQuantizationSettings(
 	}
 
 	return {bits, ctor};
+}
+
+function fromTransform(transform: VectorTransform<vec3>): mat4 {
+	return fromRotationTranslationScale(
+		[] as unknown as mat4,
+		[0, 0, 0, 1],
+		transform.offset,
+		[transform.scale, transform.scale, transform.scale],
+	) as mat4;
 }
 
 export { quantize };
