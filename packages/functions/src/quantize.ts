@@ -1,8 +1,9 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, vec3, mat4, Skin, bbox, PropertyType, vec2, vec4 } from '@gltf-transform/core';
-import { MeshQuantization } from '@gltf-transform/extensions';
-import { fromRotationTranslationScale, multiply as multiplyMat4 } from 'gl-matrix/mat4';
+import { Accessor, Animation, bbox, Document, Logger, mat4, Mesh, Node, Primitive, PrimitiveTarget, PropertyType, Skin, Transform, vec2, vec3, vec4 } from '@gltf-transform/core';
 import { dedup } from './dedup';
+import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
+import { MeshQuantization } from '@gltf-transform/extensions';
 import { prune } from './prune';
+import { transformMat4 } from 'gl-matrix/vec3';
 
 const NAME = 'quantize';
 
@@ -124,8 +125,15 @@ function quantizePrimitive(
 
 		// Remap position data.
 		if (semantic === 'POSITION') {
+			const scale = 1 / nodeTransform.scale;
+			const transform: mat4 = [] as unknown as mat4;
+			// Morph targets are relative offsets, don't translate them.
+			prim instanceof Primitive
+				? invert(transform, fromTransform(nodeTransform))
+				: fromScaling(transform, [scale, scale, scale]);
 			for (let i = 0, el: vec3 = [0, 0, 0], il = dstAttribute.getCount(); i < il; i++) {
-				dstAttribute.setElement(i, nodeTransform.remap(dstAttribute.getElement(i, el)));
+				dstAttribute.getElement(i, el);
+				dstAttribute.setElement(i, transformMat4(el, el, transform) as vec3);
 			}
 		}
 
@@ -144,7 +152,6 @@ function quantizePrimitive(
 }
 
 interface VectorTransform<T = vec2|vec3|vec4> {
-	remap: (v: number[]) => number[];
 	offset: T;
 	scale: number;
 }
@@ -188,14 +195,7 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 		min[2] + (max[2] - min[2]) / 2,
 	];
 
-	// Transforms mesh vertices to a [-1,1] AABB centered at the origin.
-	const remap = (v: number[]) => [
-		(v[0] - offset[0]) / scale,
-		(v[1] - offset[1]) / scale,
-		(v[2] - offset[2]) / scale,
-	];
-
-	return {remap, offset, scale};
+	return {offset, scale};
 }
 
 function listPositionAttributes(mesh: Mesh): Accessor[] {

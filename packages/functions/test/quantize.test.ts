@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, bbox, bounds, Document, Logger, Primitive, Scene, vec3 } from '@gltf-transform/core';
+import { Accessor, bbox, bounds, Document, Logger, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
 import { quantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -172,6 +172,50 @@ test('@gltf-transform/functions::quantize | skinned mesh', async t => {
 	t.end();
 });
 
+test.only('@gltf-transform/functions::quantize | morph targets', async t => {
+	const doc = new Document().setLogger(logger);
+	const target = doc.createPrimitiveTarget()
+		.setAttribute(
+			'POSITION',
+			doc.createAccessor()
+				.setType('VEC3')
+				.setArray(new Float32Array([
+					0, 0, 0,
+					10, 0, 0,
+					0, 20, 0,
+					0, 0, 30,
+					40, 40, 40,
+				]))
+		);
+	const prim = createPrimitive(doc).addTarget(target);
+	const scene = doc.getRoot().listScenes().pop();
+
+	const bboxSceneCopy = bounds(scene);
+	const bboxMeshCopy = primBounds(prim);
+
+	t.deepEquals(bboxSceneCopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - scene');
+	t.deepEquals(bboxMeshCopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - mesh');
+
+	await doc.transform(quantize({quantizePosition: 14}));
+
+	const bboxScene = roundBbox(bounds(scene), 2);
+	const bboxMesh = roundBbox(primBounds(prim), 3);
+	const bboxTarget = roundBbox(primBounds(target), 3);
+
+	console.log(Array.from(target.getAttribute('POSITION').getArray()));
+
+	t.deepEquals(bboxScene, {min: [10, 10, 0], max: [15, 15, 0]}, 'bbox - scene');
+	t.deepEquals(bboxMesh, {min: [-.5, -.5, -1], max: [-.25, -.25, -1]}, 'bbox - mesh');
+
+	// TODO(bug): Because morph targets aren't offset, we're not mapping them
+	// to the [-1,1] range the way we are vertex positions... we can't offset
+	// them, so I think we need to calculate the scale differently in this case?
+	// that is, the full extent of the morph targets factors into scale, not just
+	// the (max-min) span.
+	t.deepEquals(bboxTarget, {min: [0, 0, 0], max: [1, 1, 1]}, 'bbox - target');
+	t.end();
+});
+
 test('@gltf-transform/functions::quantize | attributes', async t => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
@@ -298,7 +342,7 @@ function roundBbox(bbox: bbox, decimals: number): bbox {
 	};
 }
 
-function primBounds(prim: Primitive): bbox {
+function primBounds(prim: Primitive | PrimitiveTarget): bbox {
 	return {
 		min: prim.getAttribute('POSITION').getMinNormalized([]) as vec3,
 		max: prim.getAttribute('POSITION').getMaxNormalized([]) as vec3,
