@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, bbox, bounds, Document, Logger, Primitive, Scene, vec3 } from '@gltf-transform/core';
+import { Accessor, bbox, bounds, Document, Logger, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
 import { quantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -172,6 +172,57 @@ test('@gltf-transform/functions::quantize | skinned mesh', async t => {
 	t.end();
 });
 
+test('@gltf-transform/functions::quantize | morph targets', async t => {
+	const doc = new Document().setLogger(logger);
+
+	// Note: Neither prim.POSITION nor target.POSITION includes the origin (<0,0,0>),
+	// but it MUST be included in the quantization volume to quantize targets correctly.
+	const target = doc.createPrimitiveTarget()
+		.setAttribute(
+			'POSITION',
+			doc.createAccessor()
+				.setType('VEC3')
+				.setArray(new Float32Array([
+					5, 5, 5,
+					10, 5, 5,
+					10, 20, 5,
+					10, 5, 30,
+					40, 40, 40,
+				]))
+		);
+	const prim = createPrimitive(doc)
+		.addTarget(target);
+	prim.getAttribute('POSITION')
+		.setArray(new Float32Array([
+			10, 10, 5,
+			10, 15, 5,
+			15, 10, 5,
+			15, 15, 5,
+			10, 10, 5,
+		]));
+
+	const scene = doc.getRoot().listScenes().pop();
+
+	const bboxSceneCopy = bounds(scene);
+	const bboxMeshCopy = primBounds(prim);
+	const bboxTargetCopy = primBounds(target);
+
+	t.deepEquals(bboxSceneCopy, {min: [10, 10, 5], max: [15, 15, 5]}, 'original bbox - scene');
+	t.deepEquals(bboxMeshCopy, {min: [10, 10, 5], max: [15, 15, 5]}, 'original bbox - mesh');
+	t.deepEquals(bboxTargetCopy, {min: [5, 5, 5], max: [40, 40, 40]}, 'original bbox - target');
+
+	await doc.transform(quantize({quantizePosition: 14}));
+
+	const bboxScene = roundBbox(bounds(scene), 2);
+	const bboxMesh = roundBbox(primBounds(prim), 3);
+	const bboxTarget = roundBbox(primBounds(target), 3);
+
+	t.deepEquals(bboxScene, {min: [10, 10, 5], max: [15, 15, 5]}, 'bbox - scene');
+	t.deepEquals(bboxMesh, {min: [-.75, -.75, -.875], max: [-.625, -.625, -.875]}, 'bbox - mesh');
+	t.deepEquals(bboxTarget, {min: [.125, .125, .125], max: [1, 1, 1]}, 'bbox - target');
+	t.end();
+});
+
 test('@gltf-transform/functions::quantize | attributes', async t => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
@@ -298,7 +349,7 @@ function roundBbox(bbox: bbox, decimals: number): bbox {
 	};
 }
 
-function primBounds(prim: Primitive): bbox {
+function primBounds(prim: Primitive | PrimitiveTarget): bbox {
 	return {
 		min: prim.getAttribute('POSITION').getMinNormalized([]) as vec3,
 		max: prim.getAttribute('POSITION').getMaxNormalized([]) as vec3,
