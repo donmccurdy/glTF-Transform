@@ -123,12 +123,12 @@ function quantizePrimitive(
 
 		// Remap position data.
 		if (semantic === 'POSITION') {
-			const scale = 1 / nodeTransform.scale;
+			const scale = nodeTransform.scale;
 			const transform: mat4 = [] as unknown as mat4;
 			// Morph targets are relative offsets, don't translate them.
 			prim instanceof Primitive
 				? invert(transform, fromTransform(nodeTransform))
-				: fromScaling(transform, [scale, scale, scale]);
+				: fromScaling(transform, [1 / scale, 1 / scale, 1 / scale]);
 			for (let i = 0, el: vec3 = [0, 0, 0], il = dstAttribute.getCount(); i < il; i++) {
 				dstAttribute.getElement(i, el);
 				dstAttribute.setElement(i, transformMat4(el, el, transform) as vec3);
