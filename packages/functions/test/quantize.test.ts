@@ -172,29 +172,44 @@ test('@gltf-transform/functions::quantize | skinned mesh', async t => {
 	t.end();
 });
 
-test.only('@gltf-transform/functions::quantize | morph targets', async t => {
+test('@gltf-transform/functions::quantize | morph targets', async t => {
 	const doc = new Document().setLogger(logger);
+
+	// Note: Neither prim.POSITION nor target.POSITION includes the origin (<0,0,0>),
+	// but it MUST be included in the quantization volume to quantize targets correctly.
 	const target = doc.createPrimitiveTarget()
 		.setAttribute(
 			'POSITION',
 			doc.createAccessor()
 				.setType('VEC3')
 				.setArray(new Float32Array([
-					0, 0, 0,
-					10, 0, 0,
-					0, 20, 0,
-					0, 0, 30,
+					5, 5, 5,
+					10, 5, 5,
+					10, 20, 5,
+					10, 5, 30,
 					40, 40, 40,
 				]))
 		);
-	const prim = createPrimitive(doc).addTarget(target);
+	const prim = createPrimitive(doc)
+		.addTarget(target);
+	prim.getAttribute('POSITION')
+		.setArray(new Float32Array([
+			10, 10, 5,
+			10, 15, 5,
+			15, 10, 5,
+			15, 15, 5,
+			10, 10, 5,
+		]));
+
 	const scene = doc.getRoot().listScenes().pop();
 
 	const bboxSceneCopy = bounds(scene);
 	const bboxMeshCopy = primBounds(prim);
+	const bboxTargetCopy = primBounds(target);
 
-	t.deepEquals(bboxSceneCopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - scene');
-	t.deepEquals(bboxMeshCopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - mesh');
+	t.deepEquals(bboxSceneCopy, {min: [10, 10, 5], max: [15, 15, 5]}, 'original bbox - scene');
+	t.deepEquals(bboxMeshCopy, {min: [10, 10, 5], max: [15, 15, 5]}, 'original bbox - mesh');
+	t.deepEquals(bboxTargetCopy, {min: [5, 5, 5], max: [40, 40, 40]}, 'original bbox - target');
 
 	await doc.transform(quantize({quantizePosition: 14}));
 
@@ -202,17 +217,9 @@ test.only('@gltf-transform/functions::quantize | morph targets', async t => {
 	const bboxMesh = roundBbox(primBounds(prim), 3);
 	const bboxTarget = roundBbox(primBounds(target), 3);
 
-	console.log(Array.from(target.getAttribute('POSITION').getArray()));
-
-	t.deepEquals(bboxScene, {min: [10, 10, 0], max: [15, 15, 0]}, 'bbox - scene');
-	t.deepEquals(bboxMesh, {min: [-.5, -.5, -1], max: [-.25, -.25, -1]}, 'bbox - mesh');
-
-	// TODO(bug): Because morph targets aren't offset, we're not mapping them
-	// to the [-1,1] range the way we are vertex positions... we can't offset
-	// them, so I think we need to calculate the scale differently in this case?
-	// that is, the full extent of the morph targets factors into scale, not just
-	// the (max-min) span.
-	t.deepEquals(bboxTarget, {min: [0, 0, 0], max: [1, 1, 1]}, 'bbox - target');
+	t.deepEquals(bboxScene, {min: [10, 10, 5], max: [15, 15, 5]}, 'bbox - scene');
+	t.deepEquals(bboxMesh, {min: [-.75, -.75, -.875], max: [-.625, -.625, -.875]}, 'bbox - mesh');
+	t.deepEquals(bboxTarget, {min: [.125, .125, .125], max: [1, 1, 1]}, 'bbox - target');
 	t.end();
 });
 

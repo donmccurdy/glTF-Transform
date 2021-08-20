@@ -1,9 +1,9 @@
 import { Accessor, Animation, bbox, Document, Logger, mat4, Mesh, Node, Primitive, PrimitiveTarget, PropertyType, Skin, Transform, vec2, vec3, vec4 } from '@gltf-transform/core';
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
+import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { MeshQuantization } from '@gltf-transform/extensions';
 import { prune } from './prune';
-import { transformMat4 } from 'gl-matrix/vec3';
 
 const NAME = 'quantize';
 
@@ -69,17 +69,15 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		// Compute vertex position quantization volume.
 		let nodeTransform: VectorTransform<vec3> | undefined = undefined;
 		if (options.quantizationVolume === 'scene') {
-			const positions: Accessor[] = [];
-			for (const mesh of root.listMeshes()) {
-				positions.push(...listPositionAttributes(mesh));
-			}
-			nodeTransform = getNodeTransform(flatBounds(positions, 3));
+			nodeTransform = getNodeTransform(
+				expandBounds(root.listMeshes().map(getPositionQuantizationVolume))
+			);
 		}
 
 		// Quantize mesh primitives.
 		for (const mesh of doc.getRoot().listMeshes()) {
 			if (options.quantizationVolume === 'mesh') {
-				nodeTransform = getNodeTransform(flatBounds(listPositionAttributes(mesh), 3));
+				nodeTransform = getNodeTransform(getPositionQuantizationVolume(mesh));
 			}
 
 			if (nodeTransform && !options.excludeAttributes.includes('POSITION')) {
@@ -151,31 +149,6 @@ function quantizePrimitive(
 	}
 }
 
-interface VectorTransform<T = vec2|vec3|vec4> {
-	offset: T;
-	scale: number;
-}
-
-/** Computes total min and max of all Accessors in a list. */
-function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): ({min: T, max: T}) {
-	const min: number[] = new Array(elementSize).fill(Infinity);
-	const max: number[] = new Array(elementSize).fill(-Infinity);
-
-	const tmpMin: number[] = [];
-	const tmpMax: number[] = [];
-
-	for (const accessor of accessors) {
-		accessor.getMinNormalized(tmpMin);
-		accessor.getMaxNormalized(tmpMax);
-		for (let i = 0; i < elementSize; i++) {
-			min[i] = Math.min(min[i], tmpMin[i]);
-			max[i] = Math.max(max[i], tmpMax[i]);
-		}
-	}
-
-	return {min, max} as unknown as {min: T, max: T};
-}
-
 /** Computes node quantization transforms in local space. */
 function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	const {min, max} = volume;
@@ -196,22 +169,6 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	];
 
 	return {offset, scale};
-}
-
-function listPositionAttributes(mesh: Mesh): Accessor[] {
-	const positions: Accessor[] = [];
-	for (const prim of mesh.listPrimitives()) {
-		const attribute = prim.getAttribute('POSITION');
-		if (attribute) positions.push(attribute);
-		for (const target of prim.listTargets()) {
-			const attribute = target.getAttribute('POSITION');
-			if (attribute) positions.push(attribute);
-		}
-	}
-	if (positions.length === 0) {
-		throw new Error(`${NAME}: Missing "POSITION" attribute.`);
-	}
-	return positions;
 }
 
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
@@ -357,6 +314,71 @@ function getQuantizationSettings(
 	}
 
 	return {bits, ctor};
+}
+
+function getPositionQuantizationVolume(mesh: Mesh): bbox {
+	const positions: Accessor[] = [];
+	const relativePositions: Accessor[] = [];
+	for (const prim of mesh.listPrimitives()) {
+		const attribute = prim.getAttribute('POSITION');
+		if (attribute) positions.push(attribute);
+		for (const target of prim.listTargets()) {
+			const attribute = target.getAttribute('POSITION');
+			if (attribute) relativePositions.push(attribute);
+		}
+	}
+
+	if (positions.length === 0) {
+		throw new Error(`${NAME}: Missing "POSITION" attribute.`);
+	}
+
+	const bbox = flatBounds<vec3>(positions, 3);
+
+	// Morph target quantization volume is computed differently. First, ensure that the origin
+	// <0, 0, 0> is in the quantization volume. Because we can't offset target positions (they're
+	// relative deltas), default remapping will only map to a [-2, 2] AABB. Double the bounding box
+	// to ensure scaling puts them within a [-1, 1] AABB instead.
+	if (relativePositions.length > 0) {
+		const {min: relMin, max: relMax} = flatBounds<vec3>(relativePositions, 3);
+		min(bbox.min, bbox.min, min(relMin, scale(relMin, relMin, 2), [0, 0, 0]));
+		max(bbox.max, bbox.max, max(relMax, scale(relMax, relMax, 2), [0, 0, 0]));
+	}
+
+	return bbox;
+}
+
+/** Computes total min and max of all Accessors in a list. */
+function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): ({min: T, max: T}) {
+	const min: number[] = new Array(elementSize).fill(Infinity);
+	const max: number[] = new Array(elementSize).fill(-Infinity);
+
+	const tmpMin: number[] = [];
+	const tmpMax: number[] = [];
+
+	for (const accessor of accessors) {
+		accessor.getMinNormalized(tmpMin);
+		accessor.getMaxNormalized(tmpMax);
+		for (let i = 0; i < elementSize; i++) {
+			min[i] = Math.min(min[i], tmpMin[i]);
+			max[i] = Math.max(max[i], tmpMax[i]);
+		}
+	}
+
+	return {min, max} as unknown as {min: T, max: T};
+}
+
+function expandBounds(bboxes: bbox[]): bbox {
+	const result = bboxes[0];
+	for (const bbox of bboxes) {
+		min(result.min, result.min, bbox.min);
+		max(result.max, result.max, bbox.max);
+	}
+	return result;
+}
+
+interface VectorTransform<T = vec2|vec3|vec4> {
+	offset: T;
+	scale: number;
 }
 
 function fromTransform(transform: VectorTransform<vec3>): mat4 {
