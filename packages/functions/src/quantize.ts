@@ -65,14 +65,14 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		doc.createExtension(MeshQuantization).setRequired(true);
 
-		// If quantization volume is unified, compute it.
-		let quantizationVolume: bbox | undefined = undefined;
+		// Compute vertex position quantization volume.
+		let nodeTransform: VectorTransform<vec3> | undefined = undefined;
 		if (options.quantizationVolume === 'scene') {
-			if (root.listScenes().length !== 1) {
-				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
-			} else {
-				quantizationVolume = bounds(root.listScenes().pop()!);
+			const positions: Accessor[] = [];
+			for (const mesh of root.listMeshes()) {
+				positions.push(...listPositionAttributes(mesh));
 			}
+			nodeTransform = getNodeTransform(flatBounds(positions, 3));
 		}
 
 		// Always use unified UV quantization grid.
@@ -80,15 +80,18 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		// Quantize mesh primitives.
 		for (const mesh of doc.getRoot().listMeshes()) {
-			const nodeTransform = getNodeTransform(mesh, quantizationVolume);
+			if (options.quantizationVolume === 'mesh') {
+				nodeTransform = getNodeTransform(flatBounds(listPositionAttributes(mesh), 3));
+			}
+
 			if (nodeTransform && !options.excludeAttributes.includes('POSITION')) {
 				transformMeshParents(doc, mesh, nodeTransform);
 			}
 
 			for (const prim of mesh.listPrimitives()) {
-				quantizePrimitive(doc, prim, nodeTransform, /*uvTransform,*/ options);
+				quantizePrimitive(doc, prim, nodeTransform!, /*uvTransform,*/ options);
 				for (const target of prim.listTargets()) {
-					quantizePrimitive(doc, target, nodeTransform, /*uvTransform,*/ options);
+					quantizePrimitive(doc, target, nodeTransform!, /*uvTransform,*/ options);
 				}
 			}
 		}
@@ -189,8 +192,8 @@ function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): 
 }
 
 /** Computes node quantization transforms in local space. */
-function getNodeTransform(mesh: Mesh, volume?: bbox): VectorTransform<vec3> {
-	const {min, max} = volume || flatBounds(listPositionAttributes(mesh), 3);
+function getNodeTransform(volume: bbox): VectorTransform<vec3> {
+	const {min, max} = volume;
 
 	// Scaling factor transforms [-1,1] box to the mesh AABB in local space.
 	// See: https://github.com/donmccurdy/glTF-Transform/issues/328

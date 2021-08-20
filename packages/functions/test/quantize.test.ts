@@ -1,334 +1,288 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
+import { Accessor, bbox, bounds, Document, Logger, Primitive, Scene, vec3 } from '@gltf-transform/core';
 import { quantize } from '../';
 
-const {VEC2, VEC3, VEC4} = Accessor.Type;
+const logger = new Logger(Logger.Verbosity.WARN);
 
 test('@gltf-transform/functions::quantize | exclusions', async t => {
-	const doc = new Document();
-	const uv = createFloatAttribute(doc, 'TEXCOORD_0', Accessor.Type.VEC2, new Float32Array([
-		0.00, 0.00,
-		1.00, 1.00,
-	]));
-	const normal = createFloatAttribute(doc, 'NORMAL', Accessor.Type.VEC3, new Float32Array([
-		0.00, 0.00, 1.00,
-		0.70, 0.70, 0.00,
-	]));
+	const doc = new Document().setLogger(logger);
+	const prim = createPrimitive(doc);
 
-	await doc.transform(quantize({excludeAttributes: ['TEXCOORD_0', 'NORMAL']}));
+	await doc.transform(quantize({excludeAttributes: ['NORMAL', 'TEXCOORD_0']}));
 
-	t.ok(uv.getArray() instanceof Float32Array, 'uv → unchanged');
-	t.ok(normal.getArray() instanceof Float32Array, 'normal → unchanged');
+	t.ok(prim.getAttribute('POSITION').getArray() instanceof Int16Array, 'position → Int16Array');
+	t.ok(prim.getAttribute('TEXCOORD_0').getArray() instanceof Float32Array, 'uv → unchanged');
+	t.ok(prim.getAttribute('NORMAL').getArray() instanceof Float32Array, 'normal → unchanged');
 
 	await doc.transform(quantize());
 
-	t.ok(uv.getArray() instanceof Uint16Array, 'uv → Uint16Array');
-	t.ok(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
+	t.ok(prim.getAttribute('TEXCOORD_0').getArray() instanceof Uint16Array, 'uv → Uint16Array');
+	t.ok(prim.getAttribute('NORMAL').getArray() instanceof Int16Array, 'normal → Int16Array');
 	t.end();
 });
 
-test('@gltf-transform/functions::quantize | position + mesh volume', async t => {
-	const doc = new Document();
-	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
-	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
-		// 256x256x256 box; origin <200000, 500000, 0>.
-		OX + 0, OY + 0, OZ + 0,
-		OX + 256, OY + 0, OZ + 0,
-		OX + 0, OY + 256, OZ + 0,
-		OX + 0, OY + 0, OZ + 256,
-		OX + 0, OY + 256, OZ + 256,
-		OX + 256, OY + 0, OZ + 256,
-		OX + 256, OY + 256, OZ + 0,
-		OX + 256, OY + 256, OZ + 256,
-	]));
-	const positionCopy = position.clone();
-	const mesh = doc.getRoot().listMeshes()[0];
-	const node = doc.createNode().setMesh(mesh);
+test('@gltf-transform/functions::quantize | mesh volume', async t => {
+	const doc = new Document().setLogger(logger);
+	const scene = createScene(doc);
+	const nodeA = doc.getRoot().listNodes()[0];
+	const nodeB = doc.getRoot().listNodes()[1];
+	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
+
+	const bboxSceneCopy = bounds(scene);
+	const bboxNodeACopy = bounds(nodeA);
+	const bboxNodeBCopy = bounds(nodeB);
+	const bboxMeshACopy = primBounds(primA);
+	const bboxMeshBCopy = primBounds(primB);
+
+	t.deepEquals(bboxSceneCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - scene');
+	t.deepEquals(bboxNodeACopy, {min: [20, 10, 0], max: [25, 15, 0]}, 'original bbox - nodeA');
+	t.deepEquals(bboxNodeBCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - nodeB');
+	t.deepEquals(bboxMeshACopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - meshA');
+	t.deepEquals(bboxMeshBCopy, {min: [0, 0, 0], max: [100, 100, 100]}, 'original bbox - meshB');
 
 	await doc.transform(quantize({quantizePosition: 14}));
 
-	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
-		t.fail('Backup copy of positions was modified');
-	}
+	const bboxScene = bounds(scene);
+	const bboxNodeA = bounds(nodeA);
+	const bboxNodeB = bounds(nodeB);
+	const bboxMeshA = primBounds(primA);
+	const bboxMeshB = primBounds(primB);
 
-	const expectedRemap = (v: number[]): number[] => [
-		(v[0] - OX - 128) / 128, (v[1] - OY - 128) / 128, (v[2] - OZ - 128) / 128
-	];
-
-	t.ok(position.getNormalized(), 'position → normalized');
-	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
-	t.deepEquals(node.getTranslation(), [OX + 128, OY + 128, OZ + 128], 'node offset');
-	t.deepEquals(node.getScale(), [128, 128, 128], 'node scale');
-	elementPairs(position, positionCopy, round(6))
-		.map(([a, b]) => [a, expectedRemap(b)])
-		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
+	t.deepEquals(bboxScene, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - scene');
+	t.deepEquals(bboxNodeA, {min: [20, 10, 0], max: [25, 15, 0]}, 'bbox - nodeA');
+	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
+	t.deepEquals(bboxMeshA, {min: [-1, -1, 0], max: [1, 1, 0]}, 'bbox - meshA');
+	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
 	t.end();
 });
 
-test('@gltf-transform/functions::quantize | position + scene volume', async t => {
-	const doc = new Document();
+test('@gltf-transform/functions::quantize | scene volume', async t => {
+	const doc = new Document().setLogger(logger);
+	const scene = createScene(doc);
+	const nodeA = doc.getRoot().listNodes()[0];
+	const nodeB = doc.getRoot().listNodes()[1];
+	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-	// Mesh #1.
-	let OX = 0, OY = 0, OZ = 0;
-	const position1 = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
-		// 256x256x256 box; origin <0, 0, 0>.
-		OX + 0, OY + 0, OZ + 0,
-		OX + 256, OY + 0, OZ + 0,
-		OX + 0, OY + 256, OZ + 0,
-		OX + 0, OY + 0, OZ + 256,
-		OX + 0, OY + 256, OZ + 256,
-		OX + 256, OY + 0, OZ + 256,
-		OX + 256, OY + 256, OZ + 0,
-		OX + 256, OY + 256, OZ + 256,
-	]));
-	const position1Copy = position1.clone();
-	const mesh1 = doc.getRoot().listMeshes().pop();
-	const node1 = doc.createNode().setMesh(mesh1);
+	const bboxSceneCopy = bounds(scene);
+	const bboxNodeACopy = bounds(nodeA);
+	const bboxNodeBCopy = bounds(nodeB);
+	const bboxMeshACopy = primBounds(primA);
+	const bboxMeshBCopy = primBounds(primB);
 
-	// Mesh #2.
-	OX = 256, OY = 256, OZ = 0;
-	const position2 = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
-		// 256x256x256 box; origin <256, 256, 0>.
-		OX + 0, OY + 0, OZ + 0,
-		OX + 256, OY + 0, OZ + 0,
-		OX + 0, OY + 256, OZ + 0,
-		OX + 0, OY + 0, OZ + 256,
-		OX + 0, OY + 256, OZ + 256,
-		OX + 256, OY + 0, OZ + 256,
-		OX + 256, OY + 256, OZ + 0,
-		OX + 256, OY + 256, OZ + 256,
-	]));
-	const position2Copy = position2.clone();
-	const mesh2 = doc.getRoot().listMeshes().pop();
-	const node2 = doc.createNode().setMesh(mesh2);
-
-	doc.createScene()
-		.addChild(node1)
-		.addChild(node2);
+	t.deepEquals(bboxSceneCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - scene');
+	t.deepEquals(bboxNodeACopy, {min: [20, 10, 0], max: [25, 15, 0]}, 'original bbox - nodeA');
+	t.deepEquals(bboxNodeBCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - nodeB');
+	t.deepEquals(bboxMeshACopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - meshA');
+	t.deepEquals(bboxMeshBCopy, {min: [0, 0, 0], max: [100, 100, 100]}, 'original bbox - meshB');
 
 	await doc.transform(quantize({
 		quantizePosition: 14,
-		quantizationVolume: 'scene'
+		quantizationVolume: 'scene',
 	}));
 
-	if (position1Copy.getNormalized() || !(position1Copy.getArray() instanceof Float32Array)
-		|| position2Copy.getNormalized() || !(position2Copy.getArray() instanceof Float32Array)) {
-		t.fail('Backup copy of positions was modified');
-	}
+	const bboxScene = roundBbox(bounds(scene), 3);
+	const bboxNodeA = roundBbox(bounds(nodeA), 2);
+	const bboxNodeB = roundBbox(bounds(nodeB), 3);
+	const bboxMeshA = roundBbox(primBounds(primA), 3);
+	const bboxMeshB = roundBbox(primBounds(primB), 3);
 
-	const expectedRemap = (v: number[]): number[] => [
-		(v[0] - 256) / 256, (v[1] - 256) / 256, (v[2] - 256) / 256
-	];
-
-	t.ok(position1.getNormalized(), 'position1 → normalized');
-	t.ok(position2.getNormalized(), 'position2 → normalized');
-	t.ok(position1.getArray() instanceof Int16Array, 'position1 → Int16Array');
-	t.ok(position2.getArray() instanceof Int16Array, 'position2 → Int16Array');
-	t.deepEquals(node1.getTranslation(), [256, 256, 256], 'node1 offset');
-	t.deepEquals(node2.getTranslation(), [256, 256, 256], 'node2 offset');
-	t.deepEquals(node1.getScale(), [256, 256, 256], 'node1 scale');
-	t.deepEquals(node2.getScale(), [256, 256, 256], 'node2 scale');
-	elementPairs(position1, position1Copy, round(6))
-		.map(([a, b]) => [a, expectedRemap(b)])
-		.forEach(([a, b], i) => t.deepEquals(a, b, `position1 value #${i + 1}`));
-	elementPairs(position2, position2Copy, round(6))
-		.map(([a, b]) => [a, expectedRemap(b)])
-		.forEach(([a, b], i) => t.deepEquals(a, b, `position2 value #${i + 1}`));
+	t.deepEquals(bboxScene, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - scene');
+	t.deepEquals(bboxNodeA, {min: [20, 10, 0], max: [25, 15, 0]}, 'bbox - nodeA');
+	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
+	t.deepEquals(bboxMeshA, {min: [-.8, -.8, -1], max: [-.7, -.7, -1]}, 'bbox - meshA');
+	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
 	t.end();
 });
 
-test('@gltf-transform/functions::quantize | position + skinned mesh', async t => {
-	const doc = new Document();
-	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
-	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
-		// 256x256x256 box; origin <200000, 500000, 0>.
-		OX + 0, OY + 0, OZ + 0,
-		OX + 256, OY + 0, OZ + 0,
-		OX + 0, OY + 256, OZ + 0,
-		OX + 0, OY + 0, OZ + 256,
-		OX + 0, OY + 256, OZ + 256,
-		OX + 256, OY + 0, OZ + 256,
-		OX + 256, OY + 256, OZ + 0,
-		OX + 256, OY + 256, OZ + 256,
-	]));
-	const positionCopy = position.clone();
-	const mesh = doc.getRoot().listMeshes()[0];
-	const ibm = doc.createAccessor()
-		.setType('MAT4')
-		.setArray(new Float32Array([
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1,
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1,
-		]));
-	const skin = doc.createSkin().setInverseBindMatrices(ibm);
-	const node = doc.createNode().setMesh(mesh).setSkin(skin);
+// test.only('@gltf-transform/functions::quantize | skinned mesh', async t => {
+// 	const doc = new Document().setLogger(logger);
+// 	const scene = createScene(doc);
+// 	const nodeA = doc.getRoot().listNodes()[0];
+// 	const nodeB = doc.getRoot().listNodes()[1];
+// 	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+// 	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-	await doc.transform(quantize({quantizePosition: 14}));
+// 	const bboxSceneCopy = bounds(scene);
+// 	const bboxNodeACopy = bounds(nodeA);
+// 	const bboxNodeBCopy = bounds(nodeB);
+// 	const bboxMeshACopy = primBounds(primA);
+// 	const bboxMeshBCopy = primBounds(primB);
 
-	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
-		t.fail('Backup copy of positions was modified');
-	}
+// 	t.deepEquals(bboxSceneCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - scene');
+// 	t.deepEquals(bboxNodeACopy, {min: [20, 10, 0], max: [25, 15, 0]}, 'original bbox - nodeA');
+// 	t.deepEquals(bboxNodeBCopy, {min: [0, 0, 0], max: [50, 50, 50]}, 'original bbox - nodeB');
+// 	t.deepEquals(bboxMeshACopy, {min: [10, 10, 0], max: [15, 15, 0]}, 'original bbox - meshA');
+// 	t.deepEquals(bboxMeshBCopy, {min: [0, 0, 0], max: [100, 100, 100]}, 'original bbox - meshB');
 
-	const expectedRemap = (v: number[]): number[] => [
-		(v[0] - OX - 128) / 128, (v[1] - OY - 128) / 128, (v[2] - OZ - 128) / 128
-	];
+// 	const ibm = doc.createAccessor()
+// 		.setType('MAT4')
+// 		.setArray(new Float32Array([
+// 			1, 0, 0, 0,
+// 			0, 1, 0, 0,
+// 			0, 0, 1, 0,
+// 			0, 0, 0, 1,
+// 			1, 0, 0, 0,
+// 			0, 1, 0, 0,
+// 			0, 0, 1, 0,
+// 			0, 0, 0, 1,
+// 		]));
+// 	nodeA.setSkin(doc.createSkin().setInverseBindMatrices(ibm));
 
-	t.ok(position.getNormalized(), 'position → normalized');
-	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
-	t.deepEquals(node.getTranslation(), [0, 0, 0], 'node offset');
-	t.deepEquals(node.getScale(), [1, 1, 1], 'node scale');
-	t.ok(skin.isDisposed(), 'old skin disposed');
-	t.ok(ibm.isDisposed(), 'old IBMs disposed');
-	t.deepEqual(
-		Array.from(node.getSkin().getInverseBindMatrices().getArray()),
-		[
-			128, 0, 0, 0,
-			0, 128, 0, 0,
-			0, 0, 128, 0,
-			200128, 500128, 128, 1,
-			128, 0, 0, 0,
-			0, 128, 0, 0,
-			0, 0, 128, 0,
-			200128, 500128, 128, 1,
-		],
-		'skin IBMs'
-	);
-	elementPairs(position, positionCopy, round(6))
-		.map(([a, b]) => [a, expectedRemap(b)])
-		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
-	t.end();
-});
+// 	await doc.transform(quantize({quantizePosition: 14}));
 
-test('@gltf-transform/functions::quantize | texcoord', async t => {
-	const doc = new Document();
-	const uv = createFloatAttribute(doc, 'TEXCOORD_0', VEC2, new Float32Array([
-		0.00, 0.00,
-		0.50, 0.50,
-		0.75, 0.25,
-		1.00, 0.00,
-		1.00, 1.00,
-		0.01, 0.99,
-	]));
-	const uvCopy = uv.clone();
+// 	const bboxScene = bounds(scene);
+// 	const bboxNodeA = bounds(nodeA);
+// 	const bboxNodeB = bounds(nodeB);
+// 	const bboxMeshA = primBounds(primA);
+// 	const bboxMeshB = primBounds(primB);
 
-	await doc.transform(quantize({quantizeTexcoord: 12}));
+// 	t.deepEquals(bboxScene, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - scene');
+// 	t.deepEquals(bboxNodeA, {min: [20, 10, 0], max: [25, 15, 0]}, 'bbox - nodeA');
+// 	t.deepEquals(bboxNodeB, {min: [0, 0, 0], max: [50, 50, 50]}, 'bbox - nodeB');
+// 	t.deepEquals(bboxMeshA, {min: [-1, -1, 0], max: [1, 1, 0]}, 'bbox - meshA');
+// 	t.deepEquals(bboxMeshB, {min: [-1, -1, -1], max: [1, 1, 1]}, 'bbox - meshB');
+// 	t.end();
+// });
 
-	if (uvCopy.getNormalized() || !(uvCopy.getArray() instanceof Float32Array)) {
-		t.fail('Backup copy of UVs was modified');
-	}
+// test('@gltf-transform/functions::quantize | position + skinned mesh', async t => {
+// 	const doc = new Document();
+// 	const OX = 200000, OY = 500000, OZ = 0; // intentionally outside uint16 range.
+// 	const position = createFloatAttribute(doc, 'POSITION', VEC3, new Float32Array([
+// 		// 256x256x256 box; origin <200000, 500000, 0>.
+// 		OX + 0, OY + 0, OZ + 0,
+// 		OX + 256, OY + 0, OZ + 0,
+// 		OX + 0, OY + 256, OZ + 0,
+// 		OX + 0, OY + 0, OZ + 256,
+// 		OX + 0, OY + 256, OZ + 256,
+// 		OX + 256, OY + 0, OZ + 256,
+// 		OX + 256, OY + 256, OZ + 0,
+// 		OX + 256, OY + 256, OZ + 256,
+// 	]));
+// 	const positionCopy = position.clone();
+// 	const mesh = doc.getRoot().listMeshes()[0];
+// 	const ibm = doc.createAccessor()
+// 		.setType('MAT4')
+// 		.setArray(new Float32Array([
+// 			1, 0, 0, 0,
+// 			0, 1, 0, 0,
+// 			0, 0, 1, 0,
+// 			0, 0, 0, 1,
+// 			1, 0, 0, 0,
+// 			0, 1, 0, 0,
+// 			0, 0, 1, 0,
+// 			0, 0, 0, 1,
+// 		]));
+// 	const skin = doc.createSkin().setInverseBindMatrices(ibm);
+// 	const node = doc.createNode().setMesh(mesh).setSkin(skin);
 
-	t.ok(uv.getNormalized(), 'uv → normalized');
-	t.ok(uv.getArray() instanceof Uint16Array, 'uv → Uint16Array');
-	elementPairs(uv, uvCopy, round(3))
-		.forEach(([a, b], i) => t.deepEquals(a, b, `uv value #${i + 1}`));
-	t.end();
-});
+// 	await doc.transform(quantize({quantizePosition: 14}));
 
-test('@gltf-transform/functions::quantize | normal', async t => {
-	const doc = new Document();
-	const normal = createFloatAttribute(doc, 'NORMAL', VEC3, new Float32Array([
-		-0.19211, -0.93457, 0.29946,
-		-0.08526, -0.99393, 0.06957,
-		0.82905, -0.39715, 0.39364,
-		0.37303, -0.68174, 0.62934,
-		-0.06048, 0.04752, 0.99704,
-	]));
-	const normalCopy = normal.clone();
+// 	if (positionCopy.getNormalized() || !(positionCopy.getArray() instanceof Float32Array)) {
+// 		t.fail('Backup copy of positions was modified');
+// 	}
 
-	await doc.transform(quantize({quantizeNormal: 12}));
+// 	const expectedRemap = (v: number[]): number[] => [
+// 		(v[0] - OX - 128) / 128, (v[1] - OY - 128) / 128, (v[2] - OZ - 128) / 128
+// 	];
+
+// 	t.ok(position.getNormalized(), 'position → normalized');
+// 	t.ok(position.getArray() instanceof Int16Array, 'position → Int16Array');
+// 	t.deepEquals(node.getTranslation(), [0, 0, 0], 'node offset');
+// 	t.deepEquals(node.getScale(), [1, 1, 1], 'node scale');
+// 	t.ok(skin.isDisposed(), 'old skin disposed');
+// 	t.ok(ibm.isDisposed(), 'old IBMs disposed');
+// 	t.deepEqual(
+// 		Array.from(node.getSkin().getInverseBindMatrices().getArray()),
+// 		[
+// 			128, 0, 0, 0,
+// 			0, 128, 0, 0,
+// 			0, 0, 128, 0,
+// 			200128, 500128, 128, 1,
+// 			128, 0, 0, 0,
+// 			0, 128, 0, 0,
+// 			0, 0, 128, 0,
+// 			200128, 500128, 128, 1,
+// 		],
+// 		'skin IBMs'
+// 	);
+// 	elementPairs(position, positionCopy, round(6))
+// 		.map(([a, b]) => [a, expectedRemap(b)])
+// 		.forEach(([a, b], i) => t.deepEquals(a, b, `position value #${i + 1}`));
+// 	t.end();
+// });
+
+test('@gltf-transform/functions::quantize | attributes', async t => {
+	const doc = new Document().setLogger(logger);
+	const prim = createPrimitive(doc);
+	const normalCopy = prim.getAttribute('NORMAL').clone();
+	const tangentCopy = prim.getAttribute('TANGENT').clone();
+	const uvCopy = prim.getAttribute('TEXCOORD_0').clone();
+	const colorCopy = prim.getAttribute('COLOR_0').clone();
+	const jointsCopy = prim.getAttribute('JOINTS_0').clone();
+	const weightsCopy = prim.getAttribute('WEIGHTS_0').clone();
+	const tempCopy = prim.getAttribute('_TEMPERATURE').clone();
+
+	await doc.transform(quantize({
+		quantizeNormal: 12,
+		quantizeTexcoord: 12,
+		quantizeColor: 8,
+		quantizeWeight: 10,
+		quantizeGeneric: 10,
+	}));
+
+	const normal = prim.getAttribute('NORMAL');
+	const tangent = prim.getAttribute('TANGENT');
+	const uv = prim.getAttribute('TEXCOORD_0');
+	const color = prim.getAttribute('COLOR_0');
+	const joints = prim.getAttribute('JOINTS_0');
+	const weights = prim.getAttribute('WEIGHTS_0');
+	const temp = prim.getAttribute('_TEMPERATURE');
 
 	if (normalCopy.getNormalized() || !(normalCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of normals was modified');
 	}
-
-	t.ok(normal.getNormalized(), 'normal → normalized');
-	t.ok(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
-	elementPairs(normal, normalCopy, round(2))
-		.forEach(([a, b], i) => t.deepEquals(a, b, `normal value #${i + 1}`));
-	t.end();
-});
-
-test('@gltf-transform/functions::quantize | tangent', async t => {
-	const doc = new Document();
-	const tangent = createFloatAttribute(doc, 'TANGENT', VEC4, new Float32Array([
-		-0.19211, -0.93457, 0.29946, 1.0,
-		-0.08526, -0.99393, 0.06957, -1.0,
-		0.82905, -0.39715, 0.39364, 1.0,
-		0.37303, -0.68174, 0.62934, 1.0,
-		-0.06048, 0.04752, 0.99704, -1.0
-	]));
-	const tangentCopy = tangent.clone();
-
-	await doc.transform(quantize({quantizeNormal: 12}));
-
 	if (tangentCopy.getNormalized() || !(tangentCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of tangents was modified');
 	}
-
-	t.ok(tangent.getNormalized(), 'tangent → normalized');
-	t.ok(tangent.getArray() instanceof Int16Array, 'tangent → Int16Array');
-	elementPairs(tangent, tangentCopy, round(2))
-		.forEach(([a, b], i) => t.deepEquals(a, b, `tangent value #${i + 1}`));
-	t.end();
-});
-
-test('@gltf-transform/functions::quantize | color', async t => {
-	const doc = new Document();
-	const color = createFloatAttribute(doc, 'COLOR_0', VEC3, new Float32Array([
-		0.19, 0.93, 0.29,
-		0.08, 0.99, 0.06,
-		0.82, 0.39, 0.39,
-		0.37, 0.68, 0.62,
-		0.06, 0.04, 0.99,
-	]));
-	const colorCopy = color.clone();
-
-	await doc.transform(quantize({quantizeColor: 8}));
-
+	if (uvCopy.getNormalized() || !(uvCopy.getArray() instanceof Float32Array)) {
+		t.fail('Backup copy of UVs was modified');
+	}
 	if (colorCopy.getNormalized() || !(colorCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of colors was modified');
 	}
-
-	t.ok(color.getNormalized(), 'color → normalized');
-	t.ok(color.getArray() instanceof Uint8Array, 'color → Uint8Array');
-	elementPairs(color, colorCopy, round(1))
-		.forEach(([a, b], i) => t.deepEquals(a, b, `color value #${i + 1}`));
-	t.end();
-});
-
-// TODO(feat): Apply node transform to IBM?
-test.skip('@gltf-transform/functions::quantize | skinning', async t => {
-	const doc = new Document();
-	const joints = createFloatAttribute(doc, 'JOINTS_0', VEC4, new Float32Array([
-		0, 0, 0, 0,
-		1, 0, 0, 0,
-		2, 0, 0, 0,
-		3, 0, 0, 0,
-	]));
-	const jointsCopy = joints.clone();
-	const weights = createFloatAttribute(doc, 'WEIGHTS_0', VEC4, new Float32Array([
-		1, 0, 0, 0,
-		1, 0, 0, 0,
-		1, 0, 0, 0,
-		1, 0, 0, 0,
-	]));
-	const weightsCopy = weights.clone();
-
-	await doc.transform(quantize({quantizeWeight: 10}));
-
 	if (jointsCopy.getNormalized() || !(jointsCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of joints was modified');
 	}
 	if (weightsCopy.getNormalized() || !(weightsCopy.getArray() instanceof Float32Array)) {
 		t.fail('Backup copy of weights was modified');
 	}
+	if (tempCopy.getNormalized() || !(tempCopy.getArray() instanceof Float32Array)) {
+		t.fail('Backup copy of custom attribute was modified');
+	}
+
+	t.ok(normal.getNormalized(), 'normal → normalized');
+	t.ok(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
+	elementPairs(normal, normalCopy, round(2))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `normal value #${i + 1}`));
+
+	t.ok(tangent.getNormalized(), 'tangent → normalized');
+	t.ok(tangent.getArray() instanceof Int16Array, 'tangent → Int16Array');
+	elementPairs(tangent, tangentCopy, round(2))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `tangent value #${i + 1}`));
+
+	t.ok(uv.getNormalized(), 'uv → normalized');
+	t.ok(uv.getArray() instanceof Uint16Array, 'uv → Uint16Array');
+	elementPairs(uv, uvCopy, round(3))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `uv value #${i + 1}`));
+
+	t.ok(color.getNormalized(), 'color → normalized');
+	t.ok(color.getArray() instanceof Uint8Array, 'color → Uint8Array');
+	elementPairs(color, colorCopy, round(1))
+		.forEach(([a, b], i) => t.deepEquals(a, b, `color value #${i + 1}`));
 
 	t.notOk(joints.getNormalized(), 'joints → normalized');
 	t.ok(joints.getArray() instanceof Uint8Array, 'joints → Uint8Array');
@@ -338,46 +292,28 @@ test.skip('@gltf-transform/functions::quantize | skinning', async t => {
 	t.ok(weights.getArray() instanceof Uint16Array, 'weights → Uint16Array');
 	elementPairs(weights, weightsCopy, round(6))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `weights value #${i + 1}`));
-	t.end();
-});
-
-test('@gltf-transform/functions::quantize | custom', async t => {
-	const doc = new Document();
-	const temp = createFloatAttribute(doc, '_TEMPERATURE', VEC3, new Float32Array([
-		0.19, 0.93, 0.29,
-		0.08, 0.99, 0.06,
-		0.82, 0.39, 0.39,
-		0.37, 0.68, 0.62,
-		0.06, 0.04, 0.99,
-	]));
-	const tempCopy = temp.clone();
-
-	await doc.transform(quantize({quantizeGeneric: 10}));
-
-	if (tempCopy.getNormalized() || !(tempCopy.getArray() instanceof Float32Array)) {
-		t.fail('Backup copy of custom attribute was modified');
-	}
 
 	t.ok(temp.getNormalized(), 'custom → normalized');
 	t.ok(temp.getArray() instanceof Uint16Array, 'custom → Uint16Array');
 	elementPairs(temp, tempCopy, round(3))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `custom value #${i + 1}`));
+
 	t.end();
 });
 
 test('@gltf-transform/functions::quantize | indices', async t => {
-	const doc = new Document();
-	createFloatAttribute(doc, 'POSITION', VEC2, new Float32Array([
-		0.00, 0.00, 0.50, 0.50, 0.75, 0.25,
-	]));
-	const indices = doc.createAccessor()
-		.setType('SCALAR')
-		.setArray(new Uint32Array([0, 1, 2, 3, 4, 5, 6, 7]));
-	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
-	prim.setIndices(indices);
-	const indicesCopy = indices.clone();
+	const doc = new Document().setLogger(logger);
+	const prim = createPrimitive(doc);
+	prim.setIndices(
+		doc.createAccessor()
+			.setType('SCALAR')
+			.setArray(new Uint32Array([0, 1, 2, 3, 4]))
+	);
+	const indicesCopy = prim.getIndices().clone();
 
 	await doc.transform(quantize());
+
+	const indices = prim.getIndices();
 
 	if (indicesCopy.getNormalized() || !(indicesCopy.getArray() instanceof Uint32Array)) {
 		t.fail('Backup copy of indices was modified');
@@ -393,9 +329,23 @@ test('@gltf-transform/functions::quantize | indices', async t => {
 /* UTILITIES */
 
 /** Creates a rounding function for given decimal precision. */
-function round (decimals: number): (v: number) => number {
+function round(decimals: number): (v: number) => number {
 	const f = Math.pow(10, decimals);
 	return (v: number) => Math.round(v * f) / f;
+}
+
+function roundBbox(bbox: bbox, decimals: number): bbox {
+	return {
+		min: bbox.min.map(round(decimals)) as vec3,
+		max: bbox.max.map(round(decimals)) as vec3,
+	};
+}
+
+function primBounds(prim: Primitive): bbox {
+	return {
+		min: prim.getAttribute('POSITION').getMinNormalized([]) as vec3,
+		max: prim.getAttribute('POSITION').getMaxNormalized([]) as vec3,
+	};
 }
 
 /** Returns an array of pairs, containing the aligned elements for each of two Accessors. */
@@ -410,18 +360,138 @@ function elementPairs (a: Accessor, b: Accessor, roundFn: (v: number) => number)
 	return pairs;
 }
 
-/** Builds a new float32 attribute for given type and data. */
-function createFloatAttribute(
-		doc: Document,
-		semantic: string,
-		type: GLTF.AccessorType,
-		array: Float32Array): Accessor {
-	const attribute = doc.createAccessor()
-		.setType(type)
-		.setArray(array);
+function createScene(doc: Document): Scene {
+	const meshA = doc.createMesh('A')
+		.addPrimitive(
+			doc.createPrimitive()
+				.setAttribute(
+					'POSITION',
+					doc.createAccessor()
+						.setType('VEC3')
+						.setArray(new Float32Array([
+							10, 10, 0,
+							10, 15, 0,
+							15, 10, 0,
+							15, 15, 0,
+							10, 10, 0,
+						]))
+				)
+		);
+
+	const meshB = doc.createMesh('B')
+		.addPrimitive(
+			doc.createPrimitive()
+				.setAttribute(
+					'POSITION',
+					doc.createAccessor()
+						.setType('VEC3')
+						.setArray(new Float32Array([
+							0, 0, 100,
+							0, 100, 0,
+							100, 0, 0,
+							100, 0, 100,
+							100, 100, 0,
+						]))
+				)
+		);
+
+	const nodeA = doc.createNode('A')
+		.setTranslation([10, 0, 0])
+		.setScale([1, 1, 1])
+		.setMesh(meshA);
+
+	const nodeB = doc.createNode('B')
+		.setTranslation([0, 0, 0])
+		.setScale([0.5, 0.5, 0.5])
+		.setMesh(meshB);
+
+	return doc.createScene().addChild(nodeA).addChild(nodeB);
+}
+
+function createPrimitive(doc: Document): Primitive {
 	const prim = doc.createPrimitive()
-		.setAttribute(semantic, attribute)
-		.setMode(Primitive.Mode.TRIANGLES);
-	doc.createMesh().addPrimitive(prim);
-	return attribute;
+		.setMode(Primitive.Mode.TRIANGLES)
+		.setAttribute('POSITION', doc.createAccessor('POSITION')
+			.setType('VEC3')
+			.setArray(new Float32Array([
+				10, 10, 0,
+				10, 15, 0,
+				15, 10, 0,
+				15, 15, 0,
+				10, 10, 0,
+			]))
+		)
+		.setAttribute('TEXCOORD_0', doc.createAccessor('TEXCOORD_0')
+			.setType('VEC2')
+			.setArray(new Float32Array([
+				0.00, 0.00,
+				0.50, 0.50,
+				0.75, 0.25,
+				1.00, 0.00,
+				1.00, 1.00,
+			]))
+		)
+		.setAttribute('NORMAL', doc.createAccessor('NORMAL')
+			.setType('VEC3')
+			.setArray(new Float32Array([
+				-0.19211, -0.93457, 0.29946,
+				-0.08526, -0.99393, 0.06957,
+				0.82905, -0.39715, 0.39364,
+				0.37303, -0.68174, 0.62934,
+				-0.06048, 0.04752, 0.99704,
+			]))
+		)
+		.setAttribute('TANGENT', doc.createAccessor('TANGENT')
+			.setType('VEC4')
+			.setArray(new Float32Array([
+				-0.19211, -0.93457, 0.29946, 1.0,
+				-0.08526, -0.99393, 0.06957, -1.0,
+				0.82905, -0.39715, 0.39364, 1.0,
+				0.37303, -0.68174, 0.62934, 1.0,
+				-0.06048, 0.04752, 0.99704, -1.0
+			]))
+		)
+		.setAttribute('COLOR_0', doc.createAccessor('COLOR_0')
+			.setType('VEC3')
+			.setArray(new Float32Array([
+				0.19, 0.93, 0.29,
+				0.08, 0.99, 0.06,
+				0.82, 0.39, 0.39,
+				0.37, 0.68, 0.62,
+				0.06, 0.04, 0.99,
+			]))
+		)
+		.setAttribute('JOINTS_0', doc.createAccessor('JOINTS_0')
+			.setType('VEC4')
+			.setArray(new Float32Array([
+				0, 0, 0, 0,
+				1, 0, 0, 0,
+				2, 0, 0, 0,
+				3, 0, 0, 0,
+				4, 0, 0, 0,
+			]))
+		)
+		.setAttribute('WEIGHTS_0', doc.createAccessor('WEIGHTS_0')
+			.setType('VEC4')
+			.setArray(new Float32Array([
+				1, 0, 0, 0,
+				1, 0, 0, 0,
+				1, 0, 0, 0,
+				1, 0, 0, 0,
+				1, 0, 0, 0,
+			]))
+		)
+		.setAttribute('_TEMPERATURE', doc.createAccessor('_TEMPERATURE')
+			.setType('SCALAR')
+			.setArray(new Float32Array([
+				0.56,
+				0.65,
+				0.85,
+				0.92,
+				0.81,
+			]))
+		);
+
+	doc.createScene().addChild(doc.createNode().setMesh(doc.createMesh().addPrimitive(prim)));
+	return prim;
 }
