@@ -34,7 +34,7 @@ interface LayoutPlan {
  * Example:
  *
  * ```ts
- * import { MeshoptEncoder } from 'path/to/meshopt_encoder.module.js';
+ * import { MeshoptEncoder } from 'meshoptimizer';
  * import { reorder } from '@gltf-transform/functions';
  *
  * await document.transform(
