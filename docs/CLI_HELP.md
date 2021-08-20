@@ -1,5 +1,5 @@
 
-  gltf-transform 0.12.7 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 0.12.8 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -35,6 +35,7 @@
     weld                                 Index geometry and optionally merge similar vertices   
     unweld                               De-index geometry, disconnecting any shared vertices   
     tangents                             Generate MikkTSpace vertex tangents                    
+    reorder                              Optimize vertex data for locality of reference         
                                                                                                 
                                                                                                 
                                          ✨ MATERIAL ─────────────────────────────────────────  
