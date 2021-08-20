@@ -14,6 +14,7 @@
 
 **Features:**
 
+- Add `reorder()` function. [#321](https://github.com/donmccurdy/glTF-Transform/pull/321)
 - Faster, smaller CLI installation. [#281](https://github.com/donmccurdy/glTF-Transform/pull/281)
 - Improved `textureResize()` API. [#282](https://github.com/donmccurdy/glTF-Transform/pull/282)
 - Add `node.setMatrix(...)`. [#270](https://github.com/donmccurdy/glTF-Transform/issues/270)
