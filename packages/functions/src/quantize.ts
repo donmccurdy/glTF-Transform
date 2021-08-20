@@ -300,8 +300,8 @@ function transformMeshParents(
 			}
 
 			const nodeMatrix = targetNode.getMatrix();
-			const localMatrix = multiplyMat4([] as unknown as mat4, nodeMatrix, transformMatrix);
-			targetNode.setMatrix(localMatrix as mat4);
+			multiplyMat4(nodeMatrix, nodeMatrix, transformMatrix);
+			targetNode.setMatrix(nodeMatrix);
 		}
 	}
 }
