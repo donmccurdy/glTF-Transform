@@ -1,4 +1,4 @@
-import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, bounds, vec3, mat4, Skin, bbox, PropertyType, vec2, vec4 } from '@gltf-transform/core';
+import { Accessor, Animation, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Transform, vec3, mat4, Skin, bbox, PropertyType, vec2, vec4 } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
 import { fromRotationTranslationScale, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { dedup } from './dedup';
@@ -75,9 +75,6 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			nodeTransform = getNodeTransform(flatBounds(positions, 3));
 		}
 
-		// Always use unified UV quantization grid.
-		// const uvTransform = getUVTransform(doc);
-
 		// Quantize mesh primitives.
 		for (const mesh of doc.getRoot().listMeshes()) {
 			if (options.quantizationVolume === 'mesh') {
@@ -89,23 +86,12 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 			}
 
 			for (const prim of mesh.listPrimitives()) {
-				quantizePrimitive(doc, prim, nodeTransform!, /*uvTransform,*/ options);
+				quantizePrimitive(doc, prim, nodeTransform!, options);
 				for (const target of prim.listTargets()) {
-					quantizePrimitive(doc, target, nodeTransform!, /*uvTransform,*/ options);
+					quantizePrimitive(doc, target, nodeTransform!, options);
 				}
 			}
 		}
-
-		// Apply quantization transforms as TextureInfo transforms.
-		// const textureInfos = doc.getGraph().getLinks()
-		// 	.map((link) => link.getChild())
-		// 	.filter((child) => child instanceof TextureInfo) as TextureInfo[];
-		// for (const textureInfo of Array.from(new Set(textureInfos))) {
-		// 	const texCoord = textureInfo.getTexCoord();
-		// 	if (!options.excludeAttributes.includes(`TEXCOORD_${texCoord}`)) {
-		// 		// TODO(feat): Obtain existing transform, if any. Multiply mat3 results, and set.
-		// 	}
-		// }
 
 		await doc.transform(
 			prune({propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN]}),
@@ -121,7 +107,6 @@ function quantizePrimitive(
 		doc: Document,
 		prim: Primitive | PrimitiveTarget,
 		nodeTransform: VectorTransform<vec3>,
-		// uvTransform: VectorTransform<vec2> | null,
 		options: Required<QuantizeOptions>): void {
 	const logger = doc.getLogger();
 
@@ -143,13 +128,6 @@ function quantizePrimitive(
 				dstAttribute.setElement(i, nodeTransform.remap(dstAttribute.getElement(i, el)));
 			}
 		}
-
-		// Remap UV data.
-		// if (semantic.startsWith('TEXCOORD_')) {
-		// 	for (let i = 0, el: vec2 = [0, 0], il = dstAttribute.getCount(); i < il; i++) {
-		// 		dstAttribute.setElement(i, uvTransform!.remap(dstAttribute.getElement(i, el)));
-		// 	}
-		// }
 
 		// Quantize the vertex attribute.
 		quantizeAttribute(dstAttribute, ctor, bits);
@@ -220,34 +198,6 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	return {remap, offset, scale};
 }
 
-/** Computes UV quantization transform. */
-// function getUVTransform(document: Document): VectorTransform<vec2> | null {
-// 	const uvs = listUVAttributes(document);
-// 	if (uvs.length === 0) return null;
-
-// 	const {min, max} = flatBounds(uvs, 2);
-
-// 	// Scaling factor transforms [0,1] box to original AABB.
-// 	const scale = Math.max(
-// 		max[0] - min[0],
-// 		max[1] - min[1],
-// 	);
-
-// 	// Original center of UVs.
-// 	const offset: vec2 = [
-// 		min[0] + (max[0] - min[0]) / 2,
-// 		min[1] + (max[1] - min[1]) / 2,
-// 	];
-
-// 	// Transforms UVs to a [0,1] AABB.
-// 	const remap = (v: number[]) => [
-// 		(v[0] - offset[0]) / scale,
-// 		(v[1] - offset[1]) / scale,
-// 	];
-
-// 	return {remap, scale, offset};
-// }
-
 function listPositionAttributes(mesh: Mesh): Accessor[] {
 	const positions: Accessor[] = [];
 	for (const prim of mesh.listPrimitives()) {
@@ -263,19 +213,6 @@ function listPositionAttributes(mesh: Mesh): Accessor[] {
 	}
 	return positions;
 }
-
-// function listUVAttributes(document: Document): Accessor[] {
-// 	const uvs: Accessor[] = [];
-// 	for (const mesh of document.getRoot().listMeshes()) {
-// 		for (const prim of mesh.listPrimitives()) {
-// 			let uv: Accessor | null, i = 0;
-// 			while ((uv = prim.getAttribute(`TEXCOORD_${i++}`))) {
-// 				uvs.push(uv);
-// 			}
-// 		}
-// 	}
-// 	return uvs;
-// }
 
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
 function transformMeshParents(
@@ -386,7 +323,6 @@ function getQuantizationSettings(
 		bits = options.quantizeColor;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('TEXCOORD_')) {
-		// TODO(feat): Implement...
 		if (min.some(v => v < 0) || max.some(v => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of [0,1] range.`);
 			return {bits: -1};
