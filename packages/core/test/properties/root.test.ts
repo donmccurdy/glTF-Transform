@@ -82,3 +82,21 @@ test('@gltf-transform/core::root | clone child of root', t => {
 	t.deepEqual(doc.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
 	t.end();
 });
+
+test('@gltf-transform/core::root | extras', t => {
+	const doc = new Document();
+	const io = new NodeIO();
+
+	const jsonDocNoExtras = io.writeJSON(doc);
+	doc.getRoot().setExtras({custom: 'value'});
+	const jsonDocExtras = io.writeJSON(doc);
+
+	const rtDocNoExtras = io.readJSON(jsonDocNoExtras);
+	const rtDocExtras = io.readJSON(jsonDocExtras);
+
+	t.equals(jsonDocNoExtras.json.extras, undefined, 'no empty extras');
+	t.deepEquals(jsonDocExtras.json.extras, {custom: 'value'}, 'write extras');
+	t.deepEquals(rtDocNoExtras.getRoot().getExtras(), {}, 'round trip no extras');
+	t.deepEquals(rtDocExtras.getRoot().getExtras(), {custom: 'value'}, 'round trip extras');
+	t.end();
+});
