@@ -22,8 +22,10 @@ export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
 
 		const root = doc.getRoot();
-		const asset = {...root.getAsset(), generator: `glTF-Transform ${VERSION}`};
-		const json = {asset} as GLTF.IGLTF;
+		const json = {
+			asset: {...root.getAsset(), generator: `glTF-Transform ${VERSION}`},
+			extras: {...root.getExtras()},
+		} as GLTF.IGLTF;
 		const jsonDoc = {json, resources: {}} as JSONDocument;
 
 		const context = new WriterContext(doc, jsonDoc, options);
@@ -701,6 +703,8 @@ function clean(object: Record<string, unknown>): void {
 		if (Array.isArray(value) && value.length === 0) {
 			unused.push(key);
 		} else if (value === null || value === '') {
+			unused.push(key);
+		} else if (value && typeof value === 'object' && Object.keys(value).length === 0) {
 			unused.push(key);
 		}
 	}
