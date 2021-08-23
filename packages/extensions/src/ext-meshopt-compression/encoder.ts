@@ -74,7 +74,6 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): MeshoptFilt
 		.map((link) => (link as AttributeLink).getName())
 		.filter((name) => name !== 'accessor');
 	for (const semantic of semantics) {
-		// TODO(filter): Need to pad the normals with a .w component, I think?
 		if (semantic === 'NORMAL') return MeshoptFilter.OCTAHEDRAL;
 		if (semantic === 'TANGENT') return MeshoptFilter.OCTAHEDRAL;
 		if (semantic.startsWith('JOINTS_')) return MeshoptFilter.NONE;

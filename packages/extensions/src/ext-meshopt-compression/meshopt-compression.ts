@@ -8,8 +8,7 @@ import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 const NAME = EXT_MESHOPT_COMPRESSION;
 
 interface EncoderOptions {
-	method?: EncoderMethod,
-	// TODO(filter): bits...
+	method?: EncoderMethod
 }
 
 const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
