@@ -13,13 +13,14 @@ export function prepareArray(
 	let byteStride = array.byteLength / accessor.getCount();
 
 	if (mode === MeshoptMode.ATTRIBUTES && filter !== MeshoptFilter.NONE) {
+		// TODO(filter): Would need to denormalize accessors here.
 		if (filter === MeshoptFilter.EXPONENTIAL) {
 			byteStride = accessor.getElementSize() * 4;
 			array = encoder.encodeFilterExp(
 				new Float32Array(array), accessor.getCount(), byteStride, 12
 			);
 		} else if (filter === MeshoptFilter.OCTAHEDRAL) {
-			// TODO(filter): Add .w component to normals?
+			array = padArrayElements(array, accessor.getElementSize());
 			byteStride = 8;
 			array = encoder.encodeFilterOct(
 				new Float32Array(array), accessor.getCount(), byteStride, 8
@@ -74,19 +75,18 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): MeshoptFilt
 		.filter((name) => name !== 'accessor');
 	for (const semantic of semantics) {
 		// TODO(filter): Need to pad the normals with a .w component, I think?
-		if (semantic === 'NORMAL') return MeshoptFilter.NONE;
+		if (semantic === 'NORMAL') return MeshoptFilter.OCTAHEDRAL;
 		if (semantic === 'TANGENT') return MeshoptFilter.OCTAHEDRAL;
 		if (semantic.startsWith('JOINTS_')) return MeshoptFilter.NONE;
-		if (semantic.startsWith('WEIGHTS_')) return MeshoptFilter.NONE;
+		if (semantic.startsWith('WEIGHTS_')) return MeshoptFilter.EXPONENTIAL;
 		if (semantic === 'output') {
 			const targetPath = getTargetPath(accessor);
-			if (targetPath === 'rotation') return MeshoptFilter.NONE;
+			if (targetPath === 'rotation') return MeshoptFilter.QUATERNION;
 			if (targetPath === 'translation') return MeshoptFilter.EXPONENTIAL;
 			if (targetPath === 'scale') return MeshoptFilter.EXPONENTIAL;
 			return MeshoptFilter.NONE;
 		}
-		// TODO(filter): Exponential? Index sequence?
-		if (semantic === 'input') return MeshoptFilter.NONE;
+		if (semantic === 'input') return MeshoptFilter.EXPONENTIAL;
 		if (semantic === 'inverseBindMatrices') return MeshoptFilter.NONE;
 	}
 
