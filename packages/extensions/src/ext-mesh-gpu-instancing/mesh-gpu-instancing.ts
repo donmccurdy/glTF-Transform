@@ -4,7 +4,7 @@ import { InstancedMesh } from './instanced-mesh';
 
 const NAME = EXT_MESH_GPU_INSTANCING;
 
-// See BufferViewUsage in `writer.ts`.
+// See BufferViewUsage in `writer-context.ts`.
 const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
 
 interface InstancedMeshDef {
@@ -119,7 +119,7 @@ export class MeshGPUInstancing extends Extension {
 		context.accessorUsageGroupedByParent.add(INSTANCE_ATTRIBUTE);
 		for (const prop of this.properties) {
 			for (const attribute of (prop as InstancedMesh).listAttributes()) {
-				context.setAccessorUsage(attribute, INSTANCE_ATTRIBUTE);
+				context.addAccessorToUsageGroup(attribute, INSTANCE_ATTRIBUTE);
 			}
 		}
 		return this;

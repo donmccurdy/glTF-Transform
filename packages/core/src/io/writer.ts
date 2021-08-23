@@ -2,22 +2,12 @@ import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../cons
 import { Document } from '../document';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, AttributeLink, Camera, IndexLink, Material, Property } from '../properties';
+import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, Logger, MathUtils } from '../utils';
 import { WriterContext } from './writer-context';
 
-const BufferViewTarget = {
-	ARRAY_BUFFER: 34962,
-	ELEMENT_ARRAY_BUFFER: 34963
-};
-
-const BufferViewUsage = {
-	ARRAY_BUFFER: 'ARRAY_BUFFER',
-	ELEMENT_ARRAY_BUFFER: 'ELEMENT_ARRAY_BUFFER',
-	INVERSE_BIND_MATRICES: 'INVERSE_BIND_MATRICES',
-	OTHER: 'OTHER',
-};
+const { BufferViewUsage } = WriterContext;
 
 export interface WriterOptions {
 	format: Format;
@@ -181,7 +171,7 @@ export class GLTFWriter {
 				byteOffset: bufferByteOffset,
 				byteLength: byteLength,
 				byteStride: byteStride,
-				target: BufferViewTarget.ARRAY_BUFFER,
+				target: WriterContext.BufferViewTarget.ARRAY_BUFFER,
 			};
 			json.bufferViews!.push(bufferViewDef);
 
@@ -252,27 +242,12 @@ export class GLTFWriter {
 
 			// Assign usage for core accessor usage types (explicit targets and implicit usage).
 			const accessorRefs = accessorLinks.get(accessor) || [];
-			for (const link of accessorRefs) {
-				if (context.getAccessorUsage(accessor)) break;
-
-				if (link instanceof AttributeLink) {
-					context.setAccessorUsage(accessor, BufferViewUsage.ARRAY_BUFFER);
-				} else if (link instanceof IndexLink) {
-					context.setAccessorUsage(accessor, BufferViewUsage.ELEMENT_ARRAY_BUFFER);
-				} else if (link.getName() === 'inverseBindMatrices') {
-					context.setAccessorUsage(accessor, BufferViewUsage.INVERSE_BIND_MATRICES);
-				}
-			}
-
-			// Group accessors with no specified usage into a miscellaneous buffer view.
-			if (!context.getAccessorUsage(accessor)) {
-				context.setAccessorUsage(accessor, BufferViewUsage.OTHER);
-			}
+			const usage = context.getAccessorUsage(accessor);
+			context.addAccessorToUsageGroup(accessor, usage);
 
 			// For accessor usage that requires grouping by parent (vertex and instance
 			// attributes) organize buffer views accordingly.
-			const usage = context.getAccessorUsage(accessor);
-			if (usage && groupByParent.has(usage)) {
+			if (groupByParent.has(usage)) {
 				const parent = accessorRefs[0].getParent();
 				const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
 				parentAccessors.add(accessor);
@@ -302,7 +277,7 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
-			const usageGroups = context.listAccessorsByUsage();
+			const usageGroups = context.listAccessorUsageGroups();
 
 			for (const usage in usageGroups) {
 				if (groupByParent.has(usage)) {
@@ -347,7 +322,7 @@ export class GLTFWriter {
 					if (!accessors.length) continue;
 
 					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
-						? BufferViewTarget.ELEMENT_ARRAY_BUFFER
+						? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
 						: undefined;
 					const result = concatAccessors(
 						accessors, bufferIndex, bufferByteLength, target
@@ -357,8 +332,9 @@ export class GLTFWriter {
 				}
 			}
 
-			// We only support embedded images in GLB, so we know there is only one buffer.
-			if (context.imageBufferViews.length) {
+			// We only support embedded images in GLB, where the embedded buffer must be the first.
+			// Additional buffers are currently left empty (see EXT_meshopt_compression fallback).
+			if (context.imageBufferViews.length && index === 0) {
 				for (let i = 0; i < context.imageBufferViews.length; i++) {
 					json.bufferViews![json.images![i].bufferView!].byteOffset = bufferByteLength;
 					bufferByteLength += context.imageBufferViews[i].byteLength;
