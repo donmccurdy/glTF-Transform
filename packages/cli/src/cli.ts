@@ -327,7 +327,7 @@ program.command('', '\n\n🕋 GEOMETRY ─────────────�
 
 // DRACO
 program
-	.command('draco', 'Compress mesh geometry with Draco')
+	.command('draco', 'Compress geometry with Draco')
 	.help(`
 Compress mesh geometry with the Draco library. This type of compression affects
 only geometry data — animation and textures are not compressed.
@@ -391,7 +391,7 @@ given --decodeSpeed.`.trim())
 
 // QUANTIZE
 program
-	.command('quantize', 'Quantize mesh vertex attributes')
+	.command('quantize', 'Quantize geometry')
 	.help(`
 Quantization is a simple type of compression taking 32-bit float vertex
 attributes and storing them as 16-bit or 8-bit integers. A quantization factor
