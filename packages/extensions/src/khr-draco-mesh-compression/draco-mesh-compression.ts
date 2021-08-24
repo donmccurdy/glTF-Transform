@@ -1,8 +1,8 @@
-import { Accessor, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext, bounds, bbox } from '@gltf-transform/core';
-import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
-import { DRACO } from '../types/draco3d';
+import { Accessor, bbox, bounds, Document, Extension, GLB_BUFFER, Primitive, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
-import { EncodedPrimitive, EncoderMethod, EncoderOptions, encodeGeometry, initEncoderModule } from './encoder';
+import { EncodedPrimitive, encodeGeometry, EncoderMethod, EncoderOptions, initEncoderModule } from './encoder';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
+import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
@@ -82,17 +82,17 @@ export class DracoMeshCompression extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 	public static readonly EncoderMethod = EncoderMethod;
 
-	private _decoderModule: DRACO.DecoderModule | null = null;
-	private _encoderModule: DRACO.EncoderModule | null = null;
+	private _decoderModule: DecoderModule | null = null;
+	private _encoderModule: EncoderModule | null = null;
 	private _encoderOptions: EncoderOptions = {};
 
 	public install(key: string, dependency: unknown): this {
 		if (key === 'draco3d.decoder') {
-			this._decoderModule = dependency as DRACO.DecoderModule;
+			this._decoderModule = dependency as DecoderModule;
 			initDecoderModule(this._decoderModule);
 		}
 		if (key === 'draco3d.encoder') {
-			this._encoderModule = dependency as DRACO.EncoderModule;
+			this._encoderModule = dependency as EncoderModule;
 			initEncoderModule(this._encoderModule);
 		}
 		return this;
@@ -110,7 +110,7 @@ export class DracoMeshCompression extends Extension {
 
 		const logger = this.doc.getLogger();
 		const jsonDoc = context.jsonDoc;
-		const dracoMeshes: Map<number, [DRACO.Decoder, DRACO.Mesh]> = new Map();
+		const dracoMeshes: Map<number, [Decoder, Mesh]> = new Map();
 
 		try {
 

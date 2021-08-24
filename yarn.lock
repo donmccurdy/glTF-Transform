@@ -1943,6 +1943,18 @@
   resolved "https://registry.yarnpkg.com/@types/command-exists/-/command-exists-1.2.0.tgz#d97e0ed10097090e4ab0367ed425b0312fad86f3"
   integrity sha512-ugsxEJfsCuqMLSuCD4PIJkp5Uk2z6TCMRCgYVuhRo5cYQY3+1xXTQkSlPtkpGHuvWMjS2KTeVQXxkXRACMbM6A==
 
+"@types/draco3d@*":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/draco3d/-/draco3d-1.4.0.tgz#6a57c6295d69b3c69ee72a93f132763afd74c77b"
+  integrity sha512-rXFiyNFUu/sad/VWmc6xdO4GWcc55ny7cq08cxmDFcDIeNg0WXT279ZW7mug+rO51TPS2xlmMY631VKauoot7A==
+
+"@types/draco3dgltf@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/draco3dgltf/-/draco3dgltf-1.4.0.tgz#61a839f199dd9bd92029ce5640d2890ffc7903d0"
+  integrity sha512-vo/GQzRmdYaae7uNiJd2QE/zfeMHgRPfWeqoKtCwWSTBwCd+XzrFrJEcgubooA4ZJNTEcx8+N8BUbCx9gIlR3Q==
+  dependencies:
+    "@types/draco3d" "*"
+
 "@types/estree@*":
   version "0.0.46"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.46.tgz#0fb6bfbbeabd7a30880504993369c4bf1deab1fe"
