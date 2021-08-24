@@ -1,7 +1,7 @@
-import { Accessor, GLTF, Primitive, TypedArray, bbox } from '@gltf-transform/core';
-import { DRACO } from '../types/draco3d';
+import { Accessor, bbox, GLTF, Primitive, TypedArray } from '@gltf-transform/core';
+import type { EncoderModule, Mesh, MeshBuilder } from 'draco3dgltf';
 
-export let encoderModule: DRACO.EncoderModule;
+export let encoderModule: EncoderModule;
 
 export enum EncoderMethod {
 	EDGEBREAKER = 1,
@@ -47,7 +47,7 @@ const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
 	quantizationVolume: 'mesh',
 };
 
-export function initEncoderModule (_encoderModule: DRACO.EncoderModule): void {
+export function initEncoderModule (_encoderModule: EncoderModule): void {
 	encoderModule = _encoderModule;
 }
 
@@ -159,9 +159,9 @@ function getAttributeEnum(semantic: string): AttributeEnum {
 }
 
 function addAttribute(
-	builder: DRACO.MeshBuilder,
+	builder: MeshBuilder,
 	componentType: GLTF.AccessorComponentType,
-	mesh: DRACO.Mesh,
+	mesh: Mesh,
 	attribute: number,
 	count: number,
 	itemSize: number,

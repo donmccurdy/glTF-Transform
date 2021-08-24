@@ -1,16 +1,16 @@
 import { Accessor, GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
-import { DRACO } from '../types/draco3d';
+import type { Attribute, DataType, Decoder, DecoderModule, Mesh } from 'draco3dgltf';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;
 
-export let decoderModule: DRACO.DecoderModule;
+export let decoderModule: DecoderModule;
 
 // Initialized when decoder module loads.
 let COMPONENT_ARRAY: {[key: number]: TypedArrayConstructor};
-let DATA_TYPE: {[key: number]: DRACO.DataType};
+let DATA_TYPE: {[key: number]: DataType};
 
-export function decodeGeometry(decoder: DRACO.Decoder, data: Int8Array): DRACO.Mesh {
+export function decodeGeometry(decoder: Decoder, data: Int8Array): Mesh {
 	const buffer = new decoderModule.DecoderBuffer();
 	try {
 		buffer.Init(data, data.length);
@@ -33,7 +33,7 @@ export function decodeGeometry(decoder: DRACO.Decoder, data: Int8Array): DRACO.M
 	}
 }
 
-export function decodeIndex(decoder: DRACO.Decoder, mesh: DRACO.Mesh): Uint16Array | Uint32Array {
+export function decodeIndex(decoder: Decoder, mesh: Mesh): Uint16Array | Uint32Array {
 	const numFaces = mesh.num_faces();
 	const numIndices = numFaces * 3;
 
@@ -58,9 +58,9 @@ export function decodeIndex(decoder: DRACO.Decoder, mesh: DRACO.Mesh): Uint16Arr
 }
 
 export function decodeAttribute(
-		decoder: DRACO.Decoder,
-		mesh: DRACO.Mesh,
-		attribute: DRACO.Attribute,
+		decoder: Decoder,
+		mesh: Mesh,
+		attribute: Attribute,
 		accessorDef: GLTF.IAccessor): TypedArray {
 
 	const dataType = DATA_TYPE[accessorDef.componentType];
@@ -78,7 +78,7 @@ export function decodeAttribute(
 	return array;
 }
 
-export function initDecoderModule (_decoderModule: DRACO.DecoderModule): void {
+export function initDecoderModule (_decoderModule: DecoderModule): void {
 	decoderModule = _decoderModule;
 
 	COMPONENT_ARRAY = {
