@@ -41,6 +41,22 @@ interface DracoWriterContext {
  * [elsewhere for web](https://stackoverflow.com/a/66978236/1314762)) is required for reading and writing,
  * and must be provided by the application.
  *
+ * ### Encoding options
+ *
+ * Two compression methods are available: 'edgebreaker' and 'sequential'. The
+ * edgebreaker method will give higher compression in general, but changes the
+ * order of the model's vertices. To preserve index order, use sequential
+ * compression. When a mesh uses morph targets, or a high decoding speed is
+ * selected, sequential compression will automatically be chosen.
+ *
+ * Both speed options affect the encoder's choice of algorithms. For example, a
+ * requirement for fast decoding may prevent the encoder from using the best
+ * compression methods even if the encoding speed is set to 0. In general, the
+ * faster of the two options limits the choice of features that can be used by the
+ * encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow
+ * the encoder to choose the optimal method out of the available features for the
+ * given --decodeSpeed.
+ *
  * ### Example
  *
  * ```typescript
