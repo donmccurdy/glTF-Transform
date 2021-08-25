@@ -4,11 +4,11 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
-import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
+import { ALL_EXTENSIONS, MeshoptCompression } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -332,19 +332,16 @@ program
 Compress mesh geometry with the Draco library. This type of compression affects
 only geometry data — animation and textures are not compressed.
 
-Two compression methods are available: 'edgebreaker' and 'sequential'. The
-edgebreaker method will give higher compression in general, but changes the
-order of the model's vertices. To preserve index order, use sequential
-compression. When a mesh uses morph targets, or a high decoding speed is
-selected, sequential compression will automatically be chosen.
+Compresses
+- geometry (only triangle meshes)
 
-Both speed options affect the encoder's choice of algorithms. For example, a
-requirement for fast decoding may prevent the encoder from using the best
-compression methods even if the encoding speed is set to 0. In general, the
-faster of the two options limits the choice of features that can be used by the
-encoder. Setting --decodeSpeed to be faster than the --encodeSpeed may allow
-the encoder to choose the optimal method out of the available features for the
-given --decodeSpeed.`.trim())
+Documentation
+- https://gltf-transform.donmccurdy.com/classes/extensions.dracomeshcompression.html
+
+References
+- draco: https://github.com/google/draco
+- KHR_draco_mesh_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/
+`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--method <method>', 'Compression method.', {
@@ -389,9 +386,40 @@ given --decodeSpeed.`.trim())
 			.transform(weld({tolerance: 0}), draco(options as unknown as DracoCLIOptions))
 	);
 
+// MESHOPT
+program
+	.command('meshopt', 'Compress geometry and animation with Meshopt')
+	.help(`
+Compress geometry, morph targets, and animation with Meshopt. Meshopt
+compression decodes very quickly, and is best used in combination with a
+lossless compression method like brotli or gzip.
+
+NOTICE: Currently only the moderate-compression mode (equivalent to
+gltfpack's \`-c\` flag) is available. Support for the higher-compression
+\`-cc\` mode is planned.
+
+Compresses
+- geometry (points, lines, triangle meshes)
+- morph targets
+- animation tracks
+
+Documentation
+- https://gltf-transform.donmccurdy.com/classes/extensions.meshoptcompression.html
+
+References
+- meshoptimizer: https://github.com/zeux/meshoptimizer
+- EXT_meshopt_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_meshopt_compression/
+`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(async ({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(meshopt(options as unknown as MeshoptCLIOptions))
+	);
+
 // QUANTIZE
 program
-	.command('quantize', 'Quantize geometry')
+	.command('quantize', 'Quantize geometry, reducing precision and memory')
 	.help(`
 Quantization is a simple type of compression taking 32-bit float vertex
 attributes and storing them as 16-bit or 8-bit integers. A quantization factor
