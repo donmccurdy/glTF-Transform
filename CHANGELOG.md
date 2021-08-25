@@ -14,12 +14,13 @@
 
 **Features:**
 
+- Add compression/decompression support for `EXT_meshopt_compression`. [#314](https://github.com/donmccurdy/glTF-Transform/pull/314) [#323](https://github.com/donmccurdy/glTF-Transform/pull/323)
 - Add `reorder()` function. [#321](https://github.com/donmccurdy/glTF-Transform/pull/321)
 - Faster, smaller CLI installation. [#281](https://github.com/donmccurdy/glTF-Transform/pull/281)
 - Improved `textureResize()` API. [#282](https://github.com/donmccurdy/glTF-Transform/pull/282)
 - Add `node.setMatrix(...)`. [#270](https://github.com/donmccurdy/glTF-Transform/issues/270)
 - Parse in-memory Data URIs with `readJSON`. [#266](https://github.com/donmccurdy/glTF-Transform/pull/266)
-- Add `EXT_meshopt_compression` extension (decode only). [#314](https://github.com/donmccurdy/glTF-Transform/pull/314)
+- Support `.extras` on Root object [#339](https://github.com/donmccurdy/glTF-Transform/pull/339)
 
 **Breaking changes:**
 
