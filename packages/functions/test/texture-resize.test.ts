@@ -5,9 +5,11 @@ import { getPixels, savePixels } from 'ndarray-pixels';
 import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { textureResize } from '../';
+import ndarray from 'ndarray';
 
 const GRADIENT = getPixels(path.resolve(__dirname, './in/pattern.png'));
 const GRADIENT_HALF = getPixels(path.resolve(__dirname, './in/pattern-half.png'));
+const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
 test('@gltf-transform/functions::textureResize', async t => {
 	const gradientImage = (await savePixels(await GRADIENT, 'image/png')).buffer;
@@ -38,5 +40,22 @@ test('@gltf-transform/functions::textureResize', async t => {
 		'all - resize down with aspect ratio'
 	);
 
+	t.end();
+});
+
+test('@gltf-transform/functions::textureResize | aspect ratio', async t => {
+	const nonSquareImage = (await savePixels(await NON_SQUARE, 'image/png')).buffer;
+	const document = new Document();
+	const texture = document.createTexture('target')
+		.setImage(nonSquareImage)
+		.setMimeType('image/png');
+
+	await document.transform(textureResize({size: [16, 16]}));
+
+	t.deepEqual(
+		(await getPixels(new Uint8Array(texture.getImage()), 'image/png')).shape,
+		[8, 16, 4],
+		'maintain aspect ratio'
+	);
 	t.end();
 });

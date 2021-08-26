@@ -69,13 +69,13 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			let dstHeight = srcHeight;
 
 			if (dstWidth > maxWidth) {
+				dstHeight = Math.floor(dstHeight * (maxWidth / dstWidth));
 				dstWidth = maxWidth;
-				dstHeight = Math.floor(dstHeight * (dstWidth / srcWidth));
 			}
 
 			if (dstHeight > maxHeight) {
+				dstWidth = Math.floor(dstWidth * (maxHeight / dstHeight));
 				dstHeight = maxHeight;
-				dstWidth = Math.floor(dstWidth * (dstHeight / srcHeight));
 			}
 
 			const srcImage = new Uint8Array(texture.getImage() as ArrayBuffer);
