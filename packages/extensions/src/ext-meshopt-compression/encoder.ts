@@ -11,52 +11,58 @@ export function prepareAccessor(
 	mode: MeshoptMode,
 	filterOptions: {filter: MeshoptFilter, bits?: number}
 ): PreparedAccessor {
-	let array = accessor.getArray()!;
-	let byteStride = array.byteLength / accessor.getCount();
-	let normalized = accessor.getNormalized();
-	let componentType = accessor.getComponentType();
 	const {filter, bits} = filterOptions as {filter: MeshoptFilter, bits: number};
+	const result: PreparedAccessor = {
+		array: accessor.getArray()!,
+		byteStride: accessor.getElementSize() * accessor.getComponentSize(),
+		componentType: accessor.getComponentType(),
+		normalized: accessor.getNormalized()
+	};
 
-	if (mode !== MeshoptMode.ATTRIBUTES) {
-		return {array, byteStride, componentType, normalized};
-	}
+	if (mode !== MeshoptMode.ATTRIBUTES) return result;
 
 	if (filter !== MeshoptFilter.NONE) {
-		array = accessor.getNormalized()
+		let byteStride = result.byteStride;
+		let array = accessor.getNormalized()
 			? denormalizeArray(accessor)
-			: new Float32Array(array);
+			: new Float32Array(result.array);
+		let resultArray: Uint8Array;
 
 		switch (filter) {
 			case MeshoptFilter.EXPONENTIAL: // → K single-precision floating point values.
-				byteStride = accessor.getElementSize() * 4;
-				array = encoder.encodeFilterExp(array, accessor.getCount(), byteStride, bits);
+				result.byteStride = accessor.getElementSize() * 4;
+				resultArray = encoder.encodeFilterExp(array, accessor.getCount(), byteStride, bits);
 				break;
 
 			case MeshoptFilter.OCTAHEDRAL: // → four 8- or 16-bit normalized values.
-				componentType = bits > 8 ? SHORT : BYTE;
 				byteStride = bits > 8 ? 8 : 4;
-				normalized = true;
+				result.componentType = bits > 8 ? SHORT : BYTE;
+				result.normalized = true;
 				array = accessor.getElementSize() === 3 ? padNormals(array) : array;
-				array = encoder.encodeFilterOct(array, accessor.getCount(), byteStride, bits);
+				resultArray = encoder.encodeFilterOct(array, accessor.getCount(), byteStride, bits);
 				break;
 
 			case MeshoptFilter.QUATERNION: // → four 16-bit normalized values.
 				byteStride = 8;
-				componentType = SHORT;
-				normalized = true;
-				array = encoder.encodeFilterQuat(array, accessor.getCount(), byteStride, bits);
+				result.componentType = SHORT;
+				result.normalized = true;
+				resultArray =
+					encoder.encodeFilterQuat(array, accessor.getCount(), byteStride, bits);
 				break;
 
 			default:
 				throw new Error('Invalid filter.');
 		}
 
-	} else if (byteStride % 4) {
-		array = padArrayElements(array, accessor.getElementSize());
-		byteStride = array.byteLength / accessor.getCount();
+		result.byteStride = byteStride;
+		result.array = resultArray;
+
+	} else if (result.byteStride % 4) {
+		result.array = padArrayElements(result.array, accessor.getElementSize());
+		result.byteStride = result.array.byteLength / accessor.getCount();
 	}
 
-	return {array, byteStride, componentType, normalized};
+	return result;
 }
 
 function denormalizeArray(attribute: Accessor): Float32Array {
