@@ -4,8 +4,8 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, MeshoptCompression } from '@gltf-transform/extensions';
+import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
@@ -394,10 +394,6 @@ Compress geometry, morph targets, and animation with Meshopt. Meshopt
 compression decodes very quickly, and is best used in combination with a
 lossless compression method like brotli or gzip.
 
-NOTICE: Currently only the moderate-compression mode (equivalent to
-gltfpack's \`-c\` flag) is available. Support for the higher-compression
-\`-cc\` mode is planned.
-
 Compresses
 - geometry (points, lines, triangle meshes)
 - morph targets
@@ -412,9 +408,13 @@ References
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.action(async ({args, options, logger}) =>
+	.option('--level <level>', 'Compression level.', {
+		validator: ['medium', 'high'],
+		default: 'high'
+	})
+	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(meshopt(options as unknown as MeshoptCLIOptions))
+				.transform(meshopt(options as unknown as MeshoptCLIOptions))
 	);
 
 // QUANTIZE
@@ -438,6 +438,10 @@ Bit depths for indices and JOINTS_* are determined automatically.
 Requires KHR_mesh_quantization support.`.trim())
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
+	.option('--pattern <pattern>', 'Pattern for vertex attributes (case-insensitive glob)', {
+		validator: program.STRING,
+		default: '*',
+	})
 	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizePosition,
@@ -462,18 +466,15 @@ Requires KHR_mesh_quantization support.`.trim())
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeGeneric,
 	})
-	.option('--exclude-attributes <attributes>', 'Attributes (e.g. "COLOR_0") to exclude.', {
-		validator: program.ARRAY,
-		default: QUANTIZE_DEFAULTS.excludeAttributes,
-	})
 	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
 		validator: ['mesh', 'scene'],
 		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(quantize(options))
-	);
+	.action(({args, options, logger}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		return Session.create(io, logger, args.input, args.output)
+			.transform(quantize({pattern, ...options}));
+	});
 
 // WELD
 program

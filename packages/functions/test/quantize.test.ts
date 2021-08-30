@@ -10,7 +10,7 @@ test('@gltf-transform/functions::quantize | exclusions', async t => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
 
-	await doc.transform(quantize({excludeAttributes: ['NORMAL', 'TEXCOORD_0']}));
+	await doc.transform(quantize({pattern: /^(?!TEXCOORD_0$|NORMAL$)/}));
 
 	t.ok(prim.getAttribute('POSITION').getArray() instanceof Int16Array, 'position → Int16Array');
 	t.ok(prim.getAttribute('TEXCOORD_0').getArray() instanceof Float32Array, 'uv → unchanged');

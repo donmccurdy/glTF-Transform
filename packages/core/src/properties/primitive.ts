@@ -121,7 +121,7 @@ export class Primitive extends ExtensibleProperty {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor | null): this {
-		this.indices = this.graph.linkIndex('index', this, indices);
+		this.indices = this.graph.linkIndex('indices', this, indices);
 		return this;
 	}
 
