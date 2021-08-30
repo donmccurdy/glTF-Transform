@@ -112,7 +112,6 @@ function quantizePrimitive(
 
 	for (const semantic of prim.listSemantics()) {
 		if (!options.pattern.test(semantic)) continue;
-		console.log(`quantizing ${semantic}...`);
 
 		const srcAttribute = prim.getAttribute(semantic)!;
 		const {bits, ctor} = getQuantizationSettings(semantic, srcAttribute, logger, options);

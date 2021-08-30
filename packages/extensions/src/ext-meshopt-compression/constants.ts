@@ -42,4 +42,6 @@ export interface PreparedAccessor {
 	byteStride: number;
 	normalized: boolean;
 	componentType: GLTF.AccessorComponentType;
+	min?: number[];
+	max?: number[];
 }

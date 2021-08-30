@@ -1,8 +1,9 @@
 import { PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants';
-import { Accessor, AnimationChannel, AnimationSampler, AttributeLink, BufferUtils, Document, GLTF, MathUtils, Primitive, TypedArray, TypedArrayConstructor, WriterContext } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, AnimationSampler, BufferUtils, Document, GLTF, MathUtils, Primitive, TypedArray, TypedArrayConstructor, WriterContext } from '@gltf-transform/core';
 import type { MeshoptEncoder } from 'meshoptimizer';
 
-const {BYTE, SHORT} = Accessor.ComponentType;
+const {BYTE, SHORT, FLOAT} = Accessor.ComponentType;
+const {normalize, denormalize} = MathUtils;
 
 /** Pre-processes array with required filters or padding. */
 export function prepareAccessor(
@@ -22,40 +23,50 @@ export function prepareAccessor(
 	if (mode !== MeshoptMode.ATTRIBUTES) return result;
 
 	if (filter !== MeshoptFilter.NONE) {
-		let byteStride = result.byteStride;
 		let array = accessor.getNormalized()
 			? denormalizeArray(accessor)
 			: new Float32Array(result.array);
-		let resultArray: Uint8Array;
 
 		switch (filter) {
 			case MeshoptFilter.EXPONENTIAL: // → K single-precision floating point values.
 				result.byteStride = accessor.getElementSize() * 4;
-				resultArray = encoder.encodeFilterExp(array, accessor.getCount(), byteStride, bits);
+				result.componentType = FLOAT;
+				result.normalized = false;
+				result.array =
+					encoder.encodeFilterExp(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			case MeshoptFilter.OCTAHEDRAL: // → four 8- or 16-bit normalized values.
-				byteStride = bits > 8 ? 8 : 4;
+				result.byteStride = bits > 8 ? 8 : 4;
 				result.componentType = bits > 8 ? SHORT : BYTE;
 				result.normalized = true;
 				array = accessor.getElementSize() === 3 ? padNormals(array) : array;
-				resultArray = encoder.encodeFilterOct(array, accessor.getCount(), byteStride, bits);
+				result.array =
+					encoder.encodeFilterOct(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			case MeshoptFilter.QUATERNION: // → four 16-bit normalized values.
-				byteStride = 8;
+				result.byteStride = 8;
 				result.componentType = SHORT;
 				result.normalized = true;
-				resultArray =
-					encoder.encodeFilterQuat(array, accessor.getCount(), byteStride, bits);
+				result.array =
+					encoder.encodeFilterQuat(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			default:
 				throw new Error('Invalid filter.');
 		}
 
-		result.byteStride = byteStride;
-		result.array = resultArray;
+		result.min = accessor.getMin([]);
+		result.max = accessor.getMax([]);
+		if (accessor.getNormalized()) {
+			result.min = result.min.map((v) => denormalize(v, accessor.getComponentType()));
+			result.max = result.max.map((v) => denormalize(v, accessor.getComponentType()));
+		}
+		if (result.normalized) {
+			result.min = result.min.map((v) => normalize(v, result.componentType));
+			result.max = result.max.map((v) => normalize(v, result.componentType));
+		}
 
 	} else if (result.byteStride % 4) {
 		result.array = padArrayElements(result.array, accessor.getElementSize());
@@ -70,7 +81,7 @@ function denormalizeArray(attribute: Accessor): Float32Array {
 	const srcArray = attribute.getArray()!;
 	const dstArray = new Float32Array(srcArray.length);
 	for (let i = 0; i < srcArray.length; i++) {
-		dstArray[i] = MathUtils.denormalize(srcArray[i], componentType);
+		dstArray[i] = denormalize(srcArray[i], componentType);
 	}
 	return dstArray;
 }
@@ -118,10 +129,23 @@ export function getMeshoptMode(accessor: Accessor, usage: string): MeshoptMode {
 
 export function getMeshoptFilter(accessor: Accessor, doc: Document): {filter: MeshoptFilter, bits?: number} {
 	const semantics = doc.getGraph().listParentLinks(accessor)
-		.map((link) => (link as AttributeLink).getName())
+		.map((link) => link.getName())
 		.filter((name) => name !== 'accessor');
+
 	for (const semantic of semantics) {
+		// Indices.
+		if (semantic === 'indices') return {filter: MeshoptFilter.NONE};
+
 		// Attributes.
+		//
+		// NOTES:
+		// - Vertex attributes should be filtered IFF they are _not_ quantized in
+		//   'packages/cli/src/transforms/meshopt.ts'.
+		// - POSITION and TEXCOORD_0 could use exponential filtering, but this produces broken
+		//   output in some cases (e.g. Matilda.glb), for unknown reasons. gltfpack uses manual
+		//   quantization for these attributes.
+		if (semantic === 'POSITION') return {filter: MeshoptFilter.NONE};
+		if (semantic === 'TEXCOORD_0') return {filter: MeshoptFilter.NONE};
 		if (semantic === 'NORMAL') return {filter: MeshoptFilter.OCTAHEDRAL, bits: 8};
 		if (semantic === 'TANGENT') return {filter: MeshoptFilter.OCTAHEDRAL, bits: 8};
 		if (semantic.startsWith('JOINTS_')) return {filter: MeshoptFilter.NONE};
@@ -138,7 +162,8 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): {filter: Me
 		if (semantic === 'input') return {filter: MeshoptFilter.EXPONENTIAL, bits: 12};
 		if (semantic === 'inverseBindMatrices') return {filter: MeshoptFilter.NONE};
 	}
-	return {filter: MeshoptFilter.EXPONENTIAL, bits: 12};
+
+	return {filter: MeshoptFilter.NONE};
 }
 
 export function getTargetPath(accessor: Accessor): GLTF.AnimationChannelTargetPath | null {

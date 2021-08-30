@@ -16,7 +16,11 @@ export const meshopt = (_options: MeshoptCLIOptions): Transform => {
 				target: 'size'
 			}),
 			quantize({
-				pattern: options.level === 'medium' ? /.*/ : /^WEIGHTS_\d+$/,
+				// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
+				// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
+				pattern: options.level === 'medium'
+					? /.*/
+					: /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/,
 				quantizePosition: 14,
 				quantizeTexcoord: 12,
 				quantizeColor: 8,

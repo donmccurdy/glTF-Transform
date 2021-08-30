@@ -326,6 +326,8 @@ export class MeshoptCompression extends Extension {
 			accessorDef.componentType = preparedAccessor.componentType;
 			accessorDef.normalized = preparedAccessor.normalized;
 			accessorDef.byteOffset = bufferView.byteLength;
+			if (accessorDef.min && preparedAccessor.min) accessorDef.min = preparedAccessor.min;
+			if (accessorDef.max && preparedAccessor.max) accessorDef.max = preparedAccessor.max;
 			context.accessorIndexMap.set(accessor, json.accessors!.length);
 			json.accessors!.push(accessorDef);
 			bufferViewAccessors.push(accessorDef);
