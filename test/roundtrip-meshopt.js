@@ -29,18 +29,16 @@ INDEX.forEach((asset, assetIndex) => {
 
 		try {
 			execSync(`gltfpack -i ${src} -o ${base} -noq`);
-			execSync(`gltf-transform copy ${base} ${dst.replace('{v}', 'transformed')}`);
+			execSync(`gltf-transform copy ${base} ${dst.replace('{v}', 'copy')}`);
 			execSync(`gltfpack -i ${base} -o ${dst.replace('{v}', 'ref-c')} -c`);
 			execSync(`gltfpack -i ${base} -o ${dst.replace('{v}', 'ref-cc')} -cc`);
-			execSync(`gltf-transform meshopt ${base} ${dst.replace('{v}', 'c')} --method quantize`);
-			execSync(`gltf-transform meshopt ${base} ${dst.replace('{v}', 'cc')} --method filter`);
-			execSync(`gltf-transform quantize ${base} ${dst.replace('{v}', 'quant-lo')} --quantizePosition 14 --quantizeTexcoord 12 --quantizeColor 8 --quantizeNormal 8`);
-			execSync(`gltf-transform quantize ${base} ${dst.replace('{v}', 'quant-hi')}`);
+			execSync(`gltf-transform meshopt ${base} ${dst.replace('{v}', 'c')} --level medium`);
+			execSync(`gltf-transform meshopt ${base} ${dst.replace('{v}', 'cc')} --level high`);
 			execSync(`gltf-transform draco ${base} ${dst.replace('{v}', 'draco')}`);
 
 			const stats = [
 				gzipSize.sync(fs.readFileSync(base)),
-				gzipSize.sync(fs.readFileSync(dst.replace('{v}', 'transformed'))),
+				gzipSize.sync(fs.readFileSync(dst.replace('{v}', 'copy'))),
 				gzipSize.sync(fs.readFileSync(dst.replace('{v}', 'ref-c'))),
 				gzipSize.sync(fs.readFileSync(dst.replace('{v}', 'ref-cc'))),
 				gzipSize.sync(fs.readFileSync(dst.replace('{v}', 'c'))),

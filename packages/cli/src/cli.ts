@@ -4,8 +4,8 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
-import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, MeshoptCompression } from '@gltf-transform/extensions';
+import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
@@ -394,9 +394,6 @@ Compress geometry, morph targets, and animation with Meshopt. Meshopt
 compression decodes very quickly, and is best used in combination with a
 lossless compression method like brotli or gzip.
 
-NOTICE: Currently only the moderate-compression mode (\`-c\`) is available. Support for the higher-compression
-\`-cc\` mode is planned.
-
 Compresses
 - geometry (points, lines, triangle meshes)
 - morph targets
@@ -415,15 +412,10 @@ References
 		validator: ['medium', 'high'],
 		default: 'high'
 	})
-	.action(async ({args, options, logger}) => {
-		try {
-			await Session.create(io, logger, args.input, args.output)
-				.transform(meshopt(options as unknown as MeshoptCLIOptions));
-		} catch (e) {
-			console.error(e);
-			throw e;
-		}
-	});
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+				.transform(meshopt(options as unknown as MeshoptCLIOptions))
+	);
 
 // QUANTIZE
 program
