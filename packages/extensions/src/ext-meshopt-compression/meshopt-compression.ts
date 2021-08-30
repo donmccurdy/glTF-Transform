@@ -69,19 +69,22 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * // Read and decode.
  * const document = io.read('compressed.glb');
  *
- * // Write and encode. (QUANTIZE)
+ * // Write and encode. (Medium, -c)
  * await document.transform(reorder(), quantize());
  * document.createExtension(MeshoptCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({ method: MeshoptCompression.EncoderMethod.QUANTIZE });
- * io.write('compressed-quantized.glb', document);
+ * io.write('compressed-medium.glb', document);
  *
- * // Write and encode. (FILTER)
- * await document.transform(reorder());
+ * // Write and encode. (High, -cc)
+ * await document.transform(
+ * 	reorder(),
+ * 	quantize({pattern: /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/}),
+ * );
  * document.createExtension(MeshoptCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({ method: MeshoptCompression.EncoderMethod.FILTER });
- * io.write('compressed-filtered.glb', document);
+ * io.write('compressed-high.glb', document);
  * ```
  */
 export class MeshoptCompression extends Extension {
