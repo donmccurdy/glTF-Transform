@@ -394,8 +394,7 @@ Compress geometry, morph targets, and animation with Meshopt. Meshopt
 compression decodes very quickly, and is best used in combination with a
 lossless compression method like brotli or gzip.
 
-NOTICE: Currently only the moderate-compression mode (equivalent to
-gltfpack's \`-c\` flag) is available. Support for the higher-compression
+NOTICE: Currently only the moderate-compression mode (\`-c\`) is available. Support for the higher-compression
 \`-cc\` mode is planned.
 
 Compresses
@@ -412,6 +411,10 @@ References
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--method <method>', 'Compression method.', {
+		validator: ['c', 'cc'],
+		default: 'c'
+	})
 	.action(async ({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(meshopt(options as unknown as MeshoptCLIOptions))
