@@ -1,7 +1,7 @@
 import { Accessor, Buffer, BufferUtils, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareArray } from './encoder';
+import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder';
 import { isFallbackBuffer } from './decoder';
 import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
@@ -270,16 +270,17 @@ export class MeshoptCompression extends Extension {
 		this._encoderBufferViewAccessors = {};
 
 		for (const accessor of this.doc.getRoot().listAccessors()) {
+			// See: https://github.com/donmccurdy/glTF-Transform/pull/323#issuecomment-898791251
+			// Example: https://skfb.ly/6qAD8
+			if (getTargetPath(accessor) === 'weights') continue;
+
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);
 			const filter = options.method === EncoderMethod.FILTER
 				? getMeshoptFilter(accessor, this.doc)
-				: MeshoptFilter.NONE;
-			const {array, byteStride} = prepareArray(accessor, encoder, mode, filter);
-
-			// See: https://github.com/donmccurdy/glTF-Transform/pull/323#issuecomment-898791251
-			// Example: https://skfb.ly/6qAD8
-			if (getTargetPath(accessor) === 'weights') continue;
+				: {filter: MeshoptFilter.NONE};
+			const preparedAccessor = prepareAccessor(accessor, encoder, mode, filter);
+			const {array, byteStride} = preparedAccessor;
 
 			const buffer = accessor.getBuffer();
 			if (!buffer) throw new Error(`${NAME}: Missing buffer for accessor.`);
@@ -310,7 +311,9 @@ export class MeshoptCompression extends Extension {
 							byteOffset: 0,
 							byteLength: 0,
 							mode: mode,
-							filter: filter === MeshoptFilter.NONE ? undefined : filter,
+							filter: filter.filter !== MeshoptFilter.NONE
+								? filter.filter
+								: undefined,
 							byteStride: byteStride,
 							count: 0
 						}
@@ -320,6 +323,8 @@ export class MeshoptCompression extends Extension {
 
 			// Write accessor.
 			const accessorDef = context.createAccessorDef(accessor);
+			accessorDef.componentType = preparedAccessor.componentType;
+			accessorDef.normalized = preparedAccessor.normalized;
 			accessorDef.byteOffset = bufferView.byteLength;
 			context.accessorIndexMap.set(accessor, json.accessors!.length);
 			json.accessors!.push(accessorDef);

@@ -411,14 +411,19 @@ References
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--method <method>', 'Compression method.', {
-		validator: ['c', 'cc'],
-		default: 'c'
+	.option('--level <level>', 'Compression level.', {
+		validator: ['medium', 'high'],
+		default: 'high'
 	})
-	.action(async ({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(meshopt(options as unknown as MeshoptCLIOptions))
-	);
+	.action(async ({args, options, logger}) => {
+		try {
+			await Session.create(io, logger, args.input, args.output)
+				.transform(meshopt(options as unknown as MeshoptCLIOptions));
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
+	});
 
 // QUANTIZE
 program
@@ -441,6 +446,10 @@ Bit depths for indices and JOINTS_* are determined automatically.
 Requires KHR_mesh_quantization support.`.trim())
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
+	.option('--pattern <pattern>', 'Pattern for vertex attributes (case-insensitive glob)', {
+		validator: program.STRING,
+		default: '*',
+	})
 	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizePosition,
@@ -465,18 +474,15 @@ Requires KHR_mesh_quantization support.`.trim())
 		validator: program.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeGeneric,
 	})
-	.option('--exclude-attributes <attributes>', 'Attributes (e.g. "COLOR_0") to exclude.', {
-		validator: program.ARRAY,
-		default: QUANTIZE_DEFAULTS.excludeAttributes,
-	})
 	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
 		validator: ['mesh', 'scene'],
 		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(quantize(options))
-	);
+	.action(({args, options, logger}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		return Session.create(io, logger, args.input, args.output)
+			.transform(quantize({pattern, ...options}));
+	});
 
 // WELD
 program

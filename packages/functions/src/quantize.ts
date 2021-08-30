@@ -16,7 +16,8 @@ const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[
 
 /** Options for the {@link quantize} function. */
 export interface QuantizeOptions {
-	excludeAttributes?: string[];
+	/** Pattern (regex) used to filter vertex attribute semantics for quantization. Default: all. */
+	pattern?: RegExp;
 	/** Bounds for quantization grid. */
 	quantizationVolume?: 'mesh' | 'scene';
 	/** Quantization bits for `POSITION` attributes. */
@@ -34,7 +35,7 @@ export interface QuantizeOptions {
 }
 
 export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
-	excludeAttributes: [],
+	pattern: /.*/,
 	quantizationVolume: 'mesh',
 	quantizePosition: 14,
 	quantizeNormal: 10,
@@ -80,7 +81,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 				nodeTransform = getNodeTransform(getPositionQuantizationVolume(mesh));
 			}
 
-			if (nodeTransform && !options.excludeAttributes.includes('POSITION')) {
+			if (nodeTransform && options.pattern.test('POSITION')) {
 				transformMeshParents(doc, mesh, nodeTransform);
 			}
 
@@ -110,7 +111,8 @@ function quantizePrimitive(
 	const logger = doc.getLogger();
 
 	for (const semantic of prim.listSemantics()) {
-		if (options.excludeAttributes.includes(semantic)) continue;
+		if (!options.pattern.test(semantic)) continue;
+		console.log(`quantizing ${semantic}...`);
 
 		const srcAttribute = prim.getAttribute(semantic)!;
 		const {bits, ctor} = getQuantizationSettings(semantic, srcAttribute, logger, options);
