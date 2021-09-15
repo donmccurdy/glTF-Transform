@@ -10,6 +10,7 @@ const io = new NodeIO().registerExtensions([TextureWebP]);
 
 test('@gltf-transform/extensions::texture-webp', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const webpExtension = doc.createExtension(TextureWebP);
 	const tex1 = doc.createTexture('WebPTexture')
 		.setMimeType('image/webp')

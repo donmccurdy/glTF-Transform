@@ -29,6 +29,7 @@ test('@gltf-transform/extensions::materials-clearcoat | factors', t => {
 
 test('@gltf-transform/extensions::materials-clearcoat | textures', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat()
 		.setClearcoatFactor(0.9)

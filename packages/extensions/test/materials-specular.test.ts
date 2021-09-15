@@ -8,6 +8,7 @@ const WRITER_OPTIONS = {basename: 'extensionTest'};
 
 test('@gltf-transform/extensions::materials-specular', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const specularExtension = doc.createExtension(MaterialsSpecular);
 	const specular = specularExtension.createSpecular()
 		.setSpecularFactor(0.9)

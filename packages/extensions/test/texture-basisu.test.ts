@@ -10,6 +10,7 @@ const io = new NodeIO().registerExtensions([TextureBasisu]);
 
 test('@gltf-transform/extensions::texture-basisu', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const basisuExtension = doc.createExtension(TextureBasisu);
 	const tex1 = doc.createTexture('BasisTexture')
 		.setMimeType('image/ktx2')

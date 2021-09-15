@@ -11,7 +11,7 @@ test('@gltf-transform/core::io | common', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb without buffer', t => {
+test('@gltf-transform/core::io | glb without optional buffer', t => {
 	const doc = new Document();
 	doc.createScene().addChild(doc.createNode('MyNode'));
 
@@ -32,32 +32,50 @@ test('@gltf-transform/core::io | glb without buffer', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb with texture-only buffer', t => {
-	const doc = new Document();
-	const texA = doc.createTexture('TexA').setImage(new ArrayBuffer(1)).setMimeType('image/png');
-	const texB = doc.createTexture('TexB').setImage(new ArrayBuffer(2)).setMimeType('image/png');
-	doc.createMaterial('MaterialA').setBaseColorTexture(texA);
-	doc.createMaterial('MaterialB').setBaseColorTexture(texB);
-
+test('@gltf-transform/core::io | glb without required buffer', t => {
 	const io = new NodeIO();
 
-	t.throws(() => io.writeJSON(doc, {format: Format.GLB}), 'no writeJSON without buffer');
-	t.throws(() => io.writeBinary(doc), 'no writeBinary without buffer');
+	let doc = new Document();
+	doc.createTexture('TexA').setImage(new ArrayBuffer(1)).setMimeType('image/png');
+	doc.createTexture('TexB').setImage(new ArrayBuffer(2)).setMimeType('image/png');
+
+	t.throws(() => io.writeJSON(doc, {format: Format.GLB}), /buffer required/i, 'writeJSON throws');
+	t.throws(() => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
 
 	doc.createBuffer();
 
+	t.ok(io.writeJSON(doc, {format: Format.GLB}), 'writeJSON suceeds');
+	t.ok(io.writeBinary(doc), 'writeBinary succeeds');
+
+	doc = new Document();
+	doc.createAccessor().setArray(new Float32Array(10));
+	doc.createAccessor().setArray(new Float32Array(20));
+
+	t.throws(() => io.writeJSON(doc, {format: Format.GLB}), /buffer required/i, 'writeJSON throws');
+	t.throws(() => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+
+	doc.createBuffer();
+
+	t.ok(io.writeJSON(doc, {format: Format.GLB}), 'writeJSON suceeds');
+	t.ok(io.writeBinary(doc), 'writeBinary succeeds');
+	t.end();
+});
+
+test('@gltf-transform/core::io | glb with texture-only buffer', t => {
+	const doc = new Document();
+	doc.createTexture('TexA').setImage(new ArrayBuffer(1)).setMimeType('image/png');
+	doc.createTexture('TexB').setImage(new ArrayBuffer(2)).setMimeType('image/png');
+	doc.createBuffer();
+
+	const io = new NodeIO();
 	const json = io.writeJSON(doc, {format: Format.GLB});
 	const binary = io.writeBinary(doc);
 
 	t.ok(json, 'writes json');
 	t.ok(binary, 'writes binary');
 	t.equals(Object.values(json.resources).length, 1, 'writes 1 buffer');
-	t.ok(io.readJSON(json), 'reads json');
-	t.ok(io.readBinary(binary), 'reads binary');
 
-	const rtTextures = io.readBinary(binary).getRoot()
-		.listMaterials()
-		.map((n) => n.getBaseColorTexture());
+	const rtTextures = io.readBinary(binary).getRoot().listTextures();
 
 	t.equals(rtTextures[0].getName(), 'TexA', 'reads texture 1');
 	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');

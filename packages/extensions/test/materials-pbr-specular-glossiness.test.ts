@@ -8,6 +8,7 @@ const WRITER_OPTIONS = {basename: 'extensionTest'};
 
 test('@gltf-transform/extensions::materials-pbr-specular-glossiness', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension.createPBRSpecularGlossiness()
 		.setDiffuseFactor([0.5, 0.5, 0.5, 0.9])
