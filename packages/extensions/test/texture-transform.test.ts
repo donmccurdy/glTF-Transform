@@ -10,6 +10,7 @@ const io = new NodeIO().registerExtensions([TextureTransform]);
 
 test('@gltf-transform/extensions::texture-transform', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const transformExtension = doc.createExtension(TextureTransform);
 	const tex1 = doc.createTexture()
 		.setMimeType('image/png')
@@ -123,6 +124,7 @@ test('@gltf-transform/extensions::texture-transform | clone', t => {
 
 test('@gltf-transform/extensions::texture-transform | i/o', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const transformExtension = doc.createExtension(TextureTransform);
 	const tex1 = doc.createTexture();
 

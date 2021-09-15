@@ -8,6 +8,7 @@ const WRITER_OPTIONS = {basename: 'extensionTest'};
 
 test('@gltf-transform/extensions::materials-volume', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const volumeExtension = doc.createExtension(MaterialsVolume);
 	const volume = volumeExtension.createVolume()
 		.setThicknessFactor(0.9)

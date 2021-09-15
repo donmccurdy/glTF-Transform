@@ -49,6 +49,7 @@ test('@gltf-transform/core::texture | read', t => {
 
 test('@gltf-transform/core::texture | write', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const image1 = new ArrayBuffer(1);
 	const image2 = new ArrayBuffer(2);
 	const texture1 = doc.createTexture('tex1')
@@ -96,6 +97,7 @@ test('@gltf-transform/core::texture | copy', t => {
 test('@gltf-transform/core::texture | extras', t => {
 	const io = new NodeIO();
 	const doc = new Document();
+	doc.createBuffer();
 	doc.createTexture('A')
 		.setExtras({foo: 1, bar: 2})
 		.setImage(new ArrayBuffer(10))

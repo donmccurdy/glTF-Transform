@@ -8,6 +8,7 @@ const WRITER_OPTIONS = {basename: 'extensionTest'};
 
 test('@gltf-transform/extensions::materials-sheen', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
 	const sheen = sheenExtension.createSheen()
 		.setSheenColorFactor([0.9, 0.5, .8])

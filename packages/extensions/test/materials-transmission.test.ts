@@ -8,6 +8,7 @@ const WRITER_OPTIONS = {basename: 'extensionTest'};
 
 test('@gltf-transform/extensions::materials-transmission', t => {
 	const doc = new Document();
+	doc.createBuffer();
 	const transmissionExtension = doc.createExtension(MaterialsTransmission);
 	const transmission = transmissionExtension.createTransmission()
 		.setTransmissionFactor(0.9)
