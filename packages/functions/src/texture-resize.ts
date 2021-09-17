@@ -93,8 +93,11 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 					? lanczos3(srcPixels, dstPixels)
 					: lanczos2(srcPixels, dstPixels);
 			} catch (e) {
-				logger.warn(`${NAME}: Failed to resize "${uri || name}": "${e.message}".`);
-				continue;
+				if (e instanceof Error) {
+					logger.warn(`${NAME}: Failed to resize "${uri || name}": "${e.message}".`);
+					continue;
+				}
+				throw e;
 			}
 
 			texture.setImage((await savePixels(dstPixels, texture.getMimeType())).buffer);
