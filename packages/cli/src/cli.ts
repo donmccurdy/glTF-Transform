@@ -473,7 +473,7 @@ Requires KHR_mesh_quantization support.`.trim())
 	.action(({args, options, logger}) => {
 		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
 		return Session.create(io, logger, args.input, args.output)
-			.transform(quantize({pattern, ...options}));
+			.transform(quantize({...options, pattern}));
 	});
 
 // WELD
