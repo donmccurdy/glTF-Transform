@@ -153,3 +153,16 @@ test('@gltf-transform/core::extension | i/o', t => {
 
 	t.end();
 });
+
+test('@gltf-transform/core::extension | clone', t => {
+	const doc = new Document();
+	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
+	const gizmo = extension.createGizmo();
+	doc.createNode().setExtension(EXTENSION_NAME, gizmo);
+
+	let docClone: Document;
+	t.ok(gizmo.clone(), 'clones gizmo');
+	t.ok((docClone = doc.clone()), 'clones document');
+	t.ok(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
+	t.end();
+});
