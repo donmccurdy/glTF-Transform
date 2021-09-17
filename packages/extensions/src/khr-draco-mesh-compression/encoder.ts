@@ -120,7 +120,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	encoder.SetTrackEncodedProperties(true);
 
 	// Preserve vertex order for primitives with morph targets.
-	if (prim.listTargets().length > 0 || options.method === EncoderMethod.SEQUENTIAL) {
+	if (options.method === EncoderMethod.SEQUENTIAL || prim.listTargets().length > 0) {
 		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
 	} else {
 		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
@@ -134,8 +134,16 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 		data[i] = dracoBuffer.GetValue(i);
 	}
 
+	const prevNumVertices = prim.getAttribute('POSITION')!.getCount();
 	const numVertices = encoder.GetNumberOfEncodedPoints();
 	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
+
+	if (prim.listTargets().length > 0 && numVertices !== prevNumVertices) {
+		throw new Error(''
+			+ 'Compression reduced vertex count unexpectedly, corrupting morph targets.'
+			+ ' Applying the "weld" function before compression may resolve the issue.'
+		);
+	}
 
 	encoderModule.destroy(dracoBuffer);
 	encoderModule.destroy(mesh);
