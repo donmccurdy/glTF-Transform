@@ -100,6 +100,8 @@ export abstract class Property extends GraphNode {
 	 * Makes a copy of this property, with the same resources (by reference) as the original.
 	 */
 	public clone(): this {
+		// NOTICE: Keep in sync with `./extension-property.ts`.
+
 		const PropertyClass = this.constructor as new(g: PropertyGraph) => this;
 		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 

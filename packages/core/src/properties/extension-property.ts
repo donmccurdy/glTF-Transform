@@ -1,5 +1,5 @@
 import { ExtensibleProperty } from './extensible-property';
-import { Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 import { PropertyGraph } from './property-graph';
 
 /** @hidden */
@@ -35,6 +35,19 @@ export abstract class ExtensionProperty extends Property {
 	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
 		this._extension.addExtensionProperty(this);
+	}
+
+	public clone(): this {
+		// NOTICE: Keep in sync with `./property.ts`.
+
+		const PropertyClass = this.constructor as
+			new(g: PropertyGraph, e: ExtensionPropertyParent) => this;
+		const child = new PropertyClass(this.graph, this._extension).copy(this, COPY_IDENTITY);
+
+		// Root needs this event to link cloned properties.
+		this.graph.emit('clone', child);
+
+		return child;
 	}
 
 	public dispose(): void {
