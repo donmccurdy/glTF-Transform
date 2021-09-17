@@ -1,6 +1,5 @@
 import CLITable from 'cli-table3';
 import stringify from 'csv-stringify';
-import mdTable from 'markdown-table';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { InspectAnimationReport, InspectMaterialReport, InspectMeshReport, InspectPropertyReport, InspectSceneReport, InspectTextureReport, inspect as inspectDoc } from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
@@ -16,6 +15,13 @@ type AnyPropertyReport = InspectSceneReport
 	| InspectMaterialReport
 	| InspectTextureReport
 	| InspectAnimationReport;
+
+const CLI_TABLE_MARKDOWN_CHARS = {
+	'top': '', 'top-mid': '', 'top-left': '', 'top-right': '',
+	'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': '',
+	'left': '|', 'left-mid': '', 'mid': '', 'mid-mid': '',
+	'right': '|', 'right-mid': '', 'middle': '|'
+};
 
 export async function inspect (
 		jsonDoc: JSONDocument,
@@ -100,8 +106,12 @@ async function formatTable(
 					err ? reject(err) : resolve(output);
 				});
 			});
-		case InspectFormat.MD:
-			return mdTable([head, ...rows]);
+		case InspectFormat.MD: {
+			const table = new CLITable({head, chars: CLI_TABLE_MARKDOWN_CHARS});
+			table.push(new Array(rows[0].length).fill('---'));
+			table.push(...rows);
+			return table.toString();
+		}
 	}
 
 }
