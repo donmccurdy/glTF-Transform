@@ -28,7 +28,6 @@
   "devDependencies": {
     "@types/command-exists": "1.2.0",
     "@types/draco3dgltf": "^1.4.0",
-    "@types/markdown-table": "2.0.0",
     "@types/ndarray": "1.0.9",
     "@types/node": "15.12.5",
     "@types/node-gzip": "1.1.0",
