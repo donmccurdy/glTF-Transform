@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/command-exists": "1.2.0",
-    "@types/draco3dgltf": "^1.4.0",
+    "@types/draco3dgltf": "1.4.0",
     "@types/ndarray": "1.0.10",
     "@types/node": "16.9.2",
     "@types/node-gzip": "1.1.0",
@@ -41,7 +41,7 @@
     "eslint": "7.32.0",
     "gltf-validator": "2.0.0-dev.3.5",
     "lerna": "4.0.0",
-    "meshoptimizer": "^0.16.1",
+    "meshoptimizer": "0.16.1",
     "microbundle": "0.13.3",
     "mikktspace": "1.1.0",
     "nyc": "15.1.0",

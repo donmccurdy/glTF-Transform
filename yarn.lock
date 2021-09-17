@@ -1960,7 +1960,7 @@
   resolved "https://registry.yarnpkg.com/@types/draco3d/-/draco3d-1.4.0.tgz#6a57c6295d69b3c69ee72a93f132763afd74c77b"
   integrity sha512-rXFiyNFUu/sad/VWmc6xdO4GWcc55ny7cq08cxmDFcDIeNg0WXT279ZW7mug+rO51TPS2xlmMY631VKauoot7A==
 
-"@types/draco3dgltf@^1.4.0":
+"@types/draco3dgltf@1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@types/draco3dgltf/-/draco3dgltf-1.4.0.tgz#61a839f199dd9bd92029ce5640d2890ffc7903d0"
   integrity sha512-vo/GQzRmdYaae7uNiJd2QE/zfeMHgRPfWeqoKtCwWSTBwCd+XzrFrJEcgubooA4ZJNTEcx8+N8BUbCx9gIlR3Q==
@@ -5686,7 +5686,7 @@ merge2@^1.3.0:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-meshoptimizer@^0.16.1:
+meshoptimizer@0.16.1, meshoptimizer@^0.16.1:
   version "0.16.1"
   resolved "https://registry.yarnpkg.com/meshoptimizer/-/meshoptimizer-0.16.1.tgz#2d8d83fdad969331fc07d8e4c97aa6e35d842ef3"
   integrity sha512-HWGGiUkjfbR6c70FvK1DujHg/e0gdIa7lzWoBtw0/4nexd6X6G2zmzfe9m3jpJlk4UFlBIfImQk2oD16m3QMew==
