@@ -28,8 +28,8 @@
     "@gltf-transform/extensions": "^0.12.11",
     "gl-matrix": "^3.3.0",
     "ndarray": "^1.0.19",
-    "ndarray-lanczos": "^0.1.1",
-    "ndarray-pixels": "^0.1.6"
+    "ndarray-lanczos": "^0.1.2",
+    "ndarray-pixels": "^1.0.0"
   },
   "files": [
     "dist/",
