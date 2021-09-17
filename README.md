@@ -27,4 +27,4 @@ To get started, head over to the [documentation](https://gltf-transform.donmccur
 
 ## License
 
-Copyright 2020, MIT License.
+Copyright 2021, MIT License.
