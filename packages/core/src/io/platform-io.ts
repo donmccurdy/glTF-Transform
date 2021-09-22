@@ -99,7 +99,7 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
-	public readJSON (jsonDoc: JSONDocument): Document {
+	public readJSON(jsonDoc: JSONDocument): Document {
 		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
@@ -109,7 +109,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public writeJSON (doc: Document, _options: Partial<WriterOptions> = {}): JSONDocument {
+	public writeJSON(doc: Document, _options: Partial<WriterOptions> = {}): JSONDocument {
 		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
 			throw new Error('GLB must have 0–1 buffers.');
 		}
