@@ -68,7 +68,7 @@ export class WebIO extends PlatformIO {
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
 			.map((resource: GLTF.IBuffer|GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
-				if (!uri) return Promise.resolve();
+				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
 				return fetch(_resolve(dir, uri), this._fetchConfig)
 					.then((response) => response.arrayBuffer())
@@ -90,8 +90,9 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.json())
 			.then(async (json: GLTF.IGLTF) => {
 				jsonDoc.json = json;
-				this._readResourcesInternal(jsonDoc);
+				// Read external resources first, before Data URIs are replaced.
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
+				this._readResourcesInternal(jsonDoc);
 				return jsonDoc;
 			});
 	}
@@ -102,8 +103,9 @@ export class WebIO extends PlatformIO {
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
 				const jsonDoc = this._binaryToJSON(arrayBuffer);
-				this._readResourcesInternal(jsonDoc);
+				// Read external resources first, before Data URIs are replaced.
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
+				this._readResourcesInternal(jsonDoc);
 				return jsonDoc;
 			});
 	}

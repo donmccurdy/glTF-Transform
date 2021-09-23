@@ -135,7 +135,34 @@ test('@gltf-transform/core::io | web read gltf', t => {
 		.finally(() => (t.end()));
 });
 
-test('@gltf-transform/core::io | web read gltf + data URIs in memory', t => {
+test('@gltf-transform/core::io | web read + data URIs', async t => {
+	const images = [new ArrayBuffer(3), new ArrayBuffer(2), new ArrayBuffer(1)];
+	const uris = images.map((image) => {
+		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
+	});
+
+	mockWindow('https://www.example.com/test');
+	const fetchedPaths = mockFetch({
+		arrayBuffer: () => { throw new Error('Do not call.'); },
+		json: () => ({
+			asset: {version: '2.0'},
+			images: uris.map((uri) => ({uri})),
+		}),
+	});
+
+	const io = new WebIO();
+
+	const doc = await io.read('test.gltf');
+
+	t.deepEquals(fetchedPaths, ['test.gltf'], 'one network request');
+	t.equals(doc.getRoot().listTextures().length, 3, 'reads a textures from Data URIs');
+	t.deepEquals(doc.getRoot().listTextures()[0].getImage(), images[0], 'reads texture 0');
+	t.deepEquals(doc.getRoot().listTextures()[1].getImage(), images[1], 'reads texture 1');
+	t.deepEquals(doc.getRoot().listTextures()[2].getImage(), images[2], 'reads texture 2');
+	t.end();
+});
+
+test('@gltf-transform/core::io | web readJSON + data URIs', t => {
 	const images = [new ArrayBuffer(3), new ArrayBuffer(2), new ArrayBuffer(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');

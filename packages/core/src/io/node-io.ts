@@ -108,6 +108,7 @@ export class NodeIO extends PlatformIO {
 		const arrayBuffer = BufferUtils.trim(buffer);
 		this.lastReadBytes = arrayBuffer.byteLength;
 		const jsonDoc = this._binaryToJSON(arrayBuffer);
+		// Read external resources first, before Data URIs are replaced.
 		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
 		this._readResourcesInternal(jsonDoc);
 		return jsonDoc;
@@ -119,6 +120,7 @@ export class NodeIO extends PlatformIO {
 		const jsonContent = this._fs.readFileSync(uri, 'utf8');
 		this.lastReadBytes += jsonContent.length;
 		const jsonDoc = {json: JSON.parse(jsonContent), resources: {}} as JSONDocument;
+		// Read external resources first, before Data URIs are replaced.
 		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
 		this._readResourcesInternal(jsonDoc);
 		return jsonDoc;
