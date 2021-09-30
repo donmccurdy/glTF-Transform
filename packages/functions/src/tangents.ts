@@ -58,10 +58,12 @@ export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transf
 				// Skip primitives for which we can't compute tangents.
 				if (!filterPrimitive(prim, logger, meshName, i, options.overwrite)) continue;
 
+				const texcoordSemantic = getNormalTexcoord(prim);
+
 				// Nullability conditions checked by filterPrimitive() above.
 				const position = prim.getAttribute('POSITION')!.getArray()!;
 				const normal = prim.getAttribute('NORMAL')!.getArray()!;
-				const texcoord = prim.getAttribute('TEXCOORD_0')!.getArray()!;
+				const texcoord = prim.getAttribute(texcoordSemantic)!.getArray()!;
 
 				// Compute UUIDs for each attribute.
 				const positionID = attributeIDs.get(position) || uuid();
@@ -116,6 +118,20 @@ export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transf
 			logger.debug(`${NAME}: Complete.`);
 		}
 	};
+}
+
+function getNormalTexcoord(prim: Primitive): string {
+	const material = prim.getMaterial();
+	if (!material) return 'TEXCOORD_0';
+
+	const normalTextureInfo = material.getNormalTextureInfo();
+	if (!normalTextureInfo) return 'TEXCOORD_0';
+
+	const texcoord = normalTextureInfo.getTexCoord();
+	const semantic = `TEXCOORD_${texcoord}`;
+	if (prim.getAttribute(semantic)) return semantic;
+
+	return 'TEXCOORD_0';
 }
 
 function filterPrimitive(

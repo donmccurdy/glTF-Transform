@@ -12,11 +12,17 @@ test('@gltf-transform/functions::tangents', async t => {
 	const resultArray = new Float32Array([-1, -1, -1, -1]);
 	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
 	const normal = doc.createAccessor().setType('VEC3').setArray(normalArray);
-	const texcoord = doc.createAccessor().setType('VEC2').setArray(texcoordArray);
+	const texcoord0 = doc.createAccessor().setType('VEC2').setArray(new Float32Array([0, 0]));
+	const texcoord1 = doc.createAccessor().setType('VEC2').setArray(texcoordArray);
+	const normalTexture = doc.createTexture();
+	const material = doc.createMaterial().setNormalTexture(normalTexture);
+	material.getNormalTextureInfo().setTexCoord(1);
 	const prim = doc.createPrimitive()
+		.setMaterial(material)
 		.setAttribute('POSITION', position)
 		.setAttribute('NORMAL', normal)
-		.setAttribute('TEXCOORD_0', texcoord);
+		.setAttribute('TEXCOORD_0', texcoord0)
+		.setAttribute('TEXCOORD_1', texcoord1);
 	doc.createMesh().addPrimitive(prim);
 
 	let a, b, c;
