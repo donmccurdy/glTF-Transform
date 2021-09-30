@@ -120,10 +120,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
 				logger.debug(`Texture ${textureLabel} (${slots.join(', ')})`);
 
-				// FILTER: Exclude textures that don't match the 'slots' glob, or are already KTX.
+				// FILTER: Exclude textures that don't match the 'slots' glob, are not supported, or are already KTX
 
 				if (texture.getMimeType() === 'image/ktx2') {
 					logger.debug('• Skipping, already KTX.');
+					return;
+				} else if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
+					logger.warn(`• Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
 				} else if (options.slots !== '*'
 						&& !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
