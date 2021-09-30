@@ -197,7 +197,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
  */
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
-function createParams (
+function createParams(
 		slots: string[],
 		channels: number,
 		size: vec2,
@@ -268,8 +268,8 @@ function createParams (
 	let width: number;
 	let height: number;
 	if (options.powerOfTwo) {
-		width = preferredPowerOfTwo(size[0], 2048);
-		height = preferredPowerOfTwo(size[1], 2048);
+		width = preferredPowerOfTwo(size[0]);
+		height = preferredPowerOfTwo(size[1]);
 	} else {
 		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
 			logger.warn(
@@ -282,6 +282,13 @@ function createParams (
 	}
 
 	if (width !== size[0] || height !== size[1]) {
+		if (width > 4096 || height > 4096) {
+			logger.warn( ''
+				+ `Resizing to nearest power of two, ${width}x${height}px. Texture dimensions`
+				+ ' greater than 4096px may not render on some mobile devices.'
+				+ ' Resize to a lower resolution before compressing, if needed.'
+			);
+		}
 		params.push('--resize', `${width}x${height}`);
 	}
 
@@ -307,36 +314,35 @@ function checkKTXSoftware(logger: Logger): void {
 	}
 }
 
-function isPowerOfTwo (value: number): boolean {
+function isPowerOfTwo(value: number): boolean {
 	if (value <= 2) return true;
 	return (value & (value - 1)) === 0 && value !== 0;
 }
 
-function preferredPowerOfTwo (value: number, max: number): number {
+function preferredPowerOfTwo(value: number): number {
 	if (value <= 2) return value;
 	if (value <= 4) return 4;
 
 	const lo = floorPowerOfTwo(value);
 	const hi = ceilPowerOfTwo(value);
 
-	if (hi > max) return lo;
 	if (hi - value > value - lo) return lo;
 	return hi;
 }
 
-function floorPowerOfTwo (value: number): number {
+function floorPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
 }
 
-function ceilPowerOfTwo (value: number): number {
+function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }
 
-function isMultipleOfFour (value: number): boolean {
+function isMultipleOfFour(value: number): boolean {
 	return value % 4 === 0;
 }
 
-function ceilMultipleOfFour (value: number): number {
+function ceilMultipleOfFour(value: number): number {
 	if (value <= 2) return value;
 	if (value <= 4) return 4;
 	return value % 4 ? value + 4 - value % 4 : value;

@@ -207,7 +207,7 @@ export abstract class PlatformIO {
 		const header = new Uint32Array([0x46546C67, 2, 12]);
 
 		const jsonText = JSON.stringify(json);
-		const jsonChunkData = BufferUtils.pad( BufferUtils.encodeText(jsonText), 0x20 );
+		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
 		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 		header[header.length - 1] += jsonChunk.byteLength;
