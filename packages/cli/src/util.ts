@@ -26,7 +26,7 @@ export function formatLong(x: number): string {
 export function formatBytes(bytes: number, decimals = 2): string {
 	if (bytes === 0) return '0 Bytes';
 
-	const k = 1024;
+	const k = 1000;
 	const dm = decimals < 0 ? 0 : decimals;
 	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 

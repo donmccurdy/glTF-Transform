@@ -15,7 +15,7 @@ chocolate cake. Liquorice jelly-o pie jujubes fruitcake chocolate bar jelly-o
 tart. Marshmallow icing tart tootsie roll brownie dragée.`.trim();
 
 test('@gltf-transform/cli::util', t => {
-	t.equals(formatBytes(1024), '1 KB', 'formatBytes');
+	t.equals(formatBytes(1000), '1 KB', 'formatBytes');
 	t.equals(formatHeader('Hello'), HEADER, 'formatHeader');
 	t.equals(formatParagraph(TEXT), PARAGRAPH, 'formatParagraph');
 	t.end();
