@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, bbox, bounds, Document, Logger, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, bbox, bounds, Document, Logger, Mesh, Node, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
 import { quantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -331,6 +331,45 @@ test('@gltf-transform/functions::quantize | indices', async t => {
 	t.ok(indices.getArray() instanceof Uint16Array, 'indices → Uint16Array');
 	elementPairs(indices, indicesCopy, round(8))
 		.forEach(([a, b], i) => t.deepEquals(a, b, `indices value #${i + 1}`));
+	t.end();
+});
+
+test('@gltf-transform/functions::quantize | skinned mesh parenting', async t => {
+	let doc: Document;
+	let mesh: Mesh, node: Node;
+	let scaleChannel: AnimationChannel, weightsChannel: AnimationChannel;
+
+	// (1) Don't reparent meshes or retarget non-TRS animation when not required.
+
+	doc = new Document().setLogger(logger);
+	createScene(doc);
+	node = doc.getRoot().listNodes()[0];
+	mesh = node.getMesh();
+	weightsChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('weights');
+	doc.createAnimation().addChannel(weightsChannel);
+
+	await doc.transform(quantize());
+
+	t.equals(node.getMesh(), mesh, 'don\'t reparent mesh');
+	t.equals(weightsChannel.getTargetNode(), node, 'don\'t retarget non-TRS animation');
+
+	// (2) Reparent meshes and retarget non-TRS animation when parent is affected by TRS animation.
+
+	doc = new Document().setLogger(logger);
+	createScene(doc);
+	node = doc.getRoot().listNodes()[0];
+	mesh = node.getMesh();
+	// eslint-disable-next-line prefer-const
+	scaleChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('scale');
+	weightsChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('weights');
+	doc.createAnimation().addChannel(weightsChannel).addChannel(scaleChannel);
+
+	await doc.transform(quantize());
+
+	t.equals(node.getMesh(), null, 'reparent mesh');
+	t.equals(weightsChannel.getTargetNode(), node.listChildren()[0], 'retarget non-TRS animation');
+	t.equals(scaleChannel.getTargetNode(), node, 'don\'t retarget TRS animation');
+
 	t.end();
 });
 
