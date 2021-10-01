@@ -1,4 +1,4 @@
-import { Accessor, Animation, bbox, Document, Logger, mat4, Mesh, Node, Primitive, PrimitiveTarget, PropertyType, Skin, Transform, vec2, vec3, vec4 } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, bbox, Document, Logger, mat4, Mesh, Node, Primitive, PrimitiveTarget, PropertyType, Skin, Transform, vec2, vec3, vec4 } from '@gltf-transform/core';
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
@@ -13,6 +13,8 @@ type TypedArrayConstructor = Int8ArrayConstructor
 	| Uint16ArrayConstructor;
 const SIGNED_INT = [Int8Array, Int16Array, Int32Array] as TypedArrayConstructor[];
 
+const { TRANSLATION, ROTATION, SCALE, WEIGHTS } = AnimationChannel.TargetPath;
+const TRS_CHANNELS = [TRANSLATION, ROTATION, SCALE];
 
 /** Options for the {@link quantize} function. */
 export interface QuantizeOptions {
@@ -181,8 +183,11 @@ function transformMeshParents(
 	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
 		if (parent instanceof Node) {
+			const animChannels = parent.listParents()
+				.filter((p) => p instanceof AnimationChannel) as AnimationChannel[];
+			const isAnimated = animChannels
+				.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
 			const isParentNode = parent.listChildren().length > 0;
-			const isAnimated = !!parent.listParents().find((p) => p instanceof Animation);
 
 			if (parent.getSkin()) {
 				parent.setSkin(transformSkin(parent.getSkin()!, nodeTransform));
@@ -193,6 +198,9 @@ function transformMeshParents(
 			if (isParentNode || isAnimated) {
 				targetNode = doc.createNode('').setMesh(mesh);
 				parent.addChild(targetNode).setMesh(null);
+				animChannels
+					.filter((channel) => channel.getTargetPath() === WEIGHTS)
+					.forEach((channel) => channel.setTargetNode(targetNode));
 			} else {
 				targetNode = parent;
 			}
