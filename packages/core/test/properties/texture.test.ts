@@ -112,7 +112,7 @@ test('@gltf-transform/core::texture | extras', t => {
 });
 
 test('@gltf-transform/core::texture | padding', t => {
-	// Ensure that buffer views are padded to 4-byte boundaries. See:
+	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
 
 	const doc = new Document();
@@ -130,11 +130,11 @@ test('@gltf-transform/core::texture | padding', t => {
 	], 'images');
 	t.deepEqual(jsonDoc.json.bufferViews, [
 		{buffer: 0, byteOffset: 0, byteLength: 17},
-		{buffer: 0, byteOffset: 20, byteLength: 21},
-		{buffer: 0, byteOffset: 44, byteLength: 20},
+		{buffer: 0, byteOffset: 24, byteLength: 21},
+		{buffer: 0, byteOffset: 48, byteLength: 20},
 	], 'bufferViews');
 	t.deepEqual(jsonDoc.json.buffers, [
-		{byteLength: 64}
+		{byteLength: 72}
 	], 'buffers');
 	t.end();
 });

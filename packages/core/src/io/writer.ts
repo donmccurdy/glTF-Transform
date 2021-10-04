@@ -349,9 +349,9 @@ export class GLTFWriter {
 					bufferByteLength += context.imageBufferViews[i].byteLength;
 					buffers.push(context.imageBufferViews[i]);
 
-					if (bufferByteLength % 4) {
+					if (bufferByteLength % 8) {
 						// See: https://github.com/KhronosGroup/glTF/issues/1935
-						const imagePadding = 4 - (bufferByteLength % 4);
+						const imagePadding = 8 - (bufferByteLength % 8);
 						bufferByteLength += imagePadding;
 						buffers.push(new ArrayBuffer(imagePadding));
 					}

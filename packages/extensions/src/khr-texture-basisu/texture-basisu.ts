@@ -20,10 +20,8 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 			return (dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xF) === 15) ? 4 : 3;
 		} else if (dfd.colorModel === KTX2Model.UASTC) {
 			return (dfd.samples[0].channelID & 0xF) === 3 ? 4 : 3;
-		} else {
-			throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 		}
-		return 4;
+		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 	}
 	getGPUByteLength (buffer: ArrayBuffer): number {
 		const container = readKTX(new Uint8Array(buffer));
