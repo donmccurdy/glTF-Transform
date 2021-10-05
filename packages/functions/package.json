@@ -26,7 +26,7 @@
   "dependencies": {
     "@gltf-transform/core": "^0.12.15",
     "@gltf-transform/extensions": "^0.12.15",
-    "gl-matrix": "^3.3.0",
+    "gl-matrix": "~3.3.0",
     "ndarray": "^1.0.19",
     "ndarray-lanczos": "^0.1.2",
     "ndarray-pixels": "^1.0.0"
