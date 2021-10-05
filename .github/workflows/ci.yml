@@ -9,7 +9,7 @@ jobs:
     runs-on: macos-latest # Better `headless-gl` support on macOS.
     strategy:
       matrix:
-        node-version: [12.x, 14.x] # Latest prebuilt binaries for `headless-gl`
+        node-version: [12.x, 14.x, 16.x] # Latest prebuilt binaries for `headless-gl`
     env:
       CI: true
     steps:
