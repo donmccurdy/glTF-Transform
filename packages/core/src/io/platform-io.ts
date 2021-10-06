@@ -23,7 +23,7 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  * Methods are also available for converting in-memory representations of raw glTF files, both
  * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
  *
- * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
+ * For platform-specific implementations, see {@link NodeIO}, {@link WebIO}, and {@link DenoIO}.
  *
  * @category I/O
  */

@@ -1,4 +1,5 @@
 export { NodeIO } from './node-io';
+export { DenoIO } from './deno-io';
 export { PlatformIO } from './platform-io';
 export { WebIO } from './web-io';
 export { ReaderOptions } from './reader';
