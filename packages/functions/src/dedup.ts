@@ -53,6 +53,8 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
 	const attributeAccessors: Set<Accessor> = new Set();
+	const inputAccessors: Set<Accessor> = new Set();
+	const outputAccessors: Set<Accessor> = new Set();
 
 	const meshes = doc.getRoot().listMeshes();
 	meshes.forEach((mesh) => {
@@ -63,7 +65,16 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 		});
 	});
 
-	// Find duplicate mesh accessors.
+	for (const animation of doc.getRoot().listAnimations()) {
+		for (const sampler of animation.listSamplers()) {
+			const input = sampler.getInput();
+			const output = sampler.getOutput();
+			if (input) inputAccessors.add(input);
+			if (output) outputAccessors.add(output);
+		}
+	}
+
+	// Find duplicate accessors of a given type.
 	function detectDuplicates(accessors: Accessor[]): Map<Accessor, Accessor> {
 		const duplicateAccessors: Map<Accessor, Accessor> = new Map();
 
@@ -103,7 +114,14 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 		+ ' attributes.'
 	);
 
-	// Dissolve duplicates.
+	const duplicateInputs = detectDuplicates(Array.from(inputAccessors));
+	const duplicateOutputs = detectDuplicates(Array.from(outputAccessors));
+	logger.debug(
+		`${NAME}: Found ${duplicateInputs.size + duplicateOutputs.size} duplicates among`
+		+ ` ${inputAccessors.size + outputAccessors.size} animation accessors.`
+	);
+
+	// Dissolve duplicate vertex attributes and indices.
 	meshes.forEach((mesh) => {
 		mesh.listPrimitives().forEach((primitive) => {
 			primitive.listAttributes().forEach((accessor) => {
@@ -119,6 +137,22 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	});
 	Array.from(duplicateIndices.keys()).forEach((indices) => indices.dispose());
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
+
+	// Dissolve duplicate animation sampler inputs and outputs.
+	for (const animation of doc.getRoot().listAnimations()) {
+		for (const sampler of animation.listSamplers()) {
+			const input = sampler.getInput();
+			const output = sampler.getOutput();
+			if (input && duplicateInputs.has(input)) {
+				sampler.swap(input, duplicateInputs.get(input) as Accessor);
+			}
+			if (output && duplicateOutputs.has(output)) {
+				sampler.swap(output, duplicateOutputs.get(output) as Accessor);
+			}
+		}
+	}
+	Array.from(duplicateInputs.keys()).forEach((input) => input.dispose());
+	Array.from(duplicateOutputs.keys()).forEach((output) => output.dispose());
 }
 
 function dedupMeshes(logger: Logger, doc: Document): void {
