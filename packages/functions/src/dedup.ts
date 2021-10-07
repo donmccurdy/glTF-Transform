@@ -15,7 +15,8 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
 
 /**
  * Removes duplicate {@link Accessor}, {@link Mesh}, and {@link Texture} properties. Based on a
- * [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8).
+ * [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8). Only
+ * accessors in mesh primitives, morph targets, and animation samplers are processed.
  *
  * Example:
  *
