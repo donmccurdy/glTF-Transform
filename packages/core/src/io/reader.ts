@@ -48,8 +48,6 @@ export class GLTFReader {
 
 		if (assetDef.copyright) asset.copyright = assetDef.copyright;
 		if (assetDef.extras) asset.extras = assetDef.extras;
-		if (assetDef.generator) asset.generator = assetDef.generator;
-		if (assetDef.minVersion) asset.minVersion = assetDef.minVersion;
 
 		if (json.extras !== undefined) {
 			doc.getRoot().setExtras({...json.extras});
