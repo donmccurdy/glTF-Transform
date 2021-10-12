@@ -23,7 +23,7 @@ export class GLTFWriter {
 
 		const root = doc.getRoot();
 		const json = {
-			asset: {...root.getAsset(), generator: `glTF-Transform ${VERSION}`},
+			asset: {generator: `glTF-Transform ${VERSION}`, ...root.getAsset()},
 			extras: {...root.getExtras()},
 		} as GLTF.IGLTF;
 		const jsonDoc = {json, resources: {}} as JSONDocument;

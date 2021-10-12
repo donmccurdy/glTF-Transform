@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO, Root } from '../../';
+import { Document, JSONDocument, NodeIO, Root } from '../../';
 
 test('@gltf-transform/core::root', t => {
 	const doc = new Document();
@@ -98,5 +98,27 @@ test('@gltf-transform/core::root | extras', t => {
 	t.deepEquals(jsonDocExtras.json.extras, {custom: 'value'}, 'write extras');
 	t.deepEquals(rtDocNoExtras.getRoot().getExtras(), {}, 'round trip no extras');
 	t.deepEquals(rtDocExtras.getRoot().getExtras(), {custom: 'value'}, 'round trip extras');
+	t.end();
+});
+
+test('@gltf-transform/core::root | asset', t => {
+	const doc = new Document();
+	const root = doc.getRoot();
+	const io = new NodeIO();
+
+	let jsonDoc: JSONDocument;
+	let generator: string;
+
+	jsonDoc = io.writeJSON(doc);
+	generator = jsonDoc.json.asset.generator;
+	t.match(generator, /^glTF-Transform.*/i, 'write default generator');
+
+	root.getAsset().generator = 'Custom Tool v123';
+	jsonDoc = io.writeJSON(doc);
+	generator = jsonDoc.json.asset.generator;
+	t.match(generator, /^Custom Tool.*/i, 'write custom generator');
+
+	generator = io.readJSON(jsonDoc).getRoot().getAsset().generator;
+	t.match(generator, /^glTF-Transform.*/i, 'read default generator');
 	t.end();
 });
