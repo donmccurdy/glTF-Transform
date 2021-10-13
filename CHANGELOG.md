@@ -1,12 +1,12 @@
 # Changelog
 
-## v0.13 — 🚧 Unreleased
+## v1.1 — 🚧 Unreleased
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
 
-**Features:**
+## v1.0
 
-**Breaking changes:**
+*Stable release.*
 
 ## v0.12
 
