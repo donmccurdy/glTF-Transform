@@ -2,9 +2,11 @@
 
 ## v1.1 — 🚧 Unreleased
 
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/14)
 
 ## v1.0
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
 
 *Stable release.*
 
