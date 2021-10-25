@@ -933,10 +933,10 @@
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"
   integrity sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==
 
-"@cspotcode/source-map-support@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.6.1.tgz#118511f316e2e87ee4294761868e254d3da47960"
-  integrity sha512-DX3Z+T5dt1ockmPdobJS/FAsQPW4V4SrWEhD2iYQT2Cb2tQsiMnYxrcUH9By/Z3B+v0S5LMBkQtV/XOBbpLEOg==
+"@cspotcode/source-map-support@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.7.0.tgz#4789840aa859e46d2f3173727ab707c66bf344f5"
+  integrity sha512-X4xqRHqN8ACt2aHVe51OxeA2HjbcL4MqFqXkrmQszJ1NOUuUu5u6Vqx/0lZSVNku7velL5FC/s5uEAj1lsBMhA==
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
@@ -3565,7 +3565,12 @@ dotignore@^0.1.2:
   dependencies:
     minimatch "^3.0.4"
 
-draco3dgltf@1.4.1, draco3dgltf@^1.4.1:
+draco3dgltf@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/draco3dgltf/-/draco3dgltf-1.4.3.tgz#45a222e0c8bd79fc25e504f1f67ee02dd3e522b1"
+  integrity sha512-f84JhoT//qvjS0RTTFt9Iq09Xvk8Z777idT6pvgxa5DOglKY8aNe+HnDVRFfdqBHVYOFFhF0ssy2TyAef4HTpQ==
+
+draco3dgltf@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/draco3dgltf/-/draco3dgltf-1.4.1.tgz#57b7aeeefb06f4529a312d27ff48e60c26a1e31c"
   integrity sha512-/d3SSWca9ftcNkpSOG6dwm3z7iQtM2oqnD6Eiy4YwJczbcQ3jEkDYrtBl8RuvS9xPKqwpsyciQejAtddyjKvFg==
@@ -5729,10 +5734,10 @@ meshoptimizer@0.16.1, meshoptimizer@^0.16.1:
   resolved "https://registry.yarnpkg.com/meshoptimizer/-/meshoptimizer-0.16.1.tgz#2d8d83fdad969331fc07d8e4c97aa6e35d842ef3"
   integrity sha512-HWGGiUkjfbR6c70FvK1DujHg/e0gdIa7lzWoBtw0/4nexd6X6G2zmzfe9m3jpJlk4UFlBIfImQk2oD16m3QMew==
 
-microbundle@0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/microbundle/-/microbundle-0.14.0.tgz#eeaa17e0596d544d4a19324a28049fdde59c279b"
-  integrity sha512-5rNNHyCFd3L8NfgJqfHFIUl0J58ykYL8QojfwwhDh+aP8z/Md8+X7pI2zvCXvS/6yIYhZj2BggY2AQYb7xoELA==
+microbundle@0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/microbundle/-/microbundle-0.14.1.tgz#a7de2dfa2efce01233dc494bd8dccb4570804aa4"
+  integrity sha512-/JAAPKWRyvBV0QjmmhgPU9NGuX3Tk1u8EXuMJ+6npFmnm+EtuL8IpJihxmljpUwaoHLyDy+b2ntfWoN6BkDQzA==
   dependencies:
     "@babel/core" "^7.12.10"
     "@babel/plugin-proposal-class-properties" "7.12.1"
@@ -8617,12 +8622,12 @@ triple-beam@^1.2.0, triple-beam@^1.3.0:
   resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.3.0.tgz#a595214c7298db8339eeeee083e4d10bd8cb8dd9"
   integrity sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==
 
-ts-node@10.2.1:
-  version "10.2.1"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.2.1.tgz#4cc93bea0a7aba2179497e65bb08ddfc198b3ab5"
-  integrity sha512-hCnyOyuGmD5wHleOQX6NIjJtYVIO8bPP8F2acWkB4W06wdlkgyvJtubO/I9NkI88hCFECbsEgoLc0VNkYmcSfw==
+ts-node@10.4.0:
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.4.0.tgz#680f88945885f4e6cf450e7f0d6223dd404895f7"
+  integrity sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==
   dependencies:
-    "@cspotcode/source-map-support" "0.6.1"
+    "@cspotcode/source-map-support" "0.7.0"
     "@tsconfig/node10" "^1.0.7"
     "@tsconfig/node12" "^1.0.7"
     "@tsconfig/node14" "^1.0.0"
@@ -8738,10 +8743,10 @@ typedoc@0.21.2:
     shiki "^0.9.3"
     typedoc-default-themes "^0.12.10"
 
-typescript@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.3.tgz#bdc5407caa2b109efd4f82fe130656f977a29324"
-  integrity sha512-4xfscpisVgqqDfPaJo5vkd+Qd/ItkoagnHpufr+i2QCHBsNYp+G7UAoyFl8aPtx879u38wPV65rZ8qbGZijalA==
+typescript@4.4.4:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.4.tgz#2cd01a1a1f160704d3101fd5a58ff0f9fcb8030c"
+  integrity sha512-DqGhF5IKoBl8WNf8C1gu8q0xZSInh9j1kJJMqT3a94w1JzVaBU4EXOSMrz9yDqMT0xt3selp83fuFMQ0uzv6qA==
 
 typescript@^4.1.3:
   version "4.1.3"
