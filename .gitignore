@@ -7,6 +7,7 @@ node_modules
 .nyc_output
 .rpt2_cache
 .vscode
+.idea
 **/out/*
 !**/out/.gitkeep
 packages/**/dist/*
