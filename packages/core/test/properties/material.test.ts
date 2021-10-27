@@ -315,6 +315,45 @@ test('@gltf-transform/core::material | copy', t => {
 	t.end();
 });
 
+test.only('@gltf-transform/core::material | equals', t=> {
+	const doc = new Document();
+	const tex = doc.createTexture('MyTex');
+	const mat = doc.createMaterial('MyMat')
+		.setAlphaMode('BLEND')
+		.setAlphaCutoff(0.5)
+		.setBaseColorFactor([1, 0, 1, 0.5])
+		.setBaseColorTexture(tex)
+		.setMetallicFactor(0)
+		.setRoughnessFactor(0.9)
+		.setMetallicRoughnessTexture(tex)
+		.setNormalScale(0.9)
+		.setNormalTexture(tex)
+		.setOcclusionStrength(1.5)
+		.setOcclusionTexture(tex)
+		.setEmissiveFactor([2, 2, 2])
+		.setEmissiveTexture(tex);
+	mat.getBaseColorTextureInfo()
+		.setTexCoord(2)
+		.setMagFilter(TextureInfo.MagFilter.LINEAR)
+		.setMinFilter(TextureInfo.MinFilter.NEAREST)
+		.setWrapS(TextureInfo.WrapMode.REPEAT)
+		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
+
+	const mat2 = doc.createMaterial().copy(mat);
+	//const mat3 = doc.createMaterial().copy(mat);
+
+	console.log(mat.getAlphaMode());
+	console.log(mat2.getAlphaMode());
+	//console.log(mat3.getAlphaMode());
+
+
+	t.equal(mat.getAlphaMode() === mat2.getAlphaMode(), true, 'Manual Equality Check');
+	t.equal(mat.equals(mat2), true, 'Method Equality Check');
+	t.equal(mat.equals(mat), true, 'Method Self Equality');
+	//t.equal(mat.equals(mat3), false, 'Method inequality check');
+	t.end();
+});
+
 test('@gltf-transform/core::material | i/o', t => {
 	const doc = new Document();
 	doc.createBuffer();

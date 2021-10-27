@@ -7,6 +7,7 @@ import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
+import {isDeepStrictEqual} from 'util';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -190,6 +191,19 @@ export class Material extends ExtensibleProperty {
 			.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
 
 		return this;
+	}
+
+	public equals(other: Material): boolean {
+		return this.getAlphaMode() === other.getAlphaMode() &&
+			this.getAlphaCutoff() === other.getAlphaCutoff() &&
+			this.getDoubleSided() === other.getDoubleSided() &&
+			this.getNormalScale() === other.getNormalScale() &&
+			this.getEmissiveFactor() === other.getEmissiveFactor() &&
+			this.getRoughnessFactor() === other.getRoughnessFactor() &&
+			this.getMetallicFactor() === other.getMetallicFactor();
+			// this._baseColorFactor === [...other._baseColorFactor] as vec4 &&
+		// this._emissiveFactor === [...other._emissiveFactor] as vec3 &&
+
 	}
 
 	dispose(): void {
