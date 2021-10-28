@@ -100,6 +100,7 @@ export abstract class PlatformIO {
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public readJSON(jsonDoc: JSONDocument): Document {
+		jsonDoc = {...jsonDoc}; // Shallow copy to avoid modifying original.
 		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
