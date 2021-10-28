@@ -1,7 +1,9 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Format, NodeIO } from '../../';
+import fs from 'fs';
+import path from 'path';
+import { Document, Format, JSONDocument, NodeIO } from '../../';
 
 test('@gltf-transform/core::io | common', t => {
 	t.throws(() => new NodeIO().readJSON({
@@ -81,5 +83,18 @@ test('@gltf-transform/core::io | glb with texture-only buffer', t => {
 	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');
 	t.deepEquals(rtTextures[0].getImage(), new ArrayBuffer(1), 'reads texture 1 data');
 	t.deepEquals(rtTextures[1].getImage(), new ArrayBuffer(2), 'reads texture 2 data');
+	t.end();
+});
+
+test('@gltf-transform/core::io | gltf embedded', t => {
+	const io = new NodeIO();
+	const jsonPath = path.resolve(__dirname, '../in/Box_glTF-Embedded/Box.gltf');
+	const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
+	const json = JSON.parse(jsonContent);
+	const jsonDoc = {json, resources: {}} as JSONDocument;
+	const jsonDocCopy = JSON.parse(JSON.stringify(jsonDoc));
+
+	t.ok(io.readJSON(jsonDoc), 'reads document');
+	t.deepEquals(jsonDoc, jsonDocCopy, 'original unchanged');
 	t.end();
 });
