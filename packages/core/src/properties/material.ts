@@ -1,13 +1,13 @@
 import { PropertyType, TextureChannel, vec3, vec4 } from '../constants';
 import { GraphChild, Link } from '../graph/index';
 import { GLTF } from '../types/gltf';
-import { ColorUtils } from '../utils';
+import { ColorUtils, MathUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
-import {isDeepStrictEqual} from 'util';
+
 
 const { R, G, B, A } = TextureChannel;
 
@@ -193,17 +193,24 @@ export class Material extends ExtensibleProperty {
 		return this;
 	}
 
-	public equals(other: Material): boolean {
+	public equals(other: this): boolean {
+		// TODO - Cleanup & TextureInfo
+		// ? TexInfo has an interesting problem in that it may be null..
 		return this.getAlphaMode() === other.getAlphaMode() &&
-			this.getAlphaCutoff() === other.getAlphaCutoff() &&
-			this.getDoubleSided() === other.getDoubleSided() &&
-			this.getNormalScale() === other.getNormalScale() &&
-			this.getEmissiveFactor() === other.getEmissiveFactor() &&
-			this.getRoughnessFactor() === other.getRoughnessFactor() &&
-			this.getMetallicFactor() === other.getMetallicFactor();
-			// this._baseColorFactor === [...other._baseColorFactor] as vec4 &&
-		// this._emissiveFactor === [...other._emissiveFactor] as vec3 &&
-
+				this.getAlphaCutoff() === other.getAlphaCutoff() &&
+				this.getDoubleSided() === other.getDoubleSided() &&
+				MathUtils.eq(this.getBaseColorFactor(), other.getBaseColorFactor()) &&
+				MathUtils.eq(this.getEmissiveFactor(), other.getEmissiveFactor()) &&
+				this.getNormalScale() === other.getNormalScale() &&
+				this.getOcclusionStrength() === other.getOcclusionStrength() &&
+				this.getRoughnessFactor() === other.getRoughnessFactor() &&
+				this.getMetallicFactor() === other.getMetallicFactor() &&
+				this.getBaseColorTexture() === other.getBaseColorTexture() &&
+				this.getEmissiveTexture() === other.getEmissiveTexture() &&
+				this.getNormalTexture() === other.getNormalTexture() &&
+				this.getOcclusionTexture() === other.getOcclusionTexture() &&
+				this.getMetallicRoughnessTexture() === other.getMetallicRoughnessTexture();
+				//this.getBaseColorTextureInfo() === other.getBaseColorTextureInfo();
 	}
 
 	dispose(): void {
