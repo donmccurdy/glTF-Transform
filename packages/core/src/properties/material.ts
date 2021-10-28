@@ -194,7 +194,7 @@ export class Material extends ExtensibleProperty {
 	}
 
 	public equals(other: this): boolean {
-		// TODO - Cleanup & TextureInfo
+		// TODO - Cleanup
 		// ? TexInfo has an interesting problem in that it may be null..
 		return this.getAlphaMode() === other.getAlphaMode() &&
 				this.getAlphaCutoff() === other.getAlphaCutoff() &&

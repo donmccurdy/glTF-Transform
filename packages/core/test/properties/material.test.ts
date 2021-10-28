@@ -357,8 +357,10 @@ test.only('@gltf-transform/core::material | equals', t=> {
 	t.equal(mat.equals(mat), true, 'Self Equality');
 	t.equal(mat.equals(mat3), false, 'Copy Inequality');
 
-	t.equal(mat.getBaseColorTextureInfo().equals(mat2.getBaseColorTextureInfo()), true, 'baseColor TexInfo');
-	t.equal(mat.getBaseColorTextureInfo().equals(mat2.getBaseColorTextureInfo()), true, 'TexInfo');
+	t.equal(mat.getBaseColorTextureInfo().equals(mat2.getBaseColorTextureInfo()), true,
+		'TexInfo Equality');
+	t.equal(mat.getBaseColorTextureInfo().equals(mat3.getBaseColorTextureInfo()), false,
+		'TexInfo Inequality');
 
 	t.end();
 });
