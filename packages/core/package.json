@@ -35,7 +35,7 @@
     "path": false
   },
   "dependencies": {
-    "gl-matrix": "~3.3.0"
+    "gl-matrix": "~3.4.0"
   },
   "mangle": {
     "regex": "^_"
