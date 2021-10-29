@@ -58,15 +58,20 @@ test('@gltf-transform/functions::dedup | animation accessors', t => {
 test('@gltf-transform/functions::dedup | meshes', t => {
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
-	t.equal(doc.getRoot().listMeshes().length, 501, 'begins with duplicate meshes');
+	const root = doc.getRoot();
+	t.equal(root.listMeshes().length, 501, 'begins with duplicate meshes');
 
 	dedup({propertyTypes: [PropertyType.ACCESSOR]})(doc);
 
-	t.equal(doc.getRoot().listMeshes().length, 501, 'has no effect when disabled');
+	t.equal(root.listMeshes().length, 501, 'has no effect when disabled');
+
+	// Put unique materials on two meshes to prevent merging.
+	root.listMeshes()[0].listPrimitives()[0].setMaterial(doc.createMaterial('A'));
+	root.listMeshes()[1].listPrimitives()[0].setMaterial(doc.createMaterial('B'));
 
 	dedup()(doc);
 
-	t.equal(doc.getRoot().listMeshes().length, 1, 'prunes duplicate meshes');
+	t.equal(root.listMeshes().length, 3, 'prunes duplicate meshes');
 	t.end();
 });
 
