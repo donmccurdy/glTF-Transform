@@ -1,4 +1,4 @@
-import { Accessor, BufferUtils, Document, Logger, Mesh, PropertyType, Root, Texture, Transform } from '@gltf-transform/core';
+import { Accessor, BufferUtils, Document, Logger, Material, Mesh, Primitive, PrimitiveTarget, PropertyType, Root, Texture, Transform } from '@gltf-transform/core';
 
 const NAME = 'dedup';
 
@@ -159,11 +159,10 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 function dedupMeshes(logger: Logger, doc: Document): void {
 	const root = doc.getRoot();
 
-	// Create Accessor -> ID lookup table.
-	const accessorIndices = new Map<Accessor, number>();
-	root.listAccessors().forEach((accessor, index) => {
-		accessorIndices.set(accessor, index);
-	});
+	// Create Reference -> ID lookup table.
+	const refs = new Map<Accessor|Material, number>();
+	root.listAccessors().forEach((accessor, index) => refs.set(accessor, index));
+	root.listMaterials().forEach((material, index) => refs.set(material, index));
 
 	// For each mesh, create a hashkey.
 	const numMeshes = root.listMeshes().length;
@@ -172,16 +171,7 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 		// For each mesh, create a hashkey.
 		const srcKeyItems = [];
 		for (const prim of src.listPrimitives()) {
-			const primKeyItems = [];
-			for (const semantic of prim.listSemantics()) {
-				const attribute = prim.getAttribute(semantic)!;
-				primKeyItems.push(semantic + ':' + accessorIndices.get(attribute));
-			}
-			const indices = prim.getIndices();
-			if (indices) {
-				primKeyItems.push('indices:' + accessorIndices.get(indices));
-			}
-			srcKeyItems.push(primKeyItems.join(','));
+			srcKeyItems.push(createPrimitiveKey(prim, refs));
 		}
 
 		// If another mesh exists with the same key, replace all instances with that, and dispose
@@ -248,4 +238,31 @@ function dedupImages(logger: Logger, doc: Document): void {
 		});
 		src.dispose();
 	});
+}
+
+/** Generates a key unique to the content of a primitive or target. */
+function createPrimitiveKey(
+	prim: Primitive | PrimitiveTarget,
+	refs: Map<Accessor|Material, number>
+): string {
+	const primKeyItems = [];
+	for (const semantic of prim.listSemantics()) {
+		const attribute = prim.getAttribute(semantic)!;
+		primKeyItems.push(semantic + ':' + refs.get(attribute));
+	}
+	if (prim instanceof Primitive) {
+		const indices = prim.getIndices();
+		if (indices) {
+			primKeyItems.push('indices:' + refs.get(indices));
+		}
+		const material = prim.getMaterial();
+		if (material) {
+			primKeyItems.push('material:' + refs.get(material));
+		}
+		primKeyItems.push('mode:' + prim.getMode());
+		for (const target of prim.listTargets()) {
+			primKeyItems.push('target:' + createPrimitiveKey(target, refs));
+		}
+	}
+	return primKeyItems.join(',');
 }

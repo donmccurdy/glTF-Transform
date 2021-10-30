@@ -100,6 +100,7 @@ export abstract class PlatformIO {
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
 	public readJSON(jsonDoc: JSONDocument): Document {
+		jsonDoc = this._copyJSON(jsonDoc);
 		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
@@ -120,6 +121,28 @@ export abstract class PlatformIO {
 			dependencies: {...this._dependencies, ..._options.dependencies},
 			basename: _options.basename || ''
 		} as Required<WriterOptions>);
+	}
+
+	/**
+	 * Creates a shallow copy of glTF-formatted {@link JSONDocument}.
+	 *
+	 * Images, Buffers, and Resources objects are deep copies so that PlatformIO can safely
+	 * modify them during the parsing process. Other properties are shallow copies, and buffers
+	 * are passed by reference.
+	 */
+	private _copyJSON(jsonDoc: JSONDocument): JSONDocument {
+		const {images, buffers} = jsonDoc.json;
+
+		jsonDoc = {json: {...jsonDoc.json}, resources: {...jsonDoc.resources}};
+
+		if (images) {
+			jsonDoc.json.images = images.map((image) => ({...image}));
+		}
+		if (buffers) {
+			jsonDoc.json.buffers = buffers.map((buffer) => ({...buffer}));
+		}
+
+		return jsonDoc;
 	}
 
 	/**********************************************************************************************
