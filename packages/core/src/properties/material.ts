@@ -190,6 +190,10 @@ export class Material extends ExtensibleProperty {
 		return this;
 	}
 
+	/**
+	 * Checks for equality between {@link Material} properties,
+	 * including possible {@link TextureInfo}.
+	 */
 	public equals(other: Material): boolean {
 		if (this.getAlphaMode() !== other.getAlphaMode()) return false;
 		if (this.getAlphaCutoff() !== other.getAlphaCutoff()) return false;
