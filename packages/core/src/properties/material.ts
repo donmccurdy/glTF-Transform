@@ -7,8 +7,6 @@ import {COPY_IDENTITY} from './property';
 import {TextureLink} from './property-links';
 import {Texture} from './texture';
 import {TextureInfo} from './texture-info';
-import {isDeepStrictEqual} from 'util';
-
 
 const {R, G, B, A} = TextureChannel;
 
@@ -67,7 +65,6 @@ export class Material extends ExtensibleProperty {
 		BLEND: 'BLEND',
 	}
 	public readonly propertyType = PropertyType.MATERIAL;
-
 	/**********************************************************************************************
 	 * Instance.
 	 */
@@ -204,37 +201,37 @@ export class Material extends ExtensibleProperty {
 		if (this.getMetallicFactor() !== other.getMetallicFactor()) return false;
 
 		// Texture Checks
-		if (this.getBaseColorTextureInfo()  && other.getBaseColorTextureInfo()){
+		if (this.getBaseColorTextureInfo() && other.getBaseColorTextureInfo()) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			// ! For some reason my editor does not grasp the non-null assertion above,
-			// ! so I have suppressed it here.
-			if (!this.getBaseColorTextureInfo().equals(other.getBaseColorTextureInfo())) {
+			// ! For some reason my editor does not grasp the non-null assertion below
+			// ! Nulls should be addressed above
+			if (!this!.getBaseColorTextureInfo().equals(other!.getBaseColorTextureInfo())) {
 				return false;
 			}
 		}
-		if (this.getEmissiveTextureInfo()  && other.getEmissiveTextureInfo()){
+		if (this.getEmissiveTextureInfo() && other.getEmissiveTextureInfo()) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			if (!this.getEmissiveTextureInfo().equals(other.getEmissiveTextureInfo())) {
 				return false;
 			}
 		}
-		if (this.getNormalTextureInfo()  && other.getNormalTextureInfo()){
+		if (this.getNormalTextureInfo() && other.getNormalTextureInfo()) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			if (!this.getNormalTextureInfo().equals(other.getNormalTextureInfo())) {
 				return false;
 			}
 		}
-		if (this.getOcclusionTextureInfo()  && other.getOcclusionTextureInfo()){
+		if (this.getOcclusionTextureInfo() && other.getOcclusionTextureInfo()) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			if (!this.getOcclusionTextureInfo().equals(other.getOcclusionTextureInfo())) {
 				return false;
 			}
 		}
-		if (this.getMetallicRoughnessTextureInfo()  && other.getMetallicRoughnessTextureInfo()){
+		if (this.getMetallicRoughnessTextureInfo() && other.getMetallicRoughnessTextureInfo()) {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			// eslint-disable-next-line max-len

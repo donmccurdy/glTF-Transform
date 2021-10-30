@@ -1,9 +1,9 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
+import {Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink} from '../../';
 
-const { R, G, B, A } = TextureChannel;
+const {R, G, B, A} = TextureChannel;
 
 test('@gltf-transform/core::material | properties', t => {
 	const doc = new Document();
@@ -315,7 +315,7 @@ test('@gltf-transform/core::material | copy', t => {
 	t.end();
 });
 
-test.only('@gltf-transform/core::material | equals', t=> {
+test.only('@gltf-transform/core::material | equals', t => {
 	const doc = new Document();
 	const tex = doc.createTexture('MyTex');
 	const mat = doc.createMaterial('MyMat')
