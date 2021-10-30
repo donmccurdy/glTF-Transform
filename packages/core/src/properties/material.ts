@@ -43,6 +43,7 @@ const {R, G, B, A} = TextureChannel;
  * @category Properties
  */
 export class Material extends ExtensibleProperty {
+	public readonly propertyType = PropertyType.MATERIAL;
 	/**********************************************************************************************
 	 * Constants.
 	 */
@@ -64,7 +65,7 @@ export class Material extends ExtensibleProperty {
 		 */
 		BLEND: 'BLEND',
 	}
-	public readonly propertyType = PropertyType.MATERIAL;
+
 	/**********************************************************************************************
 	 * Instance.
 	 */
@@ -278,8 +279,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets material alpha, equivalent to baseColorFactor[3]. */
 	public setAlpha(alpha: number): this {
-		this._baseColorFactor[3] = alpha;
-		return this;
+		this._baseColorFactor[3] = alpha;		return this;
 	}
 
 	/**
