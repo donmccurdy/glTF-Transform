@@ -340,27 +340,32 @@ test.only('@gltf-transform/core::material | equals', t=> {
 		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
 
 	const mat2 = doc.createMaterial().copy(mat);
-	const mat3 = doc.createMaterial().copy(mat);
-	mat3.setAlphaCutoff(0);
+
+	const tex2 = doc.createTexture('NewTex');
+	const mat3 = doc.createMaterial().copy(mat)
+		.setAlphaMode('OPAQUE')
+		.setAlphaCutoff(0)
+		.setBaseColorFactor([1, 1, 1, 0])
+		.setBaseColorTexture(tex2)
+		.setMetallicFactor(1)
+		.setRoughnessFactor(0.3)
+		.setMetallicRoughnessTexture(tex2)
+		.setNormalScale(0.1)
+		.setNormalTexture(tex2)
+		.setOcclusionStrength(0.5)
+		.setOcclusionTexture(tex2)
+		.setEmissiveFactor([2, 1, 2])
+		.setEmissiveTexture(tex2);
 	mat3.getBaseColorTextureInfo()
-		.setWrapT(TextureInfo.WrapMode.REPEAT);
-	mat3.getEmissiveTextureInfo()
-		.setWrapT(TextureInfo.WrapMode.REPEAT);
-	mat3.getNormalTextureInfo()
-		.setWrapT(TextureInfo.WrapMode.REPEAT);
-	mat3.getOcclusionTextureInfo()
-		.setWrapT(TextureInfo.WrapMode.REPEAT);
-	mat3.getMetallicRoughnessTextureInfo()
+		.setTexCoord(0)
+		.setMagFilter(TextureInfo.MagFilter.NEAREST)
+		.setMinFilter(TextureInfo.MinFilter.NEAREST)
+		.setWrapS(TextureInfo.WrapMode.REPEAT)
 		.setWrapT(TextureInfo.WrapMode.REPEAT);
 
 	t.equal(mat.equals(mat2), true, 'Copy Equality');
 	t.equal(mat.equals(mat), true, 'Self Equality');
 	t.equal(mat.equals(mat3), false, 'Copy Inequality');
-
-	t.equal(mat.getBaseColorTextureInfo().equals(mat2.getBaseColorTextureInfo()), true,
-		'TexInfo Equality');
-	t.equal(mat.getBaseColorTextureInfo().equals(mat3.getBaseColorTextureInfo()), false,
-		'TexInfo Inequality');
 
 	t.end();
 });

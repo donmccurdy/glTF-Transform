@@ -87,7 +87,7 @@ export class TextureInfo extends ExtensibleProperty {
 		return this;
 	}
 
-	public equals(other: this): boolean {
+	public equals(other: TextureInfo): boolean {
 		return this.getTexCoord() === other.getTexCoord() &&
 				this.getMagFilter() === other.getMagFilter() &&
 				this.getMinFilter() === other.getMinFilter() &&
