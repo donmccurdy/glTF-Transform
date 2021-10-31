@@ -10,11 +10,15 @@ export interface DedupOptions {
 }
 
 const DEDUP_DEFAULTS: Required<DedupOptions> = {
-	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE],
+	propertyTypes: [
+		PropertyType.ACCESSOR,
+		PropertyType.MESH,
+		PropertyType.TEXTURE,
+		PropertyType.MATERIAL],
 };
 
 /**
- * Removes duplicate {@link Accessor}, {@link Mesh}, and {@link Texture} properties. Based on a
+ * Removes duplicate {@link Accessor}, {@link Mesh}, {@link Texture}, and {@link Material} properties. Based on a
  * [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8). Only
  * accessors in mesh primitives, morph targets, and animation samplers are processed.
  *
@@ -44,6 +48,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
 		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
 		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
+		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
@@ -258,6 +263,9 @@ function dedupMaterials(logger: Logger, doc: Document): void {
 
 		for (let j = 0; j < materials.length; j++){
 			const b = materials[j];
+
+			if (a === b) continue;
+			if (duplicates.has(b)) continue;
 
 			if (a.equals(b)) {
 				duplicates.set(b, a);
