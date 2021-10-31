@@ -315,7 +315,7 @@ test('@gltf-transform/core::material | copy', t => {
 	t.end();
 });
 
-test.only('@gltf-transform/core::material | equals', t => {
+test('@gltf-transform/core::material | equals', t => {
 	const doc = new Document();
 	const tex = doc.createTexture('MyTex');
 	const mat = doc.createMaterial('MyMat')
