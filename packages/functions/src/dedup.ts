@@ -200,6 +200,12 @@ function dedupImages(logger: Logger, doc: Document): void {
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
 
+	/**
+	 * Starting from image[0], check index[y] where y is any subsequent image in the list of images
+	 * for duplicate properties of image[0]. If a duplicate is found, replace the duplicate
+	 * with the matching original value.
+	 * Continue for the length of image array checking all duplicate values.
+	 */
 	for (let i = 0; i < textures.length; i++) {
 		const a = textures[i];
 		const aData = a.getImage();
@@ -240,6 +246,37 @@ function dedupImages(logger: Logger, doc: Document): void {
 	});
 }
 
+function dedupMaterials(logger: Logger, doc: Document): void {
+	const root = doc.getRoot();
+	const materials = root.listMaterials();
+	const duplicates: Map<Material, Material> = new Map();
+
+	for (let i = 0; i < materials.length; i++){
+		const a = materials[i];
+
+		if (duplicates.has(a)) continue;
+
+		for (let j = 0; j < materials.length; j++){
+			const b = materials[j];
+
+			if (a.equals(b)) {
+				duplicates.set(b, a);
+			}
+		}
+	}
+
+	logger.debug(
+		// eslint-disable-next-line max-len
+		`${NAME}: Found ${duplicates.size} duplicates among ${root.listMaterials().length} materials.`
+	);
+
+	Array.from(duplicates.entries()).forEach(([src, dst]) => {
+		src.listParents().forEach((property) => {
+			if (!(property instanceof Root)) property.swap(src, dst);
+		});
+		src.dispose();
+	});
+}
 /** Generates a key unique to the content of a primitive or target. */
 function createPrimitiveKey(
 	prim: Primitive | PrimitiveTarget,
