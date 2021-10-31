@@ -315,6 +315,61 @@ test('@gltf-transform/core::material | copy', t => {
 	t.end();
 });
 
+test('@gltf-transform/core::material | equals', t => {
+	const doc = new Document();
+	const tex = doc.createTexture('MyTex');
+	const mat = doc.createMaterial('MyMat')
+		.setAlphaMode('BLEND')
+		.setAlphaCutoff(0.5)
+		.setBaseColorFactor([1, 0, 1, 0.5])
+		.setBaseColorTexture(tex)
+		.setMetallicFactor(0)
+		.setRoughnessFactor(0.9)
+		.setMetallicRoughnessTexture(tex)
+		.setNormalScale(0.9)
+		.setNormalTexture(tex)
+		.setOcclusionStrength(1.5)
+		.setOcclusionTexture(tex)
+		.setEmissiveFactor([2, 2, 2])
+		.setEmissiveTexture(tex);
+	mat.getBaseColorTextureInfo()
+		.setTexCoord(2)
+		.setMagFilter(TextureInfo.MagFilter.LINEAR)
+		.setMinFilter(TextureInfo.MinFilter.NEAREST)
+		.setWrapS(TextureInfo.WrapMode.REPEAT)
+		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
+
+	const mat2 = doc.createMaterial().copy(mat);
+
+	const tex2 = doc.createTexture('NewTex');
+	const mat3 = doc.createMaterial().copy(mat)
+		.setAlphaMode('OPAQUE')
+		.setAlphaCutoff(0)
+		.setBaseColorFactor([1, 1, 1, 0])
+		.setBaseColorTexture(tex2)
+		.setMetallicFactor(1)
+		.setRoughnessFactor(0.3)
+		.setMetallicRoughnessTexture(tex2)
+		.setNormalScale(0.1)
+		.setNormalTexture(tex2)
+		.setOcclusionStrength(0.5)
+		.setOcclusionTexture(tex2)
+		.setEmissiveFactor([2, 1, 2])
+		.setEmissiveTexture(tex2);
+	mat3.getBaseColorTextureInfo()
+		.setTexCoord(0)
+		.setMagFilter(TextureInfo.MagFilter.NEAREST)
+		.setMinFilter(TextureInfo.MinFilter.NEAREST)
+		.setWrapS(TextureInfo.WrapMode.REPEAT)
+		.setWrapT(TextureInfo.WrapMode.REPEAT);
+
+	t.equal(mat.equals(mat2), true, 'Copy Equality');
+	t.equal(mat.equals(mat), true, 'Self Equality');
+	t.equal(mat.equals(mat3), false, 'Copy Inequality');
+
+	t.end();
+});
+
 test('@gltf-transform/core::material | i/o', t => {
 	const doc = new Document();
 	doc.createBuffer();

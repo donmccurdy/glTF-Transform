@@ -1,7 +1,7 @@
 import { PropertyType, TextureChannel, vec3, vec4 } from '../constants';
 import { GraphChild, Link } from '../graph/index';
 import { GLTF } from '../types/gltf';
-import { ColorUtils } from '../utils';
+import { ColorUtils, MathUtils } from '../utils';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 import { TextureLink } from './property-links';
@@ -139,7 +139,7 @@ export class Material extends ExtensibleProperty {
 	 * data is stored in the `.b` channel, allowing thist exture to be packed with
 	 * `occlusionTexture`, optionally.
 	 * @internal
-	*/
+	 */
 	@GraphChild private metallicRoughnessTexture: TextureLink | null = null;
 	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> =
 		this.graph.link('metallicRoughnessTextureInfo', this, new TextureInfo(this.graph));
@@ -190,6 +190,63 @@ export class Material extends ExtensibleProperty {
 			.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
 
 		return this;
+	}
+
+	/**
+	 * Checks for equality between {@link Material} properties,
+	 * including possible {@link TextureInfo}.
+	 */
+	public equals(other: Material): boolean {
+		if (this.getAlphaMode() !== other.getAlphaMode()) return false;
+		if (this.getAlphaCutoff() !== other.getAlphaCutoff()) return false;
+		if (this.getDoubleSided() !== other.getDoubleSided()) return false;
+		if (!MathUtils.eq(this.getBaseColorFactor(), other.getBaseColorFactor())) return false;
+		if (!MathUtils.eq(this.getEmissiveFactor(), other.getEmissiveFactor())) return false;
+		if (this.getNormalScale() !== other.getNormalScale()) return false;
+		if (this.getOcclusionStrength() !== other.getOcclusionStrength()) return false;
+		if (this.getRoughnessFactor() !== other.getRoughnessFactor()) return false;
+		if (this.getMetallicFactor() !== other.getMetallicFactor()) return false;
+
+		// Texture Checks
+		if (this.getBaseColorTextureInfo() && other.getBaseColorTextureInfo()) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			// ! For some reason my editor does not grasp the non-null assertion below
+			// ! Nulls should be addressed above
+			if (!this!.getBaseColorTextureInfo().equals(other!.getBaseColorTextureInfo())) {
+				return false;
+			}
+		}
+		if (this.getEmissiveTextureInfo() && other.getEmissiveTextureInfo()) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (!this.getEmissiveTextureInfo().equals(other.getEmissiveTextureInfo())) {
+				return false;
+			}
+		}
+		if (this.getNormalTextureInfo() && other.getNormalTextureInfo()) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (!this.getNormalTextureInfo().equals(other.getNormalTextureInfo())) {
+				return false;
+			}
+		}
+		if (this.getOcclusionTextureInfo() && other.getOcclusionTextureInfo()) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			if (!this.getOcclusionTextureInfo().equals(other.getOcclusionTextureInfo())) {
+				return false;
+			}
+		}
+		if (this.getMetallicRoughnessTextureInfo() && other.getMetallicRoughnessTextureInfo()) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			// eslint-disable-next-line max-len
+			if (!this.getMetallicRoughnessTextureInfo().equals(other.getMetallicRoughnessTextureInfo())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	dispose(): void {
