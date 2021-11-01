@@ -8,7 +8,7 @@ import { TextureLink } from './property-links';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
 
-const { R, G, B, A } = TextureChannel;
+const {R, G, B, A} = TextureChannel;
 
 /**
  * # Material
