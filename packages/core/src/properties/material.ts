@@ -1,14 +1,14 @@
-import {PropertyType, TextureChannel, vec3, vec4} from '../constants';
-import {GraphChild, Link} from '../graph/index';
-import {GLTF} from '../types/gltf';
-import {ColorUtils, MathUtils} from '../utils';
-import {ExtensibleProperty} from './extensible-property';
-import {COPY_IDENTITY} from './property';
-import {TextureLink} from './property-links';
-import {Texture} from './texture';
-import {TextureInfo} from './texture-info';
+import { PropertyType, TextureChannel, vec3, vec4 } from '../constants';
+import { GraphChild, Link } from '../graph/index';
+import { GLTF } from '../types/gltf';
+import { ColorUtils, MathUtils } from '../utils';
+import { ExtensibleProperty } from './extensible-property';
+import { COPY_IDENTITY } from './property';
+import { TextureLink } from './property-links';
+import { Texture } from './texture';
+import { TextureInfo } from './texture-info';
 
-const {R, G, B, A} = TextureChannel;
+const { R, G, B, A } = TextureChannel;
 
 /**
  * # Material
@@ -195,6 +195,8 @@ export class Material extends ExtensibleProperty {
 	 * including possible {@link TextureInfo}.
 	 */
 	public equals(other: Material): boolean {
+		// Factors and modes.
+
 		if (this.getAlphaMode() !== other.getAlphaMode()) return false;
 		if (this.getAlphaCutoff() !== other.getAlphaCutoff()) return false;
 		if (this.getDoubleSided() !== other.getDoubleSided()) return false;
@@ -205,45 +207,52 @@ export class Material extends ExtensibleProperty {
 		if (this.getRoughnessFactor() !== other.getRoughnessFactor()) return false;
 		if (this.getMetallicFactor() !== other.getMetallicFactor()) return false;
 
-		// Texture Checks
-		if (this.getBaseColorTextureInfo() && other.getBaseColorTextureInfo()) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			// ! For some reason my editor does not grasp the non-null assertion below
-			// ! Nulls should be addressed above
-			if (!this!.getBaseColorTextureInfo().equals(other!.getBaseColorTextureInfo())) {
+		// Textures.
+
+		if (this.getBaseColorTexture() && other.getBaseColorTexture()) {
+			if (this.getBaseColorTexture() !== other.getBaseColorTexture()) return false;
+			if (!this.getBaseColorTextureInfo()!.equals(other.getBaseColorTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getEmissiveTextureInfo() && other.getEmissiveTextureInfo()) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			if (!this.getEmissiveTextureInfo().equals(other.getEmissiveTextureInfo())) {
+		if (this.getEmissiveTexture() && other.getEmissiveTexture()) {
+			if (this.getEmissiveTexture() !== other.getEmissiveTexture()) return false;
+			if (!this.getEmissiveTextureInfo()!.equals(other.getEmissiveTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getNormalTextureInfo() && other.getNormalTextureInfo()) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			if (!this.getNormalTextureInfo().equals(other.getNormalTextureInfo())) {
+		if (this.getNormalTexture() && other.getNormalTexture()) {
+			if (this.getNormalTexture() !== other.getNormalTexture()) return false;
+			if (!this.getNormalTextureInfo()!.equals(other.getNormalTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getOcclusionTextureInfo() && other.getOcclusionTextureInfo()) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			if (!this.getOcclusionTextureInfo().equals(other.getOcclusionTextureInfo())) {
+		if (this.getOcclusionTexture() && other.getOcclusionTexture()) {
+			if (this.getOcclusionTexture() !== other.getOcclusionTexture()) return false;
+			if (!this.getOcclusionTextureInfo()!.equals(other.getOcclusionTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getMetallicRoughnessTextureInfo() && other.getMetallicRoughnessTextureInfo()) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			// eslint-disable-next-line max-len
-			if (!this.getMetallicRoughnessTextureInfo().equals(other.getMetallicRoughnessTextureInfo())) {
+		if (this.getMetallicRoughnessTexture() && other.getMetallicRoughnessTexture()) {
+			if (this.getMetallicRoughnessTexture() !== other.getMetallicRoughnessTexture()) {
+				return false;
+			}
+			if (!this.getMetallicRoughnessTextureInfo()!
+				.equals(other.getMetallicRoughnessTextureInfo()!)) {
 				return false;
 			}
 		}
+
+		// Extensions.
+
+		const extensions = this.listExtensions();
+		const otherExtensions = other.listExtensions();
+		if (extensions.length !== otherExtensions.length) return false;
+		for (let i = 0; i < extensions.length; i++) {
+			// TODO(feat): Implement deep equality checks for material extensions.
+			if (extensions[i] !== otherExtensions[i]) return false;
+		}
+
 		return true;
 	}
 
