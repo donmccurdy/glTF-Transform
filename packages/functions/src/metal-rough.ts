@@ -25,23 +25,21 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 
 		const logger = doc.getLogger();
 
-		const extensionName = MaterialsPBRSpecularGlossiness.EXTENSION_NAME;
 		const extensionsUsed = doc.getRoot().listExtensionsUsed().map((ext) => ext.extensionName);
-		if (!extensionsUsed.includes(extensionName)) {
-			logger.warn(`${NAME}: Extension ${extensionName} not found on given document.`);
+		if (!extensionsUsed.includes('KHR_materials_pbrSpecularGlossiness')) {
+			logger.warn(`${NAME}: KHR_materials_pbrSpecularGlossiness not found on document.`);
 			return;
 		}
 
-		const iorExtension = doc.createExtension(MaterialsIOR) as MaterialsIOR;
-		const specExtension = doc.createExtension(MaterialsSpecular) as MaterialsSpecular;
-		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness) as
-			MaterialsPBRSpecularGlossiness;
+		const iorExtension = doc.createExtension(MaterialsIOR);
+		const specExtension = doc.createExtension(MaterialsSpecular);
+		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
 
 		const inputTextures = new Set<Texture | null>();
 
 		for (const material of doc.getRoot().listMaterials()) {
-			const specGloss = material.getExtension('KHR_materials_pbrSpecularGlossiness') as
-				PBRSpecularGlossiness;
+			const specGloss = material
+				.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
 			if (!specGloss) continue;
 
 			// Create specular extension.
