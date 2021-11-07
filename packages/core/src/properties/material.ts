@@ -193,8 +193,8 @@ export class Material extends ExtensibleProperty {
 	}
 
 	/**
-	 * Checks for equality between {@link Material} properties,
-	 * including possible {@link TextureInfo}.
+	 * Checks for equality of two {@link Material} properties. Textures must be
+	 * the strictly equal (===), pixel data is not compared.
 	 */
 	public equals(other: Material): boolean {
 		// Factors and modes.
