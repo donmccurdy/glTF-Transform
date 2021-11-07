@@ -4,17 +4,19 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MaterialsSheen, Sheen } from '../';
 
-const WRITER_OPTIONS = {basename: 'extensionTest'};
+const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-sheen', t => {
+test('@gltf-transform/extensions::materials-sheen', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
-	const sheen = sheenExtension.createSheen()
-		.setSheenColorFactor([0.9, 0.5, .8])
+	const sheen = sheenExtension
+		.createSheen()
+		.setSheenColorFactor([0.9, 0.5, 0.8])
 		.setSheenColorTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
 
-	const mat = doc.createMaterial('MyMaterial')
+	const mat = doc
+		.createMaterial('MyMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_sheen', sheen);
 
@@ -23,28 +25,24 @@ test('@gltf-transform/extensions::materials-sheen', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
+	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
 	t.deepEqual(
-		materialDef.pbrMetallicRoughness.baseColorFactor,
-		[1.0, 0.5, 0.5, 1.0],
-		'writes base color'
+		materialDef.extensions,
+		{
+			KHR_materials_sheen: {
+				sheenColorFactor: [0.9, 0.5, 0.8],
+				sheenRoughnessFactor: 0,
+				sheenColorTexture: { index: 0 },
+			},
+		},
+		'writes sheen extension'
 	);
-	t.deepEqual(materialDef.extensions, {'KHR_materials_sheen': {
-		sheenColorFactor: [0.9, 0.5, 0.8],
-		sheenRoughnessFactor: 0,
-		sheenColorTexture: {index: 0},
-	}}, 'writes sheen extension');
-	t.deepEqual(
-		jsonDoc.json.extensionsUsed,
-		[MaterialsSheen.EXTENSION_NAME],
-		'writes extensionsUsed'
-	);
+	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsSheen.EXTENSION_NAME], 'writes extensionsUsed');
 
 	sheenExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_sheen'), null, 'sheen is detached');
 
-	const roundtripDoc = new NodeIO()
-		.registerExtensions([MaterialsSheen])
-		.readJSON(jsonDoc);
+	const roundtripDoc = new NodeIO().registerExtensions([MaterialsSheen]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Sheen>('KHR_materials_sheen');
 
@@ -53,14 +51,14 @@ test('@gltf-transform/extensions::materials-sheen', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::materials-sheen | copy', t => {
+test('@gltf-transform/extensions::materials-sheen | copy', (t) => {
 	const doc = new Document();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
-	const sheen = sheenExtension.createSheen()
+	const sheen = sheenExtension
+		.createSheen()
 		.setSheenColorFactor([0.9, 0.5, 0.8])
 		.setSheenColorTexture(doc.createTexture('sheen'));
-	doc.createMaterial()
-		.setExtension('KHR_materials_sheen', sheen);
+	doc.createMaterial().setExtension('KHR_materials_sheen', sheen);
 
 	const doc2 = doc.clone();
 	const sheen2 = doc2.getRoot().listMaterials()[0].getExtension<Sheen>('KHR_materials_sheen');
@@ -71,12 +69,10 @@ test('@gltf-transform/extensions::materials-sheen | copy', t => {
 	t.end();
 });
 
-
-test('@gltf-transform/extensions::materials-sheen | hex', t => {
+test('@gltf-transform/extensions::materials-sheen | hex', (t) => {
 	const doc = new Document();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
-	const sheen = sheenExtension.createSheen()
-		.setSheenColorHex(0x252525);
+	const sheen = sheenExtension.createSheen().setSheenColorHex(0x252525);
 	t.equals(sheen.getSheenColorHex(), 0x252525, 'sheenColorHex');
 	t.end();
 });

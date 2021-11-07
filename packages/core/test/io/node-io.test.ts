@@ -17,7 +17,7 @@ function ensureDir(uri) {
 	if (!fs.existsSync(outdir)) fs.mkdirSync(outdir);
 }
 
-test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::io | node.js read glb', { skip: !IS_NODEJS }, (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -32,7 +32,7 @@ test('@gltf-transform/core::io | node.js read glb', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::io | node.js read gltf', { skip: !IS_NODEJS }, (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -47,7 +47,7 @@ test('@gltf-transform/core::io | node.js read gltf', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::io | node.js write glb', { skip: !IS_NODEJS }, (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -65,7 +65,7 @@ test('@gltf-transform/core::io | node.js write glb', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::io | node.js write gltf', { skip: !IS_NODEJS }, (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -82,4 +82,3 @@ test('@gltf-transform/core::io | node.js write gltf', {skip: !IS_NODEJS}, t => {
 	t.ok(count > 0, 'tests completed');
 	t.end();
 });
-

@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MappingList, MaterialsVariants } from '../';
 
-test('@gltf-transform/extensions::materials-variants', t => {
+test('@gltf-transform/extensions::materials-variants', (t) => {
 	const doc = new Document();
 	const variantsExtension = doc.createExtension(MaterialsVariants);
 	const var2 = variantsExtension.createVariant('Damaged1');
@@ -14,18 +14,15 @@ test('@gltf-transform/extensions::materials-variants', t => {
 	const mat2 = doc.createMaterial('Damaged1').setRoughnessFactor(0.5);
 	const mat3 = doc.createMaterial('Damaged2').setRoughnessFactor(1.0);
 
-	const mappingList = variantsExtension.createMappingList()
+	const mappingList = variantsExtension
+		.createMappingList()
 		.addMapping(variantsExtension.createMapping().setMaterial(mat2).addVariant(var2))
 		.addMapping(variantsExtension.createMapping().setMaterial(mat3).addVariant(var3));
 
-	doc.createMesh('Varies')
-		.addPrimitive(
-			doc.createPrimitive()
-				.setMaterial(mat1)
-				.setExtension('KHR_materials_variants', mappingList)
-		);
-	doc.createMesh('Static')
-		.addPrimitive(doc.createPrimitive().setMaterial(mat1));
+	doc.createMesh('Varies').addPrimitive(
+		doc.createPrimitive().setMaterial(mat1).setExtension('KHR_materials_variants', mappingList)
+	);
+	doc.createMesh('Static').addPrimitive(doc.createPrimitive().setMaterial(mat1));
 
 	//
 
@@ -38,7 +35,10 @@ test('@gltf-transform/extensions::materials-variants', t => {
 	//
 
 	t.deepEqual(
-		doc.getRoot().listExtensionsUsed().map((e) => e.extensionName),
+		doc
+			.getRoot()
+			.listExtensionsUsed()
+			.map((e) => e.extensionName),
 		['KHR_materials_variants'],
 		'has extension'
 	);
@@ -52,9 +52,7 @@ test('@gltf-transform/extensions::materials-variants', t => {
 		'mapping materials'
 	);
 	t.deepEqual(
-		rtMappingList.listMappings()
-			.map((mapping) => mapping.listVariants()
-				.map((variant) => variant.getName())),
+		rtMappingList.listMappings().map((mapping) => mapping.listVariants().map((variant) => variant.getName())),
 		[['Damaged1'], ['Damaged2']],
 		'mapping variants'
 	);
@@ -68,7 +66,7 @@ test('@gltf-transform/extensions::materials-variants', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::materials-variants | copy', t => {
+test('@gltf-transform/extensions::materials-variants | copy', (t) => {
 	const doc = new Document();
 	const variantsExtension = doc.createExtension(MaterialsVariants);
 	const var1 = variantsExtension.createVariant('Dry');

@@ -4,19 +4,15 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MeshQuantization } from '../';
 
-const WRITER_OPTIONS = {basename: 'extensionTest'};
+const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::mesh-quantization', t => {
+test('@gltf-transform/extensions::mesh-quantization', (t) => {
 	const doc = new Document();
 	const quantizationExtension = doc.createExtension(MeshQuantization);
 	let jsonDoc;
 
 	jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
-	t.deepEqual(
-		jsonDoc.json.extensionsUsed,
-		[MeshQuantization.EXTENSION_NAME],
-		'writes extensionsUsed'
-	);
+	t.deepEqual(jsonDoc.json.extensionsUsed, [MeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
 
 	quantizationExtension.dispose();
 
@@ -25,7 +21,7 @@ test('@gltf-transform/extensions::mesh-quantization', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::mesh-quantization | copy', t => {
+test('@gltf-transform/extensions::mesh-quantization | copy', (t) => {
 	const doc = new Document();
 	doc.createExtension(MeshQuantization);
 

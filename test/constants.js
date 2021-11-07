@@ -24,4 +24,4 @@ const VARIANTS = new Set(['glTF-Binary']);
  */
 const SKIPLIST = new Set(['AnimatedTriangle', 'SimpleMorph', 'SpecGlossVsMetalRough']);
 
-module.exports = {SOURCE, TARGET, VARIANTS, SKIPLIST};
+module.exports = { SOURCE, TARGET, VARIANTS, SKIPLIST };

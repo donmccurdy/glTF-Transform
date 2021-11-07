@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::camera', t => {
+test('@gltf-transform/core::camera', (t) => {
 	const doc = new Document();
 
 	doc.createCamera('p')
@@ -11,55 +11,60 @@ test('@gltf-transform/core::camera', t => {
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
-		.setAspectRatio(.5);
+		.setAspectRatio(0.5);
 
-	doc.createCamera('o')
-		.setType('orthographic')
-		.setZNear(10)
-		.setZFar(100)
-		.setXMag(50)
-		.setYMag(25);
+	doc.createCamera('o').setType('orthographic').setZNear(10).setZFar(100).setXMag(50).setYMag(25);
 
 	const io = new NodeIO();
 
-	const options = {basename: 'cameraTest'};
+	const options = { basename: 'cameraTest' };
 	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
 
-	t.deepEqual(jsonDoc.json.cameras[0], {
-		name: 'p',
-		type: 'perspective',
-		perspective: {
-			znear: 0.1,
-			zfar: 10,
-			yfov: Math.PI / 5,
-			aspectRatio: .5,
-		}
-	}, 'perspective camera');
+	t.deepEqual(
+		jsonDoc.json.cameras[0],
+		{
+			name: 'p',
+			type: 'perspective',
+			perspective: {
+				znear: 0.1,
+				zfar: 10,
+				yfov: Math.PI / 5,
+				aspectRatio: 0.5,
+			},
+		},
+		'perspective camera'
+	);
 
-	t.deepEqual(jsonDoc.json.cameras[1], {
-		name: 'o',
-		type: 'orthographic',
-		orthographic: {
-			znear: 10,
-			zfar: 100,
-			xmag: 50,
-			ymag: 25,
-		}
-	}, 'orthographic camera');
+	t.deepEqual(
+		jsonDoc.json.cameras[1],
+		{
+			name: 'o',
+			type: 'orthographic',
+			orthographic: {
+				znear: 10,
+				zfar: 100,
+				xmag: 50,
+				ymag: 25,
+			},
+		},
+		'orthographic camera'
+	);
 
 	t.end();
 });
 
-test('@gltf-transform/core::camera | copy', t => {
+test('@gltf-transform/core::camera | copy', (t) => {
 	const doc = new Document();
 
-	const a = doc.createCamera('MyPerspectiveCamera')
+	const a = doc
+		.createCamera('MyPerspectiveCamera')
 		.setType('perspective')
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
-		.setAspectRatio(.5);
-	const b = doc.createCamera('MyOrthoCamera')
+		.setAspectRatio(0.5);
+	const b = doc
+		.createCamera('MyOrthoCamera')
 		.setType('orthographic')
 		.setZNear(10)
 		.setZFar(100)

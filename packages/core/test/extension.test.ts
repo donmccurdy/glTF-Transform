@@ -21,7 +21,7 @@ class GizmoExtension extends Extension {
 		for (const node of this.doc.getRoot().listNodes()) {
 			if (node.getExtension(EXTENSION_NAME)) {
 				const nodeDef = context.jsonDoc.json.nodes[context.nodeIndexMap.get(node)];
-				nodeDef.extensions = {'TEST_node_gizmo': {isGizmo: true}};
+				nodeDef.extensions = { TEST_node_gizmo: { isGizmo: true } };
 			}
 		}
 		return this;
@@ -50,7 +50,7 @@ class Gizmo extends ExtensionProperty {
 GizmoExtension.EXTENSION_NAME = EXTENSION_NAME;
 Gizmo.EXTENSION_NAME = EXTENSION_NAME;
 
-test('@gltf-transform/core::extension | list', t => {
+test('@gltf-transform/core::extension | list', (t) => {
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension);
 
@@ -67,7 +67,7 @@ test('@gltf-transform/core::extension | list', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::extension | property', t => {
+test('@gltf-transform/core::extension | property', (t) => {
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
@@ -101,14 +101,13 @@ test('@gltf-transform/core::extension | property', t => {
 	t.end();
 });
 
-
-test('@gltf-transform/core::extension | i/o', t => {
+test('@gltf-transform/core::extension | i/o', (t) => {
 	const io = new NodeIO().registerExtensions([GizmoExtension]);
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
 	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
 
-	const options = {basename: 'extensionTest'};
+	const options = { basename: 'extensionTest' };
 
 	let jsonDoc;
 	let resultDoc;
@@ -124,15 +123,14 @@ test('@gltf-transform/core::extension | i/o', t => {
 
 	resultDoc = io.readJSON(jsonDoc);
 	t.deepEqual(
-		resultDoc.getRoot().listExtensionsUsed().map((ext) => ext.extensionName),
+		resultDoc
+			.getRoot()
+			.listExtensionsUsed()
+			.map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],
 		'roundtrip extensionsUsed'
 	);
-	t.deepEqual(
-		resultDoc.getRoot().listExtensionsRequired(),
-		[],
-		'roundtrip omit extensionsRequired'
-	);
+	t.deepEqual(resultDoc.getRoot().listExtensionsRequired(), [], 'roundtrip omit extensionsRequired');
 	t.equal(
 		resultDoc.getRoot().listNodes()[0].getExtension(EXTENSION_NAME).extensionName,
 		'TEST_node_gizmo',
@@ -146,7 +144,10 @@ test('@gltf-transform/core::extension | i/o', t => {
 	t.deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
 	resultDoc = io.readJSON(jsonDoc);
 	t.deepEqual(
-		resultDoc.getRoot().listExtensionsRequired().map((ext) => ext.extensionName),
+		resultDoc
+			.getRoot()
+			.listExtensionsRequired()
+			.map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],
 		'roundtrip extensionsRequired'
 	);
@@ -154,7 +155,7 @@ test('@gltf-transform/core::extension | i/o', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::extension | clone', t => {
+test('@gltf-transform/core::extension | clone', (t) => {
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();

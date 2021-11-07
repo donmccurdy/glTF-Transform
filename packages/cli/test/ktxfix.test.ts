@@ -7,10 +7,11 @@ import test from 'tape';
 import { BufferUtils, Document, Logger, Texture } from '@gltf-transform/core';
 import { ktxfix } from '../';
 
-test('@gltf-transform/cli::ktxfix', async t => {
+test('@gltf-transform/cli::ktxfix', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const material = doc.createMaterial();
-	const texture = doc.createTexture()
+	const texture = doc
+		.createTexture()
 		.setMimeType('image/ktx2')
 		.setImage(BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2'))));
 

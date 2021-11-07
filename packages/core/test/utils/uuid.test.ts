@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { uuid } from '../../';
 
-test('@gltf-transform/core::uuid', t => {
+test('@gltf-transform/core::uuid', (t) => {
 	const set = new Set();
 	for (let i = 0; i < 1000; i++) {
 		set.add(uuid());
@@ -12,15 +12,13 @@ test('@gltf-transform/core::uuid', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::uuid | conflict', t => {
-	const {random} = Math;
+test('@gltf-transform/core::uuid | conflict', (t) => {
+	const { random } = Math;
 
 	// Number of elements must match ID length.
 	const values = [
-		.12, .22, .32, .42, .52, .62,
-		.11, .21, .31, .41, .51, .61,
-		.10, .20, .30, .40, .50, .60,
-		.10, .20, .30, .40, .50, .60,
+		0.12, 0.22, 0.32, 0.42, 0.52, 0.62, 0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.1, 0.2,
+		0.3, 0.4, 0.5, 0.6,
 	];
 	Math.random = (): number => values.pop();
 

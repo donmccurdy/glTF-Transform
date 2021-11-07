@@ -3,12 +3,12 @@ require('source-map-support').install();
 import test from 'tape';
 import { MathUtils } from '../../';
 
-test('@gltf-transform/core::math-utils | identity', t => {
+test('@gltf-transform/core::math-utils | identity', (t) => {
 	t.equals(MathUtils.identity(25), 25, 'identity');
 	t.end();
 });
 
-test('@gltf-transform/core::math-utils | denormalize', t => {
+test('@gltf-transform/core::math-utils | denormalize', (t) => {
 	t.equals(MathUtils.denormalize(25, 5126), 25, 'float');
 	t.equals(MathUtils.denormalize(13107, 5123), 0.2, 'ushort');
 	t.equals(MathUtils.denormalize(51, 5121), 0.2, 'ubyte');
@@ -17,7 +17,7 @@ test('@gltf-transform/core::math-utils | denormalize', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::math-utils | normalize', t => {
+test('@gltf-transform/core::math-utils | normalize', (t) => {
 	t.equals(MathUtils.normalize(25, 5126), 25, 'float');
 	t.equals(MathUtils.normalize(0.2, 5123), 13107, 'ushort');
 	t.equals(MathUtils.normalize(0.2, 5121), 51, 'ubyte');

@@ -4,17 +4,12 @@ import test from 'tape';
 import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from '../src/utils';
 
-test('@gltf-transform/functions::utils | getGLPrimitiveCount', async t => {
+test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 	const doc = new Document();
 
-	const indices = doc.createAccessor()
-		.setArray(new Uint16Array(6));
-	const position = doc.createAccessor()
-		.setType(Accessor.Type.VEC3)
-		.setArray(new Float32Array(99));
-	const prim = doc.createPrimitive()
-		.setMode(Primitive.Mode.TRIANGLES)
-		.setAttribute('POSITION', position);
+	const indices = doc.createAccessor().setArray(new Uint16Array(6));
+	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(new Float32Array(99));
+	const prim = doc.createPrimitive().setMode(Primitive.Mode.TRIANGLES).setAttribute('POSITION', position);
 	const indexedPrim = prim.clone().setIndices(indices);
 
 	t.equals(getGLPrimitiveCount(prim), 11, 'triangles');

@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, JSONDocument, NodeIO, Root } from '../../';
 
-test('@gltf-transform/core::root', t => {
+test('@gltf-transform/core::root', (t) => {
 	const doc = new Document();
 	const accessor = doc.createAccessor();
 	const animation = doc.createAnimation();
@@ -44,7 +44,7 @@ test('@gltf-transform/core::root', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::root | default scene', t => {
+test('@gltf-transform/core::root | default scene', (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
 	const sceneA = doc.createScene('A');
@@ -64,16 +64,12 @@ test('@gltf-transform/core::root | default scene', t => {
 
 	t.equals(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
 
-	t.equals(
-		io.readJSON(io.writeJSON(doc, {})).getRoot().getDefaultScene().getName(),
-		'B',
-		'read / write persistence'
-	);
+	t.equals(io.readJSON(io.writeJSON(doc, {})).getRoot().getDefaultScene().getName(), 'B', 'read / write persistence');
 
 	t.end();
 });
 
-test('@gltf-transform/core::root | clone child of root', t => {
+test('@gltf-transform/core::root | clone child of root', (t) => {
 	const doc = new Document();
 	const a = doc.createAccessor();
 	const b = a.clone();
@@ -83,25 +79,25 @@ test('@gltf-transform/core::root | clone child of root', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::root | extras', t => {
+test('@gltf-transform/core::root | extras', (t) => {
 	const doc = new Document();
 	const io = new NodeIO();
 
 	const jsonDocNoExtras = io.writeJSON(doc);
-	doc.getRoot().setExtras({custom: 'value'});
+	doc.getRoot().setExtras({ custom: 'value' });
 	const jsonDocExtras = io.writeJSON(doc);
 
 	const rtDocNoExtras = io.readJSON(jsonDocNoExtras);
 	const rtDocExtras = io.readJSON(jsonDocExtras);
 
 	t.equals(jsonDocNoExtras.json.extras, undefined, 'no empty extras');
-	t.deepEquals(jsonDocExtras.json.extras, {custom: 'value'}, 'write extras');
+	t.deepEquals(jsonDocExtras.json.extras, { custom: 'value' }, 'write extras');
 	t.deepEquals(rtDocNoExtras.getRoot().getExtras(), {}, 'round trip no extras');
-	t.deepEquals(rtDocExtras.getRoot().getExtras(), {custom: 'value'}, 'round trip extras');
+	t.deepEquals(rtDocExtras.getRoot().getExtras(), { custom: 'value' }, 'round trip extras');
 	t.end();
 });
 
-test('@gltf-transform/core::root | asset', t => {
+test('@gltf-transform/core::root | asset', (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
 	const io = new NodeIO();

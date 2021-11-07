@@ -3,31 +3,22 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '../../';
 
-test('@gltf-transform/core::texture | read', t => {
+test('@gltf-transform/core::texture | read', (t) => {
 	const jsonDoc = {
 		json: {
-			asset: {version: '2.0'},
-			textures: [
-				{source: 0, sampler: 0},
-				{source: 1},
-				{source: 0},
-			],
-			samplers: [
-				{wrapS: 33071}
-			],
-			images: [
-				{uri: 'tex1.png'},
-				{uri: 'tex2.jpeg'},
-			],
+			asset: { version: '2.0' },
+			textures: [{ source: 0, sampler: 0 }, { source: 1 }, { source: 0 }],
+			samplers: [{ wrapS: 33071 }],
+			images: [{ uri: 'tex1.png' }, { uri: 'tex2.jpeg' }],
 			materials: [
-				{normalTexture: {index: 0}, occlusionTexture: {index: 2}},
-				{normalTexture: {index: 1}}
-			]
+				{ normalTexture: { index: 0 }, occlusionTexture: { index: 2 } },
+				{ normalTexture: { index: 1 } },
+			],
 		},
 		resources: {
 			'tex1.png': new ArrayBuffer(1),
 			'tex2.jpeg': new ArrayBuffer(2),
-		}
+		},
 	};
 
 	const io = new NodeIO();
@@ -47,27 +38,21 @@ test('@gltf-transform/core::texture | read', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | write', t => {
+test('@gltf-transform/core::texture | write', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const image1 = new ArrayBuffer(1);
 	const image2 = new ArrayBuffer(2);
-	const texture1 = doc.createTexture('tex1')
-		.setImage(image1)
-		.setURI('tex1.png');
-	const texture2 = doc.createTexture('tex2')
-		.setImage(image2)
-		.setMimeType('image/jpeg');
-	doc.createMaterial('mat1')
-		.setBaseColorTexture(texture1)
-		.setNormalTexture(texture2);
+	const texture1 = doc.createTexture('tex1').setImage(image1).setURI('tex1.png');
+	const texture2 = doc.createTexture('tex2').setImage(image2).setMimeType('image/jpeg');
+	doc.createMaterial('mat1').setBaseColorTexture(texture1).setNormalTexture(texture2);
 	doc.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = new NodeIO();
-	const jsonDoc = io.writeJSON(doc, {basename: 'basename'});
+	const jsonDoc = io.writeJSON(doc, { basename: 'basename' });
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
@@ -78,9 +63,10 @@ test('@gltf-transform/core::texture | write', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | copy', t => {
+test('@gltf-transform/core::texture | copy', (t) => {
 	const doc = new Document();
-	const tex = doc.createTexture('MyTexture')
+	const tex = doc
+		.createTexture('MyTexture')
 		.setImage(new ArrayBuffer(2))
 		.setMimeType('image/gif')
 		.setURI('path/to/image.gif');
@@ -94,24 +80,21 @@ test('@gltf-transform/core::texture | copy', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | extras', t => {
+test('@gltf-transform/core::texture | extras', (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createBuffer();
-	doc.createTexture('A')
-		.setExtras({foo: 1, bar: 2})
-		.setImage(new ArrayBuffer(10))
-		.setMimeType('image/png');
+	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new ArrayBuffer(10)).setMimeType('image/png');
 
 	const doc2 = io.readJSON(io.writeJSON(doc));
 
-	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'storage');
-	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrip');
+	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
+	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
 
 	t.end();
 });
 
-test('@gltf-transform/core::texture | padding', t => {
+test('@gltf-transform/core::texture | padding', (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
 
@@ -121,20 +104,26 @@ test('@gltf-transform/core::texture | padding', t => {
 	doc.createTexture().setImage(new ArrayBuffer(21)).setMimeType('image/png');
 	doc.createTexture().setImage(new ArrayBuffer(20)).setMimeType('image/png');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, {format: Format.GLB});
+	const jsonDoc = new NodeIO().writeJSON(doc, { format: Format.GLB });
 
-	t.deepEqual(jsonDoc.json.images, [
-		{bufferView: 0, mimeType: 'image/png'},
-		{bufferView: 1, mimeType: 'image/png'},
-		{bufferView: 2, mimeType: 'image/png'},
-	], 'images');
-	t.deepEqual(jsonDoc.json.bufferViews, [
-		{buffer: 0, byteOffset: 0, byteLength: 17},
-		{buffer: 0, byteOffset: 24, byteLength: 21},
-		{buffer: 0, byteOffset: 48, byteLength: 20},
-	], 'bufferViews');
-	t.deepEqual(jsonDoc.json.buffers, [
-		{byteLength: 72}
-	], 'buffers');
+	t.deepEqual(
+		jsonDoc.json.images,
+		[
+			{ bufferView: 0, mimeType: 'image/png' },
+			{ bufferView: 1, mimeType: 'image/png' },
+			{ bufferView: 2, mimeType: 'image/png' },
+		],
+		'images'
+	);
+	t.deepEqual(
+		jsonDoc.json.bufferViews,
+		[
+			{ buffer: 0, byteOffset: 0, byteLength: 17 },
+			{ buffer: 0, byteOffset: 24, byteLength: 21 },
+			{ buffer: 0, byteOffset: 48, byteLength: 20 },
+		],
+		'bufferViews'
+	);
+	t.deepEqual(jsonDoc.json.buffers, [{ byteLength: 72 }], 'buffers');
 	t.end();
 });

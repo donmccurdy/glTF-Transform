@@ -5,19 +5,18 @@ import { Document, Logger } from '@gltf-transform/core';
 import { InstancedMesh } from '@gltf-transform/extensions';
 import { instance } from '../';
 
-test('@gltf-transform/functions::instance | translation', async t => {
+test('@gltf-transform/functions::instance | translation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
-	const prim = doc.createPrimitive()
-		.setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
 	const mesh = doc.createMesh().addPrimitive(prim);
 	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 0]);
 	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
 	const node3 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 2]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform((instance()));
+	await doc.transform(instance());
 
 	t.equals(root.listNodes().length, 1, 'creates batch node');
 	t.equals(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
@@ -40,20 +39,19 @@ test('@gltf-transform/functions::instance | translation', async t => {
 	t.end();
 });
 
-test('@gltf-transform/functions::instance | rotation', async t => {
+test('@gltf-transform/functions::instance | rotation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
-	const prim = doc.createPrimitive()
-		.setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
 	const mesh = doc.createMesh().addPrimitive(prim);
-	const x = Math.sqrt(.5);
+	const x = Math.sqrt(0.5);
 	const node1 = doc.createNode().setMesh(mesh).setRotation([0, 0, 0, 1]);
 	const node2 = doc.createNode().setMesh(mesh).setRotation([x, 0, 0, x]);
 	const node3 = doc.createNode().setMesh(mesh).setRotation([0, x, 0, x]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform((instance()));
+	await doc.transform(instance());
 
 	t.equals(root.listNodes().length, 1, 'creates batch node');
 	t.equals(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
@@ -76,19 +74,18 @@ test('@gltf-transform/functions::instance | rotation', async t => {
 	t.end();
 });
 
-test('@gltf-transform/functions::instance | scale', async t => {
+test('@gltf-transform/functions::instance | scale', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
-	const prim = doc.createPrimitive()
-		.setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
 	const mesh = doc.createMesh().addPrimitive(prim);
 	const node1 = doc.createNode().setMesh(mesh).setScale([1, 1, 1]);
 	const node2 = doc.createNode().setMesh(mesh).setScale([2, 2, 2]);
 	const node3 = doc.createNode().setMesh(mesh).setScale([1, 1, 5]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform((instance()));
+	await doc.transform(instance());
 
 	t.equals(root.listNodes().length, 1, 'creates batch node');
 	t.equals(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
@@ -111,19 +108,18 @@ test('@gltf-transform/functions::instance | scale', async t => {
 	t.end();
 });
 
-test('@gltf-transform/functions::instance | scale', async t => {
+test('@gltf-transform/functions::instance | scale', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
-	const prim = doc.createPrimitive()
-		.setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
 	const mesh = doc.createMesh().addPrimitive(prim);
 	const node1 = doc.createNode().setMesh(mesh).setScale([1, 1, 1]);
 	const node2 = doc.createNode().setMesh(mesh.clone()).setScale([2, 2, 2]);
 	const node3 = doc.createNode().setMesh(mesh.clone()).setScale([1, 1, 5]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform((instance()));
+	await doc.transform(instance());
 
 	t.equals(root.listNodes().length, 3, 'keeps original nodes');
 	t.notOk(node1.isDisposed(), 'node (1/3)');

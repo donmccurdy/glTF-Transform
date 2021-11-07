@@ -8,39 +8,35 @@ import { Mode, mockCommandExistsSync, mockSpawnSync, toktx } from '../';
 
 const { R, G } = TextureChannel;
 
-test('@gltf-transform/cli::toktx | resize', async t => {
-	t.equals(
-		await getParams({mode: Mode.ETC1S}, [508, 508]),
-		'--genmipmap --bcmp',
-		'508x508 → no change'
-	);
+test('@gltf-transform/cli::toktx | resize', async (t) => {
+	t.equals(await getParams({ mode: Mode.ETC1S }, [508, 508]), '--genmipmap --bcmp', '508x508 → no change');
 
 	t.equals(
-		await getParams({mode: Mode.ETC1S}, [507, 509]),
+		await getParams({ mode: Mode.ETC1S }, [507, 509]),
 		'--genmipmap --bcmp --resize 508x512',
 		'507x509 → 508x512'
 	);
 
 	t.equals(
-		await getParams({mode: Mode.ETC1S, powerOfTwo: true}, [508, 508]),
+		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [508, 508]),
 		'--genmipmap --bcmp --resize 512x512',
 		'508x508+powerOfTwo → 512x512'
 	);
 
 	t.equals(
-		await getParams({mode: Mode.ETC1S, powerOfTwo: true}, [5, 3]),
+		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [5, 3]),
 		'--genmipmap --bcmp --resize 4x4',
 		'5x3+powerOfTwo → 4x4'
 	);
 
 	t.equals(
-		await getParams({mode: Mode.ETC1S}, [508, 508], R),
+		await getParams({ mode: Mode.ETC1S }, [508, 508], R),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type R',
 		'channels → R'
 	);
 
 	t.equals(
-		await getParams({mode: Mode.ETC1S}, [508, 508], G),
+		await getParams({ mode: Mode.ETC1S }, [508, 508], G),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type RG',
 		'channels → RG'
 	);
@@ -48,13 +44,9 @@ test('@gltf-transform/cli::toktx | resize', async t => {
 	t.end();
 });
 
-async function getParams(
-	options: Record<string, unknown>, size: vec2, channels = 0
-): Promise<string> {
+async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
-	const tex = doc.createTexture()
-		.setImage(new ArrayBuffer(10))
-		.setMimeType('image/png');
+	const tex = doc.createTexture().setImage(new ArrayBuffer(10)).setMimeType('image/png');
 	tex.getSize = (): vec2 => size;
 
 	// Assign texture to materials so that the given channels are in use.
@@ -62,8 +54,7 @@ async function getParams(
 		doc.createMaterial().setOcclusionTexture(tex);
 	} else if (channels === G) {
 		const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
-		const clearcoat = clearcoatExtension.createClearcoat()
-			.setClearcoatRoughnessTexture(tex);
+		const clearcoat = clearcoatExtension.createClearcoat().setClearcoatRoughnessTexture(tex);
 		doc.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
 	} else if (channels !== 0x0000) {
 		throw new Error('Unimplemented channels setting');
@@ -72,12 +63,12 @@ async function getParams(
 	let actualParams: string[];
 	mockSpawnSync((_, params: string[]) => {
 		// Mock `toktx` version check.
-		if (params.join() === '--version') return {status: 0, stdout: 'v4.0.0'};
+		if (params.join() === '--version') return { status: 0, stdout: 'v4.0.0' };
 
 		// Mock `toktx` compression.
 		actualParams = params;
 		fs.writeFileSync(params[params.length - 2], Buffer.from(new ArrayBuffer(8)));
-		return {status: 0};
+		return { status: 0 };
 	});
 	mockCommandExistsSync(() => true);
 

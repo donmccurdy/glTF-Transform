@@ -4,20 +4,16 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { TextureWebP } from '../';
 
-const WRITER_OPTIONS = {basename: 'extensionTest'};
+const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([TextureWebP]);
 
-test('@gltf-transform/extensions::texture-webp', t => {
+test('@gltf-transform/extensions::texture-webp', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const webpExtension = doc.createExtension(TextureWebP);
-	const tex1 = doc.createTexture('WebPTexture')
-		.setMimeType('image/webp')
-		.setImage(new ArrayBuffer(10));
-	const tex2 = doc.createTexture('PNGTexture')
-		.setMimeType('image/png')
-		.setImage(new ArrayBuffer(15));
+	const tex1 = doc.createTexture('WebPTexture').setMimeType('image/webp').setImage(new ArrayBuffer(10));
+	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new ArrayBuffer(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
 
 	let jsonDoc;
@@ -28,11 +24,7 @@ test('@gltf-transform/extensions::texture-webp', t => {
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['EXT_texture_webp'], 'writes extensionsUsed');
 	t.equal(jsonDoc.json.textures[0].source, undefined, 'omits .source on WebP texture');
 	t.equal(jsonDoc.json.textures[1].source, 1, 'includes .source on PNG texture');
-	t.equal(
-		jsonDoc.json.textures[0].extensions['EXT_texture_webp'].source,
-		0,
-		'includes .source on WebP extension'
-	);
+	t.equal(jsonDoc.json.textures[0].extensions['EXT_texture_webp'].source, 0, 'includes .source on WebP extension');
 
 	// Read (roundtrip) from file.
 	const rtDoc = io.readJSON(jsonDoc);

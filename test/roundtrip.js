@@ -1,6 +1,6 @@
 const path = require('path');
-const {execSync} = require('child_process');
-const {SOURCE, TARGET, VARIANTS} = require('./constants.js');
+const { execSync } = require('child_process');
+const { SOURCE, TARGET, VARIANTS } = require('./constants.js');
 
 /**
  * Generates a copy of each sample model using `gltf-transform copy`. Does
@@ -8,10 +8,9 @@ const {SOURCE, TARGET, VARIANTS} = require('./constants.js');
  * lossless round trip test.
  */
 
-const INDEX = require(path.join(TARGET, 'model-index.json'))
+const INDEX = require(path.join(TARGET, 'model-index.json'));
 
 INDEX.forEach((asset, assetIndex) => {
-
 	console.info(`📦 ${asset.name} (${assetIndex + 1} / ${INDEX.length})`);
 
 	Object.entries(asset.variants).forEach(([variant, filename]) => {
@@ -22,7 +21,10 @@ INDEX.forEach((asset, assetIndex) => {
 
 		try {
 			execSync(`gltf-transform copy ${src} ${dst.replace('{v}', 'copy')}`);
-			execSync(`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-lo')} --quantizePosition 14 --quantizeTexcoord 12 --quantizeColor 8 --quantizeNormal 8`);
+			execSync(
+				`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-lo')}` +
+					' --quantizePosition 14 --quantizeTexcoord 12 --quantizeColor 8 --quantizeNormal 8'
+			);
 			execSync(`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-hi')}`);
 			execSync(`gltf-transform draco ${src} ${dst.replace('{v}', 'draco')}`);
 			console.info(`    - ✅ ${variant}/${filename}`);

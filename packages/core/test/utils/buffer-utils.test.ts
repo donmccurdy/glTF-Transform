@@ -7,7 +7,7 @@ const IS_NODEJS = typeof window === 'undefined';
 
 const HELLO_WORLD = 'data:application/octet-stream;base64,aGVsbG8gd29ybGQ=';
 
-test('@gltf-transform/core::buffer-utils | web', {skip: IS_NODEJS}, t => {
+test('@gltf-transform/core::buffer-utils | web', { skip: IS_NODEJS }, (t) => {
 	t.equals(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',
@@ -17,7 +17,7 @@ test('@gltf-transform/core::buffer-utils | web', {skip: IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::buffer-utils | node.js', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::buffer-utils | node.js', { skip: !IS_NODEJS }, (t) => {
 	t.equals(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',

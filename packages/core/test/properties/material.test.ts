@@ -5,13 +5,10 @@ import { Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInf
 
 const { R, G, B, A } = TextureChannel;
 
-test('@gltf-transform/core::material | properties', t => {
+test('@gltf-transform/core::material | properties', (t) => {
 	const doc = new Document();
 
-	const mat = doc.createMaterial('mat')
-		.setDoubleSided(true)
-		.setAlphaMode('MASK')
-		.setAlphaCutoff(0.33);
+	const mat = doc.createMaterial('mat').setDoubleSided(true).setAlphaMode('MASK').setAlphaCutoff(0.33);
 
 	t.equal(mat.getDoubleSided(), true, 'doubleSided');
 	t.equal(mat.getAlphaMode(), 'MASK', 'alphaMode');
@@ -19,10 +16,11 @@ test('@gltf-transform/core::material | properties', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | factors', t => {
+test('@gltf-transform/core::material | factors', (t) => {
 	const doc = new Document();
 
-	const mat = doc.createMaterial('mat')
+	const mat = doc
+		.createMaterial('mat')
 		.setBaseColorFactor([1, 0, 0, 1])
 		.setEmissiveFactor([0.5, 0.5, 0.5])
 		.setMetallicFactor(0.1)
@@ -35,19 +33,17 @@ test('@gltf-transform/core::material | factors', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | hex', t => {
+test('@gltf-transform/core::material | hex', (t) => {
 	const doc = new Document();
 
-	const mat = doc.createMaterial('mat')
-		.setAlpha(0.9)
-		.setBaseColorHex(0x00FF00);
+	const mat = doc.createMaterial('mat').setAlpha(0.9).setBaseColorHex(0x00ff00);
 
 	t.equal(mat.getAlpha(), 0.9, 'alpha');
 	t.equal(mat.getBaseColorHex(), 65024, 'baseColorHex');
 	t.end();
 });
 
-test('@gltf-transform/core::material | textures', t => {
+test('@gltf-transform/core::material | textures', (t) => {
 	const doc = new Document();
 
 	const baseColor = doc.createTexture('baseColor');
@@ -56,7 +52,8 @@ test('@gltf-transform/core::material | textures', t => {
 	const metalRough = doc.createTexture('metalRough');
 	const occlusion = doc.createTexture('occlusion');
 
-	const mat = doc.createMaterial('mat')
+	const mat = doc
+		.createMaterial('mat')
 		.setBaseColorTexture(baseColor)
 		.setEmissiveTexture(emissive)
 		.setNormalTexture(normal)
@@ -75,7 +72,7 @@ test('@gltf-transform/core::material | textures', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | texture samplers', t => {
+test('@gltf-transform/core::material | texture samplers', (t) => {
 	const doc = new Document();
 
 	const mat = doc.createMaterial('mat');
@@ -98,45 +95,17 @@ test('@gltf-transform/core::material | texture samplers', t => {
 		.setMinFilter(TextureInfo.MinFilter.LINEAR)
 		.setMagFilter(TextureInfo.MagFilter.NEAREST);
 
-	t.equal(
-		mat.getBaseColorTextureInfo().getWrapS(),
-		TextureInfo.WrapMode.REPEAT,
-		'wrapS'
-	);
-	t.equal(
-		mat.getBaseColorTextureInfo().getWrapT(),
-		TextureInfo.WrapMode.CLAMP_TO_EDGE,
-		'wrapT'
-	);
-	t.equal(
-		mat.getEmissiveTextureInfo().getMinFilter(),
-		TextureInfo.MinFilter.LINEAR,
-		'minFilter'
-	);
-	t.equal(
-		mat.getEmissiveTextureInfo().getMagFilter(),
-		TextureInfo.MinFilter.NEAREST,
-		'magFilter'
-	);
-	t.equal(
-		mat.getNormalTextureInfo(),
-		null,
-		'unchanged normalTexture sampler'
-	);
-	t.equal(
-		mat.getMetallicRoughnessTextureInfo(),
-		null,
-		'unchanged metallicRoughnessTexture sampler'
-	);
-	t.equal(
-		mat.getOcclusionTextureInfo(),
-		null,
-		'unchanged occlusionTexture sampler'
-	);
+	t.equal(mat.getBaseColorTextureInfo().getWrapS(), TextureInfo.WrapMode.REPEAT, 'wrapS');
+	t.equal(mat.getBaseColorTextureInfo().getWrapT(), TextureInfo.WrapMode.CLAMP_TO_EDGE, 'wrapT');
+	t.equal(mat.getEmissiveTextureInfo().getMinFilter(), TextureInfo.MinFilter.LINEAR, 'minFilter');
+	t.equal(mat.getEmissiveTextureInfo().getMagFilter(), TextureInfo.MinFilter.NEAREST, 'magFilter');
+	t.equal(mat.getNormalTextureInfo(), null, 'unchanged normalTexture sampler');
+	t.equal(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture sampler');
+	t.equal(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture sampler');
 	t.end();
 });
 
-test('@gltf-transform/core::material | texture info', t => {
+test('@gltf-transform/core::material | texture info', (t) => {
 	const doc = new Document();
 
 	const mat = doc.createMaterial('mat');
@@ -149,13 +118,9 @@ test('@gltf-transform/core::material | texture info', t => {
 	t.equal(mat.getMetallicRoughnessTextureInfo(), null, 'default metallicRoughnessTexture info');
 	t.equal(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture info');
 
-	mat.setBaseColorTexture(baseColor)
-		.getBaseColorTextureInfo()
-		.setTexCoord(0);
+	mat.setBaseColorTexture(baseColor).getBaseColorTextureInfo().setTexCoord(0);
 
-	mat.setEmissiveTexture(emissive)
-		.getEmissiveTextureInfo()
-		.setTexCoord(1);
+	mat.setEmissiveTexture(emissive).getEmissiveTextureInfo().setTexCoord(1);
 
 	t.equal(mat.getBaseColorTextureInfo().getTexCoord(), 0, 'baseColorTexture.texCoord');
 	t.equal(mat.getEmissiveTextureInfo().getTexCoord(), 1, 'emissiveTexture.texCoord');
@@ -165,7 +130,7 @@ test('@gltf-transform/core::material | texture info', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | texture linking', t => {
+test('@gltf-transform/core::material | texture linking', (t) => {
 	const doc = new Document();
 
 	const tex1 = doc.createTexture('tex1');
@@ -197,7 +162,7 @@ test('@gltf-transform/core::material | texture linking', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | texture info linking', t => {
+test('@gltf-transform/core::material | texture info linking', (t) => {
 	const doc = new Document();
 
 	const mat = doc.createMaterial('mat');
@@ -230,7 +195,7 @@ test('@gltf-transform/core::material | texture info linking', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | texture channels', t => {
+test('@gltf-transform/core::material | texture channels', (t) => {
 	const doc = new Document();
 	const graph = doc.getGraph();
 
@@ -239,7 +204,8 @@ test('@gltf-transform/core::material | texture channels', t => {
 	const occlusionTexture = doc.createTexture('occlusionTexture');
 	const metallicRoughnessTexture = doc.createTexture('metallicRoughnessTexture');
 
-	const mat = doc.createMaterial('mat')
+	const mat = doc
+		.createMaterial('mat')
 		.setBaseColorTexture(baseColorTexture)
 		.setNormalTexture(normalTexture)
 		.setOcclusionTexture(occlusionTexture)
@@ -264,10 +230,11 @@ test('@gltf-transform/core::material | texture channels', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | copy', t => {
+test('@gltf-transform/core::material | copy', (t) => {
 	const doc = new Document();
 	const tex = doc.createTexture('MyTex');
-	const mat = doc.createMaterial('MyMat')
+	const mat = doc
+		.createMaterial('MyMat')
 		.setAlphaMode('BLEND')
 		.setAlphaCutoff(0.5)
 		.setBaseColorFactor([1, 0, 1, 0.5])
@@ -315,10 +282,11 @@ test('@gltf-transform/core::material | copy', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | equals', t => {
+test('@gltf-transform/core::material | equals', (t) => {
 	const doc = new Document();
 	const tex = doc.createTexture('MyTex');
-	const mat = doc.createMaterial('MyMat')
+	const mat = doc
+		.createMaterial('MyMat')
 		.setAlphaMode('BLEND')
 		.setAlphaCutoff(0.5)
 		.setBaseColorFactor([1, 0, 1, 0.5])
@@ -342,7 +310,9 @@ test('@gltf-transform/core::material | equals', t => {
 	const mat2 = doc.createMaterial().copy(mat);
 
 	const tex2 = doc.createTexture('NewTex');
-	const mat3 = doc.createMaterial().copy(mat)
+	const mat3 = doc
+		.createMaterial()
+		.copy(mat)
 		.setAlphaMode('OPAQUE')
 		.setAlphaCutoff(0)
 		.setBaseColorFactor([1, 1, 1, 0])
@@ -370,13 +340,12 @@ test('@gltf-transform/core::material | equals', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | i/o', t => {
+test('@gltf-transform/core::material | i/o', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 
-	const createTexture = (name: string) => doc.createTexture(name)
-		.setImage(new ArrayBuffer(10))
-		.setMimeType('image/png');
+	const createTexture = (name: string) =>
+		doc.createTexture(name).setImage(new ArrayBuffer(10)).setMimeType('image/png');
 
 	const baseColor = createTexture('baseColor');
 	const emissive = createTexture('emissive');
@@ -394,7 +363,7 @@ test('@gltf-transform/core::material | i/o', t => {
 		.setOcclusionStrength(0.4);
 
 	const io = new NodeIO();
-	const rtDoc = io.readJSON(io.writeJSON(doc, {format: Format.GLB}));
+	const rtDoc = io.readJSON(io.writeJSON(doc, { format: Format.GLB }));
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 
 	t.ok(rtMat.getBaseColorTexture(), 'baseColorTexture');

@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::buffer', t => {
+test('@gltf-transform/core::buffer', (t) => {
 	const doc = new Document();
 	const buffer1 = doc.createBuffer().setURI('mybuffer.bin');
 	const buffer2 = doc.createBuffer().setURI('');
@@ -11,12 +11,18 @@ test('@gltf-transform/core::buffer', t => {
 	doc.createBuffer().setURI('empty.bin');
 
 	// Empty buffers aren't written.
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer1);
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer2);
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer3);
+	doc.createAccessor()
+		.setArray(new Uint8Array([1, 2, 3]))
+		.setBuffer(buffer1);
+	doc.createAccessor()
+		.setArray(new Uint8Array([1, 2, 3]))
+		.setBuffer(buffer2);
+	doc.createAccessor()
+		.setArray(new Uint8Array([1, 2, 3]))
+		.setBuffer(buffer3);
 
 	const io = new NodeIO();
-	const jsonDoc = io.writeJSON(doc, {basename: 'basename'});
+	const jsonDoc = io.writeJSON(doc, { basename: 'basename' });
 
 	t.true('mybuffer.bin' in jsonDoc.resources, 'explicitly named buffer');
 	t.true('basename_1.bin' in jsonDoc.resources, 'implicitly named buffer #1');
@@ -25,7 +31,7 @@ test('@gltf-transform/core::buffer', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::buffer | copy', t => {
+test('@gltf-transform/core::buffer | copy', (t) => {
 	const doc = new Document();
 	const buffer1 = doc.createBuffer('MyBuffer').setURI('mybuffer.bin');
 	const buffer2 = doc.createBuffer().copy(buffer1);
@@ -35,16 +41,18 @@ test('@gltf-transform/core::buffer | copy', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::buffer | extras', t => {
+test('@gltf-transform/core::buffer | extras', (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
-	const buffer = doc.createBuffer('A').setExtras({foo: 1, bar: 2});
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3])).setBuffer(buffer);
+	const buffer = doc.createBuffer('A').setExtras({ foo: 1, bar: 2 });
+	doc.createAccessor()
+		.setArray(new Uint8Array([1, 2, 3]))
+		.setBuffer(buffer);
 
-	const doc2 = io.readJSON(io.writeJSON(doc, {basename: 'test'}));
+	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
 
-	t.deepEqual(doc.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
-	t.deepEqual(doc2.getRoot().listBuffers()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+	t.deepEqual(doc.getRoot().listBuffers()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
+	t.deepEqual(doc2.getRoot().listBuffers()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
 
 	t.end();
 });

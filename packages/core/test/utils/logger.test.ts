@@ -3,10 +3,10 @@ require('source-map-support').install();
 import test from 'tape';
 import { Logger } from '../../';
 
-test('@gltf-transform/core::logger', t => {
-	const {debug, info, warn, error} = console;
+test('@gltf-transform/core::logger', (t) => {
+	const { debug, info, warn, error } = console;
 
-	const calls = {debug: 0, info: 0, warn: 0, error: 0};
+	const calls = { debug: 0, info: 0, warn: 0, error: 0 };
 	Object.assign(console, {
 		debug: () => calls.debug++,
 		info: () => calls.info++,
@@ -34,6 +34,6 @@ test('@gltf-transform/core::logger', t => {
 	t.equals(calls.warn, 1, 'warn when not silenced');
 	t.equals(calls.error, 1, 'error when not silenced');
 
-	Object.assign(console, {debug, info, warn, error});
+	Object.assign(console, { debug, info, warn, error });
 	t.end();
 });

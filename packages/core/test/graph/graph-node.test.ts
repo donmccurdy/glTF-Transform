@@ -23,7 +23,7 @@ class TestNode extends Property {
 	}
 }
 
-test('@gltf-transform/core::graph-node | swap', t => {
+test('@gltf-transform/core::graph-node | swap', (t) => {
 	const graph = new Graph();
 	const root = new TestNode(graph);
 	const a = new TestNode(graph);

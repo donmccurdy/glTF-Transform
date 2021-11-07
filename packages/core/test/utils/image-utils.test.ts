@@ -13,7 +13,7 @@ if (IS_NODEJS) {
 }
 
 // TODO(https://github.com/Automattic/node-canvas/issues/1923)
-test.skip('@gltf-transform/core::image-utils | basic', {skip: !IS_NODEJS}, t => {
+test.skip('@gltf-transform/core::image-utils | basic', { skip: !IS_NODEJS }, (t) => {
 	let canvas, ctx, buffer;
 
 	canvas = createCanvas(100, 50);
@@ -31,7 +31,7 @@ test.skip('@gltf-transform/core::image-utils | basic', {skip: !IS_NODEJS}, t => 
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | png', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::image-utils | png', { skip: !IS_NODEJS }, (t) => {
 	const png = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png')));
 	const fried = BufferUtils.concat([
 		new ArrayBuffer(12),
@@ -52,7 +52,7 @@ test('@gltf-transform/core::image-utils | png', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | jpeg', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::image-utils | jpeg', { skip: !IS_NODEJS }, (t) => {
 	const jpg = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg')));
 	const buffer = new ArrayBuffer(100);
 	const view = new DataView(buffer);
@@ -69,17 +69,15 @@ test('@gltf-transform/core::image-utils | jpeg', {skip: !IS_NODEJS}, t => {
 	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'invalid');
 
 	view.setUint16(4, 94, false);
-	view.setUint8(94 + 4, 0xFF);
+	view.setUint8(94 + 4, 0xff);
 	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'no size');
 
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | webp', {skip: !IS_NODEJS}, t => {
-	const webpLossy =
-		BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossy.webp')));
-	const webpLossless =
-		BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossless.webp')));
+test('@gltf-transform/core::image-utils | webp', { skip: !IS_NODEJS }, (t) => {
+	const webpLossy = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossy.webp')));
+	const webpLossless = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossless.webp')));
 	const buffer = BufferUtils.concat([
 		BufferUtils.encodeText('RIFF'),
 		new ArrayBuffer(4),
@@ -98,7 +96,7 @@ test('@gltf-transform/core::image-utils | webp', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | ktx2', {skip: !IS_NODEJS}, t => {
+test('@gltf-transform/core::image-utils | ktx2', { skip: !IS_NODEJS }, (t) => {
 	const ktx2 = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.ktx2')));
 
 	t.throws(() => ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), 'corrupt file');
@@ -108,7 +106,7 @@ test('@gltf-transform/core::image-utils | ktx2', {skip: !IS_NODEJS}, t => {
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | extensions', t => {
+test('@gltf-transform/core::image-utils | extensions', (t) => {
 	t.equals(ImageUtils.extensionToMimeType('ktx2'), 'image/ktx2', 'extensionToMimeType, inferred');
 	t.equals(ImageUtils.extensionToMimeType('jpg'), 'image/jpeg', 'extensionToMimeType, jpeg');
 	t.equals(ImageUtils.mimeTypeToExtension('image/png'), 'png', 'mimeTypeToExtension, inferred');

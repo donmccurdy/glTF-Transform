@@ -4,12 +4,13 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Light, LightsPunctual } from '../';
 
-const WRITER_OPTIONS = {basename: 'extensionTest'};
+const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::lights-punctual', t => {
+test('@gltf-transform/extensions::lights-punctual', (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
-	const light = lightsExtension.createLight()
+	const light = lightsExtension
+		.createLight()
 		.setType(Light.Type.SPOT)
 		.setIntensity(2.0)
 		.setColor([1, 2, 0])
@@ -24,24 +25,26 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
-	t.deepEqual(nodeDef.extensions, {'KHR_lights_punctual': {light: 0}}, 'attaches light');
-	t.deepEqual(jsonDoc.json.extensions, {'KHR_lights_punctual':{
-		lights: [{
-			type: Light.Type.SPOT,
-			intensity: 2,
-			color: [1, 2, 0],
-			range: 50,
-			innerConeAngle: 0.5,
-			outerConeAngle: 0.75,
-		}]
-	}});
+	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
+	t.deepEqual(jsonDoc.json.extensions, {
+		KHR_lights_punctual: {
+			lights: [
+				{
+					type: Light.Type.SPOT,
+					intensity: 2,
+					color: [1, 2, 0],
+					range: 50,
+					innerConeAngle: 0.5,
+					outerConeAngle: 0.75,
+				},
+			],
+		},
+	});
 
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
-	const roundtripDoc = new NodeIO()
-		.registerExtensions([LightsPunctual])
-		.readJSON(jsonDoc);
+	const roundtripDoc = new NodeIO().registerExtensions([LightsPunctual]).readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension<Light>('KHR_lights_punctual');
 
@@ -54,10 +57,11 @@ test('@gltf-transform/extensions::lights-punctual', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::lights-punctual | copy', t => {
+test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
-	const light = lightsExtension.createLight()
+	const light = lightsExtension
+		.createLight()
 		.setType(Light.Type.SPOT)
 		.setIntensity(2.0)
 		.setColor([1, 2, 0])
@@ -79,21 +83,18 @@ test('@gltf-transform/extensions::lights-punctual | copy', t => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::lights-punctual | hex', t => {
+test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
-	const light = lightsExtension.createLight()
-		.setColorHex(0x111111);
+	const light = lightsExtension.createLight().setColorHex(0x111111);
 	t.equals(light.getColorHex(), 0x111111, 'colorHex');
 	t.end();
 });
 
-test('@gltf-transform/extensions::lights-punctual | i/o', t => {
+test('@gltf-transform/extensions::lights-punctual | i/o', (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
-	const light = lightsExtension.createLight()
-		.setType(Light.Type.POINT)
-		.setIntensity(2.0);
+	const light = lightsExtension.createLight().setType(Light.Type.POINT).setIntensity(2.0);
 
 	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
@@ -102,9 +103,11 @@ test('@gltf-transform/extensions::lights-punctual | i/o', t => {
 	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
-	t.deepEqual(nodeDef.extensions, {'KHR_lights_punctual': {light: 0}}, 'attaches light');
-	t.deepEqual(jsonDoc.json.extensions, {'KHR_lights_punctual': {
-		lights: [{type: 'point', intensity: 2}] // omit range!
-	}});
+	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
+	t.deepEqual(jsonDoc.json.extensions, {
+		KHR_lights_punctual: {
+			lights: [{ type: 'point', intensity: 2 }], // omit range!
+		},
+	});
 	t.end();
 });

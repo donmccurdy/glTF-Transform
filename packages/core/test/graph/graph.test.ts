@@ -23,7 +23,7 @@ class TestNode extends Property {
 	}
 }
 
-test('@gltf-transform/core::graph | link management', t => {
+test('@gltf-transform/core::graph | link management', (t) => {
 	const graph = new Graph();
 	const root = new TestNode(graph);
 	const a = new TestNode(graph);
@@ -41,10 +41,7 @@ test('@gltf-transform/core::graph | link management', t => {
 	t.deepEqual(root.listNodes(), [], 'Disposed a node.');
 
 	// Subjective behavior, but might as well unit test it.
-	root.addNode(a)
-		.addNode(b)
-		.addNode(b)
-		.addNode(b);
+	root.addNode(a).addNode(b).addNode(b).addNode(b);
 	t.deepEqual(root.listNodes(), [a, b, b, b], 'Added duplicate nodes.');
 	root.removeNode(b);
 	t.deepEqual(root.listNodes(), [a], 'Removed a duplicate node.');
@@ -68,7 +65,7 @@ test('@gltf-transform/core::graph | link management', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::graph | prevents cross-graph linking', t => {
+test('@gltf-transform/core::graph | prevents cross-graph linking', (t) => {
 	const graphA = new Graph();
 	const graphB = new Graph();
 
@@ -85,7 +82,7 @@ test('@gltf-transform/core::graph | prevents cross-graph linking', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::graph | list connections', t => {
+test('@gltf-transform/core::graph | list connections', (t) => {
 	const graph = new Graph();
 	const root = new TestNode(graph);
 	const node1 = new TestNode(graph);
@@ -96,21 +93,29 @@ test('@gltf-transform/core::graph | list connections', t => {
 
 	t.equal(graph.getLinks().length, 2, 'getLinks()');
 	t.deepEqual(
-		graph.listParentLinks(node1).map(link => link.getParent()), [root], 'listParentLinks(A)'
+		graph.listParentLinks(node1).map((link) => link.getParent()),
+		[root],
+		'listParentLinks(A)'
 	);
 	t.deepEqual(
-		graph.listChildLinks(node1).map(link => link.getChild()), [node2], 'listChildLinks(A)'
+		graph.listChildLinks(node1).map((link) => link.getChild()),
+		[node2],
+		'listChildLinks(A)'
 	);
 	t.deepEqual(
-		graph.listParentLinks(node2).map(link => link.getParent()), [node1], 'listParentLinks(B)'
+		graph.listParentLinks(node2).map((link) => link.getParent()),
+		[node1],
+		'listParentLinks(B)'
 	);
 	t.deepEqual(
-		graph.listChildLinks(node2).map(link => link.getChild()), [], 'listParentLinks(B)'
+		graph.listChildLinks(node2).map((link) => link.getChild()),
+		[],
+		'listParentLinks(B)'
 	);
 	t.end();
 });
 
-test('@gltf-transform/core::graph | dispose events', t => {
+test('@gltf-transform/core::graph | dispose events', (t) => {
 	const graph = new Graph();
 	const node1 = new TestNode(graph);
 	const node2 = new TestNode(graph);

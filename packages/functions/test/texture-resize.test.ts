@@ -11,20 +11,18 @@ const GRADIENT = getPixels(path.resolve(__dirname, './in/pattern.png'));
 const GRADIENT_HALF = getPixels(path.resolve(__dirname, './in/pattern-half.png'));
 const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
-test('@gltf-transform/functions::textureResize', async t => {
+test('@gltf-transform/functions::textureResize', async (t) => {
 	const gradientImage = (await savePixels(await GRADIENT, 'image/png')).buffer;
 	const gradientHalfImage = (await savePixels(await GRADIENT_HALF, 'image/png')).buffer;
 
 	const document = new Document();
-	const texture = document.createTexture('target')
-		.setImage(gradientImage)
-		.setMimeType('image/png');
+	const texture = document.createTexture('target').setImage(gradientImage).setMimeType('image/png');
 
-	await document.transform(textureResize({size: [100, 100], pattern: /other/}));
+	await document.transform(textureResize({ size: [100, 100], pattern: /other/ }));
 
 	t.equal(texture.getImage(), gradientImage, 'no match');
 
-	await document.transform(textureResize({size: [4, 4], pattern: /target/}));
+	await document.transform(textureResize({ size: [4, 4], pattern: /target/ }));
 
 	t.deepEqual(
 		Array.from(new Uint8Array(texture.getImage())),
@@ -32,7 +30,7 @@ test('@gltf-transform/functions::textureResize', async t => {
 		'match - resize down'
 	);
 
-	await document.transform(textureResize({size: [2, 4]}));
+	await document.transform(textureResize({ size: [2, 4] }));
 
 	t.deepEqual(
 		(await getPixels(new Uint8Array(texture.getImage()), 'image/png')).shape,
@@ -43,14 +41,12 @@ test('@gltf-transform/functions::textureResize', async t => {
 	t.end();
 });
 
-test('@gltf-transform/functions::textureResize | aspect ratio', async t => {
+test('@gltf-transform/functions::textureResize | aspect ratio', async (t) => {
 	const nonSquareImage = (await savePixels(await NON_SQUARE, 'image/png')).buffer;
 	const document = new Document();
-	const texture = document.createTexture('target')
-		.setImage(nonSquareImage)
-		.setMimeType('image/png');
+	const texture = document.createTexture('target').setImage(nonSquareImage).setMimeType('image/png');
 
-	await document.transform(textureResize({size: [16, 16]}));
+	await document.transform(textureResize({ size: [16, 16] }));
 
 	t.deepEqual(
 		(await getPixels(new Uint8Array(texture.getImage()), 'image/png')).shape,

@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { tangents } from '../';
 
-test('@gltf-transform/functions::tangents', async t => {
+test('@gltf-transform/functions::tangents', async (t) => {
 	const doc = new Document();
 	const positionArray = new Float32Array([1, 1, 1]);
 	const normalArray = new Uint16Array([0, 1, 0]);
@@ -12,12 +12,16 @@ test('@gltf-transform/functions::tangents', async t => {
 	const resultArray = new Float32Array([-1, -1, -1, -1]);
 	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
 	const normal = doc.createAccessor().setType('VEC3').setArray(normalArray);
-	const texcoord0 = doc.createAccessor().setType('VEC2').setArray(new Float32Array([0, 0]));
+	const texcoord0 = doc
+		.createAccessor()
+		.setType('VEC2')
+		.setArray(new Float32Array([0, 0]));
 	const texcoord1 = doc.createAccessor().setType('VEC2').setArray(texcoordArray);
 	const normalTexture = doc.createTexture();
 	const material = doc.createMaterial().setNormalTexture(normalTexture);
 	material.getNormalTextureInfo().setTexCoord(1);
-	const prim = doc.createPrimitive()
+	const prim = doc
+		.createPrimitive()
 		.setMaterial(material)
 		.setAttribute('POSITION', position)
 		.setAttribute('NORMAL', normal)
@@ -26,14 +30,16 @@ test('@gltf-transform/functions::tangents', async t => {
 	doc.createMesh().addPrimitive(prim);
 
 	let a, b, c;
-	await doc.transform(tangents({
-		generateTangents: (_a, _b, _c) => {
-			a = _a;
-			b = _b;
-			c = _c;
-			return resultArray;
-		}
-	}));
+	await doc.transform(
+		tangents({
+			generateTangents: (_a, _b, _c) => {
+				a = _a;
+				b = _b;
+				c = _c;
+				return resultArray;
+			},
+		})
+	);
 
 	t.deepEquals(Array.from(a), Array.from(positionArray), 'provides position');
 	t.deepEquals(Array.from(b), Array.from(normalArray), 'provides normal');

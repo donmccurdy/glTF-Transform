@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, MathUtils, NodeIO, mat4, vec3, vec4 } from '../../';
 
-test('@gltf-transform/core::node | parent', t => {
+test('@gltf-transform/core::node | parent', (t) => {
 	const doc = new Document();
 	const a = doc.createNode('A');
 	const b = doc.createNode('B');
@@ -18,9 +18,10 @@ test('@gltf-transform/core::node | parent', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | copy', t => {
+test('@gltf-transform/core::node | copy', (t) => {
 	const doc = new Document();
-	const node = doc.createNode('MyNode')
+	const node = doc
+		.createNode('MyNode')
 		.setTranslation([1, 2, 3])
 		.setRotation([1, 0, 1, 0])
 		.setScale([2, 2, 2])
@@ -40,18 +41,18 @@ test('@gltf-transform/core::node | copy', t => {
 	t.equals(node2.getCamera(), node.getCamera(), 'copy camera');
 	t.equals(node2.getMesh(), node.getMesh(), 'copy mesh');
 	t.equals(node2.getSkin(), node.getSkin(), 'copy skin');
-	t.deepEquals(node2.listChildren(), [], 'don\'t copy children');
+	t.deepEquals(node2.listChildren(), [], "don't copy children");
 	t.deepEquals(node.listChildren().length, 1, 'retain children');
 
 	t.end();
 });
 
-test('@gltf-transform/core::node | traverse', t => {
+test('@gltf-transform/core::node | traverse', (t) => {
 	const doc = new Document();
 	const disposed = doc.createNode('Four');
-	const node = doc.createNode('One')
-		.addChild(doc.createNode('Two')
-			.addChild(doc.createNode('Three').addChild(disposed)));
+	const node = doc
+		.createNode('One')
+		.addChild(doc.createNode('Two').addChild(doc.createNode('Three').addChild(disposed)));
 	disposed.dispose();
 
 	let count = 0;
@@ -61,7 +62,7 @@ test('@gltf-transform/core::node | traverse', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | getWorldMatrix', t => {
+test('@gltf-transform/core::node | getWorldMatrix', (t) => {
 	const doc = new Document();
 	const a = doc.createNode('A').setTranslation([10, 0, 0]);
 	const b = doc.createNode('B').setTranslation([0, 5, 0]);
@@ -70,12 +71,7 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 	t.deepEquals(b.getWorldTranslation(), [10, 5, 0], 'inherit translated position');
 	t.deepEquals(b.getWorldRotation(), [0, 0, 0, 1], 'default rotation');
 	t.deepEquals(b.getWorldScale(), [1, 1, 1], 'default scale');
-	t.deepEquals(b.getWorldMatrix(), [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		10, 5, 0, 1
-	], 'getWorldMatrix');
+	t.deepEquals(b.getWorldMatrix(), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 5, 0, 1], 'getWorldMatrix');
 
 	b.setTranslation([0, 0, 1]);
 	a.setTranslation([0, 0, 0]).setRotation([0.7071, 0, 0.7071, 0]);
@@ -88,7 +84,7 @@ test('@gltf-transform/core::node | getWorldMatrix', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | setMatrix', t => {
+test('@gltf-transform/core::node | setMatrix', (t) => {
 	const doc = new Document();
 	const node = doc.createNode('A').setTranslation([99, 99, 99]);
 
@@ -109,20 +105,20 @@ test('@gltf-transform/core::node | setMatrix', t => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | extras', t => {
+test('@gltf-transform/core::node | extras', (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
-	doc.createNode('A').setExtras({foo: 1, bar: 2});
+	doc.createNode('A').setExtras({ foo: 1, bar: 2 });
 
-	const doc2 = io.readJSON(io.writeJSON(doc, {basename: 'test'}));
+	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
 
-	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'stores extras');
-	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), {foo: 1, bar: 2}, 'roundtrips extras');
+	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
+	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
 
 	t.end();
 });
 
-test('@gltf-transform/core::node | identity transforms', t => {
+test('@gltf-transform/core::node | identity transforms', (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 
@@ -130,7 +126,7 @@ test('@gltf-transform/core::node | identity transforms', t => {
 	doc.createNode('B').setTranslation([1, 2, 1]);
 	doc.createNode('C').setTranslation([1, 2, 1]).setRotation([1, 0, 0, 0]).setScale([1, 2, 1]);
 
-	const { nodes } = io.writeJSON(doc, {basename: 'test'}).json;
+	const { nodes } = io.writeJSON(doc, { basename: 'test' }).json;
 
 	const a = nodes.find((n) => n.name === 'A');
 	const b = nodes.find((n) => n.name === 'B');
@@ -138,21 +134,33 @@ test('@gltf-transform/core::node | identity transforms', t => {
 
 	console.warn(b);
 
-	t.deepEqual(a, {
-		name: 'A',
-	}, 'exclude identity transforms');
+	t.deepEqual(
+		a,
+		{
+			name: 'A',
+		},
+		'exclude identity transforms'
+	);
 
-	t.deepEqual(b, {
-		name: 'B',
-		translation: [1, 2, 1],
-	}, 'has only set transform info');
+	t.deepEqual(
+		b,
+		{
+			name: 'B',
+			translation: [1, 2, 1],
+		},
+		'has only set transform info'
+	);
 
-	t.deepEqual(c, {
-		name: 'C',
-		translation: [1, 2, 1],
-		rotation: [1, 0, 0, 0],
-		scale: [1, 2, 1],
-	}, 'has transform info');
+	t.deepEqual(
+		c,
+		{
+			name: 'C',
+			translation: [1, 2, 1],
+			rotation: [1, 0, 0, 0],
+			scale: [1, 2, 1],
+		},
+		'has transform info'
+	);
 
 	t.end();
 });
