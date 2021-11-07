@@ -1,0 +1,9 @@
+**/dist
+**/in
+**/out
+**/*.md
+**/*.hbs
+**/*.json
+**/*.yml
+**/*.lock
+**/*.css
