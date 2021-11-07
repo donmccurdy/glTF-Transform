@@ -36,7 +36,6 @@ export class MathUtils {
 			default:
 				throw new Error('Invalid component type.');
 		}
-
 	}
 
 	public static normalize(f: number, componentType: GLTF.AccessorComponentType): number {
@@ -68,18 +67,14 @@ export class MathUtils {
 	 * @param dstRotation Rotation element, to be overwritten.
 	 * @param dstScale Scale element, to be overwritten.
 	 */
-	public static decompose(
-			srcMat: mat4,
-			dstTranslation: vec3,
-			dstRotation: vec4,
-			dstScale: vec3): void {
+	public static decompose(srcMat: mat4, dstTranslation: vec3, dstRotation: vec4, dstScale: vec3): void {
 		let sx = length([srcMat[0], srcMat[1], srcMat[2]]);
 		const sy = length([srcMat[4], srcMat[5], srcMat[6]]);
 		const sz = length([srcMat[8], srcMat[9], srcMat[10]]);
 
 		// if determine is negative, we need to invert one scale
 		const det = determinant(srcMat);
-		if (det < 0) sx = - sx;
+		if (det < 0) sx = -sx;
 
 		dstTranslation[0] = srcMat[12];
 		dstTranslation[1] = srcMat[13];
@@ -123,42 +118,50 @@ export class MathUtils {
 	 * @param dstMat Matrix element, to be modified and returned.
 	 * @returns dstMat, overwritten to mat4 equivalent of given TRS properties.
 	 */
-	public static compose(
-			srcTranslation: vec3,
-			srcRotation: vec4,
-			srcScale: vec3,
-			dstMat: mat4): mat4 {
+	public static compose(srcTranslation: vec3, srcRotation: vec4, srcScale: vec3, dstMat: mat4): mat4 {
 		const te = dstMat;
 
-		const x = srcRotation[0], y = srcRotation[1], z = srcRotation[2], w = srcRotation[3];
-		const x2 = x + x,	y2 = y + y, z2 = z + z;
-		const xx = x * x2, xy = x * y2, xz = x * z2;
-		const yy = y * y2, yz = y * z2, zz = z * z2;
-		const wx = w * x2, wy = w * y2, wz = w * z2;
+		const x = srcRotation[0],
+			y = srcRotation[1],
+			z = srcRotation[2],
+			w = srcRotation[3];
+		const x2 = x + x,
+			y2 = y + y,
+			z2 = z + z;
+		const xx = x * x2,
+			xy = x * y2,
+			xz = x * z2;
+		const yy = y * y2,
+			yz = y * z2,
+			zz = z * z2;
+		const wx = w * x2,
+			wy = w * y2,
+			wz = w * z2;
 
-		const sx = srcScale[0], sy = srcScale[1], sz = srcScale[2];
+		const sx = srcScale[0],
+			sy = srcScale[1],
+			sz = srcScale[2];
 
-		te[ 0 ] = ( 1 - ( yy + zz ) ) * sx;
-		te[ 1 ] = ( xy + wz ) * sx;
-		te[ 2 ] = ( xz - wy ) * sx;
-		te[ 3 ] = 0;
+		te[0] = (1 - (yy + zz)) * sx;
+		te[1] = (xy + wz) * sx;
+		te[2] = (xz - wy) * sx;
+		te[3] = 0;
 
-		te[ 4 ] = ( xy - wz ) * sy;
-		te[ 5 ] = ( 1 - ( xx + zz ) ) * sy;
-		te[ 6 ] = ( yz + wx ) * sy;
-		te[ 7 ] = 0;
+		te[4] = (xy - wz) * sy;
+		te[5] = (1 - (xx + zz)) * sy;
+		te[6] = (yz + wx) * sy;
+		te[7] = 0;
 
-		te[ 8 ] = ( xz + wy ) * sz;
-		te[ 9 ] = ( yz - wx ) * sz;
-		te[ 10 ] = ( 1 - ( xx + yy ) ) * sz;
-		te[ 11 ] = 0;
+		te[8] = (xz + wy) * sz;
+		te[9] = (yz - wx) * sz;
+		te[10] = (1 - (xx + yy)) * sz;
+		te[11] = 0;
 
-		te[ 12 ] = srcTranslation[0];
-		te[ 13 ] = srcTranslation[1];
-		te[ 14 ] = srcTranslation[2];
-		te[ 15 ] = 1;
+		te[12] = srcTranslation[0];
+		te[13] = srcTranslation[1];
+		te[14] = srcTranslation[2];
+		te[15] = 1;
 
 		return te;
 	}
-
 }

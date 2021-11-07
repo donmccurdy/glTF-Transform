@@ -1,6 +1,25 @@
 import { PropertyType } from './constants';
 import { Extension } from './extension';
-import { Accessor, Animation, AnimationChannel, AnimationSampler, Buffer, Camera, ExtensionProperty, Material, Mesh, Node, Primitive, PrimitiveTarget, Property, PropertyGraph, Root, Scene, Skin, Texture } from './properties';
+import {
+	Accessor,
+	Animation,
+	AnimationChannel,
+	AnimationSampler,
+	Buffer,
+	Camera,
+	ExtensionProperty,
+	Material,
+	Mesh,
+	Node,
+	Primitive,
+	PrimitiveTarget,
+	Property,
+	PropertyGraph,
+	Root,
+	Scene,
+	Skin,
+	Texture,
+} from './properties';
 import { Logger } from './utils';
 
 export type Transform = (doc: Document) => void;
@@ -100,11 +119,9 @@ export class Document {
 	/** Merges the content of another Document into this one, without affecting the original. */
 	public merge(other: Document): this {
 		// 1. Attach extensions.
-		const thisExtensions: {[key: string]: Extension} = {};
+		const thisExtensions: { [key: string]: Extension } = {};
 		for (const otherExtension of other.getRoot().listExtensionsUsed()) {
-			const thisExtension = this.createExtension(
-				otherExtension.constructor as new (doc: Document) => Extension
-			);
+			const thisExtension = this.createExtension(otherExtension.constructor as new (doc: Document) => Extension);
 			if (otherExtension.isRequired()) thisExtension.setRequired(true);
 			thisExtensions[thisExtension.extensionName] = thisExtension;
 		}
@@ -129,11 +146,11 @@ export class Document {
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as
-						new(g: PropertyGraph, e?: Extension) => Property;
-					otherProp = thisProp instanceof ExtensionProperty
-						? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
-						: new PropertyClass(this._graph);
+					const PropertyClass = thisProp.constructor as new (g: PropertyGraph, e?: Extension) => Property;
+					otherProp =
+						thisProp instanceof ExtensionProperty
+							? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
+							: new PropertyClass(this._graph);
 				}
 
 				propertyMap.set(thisProp as Property, otherProp);
@@ -188,8 +205,9 @@ export class Document {
 	 * extension is already enabled for this Document, the previous Extension reference is reused.
 	 */
 	createExtension<T extends Extension>(ctor: new (doc: Document) => T): T {
-		const extensionName = (ctor as unknown as {EXTENSION_NAME: 'string'}).EXTENSION_NAME;
-		const prevExtension = this.getRoot().listExtensionsUsed()
+		const extensionName = (ctor as unknown as { EXTENSION_NAME: 'string' }).EXTENSION_NAME;
+		const prevExtension = this.getRoot()
+			.listExtensionsUsed()
 			.find((ext) => ext.extensionName === extensionName);
 		return (prevExtension || new ctor(this)) as T;
 	}

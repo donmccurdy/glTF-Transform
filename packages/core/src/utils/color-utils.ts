@@ -25,11 +25,11 @@ export class ColorUtils {
 	 * @typeParam T vec3 or vec4 linear components.
 	 */
 	static hexToFactor<T = vec3 | vec4>(hex: number, target: T): T {
-		hex = Math.floor( hex );
+		hex = Math.floor(hex);
 		const _target = target as unknown as vec3;
-		_target[0] = ( hex >> 16 & 255 ) / 255;
-		_target[1] = ( hex >> 8 & 255 ) / 255;
-		_target[2] = ( hex & 255 ) / 255;
+		_target[0] = ((hex >> 16) & 255) / 255;
+		_target[1] = ((hex >> 8) & 255) / 255;
+		_target[2] = (hex & 255) / 255;
 		return this.convertSRGBToLinear<T>(target, target);
 	}
 
@@ -38,9 +38,9 @@ export class ColorUtils {
 	 * @typeParam T vec3 or vec4 linear components.
 	 */
 	static factorToHex<T = vec3 | vec4>(factor: T): number {
-		const target = [...factor as unknown as number[]] as unknown as T;
+		const target = [...(factor as unknown as number[])] as unknown as T;
 		const [r, g, b] = this.convertLinearToSRGB(factor, target) as unknown as number[];
-		return ( r * 255 ) << 16 ^ ( g * 255 ) << 8 ^ ( b * 255 ) << 0;
+		return ((r * 255) << 16) ^ ((g * 255) << 8) ^ ((b * 255) << 0);
 	}
 
 	/**
@@ -50,10 +50,11 @@ export class ColorUtils {
 	static convertSRGBToLinear<T = vec3 | vec4>(source: T, target: T): T {
 		const _source = source as unknown as vec3;
 		const _target = target as unknown as vec3;
-		for (let i = 0 ; i < 3; i++) {
-			_target[i] = ( _source[i] < 0.04045 )
-				? _source[i] * 0.0773993808
-				: Math.pow( _source[i] * 0.9478672986 + 0.0521327014, 2.4 );
+		for (let i = 0; i < 3; i++) {
+			_target[i] =
+				_source[i] < 0.04045
+					? _source[i] * 0.0773993808
+					: Math.pow(_source[i] * 0.9478672986 + 0.0521327014, 2.4);
 		}
 		return target;
 	}
@@ -66,9 +67,7 @@ export class ColorUtils {
 		const _source = source as unknown as vec3;
 		const _target = target as unknown as vec3;
 		for (let i = 0; i < 3; i++) {
-			_target[i] = ( _source[i] < 0.0031308 )
-				? _source[i] * 12.92
-				: 1.055 * ( Math.pow( _source[i], 0.41666 ) ) - 0.055;
+			_target[i] = _source[i] < 0.0031308 ? _source[i] * 12.92 : 1.055 * Math.pow(_source[i], 0.41666) - 0.055;
 		}
 		return target;
 	}

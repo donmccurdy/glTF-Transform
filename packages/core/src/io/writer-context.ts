@@ -1,7 +1,20 @@
 import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
-import { Accessor, AttributeLink, Buffer, Camera, IndexLink, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
+import {
+	Accessor,
+	AttributeLink,
+	Buffer,
+	Camera,
+	IndexLink,
+	Material,
+	Mesh,
+	Node,
+	Property,
+	Skin,
+	Texture,
+	TextureInfo,
+} from '../properties';
 import { GLTF } from '../types/gltf';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
@@ -35,7 +48,7 @@ export class WriterContext {
 	 */
 	public static readonly BufferViewUsage = BufferViewUsage;
 	/** Maps usage type to buffer view target. Usages not mapped have undefined targets. */
-	public static readonly USAGE_TO_TARGET: {[key: string]: BufferViewTarget | undefined} = {
+	public static readonly USAGE_TO_TARGET: { [key: string]: BufferViewTarget | undefined } = {
 		[BufferViewUsage.ARRAY_BUFFER]: BufferViewTarget.ARRAY_BUFFER,
 		[BufferViewUsage.ELEMENT_ARRAY_BUFFER]: BufferViewTarget.ELEMENT_ARRAY_BUFFER,
 	};
@@ -55,7 +68,7 @@ export class WriterContext {
 	public readonly imageBufferViews: ArrayBuffer[] = [];
 	public readonly otherBufferViews = new Map<Buffer, ArrayBuffer[]>();
 	public readonly otherBufferViewsIndexMap = new Map<ArrayBuffer, number>();
-	public readonly extensionData: {[key: string]: unknown} = {};
+	public readonly extensionData: { [key: string]: unknown } = {};
 
 	public bufferURIGenerator: UniqueURIGenerator;
 	public imageURIGenerator: UniqueURIGenerator;
@@ -65,7 +78,7 @@ export class WriterContext {
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
 	public readonly accessorParents = new Map<Property, Set<Accessor>>();
 
-	constructor (
+	constructor(
 		private readonly _doc: Document,
 		public readonly jsonDoc: JSONDocument,
 		public readonly options: Required<WriterOptions>
@@ -98,7 +111,7 @@ export class WriterContext {
 
 		const textureDef = {
 			source: this.imageIndexMap.get(texture),
-			sampler: this.samplerDefIndexMap.get(samplerKey)
+			sampler: this.samplerDefIndexMap.get(samplerKey),
 		} as GLTF.ITexture;
 
 		const textureKey = JSON.stringify(textureDef);
@@ -108,7 +121,7 @@ export class WriterContext {
 		}
 
 		const textureInfoDef = {
-			index: this.textureDefIndexMap.get(textureKey)
+			index: this.textureDefIndexMap.get(textureKey),
 		} as GLTF.ITextureInfo;
 
 		if (textureInfo.getTexCoord() !== 0) {
@@ -137,7 +150,8 @@ export class WriterContext {
 		accessorDef.componentType = accessor.getComponentType();
 		accessorDef.count = accessor.getCount();
 
-		const needsBounds = this._doc.getGraph()
+		const needsBounds = this._doc
+			.getGraph()
 			.listParentLinks(accessor)
 			.some((link) => link.getName() === 'POSITION' || link.getName() === 'input');
 		if (needsBounds) {
@@ -159,7 +173,7 @@ export class WriterContext {
 			this.jsonDoc.json.bufferViews!.push({
 				buffer: 0,
 				byteOffset: -1, // determined while iterating buffers, in Writer.ts.
-				byteLength: data.byteLength
+				byteLength: data.byteLength,
 			});
 		} else {
 			const extension = ImageUtils.mimeTypeToExtension(texture.getMimeType());
@@ -172,7 +186,7 @@ export class WriterContext {
 	 * Returns implicit usage type of the given accessor, related to grouping accessors into
 	 * buffer views. Usage is a superset of buffer view target, including ARRAY_BUFFER and
 	 * ELEMENT_ARRAY_BUFFER, but also usages that do not match GPU buffer view targets such as
-	* IBMs. Additional usages are defined by extensions, like `EXT_mesh_gpu_instancing`.
+	 * IBMs. Additional usages are defined by extensions, like `EXT_mesh_gpu_instancing`.
 	 */
 	public getAccessorUsage(accessor: Accessor): BufferViewUsage | string {
 		const cachedUsage = this._accessorUsageMap.get(accessor);
@@ -210,8 +224,8 @@ export class WriterContext {
 	}
 
 	/** Lists accessors grouped by usage. Accessors with unspecified usage are not included. */
-	public listAccessorUsageGroups(): {[key: string]: Accessor[]} {
-		const result = {} as {[key: string]: Accessor[]};
+	public listAccessorUsageGroups(): { [key: string]: Accessor[] } {
+		const result = {} as { [key: string]: Accessor[] };
 		for (const [accessor, usage] of Array.from(this._accessorUsageMap.entries())) {
 			result[usage] = result[usage] || [];
 			result[usage].push(accessor);
@@ -223,9 +237,7 @@ export class WriterContext {
 export class UniqueURIGenerator {
 	private counter = 1;
 
-	constructor (
-		private readonly multiple: boolean,
-		private readonly basename: string) {}
+	constructor(private readonly multiple: boolean, private readonly basename: string) {}
 
 	public createURI(object: Texture | Buffer, extension: string): string {
 		if (object.getURI()) {

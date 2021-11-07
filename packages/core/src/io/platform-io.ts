@@ -8,8 +8,8 @@ import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
 enum ChunkType {
-	JSON = 0x4E4F534A,
-	BIN = 0x004E4942
+	JSON = 0x4e4f534a,
+	BIN = 0x004e4942,
 }
 
 /**
@@ -26,10 +26,9 @@ enum ChunkType {
  * @category I/O
  */
 export abstract class PlatformIO {
-
 	protected _logger = Logger.DEFAULT_INSTANCE;
 	protected _extensions: typeof Extension[] = [];
-	protected _dependencies: {[key: string]: unknown} = {};
+	protected _dependencies: { [key: string]: unknown } = {};
 	protected _vertexLayout = VertexLayout.INTERLEAVED;
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
@@ -48,7 +47,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Registers dependencies used (e.g. by extensions) in the I/O process. */
-	public registerDependencies(dependencies: {[key: string]: unknown}): this {
+	public registerDependencies(dependencies: { [key: string]: unknown }): this {
 		Object.assign(this._dependencies, dependencies);
 		return this;
 	}
@@ -69,7 +68,7 @@ export abstract class PlatformIO {
 	/** @internal */
 	protected _readResourcesInternal(jsonDoc: JSONDocument): void {
 		function resolveResource(resource: GLTF.IBuffer | GLTF.IImage) {
-			if (!resource.uri || (resource.uri in jsonDoc.resources)) return;
+			if (!resource.uri || resource.uri in jsonDoc.resources) return;
 
 			if (resource.uri.match(/data:/)) {
 				// Rewrite Data URIs to something short and unique.
@@ -105,7 +104,7 @@ export abstract class PlatformIO {
 		return GLTFReader.read(jsonDoc, {
 			extensions: this._extensions,
 			dependencies: this._dependencies,
-			logger: this._logger
+			logger: this._logger,
 		});
 	}
 
@@ -118,8 +117,8 @@ export abstract class PlatformIO {
 			format: _options.format || Format.GLTF,
 			logger: _options.logger || this._logger,
 			vertexLayout: _options.vertexLayout || this._vertexLayout,
-			dependencies: {...this._dependencies, ..._options.dependencies},
-			basename: _options.basename || ''
+			dependencies: { ...this._dependencies, ..._options.dependencies },
+			basename: _options.basename || '',
 		} as Required<WriterOptions>);
 	}
 
@@ -131,15 +130,15 @@ export abstract class PlatformIO {
 	 * are passed by reference.
 	 */
 	private _copyJSON(jsonDoc: JSONDocument): JSONDocument {
-		const {images, buffers} = jsonDoc.json;
+		const { images, buffers } = jsonDoc.json;
 
-		jsonDoc = {json: {...jsonDoc.json}, resources: {...jsonDoc.resources}};
+		jsonDoc = { json: { ...jsonDoc.json }, resources: { ...jsonDoc.resources } };
 
 		if (images) {
-			jsonDoc.json.images = images.map((image) => ({...image}));
+			jsonDoc.json.images = images.map((image) => ({ ...image }));
 		}
 		if (buffers) {
-			jsonDoc.json.buffers = buffers.map((buffer) => ({...buffer}));
+			jsonDoc.json.buffers = buffers.map((buffer) => ({ ...buffer }));
 		}
 
 		return jsonDoc;
@@ -155,11 +154,9 @@ export abstract class PlatformIO {
 		const json = jsonDoc.json;
 
 		// Check for external references, which can't be resolved by this method.
-		if (json.buffers
-				&& json.buffers.find((bufferDef) => bufferDef.uri !== undefined)) {
+		if (json.buffers && json.buffers.find((bufferDef) => bufferDef.uri !== undefined)) {
 			throw new Error('Cannot resolve external buffers with binaryToJSON().');
-		} else if (json.images
-				&& json.images.find((imageDef) => imageDef.bufferView === undefined)) {
+		} else if (json.images && json.images.find((imageDef) => imageDef.bufferView === undefined)) {
 			throw new Error('Cannot resolve external images with binaryToJSON().');
 		}
 
@@ -170,7 +167,7 @@ export abstract class PlatformIO {
 	protected _binaryToJSON(glb: ArrayBuffer): JSONDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb, 0, 3);
-		if (header[0] !== 0x46546C67) {
+		if (header[0] !== 0x46546c67) {
 			throw new Error('Invalid glTF asset.');
 		} else if (header[1] !== 2) {
 			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
@@ -185,16 +182,14 @@ export abstract class PlatformIO {
 
 		const jsonByteOffset = 20;
 		const jsonByteLength = jsonChunkHeader[0];
-		const jsonText = BufferUtils.decodeText(
-			glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength)
-		);
+		const jsonText = BufferUtils.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
 		const json = JSON.parse(jsonText) as GLTF.IGLTF;
 
 		// Decode BIN chunk.
 
 		const binByteOffset = jsonByteOffset + jsonByteLength;
 		if (glb.byteLength <= binByteOffset) {
-			return {json, resources: {}};
+			return { json, resources: {} };
 		}
 
 		const binChunkHeader = new Uint32Array(glb, binByteOffset, 2);
@@ -205,7 +200,7 @@ export abstract class PlatformIO {
 		const binByteLength = binChunkHeader[0];
 		const binBuffer = glb.slice(binByteOffset + 8, binByteOffset + 8 + binByteLength);
 
-		return {json, resources: {[GLB_BUFFER]: binBuffer}};
+		return { json, resources: { [GLB_BUFFER]: binBuffer } };
 	}
 
 	/**********************************************************************************************
@@ -219,7 +214,7 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
 	public writeBinary(doc: Document): ArrayBuffer {
-		const {json, resources} = this.writeJSON(doc, {
+		const { json, resources } = this.writeJSON(doc, {
 			format: Format.GLB,
 			basename: '',
 			logger: this._logger,
@@ -227,11 +222,11 @@ export abstract class PlatformIO {
 			vertexLayout: this._vertexLayout,
 		});
 
-		const header = new Uint32Array([0x46546C67, 2, 12]);
+		const header = new Uint32Array([0x46546c67, 2, 12]);
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4E4F534A]).buffer;
+		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]).buffer;
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 		header[header.length - 1] += jsonChunk.byteLength;
 
@@ -241,7 +236,7 @@ export abstract class PlatformIO {
 		}
 
 		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
-		const binChunkHeader = new Uint32Array([binChunkData.byteLength, 0x004E4942]).buffer;
+		const binChunkHeader = new Uint32Array([binChunkData.byteLength, 0x004e4942]).buffer;
 		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
 		header[header.length - 1] += binChunk.byteLength;
 

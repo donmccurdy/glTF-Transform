@@ -30,17 +30,19 @@ export class PropertyGraph extends Graph<Property> {
 		return link;
 	}
 
+	public linkTexture(name: string, channels: number, a: Material | ExtensionProperty, b: null): null;
+	public linkTexture(name: string, channels: number, a: Material | ExtensionProperty, b: Texture): TextureLink;
 	public linkTexture(
-		name: string, channels: number, a: Material | ExtensionProperty, b: null
-	): null;
-	public linkTexture(
-		name: string, channels: number, a: Material | ExtensionProperty, b: Texture
-	): TextureLink;
-	public linkTexture(
-		name: string, channels: number, a: Material | ExtensionProperty, b: Texture | null
+		name: string,
+		channels: number,
+		a: Material | ExtensionProperty,
+		b: Texture | null
 	): TextureLink | null;
 	public linkTexture(
-		name: string, channels: number, a: Material | ExtensionProperty, b: Texture | null
+		name: string,
+		channels: number,
+		a: Material | ExtensionProperty,
+		b: Texture | null
 	): TextureLink | null {
 		if (!b) return null;
 		const link = new TextureLink(name, a, b);

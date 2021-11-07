@@ -37,5 +37,5 @@ import { GLTF } from './types/gltf';
  */
 export interface JSONDocument {
 	json: GLTF.IGLTF;
-	resources: {[s: string]: ArrayBuffer};
+	resources: { [s: string]: ArrayBuffer };
 }

@@ -1,5 +1,17 @@
 import { JSONDocument } from '../json-document';
-import { Accessor, Animation, Buffer, Camera, Material, Mesh, Node, Scene, Skin, Texture, TextureInfo } from '../properties';
+import {
+	Accessor,
+	Animation,
+	Buffer,
+	Camera,
+	Material,
+	Mesh,
+	Node,
+	Scene,
+	Skin,
+	Texture,
+	TextureInfo,
+} from '../properties';
 import { GLTF } from '../types/gltf';
 
 /**
@@ -24,7 +36,7 @@ export class ReaderContext {
 	public animations: Animation[] = [];
 	public scenes: Scene[] = [];
 
-	constructor (public readonly jsonDoc: JSONDocument) {}
+	constructor(public readonly jsonDoc: JSONDocument) {}
 
 	public setTextureInfo(textureInfo: TextureInfo, textureInfoDef: GLTF.ITextureInfo): void {
 		this.textureInfos.set(textureInfo, textureInfoDef);

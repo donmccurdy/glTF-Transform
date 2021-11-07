@@ -11,7 +11,7 @@ import type { Mesh, Node, Scene } from '../properties';
  * const {min, max} = bounds(scene);
  * ```
  */
-export function bounds (node: Node | Scene): bbox {
+export function bounds(node: Node | Scene): bbox {
 	const resultBounds = createBounds();
 	const parents = node.propertyType === PropertyType.NODE ? [node] : node.listChildren();
 

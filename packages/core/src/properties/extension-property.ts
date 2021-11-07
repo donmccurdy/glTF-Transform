@@ -40,8 +40,7 @@ export abstract class ExtensionProperty extends Property {
 	public clone(): this {
 		// NOTICE: Keep in sync with `./property.ts`.
 
-		const PropertyClass = this.constructor as
-			new(g: PropertyGraph, e: ExtensionPropertyParent) => this;
+		const PropertyClass = this.constructor as new (g: PropertyGraph, e: ExtensionPropertyParent) => this;
 		const child = new PropertyClass(this.graph, this._extension).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.
@@ -58,9 +57,7 @@ export abstract class ExtensionProperty extends Property {
 	/** @hidden */
 	public _validateParent(parent: ExtensibleProperty): void {
 		if (!this.parentTypes.includes(parent.propertyType)) {
-			throw new Error(
-				`Parent "${parent.propertyType}" invalid for child "${this.propertyType}".`
-			);
+			throw new Error(`Parent "${parent.propertyType}" invalid for child "${this.propertyType}".`);
 		}
 	}
 }

@@ -77,13 +77,19 @@ export class Node extends ExtensibleProperty {
 	 */
 
 	/** Returns the translation (position) of this node in local space. */
-	public getTranslation(): vec3 { return this._translation; }
+	public getTranslation(): vec3 {
+		return this._translation;
+	}
 
 	/** Returns the rotation (quaternion) of this node in local space. */
-	public getRotation(): vec4 { return this._rotation; }
+	public getRotation(): vec4 {
+		return this._rotation;
+	}
 
 	/** Returns the scale of this node in local space. */
-	public getScale(): vec3 { return this._scale; }
+	public getScale(): vec3 {
+		return this._scale;
+	}
 
 	/** Sets the translation (position) of this node in local space. */
 	public setTranslation(translation: vec3): this {
@@ -105,9 +111,7 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the local matrix of this node. */
 	public getMatrix(): mat4 {
-		return MathUtils.compose(
-			this._translation, this._rotation, this._scale, [] as unknown as mat4
-		);
+		return MathUtils.compose(this._translation, this._rotation, this._scale, [] as unknown as mat4);
 	}
 
 	/** Sets the local matrix of this node. Matrix will be decomposed to TRS properties. */
@@ -175,7 +179,7 @@ export class Node extends ExtensibleProperty {
 
 		// Set new parent.
 		child._parent = this;
-		link.onDispose(() => child._parent = null);
+		link.onDispose(() => (child._parent = null));
 		return this;
 	}
 
@@ -202,7 +206,9 @@ export class Node extends ExtensibleProperty {
 	 */
 
 	/** Returns the {@link Mesh}, if any, instantiated at this node. */
-	public getMesh(): Mesh | null { return this.mesh ? this.mesh.getChild() : null; }
+	public getMesh(): Mesh | null {
+		return this.mesh ? this.mesh.getChild() : null;
+	}
 
 	/**
 	 * Sets a {@link Mesh} to be instantiated at this node. A single mesh may be instatiated by
@@ -214,7 +220,9 @@ export class Node extends ExtensibleProperty {
 	}
 
 	/** Returns the {@link Camera}, if any, instantiated at this node. */
-	public getCamera(): Camera | null { return this.camera ? this.camera.getChild() : null; }
+	public getCamera(): Camera | null {
+		return this.camera ? this.camera.getChild() : null;
+	}
 
 	/** Sets a {@link Camera} to be instantiated at this node. */
 	public setCamera(camera: Camera | null): this {
@@ -223,7 +231,9 @@ export class Node extends ExtensibleProperty {
 	}
 
 	/** Returns the {@link Skin}, if any, instantiated at this node. */
-	public getSkin(): Skin | null { return this.skin ? this.skin.getChild() : null; }
+	public getSkin(): Skin | null {
+		return this.skin ? this.skin.getChild() : null;
+	}
 
 	/** Sets a {@link Skin} to be instantiated at this node. */
 	public setSkin(skin: Skin | null): this {

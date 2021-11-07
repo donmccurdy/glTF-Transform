@@ -18,8 +18,8 @@ const ComponentTypeToTypedArray = {
 
 export interface ReaderOptions {
 	logger?: Logger;
-	extensions: (typeof Extension)[];
-	dependencies: {[key: string]: unknown};
+	extensions: typeof Extension[];
+	dependencies: { [key: string]: unknown };
 }
 
 const DEFAULT_OPTIONS: ReaderOptions = {
@@ -31,8 +31,8 @@ const DEFAULT_OPTIONS: ReaderOptions = {
 /** @internal */
 export class GLTFReader {
 	public static read(jsonDoc: JSONDocument, _options: ReaderOptions = DEFAULT_OPTIONS): Document {
-		const options = {...DEFAULT_OPTIONS, ..._options} as Required<ReaderOptions>;
-		const {json} = jsonDoc;
+		const options = { ...DEFAULT_OPTIONS, ..._options } as Required<ReaderOptions>;
+		const { json } = jsonDoc;
 		const doc = new Document();
 
 		this.validate(jsonDoc, options);
@@ -50,7 +50,7 @@ export class GLTFReader {
 		if (assetDef.extras) asset.extras = assetDef.extras;
 
 		if (json.extras !== undefined) {
-			doc.getRoot().setExtras({...json.extras});
+			doc.getRoot().setExtras({ ...json.extras });
 		}
 
 		/** Extensions (1/2). */
@@ -59,9 +59,9 @@ export class GLTFReader {
 		const extensionsRequired = json.extensionsRequired || [];
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
-				const extension = doc.createExtension(
-					Extension as unknown as new (doc: Document) => Extension
-				).setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
+				const extension = doc
+					.createExtension(Extension as unknown as new (doc: Document) => Extension)
+					.setRequired(extensionsRequired.includes(Extension.EXTENSION_NAME));
 
 				for (const key of extension.readDependencies) {
 					extension.install(key, options.dependencies[key]);
@@ -72,7 +72,8 @@ export class GLTFReader {
 		/** Buffers. */
 
 		const bufferDefs = json.buffers || [];
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prereadTypes.includes(PropertyType.BUFFER))
 			.forEach((extension) => extension.preread(context, PropertyType.BUFFER));
 		context.buffers = bufferDefs.map((bufferDef) => {
@@ -93,9 +94,7 @@ export class GLTFReader {
 		context.bufferViewBuffers = bufferViewDefs.map((bufferViewDef, index) => {
 			if (!context.bufferViews[index]) {
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
-				const resource = bufferDef.uri
-					? jsonDoc.resources[bufferDef.uri]
-					: jsonDoc.resources[GLB_BUFFER];
+				const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
 				const bufferView = new Uint8Array(resource, byteOffset, bufferViewDef.byteLength);
 				context.bufferViews[index] = bufferView;
@@ -140,7 +139,8 @@ export class GLTFReader {
 		// are reused with different sampler properties.
 		const imageDefs = json.images || [];
 		const textureDefs = json.textures || [];
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prereadTypes.includes(PropertyType.TEXTURE))
 			.forEach((extension) => extension.preread(context, PropertyType.TEXTURE));
 		context.textures = imageDefs.map((imageDef) => {
@@ -152,9 +152,7 @@ export class GLTFReader {
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews![imageDef.bufferView];
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
-				const bufferData = bufferDef.uri
-					? jsonDoc.resources[bufferDef.uri]
-					: jsonDoc.resources[GLB_BUFFER];
+				const bufferData = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
 				const byteLength = bufferViewDef.byteLength;
 				const imageData = bufferData.slice(byteOffset, byteOffset + byteLength);
@@ -267,7 +265,8 @@ export class GLTFReader {
 		/** Meshes. */
 
 		const meshDefs = json.meshes || [];
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prereadTypes.includes(PropertyType.PRIMITIVE))
 			.forEach((extension) => extension.preread(context, PropertyType.PRIMITIVE));
 		context.meshes = meshDefs.map((meshDef) => {
@@ -301,8 +300,7 @@ export class GLTFReader {
 					primitive.setIndices(context.accessors[primitiveDef.indices]);
 				}
 
-				const targetNames: string[] =
-					meshDef.extras && meshDef.extras.targetNames as string[] || [];
+				const targetNames: string[] = (meshDef.extras && (meshDef.extras.targetNames as string[])) || [];
 				const targetDefs = primitiveDef.targets || [];
 				targetDefs.forEach((targetDef, targetIndex) => {
 					const targetName = targetNames[targetIndex] || targetIndex.toString();
@@ -341,11 +339,7 @@ export class GLTFReader {
 				}
 			} else {
 				const orthoDef = cameraDef.orthographic!;
-				camera
-					.setZNear(orthoDef.znear)
-					.setZFar(orthoDef.zfar)
-					.setXMag(orthoDef.xmag)
-					.setYMag(orthoDef.ymag);
+				camera.setZNear(orthoDef.znear).setZFar(orthoDef.zfar).setXMag(orthoDef.xmag).setYMag(orthoDef.ymag);
 			}
 			return camera;
 		});
@@ -354,7 +348,8 @@ export class GLTFReader {
 
 		const nodeDefs = json.nodes || [];
 
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prereadTypes.includes(PropertyType.NODE))
 			.forEach((extension) => extension.preread(context, PropertyType.NODE));
 
@@ -444,12 +439,11 @@ export class GLTFReader {
 
 			const samplerDefs = animationDef.samplers || [];
 			const samplers = samplerDefs.map((samplerDef) => {
-				const sampler = doc.createAnimationSampler()
+				const sampler = doc
+					.createAnimationSampler()
 					.setInput(context.accessors[samplerDef.input])
 					.setOutput(context.accessors[samplerDef.output])
-					.setInterpolation(
-						samplerDef.interpolation || AnimationSampler.Interpolation.LINEAR
-					);
+					.setInterpolation(samplerDef.interpolation || AnimationSampler.Interpolation.LINEAR);
 
 				if (samplerDef.extras) sampler.setExtras(samplerDef.extras);
 
@@ -459,7 +453,8 @@ export class GLTFReader {
 
 			const channels = animationDef.channels || [];
 			channels.forEach((channelDef) => {
-				const channel = doc.createAnimationChannel()
+				const channel = doc
+					.createAnimationChannel()
 					.setSampler(samplers[channelDef.sampler])
 					.setTargetNode(context.nodes[channelDef.target.node])
 					.setTargetPath(channelDef.target.path);
@@ -476,7 +471,8 @@ export class GLTFReader {
 
 		const sceneDefs = json.scenes || [];
 
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prereadTypes.includes(PropertyType.SCENE))
 			.forEach((extension) => extension.preread(context, PropertyType.SCENE));
 
@@ -487,9 +483,7 @@ export class GLTFReader {
 
 			const children = sceneDef.nodes || [];
 
-			children
-			.map((nodeIndex) => context.nodes[nodeIndex])
-			.forEach((node) => (scene.addChild(node)));
+			children.map((nodeIndex) => context.nodes[nodeIndex]).forEach((node) => scene.addChild(node));
 
 			return scene;
 		});
@@ -508,7 +502,6 @@ export class GLTFReader {
 	}
 
 	private static validate(jsonDoc: JSONDocument, options: Required<ReaderOptions>): void {
-
 		const json = jsonDoc.json;
 
 		if (json.asset.version !== '2.0') {
@@ -517,8 +510,7 @@ export class GLTFReader {
 
 		if (json.extensionsRequired) {
 			for (const extensionName of json.extensionsRequired) {
-				if (!options.extensions.find(
-						(extension) => extension.EXTENSION_NAME === extensionName)) {
+				if (!options.extensions.find((extension) => extension.EXTENSION_NAME === extensionName)) {
 					throw new Error(`Missing required extension, "${extensionName}".`);
 				}
 			}
@@ -526,13 +518,11 @@ export class GLTFReader {
 
 		if (json.extensionsUsed) {
 			for (const extensionName of json.extensionsUsed) {
-				if (!options.extensions.find(
-						(extension) => extension.EXTENSION_NAME === extensionName)) {
+				if (!options.extensions.find((extension) => extension.EXTENSION_NAME === extensionName)) {
 					options.logger.warn(`Missing optional extension, "${extensionName}".`);
 				}
 			}
 		}
-
 	}
 }
 
@@ -540,7 +530,7 @@ export class GLTFReader {
  * Returns the contents of an interleaved accessor, as a typed array.
  * @internal
  */
- function getInterleavedArray(accessorDef: GLTF.IAccessor, context: ReaderContext): TypedArray {
+function getInterleavedArray(accessorDef: GLTF.IAccessor, context: ReaderContext): TypedArray {
 	const jsonDoc = context.jsonDoc;
 	const bufferView = context.bufferViews[accessorDef.bufferView!];
 	const bufferViewDef = jsonDoc.json.bufferViews![accessorDef.bufferView!];
@@ -578,7 +568,7 @@ export class GLTFReader {
 					value = view.getInt8(byteOffset);
 					break;
 				default:
-				throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
+					throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
 			}
 			array[i * elementSize + j] = value;
 		}
@@ -602,7 +592,7 @@ function getAccessorArray(accessorDef: GLTF.IAccessor, context: ReaderContext): 
 	const elementStride = elementSize * componentSize;
 
 	// Interleaved buffer view.
-	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !==  elementStride) {
+	if (bufferViewDef.byteStride !== undefined && bufferViewDef.byteStride !== elementStride) {
 		return getInterleavedArray(accessorDef, context);
 	}
 
@@ -631,8 +621,8 @@ function getSparseArray(accessorDef: GLTF.IAccessor, context: ReaderContext): Ty
 
 	const sparseDef = accessorDef.sparse!;
 	const count = sparseDef.count;
-	const indicesDef = {...accessorDef, ...sparseDef.indices, count, type: 'SCALAR'};
-	const valuesDef = {...accessorDef, ...sparseDef.values, count};
+	const indicesDef = { ...accessorDef, ...sparseDef.indices, count, type: 'SCALAR' };
+	const valuesDef = { ...accessorDef, ...sparseDef.values, count };
 	const indices = getAccessorArray(indicesDef as GLTF.IAccessor, context);
 	const values = getAccessorArray(valuesDef, context);
 

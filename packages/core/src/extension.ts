@@ -49,7 +49,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	protected properties: Set<ExtensionProperty> = new Set();
 
 	/** @hidden */
-	constructor (protected readonly doc: Document) {
+	constructor(protected readonly doc: Document) {
 		doc.getRoot()._enableExtension(this);
 	}
 

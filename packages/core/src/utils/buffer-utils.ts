@@ -42,14 +42,14 @@ export class BufferUtils {
 
 	/** Copies an ArrayBuffer from a Buffer's content. */
 	static trim(buffer: Buffer): ArrayBuffer {
-		const {byteOffset, byteLength} = buffer;
+		const { byteOffset, byteLength } = buffer;
 		return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
 	}
 
 	/**
-	* Concatenates N ArrayBuffers.
-	*/
-	static concat (buffers: ArrayBuffer[]): ArrayBuffer {
+	 * Concatenates N ArrayBuffers.
+	 */
+	static concat(buffers: ArrayBuffer[]): ArrayBuffer {
 		let totalByteLength = 0;
 		for (const buffer of buffers) {
 			totalByteLength += buffer.byteLength;
@@ -67,42 +67,32 @@ export class BufferUtils {
 	}
 
 	/**
-	* Pads an ArrayBuffer to the next 4-byte boundary.
-	*
-	* Reference: [glTF → Data Alignment](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment)
-	*/
-	static pad (arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
+	 * Pads an ArrayBuffer to the next 4-byte boundary.
+	 *
+	 * Reference: [glTF → Data Alignment](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment)
+	 */
+	static pad(arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
+		const paddedLength = this.padNumber(arrayBuffer.byteLength);
 
-		const paddedLength = this.padNumber( arrayBuffer.byteLength );
+		if (paddedLength !== arrayBuffer.byteLength) {
+			const array = new Uint8Array(paddedLength);
+			array.set(new Uint8Array(arrayBuffer));
 
-		if ( paddedLength !== arrayBuffer.byteLength ) {
-
-			const array = new Uint8Array( paddedLength );
-			array.set( new Uint8Array( arrayBuffer ) );
-
-			if ( paddingByte !== 0 ) {
-
-				for ( let i = arrayBuffer.byteLength; i < paddedLength; i ++ ) {
-
-					array[ i ] = paddingByte;
-
+			if (paddingByte !== 0) {
+				for (let i = arrayBuffer.byteLength; i < paddedLength; i++) {
+					array[i] = paddingByte;
 				}
-
 			}
 
 			return array.buffer;
-
 		}
 
 		return arrayBuffer;
-
 	}
 
 	/** Pads a number to 4-byte boundaries. */
-	static padNumber (v: number): number {
-
-		return Math.ceil( v / 4 ) * 4;
-
+	static padNumber(v: number): number {
+		return Math.ceil(v / 4) * 4;
 	}
 
 	/** Returns true if given ArrayBuffer instances are equal. */

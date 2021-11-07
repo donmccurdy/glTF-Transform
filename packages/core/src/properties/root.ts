@@ -52,7 +52,7 @@ export class Root extends Property {
 
 	private readonly _asset: GLTF.IAsset = {
 		generator: `glTF-Transform ${VERSION}`,
-		version: '2.0'
+		version: '2.0',
 	};
 
 	private readonly _extensions: Set<Extension> = new Set();
@@ -71,7 +71,7 @@ export class Root extends Property {
 	@GraphChildList private textures: Link<Root, Texture>[] = [];
 
 	/** @internal */
-	constructor (graph: PropertyGraph) {
+	constructor(graph: PropertyGraph) {
 		super(graph);
 		graph.on('clone', (target) => this._addChildOfRoot(target));
 	}
@@ -107,7 +107,7 @@ export class Root extends Property {
 	}
 
 	/** @internal */
-	public _addChildOfRoot (child: unknown): this {
+	public _addChildOfRoot(child: unknown): this {
 		// TODO(cleanup): Extra private helpers could probably be removed, here.
 		if (child instanceof Scene) {
 			this._addScene(child as Scene);
@@ -140,7 +140,9 @@ export class Root extends Property {
 	 *
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
-	public getAsset(): GLTF.IAsset { return this._asset; }
+	public getAsset(): GLTF.IAsset {
+		return this._asset;
+	}
 
 	/**********************************************************************************************
 	 * Extensions.
@@ -193,7 +195,7 @@ export class Root extends Property {
 
 	/** Default {@link Scene} associated with this root. */
 	public getDefaultScene(): Scene | null {
-		return this.defaultScene ?  this.defaultScene.getChild() : null;
+		return this.defaultScene ? this.defaultScene.getChild() : null;
 	}
 
 	/**********************************************************************************************
@@ -293,7 +295,6 @@ export class Root extends Property {
 		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture));
 	}
 
-
 	/** Lists all {@link Texture} properties associated with this root. */
 	public listTextures(): Texture[] {
 		return this.textures.map((p) => p.getChild());
@@ -315,7 +316,6 @@ export class Root extends Property {
 	public listAnimations(): Animation[] {
 		return this.animations.map((p) => p.getChild());
 	}
-
 
 	/**********************************************************************************************
 	 * Accessors.

@@ -47,7 +47,7 @@ export class Scene extends ExtensibleProperty {
 
 		// Set new parent.
 		node._parent = this;
-		link.onDispose(() => node._parent = null);
+		link.onDispose(() => (node._parent = null));
 		return this;
 	}
 

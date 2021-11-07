@@ -108,13 +108,19 @@ export class Material extends ExtensibleProperty {
 
 	/** @internal Base color / albedo texture. */
 	@GraphChild private baseColorTexture: TextureLink | null = null;
-	@GraphChild private baseColorTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('baseColorTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private baseColorTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'baseColorTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	/** @internal Emissive texture. */
 	@GraphChild private emissiveTexture: TextureLink | null = null;
-	@GraphChild private emissiveTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('emissiveTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private emissiveTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'emissiveTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	/**
 	 * Normal (surface detail) texture. Normal maps often suffer artifacts with JPEG compression,
@@ -122,8 +128,11 @@ export class Material extends ExtensibleProperty {
 	 * @internal
 	 */
 	@GraphChild private normalTexture: TextureLink | null = null;
-	@GraphChild private normalTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('normalTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private normalTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'normalTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	/**
 	 * (Ambient) Occlusion texture. Occlusion data is stored in the `.r` channel, allowing this
@@ -131,8 +140,11 @@ export class Material extends ExtensibleProperty {
 	 * @internal
 	 */
 	@GraphChild private occlusionTexture: TextureLink | null = null;
-	@GraphChild private occlusionTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('occlusionTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private occlusionTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'occlusionTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	/**
 	 * Metallic/roughness PBR texture. Roughness data is stored in the `.g` channel and metallic
@@ -141,8 +153,11 @@ export class Material extends ExtensibleProperty {
 	 * @internal
 	 */
 	@GraphChild private metallicRoughnessTexture: TextureLink | null = null;
-	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('metallicRoughnessTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private metallicRoughnessTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'metallicRoughnessTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -157,36 +172,23 @@ export class Material extends ExtensibleProperty {
 		this._roughnessFactor = other._roughnessFactor;
 		this._metallicFactor = other._metallicFactor;
 
-		this.setBaseColorTexture(
-			other.baseColorTexture ? resolve(other.baseColorTexture.getChild()) : null
-		);
-		this.baseColorTextureInfo.getChild()
-			.copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
+		this.setBaseColorTexture(other.baseColorTexture ? resolve(other.baseColorTexture.getChild()) : null);
+		this.baseColorTextureInfo.getChild().copy(resolve(other.baseColorTextureInfo.getChild()), resolve);
 
-		this.setEmissiveTexture(
-			other.emissiveTexture ? resolve(other.emissiveTexture.getChild()) : null
-		);
-		this.emissiveTextureInfo.getChild()
-			.copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
+		this.setEmissiveTexture(other.emissiveTexture ? resolve(other.emissiveTexture.getChild()) : null);
+		this.emissiveTextureInfo.getChild().copy(resolve(other.emissiveTextureInfo.getChild()), resolve);
 
-		this.setNormalTexture(
-			other.normalTexture ? resolve(other.normalTexture.getChild()) : null
-		);
-		this.normalTextureInfo.getChild()
-			.copy(resolve(other.normalTextureInfo.getChild()), resolve);
+		this.setNormalTexture(other.normalTexture ? resolve(other.normalTexture.getChild()) : null);
+		this.normalTextureInfo.getChild().copy(resolve(other.normalTextureInfo.getChild()), resolve);
 
-		this.setOcclusionTexture(
-			other.occlusionTexture ? resolve(other.occlusionTexture.getChild()) : null
-		);
-		this.occlusionTextureInfo.getChild()
-			.copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
+		this.setOcclusionTexture(other.occlusionTexture ? resolve(other.occlusionTexture.getChild()) : null);
+		this.occlusionTextureInfo.getChild().copy(resolve(other.occlusionTextureInfo.getChild()), resolve);
 
 		this.setMetallicRoughnessTexture(
-			other.metallicRoughnessTexture
-				? resolve(other.metallicRoughnessTexture.getChild())
-				: null
+			other.metallicRoughnessTexture ? resolve(other.metallicRoughnessTexture.getChild()) : null
 		);
-		this.metallicRoughnessTextureInfo.getChild()
+		this.metallicRoughnessTextureInfo
+			.getChild()
 			.copy(resolve(other.metallicRoughnessTextureInfo.getChild()), resolve);
 
 		return this;
@@ -239,8 +241,7 @@ export class Material extends ExtensibleProperty {
 			if (this.getMetallicRoughnessTexture() !== other.getMetallicRoughnessTexture()) {
 				return false;
 			}
-			if (!this.getMetallicRoughnessTextureInfo()!
-				.equals(other.getMetallicRoughnessTextureInfo()!)) {
+			if (!this.getMetallicRoughnessTextureInfo()!.equals(other.getMetallicRoughnessTextureInfo()!)) {
 				return false;
 			}
 		}
@@ -273,7 +274,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** Returns true when both sides of triangles should be rendered. May impact performance. */
-	public getDoubleSided(): boolean { return this._doubleSided; }
+	public getDoubleSided(): boolean {
+		return this._doubleSided;
+	}
 
 	/** Sets whether to render both sides of triangles. May impact performance. */
 	public setDoubleSided(doubleSided: boolean): this {
@@ -286,7 +289,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** Returns material alpha, equivalent to baseColorFactor[3]. */
-	public getAlpha(): number { return this._baseColorFactor[3]; }
+	public getAlpha(): number {
+		return this._baseColorFactor[3];
+	}
 
 	/** Sets material alpha, equivalent to baseColorFactor[3]. */
 	public setAlpha(alpha: number): this {
@@ -315,7 +320,9 @@ export class Material extends ExtensibleProperty {
 	 * Reference:
 	 * - [glTF → material.alphaMode](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialalphamode)
 	 */
-	public getAlphaMode(): GLTF.MaterialAlphaMode { return this._alphaMode; }
+	public getAlphaMode(): GLTF.MaterialAlphaMode {
+		return this._alphaMode;
+	}
 
 	/** Sets the mode of the material's alpha channels. See {@link getAlphaMode} for details. */
 	public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): this {
@@ -324,7 +331,9 @@ export class Material extends ExtensibleProperty {
 	}
 
 	/** Returns the visibility threshold; applied only when `.alphaMode='MASK'`. */
-	public getAlphaCutoff(): number { return this._alphaCutoff; }
+	public getAlphaCutoff(): number {
+		return this._alphaCutoff;
+	}
 
 	/** Sets the visibility threshold; applied only when `.alphaMode='MASK'`. */
 	public setAlphaCutoff(alphaCutoff: number): this {
@@ -337,7 +346,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** Base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
-	public getBaseColorFactor(): vec4 { return this._baseColorFactor; }
+	public getBaseColorFactor(): vec4 {
+		return this._baseColorFactor;
+	}
 
 	/** Sets the base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
 	public setBaseColorFactor(baseColorFactor: vec4): this {
@@ -386,8 +397,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture | null): this {
-		this.baseColorTexture =
-			this.graph.linkTexture('baseColorTexture', R | G | B | A, this, texture);
+		this.baseColorTexture = this.graph.linkTexture('baseColorTexture', R | G | B | A, this, texture);
 		return this;
 	}
 
@@ -396,7 +406,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** Emissive color; linear multiplier. See {@link getEmissiveTexture}. */
-	public getEmissiveFactor(): vec3 { return this._emissiveFactor; }
+	public getEmissiveFactor(): vec3 {
+		return this._emissiveFactor;
+	}
 
 	/** Sets the emissive color; linear multiplier. See {@link getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
@@ -453,7 +465,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
-	public getNormalScale(): number { return this. _normalScale; }
+	public getNormalScale(): number {
+		return this._normalScale;
+	}
 
 	/** Sets normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
 	public setNormalScale(normalScale: number): this {
@@ -496,7 +510,9 @@ export class Material extends ExtensibleProperty {
 	 */
 
 	/** (Ambient) Occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
-	public getOcclusionStrength(): number { return this._occlusionStrength; }
+	public getOcclusionStrength(): number {
+		return this._occlusionStrength;
+	}
 
 	/** Sets (ambient) occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
 	public setOcclusionStrength(occlusionStrength: number): this {
@@ -542,7 +558,9 @@ export class Material extends ExtensibleProperty {
 	 * Roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public getRoughnessFactor(): number { return this._roughnessFactor; }
+	public getRoughnessFactor(): number {
+		return this._roughnessFactor;
+	}
 
 	/**
 	 * Sets roughness factor; linear multiplier. Affects roughness channel of
@@ -557,7 +575,9 @@ export class Material extends ExtensibleProperty {
 	 * Metallic factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public getMetallicFactor(): number { return this._metallicFactor; }
+	public getMetallicFactor(): number {
+		return this._metallicFactor;
+	}
 
 	/**
 	 * Sets metallic factor; linear multiplier. Affects roughness channel of
@@ -591,8 +611,7 @@ export class Material extends ExtensibleProperty {
 
 	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
 	public setMetallicRoughnessTexture(texture: Texture | null): this {
-		this.metallicRoughnessTexture =
-			this.graph.linkTexture('metallicRoughnessTexture', G | B, this, texture);
+		this.metallicRoughnessTexture = this.graph.linkTexture('metallicRoughnessTexture', G | B, this, texture);
 		return this;
 	}
 }

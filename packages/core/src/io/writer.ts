@@ -13,20 +13,19 @@ export interface WriterOptions {
 	format: Format;
 	logger?: Logger;
 	basename?: string;
-	vertexLayout?: VertexLayout,
-	dependencies?: {[key: string]: unknown};
+	vertexLayout?: VertexLayout;
+	dependencies?: { [key: string]: unknown };
 }
 
 /** @internal */
 export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
-
 		const root = doc.getRoot();
 		const json = {
-			asset: {generator: `glTF-Transform ${VERSION}`, ...root.getAsset()},
-			extras: {...root.getExtras()},
+			asset: { generator: `glTF-Transform ${VERSION}`, ...root.getAsset() },
+			extras: { ...root.getExtras() },
 		} as GLTF.IGLTF;
-		const jsonDoc = {json, resources: {}} as JSONDocument;
+		const jsonDoc = { json, resources: {} } as JSONDocument;
 
 		const context = new WriterContext(doc, jsonDoc, options);
 		const logger = options.logger || Logger.DEFAULT_INSTANCE;
@@ -47,19 +46,20 @@ export class GLTFWriter {
 		}
 
 		/**
-		* Pack a group of accessors into a sequential buffer view. Appends accessor and buffer view
-		* definitions to the root JSON lists.
-		*
-		* @param accessors Accessors to be included.
-		* @param bufferIndex Buffer to write to.
-		* @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
-		* @param bufferViewTarget (Optional) target use of the buffer view.
-		*/
+		 * Pack a group of accessors into a sequential buffer view. Appends accessor and buffer view
+		 * definitions to the root JSON lists.
+		 *
+		 * @param accessors Accessors to be included.
+		 * @param bufferIndex Buffer to write to.
+		 * @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
+		 * @param bufferViewTarget (Optional) target use of the buffer view.
+		 */
 		function concatAccessors(
-				accessors: Accessor[],
-				bufferIndex: number,
-				bufferByteOffset: number,
-				bufferViewTarget?: number): BufferViewResult {
+			accessors: Accessor[],
+			bufferIndex: number,
+			bufferByteOffset: number,
+			bufferViewTarget?: number
+		): BufferViewResult {
 			const buffers: ArrayBuffer[] = [];
 			let byteLength = 0;
 
@@ -87,7 +87,7 @@ export class GLTFWriter {
 			if (bufferViewTarget) bufferViewDef.target = bufferViewTarget;
 			json.bufferViews!.push(bufferViewDef);
 
-			return {buffers, byteLength};
+			return { buffers, byteLength };
 		}
 
 		/**
@@ -103,9 +103,10 @@ export class GLTFWriter {
 		 * @param bufferByteOffset Offset into the buffer, accounting for other buffer views.
 		 */
 		function interleaveAccessors(
-				accessors: Accessor[],
-				bufferIndex: number,
-				bufferByteOffset: number): BufferViewResult {
+			accessors: Accessor[],
+			bufferIndex: number,
+			bufferByteOffset: number
+		): BufferViewResult {
 			const vertexCount = accessors[0].getCount();
 			let byteStride = 0;
 
@@ -137,8 +138,7 @@ export class GLTFWriter {
 					const componentType = accessor.getComponentType();
 					const array = accessor.getArray()!;
 					for (let j = 0; j < elementSize; j++) {
-						const viewByteOffset =
-							i * byteStride + vertexByteOffset + j * componentSize;
+						const viewByteOffset = i * byteStride + vertexByteOffset + j * componentSize;
 						const value = array[i * elementSize + j];
 						switch (componentType) {
 							case Accessor.ComponentType.FLOAT:
@@ -177,7 +177,7 @@ export class GLTFWriter {
 			};
 			json.bufferViews!.push(bufferViewDef);
 
-			return {byteLength, buffers: [buffer]};
+			return { byteLength, buffers: [buffer] };
 		}
 
 		/* Data use pre-processing. */
@@ -225,7 +225,8 @@ export class GLTFWriter {
 
 		/* Accessors. */
 
-		doc.getRoot().listExtensionsUsed()
+		doc.getRoot()
+			.listExtensionsUsed()
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.ACCESSOR))
 			.forEach((extension) => extension.prewrite(context, PropertyType.ACCESSOR));
 		root.listAccessors().forEach((accessor) => {
@@ -263,9 +264,8 @@ export class GLTFWriter {
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.BUFFER))
 			.forEach((extension) => extension.prewrite(context, PropertyType.BUFFER));
 
-		const hasBinaryResources = root.listAccessors().length > 0
-			|| root.listTextures().length > 0
-			|| context.otherBufferViews.size > 0;
+		const hasBinaryResources =
+			root.listAccessors().length > 0 || root.listTextures().length > 0 || context.otherBufferViews.size > 0;
 		if (hasBinaryResources && root.listBuffers().length === 0) {
 			throw new Error('Buffer required for Document resources, but none was found.');
 		}
@@ -276,7 +276,8 @@ export class GLTFWriter {
 			const groupByParent = context.accessorUsageGroupedByParent;
 			const accessorParents = context.accessorParents;
 
-			const bufferAccessors = buffer.listParents()
+			const bufferAccessors = buffer
+				.listParents()
 				.filter((property) => property instanceof Accessor) as Accessor[];
 			const bufferAccessorsSet = new Set(bufferAccessors);
 
@@ -298,15 +299,18 @@ export class GLTFWriter {
 							.filter((a) => context.getAccessorUsage(a) === usage);
 						if (!accessors.length) continue;
 
-						if (usage !== BufferViewUsage.ARRAY_BUFFER
-								|| options.vertexLayout === VertexLayout.INTERLEAVED) {
+						if (
+							usage !== BufferViewUsage.ARRAY_BUFFER ||
+							options.vertexLayout === VertexLayout.INTERLEAVED
+						) {
 							// Case 1: Non-vertex data OR interleaved vertex data.
 
 							// Instanced data is not interleaved, see:
 							// https://github.com/KhronosGroup/glTF/pull/1888
-							const result = usage === BufferViewUsage.ARRAY_BUFFER
-								? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
-								: concatAccessors(accessors, bufferIndex, bufferByteLength);
+							const result =
+								usage === BufferViewUsage.ARRAY_BUFFER
+									? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
+									: concatAccessors(accessors, bufferIndex, bufferByteLength);
 							bufferByteLength += result.byteLength;
 							buffers.push(...result.buffers);
 						} else {
@@ -315,11 +319,7 @@ export class GLTFWriter {
 							for (const accessor of accessors) {
 								// We 'interleave' a single accessor because the method pads to
 								// 4-byte boundaries, which concatAccessors() does not.
-								const result = interleaveAccessors(
-									[accessor],
-									bufferIndex,
-									bufferByteLength,
-								);
+								const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
 								bufferByteLength += result.byteLength;
 								buffers.push(...result.buffers);
 							}
@@ -330,12 +330,11 @@ export class GLTFWriter {
 					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
 					if (!accessors.length) continue;
 
-					const target = usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
-						? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
-						: undefined;
-					const result = concatAccessors(
-						accessors, bufferIndex, bufferByteLength, target
-					);
+					const target =
+						usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
+							? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
+							: undefined;
+					const result = concatAccessors(accessors, bufferIndex, bufferByteLength, target);
 					bufferByteLength += result.byteLength;
 					buffers.push(...result.buffers);
 				}
@@ -386,7 +385,6 @@ export class GLTFWriter {
 				jsonDoc.resources[uri] = BufferUtils.concat(buffers);
 			}
 
-
 			json.buffers!.push(bufferDef);
 			context.bufferIndexMap.set(buffer, index);
 		});
@@ -431,8 +429,7 @@ export class GLTFWriter {
 			if (material.getBaseColorTexture()) {
 				const texture = material.getBaseColorTexture()!;
 				const textureInfo = material.getBaseColorTextureInfo()!;
-				materialDef.pbrMetallicRoughness.baseColorTexture
-					= context.createTextureInfoDef(texture, textureInfo);
+				materialDef.pbrMetallicRoughness.baseColorTexture = context.createTextureInfoDef(texture, textureInfo);
 			}
 
 			if (material.getEmissiveTexture()) {
@@ -444,8 +441,10 @@ export class GLTFWriter {
 			if (material.getNormalTexture()) {
 				const texture = material.getNormalTexture()!;
 				const textureInfo = material.getNormalTextureInfo()!;
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
-					GLTF.IMaterialNormalTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(
+					texture,
+					textureInfo
+				) as GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
 				}
@@ -455,8 +454,10 @@ export class GLTFWriter {
 			if (material.getOcclusionTexture()) {
 				const texture = material.getOcclusionTexture()!;
 				const textureInfo = material.getOcclusionTextureInfo()!;
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo) as
-					GLTF.IMaterialOcclusionTextureInfo;
+				const textureInfoDef = context.createTextureInfoDef(
+					texture,
+					textureInfo
+				) as GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
 				}
@@ -466,8 +467,10 @@ export class GLTFWriter {
 			if (material.getMetallicRoughnessTexture()) {
 				const texture = material.getMetallicRoughnessTexture()!;
 				const textureInfo = material.getMetallicRoughnessTextureInfo()!;
-				materialDef.pbrMetallicRoughness.metallicRoughnessTexture
-					= context.createTextureInfoDef(texture, textureInfo);
+				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(
+					texture,
+					textureInfo
+				);
 			}
 
 			context.materialIndexMap.set(material, index);
@@ -482,7 +485,7 @@ export class GLTFWriter {
 			let targetNames: string[] | null = null;
 
 			meshDef.primitives = mesh.listPrimitives().map((primitive) => {
-				const primitiveDef: GLTF.IMeshPrimitive = {attributes: {}};
+				const primitiveDef: GLTF.IMeshPrimitive = { attributes: {} };
 
 				primitiveDef.mode = primitive.getMode();
 
@@ -501,16 +504,16 @@ export class GLTFWriter {
 				}
 
 				for (const semantic of primitive.listSemantics()) {
-					primitiveDef.attributes[semantic]
-						= context.accessorIndexMap.get(primitive.getAttribute(semantic)!)!;
+					primitiveDef.attributes[semantic] = context.accessorIndexMap.get(
+						primitive.getAttribute(semantic)!
+					)!;
 				}
 
 				for (const target of primitive.listTargets()) {
-					const targetDef = {} as {[name: string]: number};
+					const targetDef = {} as { [name: string]: number };
 
 					for (const semantic of target.listSemantics()) {
-						targetDef[semantic]
-							= context.accessorIndexMap.get(target.getAttribute(semantic)!)!;
+						targetDef[semantic] = context.accessorIndexMap.get(target.getAttribute(semantic)!)!;
 					}
 
 					primitiveDef.targets = primitiveDef.targets || [];
@@ -634,8 +637,7 @@ export class GLTFWriter {
 			}
 
 			if (node.listChildren().length > 0) {
-				nodeDef.children = node.listChildren()
-					.map((node) => context.nodeIndexMap.get(node)!);
+				nodeDef.children = node.listChildren().map((node) => context.nodeIndexMap.get(node)!);
 			}
 		});
 
@@ -646,26 +648,24 @@ export class GLTFWriter {
 
 			const samplerIndexMap: Map<AnimationSampler, number> = new Map();
 
-			animationDef.samplers = animation.listSamplers()
-				.map((sampler, samplerIndex) => {
-					const samplerDef = context.createPropertyDef(sampler) as GLTF.IAnimationSampler;
-					samplerDef.input = context.accessorIndexMap.get(sampler.getInput()!)!;
-					samplerDef.output = context.accessorIndexMap.get(sampler.getOutput()!)!;
-					samplerDef.interpolation = sampler.getInterpolation();
-					samplerIndexMap.set(sampler, samplerIndex);
-					return samplerDef;
-				});
+			animationDef.samplers = animation.listSamplers().map((sampler, samplerIndex) => {
+				const samplerDef = context.createPropertyDef(sampler) as GLTF.IAnimationSampler;
+				samplerDef.input = context.accessorIndexMap.get(sampler.getInput()!)!;
+				samplerDef.output = context.accessorIndexMap.get(sampler.getOutput()!)!;
+				samplerDef.interpolation = sampler.getInterpolation();
+				samplerIndexMap.set(sampler, samplerIndex);
+				return samplerDef;
+			});
 
-			animationDef.channels = animation.listChannels()
-				.map((channel) => {
-					const channelDef = context.createPropertyDef(channel) as GLTF.IAnimationChannel;
-					channelDef.sampler = samplerIndexMap.get(channel.getSampler()!)!;
-					channelDef.target = {
-						node: context.nodeIndexMap.get(channel.getTargetNode()!)!,
-						path: channel.getTargetPath()!,
-					};
-					return channelDef;
-				});
+			animationDef.channels = animation.listChannels().map((channel) => {
+				const channelDef = context.createPropertyDef(channel) as GLTF.IAnimationChannel;
+				channelDef.sampler = samplerIndexMap.get(channel.getSampler()!)!;
+				channelDef.target = {
+					node: context.nodeIndexMap.get(channel.getTargetNode()!)!,
+					path: channel.getTargetPath()!,
+				};
+				return channelDef;
+			});
 
 			return animationDef;
 		});

@@ -58,7 +58,7 @@ export class Camera extends ExtensibleProperty {
 	// Perspective.
 
 	private _aspectRatio: number | null = null;
-	private _yfov: number = Math.PI * 2 * 50 / 360; // 50º
+	private _yfov: number = (Math.PI * 2 * 50) / 360; // 50º
 
 	// Orthographic.
 
@@ -84,7 +84,9 @@ export class Camera extends ExtensibleProperty {
 	 */
 
 	/** Specifies if the camera uses a perspective or orthographic projection. */
-	public getType(): GLTF.CameraType { return this._type; }
+	public getType(): GLTF.CameraType {
+		return this._type;
+	}
 
 	/** Specifies if the camera uses a perspective or orthographic projection. */
 	public setType(type: GLTF.CameraType): this {
@@ -93,7 +95,9 @@ export class Camera extends ExtensibleProperty {
 	}
 
 	/** Floating-point distance to the near clipping plane. */
-	public getZNear(): number { return this._znear; }
+	public getZNear(): number {
+		return this._znear;
+	}
 
 	/** Floating-point distance to the near clipping plane. */
 	public setZNear(znear: number): this {
@@ -105,7 +109,9 @@ export class Camera extends ExtensibleProperty {
 	 * Floating-point distance to the far clipping plane. When defined, zfar must be greater than
 	 * znear. If zfar is undefined, runtime must use infinite projection matrix.
 	 */
-	public getZFar(): number { return this._zfar; }
+	public getZFar(): number {
+		return this._zfar;
+	}
 
 	/**
 	 * Floating-point distance to the far clipping plane. When defined, zfar must be greater than
@@ -124,7 +130,9 @@ export class Camera extends ExtensibleProperty {
 	 * Floating-point aspect ratio of the field of view. When undefined, the aspect ratio of the
 	 * canvas is used.
 	 */
-	public getAspectRatio(): number | null { return this._aspectRatio; }
+	public getAspectRatio(): number | null {
+		return this._aspectRatio;
+	}
 
 	/**
 	 * Floating-point aspect ratio of the field of view. When undefined, the aspect ratio of the
@@ -136,7 +144,9 @@ export class Camera extends ExtensibleProperty {
 	}
 
 	/** Floating-point vertical field of view in radians. */
-	public getYFov(): number { return this._yfov; }
+	public getYFov(): number {
+		return this._yfov;
+	}
 
 	/** Floating-point vertical field of view in radians. */
 	public setYFov(yfov: number): this {
@@ -152,7 +162,9 @@ export class Camera extends ExtensibleProperty {
 	 * Floating-point horizontal magnification of the view, and half the view's width
 	 * in world units.
 	 */
-	public getXMag(): number { return this._xmag; }
+	public getXMag(): number {
+		return this._xmag;
+	}
 
 	/**
 	 * Floating-point horizontal magnification of the view, and half the view's width
@@ -167,7 +179,9 @@ export class Camera extends ExtensibleProperty {
 	 * Floating-point vertical magnification of the view, and half the view's height
 	 * in world units.
 	 */
-	public getYMag(): number { return this._ymag; }
+	public getYMag(): number {
+		return this._ymag;
+	}
 
 	/**
 	 * Floating-point vertical magnification of the view, and half the view's height

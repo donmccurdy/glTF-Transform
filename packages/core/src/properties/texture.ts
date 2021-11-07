@@ -88,7 +88,9 @@ export class Texture extends ExtensibleProperty {
 	 */
 
 	/** Returns the raw image data for this texture. */
-	public getImage(): ArrayBuffer | null { return this._image; }
+	public getImage(): ArrayBuffer | null {
+		return this._image;
+	}
 
 	/** Sets the raw image data for this texture. */
 	public setImage(image: ArrayBuffer): this {

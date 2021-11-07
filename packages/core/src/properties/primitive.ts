@@ -187,7 +187,9 @@ export class Primitive extends ExtensibleProperty {
 	 * Reference:
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
-	public getMode(): GLTF.MeshPrimitiveMode { return this._mode; }
+	public getMode(): GLTF.MeshPrimitiveMode {
+		return this._mode;
+	}
 
 	/**
 	 * Sets the GPU draw mode (`TRIANGLES`, `LINES`, `POINTS`...) as a WebGL enum value.

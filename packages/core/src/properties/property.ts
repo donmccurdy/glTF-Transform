@@ -61,7 +61,9 @@ export abstract class Property extends GraphNode {
 	 * encouraged, and non-unique names will be overwritten in some tools. For custom data about
 	 * a property, prefer to use Extras.
 	 */
-	public getName(): string { return this._name; }
+	public getName(): string {
+		return this._name;
+	}
 
 	/**
 	 * Sets the name of this property. While names are not required to be unique, this is
@@ -81,7 +83,9 @@ export abstract class Property extends GraphNode {
 	 * Returns a reference to the Extras object, containing application-specific data for this
 	 * Property. Extras should be an Object, not a primitive value, for best portability.
 	 */
-	public getExtras(): Record<string, unknown> { return this._extras; }
+	public getExtras(): Record<string, unknown> {
+		return this._extras;
+	}
 
 	/**
 	 * Updates the Extras object, containing application-specific data for this Property. Extras
@@ -102,7 +106,7 @@ export abstract class Property extends GraphNode {
 	public clone(): this {
 		// NOTICE: Keep in sync with `./extension-property.ts`.
 
-		const PropertyClass = this.constructor as new(g: PropertyGraph) => this;
+		const PropertyClass = this.constructor as new (g: PropertyGraph) => this;
 		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.

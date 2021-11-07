@@ -10,7 +10,7 @@ export interface ImageUtilsFormat {
 
 /** JPEG image support. */
 class JPEGImageUtils implements ImageUtilsFormat {
-	getSize (buffer: ArrayBuffer): vec2 {
+	getSize(buffer: ArrayBuffer): vec2 {
 		// Skip 4 chars, they are for signature
 		let view = new DataView(buffer, 4);
 
@@ -27,7 +27,7 @@ class JPEGImageUtils implements ImageUtilsFormat {
 			// 0xFFC1 is baseline optimized(SOF)
 			// 0xFFC2 is progressive(SOF2)
 			next = view.getUint8(i + 1);
-			if (next === 0xC0 || next === 0xC1 || next === 0xC2) {
+			if (next === 0xc0 || next === 0xc1 || next === 0xc2) {
 				return [view.getUint16(i + 7, false), view.getUint16(i + 5, false)];
 			}
 
@@ -38,7 +38,7 @@ class JPEGImageUtils implements ImageUtilsFormat {
 		throw new TypeError('Invalid JPG, no size found');
 	}
 
-	getChannels (_buffer: ArrayBuffer): number {
+	getChannels(_buffer: ArrayBuffer): number {
 		return 3;
 	}
 }
@@ -52,7 +52,7 @@ class JPEGImageUtils implements ImageUtilsFormat {
 class PNGImageUtils implements ImageUtilsFormat {
 	// Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
 	static PNG_FRIED_CHUNK_NAME = 'CgBI';
-	getSize (buffer: ArrayBuffer): vec2 {
+	getSize(buffer: ArrayBuffer): vec2 {
 		const view = new DataView(buffer);
 		const magic = BufferUtils.decodeText(buffer.slice(12, 16));
 		if (magic === PNGImageUtils.PNG_FRIED_CHUNK_NAME) {
@@ -60,7 +60,7 @@ class PNGImageUtils implements ImageUtilsFormat {
 		}
 		return [view.getUint32(16, false), view.getUint32(20, false)];
 	}
-	getChannels (_buffer: ArrayBuffer): number {
+	getChannels(_buffer: ArrayBuffer): number {
 		return 4;
 	}
 }
@@ -75,7 +75,7 @@ class PNGImageUtils implements ImageUtilsFormat {
 export class ImageUtils {
 	static impls: Record<string, ImageUtilsFormat> = {
 		'image/jpeg': new JPEGImageUtils(),
-		'image/png': new PNGImageUtils()
+		'image/png': new PNGImageUtils(),
 	};
 
 	/** Registers support for a new image format; useful for certain extensions. */
@@ -84,7 +84,7 @@ export class ImageUtils {
 	}
 
 	/** Returns the dimensions of the image. */
-	public static getSize (buffer: ArrayBuffer, mimeType: string): vec2 | null {
+	public static getSize(buffer: ArrayBuffer, mimeType: string): vec2 | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getSize(buffer);
 	}
@@ -94,13 +94,13 @@ export class ImageUtils {
 	 * formats, the method may return 4 indicating the possibility of an alpha channel, without
 	 * the ability to guarantee that an alpha channel is present.
 	 */
-	public static getChannels (buffer: ArrayBuffer, mimeType: string): number | null {
+	public static getChannels(buffer: ArrayBuffer, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getChannels(buffer);
 	}
 
 	/** Returns a conservative estimate of the GPU memory required by this image. */
-	public static getMemSize (buffer: ArrayBuffer, mimeType: string): number | null {
+	public static getMemSize(buffer: ArrayBuffer, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 
 		if (this.impls[mimeType].getGPUByteLength) {
@@ -134,15 +134,15 @@ export class ImageUtils {
 	}
 }
 
-function validateJPEGBuffer (view: DataView, i: number): DataView {
-    // index should be within buffer limits
-    if (i > view.byteLength) {
-        throw new TypeError('Corrupt JPG, exceeded buffer limits');
-    }
-    // Every JPEG block must begin with a 0xFF
-    if (view.getUint8(i) !== 0xFF) {
-        throw new TypeError('Invalid JPG, marker table corrupted');
-    }
+function validateJPEGBuffer(view: DataView, i: number): DataView {
+	// index should be within buffer limits
+	if (i > view.byteLength) {
+		throw new TypeError('Corrupt JPG, exceeded buffer limits');
+	}
+	// Every JPEG block must begin with a 0xFF
+	if (view.getUint8(i) !== 0xff) {
+		throw new TypeError('Invalid JPG, marker table corrupted');
+	}
 
 	return view;
 }

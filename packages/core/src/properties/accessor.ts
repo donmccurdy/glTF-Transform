@@ -169,13 +169,20 @@ export class Accessor extends ExtensibleProperty {
 	/** Returns size of a given element type, in components. */
 	public static getElementSize(type: GLTF.AccessorType): number {
 		switch (type) {
-			case Accessor.Type.SCALAR: return 1;
-			case Accessor.Type.VEC2: return 2;
-			case Accessor.Type.VEC3: return 3;
-			case Accessor.Type.VEC4: return 4;
-			case Accessor.Type.MAT2: return 4;
-			case Accessor.Type.MAT3: return 9;
-			case Accessor.Type.MAT4: return 16;
+			case Accessor.Type.SCALAR:
+				return 1;
+			case Accessor.Type.VEC2:
+				return 2;
+			case Accessor.Type.VEC3:
+				return 3;
+			case Accessor.Type.VEC4:
+				return 4;
+			case Accessor.Type.MAT2:
+				return 4;
+			case Accessor.Type.MAT3:
+				return 9;
+			case Accessor.Type.MAT4:
+				return 16;
 			default:
 				throw new Error('Unexpected type: ' + type);
 		}
@@ -184,12 +191,18 @@ export class Accessor extends ExtensibleProperty {
 	/** Returns size of a given component type, in bytes. */
 	public static getComponentSize(componentType: GLTF.AccessorComponentType): number {
 		switch (componentType) {
-			case Accessor.ComponentType.BYTE: return 1;
-			case Accessor.ComponentType.UNSIGNED_BYTE: return 1;
-			case Accessor.ComponentType.SHORT: return 2;
-			case Accessor.ComponentType.UNSIGNED_SHORT: return 2;
-			case Accessor.ComponentType.UNSIGNED_INT: return 4;
-			case Accessor.ComponentType.FLOAT: return 4;
+			case Accessor.ComponentType.BYTE:
+				return 1;
+			case Accessor.ComponentType.UNSIGNED_BYTE:
+				return 1;
+			case Accessor.ComponentType.SHORT:
+				return 2;
+			case Accessor.ComponentType.UNSIGNED_SHORT:
+				return 2;
+			case Accessor.ComponentType.UNSIGNED_INT:
+				return 4;
+			case Accessor.ComponentType.FLOAT:
+				return 4;
 			default:
 				throw new Error('Unexpected component type: ' + componentType);
 		}
@@ -286,7 +299,9 @@ export class Accessor extends ExtensibleProperty {
 	}
 
 	/** Type of element stored in the accessor. `VEC2`, `VEC3`, etc. */
-	public getType(): GLTF.AccessorType { return this._type; }
+	public getType(): GLTF.AccessorType {
+		return this._type;
+	}
 
 	/**
 	 * Sets type of element stored in the accessor. `VEC2`, `VEC3`, etc. Array length must be a
@@ -332,7 +347,9 @@ export class Accessor extends ExtensibleProperty {
 	 * This property is defined only for accessors that contain vertex attributes or animation
 	 * output data.
 	 */
-	public getNormalized(): boolean { return this._normalized; }
+	public getNormalized(): boolean {
+		return this._normalized;
+	}
 
 	/**
 	 * Specifies whether integer data values should be normalized (true) to [0, 1] (for unsigned
@@ -405,7 +422,9 @@ export class Accessor extends ExtensibleProperty {
 	 */
 
 	/** Returns the {@link Buffer} into which this accessor will be organized. */
-	public getBuffer(): Buffer | null { return this.buffer ? this.buffer.getChild() : null; }
+	public getBuffer(): Buffer | null {
+		return this.buffer ? this.buffer.getChild() : null;
+	}
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
 	public setBuffer(buffer: Buffer | null): this {
@@ -414,7 +433,9 @@ export class Accessor extends ExtensibleProperty {
 	}
 
 	/** Returns the raw typed array underlying this accessor. */
-	public getArray(): TypedArray | null { return this._array; }
+	public getArray(): TypedArray | null {
+		return this._array;
+	}
 
 	/** Assigns the raw typed array underlying this accessor. */
 	public setArray(array: TypedArray): this {

@@ -88,19 +88,23 @@ export class TextureInfo extends ExtensibleProperty {
 	}
 
 	public equals(other: TextureInfo): boolean {
-		return this.getTexCoord() === other.getTexCoord() &&
-				this.getMagFilter() === other.getMagFilter() &&
-				this.getMinFilter() === other.getMinFilter() &&
-				this.getWrapS() === other.getWrapS() &&
-				this.getWrapT() === other.getWrapT();
+		return (
+			this.getTexCoord() === other.getTexCoord() &&
+			this.getMagFilter() === other.getMagFilter() &&
+			this.getMinFilter() === other.getMinFilter() &&
+			this.getWrapS() === other.getWrapS() &&
+			this.getWrapT() === other.getWrapT()
+		);
 	}
 
 	/**********************************************************************************************
-	* Texture coordinates.
-	*/
+	 * Texture coordinates.
+	 */
 
 	/** Returns the texture coordinate (UV set) index for the texture. */
-	public getTexCoord(): number { return this._texCoord; }
+	public getTexCoord(): number {
+		return this._texCoord;
+	}
 
 	/** Sets the texture coordinate (UV set) index for the texture. */
 	public setTexCoord(texCoord: number): this {
@@ -109,11 +113,13 @@ export class TextureInfo extends ExtensibleProperty {
 	}
 
 	/**********************************************************************************************
-	* Min/mag filter.
-	*/
+	 * Min/mag filter.
+	 */
 
 	/** Returns the magnification filter applied to the texture. */
-	public getMagFilter(): GLTF.TextureMagFilter | null { return this._magFilter; }
+	public getMagFilter(): GLTF.TextureMagFilter | null {
+		return this._magFilter;
+	}
 
 	/** Sets the magnification filter applied to the texture. */
 	public setMagFilter(magFilter: GLTF.TextureMagFilter | null): this {
@@ -122,7 +128,9 @@ export class TextureInfo extends ExtensibleProperty {
 	}
 
 	/** Sets the minification filter applied to the texture. */
-	public getMinFilter(): GLTF.TextureMinFilter | null { return this._minFilter; }
+	public getMinFilter(): GLTF.TextureMinFilter | null {
+		return this._minFilter;
+	}
 
 	/** Returns the minification filter applied to the texture. */
 	public setMinFilter(minFilter: GLTF.TextureMinFilter | null): this {
@@ -131,11 +139,13 @@ export class TextureInfo extends ExtensibleProperty {
 	}
 
 	/**********************************************************************************************
-	* UV wrapping.
-	*/
+	 * UV wrapping.
+	 */
 
 	/** Returns the S (U) wrapping mode for UVs used by the texture. */
-	public getWrapS(): GLTF.TextureWrapMode { return this._wrapS; }
+	public getWrapS(): GLTF.TextureWrapMode {
+		return this._wrapS;
+	}
 
 	/** Sets the S (U) wrapping mode for UVs used by the texture. */
 	public setWrapS(wrapS: GLTF.TextureWrapMode): this {
@@ -144,7 +154,9 @@ export class TextureInfo extends ExtensibleProperty {
 	}
 
 	/** Returns the T (V) wrapping mode for UVs used by the texture. */
-	public getWrapT(): GLTF.TextureWrapMode { return this._wrapT; }
+	public getWrapT(): GLTF.TextureWrapMode {
+		return this._wrapT;
+	}
 
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
 	public setWrapT(wrapT: GLTF.TextureWrapMode): this {

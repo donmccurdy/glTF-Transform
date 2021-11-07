@@ -14,23 +14,26 @@ import { GraphNode } from './graph-node';
 export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	private _disposed = false;
 	private readonly _listeners: (() => void)[] = [];
-	constructor(
-		private readonly _name: string,
-		private readonly _parent: Parent,
-		private _child: Child) {
+	constructor(private readonly _name: string, private readonly _parent: Parent, private _child: Child) {
 		if (!_parent.canLink(_child)) {
 			throw new Error('Cannot link disconnected graphs/documents.');
 		}
 	}
 
 	/** Name. */
-	getName(): string { return this._name; }
+	getName(): string {
+		return this._name;
+	}
 
 	/** Owner node. */
-	getParent(): Parent { return this._parent; }
+	getParent(): Parent {
+		return this._parent;
+	}
 
 	/** Resource node. */
-	getChild(): Child { return this._child; }
+	getChild(): Child {
+		return this._child;
+	}
 
 	/**
 	 * Sets the child node.
@@ -58,5 +61,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	}
 
 	/** Whether this link has been destroyed. */
-	isDisposed(): boolean { return this._disposed; }
+	isDisposed(): boolean {
+		return this._disposed;
+	}
 }

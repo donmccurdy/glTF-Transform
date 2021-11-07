@@ -25,7 +25,9 @@ export abstract class GraphNode {
 	}
 
 	/** Returns true if the node has been permanently removed from the graph. */
-	public isDisposed(): boolean { return this._disposed; }
+	public isDisposed(): boolean {
+		return this._disposed;
+	}
 
 	/**
 	 * Removes both inbound references to and outbound references from this object. At the end
@@ -69,9 +71,7 @@ export abstract class GraphNode {
 	 *
 	 * @hidden
 	 */
-	protected addGraphChild(
-			links: Link<GraphNode, GraphNode>[],
-			link: Link<GraphNode, GraphNode>): this {
+	protected addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): this {
 		links.push(link);
 		link.onDispose(() => {
 			const remaining = links.filter((l) => l !== link);

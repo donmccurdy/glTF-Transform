@@ -32,7 +32,6 @@ const DEFAULT_INIT: RequestInit = {};
  * @category I/O
  */
 export class WebIO extends PlatformIO {
-
 	/**
 	 * Constructs a new WebIO service. Instances are reusable.
 	 * @param _fetchConfig Configuration object for Fetch API.
@@ -46,14 +45,15 @@ export class WebIO extends PlatformIO {
 	 */
 
 	/** Loads a URI and returns a {@link Document} instance. */
-	public read (uri: string): Promise<Document> {
+	public read(uri: string): Promise<Document> {
 		return this.readAsJSON(uri).then((jsonDoc) => this.readJSON(jsonDoc));
 	}
 
 	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
-	public readAsJSON (uri: string): Promise<JSONDocument> {
-		const isGLB = uri.match(/^data:application\/octet-stream;/)
-			|| new URL(uri, window.location.href).pathname.match(/\.glb$/);
+	public readAsJSON(uri: string): Promise<JSONDocument> {
+		const isGLB =
+			uri.match(/^data:application\/octet-stream;/) ||
+			new URL(uri, window.location.href).pathname.match(/\.glb$/);
 		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
 	}
 
@@ -62,11 +62,11 @@ export class WebIO extends PlatformIO {
 	 */
 
 	/** @internal */
-	private _readResourcesExternal (jsonDoc: JSONDocument, dir: string): Promise<void> {
+	private _readResourcesExternal(jsonDoc: JSONDocument, dir: string): Promise<void> {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
-		const pendingResources: Array<Promise<void>> = [...images, ...buffers]
-			.map((resource: GLTF.IBuffer|GLTF.IImage): Promise<void> => {
+		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
+			(resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
@@ -75,7 +75,8 @@ export class WebIO extends PlatformIO {
 					.then((arrayBuffer) => {
 						jsonDoc.resources[uri] = arrayBuffer;
 					});
-			});
+			}
+		);
 		return Promise.all(pendingResources).then(() => undefined);
 	}
 
@@ -84,8 +85,8 @@ export class WebIO extends PlatformIO {
 	 */
 
 	/** @internal */
-	private _readGLTF (uri: string): Promise<JSONDocument> {
-		const jsonDoc = {json: {}, resources: {}} as JSONDocument;
+	private _readGLTF(uri: string): Promise<JSONDocument> {
+		const jsonDoc = { json: {}, resources: {} } as JSONDocument;
 		return fetch(uri, this._fetchConfig)
 			.then((response) => response.json())
 			.then(async (json: GLTF.IGLTF) => {
@@ -98,7 +99,7 @@ export class WebIO extends PlatformIO {
 	}
 
 	/** @internal */
-	private _readGLB (uri: string): Promise<JSONDocument> {
+	private _readGLB(uri: string): Promise<JSONDocument> {
 		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
@@ -113,7 +114,7 @@ export class WebIO extends PlatformIO {
 
 function _dirname(path: string): string {
 	const index = path.lastIndexOf('/');
-	if (index === - 1) return './';
+	if (index === -1) return './';
 	return path.substr(0, index + 1);
 }
 

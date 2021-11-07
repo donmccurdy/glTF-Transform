@@ -30,31 +30,31 @@ class Logger {
 	public static DEFAULT_INSTANCE = new Logger(Logger.Verbosity.INFO);
 
 	/** Constructs a new Logger instance. */
-	constructor (private readonly verbosity: number) {}
+	constructor(private readonly verbosity: number) {}
 
 	/** Logs an event at level {@link Logger.Verbosity.DEBUG}. */
-	debug (text: string): void {
+	debug(text: string): void {
 		if (this.verbosity <= Logger.Verbosity.DEBUG) {
 			console.debug(text);
 		}
 	}
 
 	/** Logs an event at level {@link Logger.Verbosity.INFO}. */
-	info (text: string): void {
+	info(text: string): void {
 		if (this.verbosity <= Logger.Verbosity.INFO) {
 			console.info(text);
 		}
 	}
 
 	/** Logs an event at level {@link Logger.Verbosity.WARN}. */
-	warn (text: string): void {
+	warn(text: string): void {
 		if (this.verbosity <= Logger.Verbosity.WARN) {
 			console.warn(text);
 		}
 	}
 
 	/** Logs an event at level {@link Logger.Verbosity.ERROR}. */
-	error (text: string): void {
+	error(text: string): void {
 		if (this.verbosity <= Logger.Verbosity.ERROR) {
 			console.error(text);
 		}

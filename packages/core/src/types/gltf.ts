@@ -17,7 +17,7 @@ export declare module GLTF {
 	/** The alpha rendering mode of the material. */
 	type MaterialAlphaMode = 'OPAQUE' | 'MASK' | 'BLEND';
 	/** The type of the GL primitives to render. */
-	type MeshPrimitiveMode = | 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	type MeshPrimitiveMode = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 	/** Magnification filter.  Values match to WebGL enums: 9728 (NEAREST) and 9729 (LINEAR). */
 	type TextureMagFilter = 9728 | 9729;
 	/** Minification filter.  All valid values correspond to WebGL enums. */

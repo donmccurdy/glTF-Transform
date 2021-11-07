@@ -12,7 +12,7 @@ const DECORATOR_PREFIX = '__';
  * @hidden
  * @category Graph
  */
-export function GraphChild (target: any, propertyKey: string): void {
+export function GraphChild(target: any, propertyKey: string): void {
 	Object.defineProperty(target, propertyKey, {
 		get: function () {
 			return this[DECORATOR_PREFIX + propertyKey];
@@ -37,7 +37,7 @@ export function GraphChild (target: any, propertyKey: string): void {
 			// if (value) console.log('[GraphChild] Assigning link: ' + propertyKey, value);
 			this[DECORATOR_PREFIX + propertyKey] = value;
 		},
-		enumerable: true
+		enumerable: true,
 	});
 }
 
@@ -45,4 +45,4 @@ export function GraphChild (target: any, propertyKey: string): void {
  * @hidden
  * @category Graph
  */
-export function GraphChildList (target: any, propertyKey: string): void {}
+export function GraphChildList(target: any, propertyKey: string): void {}

@@ -43,6 +43,7 @@ export type vec3 = [number, number, number];
  */
 export type vec4 = [number, number, number, number];
 
+// prettier-ignore
 /**
  * 3x3 matrix, e.g. an affine transform of a 2D vector.
  * @hidden
@@ -53,6 +54,7 @@ export type mat3 = [
 	number, number, number,
 ];
 
+// prettier-ignore
 /**
  * 4x4 matrix, e.g. an affine transform of a 3D vector.
  * @hidden
@@ -65,7 +67,7 @@ export type mat4 = [
 ];
 
 /** @hidden */
-export type bbox = {min: vec3, max: vec3};
+export type bbox = { min: vec3; max: vec3 };
 
 /** @hidden */
 export const GLB_BUFFER = '@glb.bin';
@@ -80,7 +82,13 @@ export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array |
  * Abstraction representing the typed array constructors supported by glTF and JavaScript.
  * @hidden
  */
-export type TypedArrayConstructor = Float32ArrayConstructor | Uint32ArrayConstructor | Uint16ArrayConstructor | Uint8ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor;
+export type TypedArrayConstructor =
+	| Float32ArrayConstructor
+	| Uint32ArrayConstructor
+	| Uint16ArrayConstructor
+	| Uint8ArrayConstructor
+	| Int16ArrayConstructor
+	| Int8ArrayConstructor;
 
 /** String IDs for core {@link Property} types. */
 export enum PropertyType {

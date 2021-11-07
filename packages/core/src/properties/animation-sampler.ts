@@ -48,7 +48,6 @@ import { COPY_IDENTITY, Property } from './property';
 export class AnimationSampler extends Property {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
-
 	/**********************************************************************************************
 	 * Constants.
 	 */
@@ -67,8 +66,7 @@ export class AnimationSampler extends Property {
 	 * Instance.
 	 */
 
-	private _interpolation: GLTF.AnimationSamplerInterpolation
-		= AnimationSampler.Interpolation.LINEAR;
+	private _interpolation: GLTF.AnimationSamplerInterpolation = AnimationSampler.Interpolation.LINEAR;
 
 	@GraphChild private input: Link<AnimationSampler, Accessor> | null = null;
 	@GraphChild private output: Link<AnimationSampler, Accessor> | null = null;

@@ -15,7 +15,7 @@ export class Graph<T extends GraphNode> {
 	private _parentRefs: Map<T, Set<Link<T, T>>> = new Map();
 	private _childRefs: Map<T, Set<Link<T, T>>> = new Map();
 
-	private _listeners: {[event: string]: ((target: unknown) => void)[]} = {};
+	private _listeners: { [event: string]: ((target: unknown) => void)[] } = {};
 
 	public on(type: string, fn: (target: unknown) => void): this {
 		this._listeners[type] = this._listeners[type] || [];
@@ -83,11 +83,11 @@ export class Graph<T extends GraphNode> {
 	}
 
 	/**
-	* Creates a link between two {@link GraphNode} instances. Link is returned
-	* for the caller to store.
-	* @param a Owner
-	* @param b Resource
-	*/
+	 * Creates a link between two {@link GraphNode} instances. Link is returned
+	 * for the caller to store.
+	 * @param a Owner
+	 * @param b Resource
+	 */
 	public link<A extends T>(name: string, a: A, b: null): null;
 	public link<A extends T, B extends T>(name: string, a: A, b: B): Link<A, B>;
 	public link<A extends T, B extends T>(name: string, a: A, b: B | null): Link<A, B> | null;
@@ -116,11 +116,11 @@ export class Graph<T extends GraphNode> {
 	}
 
 	/**
-	* Removes the link from the graph. This method should only be invoked by
-	* the onDispose() listener created in {@link link()}. The public method
-	* of removing a link is {@link link.dispose()}.
-	* @param link
-	*/
+	 * Removes the link from the graph. This method should only be invoked by
+	 * the onDispose() listener created in {@link link()}. The public method
+	 * of removing a link is {@link link.dispose()}.
+	 * @param link
+	 */
 	private unlink(link: Link<T, T>): this {
 		this._links.delete(link);
 		this._parentRefs.get(link.getParent())!.delete(link);
