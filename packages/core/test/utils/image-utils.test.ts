@@ -12,7 +12,8 @@ if (IS_NODEJS) {
 	path = require('path');
 }
 
-test('@gltf-transform/core::image-utils | basic', {skip: !IS_NODEJS}, t => {
+// TODO(https://github.com/Automattic/node-canvas/issues/1923)
+test.skip('@gltf-transform/core::image-utils | basic', {skip: !IS_NODEJS}, t => {
 	let canvas, ctx, buffer;
 
 	canvas = createCanvas(100, 50);
