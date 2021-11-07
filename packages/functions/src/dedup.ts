@@ -2,19 +2,22 @@ import { Accessor, BufferUtils, Document, Logger, Material, Mesh, Primitive, Pri
 
 const NAME = 'dedup';
 
-
-
 export interface DedupOptions {
 	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
 	propertyTypes: string[];
 }
 
 const DEDUP_DEFAULTS: Required<DedupOptions> = {
-	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE],
+	propertyTypes: [
+		PropertyType.ACCESSOR,
+		PropertyType.MESH,
+		PropertyType.TEXTURE,
+		PropertyType.MATERIAL],
 };
 
 /**
- * Removes duplicate {@link Accessor}, {@link Mesh}, and {@link Texture} properties. Based on a
+ * Removes duplicate {@link Accessor}, {@link Mesh}, {@link Texture}, and {@link Material}
+ * properties. Partially based on a
  * [gist by mattdesl](https://gist.github.com/mattdesl/aea40285e2d73916b6b9101b36d84da8). Only
  * accessors in mesh primitives, morph targets, and animation samplers are processed.
  *
@@ -44,6 +47,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
 		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
 		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
+		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
@@ -200,6 +204,12 @@ function dedupImages(logger: Logger, doc: Document): void {
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
 
+	/**
+	 * Starting from image[0], check index[y] where y is any subsequent image in the list of images
+	 * for duplicate properties of image[0]. If a duplicate is found, replace the duplicate
+	 * with the matching original value.
+	 * Continue for the length of image array checking all duplicate values.
+	 */
 	for (let i = 0; i < textures.length; i++) {
 		const a = textures[i];
 		const aData = a.getImage();
@@ -230,6 +240,41 @@ function dedupImages(logger: Logger, doc: Document): void {
 
 	logger.debug(
 		`${NAME}: Found ${duplicates.size} duplicates among ${root.listTextures().length} textures.`
+	);
+
+	Array.from(duplicates.entries()).forEach(([src, dst]) => {
+		src.listParents().forEach((property) => {
+			if (!(property instanceof Root)) property.swap(src, dst);
+		});
+		src.dispose();
+	});
+}
+
+function dedupMaterials(logger: Logger, doc: Document): void {
+	const root = doc.getRoot();
+	const materials = root.listMaterials();
+	const duplicates: Map<Material, Material> = new Map();
+
+	for (let i = 0; i < materials.length; i++){
+		const a = materials[i];
+
+		if (duplicates.has(a)) continue;
+
+		for (let j = 0; j < materials.length; j++){
+			const b = materials[j];
+
+			if (a === b) continue;
+			if (duplicates.has(b)) continue;
+
+			if (a.equals(b)) {
+				duplicates.set(b, a);
+			}
+		}
+	}
+
+	logger.debug(
+		// eslint-disable-next-line max-len
+		`${NAME}: Found ${duplicates.size} duplicates among ${root.listMaterials().length} materials.`
 	);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
