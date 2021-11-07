@@ -85,7 +85,7 @@ export class Accessor extends ExtensibleProperty {
 		MAT3: 'MAT3',
 		/** 4x3 matrix, having 16 components per element. */
 		MAT4: 'MAT4',
-	}
+	};
 
 	/** Data type of the values composing each element in the accessor. */
 	public static ComponentType: Record<string, GLTF.AccessorComponentType> = {
@@ -119,7 +119,7 @@ export class Accessor extends ExtensibleProperty {
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array Float32Array}.
 		 */
 		FLOAT: 5126,
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

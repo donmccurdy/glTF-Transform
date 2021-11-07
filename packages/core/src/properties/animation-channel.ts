@@ -51,7 +51,7 @@ export class AnimationChannel extends Property {
 		SCALE: 'scale',
 		/** Channel targets {@link Node.setWeights}, affecting {@link PrimitiveTarget} weights. */
 		WEIGHTS: 'weights',
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

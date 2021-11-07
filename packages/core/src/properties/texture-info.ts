@@ -37,7 +37,7 @@ export class TextureInfo extends ExtensibleProperty {
 		MIRRORED_REPEAT: 33648,
 		/** */
 		REPEAT: 10497,
-	}
+	};
 
 	/** Magnification filter. Values correspond to WebGL enums. */
 	public static MagFilter: Record<string, GLTF.TextureMagFilter> = {
@@ -45,7 +45,7 @@ export class TextureInfo extends ExtensibleProperty {
 		NEAREST: 9728,
 		/** */
 		LINEAR: 9729,
-	}
+	};
 
 	/** Minification filter. Values correspond to WebGL enums. */
 	public static MinFilter: Record<string, GLTF.TextureMinFilter> = {
@@ -61,7 +61,7 @@ export class TextureInfo extends ExtensibleProperty {
 		NEAREST_MIPMAP_LINEAR: 9986,
 		/** */
 		LINEAR_MIPMAP_LINEAR: 9987,
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

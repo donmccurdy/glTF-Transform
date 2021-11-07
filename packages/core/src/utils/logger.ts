@@ -24,7 +24,7 @@ class Logger {
 
 		/** All events are logged. */
 		DEBUG: 0,
-	}
+	};
 
 	/** Default logger instance. */
 	public static DEFAULT_INSTANCE = new Logger(Logger.Verbosity.INFO);

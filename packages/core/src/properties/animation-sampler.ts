@@ -61,7 +61,7 @@ export class AnimationSampler extends Property {
 		STEP: 'STEP',
 		/** Animated values are interpolated according to given cubic spline tangents. */
 		CUBICSPLINE: 'CUBICSPLINE',
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

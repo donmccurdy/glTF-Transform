@@ -43,7 +43,7 @@ export class Camera extends ExtensibleProperty {
 		PERSPECTIVE: 'perspective',
 		/** An orthographic camera representing an orthographic projection matrix. */
 		ORTHOGRAPHIC: 'orthographic',
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

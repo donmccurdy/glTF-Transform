@@ -65,7 +65,7 @@ export class Material extends ExtensibleProperty {
 		 * Porter and Duff over operator)
 		 */
 		BLEND: 'BLEND',
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.

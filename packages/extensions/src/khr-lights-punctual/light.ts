@@ -23,7 +23,7 @@ export class Light extends ExtensionProperty {
 		POINT: 'point',
 		SPOT: 'spot',
 		DIRECTIONAL: 'directional',
-	}
+	};
 
 	/**********************************************************************************************
 	 * INSTANCE.

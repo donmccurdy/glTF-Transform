@@ -73,7 +73,7 @@ export class Primitive extends ExtensibleProperty {
 		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
 		 */
 		TRIANGLE_FAN: 6,
-	}
+	};
 
 	/**********************************************************************************************
 	 * Instance.
