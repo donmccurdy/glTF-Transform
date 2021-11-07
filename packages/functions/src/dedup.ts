@@ -12,7 +12,8 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
 		PropertyType.ACCESSOR,
 		PropertyType.MESH,
 		PropertyType.TEXTURE,
-		PropertyType.MATERIAL],
+		PropertyType.MATERIAL,
+	],
 };
 
 /**
@@ -204,12 +205,7 @@ function dedupImages(logger: Logger, doc: Document): void {
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
 
-	/**
-	 * Starting from image[0], check index[y] where y is any subsequent image in the list of images
-	 * for duplicate properties of image[0]. If a duplicate is found, replace the duplicate
-	 * with the matching original value.
-	 * Continue for the length of image array checking all duplicate values.
-	 */
+	// Compare each texture to every other texture — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < textures.length; i++) {
 		const a = textures[i];
 		const aData = a.getImage();
@@ -255,6 +251,7 @@ function dedupMaterials(logger: Logger, doc: Document): void {
 	const materials = root.listMaterials();
 	const duplicates: Map<Material, Material> = new Map();
 
+	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++){
 		const a = materials[i];
 

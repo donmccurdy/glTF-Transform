@@ -196,11 +196,11 @@ resources as needed. Partitioning is supported only for .gltf, not .glb, files.
 program
 	.command('dedup', 'Deduplicate accessors and textures')
 	.help(`
-Deduplicate accessors and textures. Some exporters or pipeline processing may
-lead to multiple accessors or textures within a file containing redundant
-copies of the same information. This functions scans for these cases and
-merges the duplicates where possible, reducing file size. The process may be
-very slow on large files with many accessors.
+Deduplicate accessors, textures, materials, and meshes. Some exporters or
+pipeline processing may lead to multiple resources within a file containing
+redundant copies of the same information. This functions scans for these cases
+and merges the duplicates where possible, reducing file size. The process may
+be very slow on large files with many accessors.
 
 Deduplication early in a pipeline may also help other optimizations, like
 compression and instancing, to be more effective.
@@ -208,6 +208,10 @@ compression and instancing, to be more effective.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.option('--materials <materials>', 'Remove duplicate materials', {
 		validator: program.BOOLEAN,
 		default: true,
 	})
@@ -222,6 +226,7 @@ compression and instancing, to be more effective.
 	.action(({args, options, logger}) => {
 		const propertyTypes: string[] = [];
 		if (options.accessors) propertyTypes.push(PropertyType.ACCESSOR);
+		if (options.materials) propertyTypes.push(PropertyType.MATERIAL);
 		if (options.meshes) propertyTypes.push(PropertyType.MESH);
 		if (options.textures) propertyTypes.push(PropertyType.TEXTURE);
 		return Session.create(io, logger, args.input, args.output)
