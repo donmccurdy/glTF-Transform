@@ -55,6 +55,28 @@ test('@gltf-transform/functions::dedup | animation accessors', t => {
 	t.end();
 });
 
+test('@gltf-transform/functions::dedup | materials', t => {
+	const doc = new Document();
+	const root = doc.getRoot();
+	const mat1 = doc.createMaterial('MyMat')
+		.setBaseColorHex(0xF2F2F2)
+		.setAlpha(0.9)
+		.setAlphaMode('BLEND');
+	const mat2 = mat1.clone();
+	mat1.clone().setAlphaMode('OPAQUE');
+
+	t.ok(mat1.equals(mat2), 'material.equals(material.clone())');
+
+	dedup({propertyTypes: []})(doc);
+
+	t.equal(root.listMaterials().length, 3, 'has no effect when disabled');
+
+	dedup()(doc);
+
+	t.equal(root.listMaterials().length, 2, 'prunes duplicate materials');
+	t.end();
+});
+
 test('@gltf-transform/functions::dedup | meshes', t => {
 	const io = new NodeIO();
 	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
