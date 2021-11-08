@@ -1,4 +1,21 @@
-import { Accessor, AnimationChannel, bbox, Document, Logger, mat4, Mesh, Node, Primitive, PrimitiveTarget, PropertyType, Skin, Transform, vec2, vec3, vec4 } from '@gltf-transform/core';
+import {
+	Accessor,
+	AnimationChannel,
+	bbox,
+	Document,
+	Logger,
+	mat4,
+	Mesh,
+	Node,
+	Primitive,
+	PrimitiveTarget,
+	PropertyType,
+	Skin,
+	Transform,
+	vec2,
+	vec3,
+	vec4,
+} from '@gltf-transform/core';
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
@@ -7,7 +24,8 @@ import { prune } from './prune';
 
 const NAME = 'quantize';
 
-type TypedArrayConstructor = Int8ArrayConstructor
+type TypedArrayConstructor =
+	| Int8ArrayConstructor
 	| Int16ArrayConstructor
 	| Uint8ArrayConstructor
 	| Uint16ArrayConstructor;
@@ -36,7 +54,7 @@ export interface QuantizeOptions {
 	quantizeGeneric?: number;
 }
 
-export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
+export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
 	pattern: /.*/,
 	quantizationVolume: 'mesh',
 	quantizePosition: 14,
@@ -60,8 +78,7 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> =  {
  * of the file.
  */
 const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
-
-	const options = {...QUANTIZE_DEFAULTS, ..._options} as Required<QuantizeOptions>;
+	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;
 
 	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -72,9 +89,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		// Compute vertex position quantization volume.
 		let nodeTransform: VectorTransform<vec3> | undefined = undefined;
 		if (options.quantizationVolume === 'scene') {
-			nodeTransform = getNodeTransform(
-				expandBounds(root.listMeshes().map(getPositionQuantizationVolume))
-			);
+			nodeTransform = getNodeTransform(expandBounds(root.listMeshes().map(getPositionQuantizationVolume)));
 		}
 
 		// Quantize mesh primitives.
@@ -96,27 +111,27 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		}
 
 		await doc.transform(
-			prune({propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN]}),
-			dedup({propertyTypes: [PropertyType.ACCESSOR]}),
+			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN] }),
+			dedup({ propertyTypes: [PropertyType.ACCESSOR] })
 		);
 
 		logger.debug(`${NAME}: Complete.`);
 	};
-
 };
 
 function quantizePrimitive(
-		doc: Document,
-		prim: Primitive | PrimitiveTarget,
-		nodeTransform: VectorTransform<vec3>,
-		options: Required<QuantizeOptions>): void {
+	doc: Document,
+	prim: Primitive | PrimitiveTarget,
+	nodeTransform: VectorTransform<vec3>,
+	options: Required<QuantizeOptions>
+): void {
 	const logger = doc.getLogger();
 
 	for (const semantic of prim.listSemantics()) {
 		if (!options.pattern.test(semantic)) continue;
 
 		const srcAttribute = prim.getAttribute(semantic)!;
-		const {bits, ctor} = getQuantizationSettings(semantic, srcAttribute, logger, options);
+		const { bits, ctor } = getQuantizationSettings(semantic, srcAttribute, logger, options);
 
 		if (!ctor) continue;
 		if (bits < 8 || bits > 16) throw new Error(`${NAME}: Requires bits = 8–16.`);
@@ -148,10 +163,12 @@ function quantizePrimitive(
 		normalizeWeights(prim);
 	}
 
-	if (prim instanceof Primitive
-			&& prim.getIndices()
-			&& prim.listAttributes().length
-			&& prim.listAttributes()[0]!.getCount() < 65535) {
+	if (
+		prim instanceof Primitive &&
+		prim.getIndices() &&
+		prim.listAttributes().length &&
+		prim.listAttributes()[0]!.getCount() < 65535
+	) {
 		const indices = prim.getIndices()!;
 		indices.setArray(new Uint16Array(indices.getArray()!));
 	}
@@ -159,14 +176,14 @@ function quantizePrimitive(
 
 /** Computes node quantization transforms in local space. */
 function getNodeTransform(volume: bbox): VectorTransform<vec3> {
-	const {min, max} = volume;
+	const { min, max } = volume;
 
 	// Scaling factor transforms [-1,1] box to the mesh AABB in local space.
 	// See: https://github.com/donmccurdy/glTF-Transform/issues/328
 	const scale = Math.max(
 		(max[0] - min[0]) / 2, // Divide because interval [-1,1] has length 2.
 		(max[1] - min[1]) / 2,
-		(max[2] - min[2]) / 2,
+		(max[2] - min[2]) / 2
 	);
 
 	// Original center of the mesh, in local space.
@@ -176,22 +193,18 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 		min[2] + (max[2] - min[2]) / 2,
 	];
 
-	return {offset, scale};
+	return { offset, scale };
 }
 
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
-function transformMeshParents(
-	doc: Document,
-	mesh: Mesh,
-	nodeTransform: VectorTransform<vec3>
-): void {
+function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTransform<vec3>): void {
 	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
 		if (parent instanceof Node) {
-			const animChannels = parent.listParents()
+			const animChannels = parent
+				.listParents()
 				.filter((p) => p instanceof AnimationChannel) as AnimationChannel[];
-			const isAnimated = animChannels
-				.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
+			const isAnimated = animChannels.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
 			const isParentNode = parent.listChildren().length > 0;
 
 			if (parent.getSkin()) {
@@ -239,12 +252,7 @@ function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
  *
  * See: https://github.com/donmccurdy/glTF-Transform/issues/208
  */
-function quantizeAttribute(
-		attribute: Accessor,
-		ctor: TypedArrayConstructor,
-		bits: number
-	): void {
-
+function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bits: number): void {
 	const dstArray = new ctor(attribute.getArray()!.length);
 
 	const signBits = SIGNED_INT.includes(ctor) ? 1 : 0;
@@ -273,11 +281,11 @@ function quantizeAttribute(
 }
 
 function getQuantizationSettings(
-		semantic: string,
-		attribute: Accessor,
-		logger: Logger,
-		options: Required<QuantizeOptions>): {bits: number; ctor?: TypedArrayConstructor} {
-
+	semantic: string,
+	attribute: Accessor,
+	logger: Logger,
+	options: Required<QuantizeOptions>
+): { bits: number; ctor?: TypedArrayConstructor } {
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMaxNormalized([]);
 
@@ -294,9 +302,9 @@ function getQuantizationSettings(
 		bits = options.quantizeColor;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('TEXCOORD_')) {
-		if (min.some(v => v < 0) || max.some(v => v > 1)) {
+		if (min.some((v) => v < 0) || max.some((v) => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of [0,1] range.`);
-			return {bits: -1};
+			return { bits: -1 };
 		}
 		bits = options.quantizeTexcoord;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
@@ -306,28 +314,28 @@ function getQuantizationSettings(
 		if (attribute.getComponentSize() > bits / 8) {
 			attribute.setArray(new ctor(attribute.getArray()!));
 		}
-		return {bits: -1};
+		return { bits: -1 };
 	} else if (semantic.startsWith('WEIGHTS_')) {
-		if (min.some(v => v < 0) || max.some(v => v > 1)) {
+		if (min.some((v) => v < 0) || max.some((v) => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of [0,1] range.`);
-			return {bits: -1};
+			return { bits: -1 };
 		}
 		bits = options.quantizeWeight;
 		ctor = bits <= 8 ? Uint8Array : Uint16Array;
 	} else if (semantic.startsWith('_')) {
-		if (min.some(v => v < -1) || max.some(v => v > 1)) {
+		if (min.some((v) => v < -1) || max.some((v) => v > 1)) {
 			logger.warn(`${NAME}: Skipping ${semantic}; out of [-1,1] range.`);
-			return {bits: -1};
+			return { bits: -1 };
 		}
 		bits = options.quantizeGeneric;
-		ctor = min.some(v => v < 0)
+		ctor = min.some((v) => v < 0)
 			? (ctor = bits <= 8 ? Int8Array : Int16Array)
 			: (ctor = bits <= 8 ? Uint8Array : Uint16Array);
 	} else {
 		throw new Error(`${NAME}: Unexpected semantic, "${semantic}".`);
 	}
 
-	return {bits, ctor};
+	return { bits, ctor };
 }
 
 function getPositionQuantizationVolume(mesh: Mesh): bbox {
@@ -353,7 +361,7 @@ function getPositionQuantizationVolume(mesh: Mesh): bbox {
 	// relative deltas), default remapping will only map to a [-2, 2] AABB. Double the bounding box
 	// to ensure scaling puts them within a [-1, 1] AABB instead.
 	if (relativePositions.length > 0) {
-		const {min: relMin, max: relMax} = flatBounds<vec3>(relativePositions, 3);
+		const { min: relMin, max: relMax } = flatBounds<vec3>(relativePositions, 3);
 		min(bbox.min, bbox.min, min(relMin, scale(relMin, relMin, 2), [0, 0, 0]));
 		max(bbox.max, bbox.max, max(relMax, scale(relMax, relMax, 2), [0, 0, 0]));
 	}
@@ -362,7 +370,7 @@ function getPositionQuantizationVolume(mesh: Mesh): bbox {
 }
 
 /** Computes total min and max of all Accessors in a list. */
-function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): ({min: T, max: T}) {
+function flatBounds<T = vec2 | vec3>(accessors: Accessor[], elementSize: number): { min: T; max: T } {
 	const min: number[] = new Array(elementSize).fill(Infinity);
 	const max: number[] = new Array(elementSize).fill(-Infinity);
 
@@ -378,7 +386,7 @@ function flatBounds<T = vec2|vec3>(accessors: Accessor[], elementSize: number): 
 		}
 	}
 
-	return {min, max} as unknown as {min: T, max: T};
+	return { min, max } as unknown as { min: T; max: T };
 }
 
 function expandBounds(bboxes: bbox[]): bbox {
@@ -390,18 +398,17 @@ function expandBounds(bboxes: bbox[]): bbox {
 	return result;
 }
 
-interface VectorTransform<T = vec2|vec3|vec4> {
+interface VectorTransform<T = vec2 | vec3 | vec4> {
 	offset: T;
 	scale: number;
 }
 
 function fromTransform(transform: VectorTransform<vec3>): mat4 {
-	return fromRotationTranslationScale(
-		[] as unknown as mat4,
-		[0, 0, 0, 1],
-		transform.offset,
-		[transform.scale, transform.scale, transform.scale],
-	) as mat4;
+	return fromRotationTranslationScale([] as unknown as mat4, [0, 0, 0, 1], transform.offset, [
+		transform.scale,
+		transform.scale,
+		transform.scale,
+	]) as mat4;
 }
 
 function normalizeWeights(prim: Primitive | PrimitiveTarget): void {

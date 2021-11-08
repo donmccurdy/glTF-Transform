@@ -1,39 +1,48 @@
 import { PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants';
-import { Accessor, AnimationChannel, AnimationSampler, BufferUtils, Document, GLTF, MathUtils, Primitive, TypedArray, TypedArrayConstructor, WriterContext } from '@gltf-transform/core';
+import {
+	Accessor,
+	AnimationChannel,
+	AnimationSampler,
+	BufferUtils,
+	Document,
+	GLTF,
+	MathUtils,
+	Primitive,
+	TypedArray,
+	TypedArrayConstructor,
+	WriterContext,
+} from '@gltf-transform/core';
 import type { MeshoptEncoder } from 'meshoptimizer';
 
-const {BYTE, SHORT, FLOAT} = Accessor.ComponentType;
-const {normalize, denormalize} = MathUtils;
+const { BYTE, SHORT, FLOAT } = Accessor.ComponentType;
+const { normalize, denormalize } = MathUtils;
 
 /** Pre-processes array with required filters or padding. */
 export function prepareAccessor(
 	accessor: Accessor,
 	encoder: typeof MeshoptEncoder,
 	mode: MeshoptMode,
-	filterOptions: {filter: MeshoptFilter, bits?: number}
+	filterOptions: { filter: MeshoptFilter; bits?: number }
 ): PreparedAccessor {
-	const {filter, bits} = filterOptions as {filter: MeshoptFilter, bits: number};
+	const { filter, bits } = filterOptions as { filter: MeshoptFilter; bits: number };
 	const result: PreparedAccessor = {
 		array: accessor.getArray()!,
 		byteStride: accessor.getElementSize() * accessor.getComponentSize(),
 		componentType: accessor.getComponentType(),
-		normalized: accessor.getNormalized()
+		normalized: accessor.getNormalized(),
 	};
 
 	if (mode !== MeshoptMode.ATTRIBUTES) return result;
 
 	if (filter !== MeshoptFilter.NONE) {
-		let array = accessor.getNormalized()
-			? denormalizeArray(accessor)
-			: new Float32Array(result.array);
+		let array = accessor.getNormalized() ? denormalizeArray(accessor) : new Float32Array(result.array);
 
 		switch (filter) {
 			case MeshoptFilter.EXPONENTIAL: // → K single-precision floating point values.
 				result.byteStride = accessor.getElementSize() * 4;
 				result.componentType = FLOAT;
 				result.normalized = false;
-				result.array =
-					encoder.encodeFilterExp(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterExp(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			case MeshoptFilter.OCTAHEDRAL: // → four 8- or 16-bit normalized values.
@@ -41,16 +50,14 @@ export function prepareAccessor(
 				result.componentType = bits > 8 ? SHORT : BYTE;
 				result.normalized = true;
 				array = accessor.getElementSize() === 3 ? padNormals(array) : array;
-				result.array =
-					encoder.encodeFilterOct(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterOct(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			case MeshoptFilter.QUATERNION: // → four 16-bit normalized values.
 				result.byteStride = 8;
 				result.componentType = SHORT;
 				result.normalized = true;
-				result.array =
-					encoder.encodeFilterQuat(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterQuat(array, accessor.getCount(), result.byteStride, bits);
 				break;
 
 			default:
@@ -67,7 +74,6 @@ export function prepareAccessor(
 			result.min = result.min.map((v) => normalize(v, result.componentType));
 			result.max = result.max.map((v) => normalize(v, result.componentType));
 		}
-
 	} else if (result.byteStride % 4) {
 		result.array = padArrayElements(result.array, accessor.getElementSize());
 		result.byteStride = result.array.byteLength / accessor.getCount();
@@ -92,8 +98,7 @@ export function padArrayElements<T extends TypedArray>(srcArray: T, elementSize:
 	const elementStride = byteStride / srcArray.BYTES_PER_ELEMENT;
 	const elementCount = srcArray.length / elementSize;
 
-	const dstArray =
-		new (srcArray.constructor as TypedArrayConstructor)(elementCount * elementStride) as T;
+	const dstArray = new (srcArray.constructor as TypedArrayConstructor)(elementCount * elementStride) as T;
 
 	for (let i = 0; i * elementSize < srcArray.length; i++) {
 		for (let j = 0; j < elementSize; j++) {
@@ -106,7 +111,7 @@ export function padArrayElements<T extends TypedArray>(srcArray: T, elementSize:
 
 /** Pad normals with a .w component for octahedral encoding. */
 function padNormals(srcArray: Float32Array): Float32Array {
-	const dstArray = new Float32Array(srcArray.length * 4 / 3);
+	const dstArray = new Float32Array((srcArray.length * 4) / 3);
 	for (let i = 0, il = srcArray.length / 3; i < il; i++) {
 		dstArray[i * 4] = srcArray[i * 3];
 		dstArray[i * 4 + 1] = srcArray[i * 3 + 1];
@@ -117,24 +122,25 @@ function padNormals(srcArray: Float32Array): Float32Array {
 
 export function getMeshoptMode(accessor: Accessor, usage: string): MeshoptMode {
 	if (usage === WriterContext.BufferViewUsage.ELEMENT_ARRAY_BUFFER) {
-		const isTriangles = accessor.listParents()
-			.some((parent) => {
-				return parent instanceof Primitive && parent.getMode() === Primitive.Mode.TRIANGLES;
-			});
+		const isTriangles = accessor.listParents().some((parent) => {
+			return parent instanceof Primitive && parent.getMode() === Primitive.Mode.TRIANGLES;
+		});
 		return isTriangles ? MeshoptMode.TRIANGLES : MeshoptMode.INDICES;
 	}
 
 	return MeshoptMode.ATTRIBUTES;
 }
 
-export function getMeshoptFilter(accessor: Accessor, doc: Document): {filter: MeshoptFilter, bits?: number} {
-	const semantics = doc.getGraph().listParentLinks(accessor)
+export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: MeshoptFilter; bits?: number } {
+	const semantics = doc
+		.getGraph()
+		.listParentLinks(accessor)
 		.map((link) => link.getName())
 		.filter((name) => name !== 'accessor');
 
 	for (const semantic of semantics) {
 		// Indices.
-		if (semantic === 'indices') return {filter: MeshoptFilter.NONE};
+		if (semantic === 'indices') return { filter: MeshoptFilter.NONE };
 
 		// Attributes.
 		//
@@ -144,26 +150,26 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): {filter: Me
 		// - POSITION and TEXCOORD_0 could use exponential filtering, but this produces broken
 		//   output in some cases (e.g. Matilda.glb), for unknown reasons. gltfpack uses manual
 		//   quantization for these attributes.
-		if (semantic === 'POSITION') return {filter: MeshoptFilter.NONE};
-		if (semantic === 'TEXCOORD_0') return {filter: MeshoptFilter.NONE};
-		if (semantic === 'NORMAL') return {filter: MeshoptFilter.OCTAHEDRAL, bits: 8};
-		if (semantic === 'TANGENT') return {filter: MeshoptFilter.OCTAHEDRAL, bits: 8};
-		if (semantic.startsWith('JOINTS_')) return {filter: MeshoptFilter.NONE};
-		if (semantic.startsWith('WEIGHTS_')) return {filter: MeshoptFilter.NONE};
+		if (semantic === 'POSITION') return { filter: MeshoptFilter.NONE };
+		if (semantic === 'TEXCOORD_0') return { filter: MeshoptFilter.NONE };
+		if (semantic === 'NORMAL') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
+		if (semantic === 'TANGENT') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
+		if (semantic.startsWith('JOINTS_')) return { filter: MeshoptFilter.NONE };
+		if (semantic.startsWith('WEIGHTS_')) return { filter: MeshoptFilter.NONE };
 
 		// Animation.
 		if (semantic === 'output') {
 			const targetPath = getTargetPath(accessor);
-			if (targetPath === 'rotation') return {filter: MeshoptFilter.QUATERNION, bits: 16};
-			if (targetPath === 'translation') return {filter: MeshoptFilter.EXPONENTIAL, bits: 12};
-			if (targetPath === 'scale') return {filter: MeshoptFilter.EXPONENTIAL, bits: 12};
-			return {filter: MeshoptFilter.NONE};
+			if (targetPath === 'rotation') return { filter: MeshoptFilter.QUATERNION, bits: 16 };
+			if (targetPath === 'translation') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
+			if (targetPath === 'scale') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
+			return { filter: MeshoptFilter.NONE };
 		}
-		if (semantic === 'input') return {filter: MeshoptFilter.EXPONENTIAL, bits: 12};
-		if (semantic === 'inverseBindMatrices') return {filter: MeshoptFilter.NONE};
+		if (semantic === 'input') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
+		if (semantic === 'inverseBindMatrices') return { filter: MeshoptFilter.NONE };
 	}
 
-	return {filter: MeshoptFilter.NONE};
+	return { filter: MeshoptFilter.NONE };
 }
 
 export function getTargetPath(accessor: Accessor): GLTF.AnimationChannelTargetPath | null {
