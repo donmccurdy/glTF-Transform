@@ -43,12 +43,12 @@ test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 
 test('@gltf-transform/functions::utils | transform pipeline', async (t) => {
 	const doc = new Document();
-	const first = createTransform('first', (doc: Document, context?: TransformContext) => {
+	const first = createTransform('first', (_: Document, context?: TransformContext) => {
 		if (!isTransformPending(context, 'first', 'second')) {
 			throw new Error('Out of order!');
 		}
 	});
-	const second: Transform = (doc: Document, context?: TransformContext) => {};
+	const second: Transform = (_: Document) => undefined;
 
 	t.ok(doc.transform(first, second), '[a, b] OK');
 
