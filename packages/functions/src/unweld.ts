@@ -1,4 +1,5 @@
 import { Accessor, Document, Logger, Transform, TypedArray } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'unweld';
 
@@ -19,7 +20,7 @@ export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...UNWELD_DEFAULTS, ..._options} as Required<UnweldOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 
 		const logger = doc.getLogger();
 		const visited = new Map<Accessor, Map<Accessor, Accessor>>();
@@ -60,7 +61,7 @@ export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 }
 
 function unweldAttribute(

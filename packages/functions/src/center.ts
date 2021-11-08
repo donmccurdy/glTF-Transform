@@ -1,5 +1,6 @@
 import { Document, Transform, vec3 } from '@gltf-transform/core';
 import { bounds } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'center';
 
@@ -24,7 +25,7 @@ const CENTER_DEFAULTS: Required<CenterOptions> = {pivot: 'center'};
 export function center (_options: CenterOptions = CENTER_DEFAULTS): Transform {
 	const options = {...CENTER_DEFAULTS, ..._options} as Required<CenterOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const isAnimated = root.listAnimations().length > 0 || root.listSkins().length > 0;
@@ -69,6 +70,6 @@ export function center (_options: CenterOptions = CENTER_DEFAULTS): Transform {
 		});
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 
-}
+};

@@ -1,4 +1,5 @@
 import { Accessor, Document, Logger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'tangents';
 
@@ -42,7 +43,7 @@ export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transf
 
 	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const attributeIDs = new Map<TypedArray, string>();
 		const tangentCache = new Map<string, Accessor>();
@@ -117,7 +118,7 @@ export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transf
 		} else {
 			logger.debug(`${NAME}: Complete.`);
 		}
-	};
+	});
 }
 
 function getNormalTexcoord(prim: Primitive): string {

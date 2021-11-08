@@ -1,6 +1,6 @@
 import { Document, Texture, Transform } from '@gltf-transform/core';
 import { MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness } from '@gltf-transform/extensions';
-import { rewriteTexture } from './utils';
+import { createTransform, rewriteTexture } from './utils';
 
 const NAME = 'metalRough';
 
@@ -21,7 +21,7 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...METALROUGH_DEFAULTS, ..._options} as Required<MetalRoughOptions>;
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 
 		const logger = doc.getLogger();
 
@@ -117,6 +117,6 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 
 		logger.debug(`${NAME}: Complete.`);
 
-	};
+	});
 
 }

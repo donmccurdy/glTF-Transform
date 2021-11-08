@@ -1,6 +1,6 @@
 /** @module core */
 
-export { Document, Transform } from './document';
+export { Document, Transform, TransformContext } from './document';
 export { JSONDocument } from './json-document';
 export { Extension } from './extension';
 export {

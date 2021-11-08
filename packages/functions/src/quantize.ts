@@ -21,6 +21,7 @@ import { fromRotationTranslationScale, fromScaling, invert, multiply as multiply
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { MeshQuantization } from '@gltf-transform/extensions';
 import { prune } from './prune';
+import { createTransform } from './utils';
 
 const NAME = 'quantize';
 
@@ -80,7 +81,7 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
 const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 
@@ -116,7 +117,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		);
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 };
 
 function quantizePrimitive(

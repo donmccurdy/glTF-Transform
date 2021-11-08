@@ -1,6 +1,6 @@
 import { Accessor, Document, GLTF, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune';
-import { SetMap } from './utils';
+import { createTransform, SetMap } from './utils';
 import type { MeshoptEncoder } from 'meshoptimizer';
 
 const NAME = 'reorder';
@@ -46,7 +46,7 @@ export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform
 	const options = {...REORDER_DEFAULTS, ..._options} as Required<ReorderOptions>;
 	const encoder = options.encoder;
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		await encoder.ready;
@@ -95,7 +95,7 @@ export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform
 		} else {
 			logger.debug(`${NAME}: Complete.`);
 		}
-	};
+	});
 }
 
 function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {

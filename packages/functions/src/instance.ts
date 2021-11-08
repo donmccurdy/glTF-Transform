@@ -1,5 +1,6 @@
 import { Document, Logger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
+import { createTransform } from './utils';
 
 const NAME = 'instance';
 
@@ -16,7 +17,7 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = {...INSTANCE_DEFAULTS, ..._options} as Required<InstanceOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const batchExtension = doc.createExtension(MeshGPUInstancing);
@@ -97,7 +98,7 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 
 }
 

@@ -1,4 +1,5 @@
 import { Accessor, AnimationChannel, AnimationSampler, Document, Transform } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'sequence';
 
@@ -26,7 +27,7 @@ const SEQUENCE_DEFAULTS: Required<SequenceOptions> = {
 export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
 	const options = {...SEQUENCE_DEFAULTS, ..._options} as Required<SequenceOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
@@ -80,6 +81,6 @@ export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transf
 
 		logger.debug(`${NAME}: Complete.`);
 
-	};
+	});
 
 }

@@ -1,3 +1,5 @@
+packages/functions/src/**
+packages/cli/src/**
 **/dist
 **/in
 **/out

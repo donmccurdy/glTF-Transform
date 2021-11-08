@@ -2,6 +2,7 @@ import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import { Document, Transform, vec2 } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'textureResize';
 
@@ -40,7 +41,7 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
 export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DEFAULTS): Transform {
 	const options = {...TEXTURE_RESIZE_DEFAULTS, ..._options} as Required<TextureResizeOptions>;
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 
 		const logger = doc.getLogger();
 
@@ -105,6 +106,6 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 
 		logger.debug(`${NAME}: Complete.`);
 
-	};
+	});
 
 }
