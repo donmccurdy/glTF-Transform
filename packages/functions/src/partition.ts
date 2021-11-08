@@ -1,5 +1,6 @@
 import { Document, Logger, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune';
+import { createTransform } from './utils';
 
 const NAME = 'partition';
 
@@ -32,7 +33,7 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 
 	const options = {...PARTITION_DEFAULTS, ..._options} as Required<PartitionOptions>;
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		if (options.meshes !== false) partitionMeshes(doc, logger, options);
@@ -45,7 +46,7 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 		await doc.transform(prune({propertyTypes: [PropertyType.BUFFER]}));
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 
 };
 

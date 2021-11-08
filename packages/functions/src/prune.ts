@@ -1,4 +1,5 @@
 import { AnimationChannel, Document, Graph, Property, PropertyType, Root, Transform } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'prune';
 
@@ -44,7 +45,7 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 	const options = {...PRUNE_DEFAULTS, ..._options} as Required<PruneOptions>;
 	const propertyTypes = options.propertyTypes;
 
-	return (doc: Document): void =>  {
+	return createTransform(NAME, (doc: Document): void =>  {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const graph = doc.getGraph();
@@ -139,6 +140,6 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 			disposed[prop.propertyType]++;
 		}
 
-	};
+	});
 
 };

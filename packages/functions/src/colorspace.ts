@@ -1,4 +1,5 @@
 import { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'colorspace';
 
@@ -15,7 +16,7 @@ export interface ColorspaceOptions {
  */
 export function colorspace (options: ColorspaceOptions): Transform {
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 
 		const logger = doc.getLogger();
 
@@ -67,6 +68,6 @@ export function colorspace (options: ColorspaceOptions): Transform {
 
 		logger.debug(`${NAME}: Complete.`);
 
-	};
+	});
 
-}
+};

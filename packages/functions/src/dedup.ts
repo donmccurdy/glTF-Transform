@@ -1,4 +1,5 @@
 import { Accessor, BufferUtils, Document, Logger, Material, Mesh, Primitive, PrimitiveTarget, PropertyType, Root, Texture, Transform } from '@gltf-transform/core';
+import { createTransform } from './utils';
 
 const NAME = 'dedup';
 
@@ -42,7 +43,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		}
 	}
 
-	return (doc: Document): void =>  {
+	return createTransform(NAME, (doc: Document): void =>  {
 		const logger = doc.getLogger();
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
@@ -51,7 +52,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 
 };
 

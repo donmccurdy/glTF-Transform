@@ -1,6 +1,23 @@
 import { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import { Primitive, Texture } from '@gltf-transform/core';
+import { Primitive, Texture, Transform, TransformContext } from '@gltf-transform/core';
+
+/**
+ * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
+ * optional, and plain functions may be used in transform pipelines just as well. The wrapper is
+ * used internally so earlier pipeline stages can detect and optimize based on later stages.
+ */
+export function createTransform(name: string, fn: Transform): Transform {
+	Object.defineProperty(fn, 'name', { value: name });
+	return fn;
+}
+
+export function isTransformPending(context: TransformContext | undefined, initial: string, pending: string): boolean {
+	if (!context) return false;
+	const initialIndex = context.stack.lastIndexOf(initial);
+	const pendingIndex = context.stack.lastIndexOf(pending);
+	return initialIndex < pendingIndex;
+}
 
 /** Maps pixels from source to target textures, with a per-pixel callback. */
 export async function rewriteTexture(

@@ -22,7 +22,11 @@ import {
 } from './properties';
 import { Logger } from './utils';
 
-export type Transform = (doc: Document) => void;
+export interface TransformContext {
+	stack: string[];
+}
+
+export type Transform = (doc: Document, context?: TransformContext) => void;
 
 /**
  * # Document
@@ -190,8 +194,9 @@ export class Document {
 	 * @param transforms List of synchronous transformation functions to apply.
 	 */
 	public async transform(...transforms: Transform[]): Promise<this> {
+		const stack = transforms.map((fn) => fn.name);
 		for (const transform of transforms) {
-			await transform(this);
+			await transform(this, { stack });
 		}
 		return this;
 	}

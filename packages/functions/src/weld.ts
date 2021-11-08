@@ -1,5 +1,5 @@
 import { Accessor, Document, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
-import { getGLPrimitiveCount } from './utils';
+import { getGLPrimitiveCount, createTransform } from './utils';
 
 const NAME = 'weld';
 
@@ -17,7 +17,7 @@ const WELD_DEFAULTS: Required<WeldOptions> = {tolerance: 1e-4};
 export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = {...WELD_DEFAULTS, ..._options} as Required<WeldOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 
 		for (const mesh of doc.getRoot().listMeshes()) {
@@ -31,7 +31,7 @@ export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 }
 
 /**  In-place weld, adds indices without changing number of vertices. */

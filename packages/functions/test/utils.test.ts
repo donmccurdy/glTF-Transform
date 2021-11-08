@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
-import { getGLPrimitiveCount } from '../src/utils';
+import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
+import { getGLPrimitiveCount, createTransform, isTransformPending } from '../src/utils';
 
 test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 	const doc = new Document();
@@ -37,6 +37,27 @@ test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 
 	prim.setMode('TEST' as unknown as GLTF.MeshPrimitiveMode);
 	t.throws(() => getGLPrimitiveCount(prim), 'invalid');
+
+	t.end();
+});
+
+test('@gltf-transform/functions::utils | transform pipeline', async (t) => {
+	const doc = new Document();
+	const first = createTransform('first', (doc: Document, context?: TransformContext) => {
+		if (!isTransformPending(context, 'first', 'second')) {
+			throw new Error('Out of order!');
+		}
+	});
+	const second: Transform = (doc: Document, context?: TransformContext) => {};
+
+	t.ok(doc.transform(first, second), '[a, b] OK');
+
+	try {
+		await doc.transform(second, first);
+		t.fail('[b, a] NOT OK');
+	} catch (e) {
+		t.match((e as Error).message, /out of order/i, '[b, a] NOT OK');
+	}
 
 	t.end();
 });

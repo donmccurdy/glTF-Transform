@@ -1,4 +1,5 @@
-import { Accessor, AnimationSampler, Document, Root, Transform } from '@gltf-transform/core';
+import { Accessor, AnimationSampler, Document, Root, Transform, TransformContext } from '@gltf-transform/core';
+import { createTransform, isTransformPending } from './utils';
 
 const NAME = 'resample';
 
@@ -17,7 +18,7 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 	const options = {...RESAMPLE_DEFAULTS, ..._options} as Required<ResampleOptions>;
 
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document, context?: TransformContext): void => {
 		const accessorsVisited = new Set<Accessor>();
 		const accessorsCountPrev = doc.getRoot().listAccessors().length;
 		const logger = doc.getLogger();
@@ -52,7 +53,7 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 			if (!used) accessor.dispose();
 		}
 
-		if (doc.getRoot().listAccessors().length > accessorsCountPrev) {
+		if (doc.getRoot().listAccessors().length > accessorsCountPrev && !isTransformPending(context, NAME, 'dedup')) {
 			logger.warn(
 				`${NAME}: Resampling required copying accessors, some of which may be duplicates.`
 				+ ' Consider using "dedup" to consolidate any duplicates.'
@@ -64,7 +65,7 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 
 };
 
