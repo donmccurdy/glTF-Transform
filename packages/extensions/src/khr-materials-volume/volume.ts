@@ -1,4 +1,16 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
+import {
+	COPY_IDENTITY,
+	ColorUtils,
+	ExtensionProperty,
+	GraphChild,
+	Link,
+	PropertyType,
+	Texture,
+	TextureChannel,
+	TextureInfo,
+	TextureLink,
+	vec3,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants';
 
 const { G } = TextureChannel;
@@ -9,7 +21,7 @@ const { G } = TextureChannel;
  * Defines volume on a PBR {@link Material}. See {@link MaterialsVolume}.
  */
 export class Volume extends ExtensionProperty {
-	public readonly propertyType = 'Transmission';
+	public readonly propertyType = 'Volume';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_VOLUME;
 	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;
@@ -19,8 +31,11 @@ export class Volume extends ExtensionProperty {
 	private _attenuationColor = [1, 1, 1] as vec3;
 
 	@GraphChild private thicknessTexture: TextureLink | null = null;
-	@GraphChild private thicknessTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('thicknessTextureInfo', this, new TextureInfo(this.graph));
+	@GraphChild private thicknessTextureInfo: Link<this, TextureInfo> = this.graph.link(
+		'thicknessTextureInfo',
+		this,
+		new TextureInfo(this.graph)
+	);
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
@@ -29,13 +44,8 @@ export class Volume extends ExtensionProperty {
 		this._attenuationDistance = other._attenuationDistance;
 		this._attenuationColor = [...other._attenuationColor] as vec3;
 
-		this.setThicknessTexture(
-			other.thicknessTexture
-				? resolve(other.thicknessTexture.getChild())
-				: null
-		);
-		this.thicknessTextureInfo.getChild()
-			.copy(resolve(other.thicknessTextureInfo.getChild()), resolve);
+		this.setThicknessTexture(other.thicknessTexture ? resolve(other.thicknessTexture.getChild()) : null);
+		this.thicknessTextureInfo.getChild().copy(resolve(other.thicknessTextureInfo.getChild()), resolve);
 
 		return this;
 	}
@@ -54,7 +64,9 @@ export class Volume extends ExtensionProperty {
 	 * node. If the value is 0 the material is thin-walled. Otherwise the material is a volume
 	 * boundary. The doubleSided property has no effect on volume boundaries.
 	 */
-	public getThicknessFactor(): number { return this._thicknessFactor; }
+	public getThicknessFactor(): number {
+		return this._thicknessFactor;
+	}
 
 	/**
 	 * Thickness of the volume beneath the surface in meters in the local coordinate system of the
