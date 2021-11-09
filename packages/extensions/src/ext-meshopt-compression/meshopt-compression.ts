@@ -1,7 +1,7 @@
 import { Accessor, Buffer, BufferUtils, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { getMeshoptFilter, getMeshoptMode, getSemantics, getTargetPath, prepareAccessor } from './encoder';
+import { getMeshoptFilter, getMeshoptMode, listSemantics, getTargetPath, prepareAccessor } from './encoder';
 import { isFallbackBuffer } from './decoder';
 import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
@@ -260,6 +260,7 @@ export class MeshoptCompression extends Extension {
 
 	/** @internal Claims accessors that can be compressed. */
 	private _prewriteAccessors(context: WriterContext): void {
+		const logger = this.doc.getLogger();
 		const json = context.jsonDoc.json;
 		const encoder = this._encoder!;
 		const options = this._encoderOptions;
@@ -278,8 +279,12 @@ export class MeshoptCompression extends Extension {
 			if (getTargetPath(accessor) === 'weights') continue;
 
 			// See: https://github.com/donmccurdy/glTF-Transform/issues/414
-			const isTexcoord = getSemantics(accessor, this.doc).some((semantic) => semantic.startsWith('TEXCOORD_'));
-			if (isTexcoord && accessor.getComponentSize() > 2) continue;
+			const isTexcoord = listSemantics(accessor, this.doc)
+				.some((semantic) => semantic.startsWith('TEXCOORD_'));
+			if (isTexcoord && accessor.getComponentSize() > 2) {
+				logger.warn('meshopt: Skipping TEXCOORD_0; attribute not quantized.');
+				continue;
+			}
 
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);

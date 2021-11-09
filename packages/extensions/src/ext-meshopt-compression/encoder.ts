@@ -132,7 +132,7 @@ export function getMeshoptMode(accessor: Accessor, usage: string): MeshoptMode {
 }
 
 export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: MeshoptFilter; bits?: number } {
-	for (const semantic of getSemantics(accessor, doc)) {
+	for (const semantic of listSemantics(accessor, doc)) {
 		// Indices.
 		if (semantic === 'indices') return { filter: MeshoptFilter.NONE };
 
@@ -166,7 +166,7 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 	return { filter: MeshoptFilter.NONE };
 }
 
-export function getSemantics(accessor: Accessor, doc: Document): string[] {
+export function listSemantics(accessor: Accessor, doc: Document): string[] {
 	return doc
 		.getGraph()
 		.listParentLinks(accessor)
