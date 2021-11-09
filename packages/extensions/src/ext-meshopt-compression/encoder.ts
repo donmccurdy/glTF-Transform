@@ -132,13 +132,7 @@ export function getMeshoptMode(accessor: Accessor, usage: string): MeshoptMode {
 }
 
 export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: MeshoptFilter; bits?: number } {
-	const semantics = doc
-		.getGraph()
-		.listParentLinks(accessor)
-		.map((link) => link.getName())
-		.filter((name) => name !== 'accessor');
-
-	for (const semantic of semantics) {
+	for (const semantic of getSemantics(accessor, doc)) {
 		// Indices.
 		if (semantic === 'indices') return { filter: MeshoptFilter.NONE };
 
@@ -170,6 +164,14 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 	}
 
 	return { filter: MeshoptFilter.NONE };
+}
+
+export function getSemantics(accessor: Accessor, doc: Document): string[] {
+	return doc
+		.getGraph()
+		.listParentLinks(accessor)
+		.map((link) => link.getName())
+		.filter((name) => name !== 'accessor');
 }
 
 export function getTargetPath(accessor: Accessor): GLTF.AnimationChannelTargetPath | null {

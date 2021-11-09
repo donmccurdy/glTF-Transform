@@ -1,7 +1,7 @@
 import { Accessor, Buffer, BufferUtils, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder';
+import { getMeshoptFilter, getMeshoptMode, getSemantics, getTargetPath, prepareAccessor } from './encoder';
 import { isFallbackBuffer } from './decoder';
 import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
@@ -276,6 +276,10 @@ export class MeshoptCompression extends Extension {
 			// See: https://github.com/donmccurdy/glTF-Transform/pull/323#issuecomment-898791251
 			// Example: https://skfb.ly/6qAD8
 			if (getTargetPath(accessor) === 'weights') continue;
+
+			// See: https://github.com/donmccurdy/glTF-Transform/issues/414
+			const isTexcoord = getSemantics(accessor, this.doc).some((semantic) => semantic.startsWith('TEXCOORD_'));
+			if (isTexcoord && accessor.getComponentSize() > 2) continue;
 
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);
