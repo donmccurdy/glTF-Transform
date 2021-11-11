@@ -6,6 +6,7 @@ import { TextureWebP } from './ext-texture-webp';
 import { DracoMeshCompression } from './khr-draco-mesh-compression';
 import { LightsPunctual } from './khr-lights-punctual';
 import { MaterialsClearcoat } from './khr-materials-clearcoat';
+import { MaterialsEmissiveStrength } from './khr-materials-emissive-strength';
 import { MaterialsIOR } from './khr-materials-ior';
 import { MaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';
 import { MaterialsSheen } from './khr-materials-sheen';
@@ -22,6 +23,7 @@ export const KHRONOS_EXTENSIONS = [
 	DracoMeshCompression,
 	LightsPunctual,
 	MaterialsClearcoat,
+	MaterialsEmissiveStrength,
 	MaterialsIOR,
 	MaterialsPBRSpecularGlossiness,
 	MaterialsSpecular,
@@ -48,6 +50,7 @@ export * from './ext-texture-webp';
 export * from './khr-draco-mesh-compression';
 export * from './khr-lights-punctual';
 export * from './khr-materials-clearcoat';
+export * from './khr-materials-emissive-strength';
 export * from './khr-materials-ior';
 export * from './khr-materials-sheen';
 export * from './khr-materials-specular';

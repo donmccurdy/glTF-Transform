@@ -1,0 +1,92 @@
+import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
+import { EmissiveStrength } from './emissive-strength';
+
+const NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
+
+interface EmissiveStrengthDef {
+	emissiveStrength?: number;
+}
+
+/**
+ * # MaterialsEmissiveStrength
+ *
+ * [KHR_materials_emissive_strength](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_emissive_strength/)
+ * defines emissive strength, allowing HDR values (unlike the default emissive factor, which is [0, 1]).
+ *
+ * For implementations where a physical light unit is needed, the units for the multiplicative
+ * product of the emissive texture and factor are candela per square meter (cd / m2), sometimes
+ * called _nits_. Many realtime rendering engines simplify this calculation by assuming that an
+ * emissive factor of 1.0 results in a fully exposed pixel.
+ *
+ * Properties:
+ * - {@link EmissiveStrength}
+ *
+ * ### Example
+ *
+ * ```typescript
+ * import { MaterialsEmissiveStrength, EmissiveStrength } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const emissiveStrengthExtension = document.createExtension(MaterialsEmissiveStrength);
+ *
+ * // Create EmissiveStrength property.
+ * const emissiveStrength = emissiveStrengthExtension
+ * 	.createEmissiveStrength().setEmissiveStrength(5.0);
+ *
+ * // Assign to a Material.
+ * material.setExtension('KHR_materials_emissive_strength', emissiveStrength);
+ * ```
+ */
+export class MaterialsEmissiveStrength extends Extension {
+	public readonly extensionName = NAME;
+	public static readonly EXTENSION_NAME = NAME;
+
+	public createEmissiveStrength(): EmissiveStrength {
+		return new EmissiveStrength(this.doc.getGraph(), this);
+	}
+
+	public read(context: ReaderContext): this {
+		const jsonDoc = context.jsonDoc;
+		const materialDefs = jsonDoc.json.materials || [];
+		materialDefs.forEach((materialDef, materialIndex) => {
+			if (materialDef.extensions && materialDef.extensions[NAME]) {
+				const emissiveStrength = this.createEmissiveStrength();
+				context.materials[materialIndex].setExtension(NAME, emissiveStrength);
+
+				const emissiveStrengthDef = materialDef.extensions[NAME] as EmissiveStrengthDef;
+
+				// Factors.
+
+				if (emissiveStrengthDef.emissiveStrength !== undefined) {
+					emissiveStrength.setEmissiveStrength(emissiveStrengthDef.emissiveStrength);
+				}
+			}
+		});
+
+		return this;
+	}
+
+	public write(context: WriterContext): this {
+		const jsonDoc = context.jsonDoc;
+
+		this.doc.getRoot()
+			.listMaterials()
+			.forEach((material) => {
+				const emissiveStrength = material.getExtension<EmissiveStrength>(NAME);
+				if (emissiveStrength) {
+					const materialIndex = context.materialIndexMap.get(material)!;
+					const materialDef = jsonDoc.json.materials![materialIndex];
+					materialDef.extensions = materialDef.extensions || {};
+
+					// Factors.
+
+					materialDef.extensions[NAME] = {
+						emissiveStrength: emissiveStrength.getEmissiveStrength(),
+					} as EmissiveStrengthDef;
+				}
+			});
+
+		return this;
+	}
+}
