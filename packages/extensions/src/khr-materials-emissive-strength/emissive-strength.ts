@@ -4,9 +4,8 @@ import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
 /**
  * # EmissiveStrength
  *
- * Defines emissive strength a PBR {@link Material}. Unlike
- * {@link Material.setEmissiveFactor}, the emissive strength allows HDR values
- * outside of the [0, 1] range. See {@link MaterialsEmissiveStrength}.
+ * Defines emissive strength for a PBR {@link Material}, allowing high-dynamic-range
+ * (HDR) emissive materials. See {@link MaterialsEmissiveStrength}.
  */
 export class EmissiveStrength extends ExtensionProperty {
 	public readonly propertyType = 'EmissiveStrength';
