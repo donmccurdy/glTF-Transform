@@ -21,7 +21,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), specGloss, 'specGloss is attached');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().registerExtensions([MaterialsPBRSpecularGlossiness]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(

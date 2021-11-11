@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::lights-punctual', (t) => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
@@ -100,7 +100,7 @@ test('@gltf-transform/extensions::lights-punctual | i/o', (t) => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');

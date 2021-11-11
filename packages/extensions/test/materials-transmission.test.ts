@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::materials-transmission', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_transmission'), transmission, 'transmission is attached');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = new NodeIO().registerExtensions([MaterialsTransmission]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');

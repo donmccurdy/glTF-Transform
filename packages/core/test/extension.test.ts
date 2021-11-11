@@ -112,10 +112,15 @@ test('@gltf-transform/core::extension | i/o', (t) => {
 	let jsonDoc;
 	let resultDoc;
 
-	// Write.
+	// Write (unregistered).
+
+	jsonDoc = new NodeIO().writeJSON(doc, options);
+	t.deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
+
+	// Write (registered).
 
 	jsonDoc = io.writeJSON(doc, options);
-	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)yar');
 	t.equal(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
 	t.equal(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
 
