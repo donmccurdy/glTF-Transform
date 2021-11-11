@@ -4,6 +4,13 @@
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/14)
 
+**Features:**
+
+- Extensions registered with I/O are written if used; unregistered extensions are skipped.
+- Stages in `document.transform()` can detect other stages and optimize accordingly. [#417](https://github.com/donmccurdy/glTF-Transform/pull/417)
+- Added `material.equals(otherMaterial)` method. [#405](https://github.com/donmccurdy/glTF-Transform/pull/405) by @MrMagicPenguin
+- Added support for materials in `dedup()` function. [#407](https://github.com/donmccurdy/glTF-Transform/pull/407) by @MrMagicPenguin
+
 ## v1.0
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
