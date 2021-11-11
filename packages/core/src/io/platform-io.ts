@@ -12,6 +12,8 @@ enum ChunkType {
 	BIN = 0x004e4942,
 }
 
+type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
+
 /**
  * # PlatformIO
  *
@@ -109,16 +111,17 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public writeJSON(doc: Document, _options: Partial<WriterOptions> = {}): JSONDocument {
+	public writeJSON(doc: Document, _options: PublicWriterOptions = {}): JSONDocument {
 		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
 			throw new Error('GLB must have 0–1 buffers.');
 		}
 		return GLTFWriter.write(doc, {
 			format: _options.format || Format.GLTF,
-			logger: _options.logger || this._logger,
-			vertexLayout: _options.vertexLayout || this._vertexLayout,
-			dependencies: { ...this._dependencies, ..._options.dependencies },
 			basename: _options.basename || '',
+			logger: this._logger,
+			vertexLayout: this._vertexLayout,
+			dependencies: { ...this._dependencies },
+			extensions: [...this._extensions],
 		} as Required<WriterOptions>);
 	}
 
@@ -214,13 +217,7 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
 	public writeBinary(doc: Document): ArrayBuffer {
-		const { json, resources } = this.writeJSON(doc, {
-			format: Format.GLB,
-			basename: '',
-			logger: this._logger,
-			dependencies: this._dependencies,
-			vertexLayout: this._vertexLayout,
-		});
+		const { json, resources } = this.writeJSON(doc, { format: Format.GLB });
 
 		const header = new Uint32Array([0x46546c67, 2, 12]);
 

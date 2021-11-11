@@ -128,11 +128,8 @@ export class NodeIO extends PlatformIO {
 	/** @internal */
 	private _writeGLTF(uri: string, doc: Document): void {
 		this.lastWriteBytes = 0;
-		const { json, resources } = GLTFWriter.write(doc, {
+		const { json, resources } = this.writeJSON(doc, {
 			format: Format.GLTF,
-			logger: this._logger,
-			dependencies: this._dependencies,
-			vertexLayout: this._vertexLayout,
 			basename: FileUtils.basename(uri),
 		});
 		const { _fs: fs, _path: path } = this;

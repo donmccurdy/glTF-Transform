@@ -68,9 +68,8 @@ const io = new WebIO().registerExtensions([MaterialsUnlit]);
 const doc = await io.readGLB('unlit.glb');
 ```
 
-Reading files requires registering the necessary Extensions, but writing files does not — the
-Extension objects are already attached to the Document itself. Some extensions may require
-installing dependencies:
+Reading or writing files requires registering the necessary Extensions with the I/O class. Some
+extensions may require installing dependencies:
 
 ```typescript
 import { NodeIO } from '@gltf-transform/core';

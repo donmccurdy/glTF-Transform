@@ -1,5 +1,6 @@
 import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
+import { Extension } from '../extension';
 import { Link } from '../graph';
 import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
@@ -15,6 +16,7 @@ export interface WriterOptions {
 	basename?: string;
 	vertexLayout?: VertexLayout;
 	dependencies?: { [key: string]: unknown };
+	extensions?: typeof Extension[];
 }
 
 /** @internal */
@@ -32,7 +34,20 @@ export class GLTFWriter {
 
 		/* Extensions (1/2). */
 
-		for (const extension of doc.getRoot().listExtensionsUsed()) {
+		// Extensions present on the Document are not written unless they are also registered with
+		// the I/O class. This ensures that setup in `extension.register()` is completed, and
+		// allows a Document to be written with specific extensions disabled.
+		const extensionsRegistered = new Set(options.extensions.map((ext) => ext.EXTENSION_NAME));
+		const extensionsUsed = doc.getRoot().listExtensionsUsed()
+			.filter((ext) => extensionsRegistered.has(ext.extensionName));
+		const extensionsRequired = doc.getRoot().listExtensionsRequired()
+			.filter((ext) => extensionsRegistered.has(ext.extensionName));
+
+		if (extensionsUsed.length < doc.getRoot().listExtensionsUsed().length) {
+			logger.debug('Some extensions were not registered for I/O, and will not be written.');
+		}
+
+		for (const extension of extensionsUsed) {
 			for (const key of extension.writeDependencies) {
 				extension.install(key, options.dependencies[key]);
 			}
@@ -225,8 +240,7 @@ export class GLTFWriter {
 
 		/* Accessors. */
 
-		doc.getRoot()
-			.listExtensionsUsed()
+		extensionsUsed
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.ACCESSOR))
 			.forEach((extension) => extension.prewrite(context, PropertyType.ACCESSOR));
 		root.listAccessors().forEach((accessor) => {
@@ -260,7 +274,7 @@ export class GLTFWriter {
 
 		/* Buffers, buffer views. */
 
-		root.listExtensionsUsed()
+		extensionsUsed
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.BUFFER))
 			.forEach((extension) => extension.prewrite(context, PropertyType.BUFFER));
 
@@ -685,9 +699,9 @@ export class GLTFWriter {
 
 		/* Extensions (2/2). */
 
-		json.extensionsUsed = root.listExtensionsUsed().map((ext) => ext.extensionName);
-		json.extensionsRequired = root.listExtensionsRequired().map((ext) => ext.extensionName);
-		root.listExtensionsUsed().forEach((extension) => extension.write(context));
+		json.extensionsUsed = extensionsUsed.map((ext) => ext.extensionName);
+		json.extensionsRequired = extensionsRequired.map((ext) => ext.extensionName);
+		extensionsUsed.forEach((extension) => extension.write(context));
 
 		//
 
