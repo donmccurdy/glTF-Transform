@@ -29,9 +29,9 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  */
 export abstract class PlatformIO {
 	protected _logger = Logger.DEFAULT_INSTANCE;
-	protected _extensions: typeof Extension[] = [];
-	protected _dependencies: { [key: string]: unknown } = {};
-	protected _vertexLayout = VertexLayout.INTERLEAVED;
+	private _extensions = new Set<typeof Extension>();
+	private _dependencies: { [key: string]: unknown } = {};
+	private _vertexLayout = VertexLayout.INTERLEAVED;
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
 	public setLogger(logger: Logger): this {
@@ -42,7 +42,7 @@ export abstract class PlatformIO {
 	/** Registers extensions, enabling I/O class to read and write glTF assets requiring them. */
 	public registerExtensions(extensions: typeof Extension[]): this {
 		for (const extension of extensions) {
-			this._extensions.push(extension);
+			this._extensions.add(extension);
 			extension.register();
 		}
 		return this;
@@ -69,6 +69,9 @@ export abstract class PlatformIO {
 
 	/** @internal */
 	protected _readResourcesInternal(jsonDoc: JSONDocument): void {
+		// NOTICE: This method may be called more than once during the loading
+		// process (e.g. WebIO.read) and should handle that safely.
+
 		function resolveResource(resource: GLTF.IBuffer | GLTF.IImage) {
 			if (!resource.uri || resource.uri in jsonDoc.resources) return;
 
@@ -104,7 +107,7 @@ export abstract class PlatformIO {
 		jsonDoc = this._copyJSON(jsonDoc);
 		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
-			extensions: this._extensions,
+			extensions: Array.from(this._extensions),
 			dependencies: this._dependencies,
 			logger: this._logger,
 		});
@@ -121,7 +124,7 @@ export abstract class PlatformIO {
 			logger: this._logger,
 			vertexLayout: this._vertexLayout,
 			dependencies: { ...this._dependencies },
-			extensions: [...this._extensions],
+			extensions: Array.from(this._extensions),
 		} as Required<WriterOptions>);
 	}
 
