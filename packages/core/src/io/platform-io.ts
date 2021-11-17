@@ -69,6 +69,9 @@ export abstract class PlatformIO {
 
 	/** @internal */
 	protected _readResourcesInternal(jsonDoc: JSONDocument): void {
+		// NOTICE: This method may be called more than once during the loading
+		// process (e.g. WebIO.read) and should handle that safely.
+
 		function resolveResource(resource: GLTF.IBuffer | GLTF.IImage) {
 			if (!resource.uri || resource.uri in jsonDoc.resources) return;
 
