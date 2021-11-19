@@ -41,6 +41,7 @@ export { bounds } from '@gltf-transform/core'; // backwards compatibility, remov
 export * from './center';
 export * from './colorspace';
 export * from './dedup';
+export * from './dequantize';
 export * from './inspect';
 export * from './instance';
 export * from './metal-rough';
