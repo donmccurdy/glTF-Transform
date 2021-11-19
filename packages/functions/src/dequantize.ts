@@ -8,13 +8,13 @@ const NAME = 'dequantize';
 export interface DequantizeOptions {
 	/**
 	 * Pattern (regex) used to filter vertex attribute semantics for quantization.
-	 * Default: `/^(JOINTS)(_\d+)$/`.
+	 * Default: `/^((?!JOINTS)(_\d+))*$/`.
 	 */
 	pattern?: RegExp;
 }
 
 const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
-	pattern: /^(JOINTS)(_\d+)$/,
+	pattern: /^((?!JOINTS)(_\d+))*$/,
 };
 
 /**
@@ -43,7 +43,7 @@ function dequantizePrimitive(prim: Primitive, options: Required<DequantizeOption
 	}
 	for (const target of prim.listTargets()) {
 		for (const semantic of target.listSemantics()) {
-			dequantizeAttribute(semantic, prim.getAttribute(semantic)!, options);
+			dequantizeAttribute(semantic, target.getAttribute(semantic)!, options);
 		}
 	}
 }
