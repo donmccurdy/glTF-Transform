@@ -8,13 +8,13 @@ const NAME = 'dequantize';
 export interface DequantizeOptions {
 	/**
 	 * Pattern (regex) used to filter vertex attribute semantics for quantization.
-	 * Default: `/^((?!JOINTS)(_\d+))*$/`.
+	 * Default: `/^((?!JOINTS_).)*$/`.
 	 */
 	pattern?: RegExp;
 }
 
 const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
-	pattern: /^((?!JOINTS)(_\d+))*$/,
+	pattern: /^((?!JOINTS_).)*$/,
 };
 
 /**
