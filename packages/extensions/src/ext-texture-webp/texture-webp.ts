@@ -1,10 +1,23 @@
-import { BufferUtils, Extension, ImageUtils, ImageUtilsFormat, PropertyType, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
+import {
+	BufferUtils,
+	Extension,
+	ImageUtils,
+	ImageUtilsFormat,
+	PropertyType,
+	ReaderContext,
+	WriterContext,
+	vec2,
+} from '@gltf-transform/core';
 import { EXT_TEXTURE_WEBP } from '../constants';
 
 const NAME = EXT_TEXTURE_WEBP;
 
 class WEBPImageUtils implements ImageUtilsFormat {
-	getSize (buffer: ArrayBuffer): vec2 | null {
+	match(buffer: ArrayBuffer): boolean {
+		const array = new Uint8Array(buffer);
+		return array.length >= 12 && array[8] === 87 && array[9] === 69 && array[10] === 66 && array[11] === 80;
+	}
+	getSize(buffer: ArrayBuffer): vec2 | null {
 		// Reference: http://tools.ietf.org/html/rfc6386
 		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
 		const WEBP = BufferUtils.decodeText(buffer.slice(8, 12));
@@ -26,8 +39,8 @@ class WEBPImageUtils implements ImageUtilsFormat {
 				const b1 = view.getUint8(offset + 10);
 				const b2 = view.getUint8(offset + 11);
 				const b3 = view.getUint8(offset + 12);
-				const width = 1 + (((b1 & 0x3F) << 8) | b0);
-				const height = 1 + (((b3 & 0xF) << 10) | (b2 << 2) | ((b1 & 0xC0) >> 6));
+				const width = 1 + (((b1 & 0x3f) << 8) | b0);
+				const height = 1 + (((b3 & 0xf) << 10) | (b2 << 2) | ((b1 & 0xc0) >> 6));
 				return [width, height];
 			}
 			offset += 8 + chunkByteLength + (chunkByteLength % 2);
@@ -35,11 +48,10 @@ class WEBPImageUtils implements ImageUtilsFormat {
 
 		return null;
 	}
-	getChannels (_buffer: ArrayBuffer): number {
+	getChannels(_buffer: ArrayBuffer): number {
 		return 4;
 	}
 }
-
 
 /**
  * # TextureWebP
@@ -89,7 +101,7 @@ export class TextureWebP extends Extension {
 	public readonly prereadTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
-	public static register (): void {
+	public static register(): void {
 		ImageUtils.registerFormat('image/webp', new WEBPImageUtils());
 	}
 
@@ -97,7 +109,7 @@ export class TextureWebP extends Extension {
 		const textureDefs = context.jsonDoc.json.textures || [];
 		textureDefs.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
-				textureDef.source = (textureDef.extensions[NAME] as {source: number}).source;
+				textureDef.source = (textureDef.extensions[NAME] as { source: number }).source;
 			}
 		});
 		return this;
@@ -111,7 +123,8 @@ export class TextureWebP extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listTextures()
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/webp') {
@@ -120,7 +133,7 @@ export class TextureWebP extends Extension {
 					textureDefs.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {};
-							textureDef.extensions[NAME] = {source: textureDef.source};
+							textureDef.extensions[NAME] = { source: textureDef.source };
 							delete textureDef.source;
 						}
 					});

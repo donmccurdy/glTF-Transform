@@ -1,5 +1,13 @@
 import { KTX2Model, read as readKTX } from 'ktx-parse';
-import { Extension, ImageUtils, ImageUtilsFormat, PropertyType, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
+import {
+	Extension,
+	ImageUtils,
+	ImageUtilsFormat,
+	PropertyType,
+	ReaderContext,
+	WriterContext,
+	vec2,
+} from '@gltf-transform/core';
 import { KHR_TEXTURE_BASISU } from '../constants';
 
 const NAME = KHR_TEXTURE_BASISU;
@@ -9,21 +17,38 @@ interface BasisuDef {
 }
 
 class KTX2ImageUtils implements ImageUtilsFormat {
-	getSize (buffer: ArrayBuffer): vec2 {
+	match(buffer: ArrayBuffer): boolean {
+		const array = new Uint8Array(buffer);
+		return (
+			array[0] === 0xab &&
+			array[1] === 0x4b &&
+			array[2] === 0x54 &&
+			array[3] === 0x58 &&
+			array[4] === 0x20 &&
+			array[5] === 0x32 &&
+			array[6] === 0x30 &&
+			array[7] === 0xbb &&
+			array[8] === 0x0d &&
+			array[9] === 0x0a &&
+			array[10] === 0x1a &&
+			array[11] === 0x0a
+		);
+	}
+	getSize(buffer: ArrayBuffer): vec2 {
 		const container = readKTX(new Uint8Array(buffer));
 		return [container.pixelWidth, container.pixelHeight];
 	}
-	getChannels (buffer: ArrayBuffer): number {
+	getChannels(buffer: ArrayBuffer): number {
 		const container = readKTX(new Uint8Array(buffer));
 		const dfd = container.dataFormatDescriptor[0];
 		if (dfd.colorModel === KTX2Model.ETC1S) {
-			return (dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xF) === 15) ? 4 : 3;
+			return dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xf) === 15 ? 4 : 3;
 		} else if (dfd.colorModel === KTX2Model.UASTC) {
-			return (dfd.samples[0].channelID & 0xF) === 3 ? 4 : 3;
+			return (dfd.samples[0].channelID & 0xf) === 3 ? 4 : 3;
 		}
 		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 	}
-	getGPUByteLength (buffer: ArrayBuffer): number {
+	getGPUByteLength(buffer: ArrayBuffer): number {
 		const container = readKTX(new Uint8Array(buffer));
 		const hasAlpha = this.getChannels(buffer) > 3;
 
@@ -104,7 +129,7 @@ export class TextureBasisu extends Extension {
 	public readonly prereadTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
-	public static register (): void {
+	public static register(): void {
 		ImageUtils.registerFormat('image/ktx2', new KTX2ImageUtils());
 	}
 
@@ -126,7 +151,8 @@ export class TextureBasisu extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listTextures()
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/ktx2') {
@@ -134,7 +160,7 @@ export class TextureBasisu extends Extension {
 					jsonDoc.json.textures!.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {};
-							textureDef.extensions[NAME] = {source: textureDef.source};
+							textureDef.extensions[NAME] = { source: textureDef.source };
 							delete textureDef.source;
 						}
 					});
