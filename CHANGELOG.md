@@ -12,6 +12,7 @@
 
 - Add `dequantize()` function. [#431](https://github.com/donmccurdy/glTF-Transform/pull/431)
 - Add `KHR_materials_emissive_strength` extension. [#422](https://github.com/donmccurdy/glTF-Transform/pull/422)
+- Add `ImageUtils.getMimeType(buffer)`. [#432](https://github.com/donmccurdy/glTF-Transform/pull/432)
 
 ## v1.1
 
