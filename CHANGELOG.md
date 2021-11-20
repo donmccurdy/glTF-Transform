@@ -1,6 +1,19 @@
 # Changelog
 
-## v1.1 — 🚧 Unreleased
+## v1.3 — 🚧 Unreleased
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/16)
+
+## v1.2
+
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/15)
+
+**Features:**
+
+- Add `dequantize()` function. [#431](https://github.com/donmccurdy/glTF-Transform/pull/431)
+- Add `KHR_materials_emissive_strength` extension. [#422](https://github.com/donmccurdy/glTF-Transform/pull/422)
+
+## v1.1
 
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/14)
 
