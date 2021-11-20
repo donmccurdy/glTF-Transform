@@ -1,5 +1,5 @@
 
-  gltf-transform 1.1.1 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 1.2.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -33,6 +33,7 @@
     draco                                Compress geometry with Draco                           
     meshopt                              Compress geometry and animation with Meshopt           
     quantize                             Quantize geometry, reducing precision and memory       
+    dequantize                           Dequantize geometry                                    
     weld                                 Index geometry and optionally merge similar vertices   
     unweld                               De-index geometry, disconnecting any shared vertices   
     tangents                             Generate MikkTSpace vertex tangents                    
