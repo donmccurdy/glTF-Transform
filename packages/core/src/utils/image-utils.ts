@@ -3,6 +3,7 @@ import { BufferUtils } from './buffer-utils';
 
 /** Implements support for an image format in the {@link ImageUtils} class. */
 export interface ImageUtilsFormat {
+	match(buffer: ArrayBuffer): boolean;
 	getSize(buffer: ArrayBuffer): vec2 | null;
 	getChannels(buffer: ArrayBuffer): number | null;
 	getGPUByteLength?(buffer: ArrayBuffer): number | null;
@@ -10,6 +11,10 @@ export interface ImageUtilsFormat {
 
 /** JPEG image support. */
 class JPEGImageUtils implements ImageUtilsFormat {
+	match(buffer: ArrayBuffer): boolean {
+		const array = new Uint8Array(buffer);
+		return array.length >= 3 && array[0] === 255 && array[1] === 216 && array[2] === 255;
+	}
 	getSize(buffer: ArrayBuffer): vec2 {
 		// Skip 4 chars, they are for signature
 		let view = new DataView(buffer, 4);
@@ -52,6 +57,20 @@ class JPEGImageUtils implements ImageUtilsFormat {
 class PNGImageUtils implements ImageUtilsFormat {
 	// Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
 	static PNG_FRIED_CHUNK_NAME = 'CgBI';
+	match(buffer: ArrayBuffer): boolean {
+		const array = new Uint8Array(buffer);
+		return (
+			array.length >= 8 &&
+			array[0] === 0x89 &&
+			array[1] === 0x50 &&
+			array[2] === 0x4e &&
+			array[3] === 0x47 &&
+			array[4] === 0x0d &&
+			array[5] === 0x0a &&
+			array[6] === 0x1a &&
+			array[7] === 0x0a
+		);
+	}
 	getSize(buffer: ArrayBuffer): vec2 {
 		const view = new DataView(buffer);
 		const magic = BufferUtils.decodeText(buffer.slice(12, 16));
@@ -81,6 +100,20 @@ export class ImageUtils {
 	/** Registers support for a new image format; useful for certain extensions. */
 	public static registerFormat(mimeType: string, impl: ImageUtilsFormat): void {
 		this.impls[mimeType] = impl;
+	}
+
+	/**
+	 * Returns detected MIME type of the given image buffer. Note that for image
+	 * formats with support provided by extensions, the extension must be
+	 * registered with an I/O class before it can be detected by ImageUtils.
+	 */
+	public static getMimeType(buffer: ArrayBuffer): string | null {
+		for (const mimeType in this.impls) {
+			if (this.impls[mimeType].match(buffer)) {
+				return mimeType;
+			}
+		}
+		return null;
 	}
 
 	/** Returns the dimensions of the image. */
