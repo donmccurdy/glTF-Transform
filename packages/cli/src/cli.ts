@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
 import { Session, formatBytes } from './util';
@@ -479,6 +479,27 @@ Requires KHR_mesh_quantization support.`.trim())
 		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
 		return Session.create(io, logger, args.input, args.output)
 			.transform(quantize({...options, pattern}));
+	});
+
+// DEQUANTIZE
+program
+	.command('dequantize', 'Dequantize geometry')
+	.help(`
+Removes quantization from an asset. This will increase the size of the asset on
+disk and in memory, but may be necessary for applications that don't support
+quantization.
+
+Removes KHR_mesh_quantization, if present.`.trim())
+	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
+	.argument('<output>', 'Path to write output')
+	.option('--pattern <pattern>', 'Pattern for vertex attributes (case-insensitive glob)', {
+		validator: program.STRING,
+		default: '!JOINTS_*',
+	})
+	.action(({args, options, logger}) => {
+		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		return Session.create(io, logger, args.input, args.output)
+			.transform(dequantize({...options, pattern}));
 	});
 
 // WELD
