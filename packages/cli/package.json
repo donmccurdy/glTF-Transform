@@ -24,7 +24,7 @@
     "@gltf-transform/functions": "^1.2.1",
     "cli-table3": "^0.6.0",
     "command-exists": "^1.2.9",
-    "csv-stringify": "^5.6.5",
+    "csv-stringify": "^6.0.0",
     "draco3dgltf": "^1.4.3",
     "gltf-validator": "^2.0.0-dev.3.5",
     "ktx-parse": "^0.2.1",
