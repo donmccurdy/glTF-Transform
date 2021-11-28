@@ -290,7 +290,7 @@ export class MeshoptCompression extends Extension {
 			const bufferIndex = this.doc.getRoot().listBuffers().indexOf(buffer);
 
 			// Buffer view grouping key.
-			const key = [usage, mode, filter, byteStride, bufferIndex].join(':');
+			const key = [usage, mode, filter.filter, byteStride, bufferIndex].join(':');
 
 			let bufferView = this._encoderBufferViews[key];
 			let bufferViewData = this._encoderBufferViewData[key];
