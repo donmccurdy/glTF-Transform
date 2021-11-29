@@ -87,14 +87,6 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * Instance.
 	 */
 
-	// public readonly DEFAULT_ATTRIBUTES: Nullable<IPrimitive> = {
-	// 	mode: Primitive.Mode.TRIANGLES,
-	// 	material: null,
-	// 	indices: null,
-	// 	attributes: {},
-	// 	targets: [],
-	// };
-
 	protected getDefaultAttributes(): Nullable<IPrimitive> {
 		return Object.assign(super.getDefaultAttributes(), {
 			mode: Primitive.Mode.TRIANGLES,
@@ -103,25 +95,6 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 			attributes: {},
 			targets: [],
 		});
-	}
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.setMode(other.getMode());
-
-		this.setIndices(resolve(other.getIndices()!));
-		this.setMaterial(resolve(other.getMaterial()!));
-
-		this.listSemantics().forEach((semantic) => this.setAttribute(semantic, null));
-		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
-		});
-
-		this.listTargets().forEach((target) => this.removeTarget(target));
-		other.listTargets().forEach((target) => this.addTarget(resolve(target)));
-
-		return this;
 	}
 
 	/**********************************************************************************************

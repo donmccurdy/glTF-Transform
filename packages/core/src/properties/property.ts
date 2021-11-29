@@ -1,4 +1,4 @@
-import { GraphNode, GraphNodeAttributes } from '../graph';
+import { $attributes, GraphNode, GraphNodeAttributes, Link } from '../graph';
 import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -121,9 +121,51 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * @param other Property to copy references from.
 	 * @param resolve Function to resolve each Property being transferred. Default is identity.
 	 */
-	public copy(other: this, _resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
+	public copy(other: this, resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
+		// TODO(cleanup): Move these into attributes.
 		this._name = other._name;
 		this._extras = JSON.parse(JSON.stringify(other._extras));
+
+		// Remove previous references.
+		for (const key in this[$attributes]) {
+			const value = this[$attributes][key] as any;
+			if (value instanceof Link) {
+				value.dispose();
+			} else if (Array.isArray(value) && value[0] instanceof Link) {
+				for (const link of value as Link<this, any>[]) {
+					link.dispose();
+				}
+			} else if (value && typeof value === 'object' && Object.values(value)[0] instanceof Link) {
+				for (const subkey in value) {
+					const link = this[$attributes][key][subkey] as Link<this, any>;
+					link.dispose();
+				}
+			}
+		}
+
+		// TODO(bug): Copy link metadata.
+
+		// Add new references.
+		for (const key in other[$attributes]) {
+			const value = other[$attributes][key] as any;
+			if (value instanceof Link) {
+				this[$attributes][key] = this.graph.link(value.getName(), this, resolve(value.getChild()));
+			} else if (Array.isArray(value) && value[0] instanceof Link) {
+				for (const link of value as Link<this, any>[]) {
+					this[$attributes][key].push(this.graph.link(link.getName(), this, resolve(link.getChild())));
+				}
+			} else if (value && typeof value === 'object' && Object.values(value)[0] instanceof Link) {
+				for (const subkey in value) {
+					const link = other[$attributes][key][subkey] as Link<this, any>;
+					this[$attributes][key][subkey] = this.graph.link(link.getName(), this, resolve(link.getChild()));
+				}
+			} else if (value && typeof value === 'object') {
+				this[$attributes][key] = JSON.parse(JSON.stringify(other[$attributes][key]));
+			} else {
+				this[$attributes][key] = other[$attributes][key];
+			}
+		}
+
 		return this;
 	}
 

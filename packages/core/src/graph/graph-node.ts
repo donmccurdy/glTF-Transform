@@ -35,6 +35,8 @@ type RefMapKeys<T> = { [K in keyof T]-?: T[K] extends { [key: string]: GraphNode
 // export type GraphNodeAttributes = Record<any, Literal | GraphNode | GraphNode[] | { [key: string]: GraphNode }>;
 export type GraphNodeAttributes = Record<any, any>;
 
+export const $attributes = Symbol('attributes');
+
 /**
  * Represents a node in a {@link Graph}.
  *
@@ -45,7 +47,7 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	private _disposed = false;
 
 	// public readonly DEFAULT_ATTRIBUTES = {} as Nullable<Attributes>;
-	private _attributes: Record<keyof Attributes, any> = this.getDefaultAttributes();
+	protected [$attributes]: Record<keyof Attributes, any> = this.getDefaultAttributes();
 
 	// private _attributes = {} as Record<
 	// 	keyof Attributes,
@@ -169,56 +171,56 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	 */
 
 	protected get<K extends LiteralKeys<Attributes>>(key: K): Attributes[K] {
-		return this._attributes[key];
+		return this[$attributes][key];
 	}
 
 	protected set<K extends LiteralKeys<Attributes>>(key: K, value: Attributes[K]): this {
-		this._attributes[key] = value;
+		this[$attributes][key] = value;
 		return this;
 	}
 
 	protected getRef<K extends RefKeys<Attributes>>(key: K): Attributes[K] | null {
-		return this._attributes[key] ? this._attributes[key].getChild() : null;
+		return this[$attributes][key] ? this[$attributes][key].getChild() : null;
 	}
 
 	protected setRef<K extends RefKeys<Attributes>>(key: K, value: Attributes[K] | null): this {
-		const prevLink = this._attributes[key];
+		const prevLink = this[$attributes][key];
 		if (prevLink) prevLink.dispose();
 
 		if (!value) return this;
 
 		const link = this.graph.link(key as string, this, value) as any;
-		link.onDispose(() => delete this._attributes[key]);
-		this._attributes[key] = link;
+		link.onDispose(() => delete this[$attributes][key]);
+		this[$attributes][key] = link;
 		return this;
 	}
 
 	protected listRefs<K extends RefListKeys<Attributes>>(key: K): Attributes[K] {
-		return this._attributes[key].map((link: any) => link.getChild());
+		return this[$attributes][key].map((link: any) => link.getChild());
 	}
 
 	protected addRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		this._attributes[key].push(this.graph.link(key as string, this, value));
+		this[$attributes][key].push(this.graph.link(key as string, this, value));
 		return this;
 	}
 
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		return this.removeGraphChild(this._attributes[key], value);
+		return this.removeGraphChild(this[$attributes][key], value);
 	}
 
 	protected listRefMapKeys<K extends RefMapKeys<Attributes>>(key: K): string[] {
-		return Object.keys(this._attributes[key]);
+		return Object.keys(this[$attributes][key]);
 	}
 
 	protected listRefMapValues<K extends RefMapKeys<Attributes>>(key: K): Attributes[K][keyof Attributes[K]][] {
-		return Object.values(this._attributes[key]).map((link: any) => link.getChild());
+		return Object.values(this[$attributes][key]).map((link: any) => link.getChild());
 	}
 
 	protected getRefMap<K extends RefMapKeys<Attributes>>(
 		key: K,
 		subkey: string
 	): Attributes[K][keyof Attributes[K]] | null {
-		return this._attributes[key][subkey] ? this._attributes[key][subkey].getChild() : null;
+		return this[$attributes][key][subkey] ? this[$attributes][key][subkey].getChild() : null;
 	}
 
 	protected setRefMap<K extends RefMapKeys<Attributes>>(
@@ -226,14 +228,14 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		subkey: string,
 		value: Attributes[K][keyof Attributes[K]] | null
 	): this {
-		const prevLink = this._attributes[key][subkey];
+		const prevLink = this[$attributes][key][subkey];
 		if (prevLink) prevLink.dispose();
 
 		if (!value) return this;
 
 		const link = this.graph.link(subkey, this, value) as any;
-		link.onDispose(() => delete this._attributes[key][subkey]);
-		this._attributes[key][subkey] = link;
+		link.onDispose(() => delete this[$attributes][key][subkey]);
+		this[$attributes][key][subkey] = link;
 		return this;
 	}
 }

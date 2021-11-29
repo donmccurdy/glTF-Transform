@@ -20,17 +20,6 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 		return { attributes: {} };
 	}
 
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.listSemantics().forEach((semantic) => this.setAttribute(semantic, null));
-		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
-		});
-
-		return this;
-	}
-
 	/** Returns an instance attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor | null {
 		return this.getRefMap('attributes', semantic);
