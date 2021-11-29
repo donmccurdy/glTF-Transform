@@ -23,8 +23,6 @@ export {
 	Texture,
 	TextureInfo,
 	TextureLink,
-	AttributeLink,
-	IndexLink,
 	COPY_IDENTITY,
 } from './properties';
 export { Graph, GraphChild, GraphChildList, Link } from './graph/';

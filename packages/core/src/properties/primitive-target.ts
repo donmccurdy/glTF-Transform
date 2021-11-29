@@ -1,8 +1,10 @@
-import { PropertyType } from '../constants';
-import { GraphChildList } from '../graph/index';
+import { Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
 import { COPY_IDENTITY, Property } from './property';
-import { AttributeLink } from './property-links';
+
+interface IPrimitiveTarget {
+	attributes: { [key: string]: Accessor };
+}
 
 /**
  * # PrimitiveTarget
@@ -19,16 +21,17 @@ import { AttributeLink } from './property-links';
  * Reference:
  * - [glTF → Morph Targets](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#morph-targets)
  */
-export class PrimitiveTarget extends Property {
+export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
-	/** @internal Vertex attributes. */
-	@GraphChildList private attributes: AttributeLink[] = [];
+	protected getDefaultAttributes(): Nullable<IPrimitiveTarget> {
+		return { attributes: {} };
+	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this.clearGraphChildList(this.attributes);
+		this.listSemantics().forEach((semantic) => this.setAttribute(semantic, null));
 		other.listSemantics().forEach((semantic) => {
 			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
 		});
@@ -38,25 +41,14 @@ export class PrimitiveTarget extends Property {
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor | null {
-		const link = this.attributes.find((link) => link.semantic === semantic);
-		return link ? link.getChild() : null;
+		return this.getRefMap('attributes', semantic);
 	}
 
 	/**
 	 * Sets a morph target vertex attribute to an {@link Accessor}.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		// Remove previous attribute.
-		const prevAccessor = this.getAttribute(semantic);
-		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
-
-		// Stop if deleting the attribute.
-		if (!accessor) return this;
-
-		// Add next attribute.
-		const link = this.graph.linkAttribute(semantic, this, accessor);
-		link.semantic = semantic;
-		return this.addGraphChild(this.attributes, link);
+		return this.setRefMap('attributes', semantic, accessor);
 	}
 
 	/**
@@ -64,7 +56,7 @@ export class PrimitiveTarget extends Property {
 	 * consistent with the order returned by {@link .listSemantics}().
 	 */
 	public listAttributes(): Accessor[] {
-		return this.attributes.map((link) => link.getChild());
+		return this.listRefMapValues('attributes');
 	}
 
 	/**
@@ -72,6 +64,6 @@ export class PrimitiveTarget extends Property {
 	 * consistent with the order returned by {@link .listAttributes}().
 	 */
 	public listSemantics(): string[] {
-		return this.attributes.map((link) => link.semantic);
+		return this.listRefMapKeys('attributes');
 	}
 }

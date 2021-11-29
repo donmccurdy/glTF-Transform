@@ -1,20 +1,7 @@
 import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
-import {
-	Accessor,
-	AttributeLink,
-	Buffer,
-	Camera,
-	IndexLink,
-	Material,
-	Mesh,
-	Node,
-	Property,
-	Skin,
-	Texture,
-	TextureInfo,
-} from '../properties';
+import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
 import { GLTF } from '../types/gltf';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';

@@ -1,23 +1,29 @@
-import { Accessor, AttributeLink, COPY_IDENTITY, ExtensionProperty, GraphChildList, PropertyType } from '@gltf-transform/core';
-import { EXT_MESH_GPU_INSTANCING } from '../constants';
+import { Accessor, COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
+import { EXT_MESH_GPU_INSTANCING, Nullable } from '../constants';
+
+interface IInstancedMesh {
+	attributes: { [key: string]: Accessor };
+}
 
 /**
  * # InstancedMesh
  *
  * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link MeshGPUInstancing}.
  */
-export class InstancedMesh extends ExtensionProperty {
+export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	public readonly propertyType = 'InstancedMesh';
 	public readonly parentTypes = [PropertyType.NODE];
 	public readonly extensionName = EXT_MESH_GPU_INSTANCING;
 	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;
 
-	@GraphChildList private attributes: AttributeLink[] = [];
+	protected getDefaultAttributes(): Nullable<IInstancedMesh> {
+		return { attributes: {} };
+	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
 
-		this.clearGraphChildList(this.attributes);
+		this.listSemantics().forEach((semantic) => this.setAttribute(semantic, null));
 		other.listSemantics().forEach((semantic) => {
 			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
 		});
@@ -27,8 +33,7 @@ export class InstancedMesh extends ExtensionProperty {
 
 	/** Returns an instance attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor | null {
-		const link = this.attributes.find((link) => link.semantic === semantic);
-		return link ? link.getChild() : null;
+		return this.getRefMap('attributes', semantic);
 	}
 
 	/**
@@ -36,19 +41,7 @@ export class InstancedMesh extends ExtensionProperty {
 	 * instance count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		// Remove previous attribute.
-		const prevAccessor = this.getAttribute(semantic);
-		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
-
-		// Stop if deleting the attribute.
-		if (!accessor) return this;
-
-		// Add next attribute.
-		const link = this.graph.linkAttribute(
-			semantic.toLowerCase(), this, accessor
-		) as AttributeLink;
-		link.semantic = semantic;
-		return this.addGraphChild(this.attributes, link);
+		return this.setRefMap('attributes', semantic, accessor);
 	}
 
 	/**
@@ -56,7 +49,7 @@ export class InstancedMesh extends ExtensionProperty {
 	 * will be consistent with the order returned by {@link .listSemantics}().
 	 */
 	public listAttributes(): Accessor[] {
-		return this.attributes.map((link) => link.getChild());
+		return this.listRefMapValues('attributes');
 	}
 
 	/**
@@ -64,6 +57,6 @@ export class InstancedMesh extends ExtensionProperty {
 	 * consistent with the order returned by {@link .listAttributes}().
 	 */
 	public listSemantics(): string[] {
-		return this.attributes.map((link) => link.semantic);
+		return this.listRefMapKeys('attributes');
 	}
 }

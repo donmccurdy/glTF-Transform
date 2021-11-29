@@ -1,12 +1,11 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphChild, GraphChildList, GraphNodeAttributes, Link } from '../graph';
+import { GraphNodeAttributes } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';
 import { COPY_IDENTITY } from './property';
-import { AttributeLink } from './property-links';
 
 interface IPrimitive {
 	mode: GLTF.MeshPrimitiveMode;
@@ -153,7 +152,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		return this.setMapRef('attributes', semantic, accessor);
+		return this.setRefMap('attributes', semantic, accessor);
 	}
 
 	/**

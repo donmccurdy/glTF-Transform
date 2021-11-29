@@ -221,7 +221,7 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		return this._attributes[key][subkey] ? this._attributes[key][subkey].getChild() : null;
 	}
 
-	protected setMapRef<K extends RefMapKeys<Attributes>>(
+	protected setRefMap<K extends RefMapKeys<Attributes>>(
 		key: K,
 		subkey: string,
 		value: Attributes[K][keyof Attributes[K]] | null
