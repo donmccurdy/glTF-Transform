@@ -21,7 +21,6 @@ export function GraphChild(target: any, propertyKey: string): void {
 			const link = this[DECORATOR_PREFIX + propertyKey];
 
 			if (link && !Array.isArray(link)) {
-				// console.log('[GraphChild] Disposing link: ' + propertyKey, link, value);
 				link.dispose();
 			}
 
@@ -29,12 +28,10 @@ export function GraphChild(target: any, propertyKey: string): void {
 				// This listener handles dispose events for property Links. The addGraphChild
 				// method handles the events for arrays of Links.
 				value.onDispose(() => {
-					// console.log('[GraphChild] Unassigning link: ' + propertyKey, link);
 					this[DECORATOR_PREFIX + propertyKey] = null;
 				});
 			}
 
-			// if (value) console.log('[GraphChild] Assigning link: ' + propertyKey, value);
 			this[DECORATOR_PREFIX + propertyKey] = value;
 		},
 		enumerable: true,

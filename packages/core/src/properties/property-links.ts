@@ -6,6 +6,7 @@ import { Primitive } from './primitive';
 import { Property } from './property';
 import { Texture } from './texture';
 
+// TODO(cleanup): Remove after migration.
 /** @hidden */
 export class AttributeLink extends Link<Property, Accessor> {
 	public semantic = '';
@@ -15,6 +16,7 @@ export class AttributeLink extends Link<Property, Accessor> {
 	}
 }
 
+// TODO(cleanup): Remove after migration.
 /** @hidden */
 export class IndexLink extends Link<Primitive, Accessor> {
 	public copy(_other: this): this {

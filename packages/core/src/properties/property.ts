@@ -1,4 +1,4 @@
-import { GraphNode } from '../graph';
+import { GraphNode, GraphNodeAttributes } from '../graph';
 import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -39,7 +39,7 @@ export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
  *
  * @category Properties
  */
-export abstract class Property extends GraphNode {
+export abstract class Property<T extends GraphNodeAttributes = any> extends GraphNode<T> {
 	/** Property type. */
 	public abstract readonly propertyType: string;
 

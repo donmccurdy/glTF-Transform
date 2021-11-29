@@ -16,7 +16,6 @@ export const NAME = '@gltf-transform/core';
  * THREE.Vector3, THREE.Vector4, THREE.Quaternion, THREE.Matrix3, THREE.Matrix4, and THREE.Color.
  *
  * @internal
- * @internal
  */
 export interface ArrayProxy {
 	/** Sets the value of the object from an array of values. */
@@ -24,6 +23,12 @@ export interface ArrayProxy {
 	/** Writes the value of the object into the given array. */
 	toArray(array: number[]): number[];
 }
+
+/**
+ * TypeScript utility for nullable types.
+ * @internal
+ */
+export type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 /**
  * 2-dimensional vector.

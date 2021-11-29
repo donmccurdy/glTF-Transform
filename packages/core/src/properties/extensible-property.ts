@@ -1,4 +1,4 @@
-import { GraphChildList, Link } from '../graph';
+import { GraphChildList, Link, GraphNodeAttributes } from '../graph';
 import { ExtensionProperty } from './extension-property';
 import { COPY_IDENTITY, Property } from './property';
 
@@ -15,7 +15,7 @@ const TOKEN_WARNING = 'Pass extension name (string) as lookup token, not a const
  *
  * @category Properties
  */
-export abstract class ExtensibleProperty extends Property {
+export abstract class ExtensibleProperty<T extends GraphNodeAttributes = any> extends Property<T> {
 	@GraphChildList protected extensions: Link<Property, ExtensionProperty>[] = [];
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

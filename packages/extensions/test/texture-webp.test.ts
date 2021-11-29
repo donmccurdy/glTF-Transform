@@ -1,8 +1,16 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { BufferUtils, Document, ImageUtils, NodeIO } from '@gltf-transform/core';
 import { TextureWebP } from '../';
+
+const IS_NODEJS = typeof window === 'undefined';
+
+let fs, path;
+if (IS_NODEJS) {
+	fs = require('fs');
+	path = require('path');
+}
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -41,5 +49,26 @@ test('@gltf-transform/extensions::texture-webp', (t) => {
 	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 	t.equal(jsonDoc.json.textures.length, 1, 'writes only 1 texture');
 	t.equal(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
+	t.end();
+});
+
+test('@gltf-transform/core::image-utils | webp', { skip: !IS_NODEJS }, (t) => {
+	const webpLossy = BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.webp')));
+	const webpLossless = BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test-lossless.webp')));
+	const buffer = BufferUtils.concat([
+		BufferUtils.encodeText('RIFF'),
+		new ArrayBuffer(4),
+		BufferUtils.encodeText('WEBP'),
+		BufferUtils.encodeText('OTHR'),
+		new Uint8Array([999, 0, 0, 0]),
+	]);
+
+	t.equals(ImageUtils.getSize(new ArrayBuffer(8), 'image/webp'), null, 'invalid');
+	t.equals(ImageUtils.getSize(buffer, 'image/webp'), null, 'no size');
+	t.deepEquals(ImageUtils.getSize(webpLossy, 'image/webp'), [256, 256], 'size (lossy)');
+	t.deepEquals(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');
+	t.equals(ImageUtils.getChannels(webpLossy, 'image/webp'), 4, 'channels');
+	t.equals(ImageUtils.getChannels(webpLossless, 'image/fake'), null, 'channels (other)');
+	t.equals(ImageUtils.getMemSize(webpLossy, 'image/webp'), 349524, 'gpuSize');
 	t.end();
 });

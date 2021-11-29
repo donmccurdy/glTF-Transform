@@ -77,39 +77,7 @@ test('@gltf-transform/core::image-utils | jpeg', { skip: !IS_NODEJS }, (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::image-utils | webp', { skip: !IS_NODEJS }, (t) => {
-	const webpLossy = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossy.webp')));
-	const webpLossless = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test-lossless.webp')));
-	const buffer = BufferUtils.concat([
-		BufferUtils.encodeText('RIFF'),
-		new ArrayBuffer(4),
-		BufferUtils.encodeText('WEBP'),
-		BufferUtils.encodeText('OTHR'),
-		new Uint8Array([999, 0, 0, 0]),
-	]);
-
-	t.equals(ImageUtils.getSize(new ArrayBuffer(8), 'image/webp'), null, 'invalid');
-	t.equals(ImageUtils.getSize(buffer, 'image/webp'), null, 'no size');
-	t.deepEquals(ImageUtils.getSize(webpLossy, 'image/webp'), [256, 256], 'size (lossy)');
-	t.deepEquals(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');
-	t.equals(ImageUtils.getChannels(webpLossy, 'image/webp'), 4, 'channels');
-	t.equals(ImageUtils.getChannels(webpLossless, 'image/fake'), null, 'channels (other)');
-	t.equals(ImageUtils.getMemSize(webpLossy, 'image/webp'), 349524, 'gpuSize');
-	t.end();
-});
-
-test('@gltf-transform/core::image-utils | ktx2', { skip: !IS_NODEJS }, (t) => {
-	const ktx2 = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.ktx2')));
-
-	t.throws(() => ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), 'corrupt file');
-	t.deepEquals(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
-	t.equals(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
-	t.equals(ImageUtils.getMemSize(ktx2, 'image/ktx2'), 65536, 'gpuSize');
-	t.end();
-});
-
 test('@gltf-transform/core::image-utils | extensions', (t) => {
-	t.equals(ImageUtils.extensionToMimeType('ktx2'), 'image/ktx2', 'extensionToMimeType, inferred');
 	t.equals(ImageUtils.extensionToMimeType('jpg'), 'image/jpeg', 'extensionToMimeType, jpeg');
 	t.equals(ImageUtils.mimeTypeToExtension('image/png'), 'png', 'mimeTypeToExtension, inferred');
 	t.equals(ImageUtils.mimeTypeToExtension('image/jpeg'), 'jpg', 'mimeTypeToExtension, jpg');
