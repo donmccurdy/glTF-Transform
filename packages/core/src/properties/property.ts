@@ -1,4 +1,5 @@
 import { $attributes, GraphNode, GraphNodeAttributes, Link } from '../graph';
+import { isPlainObject } from '../utils/is-plain-object';
 import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -135,7 +136,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 				for (const link of value as Link<this, any>[]) {
 					link.dispose();
 				}
-			} else if (value && typeof value === 'object' && Object.values(value)[0] instanceof Link) {
+			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
 				for (const subkey in value) {
 					const link = this[$attributes][key][subkey] as Link<this, any>;
 					link.dispose();
@@ -154,13 +155,16 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 				for (const link of value as Link<this, any>[]) {
 					this[$attributes][key].push(this.graph.link(link.getName(), this, resolve(link.getChild())));
 				}
-			} else if (value && typeof value === 'object' && Object.values(value)[0] instanceof Link) {
+			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
 				for (const subkey in value) {
 					const link = other[$attributes][key][subkey] as Link<this, any>;
 					this[$attributes][key][subkey] = this.graph.link(link.getName(), this, resolve(link.getChild()));
 				}
-			} else if (value && typeof value === 'object') {
+			} else if (isPlainObject(value)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(other[$attributes][key]));
+			} else if (value && (value as ArrayBuffer).byteLength) {
+				// TODO(cleanup): Nice that this is consolidated, but do we want to change it?
+				this[$attributes][key] = other[$attributes][key].slice();
 			} else {
 				this[$attributes][key] = other[$attributes][key];
 			}
@@ -182,7 +186,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 				if (!equalsRefList(a as any, b as any)) return false;
 			} else if (isRefMap(a) || isRefMap(b)) {
 				if (!equalsRefMap(a as any, b as any)) return false;
-			} else if ((a && typeof a === 'object') || (b && typeof b === 'object')) {
+			} else if (isPlainObject(a) || isPlainObject(b)) {
 				// Object Literal, or empty RefMap. Both can be skipped – we don't compare extras.
 			} else {
 				// Literal.

@@ -1,10 +1,17 @@
-import { PropertyType, TypedArray } from '../constants';
-import { GraphChild, Link } from '../graph';
+import { Nullable, PropertyType, TypedArray } from '../constants';
 import { GLTF } from '../types/gltf';
 import { MathUtils } from '../utils';
 import { Buffer } from './buffer';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
+
+interface IAccessor {
+	array: TypedArray | null;
+	type: GLTF.AccessorType;
+	componentType: GLTF.AccessorComponentType;
+	normalized: boolean;
+	buffer: Buffer;
+}
 
 /**
  * # Accessor
@@ -62,7 +69,7 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Accessor extends ExtensibleProperty {
+export class Accessor extends ExtensibleProperty<IAccessor> {
 	public readonly propertyType = PropertyType.ACCESSOR;
 
 	/**********************************************************************************************
@@ -125,17 +132,15 @@ export class Accessor extends ExtensibleProperty {
 	 * Instance.
 	 */
 
-	/** @internal Raw data of the accessor. */
-	private _array: TypedArray | null = null;
-
-	/** @internal Type of element represented. */
-	private _type: GLTF.AccessorType = Accessor.Type.SCALAR;
-
-	/** @internal Numeric type of each component in an element. */
-	private _componentType: GLTF.AccessorComponentType = Accessor.ComponentType.FLOAT;
-
-	/** @internal Whether data in the raw array should be considered normalized. */
-	private _normalized = false;
+	protected getDefaultAttributes(): Nullable<IAccessor> {
+		return {
+			array: null,
+			type: Accessor.Type.SCALAR,
+			componentType: Accessor.ComponentType.FLOAT,
+			normalized: false,
+			buffer: null,
+		};
+	}
 
 	/** @internal Inbound transform to normalized representation, if applicable. */
 	private _in = MathUtils.identity;
@@ -143,22 +148,10 @@ export class Accessor extends ExtensibleProperty {
 	/** @internal Outbound transform from normalized representation, if applicable. */
 	private _out = MathUtils.identity;
 
-	/** @internal The {@link Buffer} to which this accessor's data will be written. */
-	@GraphChild private buffer: Link<Accessor, Buffer> | null = null;
-
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		super.copy(other, resolve);
-
-		this._type = other._type;
-		this._componentType = other._componentType;
-		this._normalized = other._normalized;
 		this._in = other._in;
 		this._out = other._out;
-
-		if (other._array) this._array = other._array.slice();
-
-		this.setBuffer(other.buffer ? resolve(other.buffer.getChild()) : null);
-
 		return this;
 	}
 
@@ -232,6 +225,7 @@ export class Accessor extends ExtensibleProperty {
 	 * reflect normalization: use {@link .getMinNormalized} in that case.
 	 */
 	public getMin(target: number[]): number[] {
+		const array = this.get('array');
 		const count = this.getCount();
 		const elementSize = this.getElementSize();
 
@@ -239,7 +233,7 @@ export class Accessor extends ExtensibleProperty {
 
 		for (let i = 0; i < count * elementSize; i += elementSize) {
 			for (let j = 0; j < elementSize; j++) {
-				const value = this._array![i + j];
+				const value = array![i + j];
 				if (Number.isFinite(value)) {
 					target[j] = Math.min(target[j], value);
 				}
@@ -269,6 +263,7 @@ export class Accessor extends ExtensibleProperty {
 	 * reflect normalization: use {@link .getMinNormalized} in that case.
 	 */
 	public getMax(target: number[]): number[] {
+		const array = this.get('array');
 		const count = this.getCount();
 		const elementSize = this.getElementSize();
 
@@ -276,7 +271,7 @@ export class Accessor extends ExtensibleProperty {
 
 		for (let i = 0; i < count * elementSize; i += elementSize) {
 			for (let j = 0; j < elementSize; j++) {
-				const value = this._array![i + j];
+				const value = array![i + j];
 				if (Number.isFinite(value)) {
 					target[j] = Math.max(target[j], value);
 				}
@@ -295,12 +290,13 @@ export class Accessor extends ExtensibleProperty {
 	 * will have a count of 10.
 	 */
 	public getCount(): number {
-		return this._array ? this._array.length / this.getElementSize() : 0;
+		const array = this.get('array');
+		return array ? array.length / this.getElementSize() : 0;
 	}
 
 	/** Type of element stored in the accessor. `VEC2`, `VEC3`, etc. */
 	public getType(): GLTF.AccessorType {
-		return this._type;
+		return this.get('type');
 	}
 
 	/**
@@ -308,8 +304,7 @@ export class Accessor extends ExtensibleProperty {
 	 * multiple of the component size (`VEC2` = 2, `VEC3` = 3, ...) for the selected type.
 	 */
 	public setType(type: GLTF.AccessorType): Accessor {
-		this._type = type;
-		return this;
+		return this.set('type', type);
 	}
 
 	/**
@@ -318,7 +313,7 @@ export class Accessor extends ExtensibleProperty {
 	 * accessor type, specified with {@link setType}().
 	 */
 	public getElementSize(): number {
-		return Accessor.getElementSize(this._type);
+		return Accessor.getElementSize(this.get('type'));
 	}
 
 	/**
@@ -326,7 +321,7 @@ export class Accessor extends ExtensibleProperty {
 	 * `componentSize` of data backed by a `float32` array is 4 bytes.
 	 */
 	public getComponentSize(): number {
-		return this._array!.BYTES_PER_ELEMENT;
+		return this.get('array')!.BYTES_PER_ELEMENT;
 	}
 
 	/**
@@ -334,7 +329,7 @@ export class Accessor extends ExtensibleProperty {
 	 * be modified by replacing the underlying array.
 	 */
 	public getComponentType(): GLTF.AccessorComponentType {
-		return this._componentType;
+		return this.get('componentType');
 	}
 
 	/**********************************************************************************************
@@ -348,7 +343,7 @@ export class Accessor extends ExtensibleProperty {
 	 * output data.
 	 */
 	public getNormalized(): boolean {
-		return this._normalized;
+		return this.get('normalized');
 	}
 
 	/**
@@ -358,11 +353,11 @@ export class Accessor extends ExtensibleProperty {
 	 * output data.
 	 */
 	public setNormalized(normalized: boolean): this {
-		this._normalized = normalized;
+		this.set('normalized', normalized);
 
 		if (normalized) {
-			this._out = (c: number): number => MathUtils.denormalize(c, this._componentType);
-			this._in = (f: number): number => MathUtils.normalize(f, this._componentType);
+			this._out = (c: number): number => MathUtils.denormalize(c, this.get('componentType'));
+			this._in = (f: number): number => MathUtils.normalize(f, this.get('componentType'));
 		} else {
 			this._out = MathUtils.identity;
 			this._in = MathUtils.identity;
@@ -381,7 +376,7 @@ export class Accessor extends ExtensibleProperty {
 	 */
 	public getScalar(index: number): number {
 		const elementSize = this.getElementSize();
-		return this._out(this._array![index * elementSize]);
+		return this._out(this.get('array')![index * elementSize]);
 	}
 
 	/**
@@ -389,7 +384,7 @@ export class Accessor extends ExtensibleProperty {
 	 * applicable.
 	 */
 	public setScalar(index: number, x: number): this {
-		this._array![index * this.getElementSize()] = this._in(x);
+		this.get('array')![index * this.getElementSize()] = this._in(x);
 		return this;
 	}
 
@@ -399,8 +394,9 @@ export class Accessor extends ExtensibleProperty {
 	 */
 	public getElement(index: number, target: number[]): number[] {
 		const elementSize = this.getElementSize();
+		const array = this.get('array')!;
 		for (let i = 0; i < elementSize; i++) {
-			target[i] = this._out(this._array![index * elementSize + i]);
+			target[i] = this._out(array[index * elementSize + i]);
 		}
 		return target;
 	}
@@ -411,8 +407,9 @@ export class Accessor extends ExtensibleProperty {
 	 */
 	public setElement(index: number, value: number[]): this {
 		const elementSize = this.getElementSize();
+		const array = this.get('array')!;
 		for (let i = 0; i < elementSize; i++) {
-			this._array![index * elementSize + i] = this._in(value[i]);
+			array![index * elementSize + i] = this._in(value[i]);
 		}
 		return this;
 	}
@@ -423,30 +420,30 @@ export class Accessor extends ExtensibleProperty {
 
 	/** Returns the {@link Buffer} into which this accessor will be organized. */
 	public getBuffer(): Buffer | null {
-		return this.buffer ? this.buffer.getChild() : null;
+		return this.getRef('buffer');
 	}
 
 	/** Assigns the {@link Buffer} into which this accessor will be organized. */
 	public setBuffer(buffer: Buffer | null): this {
-		this.buffer = this.graph.link('buffer', this, buffer);
-		return this;
+		return this.setRef('buffer', buffer);
 	}
 
 	/** Returns the raw typed array underlying this accessor. */
 	public getArray(): TypedArray | null {
-		return this._array;
+		return this.get('array');
 	}
 
 	/** Assigns the raw typed array underlying this accessor. */
 	public setArray(array: TypedArray): this {
-		this._componentType = array ? arrayToComponentType(array) : Accessor.ComponentType.FLOAT;
-		this._array = array;
+		this.set('componentType', array ? arrayToComponentType(array) : Accessor.ComponentType.FLOAT);
+		this.set('array', array);
 		return this;
 	}
 
 	/** Returns the total bytelength of this accessor, exclusive of padding. */
 	public getByteLength(): number {
-		return this._array ? this._array.byteLength : 0;
+		const array = this.get('array');
+		return array ? array.byteLength : 0;
 	}
 }
 
