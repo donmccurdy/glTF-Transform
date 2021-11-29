@@ -169,6 +169,30 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 		return this;
 	}
 
+	public equals(other: this): boolean {
+		if (this._name !== other._name) return false;
+
+		for (const key in this[$attributes]) {
+			const a = this[$attributes];
+			const b = other[$attributes];
+
+			if (isRef(a) || isRef(b)) {
+				if (!equalsRef(a as any, b as any)) return false;
+			} else if (isRefList(a) || isRefList(b)) {
+				if (!equalsRefList(a as any, b as any)) return false;
+			} else if (isRefMap(a) || isRefMap(b)) {
+				if (!equalsRefMap(a as any, b as any)) return false;
+			} else if ((a && typeof a === 'object') || (b && typeof b === 'object')) {
+				// Object Literal, or empty RefMap. Both can be skipped – we don't compare extras.
+			} else {
+				// Literal.
+				if (a !== b) return false;
+			}
+		}
+
+		return true;
+	}
+
 	public detach(): this {
 		// Detaching should keep properties in the same Document, and attached to its root.
 		this.graph.disconnectParents(this, (n: Property) => n.propertyType !== 'Root');
@@ -195,4 +219,60 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	public listParents(): Property[] {
 		return this.listGraphParents() as Property[];
 	}
+}
+
+function isRef(value: any): boolean {
+	return value instanceof Link;
+}
+
+function isRefList(value: any): boolean {
+	return Array.isArray(value) && value[0] instanceof Link;
+}
+
+function isRefMap(value: any): boolean {
+	return value && typeof value === 'object' && Object.values(value)[0] instanceof Link;
+}
+
+function equalsRef<Parent extends Property, Child extends Property>(
+	a: Link<Parent, Child>,
+	b: Link<Parent, Child>
+): boolean {
+	if (!!a !== !!b) return false;
+	return a.getChild().equals(b.getChild());
+}
+
+function equalsRefList<Parent extends Property, Child extends Property>(
+	a: Link<Parent, Child>[],
+	b: Link<Parent, Child>[]
+): boolean {
+	if (!!a !== !!b) return false;
+	if (a.length !== b.length) return false;
+
+	for (let i = 0; i < a.length; i++) {
+		if (!a[i].getChild().equals(b[i].getChild())) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function equalsRefMap<Parent extends Property, Child extends Property>(
+	a: { [key: string]: Link<Parent, Child> },
+	b: { [key: string]: Link<Parent, Child> }
+): boolean {
+	if (!!a !== !!b) return false;
+
+	const keysA = Object.keys(a);
+	const keysB = Object.keys(b);
+	if (keysA.length !== keysB.length) return false;
+
+	for (const key in a) {
+		const valueA = a[key];
+		const valueB = b[key];
+		if (!!valueA !== !!valueB) return false;
+		if (!valueA.getChild().equals(valueB.getChild())) return false;
+	}
+
+	return true;
 }
