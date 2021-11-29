@@ -1,9 +1,13 @@
-import { PropertyType } from '../constants';
-import { GraphChild, GraphChildList, Link } from '../graph';
+import { Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
-import { COPY_IDENTITY } from './property';
+
+interface ISkin {
+	skeleton: Node;
+	inverseBindMatrices: Accessor;
+	joints: Node[];
+}
 
 /**
  * # Skin
@@ -16,23 +20,11 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Skin extends ExtensibleProperty {
+export class Skin extends ExtensibleProperty<ISkin> {
 	public readonly propertyType = PropertyType.SKIN;
 
-	@GraphChild private skeleton: Link<Skin, Node> | null = null;
-	@GraphChild private inverseBindMatrices: Link<Skin, Accessor> | null = null;
-	@GraphChildList private joints: Link<Skin, Node>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.setSkeleton(other.skeleton ? resolve(other.skeleton.getChild()) : null);
-		this.setInverseBindMatrices(other.inverseBindMatrices ? resolve(other.inverseBindMatrices.getChild()) : null);
-
-		this.clearGraphChildList(this.joints);
-		other.joints.forEach((link) => this.addJoint(resolve(link.getChild())));
-
-		return this;
+	protected getDefaultAttributes(): Nullable<ISkin> {
+		return { skeleton: null, inverseBindMatrices: null, joints: [] };
 	}
 
 	/**
@@ -40,7 +32,7 @@ export class Skin extends ExtensibleProperty {
 	 * hierarchy or a direct or indirect parent node of the closest common root.
 	 */
 	public getSkeleton(): Node | null {
-		return this.skeleton ? this.skeleton.getChild() : null;
+		return this.getRef('skeleton');
 	}
 
 	/**
@@ -48,8 +40,7 @@ export class Skin extends ExtensibleProperty {
 	 * hierarchy or a direct or indirect parent node of the closest common root.
 	 */
 	public setSkeleton(skeleton: Node | null): this {
-		this.skeleton = this.graph.link('skeleton', this, skeleton);
-		return this;
+		return this.setRef('skeleton', skeleton);
 	}
 
 	/**
@@ -58,7 +49,7 @@ export class Skin extends ExtensibleProperty {
 	 * pre-applied.
 	 */
 	public getInverseBindMatrices(): Accessor | null {
-		return this.inverseBindMatrices ? this.inverseBindMatrices.getChild() : null;
+		return this.getRef('inverseBindMatrices');
 	}
 
 	/**
@@ -67,23 +58,21 @@ export class Skin extends ExtensibleProperty {
 	 * pre-applied.
 	 */
 	public setInverseBindMatrices(inverseBindMatrices: Accessor | null): this {
-		this.inverseBindMatrices = this.graph.link('inverseBindMatrices', this, inverseBindMatrices);
-		return this;
+		return this.setRef('inverseBindMatrices', inverseBindMatrices);
 	}
 
 	/** Adds a joint {@link Node} to this {@link Skin}. */
 	public addJoint(joint: Node): this {
-		const link = this.graph.link('joint', this, joint);
-		return this.addGraphChild(this.joints, link);
+		return this.addRef('joints', joint);
 	}
 
 	/** Removes a joint {@link Node} from this {@link Skin}. */
 	public removeJoint(joint: Node): this {
-		return this.removeGraphChild(this.joints, joint);
+		return this.removeRef('joints', joint);
 	}
 
 	/** Lists joints ({@link Node}s used as joints or bones) in this {@link Skin}. */
 	public listJoints(): Node[] {
-		return this.joints.map((link) => link.getChild());
+		return this.listRefs('joints');
 	}
 }
