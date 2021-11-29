@@ -200,8 +200,8 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	}
 
 	protected addRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		this[$attributes][key].push(this.graph.link(key as string, this, value));
-		return this;
+		const link = this.graph.link(key as string, this, value) as any;
+		return this.addGraphChild(this[$attributes][key], link);
 	}
 
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
