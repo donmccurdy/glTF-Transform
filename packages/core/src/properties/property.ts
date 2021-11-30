@@ -150,7 +150,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 		for (const key in other[$attributes]) {
 			const value = other[$attributes][key] as any;
 			if (value instanceof Link) {
-				this[$attributes][key] = this.graph.link(value.getName(), this, resolve(value.getChild()));
+				this[$attributes][key] = this.graph.link(value.getName(), this, resolve(value.getChild())) as any;
 			} else if (Array.isArray(value) && value[0] instanceof Link) {
 				for (const link of value as Link<this, any>[]) {
 					this[$attributes][key].push(this.graph.link(link.getName(), this, resolve(link.getChild())));

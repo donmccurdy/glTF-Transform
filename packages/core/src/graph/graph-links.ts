@@ -13,10 +13,14 @@ import { GraphNode } from './graph-node';
  */
 export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	private _disposed = false;
-	private _metadata = {};
 	private readonly _listeners: (() => void)[] = [];
 
-	constructor(private readonly _name: string, private readonly _parent: Parent, private _child: Child) {
+	constructor(
+		private readonly _name: string,
+		private readonly _parent: Parent,
+		private _child: Child,
+		private _metadata: Record<string, unknown> = {}
+	) {
 		if (!_parent.canLink(_child)) {
 			throw new Error('Cannot link disconnected graphs/documents.');
 		}
@@ -54,15 +58,6 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	 */
 	getMetadata(): Record<string, unknown> {
 		return this._metadata;
-	}
-
-	/**
-	 * Sets metadata about the parent/child relationship.
-	 * @internal
-	 */
-	setMetadata(metadata: Record<string, unknown>): this {
-		this._metadata = metadata;
-		return this;
 	}
 
 	/** Destroys a (currently intact) link, updating both the graph and the owner. */

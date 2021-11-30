@@ -5,7 +5,6 @@ import { Accessor } from './accessor';
 import { ExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';
-import { COPY_IDENTITY } from './property';
 
 interface IPrimitive {
 	mode: GLTF.MeshPrimitiveMode;
