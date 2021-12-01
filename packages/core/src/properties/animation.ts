@@ -46,7 +46,7 @@ interface IAnimation {
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class Animation extends ExtensibleProperty {
+export class Animation extends ExtensibleProperty<IAnimation> {
 	public readonly propertyType = PropertyType.ANIMATION;
 
 	protected getDefaultAttributes(): Nullable<IAnimation> {
