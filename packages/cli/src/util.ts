@@ -62,7 +62,9 @@ export function getTextureSlots (doc: Document, texture: Texture): string[] {
 export function getTextureChannels (doc: Document, texture: Texture): number {
 	let mask = 0x0000;
 	for (const link of doc.getGraph().listParentLinks(texture)) {
-		if (link instanceof TextureLink) mask |= link.channels;
+		// TODO(cleanup): Better type information for link metadata.
+		const { channels } = link.getMetadata() as { channels: number | undefined };
+		if (channels) mask |= channels;
 	}
 	return mask;
 }

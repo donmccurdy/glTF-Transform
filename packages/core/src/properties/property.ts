@@ -1,4 +1,4 @@
-import { $attributes, GraphNode, GraphNodeAttributes, Link } from '../graph';
+import { $attributes, $immutableKeys, GraphNode, GraphNodeAttributes, Link } from '../graph';
 import { isPlainObject } from '../utils/is-plain-object';
 import { PropertyGraph } from './property-graph';
 
@@ -44,11 +44,17 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	/** Property type. */
 	public abstract readonly propertyType: string;
 
+	/**
+	 * Internal graph used to search and maintain references.
+	 * @override
+	 */
+	protected declare readonly graph: PropertyGraph;
+
 	private _extras: Record<string, unknown> = {};
 	private _name = '';
 
 	/** @hidden */
-	constructor(protected readonly graph: PropertyGraph, name = '') {
+	constructor(graph: PropertyGraph, name = '') {
 		super(graph);
 		this._name = name;
 	}
@@ -131,7 +137,9 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 		for (const key in this[$attributes]) {
 			const value = this[$attributes][key] as any;
 			if (value instanceof Link) {
-				value.dispose();
+				if (!this[$immutableKeys].has(key)) {
+					value.dispose();
+				}
 			} else if (Array.isArray(value) && value[0] instanceof Link) {
 				for (const link of value as Link<this, any>[]) {
 					link.dispose();
@@ -144,21 +152,35 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 			}
 		}
 
-		// TODO(bug): Copy link metadata.
-
 		// Add new references.
 		for (const key in other[$attributes]) {
 			const value = other[$attributes][key] as any;
 			if (value instanceof Link) {
-				this[$attributes][key] = this.graph.link(value.getName(), this, resolve(value.getChild())) as any;
+				if (this[$immutableKeys].has(key)) {
+					this[$attributes][key].getChild().copy(resolve(value.getChild()), resolve);
+				} else {
+					this[$attributes][key] = this.graph.link(
+						value.getName(),
+						this,
+						resolve(value.getChild()),
+						value.getMetadata()
+					) as any;
+				}
 			} else if (Array.isArray(value) && value[0] instanceof Link) {
 				for (const link of value as Link<this, any>[]) {
-					this[$attributes][key].push(this.graph.link(link.getName(), this, resolve(link.getChild())));
+					this[$attributes][key].push(
+						this.graph.link(link.getName(), this, resolve(link.getChild()), link.getMetadata())
+					);
 				}
 			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
 				for (const subkey in value) {
 					const link = other[$attributes][key][subkey] as Link<this, any>;
-					this[$attributes][key][subkey] = this.graph.link(link.getName(), this, resolve(link.getChild()));
+					this[$attributes][key][subkey] = this.graph.link(
+						link.getName(),
+						this,
+						resolve(link.getChild()),
+						link.getMetadata()
+					);
 				}
 			} else if (isPlainObject(value)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(other[$attributes][key]));
@@ -177,8 +199,8 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 		if (this._name !== other._name) return false;
 
 		for (const key in this[$attributes]) {
-			const a = this[$attributes];
-			const b = other[$attributes];
+			const a = this[$attributes][key];
+			const b = other[$attributes][key];
 
 			if (isRef(a) || isRef(b)) {
 				if (!equalsRef(a as any, b as any)) return false;

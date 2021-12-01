@@ -30,6 +30,20 @@ export abstract class ExtensibleProperty<T extends GraphNodeAttributes = any> ex
 		return this;
 	}
 
+	public equals(other: this): boolean {
+		if (!super.equals(other)) return false;
+
+		// TODO(bug): Sort and compare on propertytype first.
+		const extensions = this.listExtensions();
+		const otherExtensions = other.listExtensions();
+		if (extensions.length !== otherExtensions.length) return false;
+		for (let i = 0; i < extensions.length; i++) {
+			if (!extensions[i].equals(otherExtensions[i])) return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Returns an {@link ExtensionProperty} attached to this Property, if any. *Not available on
 	 * {@link Root} properties.*

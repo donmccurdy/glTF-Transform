@@ -5,8 +5,6 @@ import { Link } from './graph-links';
 // References:
 // - https://stackoverflow.com/a/70163679/1314762
 
-// TODO(cleanup): Plain objects for edges.
-
 export type GraphNodeAttributes = Record<string, any>;
 
 type Literal = null | boolean | number | string | number[] | string[] | TypedArray | ArrayBuffer;
@@ -26,6 +24,7 @@ type GraphNodeAttributesInternal<Parent extends GraphNode, Attributes extends Gr
 };
 
 export const $attributes = Symbol('attributes');
+export const $immutableKeys = Symbol('immutableKeys');
 
 /**
  * Represents a node in a {@link Graph}.
@@ -36,16 +35,75 @@ export const $attributes = Symbol('attributes');
 export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	private _disposed = false;
 
-	/** @internal @hidden */
-	protected [$attributes] = this.getDefaultAttributes() as GraphNodeAttributesInternal<this, Attributes>;
+	/**
+	 * Internal graph used to search and maintain references.
+	 * @hidden
+	 */
+	protected readonly graph: Graph<GraphNode>;
 
-	constructor(protected readonly graph: Graph<GraphNode>) {
+	/**
+	 * Attributes (literal values and GraphNode references) associated with this instance. For each
+	 * GraphNode reference, the attributes stores a Link. List and Map references are stored as
+	 * arrays and dictionaries of Links.
+	 * @internal
+	 */
+	protected readonly [$attributes]: GraphNodeAttributesInternal<this, Attributes>;
+
+	/**
+	 * Attributes included with `getDefaultAttributes` are considered immutable, and cannot be
+	 * modifed by `.setRef()`, `.copy()`, or other GraphNode methods. Both the links and the
+	 * properties will be disposed with the parent GraphNode.
+	 *
+	 * Currently, only single-link references (getRef/setRef) are supported as immutables.
+	 *
+	 * @internal
+	 */
+	protected readonly [$immutableKeys]: Set<string>;
+
+	constructor(graph: Graph<GraphNode>) {
 		this.graph = graph;
+		this[$immutableKeys] = new Set();
+		this[$attributes] = this._createAttributes();
 	}
 
-	// TODO(cleanup): Should be abstract.
+	/**
+	 * Returns default attributes for the graph node. Subclasses having any attributes (either
+	 * literal values or references to other graph nodes) must override this method. Literal
+	 * attributes should be given their default values, if any. References should generally be
+	 * initialized as empty (Ref → null, RefList → [], RefMap → {}) and then modified by setters.
+	 *
+	 * Any single-link references (setRef) returned by this method will be considered immutable,
+	 * to be owned by and disposed with the parent node. Multi-link references (addRef, removeRef,
+	 * setRefMap) cannot be returned as default attributes.
+	 */
 	protected getDefaultAttributes(): Nullable<Attributes> {
-		return {} as any;
+		return {} as Nullable<Attributes>;
+	}
+
+	/**
+	 * Constructs and returns an object used to store a graph nodes attributes. Compared to the
+	 * default Attributes interface, this has two distinctions:
+	 *
+	 * 1. Slots for GraphNode<T> objects are replaced with slots for Link<this, GraphNode<T>>
+	 * 2. GraphNode<T> objects provided as defaults are considered immutable
+	 *
+	 * @internal
+	 */
+	private _createAttributes(): GraphNodeAttributesInternal<this, Attributes> {
+		const defaultAttributes = this.getDefaultAttributes();
+		const attributes = {} as GraphNodeAttributesInternal<this, Attributes>;
+		for (const key in defaultAttributes) {
+			const value = defaultAttributes[key] as any;
+			if (value instanceof GraphNode) {
+				const link = this.graph.link(key as string, this, value);
+				link.onDispose(() => value.dispose());
+				this[$immutableKeys].add(key);
+				attributes[key] = link as any;
+			} else {
+				attributes[key] = value as any;
+			}
+		}
+		return attributes;
 	}
 
 	/**
@@ -97,6 +155,10 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		this.graph.swapChild(this, old, replacement);
 		return this;
 	}
+
+	/**********************************************************************************************
+	 * Internal attribute management APIs.
+	 */
 
 	/**
 	 * Adds a Link to a managed {@link @GraphChildList}, and sets up a listener to
@@ -153,27 +215,39 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	}
 
 	/**********************************************************************************************
-	 * Attributes and references.
+	 * Literal attributes.
 	 */
 
+	/** @hidden */
 	protected get<K extends LiteralKeys<Attributes>>(key: K): Attributes[K] {
 		return this[$attributes][key];
 	}
 
+	/** @hidden */
 	protected set<K extends LiteralKeys<Attributes>>(key: K, value: Attributes[K]): this {
 		this[$attributes][key] = value;
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * 1:1 graph node references.
+	 */
+
+	/** @hidden */
 	protected getRef<K extends RefKeys<Attributes>>(key: K): Attributes[K] | null {
 		return this[$attributes][key] ? this[$attributes][key].getChild() : null;
 	}
 
+	/** @hidden */
 	protected setRef<K extends RefKeys<Attributes>>(
 		key: K,
 		value: Attributes[K] | null,
 		metadata?: Record<string, unknown>
 	): this {
+		if (this[$immutableKeys].has(key as string)) {
+			throw new Error(`Cannot overwrite immutable attribute, "${key}".`);
+		}
+
 		const prevLink = this[$attributes][key];
 		if (prevLink) prevLink.dispose();
 
@@ -185,10 +259,16 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		return this;
 	}
 
+	/**********************************************************************************************
+	 * 1:many graph node references.
+	 */
+
+	/** @hidden */
 	protected listRefs<K extends RefListKeys<Attributes>>(key: K): Attributes[K] {
 		return this[$attributes][key].map((link: Link<this, GraphNode>) => link.getChild());
 	}
 
+	/** @hidden */
 	protected addRef<K extends RefListKeys<Attributes>>(
 		key: K,
 		value: Attributes[K][keyof Attributes[K]],
@@ -198,18 +278,26 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		return this.addGraphChild(this[$attributes][key], link);
 	}
 
+	/** @hidden */
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
 		return this.removeGraphChild(this[$attributes][key], value);
 	}
 
+	/**********************************************************************************************
+	 * Named 1:many (map) graph node references.
+	 */
+
+	/** @hidden */
 	protected listRefMapKeys<K extends RefMapKeys<Attributes>>(key: K): string[] {
 		return Object.keys(this[$attributes][key]);
 	}
 
+	/** @hidden */
 	protected listRefMapValues<K extends RefMapKeys<Attributes>>(key: K): Attributes[K][keyof Attributes[K]][] {
 		return Object.values(this[$attributes][key]).map((link: any) => link.getChild());
 	}
 
+	/** @hidden */
 	protected getRefMap<K extends RefMapKeys<Attributes>>(
 		key: K,
 		subkey: string
@@ -217,6 +305,7 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		return this[$attributes][key][subkey] ? this[$attributes][key][subkey].getChild() : null;
 	}
 
+	/** @hidden */
 	protected setRefMap<K extends RefMapKeys<Attributes>>(
 		key: K,
 		subkey: string,

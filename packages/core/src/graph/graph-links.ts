@@ -52,10 +52,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 		return this;
 	}
 
-	/**
-	 * Metadata about the parent/child relationship.
-	 * @internal
-	 */
+	/** Metadata about the parent/child relationship. */
 	getMetadata(): Record<string, unknown> {
 		return this._metadata;
 	}
