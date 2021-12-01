@@ -1,13 +1,23 @@
 import { multiply } from 'gl-matrix/mat4';
-import { PropertyType, mat4, vec3, vec4 } from '../constants';
-import { GraphChild, GraphChildList } from '../graph/graph-decorators';
-import { Link } from '../graph/graph-links';
+import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants';
+import { $attributes } from '../graph';
 import { MathUtils } from '../utils';
 import { Camera } from './camera';
 import { ExtensibleProperty } from './extensible-property';
 import { Mesh } from './mesh';
 import { COPY_IDENTITY } from './property';
 import { Skin } from './skin';
+
+interface INode {
+	translation: vec3;
+	rotation: vec4;
+	scale: vec3;
+	weights: number[];
+	camera: Camera;
+	mesh: Mesh;
+	skin: Skin;
+	children: Node[];
+}
 
 /**
  * # Node
@@ -37,39 +47,31 @@ import { Skin } from './skin';
  *
  * @category Properties
  */
-export class Node extends ExtensibleProperty {
+export class Node extends ExtensibleProperty<INode> {
 	public readonly propertyType = PropertyType.NODE;
-	private _translation: vec3 = [0, 0, 0];
-	private _rotation: vec4 = [0, 0, 0, 1];
-	private _scale: vec3 = [1, 1, 1];
-	private _weights: number[] = [];
 
 	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
 	public _parent: SceneNode | null = null;
 
-	@GraphChild private camera: Link<Node, Camera> | null = null;
-	@GraphChild private mesh: Link<Node, Mesh> | null = null;
-	@GraphChild private skin: Link<Node, Skin> | null = null;
-	@GraphChildList private children: Link<Node, Node>[] = [];
+	protected getDefaultAttributes(): Nullable<INode> {
+		return {
+			translation: [0, 0, 0],
+			rotation: [0, 0, 0, 1],
+			scale: [1, 1, 1],
+			weights: [],
+			camera: null,
+			mesh: null,
+			skin: null,
+			children: [],
+		};
+	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._translation = [...other._translation] as vec3;
-		this._rotation = [...other._rotation] as vec4;
-		this._scale = [...other._scale] as vec3;
-		this._weights = [...other._weights];
-
-		this.setCamera(other.camera ? resolve(other.camera.getChild()) : null);
-		this.setMesh(other.mesh ? resolve(other.mesh.getChild()) : null);
-		this.setSkin(other.skin ? resolve(other.skin.getChild()) : null);
-
-		if (resolve !== COPY_IDENTITY) {
-			this.clearGraphChildList(this.children);
-			other.children.forEach((link) => this.addChild(resolve(link.getChild())));
-		}
-
-		return this;
+		// Node cannot be cloned in isolation: the cloning process is shallow, but nodes cannot
+		// have more than one parent. Rather than leaving one of the two nodes without children,
+		// throw an error here.
+		if (resolve === COPY_IDENTITY) throw new Error('Node cannot be copied.');
+		return super.copy(other, resolve);
 	}
 
 	/**********************************************************************************************
@@ -78,45 +80,49 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the translation (position) of this node in local space. */
 	public getTranslation(): vec3 {
-		return this._translation;
+		return this.get('translation');
 	}
 
 	/** Returns the rotation (quaternion) of this node in local space. */
 	public getRotation(): vec4 {
-		return this._rotation;
+		return this.get('rotation');
 	}
 
 	/** Returns the scale of this node in local space. */
 	public getScale(): vec3 {
-		return this._scale;
+		return this.get('scale');
 	}
 
 	/** Sets the translation (position) of this node in local space. */
 	public setTranslation(translation: vec3): this {
-		this._translation = translation;
-		return this;
+		return this.set('translation', translation);
 	}
 
 	/** Sets the rotation (quaternion) of this node in local space. */
 	public setRotation(rotation: vec4): this {
-		this._rotation = rotation;
-		return this;
+		return this.set('rotation', rotation);
 	}
 
 	/** Sets the scale of this node in local space. */
 	public setScale(scale: vec3): this {
-		this._scale = scale;
-		return this;
+		return this.set('scale', scale);
 	}
 
 	/** Returns the local matrix of this node. */
 	public getMatrix(): mat4 {
-		return MathUtils.compose(this._translation, this._rotation, this._scale, [] as unknown as mat4);
+		const translation = this.get('translation');
+		const rotation = this.get('rotation');
+		const scale = this.get('scale');
+		return MathUtils.compose(translation, rotation, scale, [] as unknown as mat4);
 	}
 
 	/** Sets the local matrix of this node. Matrix will be decomposed to TRS properties. */
 	public setMatrix(matrix: mat4): this {
-		MathUtils.decompose(matrix, this._translation, this._rotation, this._scale);
+		const translation = this.get('translation').slice() as vec3;
+		const rotation = this.get('rotation').slice() as vec4;
+		const scale = this.get('scale').slice() as vec3;
+		MathUtils.decompose(matrix, translation, rotation, scale);
+		this.set('translation', translation).set('rotation', rotation).set('scale', scale);
 		return this;
 	}
 
@@ -174,23 +180,25 @@ export class Node extends ExtensibleProperty {
 		if (child._parent) child._parent.removeChild(child);
 
 		// Link in graph.
-		const link = this.graph.link('child', this, child);
-		this.addGraphChild(this.children, link);
+		this.addRef('children', child);
 
 		// Set new parent.
+		// TODO(cleanup): Avoid using $attributes here?
 		child._parent = this;
+		const childrenLinks = this[$attributes]['children'];
+		const link = childrenLinks[childrenLinks.length - 1];
 		link.onDispose(() => (child._parent = null));
 		return this;
 	}
 
 	/** Removes a node from this node's child node list. */
 	public removeChild(child: Node): this {
-		return this.removeGraphChild(this.children, child);
+		return this.removeRef('children', child);
 	}
 
 	/** Lists all child nodes of this node. */
 	public listChildren(): Node[] {
-		return this.children.map((link) => link.getChild());
+		return this.listRefs('children');
 	}
 
 	/**
@@ -207,7 +215,7 @@ export class Node extends ExtensibleProperty {
 
 	/** Returns the {@link Mesh}, if any, instantiated at this node. */
 	public getMesh(): Mesh | null {
-		return this.mesh ? this.mesh.getChild() : null;
+		return this.getRef('mesh');
 	}
 
 	/**
@@ -215,30 +223,27 @@ export class Node extends ExtensibleProperty {
 	 * multiple nodes; reuse of this sort is strongly encouraged.
 	 */
 	public setMesh(mesh: Mesh | null): this {
-		this.mesh = this.graph.link('mesh', this, mesh);
-		return this;
+		return this.setRef('mesh', mesh);
 	}
 
 	/** Returns the {@link Camera}, if any, instantiated at this node. */
 	public getCamera(): Camera | null {
-		return this.camera ? this.camera.getChild() : null;
+		return this.getRef('camera');
 	}
 
 	/** Sets a {@link Camera} to be instantiated at this node. */
 	public setCamera(camera: Camera | null): this {
-		this.camera = this.graph.link('camera', this, camera);
-		return this;
+		return this.setRef('camera', camera);
 	}
 
 	/** Returns the {@link Skin}, if any, instantiated at this node. */
 	public getSkin(): Skin | null {
-		return this.skin ? this.skin.getChild() : null;
+		return this.getRef('skin');
 	}
 
 	/** Sets a {@link Skin} to be instantiated at this node. */
 	public setSkin(skin: Skin | null): this {
-		this.skin = this.graph.link('skin', this, skin);
-		return this;
+		return this.setRef('skin', skin);
 	}
 
 	/**
@@ -246,7 +251,7 @@ export class Node extends ExtensibleProperty {
 	 * Most engines only support 4-8 active morph targets at a time.
 	 */
 	public getWeights(): number[] {
-		return this._weights;
+		return this.get('weights');
 	}
 
 	/**
@@ -254,8 +259,7 @@ export class Node extends ExtensibleProperty {
 	 * Most engines only support 4-8 active morph targets at a time.
 	 */
 	public setWeights(weights: number[]): this {
-		this._weights = weights;
-		return this;
+		return this.set('weights', weights);
 	}
 
 	/**********************************************************************************************

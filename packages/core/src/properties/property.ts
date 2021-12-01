@@ -1,5 +1,5 @@
 import { $attributes, $immutableKeys, GraphNode, GraphNodeAttributes, Link } from '../graph';
-import { isPlainObject } from '../utils/is-plain-object';
+import { isPlainObject } from '../utils';
 import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -183,12 +183,11 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 					);
 				}
 			} else if (isPlainObject(value)) {
-				this[$attributes][key] = JSON.parse(JSON.stringify(other[$attributes][key]));
-			} else if (value && (value as ArrayBuffer).byteLength) {
-				// TODO(cleanup): Nice that this is consolidated, but do we want to change it?
-				this[$attributes][key] = other[$attributes][key].slice();
+				this[$attributes][key] = JSON.parse(JSON.stringify(value));
+			} else if (Array.isArray(value) || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+				this[$attributes][key] = (value as Uint8Array).slice() as any;
 			} else {
-				this[$attributes][key] = other[$attributes][key];
+				this[$attributes][key] = value;
 			}
 		}
 
@@ -210,6 +209,8 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 				if (!equalsRefMap(a as any, b as any)) return false;
 			} else if (isPlainObject(a) || isPlainObject(b)) {
 				// Object Literal, or empty RefMap. Both can be skipped – we don't compare extras.
+			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
+				if (!equalsArray(a as [], b as [])) return false;
 			} else {
 				// Literal.
 				if (a !== b) return false;
@@ -298,6 +299,18 @@ function equalsRefMap<Parent extends Property, Child extends Property>(
 		const valueB = b[key];
 		if (!!valueA !== !!valueB) return false;
 		if (!valueA.getChild().equals(valueB.getChild())) return false;
+	}
+
+	return true;
+}
+
+function equalsArray(a: ArrayLike<unknown>, b: ArrayLike<unknown>): boolean {
+	if (!!a !== !!b) return false;
+
+	if (a.length !== b.length) return false;
+
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) return false;
 	}
 
 	return true;

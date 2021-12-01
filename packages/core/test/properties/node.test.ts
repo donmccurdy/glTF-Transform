@@ -31,18 +31,19 @@ test('@gltf-transform/core::node | copy', (t) => {
 		.setSkin(doc.createSkin())
 		.addChild(doc.createNode('OtherNode'));
 
-	const node2 = doc.createNode().copy(node);
-	t.equals(node2.getName(), 'MyNode', 'copy name');
-	t.deepEqual(node2.getTranslation(), [1, 2, 3], 'copy translation');
-	t.deepEqual(node2.getRotation(), [1, 0, 1, 0], 'copy rotation');
-	t.deepEqual(node2.getScale(), [2, 2, 2], 'copy scale');
-	t.deepEqual(node2.getWeights(), [1.5, 1.5], 'copy weights');
+	// TODO(cleanup): Is this behavior reasonable?
+	t.throws(() => doc.createNode().copy(node), /Node cannot be copied/, 'cannot copy node');
+	// t.equals(node2.getName(), 'MyNode', 'copy name');
+	// t.deepEqual(node2.getTranslation(), [1, 2, 3], 'copy translation');
+	// t.deepEqual(node2.getRotation(), [1, 0, 1, 0], 'copy rotation');
+	// t.deepEqual(node2.getScale(), [2, 2, 2], 'copy scale');
+	// t.deepEqual(node2.getWeights(), [1.5, 1.5], 'copy weights');
 
-	t.equals(node2.getCamera(), node.getCamera(), 'copy camera');
-	t.equals(node2.getMesh(), node.getMesh(), 'copy mesh');
-	t.equals(node2.getSkin(), node.getSkin(), 'copy skin');
-	t.deepEquals(node2.listChildren(), [], "don't copy children");
-	t.deepEquals(node.listChildren().length, 1, 'retain children');
+	// t.equals(node2.getCamera(), node.getCamera(), 'copy camera');
+	// t.equals(node2.getMesh(), node.getMesh(), 'copy mesh');
+	// t.equals(node2.getSkin(), node.getSkin(), 'copy skin');
+	// t.deepEquals(node2.listChildren(), [], "don't copy children");
+	// t.deepEquals(node.listChildren().length, 1, 'retain children');
 
 	t.end();
 });

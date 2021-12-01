@@ -46,7 +46,6 @@ export class Scene extends ExtensibleProperty<IScene> {
 
 		// Link in graph.
 		this.addRef('children', node);
-		node._parent = this;
 
 		// Set new parent.
 		// TODO(cleanup): Avoid using $attributes here?
