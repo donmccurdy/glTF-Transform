@@ -1,9 +1,15 @@
-import { PropertyType } from '../constants';
+import { Nullable, PropertyType } from '../constants';
 import { GraphChild, Link } from '../graph';
 import { GLTF } from '../types/gltf';
 import { AnimationSampler } from './animation-sampler';
 import { Node } from './node';
 import { COPY_IDENTITY, Property } from './property';
+
+interface IAnimationChannel {
+	targetPath: GLTF.AnimationChannelTargetPath | null;
+	targetNode: Node;
+	sampler: AnimationSampler;
+}
 
 /**
  * # AnimationChannel
@@ -34,7 +40,7 @@ import { COPY_IDENTITY, Property } from './property';
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class AnimationChannel extends Property {
+export class AnimationChannel extends Property<IAnimationChannel> {
 	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
 
 	/**********************************************************************************************
@@ -57,19 +63,12 @@ export class AnimationChannel extends Property {
 	 * Instance.
 	 */
 
-	private _targetPath: GLTF.AnimationChannelTargetPath | null = null;
-	@GraphChild private targetNode: Link<AnimationChannel, Node> | null = null;
-	@GraphChild private sampler: Link<AnimationChannel, AnimationSampler> | null = null;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._targetPath = other._targetPath;
-
-		this.setTargetNode(other.targetNode ? resolve(other.targetNode.getChild()) : null);
-		this.setSampler(other.sampler ? resolve(other.sampler.getChild()) : null);
-
-		return this;
+	protected getDefaultAttributes(): Nullable<IAnimationChannel> {
+		return {
+			targetPath: null,
+			targetNode: null,
+			sampler: null,
+		};
 	}
 
 	/**********************************************************************************************
@@ -81,7 +80,7 @@ export class AnimationChannel extends Property {
 	 * `translation`, `rotation`, `scale`, or `weights`.
 	 */
 	public getTargetPath(): GLTF.AnimationChannelTargetPath | null {
-		return this._targetPath;
+		return this.get('targetPath');
 	}
 
 	/**
@@ -89,19 +88,17 @@ export class AnimationChannel extends Property {
 	 * `translation`, `rotation`, `scale`, or `weights`.
 	 */
 	public setTargetPath(targetPath: GLTF.AnimationChannelTargetPath): this {
-		this._targetPath = targetPath;
-		return this;
+		return this.set('targetPath', targetPath);
 	}
 
 	/** Target {@link Node} animated by the channel. */
 	public getTargetNode(): Node | null {
-		return this.targetNode ? this.targetNode.getChild() : null;
+		return this.getRef('targetNode');
 	}
 
 	/** Target {@link Node} animated by the channel. */
 	public setTargetNode(targetNode: Node | null): this {
-		this.targetNode = this.graph.link('target.node', this, targetNode);
-		return this;
+		return this.setRef('targetNode', targetNode);
 	}
 
 	/**
@@ -109,7 +106,7 @@ export class AnimationChannel extends Property {
 	 * {@link Animation}.
 	 */
 	public getSampler(): AnimationSampler | null {
-		return this.sampler ? this.sampler.getChild() : null;
+		return this.getRef('sampler');
 	}
 
 	/**
@@ -117,7 +114,6 @@ export class AnimationChannel extends Property {
 	 * {@link Animation}.
 	 */
 	public setSampler(sampler: AnimationSampler | null): this {
-		this.sampler = this.graph.link('sampler', this, sampler);
-		return this;
+		return this.setRef('sampler', sampler);
 	}
 }

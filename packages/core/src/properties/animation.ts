@@ -1,9 +1,14 @@
-import { PropertyType } from '../constants';
+import { Nullable, PropertyType } from '../constants';
 import { GraphChildList, Link } from '../graph';
 import { AnimationChannel } from './animation-channel';
 import { AnimationSampler } from './animation-sampler';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
+
+interface IAnimation {
+	channels: AnimationChannel[];
+	samplers: AnimationSampler[];
+}
 
 /**
  * # Animation
@@ -43,50 +48,38 @@ import { COPY_IDENTITY } from './property';
  */
 export class Animation extends ExtensibleProperty {
 	public readonly propertyType = PropertyType.ANIMATION;
-	@GraphChildList private channels: Link<Animation, AnimationChannel>[] = [];
-	@GraphChildList private samplers: Link<Animation, AnimationSampler>[] = [];
 
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.clearGraphChildList(this.channels);
-		this.clearGraphChildList(this.samplers);
-
-		other.channels.forEach((link) => this.addChannel(resolve(link.getChild())));
-		other.samplers.forEach((link) => this.addSampler(resolve(link.getChild())));
-
-		return this;
+	protected getDefaultAttributes(): Nullable<IAnimation> {
+		return { channels: [], samplers: [] };
 	}
 
 	/** Adds an {@link AnimationChannel} to this Animation. */
 	public addChannel(channel: AnimationChannel): this {
-		const link = this.graph.link('channel', this, channel);
-		return this.addGraphChild(this.channels, link);
+		return this.addRef('channels', channel);
 	}
 
 	/** Removes an {@link AnimationChannel} from this Animation. */
 	public removeChannel(channel: AnimationChannel): this {
-		return this.removeGraphChild(this.channels, channel);
+		return this.removeRef('channels', channel);
 	}
 
 	/** Lists {@link AnimationChannel}s in this Animation. */
 	public listChannels(): AnimationChannel[] {
-		return this.channels.map((link) => link.getChild());
+		return this.listRefs('channels');
 	}
 
 	/** Adds an {@link AnimationSampler} to this Animation. */
 	public addSampler(sampler: AnimationSampler): this {
-		const link = this.graph.link('sampler', this, sampler);
-		return this.addGraphChild(this.samplers, link);
+		return this.addRef('samplers', sampler);
 	}
 
 	/** Removes an {@link AnimationSampler} from this Animation. */
 	public removeSampler(sampler: AnimationSampler): this {
-		return this.removeGraphChild(this.samplers, sampler);
+		return this.removeRef('samplers', sampler);
 	}
 
 	/** Lists {@link AnimationSampler}s in this Animation. */
 	public listSamplers(): AnimationSampler[] {
-		return this.samplers.map((link) => link.getChild());
+		return this.listRefs('samplers');
 	}
 }
