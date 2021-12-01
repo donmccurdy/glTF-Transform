@@ -1,8 +1,12 @@
-import { PropertyType } from '../constants';
-import { GraphChildList, Link } from '../graph/index';
+import { Nullable, PropertyType } from '../constants';
+import { $attributes } from '../graph';
 import { ExtensibleProperty } from './extensible-property';
 import { Node } from './node';
 import { COPY_IDENTITY } from './property';
+
+interface IScene {
+	children: Node[];
+}
 
 /**
  * # Scene
@@ -20,20 +24,19 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Scene extends ExtensibleProperty {
+export class Scene extends ExtensibleProperty<IScene> {
 	public readonly propertyType = PropertyType.SCENE;
 
-	@GraphChildList private children: Link<Scene, Node>[] = [];
+	protected getDefaultAttributes(): Nullable<IScene> {
+		return { children: [] };
+	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		if (resolve !== COPY_IDENTITY) {
-			this.clearGraphChildList(this.children);
-			other.children.forEach((link) => this.addChild(resolve(link.getChild())));
-		}
-
-		return this;
+		// Scene cannot be cloned in isolation: the cloning process is shallow, but nodes cannot
+		// have more than one parent. Rather than leaving one of the two scenes without children,
+		// throw an error here.
+		if (resolve === COPY_IDENTITY) throw new Error('Scene cannot be copied.');
+		return super.copy(other, resolve);
 	}
 
 	/** Adds a {@link Node} to the scene. */
@@ -42,23 +45,26 @@ export class Scene extends ExtensibleProperty {
 		if (node._parent) node._parent.removeChild(node);
 
 		// Link in graph.
-		const link = this.graph.link('child', this, node);
-		this.addGraphChild(this.children, link);
+		this.addRef('children', node);
+		node._parent = this;
 
 		// Set new parent.
+		// TODO(cleanup): Avoid using $attributes here?
 		node._parent = this;
+		const childrenLinks = this[$attributes]['children'];
+		const link = childrenLinks[childrenLinks.length - 1];
 		link.onDispose(() => (node._parent = null));
 		return this;
 	}
 
 	/** Removes a {@link Node} from the scene. */
 	public removeChild(node: Node): this {
-		return this.removeGraphChild(this.children, node);
+		return this.removeRef('children', node);
 	}
 
 	/** Lists all root {@link Node}s in the scene. */
 	public listChildren(): Node[] {
-		return this.children.map((p) => p.getChild());
+		return this.listRefs('children');
 	}
 
 	/** Visits each {@link Node} in the scene, including descendants, top-down. */
