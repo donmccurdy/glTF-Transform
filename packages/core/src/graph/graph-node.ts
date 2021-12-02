@@ -175,7 +175,7 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 
 	/** @hidden */
 	protected set<K extends LiteralKeys<Attributes>>(key: K, value: Attributes[K]): this {
-		this[$attributes][key] = value;
+		(this[$attributes][key] as Attributes[K]) = value;
 		return this;
 	}
 
