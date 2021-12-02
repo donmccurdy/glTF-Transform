@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Format, Link, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
+import { Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInfo } from '../../';
 
 const { R, G, B, A } = TextureChannel;
 

@@ -309,8 +309,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	}
 
 	/** Sets normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
-	public setNormalScale(normalScale: number): this {
-		return this.set('normalScale', normalScale);
+	public setNormalScale(scale: number): this {
+		return this.set('normalScale', scale);
 	}
 
 	/**
@@ -352,8 +352,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	}
 
 	/** Sets (ambient) occlusion factor; linear multiplier. Affects `.occlusionTexture`. */
-	public setOcclusionStrength(occlusionStrength: number): this {
-		return this.set('occlusionStrength', occlusionStrength);
+	public setOcclusionStrength(strength: number): this {
+		return this.set('occlusionStrength', strength);
 	}
 
 	/**
@@ -401,8 +401,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Sets roughness factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public setRoughnessFactor(roughnessFactor: number): this {
-		return this.set('roughnessFactor', roughnessFactor);
+	public setRoughnessFactor(factor: number): this {
+		return this.set('roughnessFactor', factor);
 	}
 
 	/**
@@ -417,8 +417,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Sets metallic factor; linear multiplier. Affects roughness channel of
 	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
 	 */
-	public setMetallicFactor(metallicFactor: number): this {
-		return this.set('metallicFactor', metallicFactor);
+	public setMetallicFactor(factor: number): this {
+		return this.set('metallicFactor', factor);
 	}
 
 	/**

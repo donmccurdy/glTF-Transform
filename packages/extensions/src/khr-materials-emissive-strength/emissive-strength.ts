@@ -1,5 +1,10 @@
 import { COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
-import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
+import { IProperty } from 'core/dist/properties';
+import { KHR_MATERIALS_EMISSIVE_STRENGTH, Nullable } from '../constants';
+
+interface IEmissiveStrength extends IProperty {
+	emissiveStrength: number;
+}
 
 /**
  * # EmissiveStrength
@@ -7,20 +12,14 @@ import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
  * Defines emissive strength for a PBR {@link Material}, allowing high-dynamic-range
  * (HDR) emissive materials. See {@link MaterialsEmissiveStrength}.
  */
-export class EmissiveStrength extends ExtensionProperty {
+export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
 	public readonly propertyType = 'EmissiveStrength';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_EMISSIVE_STRENGTH;
 	public static EXTENSION_NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
 
-	private _emissiveStrength = 1.0;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._emissiveStrength = other._emissiveStrength;
-
-		return this;
+	protected getDefaultAttributes(): Nullable<IEmissiveStrength> {
+		return Object.assign(super.getDefaultAttributes(), { emissiveStrength: 1.0 });
 	}
 
 	/**********************************************************************************************
@@ -28,11 +27,12 @@ export class EmissiveStrength extends ExtensionProperty {
 	 */
 
 	/** EmissiveStrength. */
-	public getEmissiveStrength(): number { return this._emissiveStrength; }
+	public getEmissiveStrength(): number {
+		return this.get('emissiveStrength');
+	}
 
 	/** EmissiveStrength. */
-	public setEmissiveStrength(emissiveStrength: number): this {
-		this._emissiveStrength = emissiveStrength;
-		return this;
+	public setEmissiveStrength(strength: number): this {
+		return this.set('emissiveStrength', strength);
 	}
 }

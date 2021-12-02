@@ -1,56 +1,51 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, GraphChildList, Link, Material } from '@gltf-transform/core';
-import { KHR_MATERIALS_VARIANTS } from '../constants';
+import { ExtensionProperty, Material } from '@gltf-transform/core';
+import { IProperty } from 'core/dist/properties';
+import { KHR_MATERIALS_VARIANTS, Nullable } from '../constants';
 import { Variant } from './variant';
+
+interface IMapping extends IProperty {
+	material: Material;
+	variants: Variant[];
+}
 
 /**
  * # Mapping
  *
  * Maps {@link Variant}s to {@link Material}s. See {@link MaterialsVariants}.
  */
-export class Mapping extends ExtensionProperty {
+export class Mapping extends ExtensionProperty<IMapping> {
 	public readonly propertyType = 'Mapping';
 	public readonly parentTypes = ['MappingList'];
 	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
 
-	@GraphChild private material: Link<this, Material> | null = null;
-	@GraphChildList private variants: Link<this, Variant>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
-
-		this.clearGraphChildList(this.variants);
-		other.variants.forEach((link) => this.addVariant(resolve(link.getChild())));
-
-		return this;
+	protected getDefaultAttributes(): Nullable<IMapping> {
+		// TODO(cleanup): Can we get this type-checked?
+		return Object.assign(super.getDefaultAttributes(), { material: null, variants: [] });
 	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */
 	public getMaterial(): Material | null {
-		return this.material ? this.material.getChild() : null;
+		return this.getRef('material');
 	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */
 	public setMaterial(material: Material | null): this {
-		this.material = this.graph.link('material', this, material);
-		return this;
+		return this.setRef('material', material);
 	}
 
 	/** Adds a {@link Variant} to this mapping. */
 	public addVariant(variant: Variant): this {
-		const link = this.graph.link('variant', this, variant);
-		return this.addGraphChild(this.variants, link);
+		return this.addRef('variants', variant);
 	}
 
 	/** Removes a {@link Variant} from this mapping. */
 	public removeVariant(variant: Variant): this {
-		return this.removeGraphChild(this.variants, variant);
+		return this.removeRef('variants', variant);
 	}
 
 	/** Lists {@link Variant}s in this mapping. */
 	public listVariants(): Variant[] {
-		return this.variants.map((link) => link.getChild());
+		return this.listRefs('variants');
 	}
 }

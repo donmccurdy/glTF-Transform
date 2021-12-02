@@ -1,7 +1,6 @@
 import { Nullable } from '../constants';
-import { $attributes, $immutableKeys, GraphNode, Link } from '../graph';
+import { $attributes, $immutableKeys, Graph, GraphNode, Link } from '../graph';
 import { isPlainObject } from '../utils';
-import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
@@ -54,10 +53,10 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * Internal graph used to search and maintain references.
 	 * @override
 	 */
-	protected declare readonly graph: PropertyGraph;
+	protected declare readonly graph: Graph<Property>;
 
 	/** @hidden */
-	constructor(graph: PropertyGraph, name = '') {
+	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
 		(this as Property).set('name', name);
 	}
@@ -118,7 +117,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public clone(): this {
 		// NOTICE: Keep in sync with `./extension-property.ts`.
 
-		const PropertyClass = this.constructor as new (g: PropertyGraph) => this;
+		const PropertyClass = this.constructor as new (g: Graph<Property>) => this;
 		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.

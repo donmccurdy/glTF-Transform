@@ -1,5 +1,6 @@
 import { Nullable, PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
+import { Graph } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
@@ -9,7 +10,6 @@ import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
 import { COPY_IDENTITY, IProperty, Property } from './property';
-import { PropertyGraph } from './property-graph';
 import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
@@ -89,7 +89,7 @@ export class Root extends Property<IRoot> {
 	}
 
 	/** @internal */
-	constructor(graph: PropertyGraph) {
+	constructor(graph: Graph<Property>) {
 		super(graph);
 		graph.on('clone', (target) => this._addChildOfRoot(target));
 	}

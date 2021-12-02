@@ -1,5 +1,6 @@
 import { PropertyType } from './constants';
 import { Extension } from './extension';
+import { Graph } from './graph';
 import {
 	Accessor,
 	Animation,
@@ -14,7 +15,6 @@ import {
 	Primitive,
 	PrimitiveTarget,
 	Property,
-	PropertyGraph,
 	Root,
 	Scene,
 	Skin,
@@ -76,7 +76,7 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
  * @category Documents
  */
 export class Document {
-	private _graph: PropertyGraph = new PropertyGraph();
+	private _graph: Graph<Property> = new Graph<Property>();
 	private _root: Root = new Root(this._graph);
 	private _logger = Logger.DEFAULT_INSTANCE;
 
@@ -90,7 +90,7 @@ export class Document {
 	 *
 	 * @hidden
 	 */
-	public getGraph(): PropertyGraph {
+	public getGraph(): Graph<Property> {
 		return this._graph;
 	}
 
@@ -150,7 +150,7 @@ export class Document {
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as new (g: PropertyGraph, e?: Extension) => Property;
+					const PropertyClass = thisProp.constructor as new (g: Graph<Property>, e?: Extension) => Property;
 					otherProp =
 						thisProp instanceof ExtensionProperty
 							? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])

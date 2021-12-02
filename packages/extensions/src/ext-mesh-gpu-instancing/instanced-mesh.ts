@@ -1,7 +1,8 @@
-import { Accessor, COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
+import { Accessor, ExtensionProperty, PropertyType } from '@gltf-transform/core';
+import { IProperty } from 'core/dist/properties';
 import { EXT_MESH_GPU_INSTANCING, Nullable } from '../constants';
 
-interface IInstancedMesh {
+interface IInstancedMesh extends IProperty {
 	attributes: { [key: string]: Accessor };
 }
 
@@ -17,7 +18,7 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;
 
 	protected getDefaultAttributes(): Nullable<IInstancedMesh> {
-		return { attributes: {} };
+		return Object.assign(super.getDefaultAttributes(), { attributes: {} });
 	}
 
 	/** Returns an instance attribute as an {@link Accessor}. */

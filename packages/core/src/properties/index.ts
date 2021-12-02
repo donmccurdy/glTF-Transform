@@ -6,8 +6,6 @@ export * from './buffer';
 export * from './camera';
 export * from './extension-property';
 export * from './property';
-export * from './property-graph';
-export * from './property-links';
 export * from './material';
 export * from './mesh';
 export * from './node';

@@ -2,7 +2,7 @@
 const { spawnSync: _spawnSync } = require('child_process');
 
 import { sync as _commandExistsSync } from 'command-exists';
-import { Document, FileUtils, Logger, NodeIO, Texture, TextureLink, Transform } from '@gltf-transform/core';
+import { Document, FileUtils, Logger, NodeIO, Texture, Transform } from '@gltf-transform/core';
 
 // Mock for tests.
 

@@ -1,6 +1,6 @@
+import { Graph } from '../graph';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY, Property, IProperty } from './property';
-import { PropertyGraph } from './property-graph';
 
 /** @hidden */
 export interface ExtensionPropertyParent {
@@ -32,7 +32,7 @@ export abstract class ExtensionProperty<T extends IProperty = IProperty> extends
 	public abstract readonly parentTypes: string[];
 
 	/** @hidden */
-	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
+	constructor(graph: Graph<Property>, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
 		this._extension.addExtensionProperty(this);
 	}
@@ -40,7 +40,7 @@ export abstract class ExtensionProperty<T extends IProperty = IProperty> extends
 	public clone(): this {
 		// NOTICE: Keep in sync with `./property.ts`.
 
-		const PropertyClass = this.constructor as new (g: PropertyGraph, e: ExtensionPropertyParent) => this;
+		const PropertyClass = this.constructor as new (g: Graph<Property>, e: ExtensionPropertyParent) => this;
 		const child = new PropertyClass(this.graph, this._extension).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.

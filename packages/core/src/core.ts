@@ -12,7 +12,6 @@ export {
 	Camera,
 	ExtensionProperty,
 	Property,
-	PropertyGraph,
 	Material,
 	Mesh,
 	Node,
@@ -23,11 +22,10 @@ export {
 	Skin,
 	Texture,
 	TextureInfo,
-	TextureLink,
 	COPY_IDENTITY,
 } from './properties';
-export { Graph, GraphChild, GraphChildList, Link } from './graph/';
-export { PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io/';
+export { Graph, Link } from './graph';
+export { PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io';
 export {
 	BufferUtils,
 	ColorUtils,
@@ -38,7 +36,7 @@ export {
 	MathUtils,
 	bounds,
 	uuid,
-} from './utils/';
+} from './utils';
 export {
 	TypedArray,
 	TypedArrayConstructor,

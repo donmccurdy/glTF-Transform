@@ -1,5 +1,23 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3 } from '@gltf-transform/core';
-import { KHR_MATERIALS_SPECULAR } from '../constants';
+import {
+	ColorUtils,
+	ExtensionProperty,
+	PropertyType,
+	Texture,
+	TextureChannel,
+	TextureInfo,
+	vec3,
+} from '@gltf-transform/core';
+import { IProperty } from 'core/dist/properties';
+import { KHR_MATERIALS_SPECULAR, Nullable } from '../constants';
+
+interface ISpecular extends IProperty {
+	specularFactor: number;
+	specularTexture: Texture;
+	specularTextureInfo: TextureInfo;
+	specularColorFactor: vec3;
+	specularColorTexture: Texture;
+	specularColorTextureInfo: TextureInfo;
+}
 
 const { R, G, B, A } = TextureChannel;
 
@@ -8,50 +26,21 @@ const { R, G, B, A } = TextureChannel;
  *
  * Defines specular reflectivity on a PBR {@link Material}. See {@link MaterialsSpecular}.
  */
-export class Specular extends ExtensionProperty {
+export class Specular extends ExtensionProperty<ISpecular> {
 	public readonly propertyType = 'Specular';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_SPECULAR;
 	public static EXTENSION_NAME = KHR_MATERIALS_SPECULAR;
 
-	private _specularFactor = 1.0;
-	private _specularColorFactor: vec3 = [1.0, 1.0, 1.0];
-
-	@GraphChild private specularTexture: TextureLink | null = null;
-	@GraphChild private specularTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('specularTextureInfo', this, new TextureInfo(this.graph));
-	@GraphChild private specularColorTexture: TextureLink | null = null;
-	@GraphChild private specularColorTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('specularColorTextureInfo', this, new TextureInfo(this.graph));
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._specularFactor = other._specularFactor;
-		this._specularColorFactor = other._specularColorFactor;
-
-		this.setSpecularTexture(
-			other.specularTexture
-				? resolve(other.specularTexture.getChild())
-				: null
-		);
-		this.specularTextureInfo.getChild()
-			.copy(resolve(other.specularTextureInfo.getChild()), resolve);
-
-		this.setSpecularColorTexture(
-			other.specularColorTexture
-				? resolve(other.specularColorTexture.getChild())
-				: null
-		);
-		this.specularColorTextureInfo.getChild()
-			.copy(resolve(other.specularColorTextureInfo.getChild()), resolve);
-
-		return this;
-	}
-
-	public dispose(): void {
-		this.specularTextureInfo.getChild().dispose();
-		super.dispose();
+	protected getDefaultAttributes(): Nullable<ISpecular> {
+		return Object.assign(super.getDefaultAttributes(), {
+			specularFactor: 1.0,
+			specularTexture: null,
+			specularTextureInfo: new TextureInfo(this.graph, 'specularTextureInfo'),
+			specularColorFactor: [1.0, 1.0, 1.0],
+			specularColorTexture: null,
+			specularColorTextureInfo: new TextureInfo(this.graph, 'specularColorTextureInfo'),
+		});
 	}
 
 	/**********************************************************************************************
@@ -59,32 +48,34 @@ export class Specular extends ExtensionProperty {
 	 */
 
 	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
-	public getSpecularFactor(): number { return this._specularFactor; }
+	public getSpecularFactor(): number {
+		return this.get('specularFactor');
+	}
 
 	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
-	public setSpecularFactor(specularFactor: number): this {
-		this._specularFactor = specularFactor;
-		return this;
+	public setSpecularFactor(factor: number): this {
+		return this.set('specularFactor', factor);
 	}
 
 	/** Specular color; components in linear space. See {@link getSpecularTexture}. */
-	public getSpecularColorFactor(): vec3 { return this._specularColorFactor; }
+	public getSpecularColorFactor(): vec3 {
+		return this.get('specularColorFactor');
+	}
 
 	/** Specular color; components in linear space. See {@link getSpecularTexture}. */
-	public setSpecularColorFactor(specularColorFactor: vec3): this {
-		this._specularColorFactor = specularColorFactor;
-		return this;
+	public setSpecularColorFactor(factor: vec3): this {
+		return this.set('specularColorFactor', factor);
 	}
 
 	/** Specular color; hexadecimal in sRGB colorspace. See {@link getSpecularTexture} */
 	public getSpecularColorHex(): number {
-		return ColorUtils.factorToHex(this._specularColorFactor);
+		return ColorUtils.factorToHex(this.getSpecularColorFactor());
 	}
 
 	/** Specular color; hexadecimal in sRGB colorspace. See {@link getSpecularTexture} */
 	public setSpecularColorHex(hex: number): this {
-		ColorUtils.hexToFactor(hex, this._specularColorFactor);
-		return this;
+		const factor = this.getSpecularColorFactor().slice() as vec3;
+		return this.set('specularColorFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**
@@ -96,7 +87,7 @@ export class Specular extends ExtensionProperty {
 	 * be packed with specular color (RGB) into a single texture.
 	 */
 	public getSpecularTexture(): Texture | null {
-		return this.specularTexture ? this.specularTexture.getChild() : null;
+		return this.getRef('specularTexture');
 	}
 
 	/**
@@ -104,14 +95,12 @@ export class Specular extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularTextureInfo(): TextureInfo | null {
-		return this.specularTexture ? this.specularTextureInfo.getChild() : null;
+		return this.getRef('specularTexture') ? this.getRef('specularTextureInfo') : null;
 	}
 
 	/** Sets specular texture. See {@link getSpecularTexture}. */
 	public setSpecularTexture(texture: Texture | null): this {
-		this.specularTexture =
-			this.graph.linkTexture('specularTexture', A, this, texture);
-		return this;
+		return this.setRef('specularTexture', texture, { channels: A });
 	}
 
 	/**
@@ -122,7 +111,7 @@ export class Specular extends ExtensionProperty {
 	 * factor (A) into a single texture.
 	 */
 	public getSpecularColorTexture(): Texture | null {
-		return this.specularColorTexture ? this.specularColorTexture.getChild() : null;
+		return this.getRef('specularColorTexture');
 	}
 
 	/**
@@ -130,13 +119,11 @@ export class Specular extends ExtensionProperty {
 	 * attached, {@link TextureInfo} is `null`.
 	 */
 	public getSpecularColorTextureInfo(): TextureInfo | null {
-		return this.specularColorTexture ? this.specularColorTextureInfo.getChild() : null;
+		return this.getRef('specularColorTexture') ? this.getRef('specularColorTextureInfo') : null;
 	}
 
 	/** Sets specular color texture. See {@link getSpecularColorTexture}. */
 	public setSpecularColorTexture(texture: Texture | null): this {
-		this.specularColorTexture =
-			this.graph.linkTexture('specularColorTexture', R | G | B, this, texture);
-		return this;
+		return this.setRef('specularColorTexture', texture, { channels: R | G | B });
 	}
 }
