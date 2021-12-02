@@ -185,7 +185,7 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 
 	/** @hidden */
 	protected getRef<K extends RefKeys<Attributes>>(key: K): Attributes[K] | null {
-		return this[$attributes][key] ? (this[$attributes][key] as Link<this, Attributes[K]>).getChild() : null;
+		return this[$attributes][key] ? (this[$attributes][key] as any).getChild() : null;
 	}
 
 	/** @hidden */
@@ -203,9 +203,9 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 
 		if (!value) return this;
 
-		const link = this.graph.link(key as string, this, value as GraphNode, metadata);
+		const link = this.graph.link(key as string, this, value as unknown as GraphNode, metadata);
 		link.onDispose(() => delete this[$attributes][key]);
-		(this[$attributes][key] as Link<this, Attributes[K]>) = link as Link<this, Attributes[K]>;
+		this[$attributes][key] = link as any;
 		return this;
 	}
 
@@ -216,7 +216,7 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 	/** @hidden */
 	protected listRefs<K extends RefListKeys<Attributes>>(key: K): Attributes[K] {
 		const refs = this[$attributes][key] as Link<this, GraphNode>[];
-		return refs.map((link) => link.getChild()) as Attributes[K];
+		return refs.map((link) => link.getChild()) as unknown as Attributes[K];
 	}
 
 	/** @hidden */
@@ -225,13 +225,13 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 		value: Attributes[K][keyof Attributes[K]],
 		metadata?: Record<string, unknown>
 	): this {
-		const link = this.graph.link(key as string, this, value, metadata) as any;
+		const link = this.graph.link(key as string, this, value as unknown as GraphNode, metadata) as any;
 		return this._addGraphChild(this[$attributes][key] as Link<this, GraphNode>[], link);
 	}
 
 	/** @hidden */
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		return this._removeGraphChild(this[$attributes][key] as Link<this, GraphNode>[], value);
+		return this._removeGraphChild(this[$attributes][key] as Link<this, GraphNode>[], value as unknown as GraphNode);
 	}
 
 	/**********************************************************************************************
@@ -253,8 +253,8 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 		key: K,
 		subkey: SK
 	): Attributes[K][SK] | null {
-		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, Attributes[K][SK]>>;
-		return refMap[subkey] ? refMap[subkey].getChild() : null;
+		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, GraphNode>>;
+		return refMap[subkey] ? (refMap[subkey].getChild() as unknown as Attributes[K][SK]) : null;
 	}
 
 	/** @hidden */
@@ -264,14 +264,14 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 		value: Attributes[K][SK] | null,
 		metadata?: Record<string, unknown>
 	): this {
-		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, Attributes[K][SK]>>;
+		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, GraphNode>>;
 
 		const prevLink = refMap[subkey] as Link<this, GraphNode<Attributes[K][SK]>>;
 		if (prevLink) prevLink.dispose();
 
 		if (!value) return this;
 
-		const link = this.graph.link(subkey as string, this, value, metadata) as any;
+		const link = this.graph.link(subkey as string, this, value as unknown as GraphNode, metadata) as any;
 		link.onDispose(() => delete refMap[subkey]);
 		refMap[subkey] = link;
 		return this;
