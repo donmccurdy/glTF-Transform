@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import { Nullable, TypedArray } from '../constants';
 import { Graph } from './graph';
 import { Link } from './graph-links';

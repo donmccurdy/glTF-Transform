@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Nullable } from '../constants';
 import { $attributes, $immutableKeys, Graph, GraphNode, Link } from '../graph';
 import { isPlainObject } from '../utils';

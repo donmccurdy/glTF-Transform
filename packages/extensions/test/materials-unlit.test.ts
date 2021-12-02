@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Material, NodeIO } from '@gltf-transform/core';
+import { Document, NodeIO } from '@gltf-transform/core';
 import { MaterialsUnlit } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };

@@ -88,10 +88,20 @@ export class Graph<T extends GraphNode> {
 	 * @param a Owner
 	 * @param b Resource
 	 */
-	public link<A extends T>(name: string, a: A, b: null, metadata?: any): null;
-	public link<A extends T, B extends T>(name: string, a: A, b: B, metadata?: any): Link<A, B>;
-	public link<A extends T, B extends T>(name: string, a: A, b: B | null, metadata?: any): Link<A, B> | null;
-	public link<A extends T, B extends T>(name: string, a: A, b: B | null, metadata?: any): Link<A, B> | null {
+	public link<A extends T>(name: string, a: A, b: null, metadata?: Record<string, unknown>): null;
+	public link<A extends T, B extends T>(name: string, a: A, b: B, metadata?: Record<string, unknown>): Link<A, B>;
+	public link<A extends T, B extends T>(
+		name: string,
+		a: A,
+		b: B | null,
+		metadata?: Record<string, unknown>
+	): Link<A, B> | null;
+	public link<A extends T, B extends T>(
+		name: string,
+		a: A,
+		b: B | null,
+		metadata?: Record<string, unknown>
+	): Link<A, B> | null {
 		// If there's no resource, return a null link. Avoids a lot of boilerplate in node setters.
 		if (!b) return null;
 

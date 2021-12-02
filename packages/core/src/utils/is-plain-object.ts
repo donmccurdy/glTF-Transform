@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Reference: https://github.com/jonschlinkert/is-plain-object
 
 function isObject(o: any) {
@@ -5,20 +6,18 @@ function isObject(o: any) {
 }
 
 export function isPlainObject(o: any) {
-	var ctor, prot;
-
 	if (isObject(o) === false) return false;
 
 	// If has modified constructor
-	ctor = o.constructor;
+	const ctor = o.constructor;
 	if (ctor === undefined) return true;
 
 	// If has modified prototype
-	prot = ctor.prototype;
+	const prot = ctor.prototype;
 	if (isObject(prot) === false) return false;
 
 	// If constructor does not have an Object-specific method
-	if (prot.hasOwnProperty('isPrototypeOf') === false) {
+	if (Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf') === false) {
 		return false;
 	}
 
