@@ -5,21 +5,28 @@ import { Link } from './graph-links';
 // References:
 // - https://stackoverflow.com/a/70163679/1314762
 
-export type GraphNodeAttributes = Record<string, any>;
-
-type Literal = null | boolean | number | string | number[] | string[] | TypedArray | ArrayBuffer;
+type Literal =
+	| null
+	| boolean
+	| number
+	| string
+	| number[]
+	| string[]
+	| TypedArray
+	| ArrayBuffer
+	| Record<string, unknown>;
 type LiteralKeys<T> = { [K in keyof T]-?: T[K] extends Literal ? K : never }[keyof T];
 type RefKeys<T> = { [K in keyof T]-?: T[K] extends GraphNode ? K : never }[keyof T];
 type RefListKeys<T> = { [K in keyof T]-?: T[K] extends GraphNode[] ? K : never }[keyof T];
 type RefMapKeys<T> = { [K in keyof T]-?: T[K] extends { [key: string]: GraphNode } ? K : never }[keyof T];
 
-type GraphNodeAttributesInternal<Parent extends GraphNode, Attributes extends GraphNodeAttributes> = {
-	[Key in keyof Attributes]: Key extends RefKeys<Attributes>
+type GraphNodeAttributesInternal<Parent extends GraphNode, Attributes extends {}> = {
+	[Key in keyof Attributes]: Attributes[Key] extends GraphNode
 		? Link<Parent, Attributes[Key]>
-		: Key extends RefListKeys<Attributes>
-		? Link<Parent, Attributes[Key]>[]
-		: Key extends RefMapKeys<Attributes>
-		? Record<string, Link<Parent, Attributes[Key]>>
+		: Attributes[Key] extends GraphNode[]
+		? Link<Parent, Attributes[Key][number]>[]
+		: Attributes[Key] extends { [key: string]: GraphNode }
+		? Record<string, Link<Parent, Attributes[Key][string]>>
 		: Attributes[Key];
 };
 
@@ -32,7 +39,7 @@ export const $immutableKeys = Symbol('immutableKeys');
  * @hidden
  * @category Graph
  */
-export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
+export abstract class GraphNode<Attributes extends {} = {}> {
 	private _disposed = false;
 
 	/**
@@ -220,7 +227,7 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 
 	/** @hidden */
 	protected get<K extends LiteralKeys<Attributes>>(key: K): Attributes[K] {
-		return this[$attributes][key];
+		return this[$attributes][key] as Attributes[K];
 	}
 
 	/** @hidden */
@@ -235,7 +242,7 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 
 	/** @hidden */
 	protected getRef<K extends RefKeys<Attributes>>(key: K): Attributes[K] | null {
-		return this[$attributes][key] ? this[$attributes][key].getChild() : null;
+		return this[$attributes][key] ? (this[$attributes][key] as Link<this, Attributes[K]>).getChild() : null;
 	}
 
 	/** @hidden */
@@ -248,14 +255,14 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 			throw new Error(`Cannot overwrite immutable attribute, "${key}".`);
 		}
 
-		const prevLink = this[$attributes][key];
+		const prevLink = this[$attributes][key] as Link<this, GraphNode>;
 		if (prevLink) prevLink.dispose();
 
 		if (!value) return this;
 
-		const link = this.graph.link(key as string, this, value, metadata) as any;
+		const link = this.graph.link(key as string, this, value as GraphNode, metadata);
 		link.onDispose(() => delete this[$attributes][key]);
-		this[$attributes][key] = link;
+		(this[$attributes][key] as Link<this, Attributes[K]>) = link as Link<this, Attributes[K]>;
 		return this;
 	}
 
@@ -265,7 +272,8 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 
 	/** @hidden */
 	protected listRefs<K extends RefListKeys<Attributes>>(key: K): Attributes[K] {
-		return this[$attributes][key].map((link: Link<this, GraphNode>) => link.getChild());
+		const refs = this[$attributes][key] as Link<this, GraphNode>[];
+		return refs.map((link) => link.getChild()) as Attributes[K];
 	}
 
 	/** @hidden */
@@ -275,12 +283,12 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 		metadata?: Record<string, unknown>
 	): this {
 		const link = this.graph.link(key as string, this, value, metadata) as any;
-		return this.addGraphChild(this[$attributes][key], link);
+		return this.addGraphChild(this[$attributes][key] as Link<this, GraphNode>[], link);
 	}
 
 	/** @hidden */
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		return this.removeGraphChild(this[$attributes][key], value);
+		return this.removeGraphChild(this[$attributes][key] as Link<this, GraphNode>[], value);
 	}
 
 	/**********************************************************************************************
@@ -298,28 +306,31 @@ export abstract class GraphNode<Attributes extends GraphNodeAttributes = any> {
 	}
 
 	/** @hidden */
-	protected getRefMap<K extends RefMapKeys<Attributes>>(
+	protected getRefMap<K extends RefMapKeys<Attributes>, SK extends keyof Attributes[K]>(
 		key: K,
-		subkey: string
-	): Attributes[K][keyof Attributes[K]] | null {
-		return this[$attributes][key][subkey] ? this[$attributes][key][subkey].getChild() : null;
+		subkey: SK
+	): Attributes[K][SK] | null {
+		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, Attributes[K][SK]>>;
+		return refMap[subkey] ? refMap[subkey].getChild() : null;
 	}
 
 	/** @hidden */
-	protected setRefMap<K extends RefMapKeys<Attributes>>(
+	protected setRefMap<K extends RefMapKeys<Attributes>, SK extends keyof Attributes[K]>(
 		key: K,
-		subkey: string,
-		value: Attributes[K][keyof Attributes[K]] | null,
+		subkey: SK,
+		value: Attributes[K][SK] | null,
 		metadata?: Record<string, unknown>
 	): this {
-		const prevLink = this[$attributes][key][subkey];
+		const refMap = this[$attributes][key] as Record<keyof Attributes[K], Link<this, Attributes[K][SK]>>;
+
+		const prevLink = refMap[subkey] as Link<this, GraphNode<Attributes[K][SK]>>;
 		if (prevLink) prevLink.dispose();
 
 		if (!value) return this;
 
-		const link = this.graph.link(subkey, this, value, metadata) as any;
-		link.onDispose(() => delete this[$attributes][key][subkey]);
-		this[$attributes][key][subkey] = link;
+		const link = this.graph.link(subkey as string, this, value, metadata) as any;
+		link.onDispose(() => delete refMap[subkey]);
+		refMap[subkey] = link;
 		return this;
 	}
 }

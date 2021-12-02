@@ -3,12 +3,12 @@ import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants';
 import { $attributes } from '../graph';
 import { MathUtils } from '../utils';
 import { Camera } from './camera';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Mesh } from './mesh';
 import { COPY_IDENTITY } from './property';
 import { Skin } from './skin';
 
-interface INode {
+interface INode extends IExtensibleProperty {
 	translation: vec3;
 	rotation: vec4;
 	scale: vec3;
@@ -54,7 +54,7 @@ export class Node extends ExtensibleProperty<INode> {
 	public _parent: SceneNode | null = null;
 
 	protected getDefaultAttributes(): Nullable<INode> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			translation: [0, 0, 0],
 			rotation: [0, 0, 0, 1],
 			scale: [1, 1, 1],
@@ -63,7 +63,7 @@ export class Node extends ExtensibleProperty<INode> {
 			mesh: null,
 			skin: null,
 			children: [],
-		};
+		});
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

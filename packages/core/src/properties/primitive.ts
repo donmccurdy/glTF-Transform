@@ -1,20 +1,17 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphNodeAttributes } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';
 
-interface IPrimitive {
+interface IPrimitive extends IExtensibleProperty {
 	mode: GLTF.MeshPrimitiveMode;
 	material: Material;
 	indices: Accessor;
 	attributes: { [key: string]: Accessor };
 	targets: PrimitiveTarget[];
 }
-
-type inter = IPrimitive & GraphNodeAttributes;
 
 /**
  * # Primitive

@@ -117,7 +117,7 @@ export class Document {
 
 	/** Clones this Document, copying all resources within it. */
 	public clone(): Document {
-		return new Document().merge(this).setLogger(this._logger);
+		return new Document().setLogger(this._logger).merge(this);
 	}
 
 	/** Merges the content of another Document into this one, without affecting the original. */

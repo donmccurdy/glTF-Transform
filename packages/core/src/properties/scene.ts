@@ -1,10 +1,10 @@
 import { Nullable, PropertyType } from '../constants';
 import { $attributes } from '../graph';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Node } from './node';
 import { COPY_IDENTITY } from './property';
 
-interface IScene {
+interface IScene extends IExtensibleProperty {
 	children: Node[];
 }
 
@@ -28,7 +28,7 @@ export class Scene extends ExtensibleProperty<IScene> {
 	public readonly propertyType = PropertyType.SCENE;
 
 	protected getDefaultAttributes(): Nullable<IScene> {
-		return { children: [] };
+		return Object.assign(super.getDefaultAttributes(), { children: [] });
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

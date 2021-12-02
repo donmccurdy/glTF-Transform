@@ -1,8 +1,8 @@
 import { Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface ITextureInfo {
+interface ITextureInfo extends IExtensibleProperty {
 	texCoord: number;
 
 	// Sampler properties are also attached to TextureInfo, for simplicity.
@@ -77,13 +77,13 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<ITextureInfo> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			texCoord: 0,
 			magFilter: null,
 			minFilter: null,
 			wrapS: TextureInfo.WrapMode.REPEAT,
 			wrapT: TextureInfo.WrapMode.REPEAT,
-		};
+		});
 	}
 
 	/**********************************************************************************************

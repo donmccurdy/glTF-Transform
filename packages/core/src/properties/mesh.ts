@@ -1,11 +1,8 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphChildList } from '../graph/index';
-import { Link } from '../graph/index';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Primitive } from './primitive';
-import { COPY_IDENTITY } from './property';
 
-interface IMesh {
+interface IMesh extends IExtensibleProperty {
 	weights: number[];
 	primitives: Primitive[];
 }
@@ -47,7 +44,7 @@ export class Mesh extends ExtensibleProperty<IMesh> {
 	public readonly propertyType = PropertyType.MESH;
 
 	protected getDefaultAttributes(): Nullable<IMesh> {
-		return { weights: [], primitives: [] };
+		return Object.assign(super.getDefaultAttributes(), { weights: [], primitives: [] });
 	}
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */

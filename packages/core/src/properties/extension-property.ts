@@ -1,6 +1,5 @@
-import { GraphNodeAttributes } from '../graph';
 import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY, Property } from './property';
+import { COPY_IDENTITY, Property, IProperty } from './property';
 import { PropertyGraph } from './property-graph';
 
 /** @hidden */
@@ -25,7 +24,7 @@ export interface ExtensionPropertyParent {
  * Reference:
  * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
  */
-export abstract class ExtensionProperty<T extends GraphNodeAttributes = any> extends Property<T> {
+export abstract class ExtensionProperty<T extends IProperty = IProperty> extends Property<T> {
 	public static EXTENSION_NAME: string;
 	public abstract readonly extensionName: string;
 

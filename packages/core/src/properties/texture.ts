@@ -1,8 +1,8 @@
 import { Nullable, PropertyType, vec2 } from '../constants';
 import { FileUtils, ImageUtils } from '../utils';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface ITexture {
+interface ITexture extends IExtensibleProperty {
 	image: ArrayBuffer | null;
 	mimeType: string;
 	uri: string;
@@ -32,7 +32,7 @@ export class Texture extends ExtensibleProperty<ITexture> {
 	public readonly propertyType = PropertyType.TEXTURE;
 
 	protected getDefaultAttributes(): Nullable<ITexture> {
-		return { image: null, mimeType: '', uri: '' };
+		return Object.assign(super.getDefaultAttributes(), { image: null, mimeType: '', uri: '' });
 	}
 
 	/**********************************************************************************************

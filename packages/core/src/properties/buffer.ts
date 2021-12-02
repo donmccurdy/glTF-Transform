@@ -1,7 +1,7 @@
 import { Nullable, PropertyType } from '../constants';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface IBuffer {
+interface IBuffer extends IExtensibleProperty {
 	uri: string;
 }
 
@@ -64,7 +64,7 @@ export class Buffer extends ExtensibleProperty<IBuffer> {
 	public readonly propertyType = PropertyType.BUFFER;
 
 	protected getDefaultAttributes(): Nullable<IBuffer> {
-		return { uri: '' };
+		return Object.assign(super.getDefaultAttributes(), { uri: '' });
 	}
 
 	/**

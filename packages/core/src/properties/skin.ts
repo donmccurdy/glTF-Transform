@@ -1,9 +1,9 @@
 import { Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Node } from './node';
 
-interface ISkin {
+interface ISkin extends IExtensibleProperty {
 	skeleton: Node;
 	inverseBindMatrices: Accessor;
 	joints: Node[];
@@ -24,7 +24,7 @@ export class Skin extends ExtensibleProperty<ISkin> {
 	public readonly propertyType = PropertyType.SKIN;
 
 	protected getDefaultAttributes(): Nullable<ISkin> {
-		return { skeleton: null, inverseBindMatrices: null, joints: [] };
+		return Object.assign(super.getDefaultAttributes(), { skeleton: null, inverseBindMatrices: null, joints: [] });
 	}
 
 	/**

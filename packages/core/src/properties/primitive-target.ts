@@ -1,8 +1,9 @@
 import { Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
-import { COPY_IDENTITY, Property } from './property';
+import { IExtensibleProperty } from './extensible-property';
+import { Property } from './property';
 
-interface IPrimitiveTarget {
+interface IPrimitiveTarget extends IExtensibleProperty {
 	attributes: { [key: string]: Accessor };
 }
 
@@ -25,7 +26,7 @@ export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
 	protected getDefaultAttributes(): Nullable<IPrimitiveTarget> {
-		return { attributes: {} };
+		return Object.assign(super.getDefaultAttributes(), { attributes: {} });
 	}
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */

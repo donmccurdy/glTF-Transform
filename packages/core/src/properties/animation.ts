@@ -1,11 +1,9 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphChildList, Link } from '../graph';
 import { AnimationChannel } from './animation-channel';
 import { AnimationSampler } from './animation-sampler';
-import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface IAnimation {
+interface IAnimation extends IExtensibleProperty {
 	channels: AnimationChannel[];
 	samplers: AnimationSampler[];
 }
@@ -50,7 +48,7 @@ export class Animation extends ExtensibleProperty<IAnimation> {
 	public readonly propertyType = PropertyType.ANIMATION;
 
 	protected getDefaultAttributes(): Nullable<IAnimation> {
-		return { channels: [], samplers: [] };
+		return Object.assign(super.getDefaultAttributes(), { channels: [], samplers: [] });
 	}
 
 	/** Adds an {@link AnimationChannel} to this Animation. */

@@ -1,8 +1,8 @@
 import { Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface ICamera {
+interface ICamera extends IExtensibleProperty {
 	type: GLTF.CameraType;
 	znear: number;
 	zfar: number;
@@ -59,7 +59,7 @@ export class Camera extends ExtensibleProperty<ICamera> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<ICamera> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			// Common.
 			type: Camera.Type.PERSPECTIVE,
 			znear: 0.1,
@@ -70,7 +70,7 @@ export class Camera extends ExtensibleProperty<ICamera> {
 			// Orthographic.
 			xmag: 1,
 			ymag: 1,
-		};
+		});
 	}
 
 	/**********************************************************************************************

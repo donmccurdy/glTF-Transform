@@ -1,10 +1,9 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphChild, Link } from '../graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
-import { COPY_IDENTITY, Property } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
-interface IAnimationSampler {
+interface IAnimationSampler extends IExtensibleProperty {
 	interpolation: GLTF.AnimationSamplerInterpolation;
 	input: Accessor;
 	output: Accessor;
@@ -51,7 +50,7 @@ interface IAnimationSampler {
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class AnimationSampler extends Property<IAnimationSampler> {
+export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
 	/**********************************************************************************************
@@ -73,7 +72,11 @@ export class AnimationSampler extends Property<IAnimationSampler> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<IAnimationSampler> {
-		return { interpolation: AnimationSampler.Interpolation.LINEAR, input: null, output: null };
+		return Object.assign(super.getDefaultAttributes(), {
+			interpolation: AnimationSampler.Interpolation.LINEAR,
+			input: null,
+			output: null,
+		});
 	}
 
 	/**********************************************************************************************

@@ -1,13 +1,13 @@
 import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants';
 import { GLTF } from '../types/gltf';
 import { ColorUtils } from '../utils';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Texture } from './texture';
 import { TextureInfo } from './texture-info';
 
 const { R, G, B, A } = TextureChannel;
 
-interface IMaterial {
+interface IMaterial extends IExtensibleProperty {
 	alphaMode: GLTF.MaterialAlphaMode;
 	alphaCutoff: number;
 	doubleSided: boolean;
@@ -91,7 +91,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<IMaterial> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			alphaMode: Material.AlphaMode.OPAQUE,
 			alphaCutoff: 0.5,
 			doubleSided: false,
@@ -111,7 +111,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 			metallicFactor: 1,
 			metallicRoughnessTexture: null,
 			metallicRoughnessTextureInfo: new TextureInfo(this.graph, 'metallicRoughnessTextureInfo'),
-		};
+		});
 	}
 
 	/**********************************************************************************************

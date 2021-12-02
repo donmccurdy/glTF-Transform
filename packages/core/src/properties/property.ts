@@ -1,9 +1,15 @@
-import { $attributes, $immutableKeys, GraphNode, GraphNodeAttributes, Link } from '../graph';
+import { Nullable } from '../constants';
+import { $attributes, $immutableKeys, GraphNode, Link } from '../graph';
 import { isPlainObject } from '../utils';
 import { PropertyGraph } from './property-graph';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
+
+export interface IProperty {
+	name: string;
+	extras: Record<string, unknown>;
+}
 
 /**
  * # Property
@@ -40,7 +46,7 @@ export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
  *
  * @category Properties
  */
-export abstract class Property<T extends GraphNodeAttributes = any> extends GraphNode<T> {
+export abstract class Property<T extends IProperty = IProperty> extends GraphNode<T> {
 	/** Property type. */
 	public abstract readonly propertyType: string;
 
@@ -50,13 +56,14 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 */
 	protected declare readonly graph: PropertyGraph;
 
-	private _extras: Record<string, unknown> = {};
-	private _name = '';
-
 	/** @hidden */
 	constructor(graph: PropertyGraph, name = '') {
 		super(graph);
-		this._name = name;
+		(this as Property).set('name', name);
+	}
+
+	protected getDefaultAttributes(): Nullable<T> {
+		return Object.assign(super.getDefaultAttributes(), { name: '', extras: {} });
 	}
 
 	/**********************************************************************************************
@@ -69,7 +76,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * a property, prefer to use Extras.
 	 */
 	public getName(): string {
-		return this._name;
+		return (this as Property).get('name');
 	}
 
 	/**
@@ -78,8 +85,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * a property, prefer to use Extras.
 	 */
 	public setName(name: string): this {
-		this._name = name;
-		return this;
+		return (this as Property).set('name', name) as this;
 	}
 
 	/**********************************************************************************************
@@ -91,7 +97,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * Property. Extras should be an Object, not a primitive value, for best portability.
 	 */
 	public getExtras(): Record<string, unknown> {
-		return this._extras;
+		return (this as Property).get('extras');
 	}
 
 	/**
@@ -99,8 +105,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * should be an Object, not a primitive value, for best portability.
 	 */
 	public setExtras(extras: Record<string, unknown>): this {
-		this._extras = extras;
-		return this;
+		return (this as Property).set('extras', extras) as this;
 	}
 
 	/**********************************************************************************************
@@ -129,10 +134,6 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	 * @param resolve Function to resolve each Property being transferred. Default is identity.
 	 */
 	public copy(other: this, resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
-		// TODO(cleanup): Move these into attributes.
-		this._name = other._name;
-		this._extras = JSON.parse(JSON.stringify(other._extras));
-
 		// Remove previous references.
 		for (const key in this[$attributes]) {
 			const value = this[$attributes][key] as any;
@@ -146,7 +147,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 				}
 			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
 				for (const subkey in value) {
-					const link = this[$attributes][key][subkey] as Link<this, any>;
+					const link = value[subkey] as Link<this, any>;
 					link.dispose();
 				}
 			}
@@ -154,40 +155,43 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 
 		// Add new references.
 		for (const key in other[$attributes]) {
-			const value = other[$attributes][key] as any;
-			if (value instanceof Link) {
+			const thisValue = this[$attributes][key] as any;
+			const otherValue = other[$attributes][key] as any;
+			if (otherValue instanceof Link) {
 				if (this[$immutableKeys].has(key)) {
-					this[$attributes][key].getChild().copy(resolve(value.getChild()), resolve);
+					thisValue.getChild().copy(resolve(otherValue.getChild()), resolve);
 				} else {
 					this[$attributes][key] = this.graph.link(
-						value.getName(),
+						otherValue.getName(),
 						this,
-						resolve(value.getChild()),
-						value.getMetadata()
+						resolve(otherValue.getChild()),
+						otherValue.getMetadata()
 					) as any;
 				}
-			} else if (Array.isArray(value) && value[0] instanceof Link) {
-				for (const link of value as Link<this, any>[]) {
-					this[$attributes][key].push(
-						this.graph.link(link.getName(), this, resolve(link.getChild()), link.getMetadata())
-					);
+			} else if (Array.isArray(otherValue) && otherValue[0] instanceof Link) {
+				for (const link of otherValue as Link<this, any>[]) {
+					thisValue.push(this.graph.link(link.getName(), this, resolve(link.getChild()), link.getMetadata()));
 				}
-			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
-				for (const subkey in value) {
-					const link = other[$attributes][key][subkey] as Link<this, any>;
-					this[$attributes][key][subkey] = this.graph.link(
+			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof Link) {
+				for (const subkey in otherValue) {
+					const link = otherValue[subkey] as Link<this, any>;
+					thisValue[subkey] = this.graph.link(
 						link.getName(),
 						this,
 						resolve(link.getChild()),
 						link.getMetadata()
 					);
 				}
-			} else if (isPlainObject(value)) {
-				this[$attributes][key] = JSON.parse(JSON.stringify(value));
-			} else if (Array.isArray(value) || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
-				this[$attributes][key] = (value as Uint8Array).slice() as any;
+			} else if (isPlainObject(otherValue)) {
+				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));
+			} else if (
+				Array.isArray(otherValue) ||
+				otherValue instanceof ArrayBuffer ||
+				ArrayBuffer.isView(otherValue)
+			) {
+				this[$attributes][key] = (otherValue as Uint8Array).slice() as any;
 			} else {
-				this[$attributes][key] = value;
+				this[$attributes][key] = otherValue;
 			}
 		}
 
@@ -195,8 +199,6 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 	}
 
 	public equals(other: this): boolean {
-		if (this._name !== other._name) return false;
-
 		for (const key in this[$attributes]) {
 			const a = this[$attributes][key];
 			const b = other[$attributes][key];
@@ -210,7 +212,7 @@ export abstract class Property<T extends GraphNodeAttributes = any> extends Grap
 			} else if (isPlainObject(a) || isPlainObject(b)) {
 				// Object Literal, or empty RefMap. Both can be skipped – we don't compare extras.
 			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
-				if (!equalsArray(a as [], b as [])) return false;
+				if (!equalsArray(a as unknown as [], b as unknown as [])) return false;
 			} else {
 				// Literal.
 				if (a !== b) return false;

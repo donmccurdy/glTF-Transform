@@ -1,11 +1,10 @@
 import { Nullable, PropertyType } from '../constants';
-import { GraphChild, Link } from '../graph';
 import { GLTF } from '../types/gltf';
 import { AnimationSampler } from './animation-sampler';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Node } from './node';
-import { COPY_IDENTITY, Property } from './property';
 
-interface IAnimationChannel {
+interface IAnimationChannel extends IExtensibleProperty {
 	targetPath: GLTF.AnimationChannelTargetPath | null;
 	targetNode: Node;
 	sampler: AnimationSampler;
@@ -40,7 +39,7 @@ interface IAnimationChannel {
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class AnimationChannel extends Property<IAnimationChannel> {
+export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
 
 	/**********************************************************************************************
@@ -64,11 +63,11 @@ export class AnimationChannel extends Property<IAnimationChannel> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<IAnimationChannel> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			targetPath: null,
 			targetNode: null,
 			sampler: null,
-		};
+		});
 	}
 
 	/**********************************************************************************************

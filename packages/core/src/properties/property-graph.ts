@@ -5,6 +5,8 @@ import { Property } from './property';
 import { TextureLink } from './property-links';
 import { Texture } from './texture';
 
+// TODO(cleanup): Remove this file.
+
 /** @hidden */
 export class PropertyGraph extends Graph<Property> {
 	public linkTexture(name: string, channels: number, a: Material | ExtensionProperty, b: null): null;
@@ -24,7 +26,7 @@ export class PropertyGraph extends Graph<Property> {
 		if (!b) return null;
 		const link = new TextureLink(name, a, b);
 		link.channels = channels;
-		this.registerLink(link);
+		this.registerLink(link as any);
 		return link;
 	}
 }

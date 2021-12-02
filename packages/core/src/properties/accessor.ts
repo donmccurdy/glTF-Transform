@@ -2,10 +2,10 @@ import { Nullable, PropertyType, TypedArray } from '../constants';
 import { GLTF } from '../types/gltf';
 import { MathUtils } from '../utils';
 import { Buffer } from './buffer';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 
-interface IAccessor {
+interface IAccessor extends IExtensibleProperty {
 	array: TypedArray | null;
 	type: GLTF.AccessorType;
 	componentType: GLTF.AccessorComponentType;
@@ -133,13 +133,13 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<IAccessor> {
-		return {
+		return Object.assign(super.getDefaultAttributes(), {
 			array: null,
 			type: Accessor.Type.SCALAR,
 			componentType: Accessor.ComponentType.FLOAT,
 			normalized: false,
 			buffer: null,
-		};
+		});
 	}
 
 	/** @internal Inbound transform to normalized representation, if applicable. */
