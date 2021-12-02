@@ -2,29 +2,30 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Graph, Property } from '../../';
+import { IProperty } from '../../dist/properties';
+
+interface ITestNode extends IProperty {
+	nodes: TestNode[];
+}
 
 /**
  * Simple test implementation of GraphNode.
  */
-class TestNode extends Property {
+class TestNode extends Property<ITestNode> {
 	propertyType = 'test';
-	public nodes = [];
-	constructor(graph) {
-		super(graph);
+	getDefaultAttributes(): ITestNode {
+		return { ...super.getDefaultAttributes(), nodes: [] };
 	}
-	addNode(node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
+	addNode(node: TestNode): this {
+		return this.addRef('nodes', node);
 	}
-	removeNode(node): this {
-		return this.removeGraphChild(this.nodes, node);
-	}
-	listNodes(): Property[] {
-		return this.nodes.map((link) => link.getChild());
+	listNodes(): TestNode[] {
+		return this.listRefs('nodes');
 	}
 }
 
 test('@gltf-transform/core::graph-node | swap', (t) => {
-	const graph = new Graph();
+	const graph = new Graph<Property>();
 	const root = new TestNode(graph);
 	const a = new TestNode(graph);
 	const b = new TestNode(graph);

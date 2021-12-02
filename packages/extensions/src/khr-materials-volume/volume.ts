@@ -1,13 +1,13 @@
 import {
 	ColorUtils,
 	ExtensionProperty,
+	IProperty,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
 	vec3,
 } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
 import { KHR_MATERIALS_VOLUME, Nullable } from '../constants';
 
 interface IVolume extends IProperty {

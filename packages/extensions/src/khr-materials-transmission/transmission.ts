@@ -1,5 +1,4 @@
-import { ExtensionProperty, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
+import { ExtensionProperty, IProperty, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION, Nullable } from '../constants';
 
 interface ITransmission extends IProperty {

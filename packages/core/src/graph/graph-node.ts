@@ -4,6 +4,7 @@ import { Link } from './graph-links';
 
 // References:
 // - https://stackoverflow.com/a/70163679/1314762
+// - https://stackoverflow.com/q/70192877/1314762
 
 type Literal =
 	| null
@@ -164,64 +165,6 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 	}
 
 	/**********************************************************************************************
-	 * Internal attribute management APIs.
-	 */
-
-	/**
-	 * Adds a Link to a managed {@link @GraphChildList}, and sets up a listener to
-	 * remove the link if it's disposed. This function is only for lists of links,
-	 * annotated with {@link @GraphChildList}. Properties are annotated and managed by
-	 * {@link @GraphChild} instead.
-	 *
-	 * @hidden
-	 */
-	protected addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): this {
-		// TODO(cleanup): Make private?
-		links.push(link);
-		link.onDispose(() => {
-			const remaining = links.filter((l) => l !== link);
-			links.length = 0;
-			for (const link of remaining) links.push(link);
-		});
-		return this;
-	}
-
-	/**
-	 * Removes a {@link GraphNode} from a {@link GraphChildList}.
-	 *
-	 * @hidden
-	 */
-	protected removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): this {
-		// TODO(cleanup): Make private?
-		const pruned = links.filter((link) => link.getChild() === child);
-		pruned.forEach((link) => link.dispose());
-		return this;
-	}
-
-	/**
-	 * Removes all {@link GraphNode}s from a {@link GraphChildList}.
-	 *
-	 * @hidden
-	 */
-	protected clearGraphChildList(links: Link<GraphNode, GraphNode>[]): this {
-		// TODO(cleanup): Make private?
-		while (links.length > 0) links[0].dispose();
-		return this;
-	}
-
-	/**
-	 * Returns a list of all nodes that hold a reference to this node.
-	 *
-	 * Available publicly by {@link Property}'s `.listParents()`.
-	 *
-	 * @hidden
-	 */
-	protected listGraphParents(): GraphNode[] {
-		// TODO(cleanup): Make public?
-		return this.graph.listParents(this) as GraphNode[];
-	}
-
-	/**********************************************************************************************
 	 * Literal attributes.
 	 */
 
@@ -283,12 +226,12 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 		metadata?: Record<string, unknown>
 	): this {
 		const link = this.graph.link(key as string, this, value, metadata) as any;
-		return this.addGraphChild(this[$attributes][key] as Link<this, GraphNode>[], link);
+		return this._addGraphChild(this[$attributes][key] as Link<this, GraphNode>[], link);
 	}
 
 	/** @hidden */
 	protected removeRef<K extends RefListKeys<Attributes>>(key: K, value: Attributes[K][keyof Attributes[K]]): this {
-		return this.removeGraphChild(this[$attributes][key] as Link<this, GraphNode>[], value);
+		return this._removeGraphChild(this[$attributes][key] as Link<this, GraphNode>[], value);
 	}
 
 	/**********************************************************************************************
@@ -332,5 +275,47 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 		link.onDispose(() => delete refMap[subkey]);
 		refMap[subkey] = link;
 		return this;
+	}
+
+	/**********************************************************************************************
+	 * Internal attribute management APIs.
+	 */
+
+	/**
+	 * Adds a Link to a managed {@link @GraphChildList}, and sets up a listener to
+	 * remove the link if it's disposed. This function is only for lists of links,
+	 * annotated with {@link @GraphChildList}. Properties are annotated and managed by
+	 * {@link @GraphChild} instead.
+	 *
+	 * @internal
+	 */
+	private _addGraphChild(links: Link<GraphNode, GraphNode>[], link: Link<GraphNode, GraphNode>): this {
+		// TODO(cleanup): Make private?
+		links.push(link);
+		link.onDispose(() => {
+			const remaining = links.filter((l) => l !== link);
+			links.length = 0;
+			for (const link of remaining) links.push(link);
+		});
+		return this;
+	}
+
+	/** @internal Removes a {@link GraphNode} from a {@link GraphChildList}. */
+	private _removeGraphChild(links: Link<GraphNode, GraphNode>[], child: GraphNode): this {
+		const pruned = links.filter((link) => link.getChild() === child);
+		pruned.forEach((link) => link.dispose());
+		return this;
+	}
+
+	/**
+	 * Returns a list of all nodes that hold a reference to this node.
+	 *
+	 * Available publicly by {@link Property}'s `.listParents()`.
+	 *
+	 * @hidden
+	 */
+	protected listGraphParents(): GraphNode[] {
+		// TODO(cleanup): Make public?
+		return this.graph.listParents(this) as GraphNode[];
 	}
 }

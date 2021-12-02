@@ -1,30 +1,33 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Graph, Property } from '../../';
+import { Graph, Property, IProperty } from '../../';
+
+interface ITestNode extends IProperty {
+	nodes: TestNode[];
+}
 
 /**
  * Simple test implementation of GraphNode.
  */
-class TestNode extends Property {
+class TestNode extends Property<ITestNode> {
 	propertyType = 'test';
-	public nodes = [];
-	constructor(graph) {
-		super(graph);
+	getDefaultAttributes(): ITestNode {
+		return { ...super.getDefaultAttributes(), nodes: [] };
 	}
 	addNode(node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
+		return this.addRef('nodes', node);
 	}
 	removeNode(node): this {
-		return this.removeGraphChild(this.nodes, node);
+		return this.removeRef('nodes', node);
 	}
 	listNodes(): Property[] {
-		return this.nodes.map((link) => link.getChild());
+		return this.listRefs('nodes');
 	}
 }
 
 test('@gltf-transform/core::graph | link management', (t) => {
-	const graph = new Graph();
+	const graph = new Graph<Property>();
 	const root = new TestNode(graph);
 	const a = new TestNode(graph);
 	const b = new TestNode(graph);
@@ -66,8 +69,8 @@ test('@gltf-transform/core::graph | link management', (t) => {
 });
 
 test('@gltf-transform/core::graph | prevents cross-graph linking', (t) => {
-	const graphA = new Graph();
-	const graphB = new Graph();
+	const graphA = new Graph<Property>();
+	const graphB = new Graph<Property>();
 
 	const rootA = new TestNode(graphA);
 	const rootB = new TestNode(graphB);
@@ -83,7 +86,7 @@ test('@gltf-transform/core::graph | prevents cross-graph linking', (t) => {
 });
 
 test('@gltf-transform/core::graph | list connections', (t) => {
-	const graph = new Graph();
+	const graph = new Graph<Property>();
 	const root = new TestNode(graph);
 	const node1 = new TestNode(graph);
 	const node2 = new TestNode(graph);
@@ -116,7 +119,7 @@ test('@gltf-transform/core::graph | list connections', (t) => {
 });
 
 test('@gltf-transform/core::graph | dispose events', (t) => {
-	const graph = new Graph();
+	const graph = new Graph<Property>();
 	const node1 = new TestNode(graph);
 	const node2 = new TestNode(graph);
 

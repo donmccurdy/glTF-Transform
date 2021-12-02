@@ -1,5 +1,4 @@
-import { COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
+import { ExtensionProperty, IProperty, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_EMISSIVE_STRENGTH, Nullable } from '../constants';
 
 interface IEmissiveStrength extends IProperty {

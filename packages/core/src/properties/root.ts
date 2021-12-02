@@ -100,8 +100,8 @@ export class Root extends Property<IRoot> {
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
-		// the Document during cloning. The Root, and only the Root, should avoid calling
-		// .clearGraphChildList() while copying to avoid overwriting existing links during a merge.
+		// the Document during cloning. The Root, and only the Root, should keep existing links
+		// while copying to avoid overwriting existing links during a merge.
 		if (resolve === COPY_IDENTITY) throw new Error('Root cannot be copied.');
 
 		// IMPORTANT: Root cannot call super.copy(), which removes existing links.

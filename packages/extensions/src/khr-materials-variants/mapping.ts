@@ -1,5 +1,4 @@
-import { ExtensionProperty, Material } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
+import { ExtensionProperty, IProperty, Material } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS, Nullable } from '../constants';
 import { Variant } from './variant';
 

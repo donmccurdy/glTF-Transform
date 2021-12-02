@@ -1,6 +1,5 @@
-import { ExtensionProperty, vec2 } from '@gltf-transform/core';
+import { ExtensionProperty, IProperty, vec2 } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
 import { KHR_TEXTURE_TRANSFORM, Nullable } from '../constants';
 
 interface ITransform extends IProperty {

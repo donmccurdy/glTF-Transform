@@ -12,6 +12,7 @@ export {
 	Camera,
 	ExtensionProperty,
 	Property,
+	IProperty,
 	Material,
 	Mesh,
 	Node,

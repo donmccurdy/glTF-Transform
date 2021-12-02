@@ -1,6 +1,7 @@
 import {
 	ColorUtils,
 	ExtensionProperty,
+	IProperty,
 	PropertyType,
 	Texture,
 	TextureChannel,
@@ -8,7 +9,6 @@ import {
 	vec3,
 	vec4,
 } from '@gltf-transform/core';
-import { IProperty } from 'core/dist/properties';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS, Nullable } from '../constants';
 
 interface IPBRSpecularGlossiness extends IProperty {
