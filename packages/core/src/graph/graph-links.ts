@@ -15,6 +15,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 	private _disposed = false;
 	private readonly _listeners: (() => void)[] = [];
 
+	// TODO(cleanup): Support typing metadata.
 	constructor(
 		private readonly _name: string,
 		private readonly _parent: Parent,
@@ -22,7 +23,7 @@ export class Link<Parent extends GraphNode, Child extends GraphNode> {
 		private _metadata: Record<string, unknown> = {}
 	) {
 		if (!_parent.canLink(_child)) {
-			throw new Error('Cannot link disconnected graphs/documents.');
+			throw new Error('Cannot link disconnected graphs.');
 		}
 	}
 

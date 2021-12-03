@@ -30,6 +30,7 @@ export class Graph<T extends GraphNode> {
 
 	/** Returns a list of all parent->child links on this graph. */
 	public getLinks(): Link<T, T>[] {
+		// TODO(cleanup): getLinks -> listLinks
 		return Array.from(this._links);
 	}
 

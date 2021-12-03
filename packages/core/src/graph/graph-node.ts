@@ -6,7 +6,7 @@ import { Link } from './graph-links';
 
 // References:
 // - https://stackoverflow.com/a/70163679/1314762
-// - https://stackoverflow.com/q/70192877/1314762
+// - https://stackoverflow.com/a/70201805/1314762
 
 type Literal =
 	| null
@@ -85,6 +85,8 @@ export abstract class GraphNode<Attributes extends {} = {}> {
 	 * Any single-link references (setRef) returned by this method will be considered immutable,
 	 * to be owned by and disposed with the parent node. Multi-link references (addRef, removeRef,
 	 * setRefMap) cannot be returned as default attributes.
+	 *
+	 * TODO(cleanup): getDefaultAttributes -> getDefaults
 	 */
 	protected getDefaultAttributes(): Nullable<Attributes> {
 		return {} as Nullable<Attributes>;
