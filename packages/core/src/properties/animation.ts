@@ -47,8 +47,8 @@ interface IAnimation extends IExtensibleProperty {
 export class Animation extends ExtensibleProperty<IAnimation> {
 	public readonly propertyType = PropertyType.ANIMATION;
 
-	protected getDefaultAttributes(): Nullable<IAnimation> {
-		return Object.assign(super.getDefaultAttributes(), { channels: [], samplers: [] });
+	protected getDefaults(): Nullable<IAnimation> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { channels: [], samplers: [] });
 	}
 
 	/** Adds an {@link AnimationChannel} to this Animation. */

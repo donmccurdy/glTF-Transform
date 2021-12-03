@@ -43,8 +43,8 @@ interface IMesh extends IExtensibleProperty {
 export class Mesh extends ExtensibleProperty<IMesh> {
 	public readonly propertyType = PropertyType.MESH;
 
-	protected getDefaultAttributes(): Nullable<IMesh> {
-		return Object.assign(super.getDefaultAttributes(), { weights: [], primitives: [] });
+	protected getDefaults(): Nullable<IMesh> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { weights: [], primitives: [] });
 	}
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */

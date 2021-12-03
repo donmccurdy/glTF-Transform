@@ -32,12 +32,12 @@ export class Specular extends ExtensionProperty<ISpecular> {
 	public readonly extensionName = KHR_MATERIALS_SPECULAR;
 	public static EXTENSION_NAME = KHR_MATERIALS_SPECULAR;
 
-	protected getDefaultAttributes(): Nullable<ISpecular> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<ISpecular> {
+		return Object.assign(super.getDefaults() as IProperty, {
 			specularFactor: 1.0,
 			specularTexture: null,
 			specularTextureInfo: new TextureInfo(this.graph, 'specularTextureInfo'),
-			specularColorFactor: [1.0, 1.0, 1.0],
+			specularColorFactor: [1.0, 1.0, 1.0] as vec3,
 			specularColorTexture: null,
 			specularColorTextureInfo: new TextureInfo(this.graph, 'specularColorTextureInfo'),
 		});

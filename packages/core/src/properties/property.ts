@@ -62,8 +62,8 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 		(this as Property).set('name', name);
 	}
 
-	protected getDefaultAttributes(): Nullable<T> {
-		return Object.assign(super.getDefaultAttributes(), { name: '', extras: {} });
+	protected getDefaults(): Nullable<T> {
+		return Object.assign(super.getDefaults(), { name: '', extras: {} });
 	}
 
 	/**********************************************************************************************

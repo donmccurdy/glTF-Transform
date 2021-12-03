@@ -20,8 +20,8 @@ export interface IExtensibleProperty extends IProperty {
  * @category Properties
  */
 export abstract class ExtensibleProperty<T extends IExtensibleProperty = IExtensibleProperty> extends Property<T> {
-	protected getDefaultAttributes(): Nullable<T> {
-		return Object.assign(super.getDefaultAttributes(), { extensions: {} });
+	protected getDefaults(): Nullable<T> {
+		return Object.assign(super.getDefaults(), { extensions: {} });
 	}
 
 	/**

@@ -32,9 +32,9 @@ export class Sheen extends ExtensionProperty<ISheen> {
 	public readonly extensionName = KHR_MATERIALS_SHEEN;
 	public static EXTENSION_NAME = KHR_MATERIALS_SHEEN;
 
-	protected getDefaultAttributes(): Nullable<ISheen> {
-		return Object.assign(super.getDefaultAttributes(), {
-			sheenColorFactor: [0.0, 0.0, 0.0],
+	protected getDefaults(): Nullable<ISheen> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			sheenColorFactor: [0.0, 0.0, 0.0] as vec3,
 			sheenColorTexture: null,
 			sheenColorTextureInfo: new TextureInfo(this.graph, 'sheenColorTextureInfo'),
 			sheenRoughnessFactor: 0.0,

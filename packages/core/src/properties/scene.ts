@@ -27,8 +27,8 @@ interface IScene extends IExtensibleProperty {
 export class Scene extends ExtensibleProperty<IScene> {
 	public readonly propertyType = PropertyType.SCENE;
 
-	protected getDefaultAttributes(): Nullable<IScene> {
-		return Object.assign(super.getDefaultAttributes(), { children: [] });
+	protected getDefaults(): Nullable<IScene> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { children: [] });
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {

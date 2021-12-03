@@ -132,8 +132,8 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<IAccessor> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IAccessor> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			array: null,
 			type: Accessor.Type.SCALAR,
 			componentType: Accessor.ComponentType.FLOAT,

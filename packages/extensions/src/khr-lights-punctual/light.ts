@@ -38,9 +38,9 @@ export class Light extends ExtensionProperty<ILight> {
 	 * INSTANCE.
 	 */
 
-	protected getDefaultAttributes(): Nullable<ILight> {
-		return Object.assign(super.getDefaultAttributes(), {
-			color: [1, 1, 1],
+	protected getDefaults(): Nullable<ILight> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			color: [1, 1, 1] as vec3,
 			intensity: 1,
 			type: Light.Type.POINT,
 			range: null,

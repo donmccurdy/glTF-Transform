@@ -34,12 +34,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	public readonly extensionName = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 	public static EXTENSION_NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 
-	protected getDefaultAttributes(): Nullable<IPBRSpecularGlossiness> {
-		return Object.assign(super.getDefaultAttributes(), {
-			diffuseFactor: [1.0, 1.0, 1.0, 1.0],
+	protected getDefaults(): Nullable<IPBRSpecularGlossiness> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			diffuseFactor: [1.0, 1.0, 1.0, 1.0] as vec4,
 			diffuseTexture: null,
 			diffuseTextureInfo: new TextureInfo(this.graph, 'diffuseTextureInfo'),
-			specularFactor: [1.0, 1.0, 1.0],
+			specularFactor: [1.0, 1.0, 1.0] as vec3,
 			glossinessFactor: 1.0,
 			specularGlossinessTexture: null,
 			specularGlossinessTextureInfo: new TextureInfo(this.graph, 'specularGlossinessTextureInfo'),

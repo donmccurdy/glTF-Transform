@@ -18,9 +18,8 @@ export class Mapping extends ExtensionProperty<IMapping> {
 	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
 
-	protected getDefaultAttributes(): Nullable<IMapping> {
-		// TODO(cleanup): Can we get this type-checked?
-		return Object.assign(super.getDefaultAttributes(), { material: null, variants: [] });
+	protected getDefaults(): Nullable<IMapping> {
+		return Object.assign(super.getDefaults() as IProperty, { material: null, variants: [] });
 	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */

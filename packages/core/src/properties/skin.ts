@@ -23,8 +23,12 @@ interface ISkin extends IExtensibleProperty {
 export class Skin extends ExtensibleProperty<ISkin> {
 	public readonly propertyType = PropertyType.SKIN;
 
-	protected getDefaultAttributes(): Nullable<ISkin> {
-		return Object.assign(super.getDefaultAttributes(), { skeleton: null, inverseBindMatrices: null, joints: [] });
+	protected getDefaults(): Nullable<ISkin> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			skeleton: null,
+			inverseBindMatrices: null,
+			joints: [],
+		});
 	}
 
 	/**

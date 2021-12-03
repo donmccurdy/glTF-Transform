@@ -53,11 +53,11 @@ export class Node extends ExtensibleProperty<INode> {
 	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
 	public _parent: SceneNode | null = null;
 
-	protected getDefaultAttributes(): Nullable<INode> {
-		return Object.assign(super.getDefaultAttributes(), {
-			translation: [0, 0, 0],
-			rotation: [0, 0, 0, 1],
-			scale: [1, 1, 1],
+	protected getDefaults(): Nullable<INode> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			translation: [0, 0, 0] as vec3,
+			rotation: [0, 0, 0, 1] as vec4,
+			scale: [1, 1, 1] as vec3,
 			weights: [],
 			camera: null,
 			mesh: null,

@@ -76,8 +76,8 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<ITextureInfo> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<ITextureInfo> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			texCoord: 0,
 			magFilter: null,
 			minFilter: null,

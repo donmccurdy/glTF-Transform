@@ -63,8 +63,8 @@ interface IBuffer extends IExtensibleProperty {
 export class Buffer extends ExtensibleProperty<IBuffer> {
 	public readonly propertyType = PropertyType.BUFFER;
 
-	protected getDefaultAttributes(): Nullable<IBuffer> {
-		return Object.assign(super.getDefaultAttributes(), { uri: '' });
+	protected getDefaults(): Nullable<IBuffer> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { uri: '' });
 	}
 
 	/**

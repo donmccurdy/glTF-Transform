@@ -17,8 +17,8 @@ export class MappingList extends ExtensionProperty<IMappingList> {
 	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
 
-	protected getDefaultAttributes(): Nullable<IMappingList> {
-		return Object.assign(super.getDefaultAttributes(), { mappings: [] });
+	protected getDefaults(): Nullable<IMappingList> {
+		return Object.assign(super.getDefaults() as IProperty, { mappings: [] });
 	}
 
 	/** Adds a {@link Mapping} to this mapping. */

@@ -90,15 +90,15 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<IMaterial> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IMaterial> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			alphaMode: Material.AlphaMode.OPAQUE,
 			alphaCutoff: 0.5,
 			doubleSided: false,
-			baseColorFactor: [1, 1, 1, 1],
+			baseColorFactor: [1, 1, 1, 1] as vec4,
 			baseColorTexture: null,
 			baseColorTextureInfo: new TextureInfo(this.graph, 'baseColorTextureInfo'),
-			emissiveFactor: [0, 0, 0],
+			emissiveFactor: [0, 0, 0] as vec3,
 			emissiveTexture: null,
 			emissiveTextureInfo: new TextureInfo(this.graph, 'emissiveTextureInfo'),
 			normalScale: 1,

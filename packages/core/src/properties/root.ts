@@ -72,8 +72,8 @@ export class Root extends Property<IRoot> {
 
 	private readonly _extensions: Set<Extension> = new Set();
 
-	getDefaultAttributes(): Nullable<IRoot> {
-		return Object.assign(super.getDefaultAttributes(), {
+	getDefaults(): Nullable<IRoot> {
+		return Object.assign(super.getDefaults() as IProperty, {
 			defaultScene: null,
 			accessors: [],
 			animations: [],

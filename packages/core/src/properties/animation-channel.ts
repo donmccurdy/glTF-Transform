@@ -62,8 +62,8 @@ export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<IAnimationChannel> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IAnimationChannel> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			targetPath: null,
 			targetNode: null,
 			sampler: null,

@@ -31,13 +31,13 @@ export class Volume extends ExtensionProperty<IVolume> {
 	public readonly extensionName = KHR_MATERIALS_VOLUME;
 	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;
 
-	protected getDefaultAttributes(): Nullable<IVolume> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IVolume> {
+		return Object.assign(super.getDefaults() as IProperty, {
 			thicknessFactor: 0.0,
 			thicknessTexture: null,
 			thicknessTextureInfo: new TextureInfo(this.graph, 'thicknessTexture'),
 			attenuationDistance: Infinity,
-			attenuationColor: [1.0, 1.0, 1.0],
+			attenuationColor: [1.0, 1.0, 1.0] as vec3,
 		});
 	}
 

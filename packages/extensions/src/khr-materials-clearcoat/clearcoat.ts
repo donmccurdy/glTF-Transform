@@ -28,8 +28,8 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	public readonly extensionName = KHR_MATERIALS_CLEARCOAT;
 	public static EXTENSION_NAME = KHR_MATERIALS_CLEARCOAT;
 
-	protected getDefaultAttributes(): Nullable<IClearcoat> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IClearcoat> {
+		return Object.assign(super.getDefaults() as IProperty, {
 			clearcoatFactor: 0,
 			clearcoatTexture: null,
 			clearcoatTextureInfo: new TextureInfo(this.graph, 'clearcoatTextureInfo'),

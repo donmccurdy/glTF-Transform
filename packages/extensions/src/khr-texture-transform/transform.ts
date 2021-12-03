@@ -20,11 +20,11 @@ export class Transform extends ExtensionProperty<ITransform> {
 	public readonly extensionName = KHR_TEXTURE_TRANSFORM;
 	public static EXTENSION_NAME = KHR_TEXTURE_TRANSFORM;
 
-	protected getDefaultAttributes(): Nullable<ITransform> {
-		return Object.assign(super.getDefaultAttributes(), {
-			offset: [0.0, 0.0],
+	protected getDefaults(): Nullable<ITransform> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			offset: [0.0, 0.0] as vec2,
 			rotation: 0,
-			scale: [1.0, 1.0],
+			scale: [1.0, 1.0] as vec2,
 			texCoord: null,
 		});
 	}

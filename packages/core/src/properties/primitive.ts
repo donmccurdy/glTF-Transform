@@ -83,8 +83,8 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<IPrimitive> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<IPrimitive> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			mode: Primitive.Mode.TRIANGLES,
 			material: null,
 			indices: null,

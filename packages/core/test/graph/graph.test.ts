@@ -12,8 +12,8 @@ interface ITestNode extends IProperty {
  */
 class TestNode extends Property<ITestNode> {
 	propertyType = 'test';
-	getDefaultAttributes(): ITestNode {
-		return { ...super.getDefaultAttributes(), nodes: [] };
+	getDefaults(): ITestNode {
+		return { ...super.getDefaults(), nodes: [] };
 	}
 	addNode(node): this {
 		return this.addRef('nodes', node);

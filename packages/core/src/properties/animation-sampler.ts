@@ -72,7 +72,7 @@ export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	 */
 
 	protected getDefaultAttributes(): Nullable<IAnimationSampler> {
-		return Object.assign(super.getDefaultAttributes(), {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			interpolation: AnimationSampler.Interpolation.LINEAR,
 			input: null,
 			output: null,

@@ -58,8 +58,8 @@ export class Camera extends ExtensibleProperty<ICamera> {
 	 * Instance.
 	 */
 
-	protected getDefaultAttributes(): Nullable<ICamera> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<ICamera> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			// Common.
 			type: Camera.Type.PERSPECTIVE,
 			znear: 0.1,

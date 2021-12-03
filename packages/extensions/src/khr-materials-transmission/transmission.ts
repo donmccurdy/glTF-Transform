@@ -20,8 +20,8 @@ export class Transmission extends ExtensionProperty<ITransmission> {
 	public readonly extensionName = KHR_MATERIALS_TRANSMISSION;
 	public static EXTENSION_NAME = KHR_MATERIALS_TRANSMISSION;
 
-	protected getDefaultAttributes(): Nullable<ITransmission> {
-		return Object.assign(super.getDefaultAttributes(), {
+	protected getDefaults(): Nullable<ITransmission> {
+		return Object.assign(super.getDefaults() as IProperty, {
 			transmissionFactor: 0.0,
 			transmissionTexture: null,
 			transmissionTextureInfo: new TextureInfo(this.graph, 'transmissionTextureInfo'),

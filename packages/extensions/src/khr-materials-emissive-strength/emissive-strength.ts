@@ -17,8 +17,8 @@ export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
 	public readonly extensionName = KHR_MATERIALS_EMISSIVE_STRENGTH;
 	public static EXTENSION_NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
 
-	protected getDefaultAttributes(): Nullable<IEmissiveStrength> {
-		return Object.assign(super.getDefaultAttributes(), { emissiveStrength: 1.0 });
+	protected getDefaults(): Nullable<IEmissiveStrength> {
+		return Object.assign(super.getDefaults() as IProperty, { emissiveStrength: 1.0 });
 	}
 
 	/**********************************************************************************************

@@ -16,8 +16,8 @@ export class IOR extends ExtensionProperty<IIOR> {
 	public readonly extensionName = KHR_MATERIALS_IOR;
 	public static EXTENSION_NAME = KHR_MATERIALS_IOR;
 
-	protected getDefaultAttributes(): Nullable<IIOR> {
-		return Object.assign(super.getDefaultAttributes(), { ior: 0 });
+	protected getDefaults(): Nullable<IIOR> {
+		return Object.assign(super.getDefaults() as IProperty, { ior: 0 });
 	}
 
 	/**********************************************************************************************

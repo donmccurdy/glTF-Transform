@@ -16,8 +16,8 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	public readonly extensionName = EXT_MESH_GPU_INSTANCING;
 	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;
 
-	protected getDefaultAttributes(): Nullable<IInstancedMesh> {
-		return Object.assign(super.getDefaultAttributes(), { attributes: {} });
+	protected getDefaults(): Nullable<IInstancedMesh> {
+		return Object.assign(super.getDefaults() as IProperty, { attributes: {} });
 	}
 
 	/** Returns an instance attribute as an {@link Accessor}. */

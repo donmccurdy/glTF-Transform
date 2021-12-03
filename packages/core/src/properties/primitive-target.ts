@@ -25,8 +25,8 @@ interface IPrimitiveTarget extends IExtensibleProperty {
 export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
 
-	protected getDefaultAttributes(): Nullable<IPrimitiveTarget> {
-		return Object.assign(super.getDefaultAttributes(), { attributes: {} });
+	protected getDefaults(): Nullable<IPrimitiveTarget> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { attributes: {} });
 	}
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */
