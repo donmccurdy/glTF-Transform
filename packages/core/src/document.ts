@@ -1,6 +1,6 @@
 import { PropertyType } from './constants';
 import { Extension } from './extension';
-import { Graph } from './graph';
+import { Graph } from 'property-graph';
 import {
 	Accessor,
 	Animation,

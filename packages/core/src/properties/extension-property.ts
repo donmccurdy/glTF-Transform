@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import { Graph } from 'property-graph';
 import { ExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY, Property, IProperty } from './property';
 

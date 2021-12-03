@@ -1,6 +1,6 @@
 import { Nullable, PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
-import { Graph } from '../graph';
+import { Graph } from 'property-graph';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';

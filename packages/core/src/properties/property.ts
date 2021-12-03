@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Nullable } from '../constants';
-import { $attributes, $immutableKeys, Graph, GraphNode, Link } from '../graph';
+import { $attributes, $immutableKeys, Graph, GraphNode, Link } from 'property-graph';
 import { isPlainObject } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;

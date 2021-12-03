@@ -7257,6 +7257,11 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
+property-graph@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-0.0.1.tgz#3ef72b23e2f6ac46e51fd41bfd48d0927c653059"
+  integrity sha512-o2DMPRaXkm5XzHkwimEXVKafSRv7dT9b+QXHYgx4bDgisoCChzy96lCu2cq79J1f1haVTgDa+xbiDP63YNr97Q==
+
 proto-list@~1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"

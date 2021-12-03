@@ -1,6 +1,6 @@
 import { multiply } from 'gl-matrix/mat4';
 import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants';
-import { $attributes } from '../graph';
+import { $attributes } from 'property-graph';
 import { MathUtils } from '../utils';
 import { Camera } from './camera';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';

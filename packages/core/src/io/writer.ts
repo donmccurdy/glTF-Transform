@@ -1,7 +1,7 @@
 import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
-import { Link } from '../graph';
+import { Link } from 'property-graph';
 import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
 import { GLTF } from '../types/gltf';
@@ -38,9 +38,13 @@ export class GLTFWriter {
 		// the I/O class. This ensures that setup in `extension.register()` is completed, and
 		// allows a Document to be written with specific extensions disabled.
 		const extensionsRegistered = new Set(options.extensions.map((ext) => ext.EXTENSION_NAME));
-		const extensionsUsed = doc.getRoot().listExtensionsUsed()
+		const extensionsUsed = doc
+			.getRoot()
+			.listExtensionsUsed()
 			.filter((ext) => extensionsRegistered.has(ext.extensionName));
-		const extensionsRequired = doc.getRoot().listExtensionsRequired()
+		const extensionsRequired = doc
+			.getRoot()
+			.listExtensionsRequired()
 			.filter((ext) => extensionsRegistered.has(ext.extensionName));
 
 		if (extensionsUsed.length < doc.getRoot().listExtensionsUsed().length) {

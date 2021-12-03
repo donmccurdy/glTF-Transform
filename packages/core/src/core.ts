@@ -25,7 +25,7 @@ export {
 	TextureInfo,
 	COPY_IDENTITY,
 } from './properties';
-export { Graph, Link } from './graph';
+export { Graph, Link } from 'property-graph';
 export { PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io';
 export {
 	BufferUtils,

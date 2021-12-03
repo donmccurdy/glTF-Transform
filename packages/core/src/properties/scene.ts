@@ -1,5 +1,5 @@
 import { Nullable, PropertyType } from '../constants';
-import { $attributes } from '../graph';
+import { $attributes } from 'property-graph';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Node } from './node';
 import { COPY_IDENTITY } from './property';
