@@ -204,7 +204,7 @@ export class GLTFWriter {
 		const accessorLinks = new Map<Accessor, Link<Property, Accessor>[]>();
 
 		// Gather all accessors, creating a map to look up their uses.
-		for (const link of doc.getGraph().getLinks()) {
+		for (const link of doc.getGraph().listLinks()) {
 			if (link.getParent() === root) continue;
 
 			const child = link.getChild();

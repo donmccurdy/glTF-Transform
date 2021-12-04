@@ -137,16 +137,13 @@ export class Document {
 		propertyMap.set(other._root, this._root);
 
 		// 3. Create stub classes for every Property in other Document.
-		for (const link of other._graph.getLinks()) {
+		for (const link of other._graph.listLinks()) {
 			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
 				if (visited.has(thisProp)) continue;
 
 				let otherProp: Property;
 				if (thisProp.propertyType === PropertyType.TEXTURE_INFO) {
 					// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-					// TODO(cleanup): Should the lifecycle be decoupled? Maybe just create
-					// TextureInfo automatically when appending a Texture to a Material or
-					// ExtensionProperty that doesn't have one? More work for extensions.
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.

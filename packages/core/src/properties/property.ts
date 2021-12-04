@@ -161,16 +161,16 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 				if (this[$immutableKeys].has(key)) {
 					thisValue.getChild().copy(resolve(otherValue.getChild()), resolve);
 				} else {
-					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getMetadata());
+					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
 				}
 			} else if (Array.isArray(otherValue) && otherValue[0] instanceof Link) {
 				for (const link of otherValue as Link<this, Property>[]) {
-					this.addRef(key as any, resolve(link.getChild()), link.getMetadata());
+					this.addRef(key as any, resolve(link.getChild()), link.getAttributes());
 				}
 			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof Link) {
 				for (const subkey in otherValue) {
 					const link = otherValue[subkey] as Link<this, Property>;
-					this.setRefMap(key as any, link.getName(), resolve(link.getChild()), link.getMetadata());
+					this.setRefMap(key as any, link.getName(), resolve(link.getChild()), link.getAttributes());
 				}
 			} else if (isPlainObject(otherValue)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));

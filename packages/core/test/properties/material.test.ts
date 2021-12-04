@@ -215,7 +215,7 @@ test('@gltf-transform/core::material | texture channels', (t) => {
 		let mask = 0x0000;
 		for (const link of graph.listParentLinks(texture)) {
 			// TODO(cleanup): Better type information for link metadata.
-			const { channels } = link.getMetadata() as { channels: number | undefined };
+			const { channels } = link.getAttributes() as { channels: number | undefined };
 			if (channels) mask |= channels;
 		}
 		return mask;
