@@ -183,7 +183,7 @@ export class WriterContext {
 			if (link.getName() === 'inverseBindMatrices') {
 				return WriterContext.BufferViewUsage.INVERSE_BIND_MATRICES;
 			}
-			// TODO(cleanup): BAD! Need link metadata.
+			// TODO(cleanup): Better type information for link metadata.
 			if (link.getName().toUpperCase() === link.getName()) {
 				return WriterContext.BufferViewUsage.ARRAY_BUFFER;
 			}

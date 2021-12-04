@@ -1,7 +1,6 @@
 import { Nullable, PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
 import { Graph } from 'property-graph';
-import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';
@@ -14,7 +13,16 @@ import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
 
+interface IAsset {
+	version: string;
+	minVersion?: string;
+	generator?: string;
+	copyright?: string;
+	[key: string]: unknown;
+}
+
 interface IRoot extends IProperty {
+	asset: IAsset;
 	defaultScene: Scene;
 
 	accessors: Accessor[];
@@ -64,16 +72,14 @@ interface IRoot extends IProperty {
 export class Root extends Property<IRoot> {
 	public readonly propertyType = PropertyType.ROOT;
 
-	// TODO(cleanup): Manage as literal attribute?
-	private readonly _asset: GLTF.IAsset = {
-		generator: `glTF-Transform ${VERSION}`,
-		version: '2.0',
-	};
-
 	private readonly _extensions: Set<Extension> = new Set();
 
 	getDefaults(): Nullable<IRoot> {
 		return Object.assign(super.getDefaults() as IProperty, {
+			asset: {
+				generator: `glTF-Transform ${VERSION}`,
+				version: '2.0',
+			},
 			defaultScene: null,
 			accessors: [],
 			animations: [],
@@ -106,8 +112,7 @@ export class Root extends Property<IRoot> {
 
 		// IMPORTANT: Root cannot call super.copy(), which removes existing links.
 
-		Object.assign(this._asset, other._asset);
-
+		this.set('asset', { ...other.get('asset') });
 		this.setName(other.getName());
 		this.setExtras({ ...other.getExtras() });
 		this.setDefaultScene(other.getDefaultScene() ? resolve(other.getDefaultScene()!) : null);
@@ -159,8 +164,8 @@ export class Root extends Property<IRoot> {
 	 *
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
-	public getAsset(): GLTF.IAsset {
-		return this._asset;
+	public getAsset(): IAsset {
+		return this.get('asset');
 	}
 
 	/**********************************************************************************************
