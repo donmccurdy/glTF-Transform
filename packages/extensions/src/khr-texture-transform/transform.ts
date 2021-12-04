@@ -53,7 +53,7 @@ export class Transform extends ExtensionProperty<ITransform> {
 	public getTexCoord(): number | null {
 		return this.get('texCoord');
 	}
-	public setTexCoord(texCoord: number): this {
+	public setTexCoord(texCoord: number | null): this {
 		return this.set('texCoord', texCoord);
 	}
 }

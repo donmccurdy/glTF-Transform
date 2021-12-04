@@ -147,8 +147,8 @@ export class Light extends ExtensionProperty<ILight> {
 	 * Angle, in radians, from centre of spotlight where falloff begins. Must be ≥ 0 and
 	 * < outerConeAngle.
 	 */
-	public setInnerConeAngle(innerConeAngle: number): this {
-		return this.set('innerConeAngle', innerConeAngle);
+	public setInnerConeAngle(angle: number): this {
+		return this.set('innerConeAngle', angle);
 	}
 
 	/**
@@ -163,7 +163,7 @@ export class Light extends ExtensionProperty<ILight> {
 	 * Angle, in radians, from centre of spotlight where falloff ends. Must be > innerConeAngle and
 	 * ≤ PI / 2.0.
 	 */
-	public setOuterConeAngle(outerConeAngle: number): this {
-		return this.set('outerConeAngle', outerConeAngle);
+	public setOuterConeAngle(angle: number): this {
+		return this.set('outerConeAngle', angle);
 	}
 }
