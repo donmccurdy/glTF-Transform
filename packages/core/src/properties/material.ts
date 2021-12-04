@@ -211,8 +211,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * baseColorFactor in linear space. See {@link getBaseColorTexture}.
 	 */
 	public setBaseColorHex(hex: number): this {
-		const baseColorFactor = this.get('baseColorFactor').slice() as vec4;
-		return this.set('baseColorFactor', ColorUtils.hexToFactor(hex, baseColorFactor));
+		const factor = this.get('baseColorFactor').slice() as vec4;
+		return this.set('baseColorFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**
@@ -269,8 +269,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * emissiveFactor in linear space. See {@link getEmissiveTexture}.
 	 */
 	public setEmissiveHex(hex: number): this {
-		const emissiveFactor = this.get('emissiveFactor').slice() as vec3;
-		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, emissiveFactor));
+		const factor = this.get('emissiveFactor').slice() as vec3;
+		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**

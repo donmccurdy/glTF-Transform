@@ -109,10 +109,12 @@ export class Node extends ExtensibleProperty<INode> {
 
 	/** Returns the local matrix of this node. */
 	public getMatrix(): mat4 {
-		const translation = this.get('translation');
-		const rotation = this.get('rotation');
-		const scale = this.get('scale');
-		return MathUtils.compose(translation, rotation, scale, [] as unknown as mat4);
+		return MathUtils.compose(
+			this.get('translation'),
+			this.get('rotation'),
+			this.get('scale'),
+			[] as unknown as mat4
+		);
 	}
 
 	/** Sets the local matrix of this node. Matrix will be decomposed to TRS properties. */
@@ -121,8 +123,7 @@ export class Node extends ExtensibleProperty<INode> {
 		const rotation = this.get('rotation').slice() as vec4;
 		const scale = this.get('scale').slice() as vec3;
 		MathUtils.decompose(matrix, translation, rotation, scale);
-		this.set('translation', translation).set('rotation', rotation).set('scale', scale);
-		return this;
+		return this.set('translation', translation).set('rotation', rotation).set('scale', scale);
 	}
 
 	/**********************************************************************************************

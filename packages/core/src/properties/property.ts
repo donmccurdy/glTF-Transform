@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Nullable } from '../constants';
 import { $attributes, $immutableKeys, Graph, GraphNode, Link } from 'property-graph';
 import { isPlainObject } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
+
+type Ref = Link<Property, Property>;
+type RefMap = { [key: string]: Ref };
+type UnknownRef = Ref | Ref[] | RefMap | unknown;
 
 export interface IProperty {
 	name: string;
@@ -136,18 +139,18 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public copy(other: this, resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
 		// Remove previous references.
 		for (const key in this[$attributes]) {
-			const value = this[$attributes][key] as any;
+			const value = this[$attributes][key];
 			if (value instanceof Link) {
 				if (!this[$immutableKeys].has(key)) {
 					value.dispose();
 				}
 			} else if (Array.isArray(value) && value[0] instanceof Link) {
-				for (const link of value as Link<this, any>[]) {
+				for (const link of value as Ref[]) {
 					link.dispose();
 				}
 			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
 				for (const subkey in value) {
-					const link = value[subkey] as Link<this, any>;
+					const link = value[subkey] as Ref;
 					link.dispose();
 				}
 			}
@@ -155,21 +158,25 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 
 		// Add new references.
 		for (const key in other[$attributes]) {
-			const thisValue = this[$attributes][key] as any;
-			const otherValue = other[$attributes][key] as any;
+			const thisValue = this[$attributes][key];
+			const otherValue = other[$attributes][key];
 			if (otherValue instanceof Link) {
 				if (this[$immutableKeys].has(key)) {
-					thisValue.getChild().copy(resolve(otherValue.getChild()), resolve);
+					const link = thisValue as unknown as Ref;
+					link.getChild().copy(resolve(otherValue.getChild()), resolve);
 				} else {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
 				}
 			} else if (Array.isArray(otherValue) && otherValue[0] instanceof Link) {
-				for (const link of otherValue as Link<this, Property>[]) {
+				for (const link of otherValue as Ref[]) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.addRef(key as any, resolve(link.getChild()), link.getAttributes());
 				}
 			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof Link) {
 				for (const subkey in otherValue) {
-					const link = otherValue[subkey] as Link<this, Property>;
+					const link = otherValue[subkey] as Ref;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.setRefMap(key as any, link.getName(), resolve(link.getChild()), link.getAttributes());
 				}
 			} else if (isPlainObject(otherValue)) {
@@ -179,7 +186,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 				otherValue instanceof ArrayBuffer ||
 				ArrayBuffer.isView(otherValue)
 			) {
-				this[$attributes][key] = (otherValue as Uint8Array).slice() as any;
+				this[$attributes][key] = (otherValue as unknown as Uint8Array).slice() as any;
 			} else {
 				this[$attributes][key] = otherValue;
 			}
@@ -190,19 +197,25 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 
 	public equals(other: this): boolean {
 		for (const key in this[$attributes]) {
-			const a = this[$attributes][key];
-			const b = other[$attributes][key];
+			const a = this[$attributes][key] as UnknownRef;
+			const b = other[$attributes][key] as UnknownRef;
 
 			if (isRef(a) || isRef(b)) {
-				if (!equalsRef(a as any, b as any)) return false;
+				if (!equalsRef(a as Ref, b as Ref)) {
+					return false;
+				}
 			} else if (isRefList(a) || isRefList(b)) {
-				if (!equalsRefList(a as any, b as any)) return false;
+				if (!equalsRefList(a as Ref[], b as Ref[])) {
+					return false;
+				}
 			} else if (isRefMap(a) || isRefMap(b)) {
-				if (!equalsRefMap(a as any, b as any)) return false;
+				if (!equalsRefMap(a as RefMap, b as RefMap)) {
+					return false;
+				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {
-				// Object Literal, or empty RefMap. Both can be skipped – we don't compare extras.
+				// Skip object literal, or empty RefMap. Both can be skipped – we don't compare extras.
 			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
-				if (!equalsArray(a as unknown as [], b as unknown as [])) return false;
+				if (!equalsArray(a as [], b as [])) return false;
 			} else {
 				// Literal.
 				if (a !== b) return false;
@@ -240,30 +253,24 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	}
 }
 
-function isRef(value: any): boolean {
+function isRef(value: Ref | unknown): boolean {
 	return value instanceof Link;
 }
 
-function isRefList(value: any): boolean {
+function isRefList(value: Ref[] | unknown): boolean {
 	return Array.isArray(value) && value[0] instanceof Link;
 }
 
-function isRefMap(value: any): boolean {
-	return value && typeof value === 'object' && Object.values(value)[0] instanceof Link;
+function isRefMap(value: RefMap | unknown): boolean {
+	return !!(value && typeof value === 'object' && Object.values(value)[0] instanceof Link);
 }
 
-function equalsRef<Parent extends Property, Child extends Property>(
-	a: Link<Parent, Child>,
-	b: Link<Parent, Child>
-): boolean {
+function equalsRef(a: Ref, b: Ref): boolean {
 	if (!!a !== !!b) return false;
 	return a.getChild().equals(b.getChild());
 }
 
-function equalsRefList<Parent extends Property, Child extends Property>(
-	a: Link<Parent, Child>[],
-	b: Link<Parent, Child>[]
-): boolean {
+function equalsRefList(a: Ref[], b: Ref[]): boolean {
 	if (!!a !== !!b) return false;
 	if (a.length !== b.length) return false;
 
@@ -276,10 +283,7 @@ function equalsRefList<Parent extends Property, Child extends Property>(
 	return true;
 }
 
-function equalsRefMap<Parent extends Property, Child extends Property>(
-	a: { [key: string]: Link<Parent, Child> },
-	b: { [key: string]: Link<Parent, Child> }
-): boolean {
+function equalsRefMap(a: RefMap, b: RefMap): boolean {
 	if (!!a !== !!b) return false;
 
 	const keysA = Object.keys(a);
@@ -296,8 +300,8 @@ function equalsRefMap<Parent extends Property, Child extends Property>(
 	return true;
 }
 
-function equalsArray(a: ArrayLike<unknown>, b: ArrayLike<unknown>): boolean {
-	if (!!a !== !!b) return false;
+function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
+	if (!!a !== !!b || !a || !b) return false;
 
 	if (a.length !== b.length) return false;
 
