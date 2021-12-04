@@ -1,13 +1,19 @@
 import { Nullable } from '../constants';
 import { $attributes, $immutableKeys, Graph, GraphNode, Link } from 'property-graph';
-import { isPlainObject } from '../utils';
+import {
+	equalsArray,
+	equalsRef,
+	equalsRefList,
+	equalsRefMap,
+	isPlainObject,
+	isRef,
+	isRefList,
+	isRefMap,
+} from '../utils';
+import type { Ref, RefMap, UnknownRef } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
-
-type Ref = Link<Property, Property>;
-type RefMap = { [key: string]: Ref };
-type UnknownRef = Ref | Ref[] | RefMap | unknown;
 
 export interface IProperty {
 	name: string;
@@ -261,77 +267,4 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public listParents(): Property[] {
 		return this.listGraphParents() as Property[];
 	}
-}
-
-function isRef(value: Ref | unknown): boolean {
-	return value instanceof Link;
-}
-
-function isRefList(value: Ref[] | unknown): boolean {
-	return Array.isArray(value) && value[0] instanceof Link;
-}
-
-function isRefMap(value: RefMap | unknown): boolean {
-	return !!(value && typeof value === 'object' && Object.values(value)[0] instanceof Link);
-}
-
-function equalsRef(refA: Ref, refB: Ref): boolean {
-	if (!!refA !== !!refB) return false;
-
-	const a = refA.getChild();
-	const b = refB.getChild();
-
-	return a === b || a.equals(b);
-}
-
-function equalsRefList(refListA: Ref[], refListB: Ref[]): boolean {
-	if (!!refListA !== !!refListB) return false;
-	if (refListA.length !== refListB.length) return false;
-
-	for (let i = 0; i < refListA.length; i++) {
-		const a = refListA[i];
-		const b = refListB[i];
-
-		if (a.getChild() === b.getChild()) continue;
-
-		if (!a.getChild().equals(b.getChild())) return false;
-	}
-
-	return true;
-}
-
-function equalsRefMap(refMapA: RefMap, refMapB: RefMap): boolean {
-	if (!!refMapA !== !!refMapB) return false;
-
-	const keysA = Object.keys(refMapA);
-	const keysB = Object.keys(refMapB);
-	if (keysA.length !== keysB.length) return false;
-
-	for (const key in refMapA) {
-		const refA = refMapA[key];
-		const refB = refMapB[key];
-		if (!!refA !== !!refB) return false;
-
-		const a = refA.getChild();
-		const b = refB.getChild();
-		if (a === b) continue;
-
-		if (!a.equals(b)) return false;
-	}
-
-	return true;
-}
-
-function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
-	if (a === b) return true;
-
-	if (!!a !== !!b || !a || !b) return false;
-
-	if (a.length !== b.length) return false;
-
-	for (let i = 0; i < a.length; i++) {
-		if (a[i] !== b[i]) return false;
-	}
-
-	return true;
 }
