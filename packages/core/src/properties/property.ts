@@ -186,6 +186,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 				otherValue instanceof ArrayBuffer ||
 				ArrayBuffer.isView(otherValue)
 			) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				this[$attributes][key] = (otherValue as unknown as Uint8Array).slice() as any;
 			} else {
 				this[$attributes][key] = otherValue;
@@ -195,7 +196,16 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 		return this;
 	}
 
+	/**
+	 * Returns true if two properties are deeply equivalent, recursively comparing the attributes
+	 * of the properties. For example, two {@link Primitive Primitives} are equivalent if they
+	 * have accessors and materials with equivalent content — but not necessarily the same specific
+	 * accessors and materials.
+	 */
 	public equals(other: this): boolean {
+		if (this === other) return true;
+		if (this.propertyType !== other.propertyType) return false;
+
 		for (const key in this[$attributes]) {
 			const a = this[$attributes][key] as UnknownRef;
 			const b = other[$attributes][key] as UnknownRef;
@@ -265,42 +275,56 @@ function isRefMap(value: RefMap | unknown): boolean {
 	return !!(value && typeof value === 'object' && Object.values(value)[0] instanceof Link);
 }
 
-function equalsRef(a: Ref, b: Ref): boolean {
-	if (!!a !== !!b) return false;
-	return a.getChild().equals(b.getChild());
+function equalsRef(refA: Ref, refB: Ref): boolean {
+	if (!!refA !== !!refB) return false;
+
+	const a = refA.getChild();
+	const b = refB.getChild();
+
+	return a === b || a.equals(b);
 }
 
-function equalsRefList(a: Ref[], b: Ref[]): boolean {
-	if (!!a !== !!b) return false;
-	if (a.length !== b.length) return false;
+function equalsRefList(refListA: Ref[], refListB: Ref[]): boolean {
+	if (!!refListA !== !!refListB) return false;
+	if (refListA.length !== refListB.length) return false;
 
-	for (let i = 0; i < a.length; i++) {
-		if (!a[i].getChild().equals(b[i].getChild())) {
-			return false;
-		}
+	for (let i = 0; i < refListA.length; i++) {
+		const a = refListA[i];
+		const b = refListB[i];
+
+		if (a.getChild() === b.getChild()) continue;
+
+		if (!a.getChild().equals(b.getChild())) return false;
 	}
 
 	return true;
 }
 
-function equalsRefMap(a: RefMap, b: RefMap): boolean {
-	if (!!a !== !!b) return false;
+function equalsRefMap(refMapA: RefMap, refMapB: RefMap): boolean {
+	if (!!refMapA !== !!refMapB) return false;
 
-	const keysA = Object.keys(a);
-	const keysB = Object.keys(b);
+	const keysA = Object.keys(refMapA);
+	const keysB = Object.keys(refMapB);
 	if (keysA.length !== keysB.length) return false;
 
-	for (const key in a) {
-		const valueA = a[key];
-		const valueB = b[key];
-		if (!!valueA !== !!valueB) return false;
-		if (!valueA.getChild().equals(valueB.getChild())) return false;
+	for (const key in refMapA) {
+		const refA = refMapA[key];
+		const refB = refMapB[key];
+		if (!!refA !== !!refB) return false;
+
+		const a = refA.getChild();
+		const b = refB.getChild();
+		if (a === b) continue;
+
+		if (!a.equals(b)) return false;
 	}
 
 	return true;
 }
 
 function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
+	if (a === b) return true;
+
 	if (!!a !== !!b || !a || !b) return false;
 
 	if (a.length !== b.length) return false;
