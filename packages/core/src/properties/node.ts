@@ -67,9 +67,8 @@ export class Node extends ExtensibleProperty<INode> {
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
-		// Node cannot be cloned in isolation: the cloning process is shallow, but nodes cannot
-		// have more than one parent. Rather than leaving one of the two nodes without children,
-		// throw an error here.
+		// Node cannot be copied, only cloned. Copying is shallow, but nodes cannot have more than
+		// one parent. Rather than leaving one of the two nodes without children, throw an error here.
 		if (resolve === COPY_IDENTITY) throw new Error('Node cannot be copied.');
 		return super.copy(other, resolve);
 	}

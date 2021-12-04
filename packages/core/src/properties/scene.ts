@@ -32,9 +32,8 @@ export class Scene extends ExtensibleProperty<IScene> {
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
-		// Scene cannot be cloned in isolation: the cloning process is shallow, but nodes cannot
-		// have more than one parent. Rather than leaving one of the two scenes without children,
-		// throw an error here.
+		// Scene cannot be copied, only cloned. Copying is shallow, but nodes cannot have more than
+		// one parent. Rather than leaving one of the two scenes without children, throw an error here.
 		if (resolve === COPY_IDENTITY) throw new Error('Scene cannot be copied.');
 		return super.copy(other, resolve);
 	}
