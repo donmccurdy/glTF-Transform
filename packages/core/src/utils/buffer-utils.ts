@@ -119,4 +119,15 @@ export class BufferUtils {
 	static toBuffer(a: TypedArray, byteOffset = 0, byteLength = Infinity): Uint8Array {
 		return new Uint8Array(a.buffer, a.byteOffset + byteOffset, Math.min(a.byteLength, byteLength));
 	}
+
+	/** @internal */
+	static assertView(view: null): null;
+	static assertView(view: Uint8Array): Uint8Array;
+	static assertView(view: Uint8Array | null): Uint8Array | null;
+	static assertView(view: Uint8Array | null): Uint8Array | null {
+		if (view && !ArrayBuffer.isView(view)) {
+			throw new Error('Method requires Uint8Array parameter.');
+		}
+		return view as Uint8Array;
+	}
 }

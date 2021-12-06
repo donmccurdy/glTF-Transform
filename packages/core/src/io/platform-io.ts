@@ -73,7 +73,12 @@ export abstract class PlatformIO {
 		// process (e.g. WebIO.read) and should handle that safely.
 
 		function resolveResource(resource: GLTF.IBuffer | GLTF.IImage) {
-			if (!resource.uri || resource.uri in jsonDoc.resources) return;
+			if (!resource.uri) return;
+
+			if (resource.uri in jsonDoc.resources) {
+				BufferUtils.assertView(jsonDoc.resources[resource.uri]);
+				return;
+			}
 
 			if (resource.uri.match(/data:/)) {
 				// Rewrite Data URIs to something short and unique.
@@ -156,7 +161,7 @@ export abstract class PlatformIO {
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
 	public binaryToJSON(glb: Uint8Array): JSONDocument {
-		const jsonDoc = this._binaryToJSON(glb);
+		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
 		const json = jsonDoc.json;
 
 		// Check for external references, which can't be resolved by this method.
@@ -215,7 +220,7 @@ export abstract class PlatformIO {
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
 	public readBinary(glb: Uint8Array): Document {
-		return this.readJSON(this.binaryToJSON(glb));
+		return this.readJSON(this.binaryToJSON(BufferUtils.assertView(glb)));
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
