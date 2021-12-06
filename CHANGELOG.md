@@ -1,8 +1,18 @@
 # Changelog
 
-## v1.3 — 🚧 Unreleased
+## v2.0 — 🚧 Unreleased
 
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/16)
+[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17)
+
+**Features:**
+
+- Improved and simplified extension API. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
+
+**Breaking changes:**
+
+- API for custom extensions has changed. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
+
+***
 
 ## v1.2
 
@@ -30,6 +40,8 @@
 [Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
 
 *Stable release.*
+
+***
 
 ## v0.12
 
