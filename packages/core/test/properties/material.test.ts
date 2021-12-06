@@ -316,35 +316,29 @@ test('@gltf-transform/core::material | equals', (t) => {
 		.setWrapS(TextureInfo.WrapMode.REPEAT)
 		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
 
-	const mat2 = doc.createMaterial().copy(mat);
+	const mat2 = doc.createMaterial();
 
-	const tex2 = doc.createTexture('NewTex');
-	const mat3 = doc
-		.createMaterial()
-		.copy(mat)
-		.setAlphaMode('OPAQUE')
-		.setAlphaCutoff(0)
-		.setBaseColorFactor([1, 1, 1, 0])
-		.setBaseColorTexture(tex2)
-		.setMetallicFactor(1)
-		.setRoughnessFactor(0.3)
-		.setMetallicRoughnessTexture(tex2)
-		.setNormalScale(0.1)
-		.setNormalTexture(tex2)
-		.setOcclusionStrength(0.5)
-		.setOcclusionTexture(tex2)
-		.setEmissiveFactor([2, 1, 2])
-		.setEmissiveTexture(tex2);
-	mat3.getBaseColorTextureInfo()
-		.setTexCoord(0)
-		.setMagFilter(TextureInfo.MagFilter.NEAREST)
-		.setMinFilter(TextureInfo.MinFilter.NEAREST)
-		.setWrapS(TextureInfo.WrapMode.REPEAT)
-		.setWrapT(TextureInfo.WrapMode.REPEAT);
+	mat2.copy(mat);
+	t.equals(mat.equals(mat), true, 'mat = mat');
+	t.equals(mat.equals(mat2), true, 'mat ≅ mat2');
 
-	t.equal(mat.equals(mat2), true, 'Copy Equality');
-	t.equal(mat.equals(mat), true, 'Self Equality');
-	t.equal(mat.equals(mat3), false, 'Copy Inequality');
+	mat2.copy(mat).setAlphaMode('OPAQUE');
+	t.equals(mat.equals(mat2), false, '.alphaMode ≠ .alphaMode');
+
+	mat2.copy(mat).setBaseColorFactor([1, 1, 1, 0]);
+	t.equals(mat.equals(mat2), false, '.baseColorFactor ≠ .baseColorFactor');
+
+	mat2.copy(mat).setBaseColorTexture(tex.clone());
+	t.equals(mat.equals(mat2), true, '.baseColorTexture ≅ .baseColorTexture');
+
+	mat2.copy(mat).setBaseColorTexture(tex.clone().setURI('other.png'));
+	t.equals(mat.equals(mat2), false, '.baseColorTexture ≠ .baseColorTexture');
+
+	mat2.copy(mat).setBaseColorTexture(null);
+	t.equals(mat.equals(mat2), false, '.baseColorTexture ≠ null');
+
+	mat2.copy(mat).getBaseColorTextureInfo().setTexCoord(0);
+	t.equals(mat.equals(mat2), false, '.baseColorTextureInfo ≠ .baseColorTextureInfo');
 
 	t.end();
 });
