@@ -1,4 +1,4 @@
-import { Nullable, PropertyType } from '../constants';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
@@ -108,7 +108,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor | null): this {
-		return this.setRef('indices', indices);
+		return this.setRef('indices', indices, { usage: BufferViewUsage.ELEMENT_ARRAY_BUFFER });
 	}
 
 	/** Returns a vertex attribute as an {@link Accessor}. */
@@ -121,7 +121,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		return this.setRefMap('attributes', semantic, accessor);
+		return this.setRefMap('attributes', semantic, accessor, { usage: BufferViewUsage.ARRAY_BUFFER });
 	}
 
 	/**

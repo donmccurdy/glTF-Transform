@@ -1,11 +1,8 @@
 import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { EXT_MESH_GPU_INSTANCING } from '../constants';
-import { InstancedMesh } from './instanced-mesh';
+import { InstancedMesh, INSTANCE_ATTRIBUTE } from './instanced-mesh';
 
 const NAME = EXT_MESH_GPU_INSTANCING;
-
-// See BufferViewUsage in `writer-context.ts`.
-const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
 
 interface InstancedMeshDef {
 	attributes: {

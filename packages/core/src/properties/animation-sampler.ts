@@ -1,4 +1,4 @@
-import { Nullable, PropertyType } from '../constants';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
@@ -100,7 +100,7 @@ export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 
 	/** Times for each keyframe, in seconds. */
 	public setInput(input: Accessor | null): this {
-		return this.setRef('input', input);
+		return this.setRef('input', input, { usage: BufferViewUsage.OTHER });
 	}
 
 	/**
@@ -116,6 +116,6 @@ export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	 * tangents.
 	 */
 	public setOutput(output: Accessor | null): this {
-		return this.setRef('output', output);
+		return this.setRef('output', output, { usage: BufferViewUsage.OTHER });
 	}
 }

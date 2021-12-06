@@ -1,5 +1,7 @@
 import { Link } from 'property-graph';
-import type { Property } from '../properties';
+import { BufferViewUsage, PropertyType } from '../constants';
+import type { Accessor, Property, Texture } from '../properties';
+import type { Document } from '../document';
 
 export type Ref = Link<Property, Property>;
 export type RefMap = { [key: string]: Ref };
@@ -76,4 +78,16 @@ export function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> 
 	}
 
 	return true;
+}
+
+export type LinkAttributes = Record<string, unknown>;
+
+export interface AccessorLinkAttributes extends LinkAttributes {
+	/** Usage role of an accessor reference. */
+	usage: BufferViewUsage | string;
+}
+
+export interface TextureLinkAttributes extends LinkAttributes {
+	/** Bitmask for {@link TextureChannel TextureChannels} used by a texture reference. */
+	channels: number;
 }

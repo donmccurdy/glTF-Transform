@@ -130,6 +130,14 @@ export enum VertexLayout {
 	SEPARATE = 'separate',
 }
 
+/** Accessor usage. */
+export enum BufferViewUsage {
+	ARRAY_BUFFER = 'ARRAY_BUFFER',
+	ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
+	INVERSE_BIND_MATRICES = 'INVERSE_BIND_MATRICES',
+	OTHER = 'OTHER',
+}
+
 /** Texture channels. */
 export enum TextureChannel {
 	R = 0x1000,

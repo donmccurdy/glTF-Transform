@@ -1,4 +1,4 @@
-import { Nullable, PropertyType } from '../constants';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Node } from './node';
@@ -62,7 +62,9 @@ export class Skin extends ExtensibleProperty<ISkin> {
 	 * pre-applied.
 	 */
 	public setInverseBindMatrices(inverseBindMatrices: Accessor | null): this {
-		return this.setRef('inverseBindMatrices', inverseBindMatrices);
+		return this.setRef('inverseBindMatrices', inverseBindMatrices, {
+			usage: BufferViewUsage.INVERSE_BIND_MATRICES,
+		});
 	}
 
 	/** Adds a joint {@link Node} to this {@link Skin}. */

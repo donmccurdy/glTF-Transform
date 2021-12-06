@@ -1,4 +1,4 @@
-import { Format } from '../constants';
+import { BufferViewUsage, Format, PropertyType } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
@@ -11,12 +11,6 @@ type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF
 enum BufferViewTarget {
 	ARRAY_BUFFER = 34962,
 	ELEMENT_ARRAY_BUFFER = 34963,
-}
-enum BufferViewUsage {
-	ARRAY_BUFFER = 'ARRAY_BUFFER',
-	ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
-	INVERSE_BIND_MATRICES = 'INVERSE_BIND_MATRICES',
-	OTHER = 'OTHER',
 }
 
 /**
@@ -180,15 +174,12 @@ export class WriterContext {
 		if (cachedUsage) return cachedUsage;
 
 		for (const link of this._doc.getGraph().listParentLinks(accessor)) {
-			if (link.getName() === 'inverseBindMatrices') {
-				return WriterContext.BufferViewUsage.INVERSE_BIND_MATRICES;
-			}
-			// TODO(cleanup): Better type information for link metadata.
-			if (link.getName().toUpperCase() === link.getName()) {
-				return WriterContext.BufferViewUsage.ARRAY_BUFFER;
-			}
-			if (link.getName() === 'indices') {
-				return WriterContext.BufferViewUsage.ELEMENT_ARRAY_BUFFER;
+			const { usage } = link.getAttributes() as { usage: BufferViewUsage | undefined };
+
+			if (usage) return usage;
+
+			if (link.getParent().propertyType !== PropertyType.ROOT) {
+				this._doc.getLogger().warn(`Missing attribute ".usage" on link, "${link.getName()}".`);
 			}
 		}
 

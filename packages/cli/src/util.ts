@@ -2,7 +2,7 @@
 const { spawnSync: _spawnSync } = require('child_process');
 
 import { sync as _commandExistsSync } from 'command-exists';
-import { Document, FileUtils, Logger, NodeIO, Texture, Transform } from '@gltf-transform/core';
+import { Document, FileUtils, Logger, NodeIO, PropertyType, Texture, Transform } from '@gltf-transform/core';
 
 // Mock for tests.
 
@@ -62,9 +62,16 @@ export function getTextureSlots (doc: Document, texture: Texture): string[] {
 export function getTextureChannels (doc: Document, texture: Texture): number {
 	let mask = 0x0000;
 	for (const link of doc.getGraph().listParentLinks(texture)) {
-		// TODO(cleanup): Better type information for link metadata.
 		const { channels } = link.getAttributes() as { channels: number | undefined };
-		if (channels) mask |= channels;
+
+		if (channels) {
+			mask |= channels;
+			continue;
+		}
+
+		if (link.getParent().propertyType !== PropertyType.ROOT) {
+			doc.getLogger().warn(`Missing attribute ".channels" on link, "${link.getName()}".`);
+		}
 	}
 	return mask;
 }

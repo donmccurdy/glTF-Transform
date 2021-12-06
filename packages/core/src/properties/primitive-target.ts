@@ -1,4 +1,4 @@
-import { Nullable, PropertyType } from '../constants';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { Accessor } from './accessor';
 import { IExtensibleProperty } from './extensible-property';
 import { Property } from './property';
@@ -38,7 +38,7 @@ export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	 * Sets a morph target vertex attribute to an {@link Accessor}.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		return this.setRefMap('attributes', semantic, accessor);
+		return this.setRefMap('attributes', semantic, accessor, { usage: BufferViewUsage.ARRAY_BUFFER });
 	}
 
 	/**

@@ -5,6 +5,9 @@ interface IInstancedMesh extends IProperty {
 	attributes: { [key: string]: Accessor };
 }
 
+// See BufferViewUsage in `writer-context.ts`.
+export const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
+
 /**
  * # InstancedMesh
  *
@@ -30,7 +33,7 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	 * instance count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		return this.setRefMap('attributes', semantic, accessor);
+		return this.setRefMap('attributes', semantic, accessor, { usage: INSTANCE_ATTRIBUTE });
 	}
 
 	/**
