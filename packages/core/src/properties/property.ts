@@ -230,7 +230,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 					return false;
 				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {
-				// Skip object literal, or empty RefMap. Both can be skipped – we don't compare extras.
+				// Skip object literal, or empty RefMap. We don't currently compare extras.
 			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
 				if (!equalsArray(a as [], b as [])) return false;
 			} else {
