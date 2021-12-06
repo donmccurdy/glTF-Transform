@@ -1,8 +1,8 @@
 # Changelog
 
-## v2.0 — 🚧 Unreleased
+## v2.x
 
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17)
+### v2.0 — 🚧 Unreleased ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
 **Features:**
 
@@ -10,13 +10,11 @@
 
 **Breaking changes:**
 
-- API for custom extensions has changed. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
+- API for custom extensions updated. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 
-***
+## v1.x
 
-## v1.2
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/15)
+### v1.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/15))
 
 **Features:**
 
@@ -24,9 +22,7 @@
 - Add `KHR_materials_emissive_strength` extension. [#422](https://github.com/donmccurdy/glTF-Transform/pull/422)
 - Add `ImageUtils.getMimeType(buffer)`. [#432](https://github.com/donmccurdy/glTF-Transform/pull/432)
 
-## v1.1
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/14)
+### v1.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/14))
 
 **Features:**
 
@@ -35,17 +31,13 @@
 - Added `material.equals(otherMaterial)` method. [#405](https://github.com/donmccurdy/glTF-Transform/pull/405) by [@MrMagicPenguin](https://github.com/MrMagicPenguin)
 - Added support for materials in `dedup()` function. [#407](https://github.com/donmccurdy/glTF-Transform/pull/407) by [@MrMagicPenguin](https://github.com/MrMagicPenguin)
 
-## v1.0
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13)
+### v1.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/13))
 
 *Stable release.*
 
-***
+## v0.x
 
-## v0.12
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/12)
+### v0.12 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/12))
 
 **Features:**
 
@@ -61,9 +53,7 @@
 
 - Remove ao() function and dependencies. [#281](https://github.com/donmccurdy/glTF-Transform/pull/281)
 
-## v0.11
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/11)
+### v0.11 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/11))
 
 **Features:**
 
@@ -79,9 +69,7 @@
 - Move `ao()` from `@gltf-transform/functions` to the CLI, cutting size and dependencies of the functions package.
 - I/O `writeJSON` option `isGLB: true` changed to `format: Format.GLB`.
 
-## v0.10
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10)
+### v0.10 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/10))
 
 **Features:**
 
@@ -92,9 +80,7 @@
 
 - Material extensions now track RGBA channel usage of each texture, allowing improvements in KTX 2.0 support. [#221](https://github.com/donmccurdy/glTF-Transform/pull/221)
 
-## v0.9
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/9)
+### v0.9 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/9))
 
 **Features:**
 
@@ -116,9 +102,7 @@
 - 'dedup' transform takes a `propertyTypes: string[]` array, rather than boolean flags for each property type.
 - 'draco' CLI command options renamed (hyphenated) for consistency.
 
-## v0.8
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/8)
+### v0.8 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/8))
 
 **Features:**
 
@@ -132,9 +116,7 @@
 - Stricter type checking.
 - External type definitions are now installed as dependencies.
 
-## v0.7
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7)
+### v0.7 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/7))
 
 **Features:**
 
@@ -158,9 +140,7 @@
   - createNativeDocument -> writeJSON
   - unpackGLBToNativeDocument -> binaryToJSON
 
-## v0.6
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/6)
+### v0.6 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/6))
 
 **Features:**
 
@@ -179,18 +159,10 @@
 - getExtension/setExtension syntax changed to accept extension names, not constructors. See [ExtensibleProperty](https://gltf-transform.donmccurdy.com/classes/extensibleproperty.html).
 - Scene addNode/removeNode/listNodes are now addChild/removeChild/listChildren, for consistency with Node API.
 
-## v0.5
+### v0.5 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/5))
 
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/5)
+### v0.4 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/4))
 
-## v0.4
+### v0.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/2))
 
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/4)
-
-## v0.2
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/2)
-
-## v0.1
-
-[Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/1)
+### v0.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/1))
