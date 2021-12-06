@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Format, NodeIO, Property, PropertyType, Root, Texture, TextureChannel, TextureInfo } from '../../';
+import { Document, Format, NodeIO, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '../../';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -354,7 +354,7 @@ test('@gltf-transform/core::material | i/o', (t) => {
 	doc.createBuffer();
 
 	const createTexture = (name: string) =>
-		doc.createTexture(name).setImage(new ArrayBuffer(10)).setMimeType('image/png');
+		doc.createTexture(name).setImage(new Uint8Array(10)).setMimeType('image/png');
 
 	const baseColor = createTexture('baseColor');
 	const emissive = createTexture('emissive');

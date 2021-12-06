@@ -79,7 +79,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 				dstHeight = maxHeight;
 			}
 
-			const srcImage = new Uint8Array(texture.getImage() as ArrayBuffer);
+			const srcImage = texture.getImage()!;
 			const srcPixels = await getPixels(srcImage, texture.getMimeType());
 			const dstPixels = ndarray(
 				new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]
@@ -101,7 +101,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 				throw e;
 			}
 
-			texture.setImage((await savePixels(dstPixels, texture.getMimeType())).buffer);
+			texture.setImage(await savePixels(dstPixels, texture.getMimeType()));
 		}
 
 		logger.debug(`${NAME}: Complete.`);

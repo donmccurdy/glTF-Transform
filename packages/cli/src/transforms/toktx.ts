@@ -4,7 +4,7 @@ const minimatch = require('minimatch');
 const semver = require('semver');
 const tmp = require('tmp');
 
-import { BufferUtils, Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
+import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { commandExistsSync, formatBytes, getTextureChannels, getTextureSlots, spawnSync } from '../util';
 
@@ -173,7 +173,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				// PACK: Replace image data in the glTF asset.
 
 				texture
-					.setImage(BufferUtils.trim(fs.readFileSync(outPath)))
+					.setImage(fs.readFileSync(outPath))
 					.setMimeType('image/ktx2');
 
 				if (texture.getURI()) {

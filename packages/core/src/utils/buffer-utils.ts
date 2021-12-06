@@ -1,3 +1,5 @@
+import { TypedArray } from '../constants';
+
 /**
  * # BufferUtils
  *
@@ -6,8 +8,8 @@
  * @category Utilities
  */
 export class BufferUtils {
-	/** Creates an ArrayBuffer from a Data URI. */
-	static createBufferFromDataURI(dataURI: string): ArrayBuffer {
+	/** Creates a byte array from a Data URI. */
+	static createBufferFromDataURI(dataURI: string): Uint8Array {
 		if (typeof Buffer === 'undefined') {
 			// Browser.
 			const byteString = atob(dataURI.split(',')[1]);
@@ -15,79 +17,70 @@ export class BufferUtils {
 			for (let i = 0; i < byteString.length; i++) {
 				ia[i] = byteString.charCodeAt(i);
 			}
-			return ia.buffer;
+			return ia;
 		} else {
 			// Node.js.
 			const data = dataURI.split(',')[1];
 			const isBase64 = dataURI.indexOf('base64') >= 0;
-			return this.trim(Buffer.from(data, isBase64 ? 'base64' : 'utf8'));
+			return Buffer.from(data, isBase64 ? 'base64' : 'utf8');
 		}
 	}
 
-	/** Encodes text to an ArrayBuffer. */
-	static encodeText(text: string): ArrayBuffer {
+	/** Encodes text to a byte array. */
+	static encodeText(text: string): Uint8Array {
 		if (typeof TextEncoder !== 'undefined') {
-			return new TextEncoder().encode(text).buffer;
+			return new TextEncoder().encode(text);
 		}
-		return this.trim(Buffer.from(text));
+		return Buffer.from(text);
 	}
 
-	/** Decodes an ArrayBuffer to text. */
-	static decodeText(buffer: ArrayBuffer): string {
+	/** Decodes a byte array to text. */
+	static decodeText(array: Uint8Array): string {
 		if (typeof TextDecoder !== 'undefined') {
-			return new TextDecoder().decode(buffer);
+			return new TextDecoder().decode(array);
 		}
-		return Buffer.from(buffer).toString('utf8');
-	}
-
-	/** Copies an ArrayBuffer from a Buffer's content. */
-	static trim(buffer: Buffer): ArrayBuffer {
-		const { byteOffset, byteLength } = buffer;
-		return buffer.buffer.slice(byteOffset, byteOffset + byteLength);
+		return Buffer.from(array).toString('utf8');
 	}
 
 	/**
-	 * Concatenates N ArrayBuffers.
+	 * Concatenates N byte arrays.
 	 */
-	static concat(buffers: ArrayBuffer[]): ArrayBuffer {
+	static concat(arrays: Uint8Array[]): Uint8Array {
 		let totalByteLength = 0;
-		for (const buffer of buffers) {
-			totalByteLength += buffer.byteLength;
+		for (const array of arrays) {
+			totalByteLength += array.byteLength;
 		}
 
 		const result = new Uint8Array(totalByteLength);
 		let byteOffset = 0;
 
-		for (const buffer of buffers) {
-			result.set(new Uint8Array(buffer), byteOffset);
-			byteOffset += buffer.byteLength;
+		for (const array of arrays) {
+			result.set(array, byteOffset);
+			byteOffset += array.byteLength;
 		}
 
-		return result.buffer;
+		return result;
 	}
 
 	/**
-	 * Pads an ArrayBuffer to the next 4-byte boundary.
+	 * Pads a Uint8Array to the next 4-byte boundary.
 	 *
 	 * Reference: [glTF → Data Alignment](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#data-alignment)
 	 */
-	static pad(arrayBuffer: ArrayBuffer, paddingByte = 0): ArrayBuffer {
-		const paddedLength = this.padNumber(arrayBuffer.byteLength);
+	static pad(srcArray: Uint8Array, paddingByte = 0): Uint8Array {
+		const paddedLength = this.padNumber(srcArray.byteLength);
+		if (paddedLength === srcArray.byteLength) return srcArray;
 
-		if (paddedLength !== arrayBuffer.byteLength) {
-			const array = new Uint8Array(paddedLength);
-			array.set(new Uint8Array(arrayBuffer));
+		const dstArray = new Uint8Array(paddedLength);
+		dstArray.set(srcArray);
 
-			if (paddingByte !== 0) {
-				for (let i = arrayBuffer.byteLength; i < paddedLength; i++) {
-					array[i] = paddingByte;
-				}
+		if (paddingByte !== 0) {
+			for (let i = srcArray.byteLength; i < paddedLength; i++) {
+				dstArray[i] = paddingByte;
 			}
-
-			return array.buffer;
 		}
 
-		return arrayBuffer;
+		return dstArray;
 	}
 
 	/** Pads a number to 4-byte boundaries. */
@@ -95,20 +88,35 @@ export class BufferUtils {
 		return Math.ceil(v / 4) * 4;
 	}
 
-	/** Returns true if given ArrayBuffer instances are equal. */
-	static equals(a: ArrayBuffer, b: ArrayBuffer): boolean {
+	/** Returns true if given byte array instances are equal. */
+	static equals(a: Uint8Array, b: Uint8Array): boolean {
 		if (a === b) return true;
 
 		if (a.byteLength !== b.byteLength) return false;
 
-		const view1 = new DataView(a);
-		const view2 = new DataView(b);
-
 		let i = a.byteLength;
 		while (i--) {
-			if (view1.getUint8(i) !== view2.getUint8(i)) return false;
+			if (a[i] !== b[i]) return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns a Uint8Array/Buffer view of a typed array, with the same underlying ArrayBuffer.
+	 *
+	 * A shorthand for:
+	 *
+	 * ```js
+	 * const buffer = new Uint8Array(
+	 * 	array.buffer,
+	 * 	array.byteOffset + byteOffset,
+	 * 	Math.min(array.byteLength, byteLength)
+	 * );
+	 * ```
+	 *
+	 */
+	static toBuffer(a: TypedArray, byteOffset = 0, byteLength = Infinity): Uint8Array {
+		return new Uint8Array(a.buffer, a.byteOffset + byteOffset, Math.min(a.byteLength, byteLength));
 	}
 }

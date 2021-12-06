@@ -4,7 +4,7 @@ import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera } from '../properties';
 import { GLTF } from '../types/gltf';
-import { FileUtils, ImageUtils, Logger, MathUtils } from '../utils';
+import { BufferUtils, FileUtils, ImageUtils, Logger, MathUtils } from '../utils';
 import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
@@ -96,8 +96,7 @@ export class GLTFReader {
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 				const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
-				const bufferView = new Uint8Array(resource, byteOffset, bufferViewDef.byteLength);
-				context.bufferViews[index] = bufferView;
+				context.bufferViews[index] = BufferUtils.toBuffer(resource, byteOffset, bufferViewDef.byteLength);
 			}
 
 			return context.buffers[bufferViewDef.buffer];

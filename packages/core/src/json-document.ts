@@ -25,8 +25,8 @@ import { GLTF } from './types/gltf';
  *
  * 	// URI → ArrayBuffer mapping.
  * 	resources: {
- * 		'image1.png': BufferUtils.trim(fs.readFileSync('image1.png')),
- * 		'image2.png': BufferUtils.trim(fs.readFileSync('image2.png')),
+ * 		'image1.png': fs.readFileSync('image1.png'),
+ * 		'image2.png': fs.readFileSync('image2.png'),
  * 	}
  * };
  *
@@ -37,5 +37,5 @@ import { GLTF } from './types/gltf';
  */
 export interface JSONDocument {
 	json: GLTF.IGLTF;
-	resources: { [s: string]: ArrayBuffer };
+	resources: { [s: string]: Uint8Array };
 }

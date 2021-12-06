@@ -18,7 +18,7 @@ export function ktxfix (): Transform {
 			const image = texture.getImage();
 			if (!image) continue;
 
-			const ktx = read(new Uint8Array(image));
+			const ktx = read(image);
 			const dfd = ktx.dataFormatDescriptor[0];
 			const slots = getTextureSlots(doc, texture);
 
@@ -41,7 +41,7 @@ export function ktxfix (): Transform {
 			}
 
 			if (changed) {
-				texture.setImage(write(ktx).buffer);
+				texture.setImage(write(ktx));
 				numChanged++;
 			}
 		}

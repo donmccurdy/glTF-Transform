@@ -7,10 +7,10 @@ const NAME = KHR_DRACO_MESH_COMPRESSION;
 export let decoderModule: DecoderModule;
 
 // Initialized when decoder module loads.
-let COMPONENT_ARRAY: {[key: number]: TypedArrayConstructor};
-let DATA_TYPE: {[key: number]: DataType};
+let COMPONENT_ARRAY: { [key: number]: TypedArrayConstructor };
+let DATA_TYPE: { [key: number]: DataType };
 
-export function decodeGeometry(decoder: Decoder, data: Int8Array): Mesh {
+export function decodeGeometry(decoder: Decoder, data: Uint8Array): Mesh {
 	const buffer = new decoderModule.DecoderBuffer();
 	try {
 		buffer.Init(data, data.length);
@@ -58,11 +58,11 @@ export function decodeIndex(decoder: Decoder, mesh: Mesh): Uint16Array | Uint32A
 }
 
 export function decodeAttribute(
-		decoder: Decoder,
-		mesh: Mesh,
-		attribute: Attribute,
-		accessorDef: GLTF.IAccessor): TypedArray {
-
+	decoder: Decoder,
+	mesh: Mesh,
+	attribute: Attribute,
+	accessorDef: GLTF.IAccessor
+): TypedArray {
 	const dataType = DATA_TYPE[accessorDef.componentType];
 	const ArrayCtor = COMPONENT_ARRAY[accessorDef.componentType];
 	const numComponents = attribute.num_components();
@@ -78,7 +78,7 @@ export function decodeAttribute(
 	return array;
 }
 
-export function initDecoderModule (_decoderModule: DecoderModule): void {
+export function initDecoderModule(_decoderModule: DecoderModule): void {
 	decoderModule = _decoderModule;
 
 	COMPONENT_ARRAY = {
@@ -99,4 +99,3 @@ export function initDecoderModule (_decoderModule: DecoderModule): void {
 		[Accessor.ComponentType.BYTE]: decoderModule.DT_INT8,
 	};
 }
-

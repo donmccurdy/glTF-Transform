@@ -15,7 +15,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', (t) => {
 		.setDiffuseFactor([0.5, 0.5, 0.5, 0.9])
 		.setSpecularFactor([0.9, 0.5, 0.8])
 		.setGlossinessFactor(0.5)
-		.setSpecularGlossinessTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
+		.setSpecularGlossinessTexture(doc.createTexture().setImage(new Uint8Array(1)));
 
 	const mat = doc.createMaterial('MyMaterial').setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 

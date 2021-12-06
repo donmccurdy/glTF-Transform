@@ -82,29 +82,31 @@ test('@gltf-transform/core::accessor | getElementSize', (t) => {
 
 test('@gltf-transform/core::accessor | interleaved', (t) => {
 	const resources = {
-		'test.bin': new Uint16Array([
-			// vertex 1
-			0,
-			1,
-			2,
-			10,
-			20,
-			100,
-			200,
+		'test.bin': new Uint8Array(
+			new Uint16Array([
+				// vertex 1
+				0,
+				1,
+				2,
+				10,
+				20,
+				100,
+				200,
 
-			0, // pad
+				0, // pad
 
-			// vertex 2
-			3,
-			4,
-			5,
-			40,
-			50,
-			400,
-			500,
+				// vertex 2
+				3,
+				4,
+				5,
+				40,
+				50,
+				400,
+				500,
 
-			0, // pad
-		]).buffer,
+				0, // pad
+			]).buffer
+		),
 	};
 
 	const json = {
@@ -163,8 +165,8 @@ test('@gltf-transform/core::accessor | interleaved', (t) => {
 
 test('@gltf-transform/core::accessor | sparse', (t) => {
 	const resources = {
-		'indices.bin': new Uint16Array([10, 50, 51]).buffer,
-		'values.bin': new Float32Array([1, 2, 3, 10, 12, 14, 25, 50, 75]).buffer,
+		'indices.bin': new Uint8Array(new Uint16Array([10, 50, 51]).buffer),
+		'values.bin': new Uint8Array(new Float32Array([1, 2, 3, 10, 12, 14, 25, 50, 75]).buffer),
 	};
 
 	const json = {

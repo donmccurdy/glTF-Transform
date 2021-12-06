@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { KTX2Primaries, read } from 'ktx-parse';
 import test from 'tape';
-import { BufferUtils, Document, Logger, Texture } from '@gltf-transform/core';
+import { Document, Logger, Texture } from '@gltf-transform/core';
 import { ktxfix } from '../';
 
 test('@gltf-transform/cli::ktxfix', async (t) => {
@@ -13,7 +13,7 @@ test('@gltf-transform/cli::ktxfix', async (t) => {
 	const texture = doc
 		.createTexture()
 		.setMimeType('image/ktx2')
-		.setImage(BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2'))));
+		.setImage(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2')));
 
 	t.equals(getColorPrimaries(texture), KTX2Primaries.SRGB, 'initial - sRGB');
 
@@ -41,6 +41,6 @@ test('@gltf-transform/cli::ktxfix', async (t) => {
 
 function getColorPrimaries(texture: Texture): KTX2Primaries {
 	const image = texture.getImage();
-	const ktx = read(new Uint8Array(image));
+	const ktx = read(image);
 	return ktx.dataFormatDescriptor[0].colorPrimaries;
 }

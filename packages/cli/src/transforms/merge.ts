@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { BufferUtils, Document, FileUtils, ImageUtils, NodeIO, Transform } from '@gltf-transform/core';
+import { Document, FileUtils, ImageUtils, NodeIO, Transform } from '@gltf-transform/core';
 
 const NAME = 'merge';
 
@@ -24,7 +24,7 @@ const merge = (options: MergeOptions): Transform => {
 			const extension = FileUtils.extension(path).toLowerCase();
 			if (['png', 'jpg', 'jpeg', 'webp', 'ktx2'].includes(extension)) {
 				doc.createTexture(basename)
-					.setImage(BufferUtils.trim(fs.readFileSync(path)))
+					.setImage(fs.readFileSync(path))
 					.setMimeType(ImageUtils.extensionToMimeType(extension))
 					.setURI(basename + '.' + extension);
 			} else if (['gltf', 'glb'].includes(extension)) {

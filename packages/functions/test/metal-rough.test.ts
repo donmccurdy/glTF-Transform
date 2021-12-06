@@ -24,11 +24,11 @@ const SPEC = ndarray(new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 
 // 1 - gloss * glossFactor
 const ROUGH = ndarray(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 64, 0, 0, 0, 128]), [1, 4, 4]);
 
-async function ndarrayToImage(pixels): Promise<ArrayBuffer> {
-	return (await savePixels(pixels, 'image/png')).buffer;
+async function ndarrayToImage(pixels): Promise<Uint8Array> {
+	return await savePixels(pixels, 'image/png');
 }
 
-test('@gltf-transform/functions::metalRough | textures', async (t) => {
+test.only('@gltf-transform/functions::metalRough | textures', async (t) => {
 	const doc = new Document();
 	const baseColorTex = doc
 		.createTexture()
@@ -79,12 +79,12 @@ test('@gltf-transform/functions::metalRough | textures', async (t) => {
 	t.ok(baseColorTex.isDisposed(), 'disposes baseColorTexture');
 	t.ok(metalRoughTex.isDisposed(), 'disposes metalRoughTexture');
 	t.ok(specGlossTex.isDisposed(), 'disposes specGlossTexture');
-	t.deepEqual(mat.getBaseColorTexture().getImage(), baseColorImage, 'diffuse -> baseColor');
-	t.deepEqual(mat.getMetallicRoughnessTexture().getImage(), roughImage, 'spec -> rough');
+	t.deepEqual(Array.from(mat.getBaseColorTexture().getImage()), Array.from(baseColorImage), 'diffuse -> baseColor');
+	t.deepEqual(Array.from(mat.getMetallicRoughnessTexture().getImage()), Array.from(roughImage), 'spec -> rough');
 	t.deepEqual(
 		mat.getExtension<Specular>('KHR_materials_specular').getSpecularTexture().getImage(),
 		specImage,
-		'diffuse -> baseColor'
+		'spec -> spec'
 	);
 	t.equal(mat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1000, 'ior = 1000');
 	t.equal(mat.getRoughnessFactor(), 1, 'roughnessFactor = 1');

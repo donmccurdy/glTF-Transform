@@ -19,27 +19,27 @@ test.skip('@gltf-transform/core::image-utils | basic', { skip: !IS_NODEJS }, (t)
 	canvas = createCanvas(100, 50);
 	ctx = canvas.getContext('2d');
 	ctx.fillStyle = '#222222';
-	buffer = BufferUtils.trim(canvas.toBuffer('image/png'));
+	buffer = canvas.toBuffer('image/png');
 	t.deepEquals(ImageUtils.getSize(buffer, 'image/png'), [100, 50], 'gets PNG size');
 
 	canvas = createCanvas(16, 32);
 	ctx = canvas.getContext('2d');
 	ctx.fillStyle = '#222222';
-	buffer = BufferUtils.trim(canvas.toBuffer('image/jpeg'));
+	buffer = canvas.toBuffer('image/jpeg');
 	t.deepEquals(ImageUtils.getSize(buffer, 'image/jpeg'), [16, 32], 'gets JPEG size');
 
 	t.end();
 });
 
 test('@gltf-transform/core::image-utils | png', { skip: !IS_NODEJS }, (t) => {
-	const png = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png')));
+	const png = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png'));
 	const fried = BufferUtils.concat([
-		new ArrayBuffer(12),
+		new Uint8Array(12),
 		BufferUtils.encodeText('CgBI'),
-		new ArrayBuffer(16),
-		new ArrayBuffer(8),
+		new Uint8Array(16),
+		new Uint8Array(8),
 	]);
-	const friedView = new DataView(fried);
+	const friedView = new DataView(fried.buffer, fried.byteOffset);
 	friedView.setUint32(32, 12, false);
 	friedView.setUint32(36, 12, false);
 
@@ -54,9 +54,9 @@ test('@gltf-transform/core::image-utils | png', { skip: !IS_NODEJS }, (t) => {
 });
 
 test('@gltf-transform/core::image-utils | jpeg', { skip: !IS_NODEJS }, (t) => {
-	const jpg = BufferUtils.trim(fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg')));
-	const buffer = new ArrayBuffer(100);
-	const view = new DataView(buffer);
+	const jpg = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg'));
+	const array = new Uint8Array(100);
+	const view = new DataView(array.buffer, array.byteOffset);
 
 	t.equals(ImageUtils.getMimeType(jpg), 'image/jpeg', 'detects image/jpeg');
 	t.deepEquals(ImageUtils.getSize(jpg, 'image/jpeg'), [256, 256], 'jpg size');
@@ -65,14 +65,14 @@ test('@gltf-transform/core::image-utils | jpeg', { skip: !IS_NODEJS }, (t) => {
 	t.equals(ImageUtils.getMemSize(jpg, 'image/jpeg'), 349524, 'jpg gpu size');
 
 	view.setUint16(4, 1000, false);
-	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'oob');
+	t.throws(() => ImageUtils.getSize(array, 'image/jpeg'), 'oob');
 
 	view.setUint16(4, 12, false);
-	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'invalid');
+	t.throws(() => ImageUtils.getSize(array, 'image/jpeg'), 'invalid');
 
 	view.setUint16(4, 94, false);
 	view.setUint8(94 + 4, 0xff);
-	t.throws(() => ImageUtils.getSize(buffer, 'image/jpeg'), 'no size');
+	t.throws(() => ImageUtils.getSize(array, 'image/jpeg'), 'no size');
 
 	t.end();
 });

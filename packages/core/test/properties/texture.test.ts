@@ -16,8 +16,8 @@ test('@gltf-transform/core::texture | read', (t) => {
 			],
 		},
 		resources: {
-			'tex1.png': new ArrayBuffer(1),
-			'tex2.jpeg': new ArrayBuffer(2),
+			'tex1.png': new Uint8Array(1),
+			'tex2.jpeg': new Uint8Array(2),
 		},
 	};
 
@@ -41,8 +41,8 @@ test('@gltf-transform/core::texture | read', (t) => {
 test('@gltf-transform/core::texture | write', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const image1 = new ArrayBuffer(1);
-	const image2 = new ArrayBuffer(2);
+	const image1 = new Uint8Array(1);
+	const image2 = new Uint8Array(2);
 	const texture1 = doc.createTexture('tex1').setImage(image1).setURI('tex1.png');
 	const texture2 = doc.createTexture('tex2').setImage(image2).setMimeType('image/jpeg');
 	doc.createMaterial('mat1').setBaseColorTexture(texture1).setNormalTexture(texture2);
@@ -67,7 +67,7 @@ test('@gltf-transform/core::texture | copy', (t) => {
 	const doc = new Document();
 	const tex = doc
 		.createTexture('MyTexture')
-		.setImage(new ArrayBuffer(2))
+		.setImage(new Uint8Array(2))
 		.setMimeType('image/gif')
 		.setURI('path/to/image.gif');
 
@@ -84,7 +84,7 @@ test('@gltf-transform/core::texture | extras', (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createBuffer();
-	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new ArrayBuffer(10)).setMimeType('image/png');
+	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new Uint8Array(10)).setMimeType('image/png');
 
 	const doc2 = io.readJSON(io.writeJSON(doc));
 
@@ -100,9 +100,9 @@ test('@gltf-transform/core::texture | padding', (t) => {
 
 	const doc = new Document();
 	doc.createBuffer();
-	doc.createTexture().setImage(new ArrayBuffer(17)).setMimeType('image/png');
-	doc.createTexture().setImage(new ArrayBuffer(21)).setMimeType('image/png');
-	doc.createTexture().setImage(new ArrayBuffer(20)).setMimeType('image/png');
+	doc.createTexture().setImage(new Uint8Array(17)).setMimeType('image/png');
+	doc.createTexture().setImage(new Uint8Array(21)).setMimeType('image/png');
+	doc.createTexture().setImage(new Uint8Array(20)).setMimeType('image/png');
 
 	const jsonDoc = new NodeIO().writeJSON(doc, { format: Format.GLB });
 

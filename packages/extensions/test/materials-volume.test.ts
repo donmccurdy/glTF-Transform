@@ -13,7 +13,7 @@ test('@gltf-transform/extensions::materials-volume', (t) => {
 	const volume = volumeExtension
 		.createVolume()
 		.setThicknessFactor(0.9)
-		.setThicknessTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
+		.setThicknessTexture(doc.createTexture().setImage(new Uint8Array(1)))
 		.setAttenuationDistance(2)
 		.setAttenuationColor([0.1, 0.2, 0.3]);
 

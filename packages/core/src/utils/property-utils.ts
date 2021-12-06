@@ -1,7 +1,6 @@
 import { Link } from 'property-graph';
-import { BufferViewUsage, PropertyType } from '../constants';
-import type { Accessor, Property, Texture } from '../properties';
-import type { Document } from '../document';
+import { BufferViewUsage } from '../constants';
+import type { Property } from '../properties';
 
 export type Ref = Link<Property, Property>;
 export type RefMap = { [key: string]: Ref };

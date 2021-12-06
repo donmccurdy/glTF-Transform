@@ -155,7 +155,7 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
-	public binaryToJSON(glb: ArrayBuffer): JSONDocument {
+	public binaryToJSON(glb: Uint8Array): JSONDocument {
 		const jsonDoc = this._binaryToJSON(glb);
 		const json = jsonDoc.json;
 
@@ -170,9 +170,9 @@ export abstract class PlatformIO {
 	}
 
 	/** @internal For internal use by WebIO and NodeIO. Does not warn about external resources. */
-	protected _binaryToJSON(glb: ArrayBuffer): JSONDocument {
+	protected _binaryToJSON(glb: Uint8Array): JSONDocument {
 		// Decode and verify GLB header.
-		const header = new Uint32Array(glb, 0, 3);
+		const header = new Uint32Array(glb.buffer, glb.byteOffset, 3);
 		if (header[0] !== 0x46546c67) {
 			throw new Error('Invalid glTF asset.');
 		} else if (header[1] !== 2) {
@@ -181,14 +181,14 @@ export abstract class PlatformIO {
 
 		// Decode JSON chunk.
 
-		const jsonChunkHeader = new Uint32Array(glb, 12, 2);
+		const jsonChunkHeader = new Uint32Array(glb.buffer, glb.byteOffset + 12, 2);
 		if (jsonChunkHeader[1] !== ChunkType.JSON) {
 			throw new Error('Missing required GLB JSON chunk.');
 		}
 
 		const jsonByteOffset = 20;
 		const jsonByteLength = jsonChunkHeader[0];
-		const jsonText = BufferUtils.decodeText(glb.slice(jsonByteOffset, jsonByteOffset + jsonByteLength));
+		const jsonText = BufferUtils.decodeText(BufferUtils.toBuffer(glb, jsonByteOffset, jsonByteLength));
 		const json = JSON.parse(jsonText) as GLTF.IGLTF;
 
 		// Decode BIN chunk.
@@ -198,13 +198,13 @@ export abstract class PlatformIO {
 			return { json, resources: {} };
 		}
 
-		const binChunkHeader = new Uint32Array(glb, binByteOffset, 2);
+		const binChunkHeader = new Uint32Array(glb.buffer, glb.byteOffset + binByteOffset, 2);
 		if (binChunkHeader[1] !== ChunkType.BIN) {
 			throw new Error('Expected GLB BIN in second chunk.');
 		}
 
 		const binByteLength = binChunkHeader[0];
-		const binBuffer = glb.slice(binByteOffset + 8, binByteOffset + 8 + binByteLength);
+		const binBuffer = BufferUtils.toBuffer(glb, binByteOffset + 8, binByteLength);
 
 		return { json, resources: { [GLB_BUFFER]: binBuffer } };
 	}
@@ -214,32 +214,32 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
-	public readBinary(glb: ArrayBuffer): Document {
+	public readBinary(glb: Uint8Array): Document {
 		return this.readJSON(this.binaryToJSON(glb));
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
-	public writeBinary(doc: Document): ArrayBuffer {
+	public writeBinary(doc: Document): Uint8Array {
 		const { json, resources } = this.writeJSON(doc, { format: Format.GLB });
 
-		const header = new Uint32Array([0x46546c67, 2, 12]);
+		const header = BufferUtils.toBuffer(new Uint32Array([0x46546c67, 2, 12]));
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-		const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]).buffer;
+		const jsonChunkHeader = BufferUtils.toBuffer(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 		header[header.length - 1] += jsonChunk.byteLength;
 
 		const binBuffer = Object.values(resources)[0];
 		if (!binBuffer || !binBuffer.byteLength) {
-			return BufferUtils.concat([header.buffer, jsonChunk]);
+			return BufferUtils.concat([BufferUtils.toBuffer(header), jsonChunk]);
 		}
 
 		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
-		const binChunkHeader = new Uint32Array([binChunkData.byteLength, 0x004e4942]).buffer;
+		const binChunkHeader = BufferUtils.toBuffer(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
 		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
 		header[header.length - 1] += binChunk.byteLength;
 
-		return BufferUtils.concat([header.buffer, jsonChunk, binChunk]);
+		return BufferUtils.concat([header, jsonChunk, binChunk]);
 	}
 }
