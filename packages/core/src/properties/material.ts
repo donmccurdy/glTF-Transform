@@ -213,35 +213,44 @@ export class Material extends ExtensibleProperty {
 
 		// Textures.
 
-		if (this.getBaseColorTexture() && other.getBaseColorTexture()) {
+		if (this.getBaseColorTexture() || other.getBaseColorTexture()) {
 			if (this.getBaseColorTexture() !== other.getBaseColorTexture()) return false;
-			if (!this.getBaseColorTextureInfo()!.equals(other.getBaseColorTextureInfo()!)) {
+			if (
+				this.getBaseColorTexture() &&
+				!this.getBaseColorTextureInfo()!.equals(other.getBaseColorTextureInfo()!)
+			) {
 				return false;
 			}
 		}
-		if (this.getEmissiveTexture() && other.getEmissiveTexture()) {
+		if (this.getEmissiveTexture() || other.getEmissiveTexture()) {
 			if (this.getEmissiveTexture() !== other.getEmissiveTexture()) return false;
-			if (!this.getEmissiveTextureInfo()!.equals(other.getEmissiveTextureInfo()!)) {
+			if (this.getEmissiveTexture() && !this.getEmissiveTextureInfo()!.equals(other.getEmissiveTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getNormalTexture() && other.getNormalTexture()) {
+		if (this.getNormalTexture() || other.getNormalTexture()) {
 			if (this.getNormalTexture() !== other.getNormalTexture()) return false;
-			if (!this.getNormalTextureInfo()!.equals(other.getNormalTextureInfo()!)) {
+			if (this.getNormalTexture() && !this.getNormalTextureInfo()!.equals(other.getNormalTextureInfo()!)) {
 				return false;
 			}
 		}
-		if (this.getOcclusionTexture() && other.getOcclusionTexture()) {
+		if (this.getOcclusionTexture() || other.getOcclusionTexture()) {
 			if (this.getOcclusionTexture() !== other.getOcclusionTexture()) return false;
-			if (!this.getOcclusionTextureInfo()!.equals(other.getOcclusionTextureInfo()!)) {
+			if (
+				this.getOcclusionTexture() &&
+				!this.getOcclusionTextureInfo()!.equals(other.getOcclusionTextureInfo()!)
+			) {
 				return false;
 			}
 		}
-		if (this.getMetallicRoughnessTexture() && other.getMetallicRoughnessTexture()) {
+		if (this.getMetallicRoughnessTexture() || other.getMetallicRoughnessTexture()) {
 			if (this.getMetallicRoughnessTexture() !== other.getMetallicRoughnessTexture()) {
 				return false;
 			}
-			if (!this.getMetallicRoughnessTextureInfo()!.equals(other.getMetallicRoughnessTextureInfo()!)) {
+			if (
+				this.getMetallicRoughnessTexture() &&
+				!this.getMetallicRoughnessTextureInfo()!.equals(other.getMetallicRoughnessTextureInfo()!)
+			) {
 				return false;
 			}
 		}

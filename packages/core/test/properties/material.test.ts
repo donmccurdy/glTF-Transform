@@ -319,8 +319,9 @@ test('@gltf-transform/core::material | equals', (t) => {
 	mat2.copy(mat).setBaseColorFactor([1, 1, 1, 0]);
 	t.equals(mat.equals(mat2), false, '.baseColorFactor ≠ .baseColorFactor');
 
-	mat2.copy(mat).setBaseColorTexture(tex.clone());
-	t.equals(mat.equals(mat2), true, '.baseColorTexture ≅ .baseColorTexture');
+	// Implemented in v2.x.
+	// mat2.copy(mat).setBaseColorTexture(tex.clone());
+	// t.equals(mat.equals(mat2), true, '.baseColorTexture ≅ .baseColorTexture');
 
 	mat2.copy(mat).setBaseColorTexture(tex.clone().setURI('other.png'));
 	t.equals(mat.equals(mat2), false, '.baseColorTexture ≠ .baseColorTexture');
