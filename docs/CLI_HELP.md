@@ -1,5 +1,5 @@
 
-  gltf-transform 1.2.2 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 1.2.3 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
