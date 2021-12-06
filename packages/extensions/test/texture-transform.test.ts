@@ -12,9 +12,9 @@ test('@gltf-transform/extensions::texture-transform', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transformExtension = doc.createExtension(TextureTransform);
-	const tex1 = doc.createTexture().setMimeType('image/png').setImage(new ArrayBuffer(10));
-	const tex2 = doc.createTexture().setMimeType('image/png').setImage(new ArrayBuffer(15));
-	const tex3 = doc.createTexture().setMimeType('image/png').setImage(new ArrayBuffer(20));
+	const tex1 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(10));
+	const tex2 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(15));
+	const tex3 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(20));
 	const mat = doc.createMaterial();
 	mat.setBaseColorTexture(tex1)
 		.getBaseColorTextureInfo()

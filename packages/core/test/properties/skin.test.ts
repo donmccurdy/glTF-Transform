@@ -8,7 +8,7 @@ test('@gltf-transform/core::skin', (t) => {
 
 	const joints = [doc.createNode('joint1'), doc.createNode('joint2'), doc.createNode('joint3')];
 
-	doc.createBuffer('skinBuffer');
+	doc.createBuffer('skinBuffer').setURI('skinTest.bin');
 
 	const ibm = doc
 		.createAccessor('ibm')
@@ -45,10 +45,7 @@ test('@gltf-transform/core::skin', (t) => {
 	doc.createAnimation().addChannel(channel).addSampler(sampler);
 
 	const io = new NodeIO();
-	const options = { basename: 'skinTest' }; // TODO: Defaults have changed!
-	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
-
-	console.log('JSONDOC', jsonDoc);
+	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, {})));
 
 	t.deepEqual(
 		jsonDoc.json.nodes[3],
@@ -75,8 +72,8 @@ test('@gltf-transform/core::skin', (t) => {
 	const inputAccessor = jsonDoc.json.accessors[jsonDoc.json.animations[0].samplers[0].input];
 	t.notEqual(ibmAccessor.bufferView, inputAccessor.bufferView, 'stores IBMs and animation in different buffer views');
 
-	const actualIBM = new Float32Array(jsonDoc.resources['skinTest.bin'].slice(0, 192));
-	t.deepEqual(actualIBM, ibm.getArray(), 'stores skin IBMs');
+	const actualIBM = new Float32Array(jsonDoc.resources['skinTest.bin'].slice(0, 192).buffer);
+	t.deepEqual(Array.from(actualIBM), Array.from(ibm.getArray()), 'stores skin IBMs');
 
 	t.end();
 });

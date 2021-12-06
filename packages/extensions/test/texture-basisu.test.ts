@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { BufferUtils, Document, ImageUtils, NodeIO } from '@gltf-transform/core';
+import { Document, ImageUtils, NodeIO } from '@gltf-transform/core';
 import { TextureBasisu } from '../';
 
 const IS_NODEJS = typeof window === 'undefined';
@@ -20,8 +20,8 @@ test('@gltf-transform/extensions::texture-basisu', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const basisuExtension = doc.createExtension(TextureBasisu);
-	const tex1 = doc.createTexture('BasisTexture').setMimeType('image/ktx2').setImage(new ArrayBuffer(10));
-	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new ArrayBuffer(15));
+	const tex1 = doc.createTexture('BasisTexture').setMimeType('image/ktx2').setImage(new Uint8Array(10));
+	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new Uint8Array(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
 
 	let jsonDoc;
@@ -53,9 +53,9 @@ test('@gltf-transform/extensions::texture-basisu', (t) => {
 });
 
 test('@gltf-transform/extensions::texture-basisu | image-utils', { skip: !IS_NODEJS }, (t) => {
-	const ktx2 = BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2')));
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2'));
 
-	t.throws(() => ImageUtils.getSize(new ArrayBuffer(10), 'image/ktx2'), 'corrupt file');
+	t.throws(() => ImageUtils.getSize(new Uint8Array(10), 'image/ktx2'), 'corrupt file');
 	t.deepEquals(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
 	t.equals(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
 	t.equals(ImageUtils.getMemSize(ktx2, 'image/ktx2'), 65536, 'gpuSize');

@@ -87,7 +87,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 
 		for (let i = 0; i < accessors.length; i++) {
 			const a = accessors[i];
-			const aData = a.getArray()!.slice().buffer;
+			const aData = BufferUtils.toView(a.getArray()!);
 
 			if (duplicateAccessors.has(a)) continue;
 
@@ -101,7 +101,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 				if (a.getComponentType() !== b.getComponentType()) continue;
 				if (a.getCount() !== b.getCount()) continue;
 				if (a.getNormalized() !== b.getNormalized()) continue;
-				if (BufferUtils.equals(aData, b.getArray()!.slice().buffer)) {
+				if (BufferUtils.equals(aData, BufferUtils.toView(b.getArray()!))) {
 					duplicateAccessors.set(b, a);
 				}
 			}

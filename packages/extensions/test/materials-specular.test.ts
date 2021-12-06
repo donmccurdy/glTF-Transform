@@ -14,8 +14,8 @@ test('@gltf-transform/extensions::materials-specular', (t) => {
 		.createSpecular()
 		.setSpecularFactor(0.9)
 		.setSpecularColorFactor([0.9, 0.5, 0.8])
-		.setSpecularTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
-		.setSpecularColorTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
+		.setSpecularTexture(doc.createTexture().setImage(new Uint8Array(1)))
+		.setSpecularColorTexture(doc.createTexture().setImage(new Uint8Array(1)));
 
 	const mat = doc
 		.createMaterial('MyMaterial')

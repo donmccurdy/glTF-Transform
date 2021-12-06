@@ -20,8 +20,8 @@ test('@gltf-transform/extensions::texture-webp', (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const webpExtension = doc.createExtension(TextureWebP);
-	const tex1 = doc.createTexture('WebPTexture').setMimeType('image/webp').setImage(new ArrayBuffer(10));
-	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new ArrayBuffer(15));
+	const tex1 = doc.createTexture('WebPTexture').setMimeType('image/webp').setImage(new Uint8Array(10));
+	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new Uint8Array(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
 
 	let jsonDoc;
@@ -53,17 +53,17 @@ test('@gltf-transform/extensions::texture-webp', (t) => {
 });
 
 test('@gltf-transform/core::image-utils | webp', { skip: !IS_NODEJS }, (t) => {
-	const webpLossy = BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.webp')));
-	const webpLossless = BufferUtils.trim(fs.readFileSync(path.join(__dirname, 'in', 'test-lossless.webp')));
+	const webpLossy = fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.webp'));
+	const webpLossless = fs.readFileSync(path.join(__dirname, 'in', 'test-lossless.webp'));
 	const buffer = BufferUtils.concat([
 		BufferUtils.encodeText('RIFF'),
-		new ArrayBuffer(4),
+		new Uint8Array(4),
 		BufferUtils.encodeText('WEBP'),
 		BufferUtils.encodeText('OTHR'),
 		new Uint8Array([999, 0, 0, 0]),
 	]);
 
-	t.equals(ImageUtils.getSize(new ArrayBuffer(8), 'image/webp'), null, 'invalid');
+	t.equals(ImageUtils.getSize(new Uint8Array(8), 'image/webp'), null, 'invalid');
 	t.equals(ImageUtils.getSize(buffer, 'image/webp'), null, 'no size');
 	t.deepEquals(ImageUtils.getSize(webpLossy, 'image/webp'), [256, 256], 'size (lossy)');
 	t.deepEquals(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');

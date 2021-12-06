@@ -32,9 +32,9 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', (t) => {
 	const clearcoat = clearcoatExtension
 		.createClearcoat()
 		.setClearcoatFactor(0.9)
-		.setClearcoatTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
-		.setClearcoatRoughnessTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
-		.setClearcoatNormalTexture(doc.createTexture().setImage(new ArrayBuffer(1)))
+		.setClearcoatTexture(doc.createTexture().setImage(new Uint8Array(1)))
+		.setClearcoatRoughnessTexture(doc.createTexture().setImage(new Uint8Array(1)))
+		.setClearcoatNormalTexture(doc.createTexture().setImage(new Uint8Array(1)))
 		.setClearcoatNormalScale(2.0)
 		.setClearcoatRoughnessFactor(0.1);
 

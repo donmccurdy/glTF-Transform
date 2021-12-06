@@ -61,7 +61,7 @@ export class GLTFWriter {
 
 		interface BufferViewResult {
 			byteLength: number;
-			buffers: ArrayBuffer[];
+			buffers: Uint8Array[];
 		}
 
 		/**
@@ -79,7 +79,7 @@ export class GLTFWriter {
 			bufferByteOffset: number,
 			bufferViewTarget?: number
 		): BufferViewResult {
-			const buffers: ArrayBuffer[] = [];
+			const buffers: Uint8Array[] = [];
 			let byteLength = 0;
 
 			// Create accessor definitions, determining size of final buffer view.
@@ -87,7 +87,8 @@ export class GLTFWriter {
 				const accessorDef = context.createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews!.length;
 
-				const data = BufferUtils.pad(accessor.getArray()!.buffer);
+				const accessorArray = accessor.getArray()!;
+				const data = BufferUtils.pad(BufferUtils.toView(accessorArray));
 				accessorDef.byteOffset = byteLength;
 				byteLength += data.byteLength;
 				buffers.push(data);
@@ -196,7 +197,7 @@ export class GLTFWriter {
 			};
 			json.bufferViews!.push(bufferViewDef);
 
-			return { byteLength, buffers: [buffer] };
+			return { byteLength, buffers: [new Uint8Array(buffer)] };
 		}
 
 		/* Data use pre-processing. */
@@ -301,7 +302,7 @@ export class GLTFWriter {
 
 			// Write accessor groups to buffer views.
 
-			const buffers: ArrayBuffer[] = [];
+			const buffers: Uint8Array[] = [];
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
@@ -370,7 +371,7 @@ export class GLTFWriter {
 						// See: https://github.com/KhronosGroup/glTF/issues/1935
 						const imagePadding = 8 - (bufferByteLength % 8);
 						bufferByteLength += imagePadding;
-						buffers.push(new ArrayBuffer(imagePadding));
+						buffers.push(new Uint8Array(imagePadding));
 					}
 				}
 			}

@@ -53,20 +53,22 @@ test('@gltf-transform/core::io | web read glb + resources', (t) => {
 
 	const jsonText = JSON.stringify(json);
 	const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-	const jsonChunkHeader = new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]).buffer;
+	const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
 	const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 
-	const binaryChunkData = BufferUtils.pad(new ArrayBuffer(0), 0x00);
-	const binaryChunkHeader = new Uint32Array([binaryChunkData.byteLength, 0x004e4942]).buffer;
+	const binaryChunkData = BufferUtils.pad(new Uint8Array(0), 0x00);
+	const binaryChunkHeader = BufferUtils.toView(new Uint32Array([binaryChunkData.byteLength, 0x004e4942]));
 	const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
 
-	const header = new Uint32Array([0x46546c67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]).buffer;
+	const header = BufferUtils.toView(
+		new Uint32Array([0x46546c67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength])
+	);
 
 	const responses = [
-		new ArrayBuffer(4),
-		new ArrayBuffer(3),
-		new ArrayBuffer(2),
-		new ArrayBuffer(1),
+		new Uint8Array(4),
+		new Uint8Array(3),
+		new Uint8Array(2),
+		new Uint8Array(1),
 		BufferUtils.concat([header, jsonChunk, binaryChunk]),
 	];
 
@@ -101,7 +103,7 @@ test('@gltf-transform/core::io | web read glb + resources', (t) => {
 });
 
 test('@gltf-transform/core::io | web read gltf', (t) => {
-	const images = [new ArrayBuffer(4), new ArrayBuffer(3), new ArrayBuffer(2), new ArrayBuffer(1)];
+	const images = [new Uint8Array(4), new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
@@ -141,7 +143,7 @@ test('@gltf-transform/core::io | web read gltf', (t) => {
 });
 
 test('@gltf-transform/core::io | web read + data URIs', async (t) => {
-	const images = [new ArrayBuffer(3), new ArrayBuffer(2), new ArrayBuffer(1)];
+	const images = [new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
 	});
@@ -160,17 +162,18 @@ test('@gltf-transform/core::io | web read + data URIs', async (t) => {
 	const io = new WebIO();
 
 	const doc = await io.read('test.gltf');
+	const textures = doc.getRoot().listTextures();
 
 	t.deepEquals(fetchedPaths, ['test.gltf'], 'one network request');
-	t.equals(doc.getRoot().listTextures().length, 3, 'reads a textures from Data URIs');
-	t.deepEquals(doc.getRoot().listTextures()[0].getImage(), images[0], 'reads texture 0');
-	t.deepEquals(doc.getRoot().listTextures()[1].getImage(), images[1], 'reads texture 1');
-	t.deepEquals(doc.getRoot().listTextures()[2].getImage(), images[2], 'reads texture 2');
+	t.equals(textures.length, 3, 'reads a textures from Data URIs');
+	t.deepEquals(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
+	t.deepEquals(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
+	t.deepEquals(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
 	t.end();
 });
 
 test('@gltf-transform/core::io | web readJSON + data URIs', (t) => {
-	const images = [new ArrayBuffer(3), new ArrayBuffer(2), new ArrayBuffer(1)];
+	const images = [new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
 	});
@@ -194,11 +197,12 @@ test('@gltf-transform/core::io | web readJSON + data URIs', (t) => {
 		},
 		resources: {},
 	});
+	const textures = doc.getRoot().listTextures();
 
 	t.deepEquals(fetchedPaths, [], 'no network requests');
-	t.equals(doc.getRoot().listTextures().length, 3, 'reads a textures from Data URIs');
-	t.deepEquals(doc.getRoot().listTextures()[0].getImage(), images[0], 'reads texture 0');
-	t.deepEquals(doc.getRoot().listTextures()[1].getImage(), images[1], 'reads texture 1');
-	t.deepEquals(doc.getRoot().listTextures()[2].getImage(), images[2], 'reads texture 2');
+	t.equals(textures.length, 3, 'reads a textures from Data URIs');
+	t.deepEquals(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
+	t.deepEquals(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
+	t.deepEquals(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
 	t.end();
 });

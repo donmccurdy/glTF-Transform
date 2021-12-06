@@ -2,7 +2,7 @@ import { Format } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
-import { BufferUtils, FileUtils } from '../utils/';
+import { FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
 
 /**
@@ -24,12 +24,12 @@ import { PlatformIO } from './platform-io';
  * const io = new NodeIO();
  *
  * // Read.
- * io.read('model.glb');             // → Document
- * io.readBinary(ArrayBuffer);       // → Document
+ * io.read('model.glb');       // → Document
+ * io.readBinary(glb);         // Uint8Array → Document
  *
  * // Write.
  * io.write('model.glb', doc); // → void
- * io.writeBinary(doc);        // → ArrayBuffer
+ * io.writeBinary(doc);        // Document → Uint8Array
  * ```
  *
  * @category I/O
@@ -84,7 +84,7 @@ export class NodeIO extends PlatformIO {
 		[...images, ...buffers].forEach((resource: GLTF.IBuffer | GLTF.IImage) => {
 			if (resource.uri && !resource.uri.match(/data:/)) {
 				const absURI = this._path.resolve(dir, resource.uri);
-				jsonDoc.resources[resource.uri] = BufferUtils.trim(this._fs.readFileSync(absURI));
+				jsonDoc.resources[resource.uri] = this._fs.readFileSync(absURI);
 				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
 			}
 		});
@@ -97,9 +97,8 @@ export class NodeIO extends PlatformIO {
 	/** @internal */
 	private _readGLB(uri: string): JSONDocument {
 		const buffer: Buffer = this._fs.readFileSync(uri);
-		const arrayBuffer = BufferUtils.trim(buffer);
-		this.lastReadBytes = arrayBuffer.byteLength;
-		const jsonDoc = this._binaryToJSON(arrayBuffer);
+		this.lastReadBytes = buffer.byteLength;
+		const jsonDoc = this._binaryToJSON(buffer);
 		// Read external resources first, before Data URIs are replaced.
 		this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
 		this._readResourcesInternal(jsonDoc);

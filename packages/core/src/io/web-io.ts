@@ -23,10 +23,10 @@ const DEFAULT_INIT: RequestInit = {};
  *
  * // Read.
  * const doc = await io.read('model.glb');  // → Document
- * const doc = io.readBinary(ArrayBuffer);  // → Document
+ * const doc = io.readBinary(glb);  // Uint8Array → Document
  *
  * // Write.
- * const arrayBuffer = io.writeBinary(doc); // → ArrayBuffer
+ * const glb = io.writeBinary(doc); // Document → Uint8Array
  * ```
  *
  * @category I/O
@@ -73,7 +73,7 @@ export class WebIO extends PlatformIO {
 				return fetch(_resolve(dir, uri), this._fetchConfig)
 					.then((response) => response.arrayBuffer())
 					.then((arrayBuffer) => {
-						jsonDoc.resources[uri] = arrayBuffer;
+						jsonDoc.resources[uri] = new Uint8Array(arrayBuffer);
 					});
 			}
 		);
@@ -103,7 +103,7 @@ export class WebIO extends PlatformIO {
 		return fetch(uri, this._fetchConfig)
 			.then((response) => response.arrayBuffer())
 			.then(async (arrayBuffer) => {
-				const jsonDoc = this._binaryToJSON(arrayBuffer);
+				const jsonDoc = this._binaryToJSON(new Uint8Array(arrayBuffer));
 				// Read external resources first, before Data URIs are replaced.
 				await this._readResourcesExternal(jsonDoc, _dirname(uri));
 				this._readResourcesInternal(jsonDoc);

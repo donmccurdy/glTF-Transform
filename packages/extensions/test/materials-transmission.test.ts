@@ -13,7 +13,7 @@ test('@gltf-transform/extensions::materials-transmission', (t) => {
 	const transmission = transmissionExtension
 		.createTransmission()
 		.setTransmissionFactor(0.9)
-		.setTransmissionTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
+		.setTransmissionTexture(doc.createTexture().setImage(new Uint8Array(1)));
 
 	const mat = doc
 		.createMaterial('MyTransmissionMaterial')

@@ -100,10 +100,10 @@ test('@gltf-transform/functions::dedup | textures', (t) => {
 	const canvas = createCanvas(100, 50);
 	const ctx = canvas.getContext('2d');
 	ctx.fillStyle = '#222222';
-	const buffer = canvas.toBuffer('image/png').slice().buffer;
+	const image = canvas.toBuffer('image/png');
 
-	const tex1 = doc.createTexture('copy 1').setMimeType('image/png').setImage(buffer);
-	const tex2 = doc.createTexture('copy 2').setMimeType('image/png').setImage(buffer.slice(0));
+	const tex1 = doc.createTexture('copy 1').setMimeType('image/png').setImage(image);
+	const tex2 = doc.createTexture('copy 2').setMimeType('image/png').setImage(image.slice());
 
 	const transmission = transmissionExt.createTransmission().setTransmissionTexture(tex2);
 	const mat = doc.createMaterial().setBaseColorTexture(tex1).setExtension('KHR_materials_transmission', transmission);

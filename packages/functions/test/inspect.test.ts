@@ -10,7 +10,7 @@ test('@gltf-transform/functions::inspect', (t) => {
 	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb')).setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	doc.createAnimation('TestAnim');
-	doc.createTexture('TestTex').setImage(new ArrayBuffer(10)).setMimeType('image/fake');
+	doc.createTexture('TestTex').setImage(new Uint8Array(10)).setMimeType('image/fake');
 
 	const report = inspect(doc);
 

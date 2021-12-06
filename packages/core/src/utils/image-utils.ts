@@ -3,21 +3,20 @@ import { BufferUtils } from './buffer-utils';
 
 /** Implements support for an image format in the {@link ImageUtils} class. */
 export interface ImageUtilsFormat {
-	match(buffer: ArrayBuffer): boolean;
-	getSize(buffer: ArrayBuffer): vec2 | null;
-	getChannels(buffer: ArrayBuffer): number | null;
-	getGPUByteLength?(buffer: ArrayBuffer): number | null;
+	match(buffer: Uint8Array): boolean;
+	getSize(buffer: Uint8Array): vec2 | null;
+	getChannels(buffer: Uint8Array): number | null;
+	getGPUByteLength?(buffer: Uint8Array): number | null;
 }
 
 /** JPEG image support. */
 class JPEGImageUtils implements ImageUtilsFormat {
-	match(buffer: ArrayBuffer): boolean {
-		const array = new Uint8Array(buffer);
+	match(array: Uint8Array): boolean {
 		return array.length >= 3 && array[0] === 255 && array[1] === 216 && array[2] === 255;
 	}
-	getSize(buffer: ArrayBuffer): vec2 {
+	getSize(array: Uint8Array): vec2 {
 		// Skip 4 chars, they are for signature
-		let view = new DataView(buffer, 4);
+		let view = new DataView(array.buffer, array.byteOffset + 4);
 
 		let i: number, next: number;
 		while (view.byteLength) {
@@ -37,13 +36,13 @@ class JPEGImageUtils implements ImageUtilsFormat {
 			}
 
 			// move to the next block
-			view = new DataView(buffer, view.byteOffset + i + 2);
+			view = new DataView(array.buffer, view.byteOffset + i + 2);
 		}
 
 		throw new TypeError('Invalid JPG, no size found');
 	}
 
-	getChannels(_buffer: ArrayBuffer): number {
+	getChannels(_buffer: Uint8Array): number {
 		return 3;
 	}
 }
@@ -57,8 +56,7 @@ class JPEGImageUtils implements ImageUtilsFormat {
 class PNGImageUtils implements ImageUtilsFormat {
 	// Used to detect "fried" png's: http://www.jongware.com/pngdefry.html
 	static PNG_FRIED_CHUNK_NAME = 'CgBI';
-	match(buffer: ArrayBuffer): boolean {
-		const array = new Uint8Array(buffer);
+	match(array: Uint8Array): boolean {
 		return (
 			array.length >= 8 &&
 			array[0] === 0x89 &&
@@ -71,15 +69,15 @@ class PNGImageUtils implements ImageUtilsFormat {
 			array[7] === 0x0a
 		);
 	}
-	getSize(buffer: ArrayBuffer): vec2 {
-		const view = new DataView(buffer);
-		const magic = BufferUtils.decodeText(buffer.slice(12, 16));
+	getSize(array: Uint8Array): vec2 {
+		const view = new DataView(array.buffer, array.byteOffset);
+		const magic = BufferUtils.decodeText(array.slice(12, 16));
 		if (magic === PNGImageUtils.PNG_FRIED_CHUNK_NAME) {
 			return [view.getUint32(32, false), view.getUint32(36, false)];
 		}
 		return [view.getUint32(16, false), view.getUint32(20, false)];
 	}
-	getChannels(_buffer: ArrayBuffer): number {
+	getChannels(_buffer: Uint8Array): number {
 		return 4;
 	}
 }
@@ -107,7 +105,7 @@ export class ImageUtils {
 	 * formats with support provided by extensions, the extension must be
 	 * registered with an I/O class before it can be detected by ImageUtils.
 	 */
-	public static getMimeType(buffer: ArrayBuffer): string | null {
+	public static getMimeType(buffer: Uint8Array): string | null {
 		for (const mimeType in this.impls) {
 			if (this.impls[mimeType].match(buffer)) {
 				return mimeType;
@@ -117,7 +115,7 @@ export class ImageUtils {
 	}
 
 	/** Returns the dimensions of the image. */
-	public static getSize(buffer: ArrayBuffer, mimeType: string): vec2 | null {
+	public static getSize(buffer: Uint8Array, mimeType: string): vec2 | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getSize(buffer);
 	}
@@ -127,13 +125,13 @@ export class ImageUtils {
 	 * formats, the method may return 4 indicating the possibility of an alpha channel, without
 	 * the ability to guarantee that an alpha channel is present.
 	 */
-	public static getChannels(buffer: ArrayBuffer, mimeType: string): number | null {
+	public static getChannels(buffer: Uint8Array, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 		return this.impls[mimeType].getChannels(buffer);
 	}
 
 	/** Returns a conservative estimate of the GPU memory required by this image. */
-	public static getMemSize(buffer: ArrayBuffer, mimeType: string): number | null {
+	public static getMemSize(buffer: Uint8Array, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 
 		if (this.impls[mimeType].getGPUByteLength) {

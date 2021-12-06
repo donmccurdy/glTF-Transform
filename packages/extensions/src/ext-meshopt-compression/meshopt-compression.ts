@@ -117,7 +117,7 @@ export class MeshoptCompression extends Extension {
 	private _encoderOptions: Required<EncoderOptions> = DEFAULT_ENCODER_OPTIONS;
 	private _encoderFallbackBuffer: Buffer | null = null;
 	private _encoderBufferViews: { [key: string]: EncodedBufferView } = {};
-	private _encoderBufferViewData: { [key: string]: ArrayBuffer[] } = {};
+	private _encoderBufferViewData: { [key: string]: Uint8Array[] } = {};
 	private _encoderBufferViewAccessors: { [key: string]: GLTF.IAccessor[] } = {};
 
 	/** @hidden */
@@ -200,11 +200,12 @@ export class MeshoptCompression extends Extension {
 			const byteLength = meshoptDef.byteLength || 0;
 			const count = meshoptDef.count;
 			const stride = meshoptDef.byteStride;
-			const result = new Uint8Array(new ArrayBuffer(count * stride));
+			const result = new Uint8Array(count * stride);
 
 			const bufferDef = jsonDoc.json.buffers![viewDef.buffer];
+			// TODO(cleanup): Should be encapsulated in writer-context.ts.
 			const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
-			const source = new Uint8Array(resource, byteOffset, byteLength);
+			const source = BufferUtils.toView(resource, byteOffset, byteLength);
 
 			this._decoder!.decodeGltfBuffer(result, count, stride, source, meshoptDef.mode, meshoptDef.filter);
 
@@ -344,7 +345,7 @@ export class MeshoptCompression extends Extension {
 			bufferViewAccessors.push(accessorDef);
 
 			// Update buffer view.
-			bufferViewData.push(array.slice().buffer);
+			bufferViewData.push(new Uint8Array(array.buffer, array.byteOffset, array.byteLength));
 			bufferView.byteLength += array.byteLength;
 			bufferView.extensions.EXT_meshopt_compression.count += accessor.getCount();
 		}
@@ -361,9 +362,9 @@ export class MeshoptCompression extends Extension {
 			const otherBufferViews = context.otherBufferViews.get(buffer) || [];
 
 			const { count, byteStride, mode } = bufferView.extensions[NAME];
-			const srcArray = new Uint8Array(BufferUtils.concat(bufferViewData));
+			const srcArray = BufferUtils.concat(bufferViewData);
 			const dstArray = encoder.encodeGltfBuffer(srcArray, count, byteStride, mode);
-			const compressedData = BufferUtils.pad(dstArray.slice().buffer);
+			const compressedData = BufferUtils.pad(dstArray);
 
 			bufferView.extensions[NAME].byteLength = dstArray.byteLength;
 

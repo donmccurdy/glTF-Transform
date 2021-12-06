@@ -13,22 +13,28 @@ import { EXT_TEXTURE_WEBP } from '../constants';
 const NAME = EXT_TEXTURE_WEBP;
 
 class WEBPImageUtils implements ImageUtilsFormat {
-	match(buffer: ArrayBuffer): boolean {
-		const array = new Uint8Array(buffer);
+	match(array: Uint8Array): boolean {
 		return array.length >= 12 && array[8] === 87 && array[9] === 69 && array[10] === 66 && array[11] === 80;
 	}
-	getSize(buffer: ArrayBuffer): vec2 | null {
+	getSize(array: Uint8Array): vec2 | null {
 		// Reference: http://tools.ietf.org/html/rfc6386
-		const RIFF = BufferUtils.decodeText(buffer.slice(0, 4));
-		const WEBP = BufferUtils.decodeText(buffer.slice(8, 12));
+		const RIFF = BufferUtils.decodeText(array.slice(0, 4));
+		const WEBP = BufferUtils.decodeText(array.slice(8, 12));
 		if (RIFF !== 'RIFF' || WEBP !== 'WEBP') return null;
 
-		const view = new DataView(buffer);
+		const view = new DataView(array.buffer, array.byteOffset);
 
 		// Reference: https://wiki.tcl-lang.org/page/Reading+WEBP+image+dimensions
 		let offset = 12;
-		while (offset < buffer.byteLength) {
-			const chunkId = BufferUtils.decodeText(buffer.slice(offset, offset + 4));
+		while (offset < view.byteLength) {
+			const chunkId = BufferUtils.decodeText(
+				new Uint8Array([
+					view.getUint8(offset),
+					view.getUint8(offset + 1),
+					view.getUint8(offset + 2),
+					view.getUint8(offset + 3),
+				])
+			);
 			const chunkByteLength = view.getUint32(offset + 4, true);
 			if (chunkId === 'VP8 ') {
 				const width = view.getInt16(offset + 14, true) & 0x3fff;
@@ -48,7 +54,7 @@ class WEBPImageUtils implements ImageUtilsFormat {
 
 		return null;
 	}
-	getChannels(_buffer: ArrayBuffer): number {
+	getChannels(_buffer: Uint8Array): number {
 		return 4;
 	}
 }

@@ -1,9 +1,9 @@
 import { Nullable, PropertyType, vec2 } from '../constants';
-import { FileUtils, ImageUtils } from '../utils';
+import { BufferUtils, FileUtils, ImageUtils } from '../utils';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
 interface ITexture extends IExtensibleProperty {
-	image: ArrayBuffer | null;
+	image: Uint8Array | null;
 	mimeType: string;
 	uri: string;
 }
@@ -76,13 +76,13 @@ export class Texture extends ExtensibleProperty<ITexture> {
 	 */
 
 	/** Returns the raw image data for this texture. */
-	public getImage(): ArrayBuffer | null {
+	public getImage(): Uint8Array | null {
 		return this.get('image');
 	}
 
 	/** Sets the raw image data for this texture. */
-	public setImage(image: ArrayBuffer): this {
-		return this.set('image', image);
+	public setImage(image: Uint8Array): this {
+		return this.set('image', BufferUtils.assertView(image));
 	}
 
 	/** Returns the size, in pixels, of this texture. */

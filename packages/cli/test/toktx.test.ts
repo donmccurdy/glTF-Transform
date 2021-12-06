@@ -46,7 +46,7 @@ test('@gltf-transform/cli::toktx | resize', async (t) => {
 
 async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
-	const tex = doc.createTexture().setImage(new ArrayBuffer(10)).setMimeType('image/png');
+	const tex = doc.createTexture().setImage(new Uint8Array(10)).setMimeType('image/png');
 	tex.getSize = (): vec2 => size;
 
 	// Assign texture to materials so that the given channels are in use.
@@ -67,7 +67,7 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 
 		// Mock `toktx` compression.
 		actualParams = params;
-		fs.writeFileSync(params[params.length - 2], Buffer.from(new ArrayBuffer(8)));
+		fs.writeFileSync(params[params.length - 2], new Uint8Array(8));
 		return { status: 0 };
 	});
 	mockCommandExistsSync(() => true);

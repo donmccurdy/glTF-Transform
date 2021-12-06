@@ -17,8 +17,7 @@ interface BasisuDef {
 }
 
 class KTX2ImageUtils implements ImageUtilsFormat {
-	match(buffer: ArrayBuffer): boolean {
-		const array = new Uint8Array(buffer);
+	match(array: Uint8Array): boolean {
 		return (
 			array[0] === 0xab &&
 			array[1] === 0x4b &&
@@ -34,12 +33,12 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 			array[11] === 0x0a
 		);
 	}
-	getSize(buffer: ArrayBuffer): vec2 {
-		const container = readKTX(new Uint8Array(buffer));
+	getSize(array: Uint8Array): vec2 {
+		const container = readKTX(array);
 		return [container.pixelWidth, container.pixelHeight];
 	}
-	getChannels(buffer: ArrayBuffer): number {
-		const container = readKTX(new Uint8Array(buffer));
+	getChannels(array: Uint8Array): number {
+		const container = readKTX(array);
 		const dfd = container.dataFormatDescriptor[0];
 		if (dfd.colorModel === KTX2Model.ETC1S) {
 			return dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xf) === 15 ? 4 : 3;
@@ -48,9 +47,9 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 		}
 		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 	}
-	getGPUByteLength(buffer: ArrayBuffer): number {
-		const container = readKTX(new Uint8Array(buffer));
-		const hasAlpha = this.getChannels(buffer) > 3;
+	getGPUByteLength(array: Uint8Array): number {
+		const container = readKTX(array);
+		const hasAlpha = this.getChannels(array) > 3;
 
 		let uncompressedBytes = 0;
 		for (let i = 0; i < container.levels.length; i++) {

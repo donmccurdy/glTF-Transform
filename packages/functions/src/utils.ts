@@ -30,7 +30,7 @@ export async function rewriteTexture(
 	const srcImage = source.getImage();
 	if (!srcImage) return null;
 
-	const pixels = await getPixels(new Uint8Array(srcImage), source.getMimeType());
+	const pixels = await getPixels(srcImage, source.getMimeType());
 
 	for(let i = 0; i < pixels.shape[0]; ++i) {
 		for(let j = 0; j < pixels.shape[1]; ++j) {
@@ -38,7 +38,7 @@ export async function rewriteTexture(
 		}
 	}
 
-	const dstImage = (await savePixels(pixels, 'image/png')).buffer;
+	const dstImage = await savePixels(pixels, 'image/png');
 	return target.setImage(dstImage).setMimeType('image/png');
 }
 

@@ -13,7 +13,7 @@ test('@gltf-transform/extensions::materials-sheen', (t) => {
 	const sheen = sheenExtension
 		.createSheen()
 		.setSheenColorFactor([0.9, 0.5, 0.8])
-		.setSheenColorTexture(doc.createTexture().setImage(new ArrayBuffer(1)));
+		.setSheenColorTexture(doc.createTexture().setImage(new Uint8Array(1)));
 
 	const mat = doc
 		.createMaterial('MyMaterial')
