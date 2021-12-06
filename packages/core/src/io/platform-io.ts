@@ -227,7 +227,7 @@ export abstract class PlatformIO {
 	public writeBinary(doc: Document): Uint8Array {
 		const { json, resources } = this.writeJSON(doc, { format: Format.GLB });
 
-		const header = BufferUtils.toView(new Uint32Array([0x46546c67, 2, 12]));
+		const header = new Uint32Array([0x46546c67, 2, 12]);
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
@@ -245,6 +245,6 @@ export abstract class PlatformIO {
 		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
 		header[header.length - 1] += binChunk.byteLength;
 
-		return BufferUtils.concat([header, jsonChunk, binChunk]);
+		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
 	}
 }
