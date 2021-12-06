@@ -24,12 +24,12 @@ import { PlatformIO } from './platform-io';
  * const io = new NodeIO();
  *
  * // Read.
- * io.read('model.glb');             // → Document
- * io.readBinary(ArrayBuffer);       // → Document
+ * io.read('model.glb');       // → Document
+ * io.readBinary(glb);         // Uint8Array → Document
  *
  * // Write.
  * io.write('model.glb', doc); // → void
- * io.writeBinary(doc);        // → ArrayBuffer
+ * io.writeBinary(doc);        // Document → Uint8Array
  * ```
  *
  * @category I/O

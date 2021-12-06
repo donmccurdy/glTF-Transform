@@ -23,10 +23,10 @@ const DEFAULT_INIT: RequestInit = {};
  *
  * // Read.
  * const doc = await io.read('model.glb');  // → Document
- * const doc = io.readBinary(ArrayBuffer);  // → Document
+ * const doc = io.readBinary(glb);  // Uint8Array → Document
  *
  * // Write.
- * const arrayBuffer = io.writeBinary(doc); // → ArrayBuffer
+ * const glb = io.writeBinary(doc); // Document → Uint8Array
  * ```
  *
  * @category I/O
