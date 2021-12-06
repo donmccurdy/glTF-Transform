@@ -19,7 +19,7 @@ interface LightDef {
 	range?: number;
 	innerConeAngle?: number;
 	outerConeAngle?: number;
-	type: 'spot' | 'point' | 'directional'
+	type: 'spot' | 'point' | 'directional';
 }
 
 /**
@@ -57,17 +57,19 @@ export class LightsPunctual extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new punctual Light property for use on a {@link Node}. */
 	public createLight(): Light {
 		return new Light(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
 
 		const rootDef = jsonDoc.json.extensions[NAME] as LightsPunctualRootDef;
-		const lightDefs = rootDef.lights || [] as LightDef[];
+		const lightDefs = rootDef.lights || ([] as LightDef[]);
 		const lights = lightDefs.map((lightDef) => {
 			const light = this.createLight()
 				.setName(lightDef.name || '')
@@ -96,6 +98,7 @@ export class LightsPunctual extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
@@ -106,7 +109,7 @@ export class LightsPunctual extends Extension {
 
 		for (const property of this.properties) {
 			const light = property as Light;
-			const lightDef = {type: light.getType()} as LightDef;
+			const lightDef = { type: light.getType() } as LightDef;
 
 			if (!MathUtils.eq(light.getColor(), [1, 1, 1])) lightDef.color = light.getColor();
 			if (light.getIntensity() !== 1) lightDef.intensity = light.getIntensity();
@@ -123,7 +126,8 @@ export class LightsPunctual extends Extension {
 			lightIndexMap.set(light, lightDefs.length - 1);
 		}
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listNodes()
 			.forEach((node) => {
 				const light = node.getExtension<Light>(NAME);
@@ -131,12 +135,12 @@ export class LightsPunctual extends Extension {
 					const nodeIndex = context.nodeIndexMap.get(node)!;
 					const nodeDef = jsonDoc.json.nodes![nodeIndex];
 					nodeDef.extensions = nodeDef.extensions || {};
-					nodeDef.extensions[NAME] = {light: lightIndexMap.get(light)};
+					nodeDef.extensions[NAME] = { light: lightIndexMap.get(light) };
 				}
 			});
 
 		jsonDoc.json.extensions = jsonDoc.json.extensions || {};
-		jsonDoc.json.extensions[NAME] = {lights: lightDefs};
+		jsonDoc.json.extensions[NAME] = { lights: lightDefs };
 
 		return this;
 	}

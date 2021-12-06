@@ -62,6 +62,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	/**
 	 * Internal graph used to search and maintain references.
 	 * @override
+	 * @hidden
 	 */
 	protected declare readonly graph: Graph<Property>;
 

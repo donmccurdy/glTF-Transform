@@ -126,13 +126,16 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  */
 export class TextureBasisu extends Extension {
 	public readonly extensionName = NAME;
+	/** @hidden */
 	public readonly prereadTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** @hidden */
 	public static register(): void {
 		ImageUtils.registerFormat('image/ktx2', new KTX2ImageUtils());
 	}
 
+	/** @hidden */
 	public preread(context: ReaderContext): this {
 		context.jsonDoc.json.textures!.forEach((textureDef) => {
 			if (textureDef.extensions && textureDef.extensions[NAME]) {
@@ -143,11 +146,13 @@ export class TextureBasisu extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 

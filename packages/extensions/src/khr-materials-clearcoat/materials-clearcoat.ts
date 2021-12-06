@@ -50,10 +50,12 @@ export class MaterialsClearcoat extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Clearcoat property for use on a {@link Material}. */
 	public createClearcoat(): Clearcoat {
 		return new Clearcoat(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -71,9 +73,7 @@ export class MaterialsClearcoat extends Extension {
 					clearcoat.setClearcoatFactor(clearcoatDef.clearcoatFactor);
 				}
 				if (clearcoatDef.clearcoatRoughnessFactor !== undefined) {
-					clearcoat.setClearcoatRoughnessFactor(
-						clearcoatDef.clearcoatRoughnessFactor
-					);
+					clearcoat.setClearcoatRoughnessFactor(clearcoatDef.clearcoatRoughnessFactor);
 				}
 
 				// Textures.
@@ -88,19 +88,13 @@ export class MaterialsClearcoat extends Extension {
 					const textureInfoDef = clearcoatDef.clearcoatRoughnessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					clearcoat.setClearcoatRoughnessTexture(texture);
-					context.setTextureInfo(
-						clearcoat.getClearcoatRoughnessTextureInfo()!,
-						textureInfoDef
-					);
+					context.setTextureInfo(clearcoat.getClearcoatRoughnessTextureInfo()!, textureInfoDef);
 				}
 				if (clearcoatDef.clearcoatNormalTexture !== undefined) {
 					const textureInfoDef = clearcoatDef.clearcoatNormalTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					clearcoat.setClearcoatNormalTexture(texture);
-					context.setTextureInfo(
-						clearcoat.getClearcoatNormalTextureInfo()!,
-						textureInfoDef
-					);
+					context.setTextureInfo(clearcoat.getClearcoatNormalTextureInfo()!, textureInfoDef);
 					if (textureInfoDef.scale !== undefined) {
 						clearcoat.setClearcoatNormalScale(textureInfoDef.scale);
 					}
@@ -111,10 +105,12 @@ export class MaterialsClearcoat extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				const clearcoat = material.getExtension<Clearcoat>(NAME);
@@ -125,33 +121,29 @@ export class MaterialsClearcoat extends Extension {
 
 					// Factors.
 
-					const clearcoatDef = materialDef.extensions[NAME] = {
+					const clearcoatDef = (materialDef.extensions[NAME] = {
 						clearcoatFactor: clearcoat.getClearcoatFactor(),
 						clearcoatRoughnessFactor: clearcoat.getClearcoatRoughnessFactor(),
-					} as ClearcoatDef;
+					} as ClearcoatDef);
 
 					// Textures.
 
 					if (clearcoat.getClearcoatTexture()) {
 						const texture = clearcoat.getClearcoatTexture()!;
 						const textureInfo = clearcoat.getClearcoatTextureInfo()!;
-						clearcoatDef.clearcoatTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						clearcoatDef.clearcoatTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatRoughnessTexture()) {
 						const texture = clearcoat.getClearcoatRoughnessTexture()!;
 						const textureInfo = clearcoat.getClearcoatRoughnessTextureInfo()!;
-						clearcoatDef.clearcoatRoughnessTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						clearcoatDef.clearcoatRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (clearcoat.getClearcoatNormalTexture()) {
 						const texture = clearcoat.getClearcoatNormalTexture()!;
 						const textureInfo = clearcoat.getClearcoatNormalTextureInfo()!;
-						clearcoatDef.clearcoatNormalTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						clearcoatDef.clearcoatNormalTexture = context.createTextureInfoDef(texture, textureInfo);
 						if (clearcoat.getClearcoatNormalScale() !== 1) {
-							clearcoatDef.clearcoatNormalTexture.scale
-								= clearcoat.getClearcoatNormalScale();
+							clearcoatDef.clearcoatNormalTexture.scale = clearcoat.getClearcoatNormalScale();
 						}
 					}
 				}

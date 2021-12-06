@@ -1,4 +1,14 @@
-import { Accessor, Buffer, BufferUtils, Extension, GLB_BUFFER, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import {
+	Accessor,
+	Buffer,
+	BufferUtils,
+	Extension,
+	GLB_BUFFER,
+	GLTF,
+	PropertyType,
+	ReaderContext,
+	WriterContext,
+} from '@gltf-transform/core';
 import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
 import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder';
@@ -8,14 +18,14 @@ import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 const NAME = EXT_MESHOPT_COMPRESSION;
 
 interface EncoderOptions {
-	method?: EncoderMethod
+	method?: EncoderMethod;
 }
 
 const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
-	method: EncoderMethod.QUANTIZE
+	method: EncoderMethod.QUANTIZE,
 };
 
-type MeshoptBufferView = {extensions: {[NAME]: MeshoptBufferViewExtension}};
+type MeshoptBufferView = { extensions: { [NAME]: MeshoptBufferViewExtension } };
 type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
 
 /**
@@ -89,9 +99,13 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  */
 export class MeshoptCompression extends Extension {
 	public readonly extensionName = NAME;
+	/** @hidden */
 	public readonly prereadTypes = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
+	/** @hidden */
 	public readonly prewriteTypes = [PropertyType.BUFFER, PropertyType.ACCESSOR];
+	/** @hidden */
 	public readonly readDependencies = ['meshopt.decoder'];
+	/** @hidden */
 	public readonly writeDependencies = ['meshopt.encoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
@@ -102,10 +116,11 @@ export class MeshoptCompression extends Extension {
 	private _encoder: typeof MeshoptEncoder | null = null;
 	private _encoderOptions: Required<EncoderOptions> = DEFAULT_ENCODER_OPTIONS;
 	private _encoderFallbackBuffer: Buffer | null = null;
-	private _encoderBufferViews: {[key: string]: EncodedBufferView} = {};
-	private _encoderBufferViewData: {[key: string]: ArrayBuffer[]} = {};
-	private _encoderBufferViewAccessors: {[key: string]: GLTF.IAccessor[]} = {};
+	private _encoderBufferViews: { [key: string]: EncodedBufferView } = {};
+	private _encoderBufferViewData: { [key: string]: ArrayBuffer[] } = {};
+	private _encoderBufferViewAccessors: { [key: string]: GLTF.IAccessor[] } = {};
 
+	/** @hidden */
 	public install(key: string, dependency: unknown): this {
 		if (key === 'meshopt.decoder') {
 			this._decoder = dependency as typeof MeshoptDecoder;
@@ -144,7 +159,7 @@ export class MeshoptCompression extends Extension {
 	 * ```
 	 */
 	public setEncoderOptions(options: EncoderOptions): this {
-		this._encoderOptions = {...DEFAULT_ENCODER_OPTIONS, ...options};
+		this._encoderOptions = { ...DEFAULT_ENCODER_OPTIONS, ...options };
 		return this;
 	}
 
@@ -188,14 +203,10 @@ export class MeshoptCompression extends Extension {
 			const result = new Uint8Array(new ArrayBuffer(count * stride));
 
 			const bufferDef = jsonDoc.json.buffers![viewDef.buffer];
-			const resource = bufferDef.uri
-				? jsonDoc.resources[bufferDef.uri]
-				: jsonDoc.resources[GLB_BUFFER];
+			const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 			const source = new Uint8Array(resource, byteOffset, byteLength);
 
-			this._decoder!.decodeGltfBuffer(
-				result, count, stride, source, meshoptDef.mode, meshoptDef.filter
-			);
+			this._decoder!.decodeGltfBuffer(result, count, stride, source, meshoptDef.mode, meshoptDef.filter);
 
 			context.bufferViews[index] = result;
 		});
@@ -279,11 +290,12 @@ export class MeshoptCompression extends Extension {
 
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);
-			const filter = options.method === EncoderMethod.FILTER
-				? getMeshoptFilter(accessor, this.doc)
-				: {filter: MeshoptFilter.NONE};
+			const filter =
+				options.method === EncoderMethod.FILTER
+					? getMeshoptFilter(accessor, this.doc)
+					: { filter: MeshoptFilter.NONE };
 			const preparedAccessor = prepareAccessor(accessor, encoder, mode, filter);
-			const {array, byteStride} = preparedAccessor;
+			const { array, byteStride } = preparedAccessor;
 
 			const buffer = accessor.getBuffer();
 			if (!buffer) throw new Error(`${NAME}: Missing buffer for accessor.`);
@@ -305,22 +317,18 @@ export class MeshoptCompression extends Extension {
 					target: WriterContext.USAGE_TO_TARGET[usage],
 					byteOffset: 0,
 					byteLength: 0,
-					byteStride: usage === WriterContext.BufferViewUsage.ARRAY_BUFFER
-						? byteStride
-						: undefined,
+					byteStride: usage === WriterContext.BufferViewUsage.ARRAY_BUFFER ? byteStride : undefined,
 					extensions: {
 						[NAME]: {
 							buffer: bufferIndex,
 							byteOffset: 0,
 							byteLength: 0,
 							mode: mode,
-							filter: filter.filter !== MeshoptFilter.NONE
-								? filter.filter
-								: undefined,
+							filter: filter.filter !== MeshoptFilter.NONE ? filter.filter : undefined,
 							byteStride: byteStride,
-							count: 0
-						}
-					}
+							count: 0,
+						},
+					},
 				};
 			}
 
@@ -352,7 +360,7 @@ export class MeshoptCompression extends Extension {
 			const buffer = this.doc.getRoot().listBuffers()[bufferView.extensions[NAME].buffer];
 			const otherBufferViews = context.otherBufferViews.get(buffer) || [];
 
-			const {count, byteStride, mode} = bufferView.extensions[NAME];
+			const { count, byteStride, mode } = bufferView.extensions[NAME];
 			const srcArray = new Uint8Array(BufferUtils.concat(bufferViewData));
 			const dstArray = encoder.encodeGltfBuffer(srcArray, count, byteStride, mode);
 			const compressedData = BufferUtils.pad(dstArray.slice().buffer);
@@ -386,8 +394,7 @@ export class MeshoptCompression extends Extension {
 
 			Object.assign(finalBufferViewDef, bufferView);
 			finalBufferViewDef.byteOffset = fallbackBufferByteOffset;
-			const bufferViewExtensionDef = finalBufferViewDef.extensions![NAME] as
-				MeshoptBufferViewExtension;
+			const bufferViewExtensionDef = finalBufferViewDef.extensions![NAME] as MeshoptBufferViewExtension;
 			bufferViewExtensionDef.byteOffset = compressedByteOffset;
 
 			fallbackBufferByteOffset += BufferUtils.padNumber(bufferView.byteLength);
@@ -398,7 +405,7 @@ export class MeshoptCompression extends Extension {
 		const fallbackBufferIndex = context.bufferIndexMap.get(fallbackBuffer)!;
 		const fallbackBufferDef = context.jsonDoc.json.buffers![fallbackBufferIndex];
 		fallbackBufferDef.byteLength = fallbackBufferByteOffset;
-		fallbackBufferDef.extensions = {[NAME]: {fallback: true}};
+		fallbackBufferDef.extensions = { [NAME]: { fallback: true } };
 		fallbackBuffer.dispose();
 
 		return this;

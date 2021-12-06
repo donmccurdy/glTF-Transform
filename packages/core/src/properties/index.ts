@@ -5,6 +5,7 @@ export * from './animation-sampler';
 export * from './buffer';
 export * from './camera';
 export * from './extension-property';
+export * from './extensible-property';
 export * from './property';
 export * from './material';
 export * from './mesh';

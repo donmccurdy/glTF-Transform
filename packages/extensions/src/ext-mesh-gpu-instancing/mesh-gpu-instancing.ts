@@ -82,14 +82,18 @@ interface InstancedMeshDef {
  */
 export class MeshGPUInstancing extends Extension {
 	public readonly extensionName = NAME;
+	/** @hidden */
 	public readonly provideTypes = [PropertyType.NODE];
+	/** @hidden */
 	public readonly prewriteTypes = [PropertyType.ACCESSOR];
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new InstancedMesh property for use on a {@link Node}. */
 	public createInstancedMesh(): InstancedMesh {
 		return new InstancedMesh(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
@@ -101,10 +105,7 @@ export class MeshGPUInstancing extends Extension {
 			const instancedMesh = this.createInstancedMesh();
 
 			for (const semantic in instancedMeshDef.attributes) {
-				instancedMesh.setAttribute(
-					semantic,
-					context.accessors[instancedMeshDef.attributes[semantic]]
-				);
+				instancedMesh.setAttribute(semantic, context.accessors[instancedMeshDef.attributes[semantic]]);
 			}
 
 			context.nodes[nodeIndex].setExtension(NAME, instancedMesh);
@@ -113,6 +114,7 @@ export class MeshGPUInstancing extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public prewrite(context: WriterContext): this {
 		// Set usage for instance attribute accessors, so they are stored in separate buffer
 		// views grouped by parent reference.
@@ -125,10 +127,12 @@ export class MeshGPUInstancing extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listNodes()
 			.forEach((node) => {
 				const instancedMesh = node.getExtension<InstancedMesh>(NAME);
@@ -136,14 +140,12 @@ export class MeshGPUInstancing extends Extension {
 					const nodeIndex = context.nodeIndexMap.get(node)!;
 					const nodeDef = jsonDoc.json.nodes![nodeIndex];
 
-					const instancedMeshDef = {attributes: {}} as InstancedMeshDef;
+					const instancedMeshDef = { attributes: {} } as InstancedMeshDef;
 
-					instancedMesh.listSemantics()
-						.forEach((semantic) => {
-							const attribute = instancedMesh.getAttribute(semantic)!;
-							instancedMeshDef.attributes[semantic] =
-								context.accessorIndexMap.get(attribute)!;
-						});
+					instancedMesh.listSemantics().forEach((semantic) => {
+						const attribute = instancedMesh.getAttribute(semantic)!;
+						instancedMeshDef.attributes[semantic] = context.accessorIndexMap.get(attribute)!;
+					});
 
 					nodeDef.extensions = nodeDef.extensions || {};
 					nodeDef.extensions[NAME] = instancedMeshDef;

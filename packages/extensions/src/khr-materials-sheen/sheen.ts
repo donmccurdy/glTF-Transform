@@ -2,13 +2,14 @@ import {
 	ColorUtils,
 	ExtensionProperty,
 	IProperty,
+	Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
 	vec3,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_SHEEN, Nullable } from '../constants';
+import { KHR_MATERIALS_SHEEN } from '../constants';
 
 interface ISheen extends IProperty {
 	sheenColorFactor: vec3;

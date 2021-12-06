@@ -93,23 +93,27 @@ export class MaterialsVariants extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new MappingList property. */
 	public createMappingList(): MappingList {
 		return new MappingList(this.doc.getGraph(), this);
 	}
 
+	/** Creates a new Variant property. */
 	public createVariant(name = ''): Variant {
 		return new Variant(this.doc.getGraph(), this).setName(name);
 	}
 
+	/** Creates a new Mapping property. */
 	public createMapping(): Mapping {
 		return new Mapping(this.doc.getGraph(), this);
 	}
 
+	/** Lists all Variants on the current Document. */
 	public listVariants(): Variant[] {
-		return Array.from(this.properties)
-			.filter((prop) => prop instanceof Variant) as Variant[];
+		return Array.from(this.properties).filter((prop) => prop instanceof Variant) as Variant[];
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
@@ -118,8 +122,7 @@ export class MaterialsVariants extends Extension {
 		// Read all top-level variant names.
 		const variantsRootDef = jsonDoc.json.extensions[NAME] as VariantsRootDef;
 		const variantDefs = variantsRootDef.variants || [];
-		const variants = variantDefs
-			.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
+		const variants = variantDefs.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
 
 		// For each mesh primitive, read its material/variant mappings.
 		const meshDefs = jsonDoc.json.meshes || [];
@@ -156,12 +159,12 @@ export class MaterialsVariants extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		const variants = this.listVariants();
 		if (!variants.length) return this;
-
 
 		// Write all top-level variant names.
 		const variantDefs = [];
@@ -181,7 +184,6 @@ export class MaterialsVariants extends Extension {
 
 				const primDef = context.jsonDoc.json.meshes![meshIndex].primitives[primIndex];
 
-
 				const mappingDefs = mappingList.listMappings().map((mapping) => {
 					const mappingDef = context.createPropertyDef(mapping) as VariantMappingDef;
 
@@ -190,19 +192,18 @@ export class MaterialsVariants extends Extension {
 						mappingDef.material = context.materialIndexMap.get(material)!;
 					}
 
-					mappingDef.variants = mapping.listVariants()
-						.map((variant) => variantIndexMap.get(variant)!);
+					mappingDef.variants = mapping.listVariants().map((variant) => variantIndexMap.get(variant)!);
 
 					return mappingDef;
 				});
 
 				primDef.extensions = primDef.extensions || {};
-				primDef.extensions[NAME] = {mappings: mappingDefs};
+				primDef.extensions[NAME] = { mappings: mappingDefs };
 			});
 		}
 
 		jsonDoc.json.extensions = jsonDoc.json.extensions || {};
-		jsonDoc.json.extensions[NAME] = {variants: variantDefs};
+		jsonDoc.json.extensions[NAME] = { variants: variantDefs };
 
 		return this;
 	}

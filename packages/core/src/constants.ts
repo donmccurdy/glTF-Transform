@@ -26,7 +26,7 @@ export interface ArrayProxy {
 
 /**
  * TypeScript utility for nullable types.
- * @internal
+ * @hidden
  */
 export type Nullable<T> = { [P in keyof T]: T[P] | null };
 

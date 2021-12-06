@@ -53,10 +53,12 @@ export class MaterialsEmissiveStrength extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new EmissiveStrength property for use on a {@link Material}. */
 	public createEmissiveStrength(): EmissiveStrength {
 		return new EmissiveStrength(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -78,6 +80,7 @@ export class MaterialsEmissiveStrength extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 

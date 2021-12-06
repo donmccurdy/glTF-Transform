@@ -1,5 +1,13 @@
-import { ExtensionProperty, IProperty, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
-import { KHR_MATERIALS_CLEARCOAT, Nullable } from '../constants';
+import {
+	ExtensionProperty,
+	IProperty,
+	Nullable,
+	PropertyType,
+	Texture,
+	TextureChannel,
+	TextureInfo,
+} from '@gltf-transform/core';
+import { KHR_MATERIALS_CLEARCOAT } from '../constants';
 
 interface IClearcoat extends IProperty {
 	clearcoatFactor: number;

@@ -1,5 +1,5 @@
-import { ExtensionProperty, IProperty, PropertyType } from '@gltf-transform/core';
-import { KHR_MATERIALS_IOR, Nullable } from '../constants';
+import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
+import { KHR_MATERIALS_IOR } from '../constants';
 
 interface IIOR extends IProperty {
 	ior: number;

@@ -33,19 +33,25 @@ export abstract class Extension implements ExtensionPropertyParent {
 	/**
 	 * Before reading, extension should be called for these {@link Property} types. *Most
 	 * extensions don't need to implement this.*
+	 * @hidden
 	 */
 	public readonly prereadTypes: PropertyType[] = [];
 	/**
 	 * Before writing, extension should be called for these {@link Property} types. *Most
 	 * extensions don't need to implement this.*
+	 * @hidden
 	 */
 	public readonly prewriteTypes: PropertyType[] = [];
 
-	/** Dependency IDs needed by this extension, to be installed before I/O. */
+	/** @hidden Dependency IDs needed to read this extension, to be installed before I/O. */
 	public readonly readDependencies: string[] = [];
+	/** @hidden Dependency IDs needed to write this extension, to be installed before I/O. */
 	public readonly writeDependencies: string[] = [];
 
+	/** @hidden */
 	protected required = false;
+
+	/** @hidden */
 	protected properties: Set<ExtensionProperty> = new Set();
 
 	/** @hidden */
@@ -61,7 +67,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 		}
 	}
 
-	/** Performs first-time setup for the extension. Must be idempotent. */
+	/** @hidden Performs first-time setup for the extension. Must be idempotent. */
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	public static register(): void {}
 
@@ -104,7 +110,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * I/O implementation.
 	 */
 
-	/** Installs dependencies required by the extension. */
+	/** @hidden Installs dependencies required by the extension. */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public install(key: string, dependency: unknown): this {
 		return this;
@@ -117,6 +123,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * be given a ReaderContext instance, and is expected to update either the context or its
 	 * {@link JSONDocument} with resources known to the Extension. *Most extensions don't need to
 	 * implement this.*
+	 * @hidden
 	 */
 	public preread(_readerContext: ReaderContext, _propertyType: PropertyType): this {
 		return this;
@@ -129,6 +136,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * be given a WriterContext instance, and is expected to update either the context or its
 	 * {@link JSONDocument} with resources known to the Extension. *Most extensions don't need to
 	 * implement this.*
+	 * @hidden
 	 */
 	public prewrite(_writerContext: WriterContext, _propertyType: PropertyType): this {
 		return this;
@@ -138,6 +146,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * Used by the {@link PlatformIO} utilities when reading a glTF asset. This method must be
 	 * implemented by each extension in order to support reading files. The extension will be
 	 * given a ReaderContext instance, and should update the current {@link Document} accordingly.
+	 * @hidden
 	 */
 	public abstract read(readerContext: ReaderContext): this;
 
@@ -147,6 +156,7 @@ export abstract class Extension implements ExtensionPropertyParent {
 	 * given a WriterContext instance, and should modify the {@link JSONDocument} output
 	 * accordingly. Adding the extension name to the `extensionsUsed` and `extensionsRequired` list
 	 * is done automatically, and should not be included here.
+	 * @hidden
 	 */
 	public abstract write(writerContext: WriterContext): this;
 }
