@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/cli",
-  "version": "1.2.2",
+  "version": "2.0.0-alpha.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "homepage": "https://gltf-transform.donmccurdy.com/cli.html",
   "description": "CLI interface to glTF Transform",
@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@caporal/core": "^2.0.2",
-    "@gltf-transform/core": "^1.2.2",
-    "@gltf-transform/extensions": "^1.2.2",
-    "@gltf-transform/functions": "^1.2.2",
+    "@gltf-transform/core": "^2.0.0-alpha.0",
+    "@gltf-transform/extensions": "^2.0.0-alpha.0",
+    "@gltf-transform/functions": "^2.0.0-alpha.0",
     "cli-table3": "^0.6.0",
     "command-exists": "^1.2.9",
     "csv-stringify": "^5.6.5",
