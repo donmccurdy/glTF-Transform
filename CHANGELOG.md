@@ -7,6 +7,7 @@
 **Features:**
 
 - Improved and simplified extension API. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
+- Add `a.equals(b)` method for all property types. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 
 **Breaking changes:**
 
