@@ -21,7 +21,7 @@ const SPEC_GLOSS = ndarray(new Uint8Array([255, 0, 0, 0, 0, 255, 0, 64, 0, 0, 25
 
 const SPEC = ndarray(new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255]), [1, 4, 4]);
 
-// orm.R = 1 - specGloss.A * glossFactor
+// orm.G = 1 - specGloss.A * glossFactor
 const ROUGH = ndarray(new Uint8Array([0, 255, 0, 255, 0, 223, 0, 255, 0, 191, 0, 255, 0, 127, 0, 255]), [1, 4, 4]);
 
 test('@gltf-transform/functions::metalRough | textures', async (t) => {
