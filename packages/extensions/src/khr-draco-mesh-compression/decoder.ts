@@ -13,7 +13,7 @@ let DATA_TYPE: { [key: number]: DataType };
 export function decodeGeometry(decoder: Decoder, data: Uint8Array): Mesh {
 	const buffer = new decoderModule.DecoderBuffer();
 	try {
-		buffer.Init(data, data.length);
+		buffer.Init(data as unknown as Int8Array, data.length);
 
 		const geometryType = decoder.GetEncodedGeometryType(buffer);
 		if (geometryType !== decoderModule.TRIANGULAR_MESH) {
