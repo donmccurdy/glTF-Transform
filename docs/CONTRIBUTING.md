@@ -88,7 +88,7 @@ lerna publish [ patch | minor | major ] --force-publish "*" --otp <OTP>
 To create an alpha release:
 
 ```shell
-lerna publish prerelease --dist-tag alpha --force-publish "*" --otp <OTP>
+lerna publish prerelease --dist-tag next --force-publish "*" --otp <OTP>
 ```
 
 If a release contains a new package, `-- --access public` must be appended. Lerna has historically
