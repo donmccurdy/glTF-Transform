@@ -1,5 +1,19 @@
-import { COPY_IDENTITY, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink } from '@gltf-transform/core';
+import {
+	ExtensionProperty,
+	IProperty,
+	Nullable,
+	PropertyType,
+	Texture,
+	TextureChannel,
+	TextureInfo,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants';
+
+interface ITransmission extends IProperty {
+	transmissionFactor: number;
+	transmissionTexture: Texture;
+	transmissionTextureInfo: TextureInfo;
+}
 
 const { R } = TextureChannel;
 
@@ -8,37 +22,18 @@ const { R } = TextureChannel;
  *
  * Defines optical transmission on a PBR {@link Material}. See {@link MaterialsTransmission}.
  */
-export class Transmission extends ExtensionProperty {
+export class Transmission extends ExtensionProperty<ITransmission> {
 	public readonly propertyType = 'Transmission';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_TRANSMISSION;
 	public static EXTENSION_NAME = KHR_MATERIALS_TRANSMISSION;
 
-	private _transmissionFactor = 0.0;
-
-	@GraphChild private transmissionTexture: TextureLink | null = null;
-	@GraphChild private transmissionTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('transmissionTextureInfo', this, new TextureInfo(this.graph));
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._transmissionFactor = other._transmissionFactor;
-
-		this.setTransmissionTexture(
-			other.transmissionTexture
-				? resolve(other.transmissionTexture.getChild())
-				: null
-		);
-		this.transmissionTextureInfo.getChild()
-			.copy(resolve(other.transmissionTextureInfo.getChild()), resolve);
-
-		return this;
-	}
-
-	public dispose(): void {
-		this.transmissionTextureInfo.getChild().dispose();
-		super.dispose();
+	protected getDefaults(): Nullable<ITransmission> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			transmissionFactor: 0.0,
+			transmissionTexture: null,
+			transmissionTextureInfo: new TextureInfo(this.graph, 'transmissionTextureInfo'),
+		});
 	}
 
 	/**********************************************************************************************
@@ -46,12 +41,13 @@ export class Transmission extends ExtensionProperty {
 	 */
 
 	/** Transmission; linear multiplier. See {@link getTransmissionTexture}. */
-	public getTransmissionFactor(): number { return this._transmissionFactor; }
+	public getTransmissionFactor(): number {
+		return this.get('transmissionFactor');
+	}
 
 	/** Transmission; linear multiplier. See {@link getTransmissionTexture}. */
-	public setTransmissionFactor(transmissionFactor: number): this {
-		this._transmissionFactor = transmissionFactor;
-		return this;
+	public setTransmissionFactor(factor: number): this {
+		return this.set('transmissionFactor', factor);
 	}
 
 	/**
@@ -61,7 +57,7 @@ export class Transmission extends ExtensionProperty {
 	 * addition of the `KHR_materials_volume` extension.
 	 */
 	public getTransmissionTexture(): Texture | null {
-		return this.transmissionTexture ? this.transmissionTexture.getChild() : null;
+		return this.getRef('transmissionTexture');
 	}
 
 	/**
@@ -69,12 +65,11 @@ export class Transmission extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getTransmissionTextureInfo(): TextureInfo | null {
-		return this.transmissionTexture ? this.transmissionTextureInfo.getChild() : null;
+		return this.getRef('transmissionTexture') ? this.getRef('transmissionTextureInfo') : null;
 	}
 
 	/** Sets transmission texture. See {@link getTransmissionTexture}. */
 	public setTransmissionTexture(texture: Texture | null): this {
-		this.transmissionTexture = this.graph.linkTexture('transmissionTexture', R, this, texture);
-		return this;
+		return this.setRef('transmissionTexture', texture, { channels: R });
 	}
 }

@@ -1,7 +1,6 @@
-import { PropertyType, VERSION } from '../constants';
+import { Nullable, PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
-import { GraphChild, GraphChildList, Link } from '../graph';
-import { GLTF } from '../types/gltf';
+import { Graph } from 'property-graph';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';
@@ -9,11 +8,34 @@ import { Camera } from './camera';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
-import { COPY_IDENTITY, Property } from './property';
-import { PropertyGraph } from './property-graph';
+import { COPY_IDENTITY, IProperty, Property } from './property';
 import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
+
+interface IAsset {
+	version: string;
+	minVersion?: string;
+	generator?: string;
+	copyright?: string;
+	[key: string]: unknown;
+}
+
+interface IRoot extends IProperty {
+	asset: IAsset;
+	defaultScene: Scene;
+
+	accessors: Accessor[];
+	animations: Animation[];
+	buffers: Buffer[];
+	cameras: Camera[];
+	materials: Material[];
+	meshes: Mesh[];
+	nodes: Node[];
+	scenes: Scene[];
+	skins: Skin[];
+	textures: Texture[];
+}
 
 /**
  * # Root
@@ -47,31 +69,33 @@ import { Texture } from './texture';
  *
  * @category Properties
  */
-export class Root extends Property {
+export class Root extends Property<IRoot> {
 	public readonly propertyType = PropertyType.ROOT;
-
-	private readonly _asset: GLTF.IAsset = {
-		generator: `glTF-Transform ${VERSION}`,
-		version: '2.0',
-	};
 
 	private readonly _extensions: Set<Extension> = new Set();
 
-	@GraphChild private defaultScene: Link<Root, Scene> | null = null;
-
-	@GraphChildList private accessors: Link<Root, Accessor>[] = [];
-	@GraphChildList private animations: Link<Root, Animation>[] = [];
-	@GraphChildList private buffers: Link<Root, Buffer>[] = [];
-	@GraphChildList private cameras: Link<Root, Camera>[] = [];
-	@GraphChildList private materials: Link<Root, Material>[] = [];
-	@GraphChildList private meshes: Link<Root, Mesh>[] = [];
-	@GraphChildList private nodes: Link<Root, Node>[] = [];
-	@GraphChildList private scenes: Link<Root, Scene>[] = [];
-	@GraphChildList private skins: Link<Root, Skin>[] = [];
-	@GraphChildList private textures: Link<Root, Texture>[] = [];
+	getDefaults(): Nullable<IRoot> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			asset: {
+				generator: `glTF-Transform ${VERSION}`,
+				version: '2.0',
+			},
+			defaultScene: null,
+			accessors: [],
+			animations: [],
+			buffers: [],
+			cameras: [],
+			materials: [],
+			meshes: [],
+			nodes: [],
+			scenes: [],
+			skins: [],
+			textures: [],
+		});
+	}
 
 	/** @internal */
-	constructor(graph: PropertyGraph) {
+	constructor(graph: Graph<Property>) {
 		super(graph);
 		graph.on('clone', (target) => this._addChildOfRoot(target));
 	}
@@ -81,54 +105,54 @@ export class Root extends Property {
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
-		// the Document during cloning. The Root, and only the Root, should avoid calling
-		// .clearGraphChildList() while copying to avoid overwriting existing links during a merge.
+		// the Document during cloning. The Root, and only the Root, should keep existing links
+		// while copying to avoid overwriting existing links during a merge.
 		if (resolve === COPY_IDENTITY) throw new Error('Root cannot be copied.');
 
-		Object.assign(this._asset, other._asset);
+		// IMPORTANT: Root cannot call super.copy(), which removes existing links.
 
-		other.accessors.forEach((link) => this._addAccessor(resolve(link.getChild())));
-		other.animations.forEach((link) => this._addAnimation(resolve(link.getChild())));
-		other.buffers.forEach((link) => this._addBuffer(resolve(link.getChild())));
-		other.cameras.forEach((link) => this._addCamera(resolve(link.getChild())));
-		other.materials.forEach((link) => this._addMaterial(resolve(link.getChild())));
-		other.meshes.forEach((link) => this._addMesh(resolve(link.getChild())));
-		other.nodes.forEach((link) => this._addNode(resolve(link.getChild())));
-		other.scenes.forEach((link) => this._addScene(resolve(link.getChild())));
-		other.skins.forEach((link) => this._addSkin(resolve(link.getChild())));
-		other.textures.forEach((link) => this._addTexture(resolve(link.getChild())));
+		this.set('asset', { ...other.get('asset') });
+		this.setName(other.getName());
+		this.setExtras({ ...other.getExtras() });
+		this.setDefaultScene(other.getDefaultScene() ? resolve(other.getDefaultScene()!) : null);
 
-		this.setDefaultScene(other.defaultScene ? resolve(other.defaultScene.getChild()) : null);
+		other.listScenes().forEach((prop) => this.addRef('scenes', resolve(prop)));
+		other.listNodes().forEach((prop) => this.addRef('nodes', resolve(prop)));
+		other.listCameras().forEach((prop) => this.addRef('cameras', resolve(prop)));
+		other.listSkins().forEach((prop) => this.addRef('skins', resolve(prop)));
+		other.listMeshes().forEach((prop) => this.addRef('meshes', resolve(prop)));
+		other.listMaterials().forEach((prop) => this.addRef('materials', resolve(prop)));
+		other.listTextures().forEach((prop) => this.addRef('textures', resolve(prop)));
+		other.listAnimations().forEach((prop) => this.addRef('animations', resolve(prop)));
+		other.listAccessors().forEach((prop) => this.addRef('accessors', resolve(prop)));
+		other.listBuffers().forEach((prop) => this.addRef('buffers', resolve(prop)));
 
 		return this;
 	}
 
 	/** @internal */
 	public _addChildOfRoot(child: unknown): this {
-		// TODO(cleanup): Extra private helpers could probably be removed, here.
 		if (child instanceof Scene) {
-			this._addScene(child as Scene);
+			this.addRef('scenes', child);
 		} else if (child instanceof Node) {
-			this._addNode(child as Node);
+			this.addRef('nodes', child);
 		} else if (child instanceof Camera) {
-			this._addCamera(child as Camera);
+			this.addRef('cameras', child);
 		} else if (child instanceof Skin) {
-			this._addSkin(child as Skin);
+			this.addRef('skins', child);
 		} else if (child instanceof Mesh) {
-			this._addMesh(child as Mesh);
+			this.addRef('meshes', child);
 		} else if (child instanceof Material) {
-			this._addMaterial(child as Material);
+			this.addRef('materials', child);
 		} else if (child instanceof Texture) {
-			this._addTexture(child as Texture);
+			this.addRef('textures', child);
 		} else if (child instanceof Animation) {
-			this._addAnimation(child as Animation);
+			this.addRef('animations', child);
 		} else if (child instanceof Accessor) {
-			this._addAccessor(child as Accessor);
+			this.addRef('accessors', child);
 		} else if (child instanceof Buffer) {
-			this._addBuffer(child as Buffer);
+			this.addRef('buffers', child);
 		}
 		// No error for untracked property types.
 		return this;
@@ -140,8 +164,8 @@ export class Root extends Property {
 	 *
 	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
 	 */
-	public getAsset(): GLTF.IAsset {
-		return this._asset;
+	public getAsset(): IAsset {
+		return this.get('asset');
 	}
 
 	/**********************************************************************************************
@@ -171,183 +195,66 @@ export class Root extends Property {
 	}
 
 	/**********************************************************************************************
-	 * Scenes.
+	 * Properties.
 	 */
-
-	/**
-	 * Adds a new {@link Scene} to the root list.
-	 * @internal
-	 */
-	public _addScene(scene: Scene): this {
-		return this.addGraphChild(this.scenes, this.graph.link('scene', this, scene));
-	}
 
 	/** Lists all {@link Scene} properties associated with this root. */
 	public listScenes(): Scene[] {
-		return this.scenes.map((p) => p.getChild());
+		return this.listRefs('scenes');
 	}
 
 	/** Default {@link Scene} associated with this root. */
 	public setDefaultScene(defaultScene: Scene | null): this {
-		this.defaultScene = this.graph.link('scene', this, defaultScene);
-		return this;
+		return this.setRef('defaultScene', defaultScene);
 	}
 
 	/** Default {@link Scene} associated with this root. */
 	public getDefaultScene(): Scene | null {
-		return this.defaultScene ? this.defaultScene.getChild() : null;
-	}
-
-	/**********************************************************************************************
-	 * Nodes.
-	 */
-
-	/**
-	 * Adds a new {@link Node} to the root list.
-	 * @internal
-	 */
-	public _addNode(node: Node): this {
-		return this.addGraphChild(this.nodes, this.graph.link('node', this, node));
+		return this.getRef('defaultScene');
 	}
 
 	/** Lists all {@link Node} properties associated with this root. */
 	public listNodes(): Node[] {
-		return this.nodes.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Cameras.
-	 */
-
-	/**
-	 * Adds a new {@link Camera} to the root list.
-	 * @internal
-	 */
-	public _addCamera(camera: Camera): this {
-		return this.addGraphChild(this.cameras, this.graph.link('camera', this, camera));
+		return this.listRefs('nodes');
 	}
 
 	/** Lists all {@link Camera} properties associated with this root. */
 	public listCameras(): Camera[] {
-		return this.cameras.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Skins.
-	 */
-
-	/**
-	 * Adds a new {@link Skin} to the root list.
-	 * @internal
-	 */
-	public _addSkin(skin: Skin): this {
-		return this.addGraphChild(this.skins, this.graph.link('skin', this, skin));
+		return this.listRefs('cameras');
 	}
 
 	/** Lists all {@link Skin} properties associated with this root. */
 	public listSkins(): Skin[] {
-		return this.skins.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Meshes.
-	 */
-
-	/**
-	 * Adds a new {@link Mesh} to the root list.
-	 * @internal
-	 */
-	public _addMesh(mesh: Mesh): this {
-		return this.addGraphChild(this.meshes, this.graph.link('mesh', this, mesh));
+		return this.listRefs('skins');
 	}
 
 	/** Lists all {@link Mesh} properties associated with this root. */
 	public listMeshes(): Mesh[] {
-		return this.meshes.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Materials.
-	 */
-
-	/**
-	 * Adds a new {@link Material} to the root list.
-	 * @internal
-	 */
-	public _addMaterial(material: Material): this {
-		return this.addGraphChild(this.materials, this.graph.link('material', this, material));
+		return this.listRefs('meshes');
 	}
 
 	/** Lists all {@link Material} properties associated with this root. */
 	public listMaterials(): Material[] {
-		return this.materials.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Textures.
-	 */
-
-	/**
-	 * Adds a new {@link Texture} to the root list.
-	 * @internal
-	 */
-	public _addTexture(texture: Texture): this {
-		return this.addGraphChild(this.textures, this.graph.link('texture', this, texture));
+		return this.listRefs('materials');
 	}
 
 	/** Lists all {@link Texture} properties associated with this root. */
 	public listTextures(): Texture[] {
-		return this.textures.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Animations.
-	 */
-
-	/**
-	 * Adds a new {@link Animation} to the root list.
-	 * @internal
-	 */
-	public _addAnimation(animation: Animation): this {
-		return this.addGraphChild(this.animations, this.graph.link('animation', this, animation));
+		return this.listRefs('textures');
 	}
 
 	/** Lists all {@link Animation} properties associated with this root. */
 	public listAnimations(): Animation[] {
-		return this.animations.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Accessors.
-	 */
-
-	/**
-	 * Adds a new {@link Accessor} to the root list.
-	 * @internal
-	 */
-	public _addAccessor(accessor: Accessor): this {
-		return this.addGraphChild(this.accessors, this.graph.link('accessor', this, accessor));
+		return this.listRefs('animations');
 	}
 
 	/** Lists all {@link Accessor} properties associated with this root. */
 	public listAccessors(): Accessor[] {
-		return this.accessors.map((p) => p.getChild());
-	}
-
-	/**********************************************************************************************
-	 * Buffers.
-	 */
-
-	/**
-	 * Adds a new {@link Buffer} to the root list.
-	 * @internal
-	 */
-	public _addBuffer(buffer: Buffer): this {
-		return this.addGraphChild(this.buffers, this.graph.link('buffer', this, buffer));
+		return this.listRefs('accessors');
 	}
 
 	/** Lists all {@link Buffer} properties associated with this root. */
 	public listBuffers(): Buffer[] {
-		return this.buffers.map((p) => p.getChild());
+		return this.listRefs('buffers');
 	}
 }

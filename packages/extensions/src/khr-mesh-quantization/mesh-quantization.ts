@@ -48,10 +48,12 @@ export class MeshQuantization extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** @hidden */
 	read(_: ReaderContext): this {
 		return this;
 	}
 
+	/** @hidden */
 	write(_: WriterContext): this {
 		return this;
 	}

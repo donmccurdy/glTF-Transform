@@ -1,6 +1,6 @@
+import { Graph } from 'property-graph';
 import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY, Property } from './property';
-import { PropertyGraph } from './property-graph';
+import { COPY_IDENTITY, Property, IProperty } from './property';
 
 /** @hidden */
 export interface ExtensionPropertyParent {
@@ -24,7 +24,7 @@ export interface ExtensionPropertyParent {
  * Reference:
  * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
  */
-export abstract class ExtensionProperty extends Property {
+export abstract class ExtensionProperty<T extends IProperty = IProperty> extends Property<T> {
 	public static EXTENSION_NAME: string;
 	public abstract readonly extensionName: string;
 
@@ -32,7 +32,7 @@ export abstract class ExtensionProperty extends Property {
 	public abstract readonly parentTypes: string[];
 
 	/** @hidden */
-	constructor(graph: PropertyGraph, private readonly _extension: ExtensionPropertyParent) {
+	constructor(graph: Graph<Property>, private readonly _extension: ExtensionPropertyParent) {
 		super(graph);
 		this._extension.addExtensionProperty(this);
 	}
@@ -40,7 +40,7 @@ export abstract class ExtensionProperty extends Property {
 	public clone(): this {
 		// NOTICE: Keep in sync with `./property.ts`.
 
-		const PropertyClass = this.constructor as new (g: PropertyGraph, e: ExtensionPropertyParent) => this;
+		const PropertyClass = this.constructor as new (g: Graph<Property>, e: ExtensionPropertyParent) => this;
 		const child = new PropertyClass(this.graph, this._extension).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.

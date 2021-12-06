@@ -1,6 +1,9 @@
-import { PropertyType } from '../constants';
-import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY } from './property';
+import { Nullable, PropertyType } from '../constants';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+
+interface IBuffer extends IExtensibleProperty {
+	uri: string;
+}
 
 /**
  * # Buffer
@@ -57,18 +60,11 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Buffer extends ExtensibleProperty {
+export class Buffer extends ExtensibleProperty<IBuffer> {
 	public readonly propertyType = PropertyType.BUFFER;
 
-	/** @internal URI (or filename) of the buffer. */
-	private _uri = '';
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._uri = other._uri;
-
-		return this;
+	protected getDefaults(): Nullable<IBuffer> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { uri: '' });
 	}
 
 	/**
@@ -80,7 +76,7 @@ export class Buffer extends ExtensibleProperty {
 	 * Buffers commonly use the extension `.bin`, though this is not required.
 	 */
 	public getURI(): string {
-		return this._uri;
+		return this.get('uri');
 	}
 
 	/**
@@ -92,7 +88,6 @@ export class Buffer extends ExtensibleProperty {
 	 * Buffers commonly use the extension `.bin`, though this is not required.
 	 */
 	public setURI(uri: string): this {
-		this._uri = uri;
-		return this;
+		return this.set('uri', uri);
 	}
 }

@@ -1,17 +1,23 @@
 import {
-	COPY_IDENTITY,
 	ColorUtils,
 	ExtensionProperty,
-	GraphChild,
-	Link,
+	IProperty,
+	Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	TextureLink,
 	vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants';
+
+interface IVolume extends IProperty {
+	thicknessFactor: number;
+	thicknessTexture: Texture;
+	thicknessTextureInfo: TextureInfo;
+	attenuationDistance: number;
+	attenuationColor: vec3;
+}
 
 const { G } = TextureChannel;
 
@@ -20,39 +26,20 @@ const { G } = TextureChannel;
  *
  * Defines volume on a PBR {@link Material}. See {@link MaterialsVolume}.
  */
-export class Volume extends ExtensionProperty {
+export class Volume extends ExtensionProperty<IVolume> {
 	public readonly propertyType = 'Volume';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_VOLUME;
 	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;
 
-	private _thicknessFactor = 0.0;
-	private _attenuationDistance = Infinity;
-	private _attenuationColor = [1, 1, 1] as vec3;
-
-	@GraphChild private thicknessTexture: TextureLink | null = null;
-	@GraphChild private thicknessTextureInfo: Link<this, TextureInfo> = this.graph.link(
-		'thicknessTextureInfo',
-		this,
-		new TextureInfo(this.graph)
-	);
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._thicknessFactor = other._thicknessFactor;
-		this._attenuationDistance = other._attenuationDistance;
-		this._attenuationColor = [...other._attenuationColor] as vec3;
-
-		this.setThicknessTexture(other.thicknessTexture ? resolve(other.thicknessTexture.getChild()) : null);
-		this.thicknessTextureInfo.getChild().copy(resolve(other.thicknessTextureInfo.getChild()), resolve);
-
-		return this;
-	}
-
-	public dispose(): void {
-		this.thicknessTextureInfo.getChild().dispose();
-		super.dispose();
+	protected getDefaults(): Nullable<IVolume> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			thicknessFactor: 0.0,
+			thicknessTexture: null,
+			thicknessTextureInfo: new TextureInfo(this.graph, 'thicknessTexture'),
+			attenuationDistance: Infinity,
+			attenuationColor: [1.0, 1.0, 1.0] as vec3,
+		});
 	}
 
 	/**********************************************************************************************
@@ -65,7 +52,7 @@ export class Volume extends ExtensionProperty {
 	 * boundary. The doubleSided property has no effect on volume boundaries.
 	 */
 	public getThicknessFactor(): number {
-		return this._thicknessFactor;
+		return this.get('thicknessFactor');
 	}
 
 	/**
@@ -73,9 +60,8 @@ export class Volume extends ExtensionProperty {
 	 * node. If the value is 0 the material is thin-walled. Otherwise the material is a volume
 	 * boundary. The doubleSided property has no effect on volume boundaries.
 	 */
-	public setThicknessFactor(thicknessFactor: number): this {
-		this._thicknessFactor = thicknessFactor;
-		return this;
+	public setThicknessFactor(factor: number): this {
+		return this.set('thicknessFactor', factor);
 	}
 
 	/**
@@ -83,7 +69,7 @@ export class Volume extends ExtensionProperty {
 	 * thicknessFactor.
 	 */
 	public getThicknessTexture(): Texture | null {
-		return this.thicknessTexture ? this.thicknessTexture.getChild() : null;
+		return this.getRef('thicknessTexture');
 	}
 
 	/**
@@ -91,7 +77,7 @@ export class Volume extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getThicknessTextureInfo(): TextureInfo | null {
-		return this.thicknessTexture ? this.thicknessTextureInfo.getChild() : null;
+		return this.getRef('thicknessTexture') ? this.getRef('thicknessTextureInfo') : null;
 	}
 
 	/**
@@ -99,8 +85,7 @@ export class Volume extends ExtensionProperty {
 	 * thicknessFactor.
 	 */
 	public setThicknessTexture(texture: Texture | null): this {
-		this.thicknessTexture = this.graph.linkTexture('thicknessTexture', G, this, texture);
-		return this;
+		return this.setRef('thicknessTexture', texture, { channels: G });
 	}
 
 	/**********************************************************************************************
@@ -112,16 +97,15 @@ export class Volume extends ExtensionProperty {
 	 * medium before interacting with a particle.
 	 */
 	public getAttenuationDistance(): number {
-		return this._attenuationDistance;
+		return this.get('attenuationDistance');
 	}
 
 	/**
 	 * Density of the medium given as the average distance in meters that light travels in the
 	 * medium before interacting with a particle.
 	 */
-	public setAttenuationDistance(attenuationDistance: number): this {
-		this._attenuationDistance = attenuationDistance;
-		return this;
+	public setAttenuationDistance(distance: number): this {
+		return this.set('attenuationDistance', distance);
 	}
 
 	/**
@@ -129,16 +113,15 @@ export class Volume extends ExtensionProperty {
 	 * distance.
 	 */
 	public getAttenuationColor(): vec3 {
-		return this._attenuationColor;
+		return this.get('attenuationColor');
 	}
 
 	/**
 	 * Color (linear) that white light turns into due to absorption when reaching the attenuation
 	 * distance.
 	 */
-	public setAttenuationColor(attenuationColor: vec3): this {
-		this._attenuationColor = attenuationColor;
-		return this;
+	public setAttenuationColor(color: vec3): this {
+		return this.set('attenuationColor', color);
 	}
 
 	/**
@@ -146,7 +129,7 @@ export class Volume extends ExtensionProperty {
 	 * distance.
 	 */
 	public getAttenuationColorHex(): number {
-		return ColorUtils.factorToHex(this._attenuationColor);
+		return ColorUtils.factorToHex(this.getAttenuationColor());
 	}
 
 	/**
@@ -154,7 +137,7 @@ export class Volume extends ExtensionProperty {
 	 * distance.
 	 */
 	public setAttenuationColorHex(hex: number): this {
-		ColorUtils.hexToFactor(hex, this._attenuationColor);
-		return this;
+		const factor = this.getAttenuationColor().slice() as vec3;
+		return this.set('attenuationColor', ColorUtils.hexToFactor(hex, factor));
 	}
 }

@@ -51,10 +51,12 @@ export class TextureTransform extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Transform property for use on a {@link TextureInfo}. */
 	public createTransform(): Transform {
 		return new Transform(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		for (const [textureInfo, textureInfoDef] of Array.from(context.textureInfos.entries())) {
 			if (!textureInfoDef.extensions || !textureInfoDef.extensions[NAME]) continue;
@@ -72,6 +74,7 @@ export class TextureTransform extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const textureInfoEntries = Array.from(context.textureInfoDefMap.entries());
 		for (const [textureInfo, textureInfoDef] of textureInfoEntries) {

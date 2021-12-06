@@ -1,5 +1,26 @@
-import { COPY_IDENTITY, ColorUtils, ExtensionProperty, GraphChild, Link, PropertyType, Texture, TextureChannel, TextureInfo, TextureLink, vec3, vec4 } from '@gltf-transform/core';
+import {
+	ColorUtils,
+	ExtensionProperty,
+	IProperty,
+	Nullable,
+	PropertyType,
+	Texture,
+	TextureChannel,
+	TextureInfo,
+	vec3,
+	vec4,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
+
+interface IPBRSpecularGlossiness extends IProperty {
+	diffuseFactor: vec4;
+	diffuseTexture: Texture;
+	diffuseTextureInfo: TextureInfo;
+	specularFactor: vec3;
+	glossinessFactor: number;
+	specularGlossinessTexture: Texture;
+	specularGlossinessTextureInfo: TextureInfo;
+}
 
 const { R, G, B, A } = TextureChannel;
 
@@ -8,54 +29,22 @@ const { R, G, B, A } = TextureChannel;
  *
  * Converts a {@link Material} to a spec/gloss workflow. See {@link MaterialsPBRSpecularGlossiness}.
  */
-export class PBRSpecularGlossiness extends ExtensionProperty {
+export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossiness> {
 	public readonly propertyType = 'PBRSpecularGlossiness';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 	public static EXTENSION_NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 
-	private _diffuseFactor: vec4 = [1.0, 1.0, 1.0, 1.0];
-	private _specularFactor: vec3 = [1.0, 1.0, 1.0];
-	private _glossinessFactor = 1.0;
-
-	@GraphChild private diffuseTexture: TextureLink | null = null;
-	@GraphChild private diffuseTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('diffuseTextureInfo', this, new TextureInfo(this.graph));
-
-	@GraphChild private specularGlossinessTexture: TextureLink | null = null;
-	@GraphChild private specularGlossinessTextureInfo: Link<this, TextureInfo> =
-		this.graph.link('specularGlossinessTextureInfo', this, new TextureInfo(this.graph));
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._diffuseFactor = other._diffuseFactor;
-		this._specularFactor = other._specularFactor;
-		this._glossinessFactor = other._glossinessFactor;
-
-		this.setDiffuseTexture(
-			other.diffuseTexture
-				? resolve(other.diffuseTexture.getChild())
-				: null
-		);
-		this.diffuseTextureInfo.getChild()
-			.copy(resolve(other.diffuseTextureInfo.getChild()), resolve);
-
-		this.setSpecularGlossinessTexture(
-			other.specularGlossinessTexture
-				? resolve(other.specularGlossinessTexture.getChild())
-				: null
-		);
-		this.specularGlossinessTextureInfo.getChild()
-			.copy(resolve(other.specularGlossinessTextureInfo.getChild()), resolve);
-
-		return this;
-	}
-
-	public dispose(): void {
-		this.diffuseTextureInfo.getChild().dispose();
-		this.specularGlossinessTextureInfo.getChild().dispose();
-		super.dispose();
+	protected getDefaults(): Nullable<IPBRSpecularGlossiness> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			diffuseFactor: [1.0, 1.0, 1.0, 1.0] as vec4,
+			diffuseTexture: null,
+			diffuseTextureInfo: new TextureInfo(this.graph, 'diffuseTextureInfo'),
+			specularFactor: [1.0, 1.0, 1.0] as vec3,
+			glossinessFactor: 1.0,
+			specularGlossinessTexture: null,
+			specularGlossinessTextureInfo: new TextureInfo(this.graph, 'specularGlossinessTextureInfo'),
+		});
 	}
 
 	/**********************************************************************************************
@@ -63,21 +52,24 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 */
 
 	/** Diffuse; linear multiplier. See {@link getDiffuseTexture}. */
-	public getDiffuseFactor(): vec4 { return this._diffuseFactor; }
+	public getDiffuseFactor(): vec4 {
+		return this.get('diffuseFactor');
+	}
 
 	/** Diffuse; linear multiplier. See {@link getDiffuseTexture}. */
-	public setDiffuseFactor(diffuseFactor: vec4): this {
-		this._diffuseFactor = diffuseFactor;
-		return this;
+	public setDiffuseFactor(factor: vec4): this {
+		return this.set('diffuseFactor', factor);
 	}
 
 	/** Diffuse; hex color in sRGB colorspace. */
-	public getDiffuseHex(): number { return ColorUtils.factorToHex(this._diffuseFactor); }
+	public getDiffuseHex(): number {
+		return ColorUtils.factorToHex(this.getDiffuseFactor());
+	}
 
 	/** Diffuse; hex color in sRGB colorspace. */
 	public setDiffuseHex(hex: number): this {
-		ColorUtils.hexToFactor(hex, this._diffuseFactor);
-		return this;
+		const factor = this.getDiffuseFactor().slice() as vec4;
+		return this.setDiffuseFactor(ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**
@@ -85,7 +77,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * spec/gloss PBR workflow.
 	 */
 	public getDiffuseTexture(): Texture | null {
-		return this.diffuseTexture ? this.diffuseTexture.getChild() : null;
+		return this.getRef('diffuseTexture');
 	}
 
 	/**
@@ -93,14 +85,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getDiffuseTextureInfo(): TextureInfo | null {
-		return this.diffuseTexture ? this.diffuseTextureInfo.getChild() : null;
+		return this.getRef('diffuseTexture') ? this.getRef('diffuseTextureInfo') : null;
 	}
 
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
 	public setDiffuseTexture(texture: Texture | null): this {
-		this.diffuseTexture =
-			this.graph.linkTexture('diffuseTexture', R | G | B | A, this, texture);
-		return this;
+		return this.setRef('diffuseTexture', texture, { channels: R | G | B | A });
 	}
 
 	/**********************************************************************************************
@@ -108,12 +98,13 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 */
 
 	/** Specular; linear multiplier. */
-	public getSpecularFactor(): vec3 { return this._specularFactor; }
+	public getSpecularFactor(): vec3 {
+		return this.get('specularFactor');
+	}
 
 	/** Specular; linear multiplier. */
-	public setSpecularFactor(specularFactor: vec3): this {
-		this._specularFactor = specularFactor;
-		return this;
+	public setSpecularFactor(factor: vec3): this {
+		return this.set('specularFactor', factor);
 	}
 
 	/**********************************************************************************************
@@ -121,12 +112,13 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 */
 
 	/** Glossiness; linear multiplier. */
-	public getGlossinessFactor(): number { return this._glossinessFactor; }
+	public getGlossinessFactor(): number {
+		return this.get('glossinessFactor');
+	}
 
 	/** Glossiness; linear multiplier. */
-	public setGlossinessFactor(glossinessFactor: number): this {
-		this._glossinessFactor = glossinessFactor;
-		return this;
+	public setGlossinessFactor(factor: number): this {
+		return this.set('glossinessFactor', factor);
 	}
 
 	/**********************************************************************************************
@@ -135,7 +127,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 
 	/** Spec/gloss texture; linear multiplier. */
 	public getSpecularGlossinessTexture(): Texture | null {
-		return this.specularGlossinessTexture ? this.specularGlossinessTexture.getChild() : null;
+		return this.getRef('specularGlossinessTexture');
 	}
 
 	/**
@@ -143,15 +135,11 @@ export class PBRSpecularGlossiness extends ExtensionProperty {
 	 * {@link TextureInfo} is `null`.
 	 */
 	public getSpecularGlossinessTextureInfo(): TextureInfo | null {
-		return this.specularGlossinessTexture
-			? this.specularGlossinessTextureInfo.getChild()
-			: null;
+		return this.getRef('specularGlossinessTexture') ? this.getRef('specularGlossinessTextureInfo') : null;
 	}
 
 	/** Spec/gloss texture; linear multiplier. */
 	public setSpecularGlossinessTexture(texture: Texture | null): this {
-		this.specularGlossinessTexture
-			= this.graph.linkTexture('specularGlossinessTexture', R | G | B | A, this, texture);
-		return this;
+		return this.setRef('specularGlossinessTexture', texture, { channels: R | G | B | A });
 	}
 }

@@ -1,7 +1,12 @@
-import { PropertyType, vec2 } from '../constants';
+import { Nullable, PropertyType, vec2 } from '../constants';
 import { FileUtils, ImageUtils } from '../utils';
-import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+
+interface ITexture extends IExtensibleProperty {
+	image: ArrayBuffer | null;
+	mimeType: string;
+	uri: string;
+}
 
 /**
  * # Texture
@@ -23,27 +28,11 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Texture extends ExtensibleProperty {
+export class Texture extends ExtensibleProperty<ITexture> {
 	public readonly propertyType = PropertyType.TEXTURE;
 
-	/** @internal Raw image data for this texture. */
-	private _image: ArrayBuffer | null = null;
-
-	/** @internal Image MIME type. Required if URI is not set. */
-	private _mimeType = '';
-
-	/** @internal Image URI. Required if MIME type is not set. */
-	private _uri = '';
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._mimeType = other._mimeType;
-		this._uri = other._uri;
-
-		if (other._image) this._image = other._image.slice(0);
-
-		return this;
+	protected getDefaults(): Nullable<ITexture> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { image: null, mimeType: '', uri: '' });
 	}
 
 	/**********************************************************************************************
@@ -52,7 +41,7 @@ export class Texture extends ExtensibleProperty {
 
 	/** Returns the MIME type for this texture ('image/jpeg' or 'image/png'). */
 	public getMimeType(): string {
-		return this._mimeType || ImageUtils.extensionToMimeType(FileUtils.extension(this._uri));
+		return this.get('mimeType') || ImageUtils.extensionToMimeType(FileUtils.extension(this.get('uri')));
 	}
 
 	/**
@@ -60,8 +49,7 @@ export class Texture extends ExtensibleProperty {
 	 * have a URI, a MIME type is required for correct export.
 	 */
 	public setMimeType(mimeType: string): this {
-		this._mimeType = mimeType;
-		return this;
+		return this.set('mimeType', mimeType);
 	}
 
 	/**********************************************************************************************
@@ -70,7 +58,7 @@ export class Texture extends ExtensibleProperty {
 
 	/** Returns the URI (e.g. 'path/to/file.png') for this texture. */
 	public getURI(): string {
-		return this._uri;
+		return this.get('uri');
 	}
 
 	/**
@@ -78,8 +66,8 @@ export class Texture extends ExtensibleProperty {
 	 * type, a URI is required for correct export.
 	 */
 	public setURI(uri: string): this {
-		this._uri = uri;
-		this._mimeType = ImageUtils.extensionToMimeType(FileUtils.extension(uri));
+		this.set('uri', uri);
+		this.set('mimeType', ImageUtils.extensionToMimeType(FileUtils.extension(uri)));
 		return this;
 	}
 
@@ -89,18 +77,18 @@ export class Texture extends ExtensibleProperty {
 
 	/** Returns the raw image data for this texture. */
 	public getImage(): ArrayBuffer | null {
-		return this._image;
+		return this.get('image');
 	}
 
 	/** Sets the raw image data for this texture. */
 	public setImage(image: ArrayBuffer): this {
-		this._image = image;
-		return this;
+		return this.set('image', image);
 	}
 
 	/** Returns the size, in pixels, of this texture. */
 	public getSize(): vec2 | null {
-		if (!this._image) return null;
-		return ImageUtils.getSize(this._image, this.getMimeType());
+		const image = this.get('image');
+		if (!image) return null;
+		return ImageUtils.getSize(image, this.getMimeType());
 	}
 }

@@ -1,8 +1,24 @@
-import { GraphNode } from '../graph';
-import { PropertyGraph } from './property-graph';
+import { Nullable } from '../constants';
+import { $attributes, $immutableKeys, Graph, GraphNode, Link } from 'property-graph';
+import {
+	equalsArray,
+	equalsRef,
+	equalsRefList,
+	equalsRefMap,
+	isPlainObject,
+	isRef,
+	isRefList,
+	isRefMap,
+} from '../utils';
+import type { Ref, RefMap, UnknownRef } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
+
+export interface IProperty {
+	name: string;
+	extras: Record<string, unknown>;
+}
 
 /**
  * # Property
@@ -39,17 +55,25 @@ export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
  *
  * @category Properties
  */
-export abstract class Property extends GraphNode {
+export abstract class Property<T extends IProperty = IProperty> extends GraphNode<T> {
 	/** Property type. */
 	public abstract readonly propertyType: string;
 
-	private _extras: Record<string, unknown> = {};
-	private _name = '';
+	/**
+	 * Internal graph used to search and maintain references.
+	 * @override
+	 * @hidden
+	 */
+	protected declare readonly graph: Graph<Property>;
 
 	/** @hidden */
-	constructor(protected readonly graph: PropertyGraph, name = '') {
+	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
-		this._name = name;
+		(this as Property).set('name', name);
+	}
+
+	protected getDefaults(): Nullable<T> {
+		return Object.assign(super.getDefaults(), { name: '', extras: {} });
 	}
 
 	/**********************************************************************************************
@@ -62,7 +86,7 @@ export abstract class Property extends GraphNode {
 	 * a property, prefer to use Extras.
 	 */
 	public getName(): string {
-		return this._name;
+		return (this as Property).get('name');
 	}
 
 	/**
@@ -71,8 +95,7 @@ export abstract class Property extends GraphNode {
 	 * a property, prefer to use Extras.
 	 */
 	public setName(name: string): this {
-		this._name = name;
-		return this;
+		return (this as Property).set('name', name) as this;
 	}
 
 	/**********************************************************************************************
@@ -84,7 +107,7 @@ export abstract class Property extends GraphNode {
 	 * Property. Extras should be an Object, not a primitive value, for best portability.
 	 */
 	public getExtras(): Record<string, unknown> {
-		return this._extras;
+		return (this as Property).get('extras');
 	}
 
 	/**
@@ -92,8 +115,7 @@ export abstract class Property extends GraphNode {
 	 * should be an Object, not a primitive value, for best portability.
 	 */
 	public setExtras(extras: Record<string, unknown>): this {
-		this._extras = extras;
-		return this;
+		return (this as Property).set('extras', extras) as this;
 	}
 
 	/**********************************************************************************************
@@ -106,7 +128,7 @@ export abstract class Property extends GraphNode {
 	public clone(): this {
 		// NOTICE: Keep in sync with `./extension-property.ts`.
 
-		const PropertyClass = this.constructor as new (g: PropertyGraph) => this;
+		const PropertyClass = this.constructor as new (g: Graph<Property>) => this;
 		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 
 		// Root needs this event to link cloned properties.
@@ -121,10 +143,103 @@ export abstract class Property extends GraphNode {
 	 * @param other Property to copy references from.
 	 * @param resolve Function to resolve each Property being transferred. Default is identity.
 	 */
-	public copy(other: this, _resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
-		this._name = other._name;
-		this._extras = JSON.parse(JSON.stringify(other._extras));
+	public copy(other: this, resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
+		// Remove previous references.
+		for (const key in this[$attributes]) {
+			const value = this[$attributes][key];
+			if (value instanceof Link) {
+				if (!this[$immutableKeys].has(key)) {
+					value.dispose();
+				}
+			} else if (Array.isArray(value) && value[0] instanceof Link) {
+				for (const link of value as Ref[]) {
+					link.dispose();
+				}
+			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
+				for (const subkey in value) {
+					const link = value[subkey] as Ref;
+					link.dispose();
+				}
+			}
+		}
+
+		// Add new references.
+		for (const key in other[$attributes]) {
+			const thisValue = this[$attributes][key];
+			const otherValue = other[$attributes][key];
+			if (otherValue instanceof Link) {
+				if (this[$immutableKeys].has(key)) {
+					const link = thisValue as unknown as Ref;
+					link.getChild().copy(resolve(otherValue.getChild()), resolve);
+				} else {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
+				}
+			} else if (Array.isArray(otherValue) && otherValue[0] instanceof Link) {
+				for (const link of otherValue as Ref[]) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					this.addRef(key as any, resolve(link.getChild()), link.getAttributes());
+				}
+			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof Link) {
+				for (const subkey in otherValue) {
+					const link = otherValue[subkey] as Ref;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					this.setRefMap(key as any, link.getName(), resolve(link.getChild()), link.getAttributes());
+				}
+			} else if (isPlainObject(otherValue)) {
+				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));
+			} else if (
+				Array.isArray(otherValue) ||
+				otherValue instanceof ArrayBuffer ||
+				ArrayBuffer.isView(otherValue)
+			) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				this[$attributes][key] = (otherValue as unknown as Uint8Array).slice() as any;
+			} else {
+				this[$attributes][key] = otherValue;
+			}
+		}
+
 		return this;
+	}
+
+	/**
+	 * Returns true if two properties are deeply equivalent, recursively comparing the attributes
+	 * of the properties. For example, two {@link Primitive Primitives} are equivalent if they
+	 * have accessors and materials with equivalent content — but not necessarily the same specific
+	 * accessors and materials.
+	 */
+	public equals(other: this): boolean {
+		if (this === other) return true;
+		if (this.propertyType !== other.propertyType) return false;
+
+		for (const key in this[$attributes]) {
+			const a = this[$attributes][key] as UnknownRef;
+			const b = other[$attributes][key] as UnknownRef;
+
+			if (isRef(a) || isRef(b)) {
+				if (!equalsRef(a as Ref, b as Ref)) {
+					return false;
+				}
+			} else if (isRefList(a) || isRefList(b)) {
+				if (!equalsRefList(a as Ref[], b as Ref[])) {
+					return false;
+				}
+			} else if (isRefMap(a) || isRefMap(b)) {
+				if (!equalsRefMap(a as RefMap, b as RefMap)) {
+					return false;
+				}
+			} else if (isPlainObject(a) || isPlainObject(b)) {
+				// Skip object literal, or empty RefMap. Both can be skipped – we don't compare extras.
+			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
+				if (!equalsArray(a as [], b as [])) return false;
+			} else {
+				// Literal.
+				if (a !== b) return false;
+			}
+		}
+
+		return true;
 	}
 
 	public detach(): this {

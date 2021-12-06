@@ -46,10 +46,12 @@ export class MaterialsUnlit extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Unlit property for use on a {@link Material}. */
 	public createUnlit(): Unlit {
 		return new Unlit(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const materialDefs = context.jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
@@ -61,10 +63,12 @@ export class MaterialsUnlit extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				if (material.getExtension<Unlit>(NAME)) {

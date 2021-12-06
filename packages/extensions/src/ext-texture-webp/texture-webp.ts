@@ -98,13 +98,16 @@ class WEBPImageUtils implements ImageUtilsFormat {
  */
 export class TextureWebP extends Extension {
 	public readonly extensionName = NAME;
+	/** @hidden */
 	public readonly prereadTypes = [PropertyType.TEXTURE];
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** @hidden */
 	public static register(): void {
 		ImageUtils.registerFormat('image/webp', new WEBPImageUtils());
 	}
 
+	/** @hidden */
 	public preread(context: ReaderContext): this {
 		const textureDefs = context.jsonDoc.json.textures || [];
 		textureDefs.forEach((textureDef) => {
@@ -115,11 +118,13 @@ export class TextureWebP extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 

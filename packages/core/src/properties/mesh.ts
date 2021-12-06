@@ -1,9 +1,11 @@
-import { PropertyType } from '../constants';
-import { GraphChildList } from '../graph/index';
-import { Link } from '../graph/index';
-import { ExtensibleProperty } from './extensible-property';
+import { Nullable, PropertyType } from '../constants';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Primitive } from './primitive';
-import { COPY_IDENTITY } from './property';
+
+interface IMesh extends IExtensibleProperty {
+	weights: number[];
+	primitives: Primitive[];
+}
 
 /**
  * # Mesh
@@ -38,38 +40,26 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Mesh extends ExtensibleProperty {
+export class Mesh extends ExtensibleProperty<IMesh> {
 	public readonly propertyType = PropertyType.MESH;
 
-	private _weights: number[] = [];
-
-	/** @internal Primitive GPU draw call list. */
-	@GraphChildList private primitives: Link<Mesh, Primitive>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._weights = [...other._weights];
-
-		this.clearGraphChildList(this.primitives);
-		other.primitives.forEach((link) => this.addPrimitive(resolve(link.getChild())));
-
-		return this;
+	protected getDefaults(): Nullable<IMesh> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { weights: [], primitives: [] });
 	}
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
 	public addPrimitive(primitive: Primitive): this {
-		return this.addGraphChild(this.primitives, this.graph.link('primitive', this, primitive));
+		return this.addRef('primitives', primitive);
 	}
 
 	/** Removes a {@link Primitive} from the mesh's draw call list. */
 	public removePrimitive(primitive: Primitive): this {
-		return this.removeGraphChild(this.primitives, primitive);
+		return this.removeRef('primitives', primitive);
 	}
 
 	/** Lists {@link Primitive} draw calls of the mesh. */
 	public listPrimitives(): Primitive[] {
-		return this.primitives.map((p) => p.getChild());
+		return this.listRefs('primitives');
 	}
 
 	/**
@@ -78,7 +68,7 @@ export class Mesh extends ExtensibleProperty {
 	 * time.
 	 */
 	public getWeights(): number[] {
-		return this._weights;
+		return this.get('weights');
 	}
 
 	/**
@@ -87,7 +77,6 @@ export class Mesh extends ExtensibleProperty {
 	 * time.
 	 */
 	public setWeights(weights: number[]): this {
-		this._weights = weights;
-		return this;
+		return this.set('weights', weights);
 	}
 }

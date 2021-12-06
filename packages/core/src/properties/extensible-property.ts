@@ -1,9 +1,13 @@
-import { GraphChildList, Link } from '../graph';
+import { Nullable } from '../constants';
 import { ExtensionProperty } from './extension-property';
-import { COPY_IDENTITY, Property } from './property';
+import { Property, IProperty } from './property';
 
 // Breaking change introduced in v0.6.
 const TOKEN_WARNING = 'Pass extension name (string) as lookup token, not a constructor.';
+
+export interface IExtensibleProperty extends IProperty {
+	extensions: { [key: string]: ExtensionProperty };
+}
 
 /**
  * # ExtensibleProperty
@@ -15,19 +19,9 @@ const TOKEN_WARNING = 'Pass extension name (string) as lookup token, not a const
  *
  * @category Properties
  */
-export abstract class ExtensibleProperty extends Property {
-	@GraphChildList protected extensions: Link<Property, ExtensionProperty>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this.clearGraphChildList(this.extensions);
-		other.extensions.forEach((link) => {
-			const extension = link.getChild();
-			this.setExtension(extension.extensionName, resolve(extension));
-		});
-
-		return this;
+export abstract class ExtensibleProperty<T extends IExtensibleProperty = IExtensibleProperty> extends Property<T> {
+	protected getDefaults(): Nullable<T> {
+		return Object.assign(super.getDefaults(), { extensions: {} });
 	}
 
 	/**
@@ -36,8 +30,7 @@ export abstract class ExtensibleProperty extends Property {
 	 */
 	public getExtension<Prop extends ExtensionProperty>(name: string): Prop | null {
 		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
-		const link = this.extensions.find((link) => link.getChild().extensionName === name);
-		return link ? (link.getChild() as Prop) : null;
+		return (this as ExtensibleProperty).getRefMap('extensions', name) as Prop;
 	}
 
 	/**
@@ -46,18 +39,8 @@ export abstract class ExtensibleProperty extends Property {
 	 * {@link Root} properties.*
 	 */
 	public setExtension<Prop extends ExtensionProperty>(name: string, extensionProperty: Prop | null): this {
-		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
-
-		// Remove previous extension.
-		const prevExtension = this.getExtension(name);
-		if (prevExtension) this.removeGraphChild(this.extensions, prevExtension);
-
-		// Stop if deleting the extension.
-		if (!extensionProperty) return this;
-
-		// Add next extension.
-		extensionProperty._validateParent(this);
-		return this.addGraphChild(this.extensions, this.graph.link(name, this, extensionProperty));
+		if (extensionProperty) extensionProperty._validateParent(this as ExtensibleProperty);
+		return (this as ExtensibleProperty).setRefMap('extensions', name, extensionProperty) as this;
 	}
 
 	/**
@@ -65,6 +48,6 @@ export abstract class ExtensibleProperty extends Property {
 	 * {@link Root} properties.*
 	 */
 	public listExtensions(): ExtensionProperty[] {
-		return this.extensions.map((link) => link.getChild());
+		return (this as ExtensibleProperty).listRefMapValues('extensions');
 	}
 }

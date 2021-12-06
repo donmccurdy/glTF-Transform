@@ -1,8 +1,13 @@
-import { PropertyType } from '../constants';
-import { GraphChild, Link } from '../graph';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
-import { COPY_IDENTITY, Property } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+
+interface IAnimationSampler extends IExtensibleProperty {
+	interpolation: GLTF.AnimationSamplerInterpolation;
+	input: Accessor;
+	output: Accessor;
+}
 
 /**
  * # AnimationSampler
@@ -45,7 +50,7 @@ import { COPY_IDENTITY, Property } from './property';
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
-export class AnimationSampler extends Property {
+export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
 
 	/**********************************************************************************************
@@ -66,20 +71,12 @@ export class AnimationSampler extends Property {
 	 * Instance.
 	 */
 
-	private _interpolation: GLTF.AnimationSamplerInterpolation = AnimationSampler.Interpolation.LINEAR;
-
-	@GraphChild private input: Link<AnimationSampler, Accessor> | null = null;
-	@GraphChild private output: Link<AnimationSampler, Accessor> | null = null;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._interpolation = other._interpolation;
-
-		this.setInput(other.input ? resolve(other.input.getChild()) : null);
-		this.setOutput(other.output ? resolve(other.output.getChild()) : null);
-
-		return this;
+	protected getDefaultAttributes(): Nullable<IAnimationSampler> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			interpolation: AnimationSampler.Interpolation.LINEAR,
+			input: null,
+			output: null,
+		});
 	}
 
 	/**********************************************************************************************
@@ -88,24 +85,22 @@ export class AnimationSampler extends Property {
 
 	/** Interpolation mode: `STEP`, `LINEAR`, or `CUBICSPLINE`. */
 	public getInterpolation(): GLTF.AnimationSamplerInterpolation {
-		return this._interpolation;
+		return this.get('interpolation');
 	}
 
 	/** Interpolation mode: `STEP`, `LINEAR`, or `CUBICSPLINE`. */
 	public setInterpolation(interpolation: GLTF.AnimationSamplerInterpolation): this {
-		this._interpolation = interpolation;
-		return this;
+		return this.set('interpolation', interpolation);
 	}
 
 	/** Times for each keyframe, in seconds. */
 	public getInput(): Accessor | null {
-		return this.input ? this.input.getChild() : null;
+		return this.getRef('input');
 	}
 
 	/** Times for each keyframe, in seconds. */
 	public setInput(input: Accessor | null): this {
-		this.input = this.graph.link('input', this, input);
-		return this;
+		return this.setRef('input', input, { usage: BufferViewUsage.OTHER });
 	}
 
 	/**
@@ -113,7 +108,7 @@ export class AnimationSampler extends Property {
 	 * tangents.
 	 */
 	public getOutput(): Accessor | null {
-		return this.output ? this.output.getChild() : null;
+		return this.getRef('output');
 	}
 
 	/**
@@ -121,7 +116,6 @@ export class AnimationSampler extends Property {
 	 * tangents.
 	 */
 	public setOutput(output: Accessor | null): this {
-		this.output = this.graph.link('output', this, output);
-		return this;
+		return this.setRef('output', output, { usage: BufferViewUsage.OTHER });
 	}
 }

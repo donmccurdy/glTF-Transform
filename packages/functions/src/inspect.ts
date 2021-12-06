@@ -88,7 +88,7 @@ function listMaterials (doc: Document): InspectPropertyReport<InspectMaterialRep
 
 		// Find all texture slots attached to this material or its extensions.
 		const extensions = new Set<ExtensionProperty>(material.listExtensions());
-		const slots = doc.getGraph().getLinks()
+		const slots = doc.getGraph().listLinks()
 			.filter((link) => {
 				const child = link.getChild();
 				const parent = link.getParent();

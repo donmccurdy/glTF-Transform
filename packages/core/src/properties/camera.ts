@@ -1,7 +1,16 @@
-import { PropertyType } from '../constants';
+import { Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
-import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+
+interface ICamera extends IExtensibleProperty {
+	type: GLTF.CameraType;
+	znear: number;
+	zfar: number;
+	aspectRatio: number | null;
+	yfov: number;
+	xmag: number;
+	ymag: number;
+}
 
 /**
  * # Camera
@@ -31,7 +40,7 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class Camera extends ExtensibleProperty {
+export class Camera extends ExtensibleProperty<ICamera> {
 	public readonly propertyType = PropertyType.CAMERA;
 
 	/**********************************************************************************************
@@ -49,34 +58,19 @@ export class Camera extends ExtensibleProperty {
 	 * Instance.
 	 */
 
-	// Common.
-
-	private _type: GLTF.CameraType = Camera.Type.PERSPECTIVE;
-	private _znear = 0.1;
-	private _zfar = 100;
-
-	// Perspective.
-
-	private _aspectRatio: number | null = null;
-	private _yfov: number = (Math.PI * 2 * 50) / 360; // 50º
-
-	// Orthographic.
-
-	private _xmag = 1;
-	private _ymag = 1;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._type = other._type;
-		this._znear = other._znear;
-		this._zfar = other._zfar;
-		this._aspectRatio = other._aspectRatio;
-		this._yfov = other._yfov;
-		this._xmag = other._xmag;
-		this._ymag = other._ymag;
-
-		return this;
+	protected getDefaults(): Nullable<ICamera> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			// Common.
+			type: Camera.Type.PERSPECTIVE,
+			znear: 0.1,
+			zfar: 100,
+			// Perspective.
+			aspectRatio: null,
+			yfov: (Math.PI * 2 * 50) / 360, // 50º
+			// Orthographic.
+			xmag: 1,
+			ymag: 1,
+		});
 	}
 
 	/**********************************************************************************************
@@ -85,24 +79,22 @@ export class Camera extends ExtensibleProperty {
 
 	/** Specifies if the camera uses a perspective or orthographic projection. */
 	public getType(): GLTF.CameraType {
-		return this._type;
+		return this.get('type');
 	}
 
 	/** Specifies if the camera uses a perspective or orthographic projection. */
 	public setType(type: GLTF.CameraType): this {
-		this._type = type;
-		return this;
+		return this.set('type', type);
 	}
 
 	/** Floating-point distance to the near clipping plane. */
 	public getZNear(): number {
-		return this._znear;
+		return this.get('znear');
 	}
 
 	/** Floating-point distance to the near clipping plane. */
 	public setZNear(znear: number): this {
-		this._znear = znear;
-		return this;
+		return this.set('znear', znear);
 	}
 
 	/**
@@ -110,7 +102,7 @@ export class Camera extends ExtensibleProperty {
 	 * znear. If zfar is undefined, runtime must use infinite projection matrix.
 	 */
 	public getZFar(): number {
-		return this._zfar;
+		return this.get('zfar');
 	}
 
 	/**
@@ -118,8 +110,7 @@ export class Camera extends ExtensibleProperty {
 	 * znear. If zfar is undefined, runtime must use infinite projection matrix.
 	 */
 	public setZFar(zfar: number): this {
-		this._zfar = zfar;
-		return this;
+		return this.set('zfar', zfar);
 	}
 
 	/**********************************************************************************************
@@ -131,7 +122,7 @@ export class Camera extends ExtensibleProperty {
 	 * canvas is used.
 	 */
 	public getAspectRatio(): number | null {
-		return this._aspectRatio;
+		return this.get('aspectRatio');
 	}
 
 	/**
@@ -139,19 +130,17 @@ export class Camera extends ExtensibleProperty {
 	 * canvas is used.
 	 */
 	public setAspectRatio(aspectRatio: number | null): this {
-		this._aspectRatio = aspectRatio;
-		return this;
+		return this.set('aspectRatio', aspectRatio);
 	}
 
 	/** Floating-point vertical field of view in radians. */
 	public getYFov(): number {
-		return this._yfov;
+		return this.get('yfov');
 	}
 
 	/** Floating-point vertical field of view in radians. */
 	public setYFov(yfov: number): this {
-		this._yfov = yfov;
-		return this;
+		return this.set('yfov', yfov);
 	}
 
 	/**********************************************************************************************
@@ -163,7 +152,7 @@ export class Camera extends ExtensibleProperty {
 	 * in world units.
 	 */
 	public getXMag(): number {
-		return this._xmag;
+		return this.get('xmag');
 	}
 
 	/**
@@ -171,8 +160,7 @@ export class Camera extends ExtensibleProperty {
 	 * in world units.
 	 */
 	public setXMag(xmag: number): this {
-		this._xmag = xmag;
-		return this;
+		return this.set('xmag', xmag);
 	}
 
 	/**
@@ -180,7 +168,7 @@ export class Camera extends ExtensibleProperty {
 	 * in world units.
 	 */
 	public getYMag(): number {
-		return this._ymag;
+		return this.get('ymag');
 	}
 
 	/**
@@ -188,7 +176,6 @@ export class Camera extends ExtensibleProperty {
 	 * in world units.
 	 */
 	public setYMag(ymag: number): this {
-		this._ymag = ymag;
-		return this;
+		return this.set('ymag', ymag);
 	}
 }

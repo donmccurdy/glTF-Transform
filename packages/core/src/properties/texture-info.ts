@@ -1,7 +1,16 @@
-import { PropertyType } from '../constants';
+import { Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
-import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+
+interface ITextureInfo extends IExtensibleProperty {
+	texCoord: number;
+
+	// Sampler properties are also attached to TextureInfo, for simplicity.
+	magFilter: GLTF.TextureMagFilter | null;
+	minFilter: GLTF.TextureMinFilter | null;
+	wrapS: GLTF.TextureWrapMode;
+	wrapT: GLTF.TextureWrapMode;
+}
 
 /**
  * # TextureInfo
@@ -22,7 +31,7 @@ import { COPY_IDENTITY } from './property';
  *
  * @category Properties
  */
-export class TextureInfo extends ExtensibleProperty {
+export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	public readonly propertyType = PropertyType.TEXTURE_INFO;
 
 	/**********************************************************************************************
@@ -67,34 +76,14 @@ export class TextureInfo extends ExtensibleProperty {
 	 * Instance.
 	 */
 
-	private _texCoord = 0;
-
-	// Sampler properties are also attached to TextureInfo, for simplicity.
-	private _magFilter: GLTF.TextureMagFilter | null = null;
-	private _minFilter: GLTF.TextureMinFilter | null = null;
-	private _wrapS: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
-	private _wrapT: GLTF.TextureWrapMode = TextureInfo.WrapMode.REPEAT;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._texCoord = other._texCoord;
-		this._magFilter = other._magFilter;
-		this._minFilter = other._minFilter;
-		this._wrapS = other._wrapS;
-		this._wrapT = other._wrapT;
-
-		return this;
-	}
-
-	public equals(other: TextureInfo): boolean {
-		return (
-			this.getTexCoord() === other.getTexCoord() &&
-			this.getMagFilter() === other.getMagFilter() &&
-			this.getMinFilter() === other.getMinFilter() &&
-			this.getWrapS() === other.getWrapS() &&
-			this.getWrapT() === other.getWrapT()
-		);
+	protected getDefaults(): Nullable<ITextureInfo> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			texCoord: 0,
+			magFilter: null,
+			minFilter: null,
+			wrapS: TextureInfo.WrapMode.REPEAT,
+			wrapT: TextureInfo.WrapMode.REPEAT,
+		});
 	}
 
 	/**********************************************************************************************
@@ -103,13 +92,12 @@ export class TextureInfo extends ExtensibleProperty {
 
 	/** Returns the texture coordinate (UV set) index for the texture. */
 	public getTexCoord(): number {
-		return this._texCoord;
+		return this.get('texCoord');
 	}
 
 	/** Sets the texture coordinate (UV set) index for the texture. */
 	public setTexCoord(texCoord: number): this {
-		this._texCoord = texCoord;
-		return this;
+		return this.set('texCoord', texCoord);
 	}
 
 	/**********************************************************************************************
@@ -118,24 +106,22 @@ export class TextureInfo extends ExtensibleProperty {
 
 	/** Returns the magnification filter applied to the texture. */
 	public getMagFilter(): GLTF.TextureMagFilter | null {
-		return this._magFilter;
+		return this.get('magFilter');
 	}
 
 	/** Sets the magnification filter applied to the texture. */
 	public setMagFilter(magFilter: GLTF.TextureMagFilter | null): this {
-		this._magFilter = magFilter;
-		return this;
+		return this.set('magFilter', magFilter);
 	}
 
 	/** Sets the minification filter applied to the texture. */
 	public getMinFilter(): GLTF.TextureMinFilter | null {
-		return this._minFilter;
+		return this.get('minFilter');
 	}
 
 	/** Returns the minification filter applied to the texture. */
 	public setMinFilter(minFilter: GLTF.TextureMinFilter | null): this {
-		this._minFilter = minFilter;
-		return this;
+		return this.set('minFilter', minFilter);
 	}
 
 	/**********************************************************************************************
@@ -144,23 +130,21 @@ export class TextureInfo extends ExtensibleProperty {
 
 	/** Returns the S (U) wrapping mode for UVs used by the texture. */
 	public getWrapS(): GLTF.TextureWrapMode {
-		return this._wrapS;
+		return this.get('wrapS');
 	}
 
 	/** Sets the S (U) wrapping mode for UVs used by the texture. */
 	public setWrapS(wrapS: GLTF.TextureWrapMode): this {
-		this._wrapS = wrapS;
-		return this;
+		return this.set('wrapS', wrapS);
 	}
 
 	/** Returns the T (V) wrapping mode for UVs used by the texture. */
 	public getWrapT(): GLTF.TextureWrapMode {
-		return this._wrapT;
+		return this.get('wrapT');
 	}
 
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
 	public setWrapT(wrapT: GLTF.TextureWrapMode): this {
-		this._wrapT = wrapT;
-		return this;
+		return this.set('wrapT', wrapT);
 	}
 }

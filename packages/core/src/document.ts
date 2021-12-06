@@ -1,5 +1,6 @@
 import { PropertyType } from './constants';
 import { Extension } from './extension';
+import { Graph } from 'property-graph';
 import {
 	Accessor,
 	Animation,
@@ -14,7 +15,6 @@ import {
 	Primitive,
 	PrimitiveTarget,
 	Property,
-	PropertyGraph,
 	Root,
 	Scene,
 	Skin,
@@ -76,7 +76,7 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
  * @category Documents
  */
 export class Document {
-	private _graph: PropertyGraph = new PropertyGraph();
+	private _graph: Graph<Property> = new Graph<Property>();
 	private _root: Root = new Root(this._graph);
 	private _logger = Logger.DEFAULT_INSTANCE;
 
@@ -90,7 +90,7 @@ export class Document {
 	 *
 	 * @hidden
 	 */
-	public getGraph(): PropertyGraph {
+	public getGraph(): Graph<Property> {
 		return this._graph;
 	}
 
@@ -117,7 +117,7 @@ export class Document {
 
 	/** Clones this Document, copying all resources within it. */
 	public clone(): Document {
-		return new Document().merge(this).setLogger(this._logger);
+		return new Document().setLogger(this._logger).merge(this);
 	}
 
 	/** Merges the content of another Document into this one, without affecting the original. */
@@ -137,20 +137,17 @@ export class Document {
 		propertyMap.set(other._root, this._root);
 
 		// 3. Create stub classes for every Property in other Document.
-		for (const link of other._graph.getLinks()) {
+		for (const link of other._graph.listLinks()) {
 			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
 				if (visited.has(thisProp)) continue;
 
 				let otherProp: Property;
 				if (thisProp.propertyType === PropertyType.TEXTURE_INFO) {
 					// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-					// TODO(cleanup): Should the lifecycle be decoupled? Maybe just create
-					// TextureInfo automatically when appending a Texture to a Material or
-					// ExtensionProperty that doesn't have one? More work for extensions.
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as new (g: PropertyGraph, e?: Extension) => Property;
+					const PropertyClass = thisProp.constructor as new (g: Graph<Property>, e?: Extension) => Property;
 					otherProp =
 						thisProp instanceof ExtensionProperty
 							? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
@@ -224,35 +221,35 @@ export class Document {
 	/** Creates a new {@link Scene} attached to this document's {@link Root}. */
 	createScene(name = ''): Scene {
 		const scene = new Scene(this._graph, name);
-		this._root._addScene(scene);
+		this._root._addChildOfRoot(scene);
 		return scene;
 	}
 
 	/** Creates a new {@link Node} attached to this document's {@link Root}. */
 	createNode(name = ''): Node {
 		const node = new Node(this._graph, name);
-		this._root._addNode(node);
+		this._root._addChildOfRoot(node);
 		return node;
 	}
 
 	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
 	createCamera(name = ''): Camera {
 		const camera = new Camera(this._graph, name);
-		this._root._addCamera(camera);
+		this._root._addChildOfRoot(camera);
 		return camera;
 	}
 
 	/** Creates a new {@link Skin} attached to this document's {@link Root}. */
 	createSkin(name = ''): Skin {
 		const skin = new Skin(this._graph, name);
-		this._root._addSkin(skin);
+		this._root._addChildOfRoot(skin);
 		return skin;
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
 	createMesh(name = ''): Mesh {
 		const mesh = new Mesh(this._graph, name);
-		this._root._addMesh(mesh);
+		this._root._addChildOfRoot(mesh);
 		return mesh;
 	}
 
@@ -275,21 +272,21 @@ export class Document {
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
 	createMaterial(name = ''): Material {
 		const material = new Material(this._graph, name);
-		this._root._addMaterial(material);
+		this._root._addChildOfRoot(material);
 		return material;
 	}
 
 	/** Creates a new {@link Texture} attached to this document's {@link Root}. */
 	createTexture(name = ''): Texture {
 		const texture = new Texture(this._graph, name);
-		this._root._addTexture(texture);
+		this._root._addChildOfRoot(texture);
 		return texture;
 	}
 
 	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
 	createAnimation(name = ''): Animation {
 		const animation = new Animation(this._graph, name);
-		this._root._addAnimation(animation);
+		this._root._addChildOfRoot(animation);
 		return animation;
 	}
 
@@ -315,14 +312,14 @@ export class Document {
 			buffer = this.getRoot().listBuffers()[0];
 		}
 		const accessor = new Accessor(this._graph, name).setBuffer(buffer);
-		this._root._addAccessor(accessor);
+		this._root._addChildOfRoot(accessor);
 		return accessor;
 	}
 
 	/** Creates a new {@link Buffer} attached to this document's {@link Root}. */
 	createBuffer(name = ''): Buffer {
 		const buffer = new Buffer(this._graph, name);
-		this._root._addBuffer(buffer);
+		this._root._addChildOfRoot(buffer);
 		return buffer;
 	}
 }

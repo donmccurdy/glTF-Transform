@@ -22,7 +22,11 @@ test('@gltf-transform/extensions::materials-emissive-strength', (t) => {
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
-	t.deepEqual(materialDef.extensions, { KHR_materials_emissive_strength: { emissiveStrength: 5.0 } }, 'writes emissive strength extension');
+	t.deepEqual(
+		materialDef.extensions,
+		{ KHR_materials_emissive_strength: { emissiveStrength: 5.0 } },
+		'writes emissive strength extension'
+	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsEmissiveStrength.EXTENSION_NAME], 'writes extensionsUsed');
 
 	emissiveStrengthExtension.dispose();
@@ -31,7 +35,11 @@ test('@gltf-transform/extensions::materials-emissive-strength', (t) => {
 	const roundtripDoc = new NodeIO().registerExtensions([MaterialsEmissiveStrength]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 
-	t.equal(roundtripMat.getExtension<EmissiveStrength>('KHR_materials_emissive_strength').getEmissiveStrength(), 5.0, 'reads emissive strength');
+	t.equal(
+		roundtripMat.getExtension<EmissiveStrength>('KHR_materials_emissive_strength').getEmissiveStrength(),
+		5.0,
+		'reads emissive strength'
+	);
 	t.end();
 });
 
@@ -42,7 +50,10 @@ test('@gltf-transform/extensions::materials-emissive-strength | copy', (t) => {
 	doc.createMaterial().setExtension('KHR_materials_emissive_strength', emissiveStrength);
 
 	const doc2 = doc.clone();
-	const emissiveStrength2 = doc2.getRoot().listMaterials()[0].getExtension<EmissiveStrength>('KHR_materials_emissive_strength');
+	const emissiveStrength2 = doc2
+		.getRoot()
+		.listMaterials()[0]
+		.getExtension<EmissiveStrength>('KHR_materials_emissive_strength');
 	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsEmissiveStrength');
 	t.ok(emissiveStrength2, 'copy EmissiveStrength');
 	t.equals(emissiveStrength2.getEmissiveStrength(), 5.0, 'copy emissive strength');

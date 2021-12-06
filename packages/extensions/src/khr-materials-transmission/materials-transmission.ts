@@ -47,10 +47,12 @@ export class MaterialsTransmission extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Transmission property for use on a {@link Material}. */
 	public createTransmission(): Transmission {
 		return new Transmission(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -65,9 +67,7 @@ export class MaterialsTransmission extends Extension {
 				// Factors.
 
 				if (transmissionDef.transmissionFactor !== undefined) {
-					transmission.setTransmissionFactor(
-						transmissionDef.transmissionFactor
-					);
+					transmission.setTransmissionFactor(transmissionDef.transmissionFactor);
 				}
 
 				// Textures.
@@ -76,10 +76,7 @@ export class MaterialsTransmission extends Extension {
 					const textureInfoDef = transmissionDef.transmissionTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					transmission.setTransmissionTexture(texture);
-					context.setTextureInfo(
-						transmission.getTransmissionTextureInfo()!,
-						textureInfoDef
-					);
+					context.setTextureInfo(transmission.getTransmissionTextureInfo()!, textureInfoDef);
 				}
 			}
 		});
@@ -87,10 +84,12 @@ export class MaterialsTransmission extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				const transmission = material.getExtension<Transmission>(NAME);
@@ -101,17 +100,16 @@ export class MaterialsTransmission extends Extension {
 
 					// Factors.
 
-					const transmissionDef = materialDef.extensions[NAME] = {
+					const transmissionDef = (materialDef.extensions[NAME] = {
 						transmissionFactor: transmission.getTransmissionFactor(),
-					} as TransmissionDef;
+					} as TransmissionDef);
 
 					// Textures.
 
 					if (transmission.getTransmissionTexture()) {
 						const texture = transmission.getTransmissionTexture()!;
 						const textureInfo = transmission.getTransmissionTextureInfo()!;
-						transmissionDef.transmissionTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						transmissionDef.transmissionTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

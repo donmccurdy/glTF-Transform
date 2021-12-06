@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Format, NodeIO, Property, Texture, TextureChannel, TextureInfo, TextureLink } from '../../';
+import { Document, Format, NodeIO, Property, PropertyType, Root, Texture, TextureChannel, TextureInfo } from '../../';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -214,7 +214,16 @@ test('@gltf-transform/core::material | texture channels', (t) => {
 	function getChannels(texture: Texture): number {
 		let mask = 0x0000;
 		for (const link of graph.listParentLinks(texture)) {
-			if (link instanceof TextureLink) mask |= link.channels;
+			const { channels } = link.getAttributes() as { channels: number | undefined };
+
+			if (channels) {
+				mask |= channels;
+				continue;
+			}
+
+			if (link.getParent().propertyType !== PropertyType.ROOT) {
+				throw new Error(`Missing attribute ".channels" on link, "${link.getName()}".`);
+			}
 		}
 		return mask;
 	}

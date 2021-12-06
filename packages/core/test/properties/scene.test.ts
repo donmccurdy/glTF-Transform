@@ -6,11 +6,8 @@ import { Document, NodeIO } from '../../';
 test('@gltf-transform/core::scene | copy', (t) => {
 	const doc = new Document();
 	const scene = doc.createScene('MyScene').addChild(doc.createNode('Node1')).addChild(doc.createNode('Node2'));
-
-	const scene2 = doc.createScene().copy(scene);
-	t.equals(scene2.getName(), 'MyScene', 'copy name');
-	t.equal(scene.listChildren().length, 2, 'retain children');
-	t.deepEqual(scene2.listChildren(), [], "don't copy children");
+	// See {@link Scene.copy}.
+	t.throws(() => doc.createScene().copy(scene), /Scene cannot be copied/, 'cannot copy scene');
 	t.end();
 });
 

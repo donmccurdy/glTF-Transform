@@ -1,55 +1,59 @@
-import { COPY_IDENTITY, ExtensionProperty, vec2 } from '@gltf-transform/core';
+import { ExtensionProperty, IProperty, Nullable, vec2 } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants';
+
+interface ITransform extends IProperty {
+	offset: vec2;
+	rotation: number;
+	scale: vec2;
+	texCoord: number | null; // null → do not override TextureInfo.
+}
 
 /**
  * # Transform
  *
  * Defines UV transform for a {@link TextureInfo}. See {@link TextureTransform}.
  */
-export class Transform extends ExtensionProperty {
+export class Transform extends ExtensionProperty<ITransform> {
 	public readonly propertyType = 'Transform';
 	public readonly parentTypes = [PropertyType.TEXTURE_INFO];
 	public readonly extensionName = KHR_TEXTURE_TRANSFORM;
 	public static EXTENSION_NAME = KHR_TEXTURE_TRANSFORM;
 
-	private _offset: vec2 = [0, 0];
-	private _rotation = 0;
-	private _scale: vec2 = [1, 1];
-	private _texCoord: number | null = null;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._offset = other._offset;
-		this._rotation = other._rotation;
-		this._scale = other._scale;
-		this._texCoord = other._texCoord;
-
-		return this;
+	protected getDefaults(): Nullable<ITransform> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			offset: [0.0, 0.0] as vec2,
+			rotation: 0,
+			scale: [1.0, 1.0] as vec2,
+			texCoord: null,
+		});
 	}
 
-	public getOffset(): vec2 { return this._offset; }
+	public getOffset(): vec2 {
+		return this.get('offset');
+	}
 	public setOffset(offset: vec2): this {
-		this._offset = offset;
-		return this;
+		return this.set('offset', offset);
 	}
 
-	public getRotation(): number { return this._rotation; }
+	public getRotation(): number {
+		return this.get('rotation');
+	}
 	public setRotation(rotation: number): this {
-		this._rotation = rotation;
-		return this;
+		return this.set('rotation', rotation);
 	}
 
-	public getScale(): vec2 { return this._scale; }
+	public getScale(): vec2 {
+		return this.get('scale');
+	}
 	public setScale(scale: vec2): this {
-		this._scale = scale;
-		return this;
+		return this.set('scale', scale);
 	}
 
-	public getTexCoord(): number | null { return this._texCoord; }
-	public setTexCoord(texCoord: number): this {
-		this._texCoord = texCoord;
-		return this;
+	public getTexCoord(): number | null {
+		return this.get('texCoord');
+	}
+	public setTexCoord(texCoord: number | null): this {
+		return this.set('texCoord', texCoord);
 	}
 }

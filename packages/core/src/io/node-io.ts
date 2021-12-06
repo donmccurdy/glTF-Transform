@@ -4,8 +4,6 @@ import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
-import { GLTFReader } from './reader';
-import { GLTFWriter } from './writer';
 
 /**
  * # NodeIO

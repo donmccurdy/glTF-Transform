@@ -1,13 +1,17 @@
-import { PropertyType } from '../constants';
-import { GraphChild, GraphChildList } from '../graph/index';
-import { Link } from '../graph/index';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants';
 import { GLTF } from '../types/gltf';
 import { Accessor } from './accessor';
-import { ExtensibleProperty } from './extensible-property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { Material } from './material';
 import { PrimitiveTarget } from './primitive-target';
-import { COPY_IDENTITY } from './property';
-import { AttributeLink } from './property-links';
+
+interface IPrimitive extends IExtensibleProperty {
+	mode: GLTF.MeshPrimitiveMode;
+	material: Material;
+	indices: Accessor;
+	attributes: { [key: string]: Accessor };
+	targets: PrimitiveTarget[];
+}
 
 /**
  * # Primitive
@@ -43,7 +47,7 @@ import { AttributeLink } from './property-links';
  *
  * @category Properties
  */
-export class Primitive extends ExtensibleProperty {
+export class Primitive extends ExtensibleProperty<IPrimitive> {
 	public readonly propertyType = PropertyType.PRIMITIVE;
 
 	/**********************************************************************************************
@@ -79,31 +83,14 @@ export class Primitive extends ExtensibleProperty {
 	 * Instance.
 	 */
 
-	/** @internal GPU draw mode. */
-	private _mode: GLTF.MeshPrimitiveMode = Primitive.Mode.TRIANGLES;
-
-	@GraphChild private material: Link<Primitive, Material> | null = null;
-	@GraphChild private indices: Link<Primitive, Accessor> | null = null;
-	@GraphChildList private attributes: AttributeLink[] = [];
-	@GraphChildList private targets: Link<Primitive, PrimitiveTarget>[] = [];
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._mode = other._mode;
-
-		this.setIndices(other.indices ? resolve(other.indices.getChild()) : null);
-		this.setMaterial(other.material ? resolve(other.material.getChild()) : null);
-
-		this.clearGraphChildList(this.attributes);
-		other.listSemantics().forEach((semantic) => {
-			this.setAttribute(semantic, resolve(other.getAttribute(semantic)!));
+	protected getDefaults(): Nullable<IPrimitive> {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			mode: Primitive.Mode.TRIANGLES,
+			material: null,
+			indices: null,
+			attributes: {},
+			targets: [],
 		});
-
-		this.clearGraphChildList(this.targets);
-		other.targets.forEach((link) => this.addTarget(resolve(link.getChild())));
-
-		return this;
 	}
 
 	/**********************************************************************************************
@@ -112,7 +99,7 @@ export class Primitive extends ExtensibleProperty {
 
 	/** Returns an {@link Accessor} with indices of vertices to be drawn. */
 	public getIndices(): Accessor | null {
-		return this.indices ? this.indices.getChild() : null;
+		return this.getRef('indices');
 	}
 
 	/**
@@ -121,14 +108,12 @@ export class Primitive extends ExtensibleProperty {
 	 * winding order.
 	 */
 	public setIndices(indices: Accessor | null): this {
-		this.indices = this.graph.linkIndex('indices', this, indices);
-		return this;
+		return this.setRef('indices', indices, { usage: BufferViewUsage.ELEMENT_ARRAY_BUFFER });
 	}
 
 	/** Returns a vertex attribute as an {@link Accessor}. */
 	public getAttribute(semantic: string): Accessor | null {
-		const link = this.attributes.find((link) => link.semantic === semantic);
-		return link ? link.getChild() : null;
+		return this.getRefMap('attributes', semantic);
 	}
 
 	/**
@@ -136,16 +121,7 @@ export class Primitive extends ExtensibleProperty {
 	 * count.
 	 */
 	public setAttribute(semantic: string, accessor: Accessor | null): this {
-		// Remove previous attribute.
-		const prevAccessor = this.getAttribute(semantic);
-		if (prevAccessor) this.removeGraphChild(this.attributes, prevAccessor);
-
-		// Stop if deleting the attribute.
-		if (!accessor) return this;
-
-		// Add next attribute.
-		const link = this.graph.linkAttribute(semantic, this, accessor);
-		return this.addGraphChild(this.attributes, link);
+		return this.setRefMap('attributes', semantic, accessor, { usage: BufferViewUsage.ARRAY_BUFFER });
 	}
 
 	/**
@@ -154,7 +130,7 @@ export class Primitive extends ExtensibleProperty {
 	 * uvAccessor]`. Order will be consistent with the order returned by {@link .listSemantics}().
 	 */
 	public listAttributes(): Accessor[] {
-		return this.attributes.map((link) => link.getChild());
+		return this.listRefMapValues('attributes');
 	}
 
 	/**
@@ -163,18 +139,17 @@ export class Primitive extends ExtensibleProperty {
 	 * consistent with the order returned by {@link .listAttributes}().
 	 */
 	public listSemantics(): string[] {
-		return this.attributes.map((link) => link.semantic);
+		return this.listRefMapKeys('attributes');
 	}
 
 	/** Returns the material used to render the primitive. */
 	public getMaterial(): Material | null {
-		return this.material ? this.material.getChild() : null;
+		return this.getRef('material');
 	}
 
 	/** Sets the material used to render the primitive. */
 	public setMaterial(material: Material | null): this {
-		this.material = this.graph.link('material', this, material);
-		return this;
+		return this.setRef('material', material);
 	}
 
 	/**********************************************************************************************
@@ -188,7 +163,7 @@ export class Primitive extends ExtensibleProperty {
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
 	public getMode(): GLTF.MeshPrimitiveMode {
-		return this._mode;
+		return this.get('mode');
 	}
 
 	/**
@@ -198,8 +173,7 @@ export class Primitive extends ExtensibleProperty {
 	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
 	 */
 	public setMode(mode: GLTF.MeshPrimitiveMode): this {
-		this._mode = mode;
-		return this;
+		return this.set('mode', mode);
 	}
 
 	/**********************************************************************************************
@@ -208,7 +182,7 @@ export class Primitive extends ExtensibleProperty {
 
 	/** Lists all morph targets associated with the primitive. */
 	public listTargets(): PrimitiveTarget[] {
-		return this.targets.map((link) => link.getChild());
+		return this.listRefs('targets');
 	}
 
 	/**
@@ -216,8 +190,7 @@ export class Primitive extends ExtensibleProperty {
 	 * number of targets.
 	 */
 	public addTarget(target: PrimitiveTarget): this {
-		this.addGraphChild(this.targets, this.graph.link('target', this, target));
-		return this;
+		return this.addRef('targets', target);
 	}
 
 	/**
@@ -225,6 +198,6 @@ export class Primitive extends ExtensibleProperty {
 	 * number of targets.
 	 */
 	public removeTarget(target: PrimitiveTarget): this {
-		return this.removeGraphChild(this.targets, target);
+		return this.removeRef('targets', target);
 	}
 }

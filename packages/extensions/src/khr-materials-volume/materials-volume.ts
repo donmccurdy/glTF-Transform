@@ -69,10 +69,12 @@ export class MaterialsVolume extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Volume property for use on a {@link Material}. */
 	public createVolume(): Volume {
 		return new Volume(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -102,10 +104,7 @@ export class MaterialsVolume extends Extension {
 					const textureInfoDef = volumeDef.thicknessTexture;
 					const texture = context.textures[textureDefs[textureInfoDef.index].source!];
 					volume.setThicknessTexture(texture);
-					context.setTextureInfo(
-						volume.getThicknessTextureInfo()!,
-						textureInfoDef
-					);
+					context.setTextureInfo(volume.getThicknessTextureInfo()!, textureInfoDef);
 				}
 			}
 		});
@@ -113,10 +112,12 @@ export class MaterialsVolume extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				const volume = material.getExtension<Volume>(NAME);
@@ -127,7 +128,7 @@ export class MaterialsVolume extends Extension {
 
 					// Factors.
 
-					const volumeDef = materialDef.extensions[NAME] = {} as VolumeDef;
+					const volumeDef = (materialDef.extensions[NAME] = {} as VolumeDef);
 
 					if (volume.getThicknessFactor() > 0) {
 						volumeDef.thicknessFactor = volume.getThicknessFactor();
@@ -144,8 +145,7 @@ export class MaterialsVolume extends Extension {
 					if (volume.getThicknessTexture()) {
 						const texture = volume.getThicknessTexture()!;
 						const textureInfo = volume.getThicknessTextureInfo()!;
-						volumeDef.thicknessTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						volumeDef.thicknessTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

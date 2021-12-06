@@ -1,6 +1,15 @@
-import { COPY_IDENTITY, ExtensionProperty, PropertyType, vec3 } from '@gltf-transform/core';
+import { ExtensionProperty, IProperty, Nullable, PropertyType, vec3 } from '@gltf-transform/core';
 import { ColorUtils } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants';
+
+interface ILight extends IProperty {
+	color: vec3;
+	intensity: number;
+	type: PunctualLightType;
+	range: number | null;
+	innerConeAngle: number;
+	outerConeAngle: number;
+}
 
 type PunctualLightType = 'point' | 'spot' | 'directional';
 
@@ -9,7 +18,7 @@ type PunctualLightType = 'point' | 'spot' | 'directional';
  *
  * Defines a light attached to a {@link Node}. See {@link LightsPunctual}.
  */
-export class Light extends ExtensionProperty {
+export class Light extends ExtensionProperty<ILight> {
 	public readonly propertyType = 'Light';
 	public readonly parentTypes = [PropertyType.NODE];
 	public readonly extensionName = KHR_LIGHTS_PUNCTUAL;
@@ -29,26 +38,15 @@ export class Light extends ExtensionProperty {
 	 * INSTANCE.
 	 */
 
-	private _color: vec3 = [1, 1, 1];
-	private _intensity = 1;
-	private _type: PunctualLightType = Light.Type.POINT;
-	private _range: number | null = null;
-
-	private _innerConeAngle = 0;
-	private _outerConeAngle = Math.PI / 4;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._color = [...other._color] as vec3;
-		this._intensity = other._intensity;
-		this._type = other._type;
-		this._range = other._range;
-
-		this._innerConeAngle = other._innerConeAngle;
-		this._outerConeAngle = other._outerConeAngle;
-
-		return this;
+	protected getDefaults(): Nullable<ILight> {
+		return Object.assign(super.getDefaults() as IProperty, {
+			color: [1, 1, 1] as vec3,
+			intensity: 1,
+			type: Light.Type.POINT,
+			range: null,
+			innerConeAngle: 0,
+			outerConeAngle: Math.PI / 4,
+		});
 	}
 
 	/**********************************************************************************************
@@ -56,21 +54,25 @@ export class Light extends ExtensionProperty {
 	 */
 
 	/** Components (R, G, B) of light's color in linear space. */
-	public getColor(): vec3 { return this._color; }
+	public getColor(): vec3 {
+		return this.get('color');
+	}
 
 	/** Components (R, G, B) of light's color in linear space. */
 	public setColor(color: vec3): this {
-		this._color = color;
-		return this;
+		return this.set('color', color);
 	}
 
 	/** Hex light color in sRGB colorspace. */
-	public getColorHex(): number { return ColorUtils.factorToHex(this._color); }
+	public getColorHex(): number {
+		return ColorUtils.factorToHex(this.getColor());
+	}
 
 	/** Hex light color in sRGB colorspace. */
 	public setColorHex(hex: number): this {
-		ColorUtils.hexToFactor(hex, this._color);
-		return this;
+		const color = this.getColor().slice() as vec3;
+		ColorUtils.hexToFactor(hex, color);
+		return this.setColor(color);
 	}
 
 	/**********************************************************************************************
@@ -81,15 +83,16 @@ export class Light extends ExtensionProperty {
 	 * Brightness of light. Units depend on the type of light: point and spot lights use luminous
 	 * intensity in candela (lm/sr) while directional lights use illuminance in lux (lm/m2).
 	 */
-	public getIntensity(): number { return this._intensity; }
+	public getIntensity(): number {
+		return this.get('intensity');
+	}
 
 	/**
 	 * Brightness of light. Units depend on the type of light: point and spot lights use luminous
 	 * intensity in candela (lm/sr) while directional lights use illuminance in lux (lm/m2).
 	 */
 	public setIntensity(intensity: number): this {
-		this._intensity = intensity;
-		return this;
+		return this.set('intensity', intensity);
 	}
 
 	/**********************************************************************************************
@@ -97,12 +100,13 @@ export class Light extends ExtensionProperty {
 	 */
 
 	/** Type. */
-	public getType(): PunctualLightType { return this._type; }
+	public getType(): PunctualLightType {
+		return this.get('type');
+	}
 
 	/** Type. */
 	public setType(type: PunctualLightType): this {
-		this._type = type;
-		return this;
+		return this.set('type', type);
 	}
 
 	/**********************************************************************************************
@@ -114,7 +118,9 @@ export class Light extends ExtensionProperty {
 	 * reached zero. Supported only for point and spot lights. Must be > 0. When undefined, range
 	 * is assumed to be infinite.
 	 */
-	public getRange(): number | null { return this._range; }
+	public getRange(): number | null {
+		return this.get('range');
+	}
 
 	/**
 	 * Hint defining a distance cutoff at which the light's intensity may be considered to have
@@ -122,8 +128,7 @@ export class Light extends ExtensionProperty {
 	 * is assumed to be infinite.
 	 */
 	public setRange(range: number | null): this {
-		this._range = range;
-		return this;
+		return this.set('range', range);
 	}
 
 	/**********************************************************************************************
@@ -134,29 +139,31 @@ export class Light extends ExtensionProperty {
 	 * Angle, in radians, from centre of spotlight where falloff begins. Must be ≥ 0 and
 	 * < outerConeAngle.
 	 */
-	public getInnerConeAngle(): number { return this._innerConeAngle; }
+	public getInnerConeAngle(): number {
+		return this.get('innerConeAngle');
+	}
 
 	/**
 	 * Angle, in radians, from centre of spotlight where falloff begins. Must be ≥ 0 and
 	 * < outerConeAngle.
 	 */
-	public setInnerConeAngle(innerConeAngle: number): this {
-		this._innerConeAngle = innerConeAngle;
-		return this;
+	public setInnerConeAngle(angle: number): this {
+		return this.set('innerConeAngle', angle);
 	}
 
 	/**
 	 * Angle, in radians, from centre of spotlight where falloff ends. Must be > innerConeAngle and
 	 * ≤ PI / 2.0.
 	 */
-	public getOuterConeAngle(): number { return this._outerConeAngle; }
+	public getOuterConeAngle(): number {
+		return this.get('outerConeAngle');
+	}
 
 	/**
 	 * Angle, in radians, from centre of spotlight where falloff ends. Must be > innerConeAngle and
 	 * ≤ PI / 2.0.
 	 */
-	public setOuterConeAngle(outerConeAngle: number): this {
-		this._outerConeAngle = outerConeAngle;
-		return this;
+	public setOuterConeAngle(angle: number): this {
+		return this.set('outerConeAngle', angle);
 	}
 }

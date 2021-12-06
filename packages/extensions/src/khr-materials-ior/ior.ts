@@ -1,25 +1,23 @@
-import { COPY_IDENTITY, ExtensionProperty, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_IOR } from '../constants';
+
+interface IIOR extends IProperty {
+	ior: number;
+}
 
 /**
  * # IOR
  *
  * Defines index of refraction for a PBR {@link Material}. See {@link MaterialsIOR}.
  */
-export class IOR extends ExtensionProperty {
+export class IOR extends ExtensionProperty<IIOR> {
 	public readonly propertyType = 'IOR';
 	public readonly parentTypes = [PropertyType.MATERIAL];
 	public readonly extensionName = KHR_MATERIALS_IOR;
 	public static EXTENSION_NAME = KHR_MATERIALS_IOR;
 
-	private _ior = 0.0;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-
-		this._ior = other._ior;
-
-		return this;
+	protected getDefaults(): Nullable<IIOR> {
+		return Object.assign(super.getDefaults() as IProperty, { ior: 0 });
 	}
 
 	/**********************************************************************************************
@@ -27,11 +25,12 @@ export class IOR extends ExtensionProperty {
 	 */
 
 	/** IOR. */
-	public getIOR(): number { return this._ior; }
+	public getIOR(): number {
+		return this.get('ior');
+	}
 
 	/** IOR. */
 	public setIOR(ior: number): this {
-		this._ior = ior;
-		return this;
+		return this.set('ior', ior);
 	}
 }

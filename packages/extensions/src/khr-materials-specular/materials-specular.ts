@@ -48,10 +48,12 @@ export class MaterialsSpecular extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Specular property for use on a {@link Material}. */
 	public createSpecular(): Specular {
 		return new Specular(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -92,10 +94,12 @@ export class MaterialsSpecular extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				const specular = material.getExtension<Specular>(NAME);
@@ -106,7 +110,7 @@ export class MaterialsSpecular extends Extension {
 
 					// Factors.
 
-					const specularDef = materialDef.extensions[NAME] = {} as SpecularDef;
+					const specularDef = (materialDef.extensions[NAME] = {} as SpecularDef);
 
 					if (specular.getSpecularFactor() !== 1) {
 						specularDef.specularFactor = specular.getSpecularFactor();
@@ -120,14 +124,12 @@ export class MaterialsSpecular extends Extension {
 					if (specular.getSpecularTexture()) {
 						const texture = specular.getSpecularTexture()!;
 						const textureInfo = specular.getSpecularTextureInfo()!;
-						specularDef.specularTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						specularDef.specularTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (specular.getSpecularColorTexture()) {
 						const texture = specular.getSpecularColorTexture()!;
 						const textureInfo = specular.getSpecularColorTextureInfo()!;
-						specularDef.specularColorTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						specularDef.specularColorTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

@@ -52,10 +52,12 @@ export class MaterialsSheen extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
+	/** Creates a new Sheen property for use on a {@link Material}. */
 	public createSheen(): Sheen {
 		return new Sheen(this.doc.getGraph(), this);
 	}
 
+	/** @hidden */
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
@@ -73,9 +75,7 @@ export class MaterialsSheen extends Extension {
 					sheen.setSheenColorFactor(sheenDef.sheenColorFactor);
 				}
 				if (sheenDef.sheenRoughnessFactor !== undefined) {
-					sheen.setSheenRoughnessFactor(
-						sheenDef.sheenRoughnessFactor
-					);
+					sheen.setSheenRoughnessFactor(sheenDef.sheenRoughnessFactor);
 				}
 
 				// Textures.
@@ -98,10 +98,12 @@ export class MaterialsSheen extends Extension {
 		return this;
 	}
 
+	/** @hidden */
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc.getRoot()
+		this.doc
+			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
 				const sheen = material.getExtension<Sheen>(NAME);
@@ -112,24 +114,22 @@ export class MaterialsSheen extends Extension {
 
 					// Factors.
 
-					const sheenDef = materialDef.extensions[NAME] = {
+					const sheenDef = (materialDef.extensions[NAME] = {
 						sheenColorFactor: sheen.getSheenColorFactor(),
 						sheenRoughnessFactor: sheen.getSheenRoughnessFactor(),
-					} as SheenDef;
+					} as SheenDef);
 
 					// Textures.
 
 					if (sheen.getSheenColorTexture()) {
 						const texture = sheen.getSheenColorTexture()!;
 						const textureInfo = sheen.getSheenColorTextureInfo()!;
-						sheenDef.sheenColorTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						sheenDef.sheenColorTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 					if (sheen.getSheenRoughnessTexture()) {
 						const texture = sheen.getSheenRoughnessTexture()!;
 						const textureInfo = sheen.getSheenRoughnessTextureInfo()!;
-						sheenDef.sheenRoughnessTexture
-							= context.createTextureInfoDef(texture, textureInfo);
+						sheenDef.sheenRoughnessTexture = context.createTextureInfoDef(texture, textureInfo);
 					}
 				}
 			});

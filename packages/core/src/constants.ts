@@ -16,7 +16,6 @@ export const NAME = '@gltf-transform/core';
  * THREE.Vector3, THREE.Vector4, THREE.Quaternion, THREE.Matrix3, THREE.Matrix4, and THREE.Color.
  *
  * @internal
- * @internal
  */
 export interface ArrayProxy {
 	/** Sets the value of the object from an array of values. */
@@ -24,6 +23,12 @@ export interface ArrayProxy {
 	/** Writes the value of the object into the given array. */
 	toArray(array: number[]): number[];
 }
+
+/**
+ * TypeScript utility for nullable types.
+ * @hidden
+ */
+export type Nullable<T> = { [P in keyof T]: T[P] | null };
 
 /**
  * 2-dimensional vector.
@@ -123,6 +128,14 @@ export enum VertexLayout {
 	 * page-thrashing in GPU memory. Some 3D engines may prefer this layout, e.g. for simplicity.
 	 */
 	SEPARATE = 'separate',
+}
+
+/** Accessor usage. */
+export enum BufferViewUsage {
+	ARRAY_BUFFER = 'ARRAY_BUFFER',
+	ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
+	INVERSE_BIND_MATRICES = 'INVERSE_BIND_MATRICES',
+	OTHER = 'OTHER',
 }
 
 /** Texture channels. */
