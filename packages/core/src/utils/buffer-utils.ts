@@ -103,7 +103,7 @@ export class BufferUtils {
 	}
 
 	/**
-	 * Returns a Uint8Array/Buffer view of a typed array, with the same underlying ArrayBuffer.
+	 * Returns a Uint8Array view of a typed array, with the same underlying ArrayBuffer.
 	 *
 	 * A shorthand for:
 	 *
@@ -116,7 +116,7 @@ export class BufferUtils {
 	 * ```
 	 *
 	 */
-	static toBuffer(a: TypedArray, byteOffset = 0, byteLength = Infinity): Uint8Array {
+	static toView(a: TypedArray, byteOffset = 0, byteLength = Infinity): Uint8Array {
 		return new Uint8Array(a.buffer, a.byteOffset + byteOffset, Math.min(a.byteLength, byteLength));
 	}
 

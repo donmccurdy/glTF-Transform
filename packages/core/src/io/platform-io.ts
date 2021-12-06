@@ -193,7 +193,7 @@ export abstract class PlatformIO {
 
 		const jsonByteOffset = 20;
 		const jsonByteLength = jsonChunkHeader[0];
-		const jsonText = BufferUtils.decodeText(BufferUtils.toBuffer(glb, jsonByteOffset, jsonByteLength));
+		const jsonText = BufferUtils.decodeText(BufferUtils.toView(glb, jsonByteOffset, jsonByteLength));
 		const json = JSON.parse(jsonText) as GLTF.IGLTF;
 
 		// Decode BIN chunk.
@@ -209,7 +209,7 @@ export abstract class PlatformIO {
 		}
 
 		const binByteLength = binChunkHeader[0];
-		const binBuffer = BufferUtils.toBuffer(glb, binByteOffset + 8, binByteLength);
+		const binBuffer = BufferUtils.toView(glb, binByteOffset + 8, binByteLength);
 
 		return { json, resources: { [GLB_BUFFER]: binBuffer } };
 	}
@@ -227,21 +227,21 @@ export abstract class PlatformIO {
 	public writeBinary(doc: Document): Uint8Array {
 		const { json, resources } = this.writeJSON(doc, { format: Format.GLB });
 
-		const header = BufferUtils.toBuffer(new Uint32Array([0x46546c67, 2, 12]));
+		const header = BufferUtils.toView(new Uint32Array([0x46546c67, 2, 12]));
 
 		const jsonText = JSON.stringify(json);
 		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-		const jsonChunkHeader = BufferUtils.toBuffer(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
+		const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
 		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 		header[header.length - 1] += jsonChunk.byteLength;
 
 		const binBuffer = Object.values(resources)[0];
 		if (!binBuffer || !binBuffer.byteLength) {
-			return BufferUtils.concat([BufferUtils.toBuffer(header), jsonChunk]);
+			return BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
 		}
 
 		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
-		const binChunkHeader = BufferUtils.toBuffer(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
+		const binChunkHeader = BufferUtils.toView(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
 		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
 		header[header.length - 1] += binChunk.byteLength;
 

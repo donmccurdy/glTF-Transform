@@ -53,14 +53,14 @@ test('@gltf-transform/core::io | web read glb + resources', (t) => {
 
 	const jsonText = JSON.stringify(json);
 	const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-	const jsonChunkHeader = BufferUtils.toBuffer(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
+	const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
 	const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
 
 	const binaryChunkData = BufferUtils.pad(new Uint8Array(0), 0x00);
-	const binaryChunkHeader = BufferUtils.toBuffer(new Uint32Array([binaryChunkData.byteLength, 0x004e4942]));
+	const binaryChunkHeader = BufferUtils.toView(new Uint32Array([binaryChunkData.byteLength, 0x004e4942]));
 	const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
 
-	const header = BufferUtils.toBuffer(
+	const header = BufferUtils.toView(
 		new Uint32Array([0x46546c67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength])
 	);
 

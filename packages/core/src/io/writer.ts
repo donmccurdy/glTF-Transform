@@ -88,7 +88,7 @@ export class GLTFWriter {
 				accessorDef.bufferView = json.bufferViews!.length;
 
 				const accessorArray = accessor.getArray()!;
-				const data = BufferUtils.pad(BufferUtils.toBuffer(accessorArray));
+				const data = BufferUtils.pad(BufferUtils.toView(accessorArray));
 				accessorDef.byteOffset = byteLength;
 				byteLength += data.byteLength;
 				buffers.push(data);

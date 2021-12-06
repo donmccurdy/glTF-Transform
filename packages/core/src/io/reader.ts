@@ -96,7 +96,7 @@ export class GLTFReader {
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 				const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
-				context.bufferViews[index] = BufferUtils.toBuffer(resource, byteOffset, bufferViewDef.byteLength);
+				context.bufferViews[index] = BufferUtils.toView(resource, byteOffset, bufferViewDef.byteLength);
 			}
 
 			return context.buffers[bufferViewDef.buffer];
