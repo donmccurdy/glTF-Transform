@@ -162,12 +162,13 @@ export abstract class PlatformIO {
 	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
 	public binaryToJSON(glb: Uint8Array): JSONDocument {
 		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
+		this._readResourcesInternal(jsonDoc);
 		const json = jsonDoc.json;
 
 		// Check for external references, which can't be resolved by this method.
-		if (json.buffers && json.buffers.find((bufferDef) => bufferDef.uri !== undefined)) {
+		if (json.buffers && json.buffers.some((bufferDef) => isExternalBuffer(jsonDoc, bufferDef))) {
 			throw new Error('Cannot resolve external buffers with binaryToJSON().');
-		} else if (json.images && json.images.find((imageDef) => imageDef.bufferView === undefined)) {
+		} else if (json.images && json.images.some((imageDef) => isExternalImage(jsonDoc, imageDef))) {
 			throw new Error('Cannot resolve external images with binaryToJSON().');
 		}
 
@@ -247,4 +248,12 @@ export abstract class PlatformIO {
 
 		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
 	}
+}
+
+function isExternalBuffer(jsonDocument: JSONDocument, bufferDef: GLTF.IBuffer): boolean {
+	return bufferDef.uri !== undefined && !(bufferDef.uri in jsonDocument.resources);
+}
+
+function isExternalImage(jsonDocument: JSONDocument, imageDef: GLTF.IImage): boolean {
+	return imageDef.uri !== undefined && !(imageDef.uri in jsonDocument.resources) && imageDef.bufferView === undefined;
 }
