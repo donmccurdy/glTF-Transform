@@ -18,6 +18,7 @@ import { MaterialsVolume } from './khr-materials-volume';
 import { MeshQuantization } from './khr-mesh-quantization';
 import { TextureBasisu } from './khr-texture-basisu';
 import { TextureTransform } from './khr-texture-transform';
+import { XMP } from './khr-xmp-json-ld';
 
 export const KHRONOS_EXTENSIONS = [
 	DracoMeshCompression,
@@ -35,14 +36,10 @@ export const KHRONOS_EXTENSIONS = [
 	MeshQuantization,
 	TextureBasisu,
 	TextureTransform,
+	XMP,
 ];
 
-export const ALL_EXTENSIONS = [
-	MeshGPUInstancing,
-	MeshoptCompression,
-	TextureWebP,
-	...KHRONOS_EXTENSIONS,
-];
+export const ALL_EXTENSIONS = [MeshGPUInstancing, MeshoptCompression, TextureWebP, ...KHRONOS_EXTENSIONS];
 
 export * from './ext-mesh-gpu-instancing';
 export * from './ext-meshopt-compression';
@@ -62,3 +59,4 @@ export * from './khr-materials-volume';
 export * from './khr-mesh-quantization';
 export * from './khr-texture-basisu';
 export * from './khr-texture-transform';
+export * from './khr-xmp-json-ld';
