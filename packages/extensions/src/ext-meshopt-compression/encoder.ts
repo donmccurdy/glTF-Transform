@@ -8,6 +8,7 @@ import {
 	GLTF,
 	MathUtils,
 	Primitive,
+	Root,
 	TypedArray,
 	TypedArrayConstructor,
 	WriterContext,
@@ -135,8 +136,8 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 	const semantics = doc
 		.getGraph()
 		.listParentLinks(accessor)
-		.map((link) => link.getName())
-		.filter((name) => name !== 'accessor');
+		.filter((link) => !(link.getParent() instanceof Root))
+		.map((link) => link.getName());
 
 	for (const semantic of semantics) {
 		// Indices.
