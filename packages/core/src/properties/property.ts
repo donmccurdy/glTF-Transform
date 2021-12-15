@@ -1,15 +1,6 @@
 import { Nullable } from '../constants';
-import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge } from 'property-graph';
-import {
-	equalsArray,
-	equalsRef,
-	equalsRefList,
-	equalsRefMap,
-	isPlainObject,
-	isRef,
-	isRefList,
-	isRefMap,
-} from '../utils';
+import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge, isRef, isRefList, isRefMap } from 'property-graph';
+import { equalsArray, equalsRef, equalsRefList, equalsRefMap, isPlainObject } from '../utils';
 import type { Ref, RefMap, UnknownRef } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;

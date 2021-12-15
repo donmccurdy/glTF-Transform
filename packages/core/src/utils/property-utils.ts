@@ -6,18 +6,6 @@ export type Ref = GraphEdge<Property, Property>;
 export type RefMap = { [key: string]: Ref };
 export type UnknownRef = Ref | Ref[] | RefMap | unknown;
 
-export function isRef(value: Ref | unknown): boolean {
-	return value instanceof GraphEdge;
-}
-
-export function isRefList(value: Ref[] | unknown): boolean {
-	return Array.isArray(value) && value[0] instanceof GraphEdge;
-}
-
-export function isRefMap(value: RefMap | unknown): boolean {
-	return !!(value && typeof value === 'object' && Object.values(value)[0] instanceof GraphEdge);
-}
-
 export function equalsRef(refA: Ref, refB: Ref): boolean {
 	if (!!refA !== !!refB) return false;
 
