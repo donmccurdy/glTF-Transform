@@ -1,9 +1,7 @@
+import { $attributes } from 'property-graph';
 import { Nullable } from '../constants';
 import { ExtensionProperty } from './extension-property';
 import { Property, IProperty } from './property';
-
-// Breaking change introduced in v0.6.
-const TOKEN_WARNING = 'Pass extension name (string) as lookup token, not a constructor.';
 
 export interface IExtensibleProperty extends IProperty {
 	extensions: { [key: string]: ExtensionProperty };
@@ -29,7 +27,6 @@ export abstract class ExtensibleProperty<T extends IExtensibleProperty = IExtens
 	 * {@link Root} properties.*
 	 */
 	public getExtension<Prop extends ExtensionProperty>(name: string): Prop | null {
-		if (typeof name !== 'string') throw new Error(TOKEN_WARNING);
 		return (this as ExtensibleProperty).getRefMap('extensions', name) as Prop;
 	}
 

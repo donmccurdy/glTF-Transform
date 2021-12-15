@@ -19,10 +19,10 @@ type PunctualLightType = 'point' | 'spot' | 'directional';
  * Defines a light attached to a {@link Node}. See {@link LightsPunctual}.
  */
 export class Light extends ExtensionProperty<ILight> {
-	public readonly propertyType = 'Light';
-	public readonly parentTypes = [PropertyType.NODE];
-	public readonly extensionName = KHR_LIGHTS_PUNCTUAL;
 	public static EXTENSION_NAME = KHR_LIGHTS_PUNCTUAL;
+	public declare extensionName: typeof KHR_LIGHTS_PUNCTUAL;
+	public declare propertyType: 'Light';
+	public declare parentTypes: [PropertyType.NODE];
 
 	/**********************************************************************************************
 	 * CONSTANTS.
@@ -37,6 +37,13 @@ export class Light extends ExtensionProperty<ILight> {
 	/**********************************************************************************************
 	 * INSTANCE.
 	 */
+
+	protected init(): this {
+		this.extensionName = KHR_LIGHTS_PUNCTUAL;
+		this.propertyType = 'Light';
+		this.parentTypes = [PropertyType.NODE];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ILight> {
 		return Object.assign(super.getDefaults() as IProperty, {

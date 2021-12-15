@@ -48,10 +48,15 @@ interface INode extends IExtensibleProperty {
  * @category Properties
  */
 export class Node extends ExtensibleProperty<INode> {
-	public readonly propertyType = PropertyType.NODE;
+	public declare propertyType: PropertyType.NODE;
 
 	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
 	public _parent: SceneNode | null = null;
+
+	protected init(): this {
+		this.propertyType = PropertyType.NODE;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<INode> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {
@@ -179,15 +184,15 @@ export class Node extends ExtensibleProperty<INode> {
 		// Remove existing parent.
 		if (child._parent) child._parent.removeChild(child);
 
-		// Link in graph.
+		// Edge in graph.
 		this.addRef('children', child);
 
 		// Set new parent.
 		// TODO(cleanup): Avoid using $attributes here?
 		child._parent = this;
-		const childrenLinks = this[$attributes]['children'];
-		const link = childrenLinks[childrenLinks.length - 1];
-		link.onDispose(() => (child._parent = null));
+		const childrenRefs = this[$attributes]['children'];
+		const ref = childrenRefs[childrenRefs.length - 1];
+		ref.addEventListener('dispose', () => (child._parent = null));
 		return this;
 	}
 

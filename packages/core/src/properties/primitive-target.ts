@@ -23,7 +23,12 @@ interface IPrimitiveTarget extends IExtensibleProperty {
  * - [glTF → Morph Targets](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#morph-targets)
  */
 export class PrimitiveTarget extends Property<IPrimitiveTarget> {
-	public readonly propertyType = PropertyType.PRIMITIVE_TARGET;
+	public declare propertyType: PropertyType.PRIMITIVE_TARGET;
+
+	protected init(): this {
+		this.propertyType = PropertyType.PRIMITIVE_TARGET;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IPrimitiveTarget> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { attributes: {} });

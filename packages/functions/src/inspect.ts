@@ -88,10 +88,10 @@ function listMaterials (doc: Document): InspectPropertyReport<InspectMaterialRep
 
 		// Find all texture slots attached to this material or its extensions.
 		const extensions = new Set<ExtensionProperty>(material.listExtensions());
-		const slots = doc.getGraph().listLinks()
-			.filter((link) => {
-				const child = link.getChild();
-				const parent = link.getParent();
+		const slots = doc.getGraph().listEdges()
+			.filter((ref) => {
+				const child = ref.getChild();
+				const parent = ref.getParent();
 				if (child instanceof Texture && parent === material) {
 					return true;
 				}
@@ -102,7 +102,7 @@ function listMaterials (doc: Document): InspectPropertyReport<InspectMaterialRep
 				}
 				return false;
 			})
-			.map((link) => link.getName());
+			.map((ref) => ref.getName());
 
 		return {
 			name: material.getName(),
@@ -123,8 +123,8 @@ function listTextures (doc: Document): InspectPropertyReport<InspectTextureRepor
 			.filter((parent) => parent.propertyType !== 'Root')
 			.length;
 
-		const slots = doc.getGraph().listParentLinks(texture)
-			.map((link) => link.getName())
+		const slots = doc.getGraph().listParentEdges(texture)
+			.map((edge) => edge.getName())
 			.filter((name) => name !== 'texture');
 
 		const resolution = ImageUtils.getSize(texture.getImage()!, texture.getMimeType());

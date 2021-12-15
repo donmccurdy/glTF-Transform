@@ -52,7 +52,7 @@ export class MaterialsClearcoat extends Extension {
 
 	/** Creates a new Clearcoat property for use on a {@link Material}. */
 	public createClearcoat(): Clearcoat {
-		return new Clearcoat(this.doc.getGraph(), this);
+		return new Clearcoat(this.doc.getGraph());
 	}
 
 	/** @hidden */

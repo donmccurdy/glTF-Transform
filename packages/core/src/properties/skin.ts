@@ -21,7 +21,12 @@ interface ISkin extends IExtensibleProperty {
  * @category Properties
  */
 export class Skin extends ExtensibleProperty<ISkin> {
-	public readonly propertyType = PropertyType.SKIN;
+	public declare propertyType: PropertyType.SKIN;
+
+	protected init(): this {
+		this.propertyType = PropertyType.SKIN;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ISkin> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

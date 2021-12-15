@@ -71,7 +71,7 @@ export class MaterialsVolume extends Extension {
 
 	/** Creates a new Volume property for use on a {@link Material}. */
 	public createVolume(): Volume {
-		return new Volume(this.doc.getGraph(), this);
+		return new Volume(this.doc.getGraph());
 	}
 
 	/** @hidden */

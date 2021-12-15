@@ -213,16 +213,16 @@ test('@gltf-transform/core::material | texture channels', (t) => {
 
 	function getChannels(texture: Texture): number {
 		let mask = 0x0000;
-		for (const link of graph.listParentLinks(texture)) {
-			const { channels } = link.getAttributes() as { channels: number | undefined };
+		for (const edge of graph.listParentEdges(texture)) {
+			const { channels } = edge.getAttributes() as { channels: number | undefined };
 
 			if (channels) {
 				mask |= channels;
 				continue;
 			}
 
-			if (link.getParent().propertyType !== PropertyType.ROOT) {
-				throw new Error(`Missing attribute ".channels" on link, "${link.getName()}".`);
+			if (edge.getParent().propertyType !== PropertyType.ROOT) {
+				throw new Error(`Missing attribute ".channels" on link, "${edge.getName()}".`);
 			}
 		}
 		return mask;

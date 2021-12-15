@@ -227,7 +227,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 	t.end();
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', async (t) => {
+test.only('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', async (t) => {
 	const doc = new Document();
 	doc.createExtension(DracoMeshCompression).setRequired(true);
 

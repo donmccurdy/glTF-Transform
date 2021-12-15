@@ -23,10 +23,17 @@ const { R } = TextureChannel;
  * Defines optical transmission on a PBR {@link Material}. See {@link MaterialsTransmission}.
  */
 export class Transmission extends ExtensionProperty<ITransmission> {
-	public readonly propertyType = 'Transmission';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_TRANSMISSION;
 	public static EXTENSION_NAME = KHR_MATERIALS_TRANSMISSION;
+	public declare extensionName: typeof KHR_MATERIALS_TRANSMISSION;
+	public declare propertyType: 'Transmission';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_TRANSMISSION;
+		this.propertyType = 'Transmission';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ITransmission> {
 		return Object.assign(super.getDefaults() as IProperty, {

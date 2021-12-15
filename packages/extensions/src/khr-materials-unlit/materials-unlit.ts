@@ -48,7 +48,7 @@ export class MaterialsUnlit extends Extension {
 
 	/** Creates a new Unlit property for use on a {@link Material}. */
 	public createUnlit(): Unlit {
-		return new Unlit(this.doc.getGraph(), this);
+		return new Unlit(this.doc.getGraph());
 	}
 
 	/** @hidden */

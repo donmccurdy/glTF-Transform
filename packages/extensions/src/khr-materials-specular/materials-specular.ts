@@ -50,7 +50,7 @@ export class MaterialsSpecular extends Extension {
 
 	/** Creates a new Specular property for use on a {@link Material}. */
 	public createSpecular(): Specular {
-		return new Specular(this.doc.getGraph(), this);
+		return new Specular(this.doc.getGraph());
 	}
 
 	/** @hidden */

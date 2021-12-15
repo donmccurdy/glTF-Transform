@@ -128,8 +128,8 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		 * but since they're not on the graph they don't need to be tree-shaken.
 		 */
 		function indirectTreeShake(graph: Graph<Property>, propertyType: string): void {
-			graph.listLinks()
-				.map((link) => link.getParent())
+			graph.listEdges()
+				.map((edge) => edge.getParent())
 				.filter((parent) => parent.propertyType === propertyType)
 				.forEach(treeShake);
 		}

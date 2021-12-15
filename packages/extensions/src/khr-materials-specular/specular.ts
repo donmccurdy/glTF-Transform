@@ -28,10 +28,17 @@ const { R, G, B, A } = TextureChannel;
  * Defines specular reflectivity on a PBR {@link Material}. See {@link MaterialsSpecular}.
  */
 export class Specular extends ExtensionProperty<ISpecular> {
-	public readonly propertyType = 'Specular';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_SPECULAR;
 	public static EXTENSION_NAME = KHR_MATERIALS_SPECULAR;
+	public declare extensionName: typeof KHR_MATERIALS_SPECULAR;
+	public declare propertyType: 'Specular';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_SPECULAR;
+		this.propertyType = 'Specular';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ISpecular> {
 		return Object.assign(super.getDefaults() as IProperty, {

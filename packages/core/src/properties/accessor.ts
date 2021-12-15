@@ -70,7 +70,7 @@ interface IAccessor extends IExtensibleProperty {
  * @category Properties
  */
 export class Accessor extends ExtensibleProperty<IAccessor> {
-	public readonly propertyType = PropertyType.ACCESSOR;
+	public declare propertyType: PropertyType.ACCESSOR;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -131,6 +131,11 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.ACCESSOR;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IAccessor> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

@@ -12,10 +12,17 @@ interface IEmissiveStrength extends IProperty {
  * (HDR) emissive materials. See {@link MaterialsEmissiveStrength}.
  */
 export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
-	public readonly propertyType = 'EmissiveStrength';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_EMISSIVE_STRENGTH;
 	public static EXTENSION_NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
+	public declare extensionName: typeof KHR_MATERIALS_EMISSIVE_STRENGTH;
+	public declare propertyType: 'EmissiveStrength';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_EMISSIVE_STRENGTH;
+		this.propertyType = 'EmissiveStrength';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IEmissiveStrength> {
 		return Object.assign(super.getDefaults() as IProperty, { emissiveStrength: 1.0 });

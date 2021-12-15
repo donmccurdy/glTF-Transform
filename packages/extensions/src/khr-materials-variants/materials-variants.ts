@@ -95,17 +95,17 @@ export class MaterialsVariants extends Extension {
 
 	/** Creates a new MappingList property. */
 	public createMappingList(): MappingList {
-		return new MappingList(this.doc.getGraph(), this);
+		return new MappingList(this.doc.getGraph());
 	}
 
 	/** Creates a new Variant property. */
 	public createVariant(name = ''): Variant {
-		return new Variant(this.doc.getGraph(), this).setName(name);
+		return new Variant(this.doc.getGraph(), name);
 	}
 
 	/** Creates a new Mapping property. */
 	public createMapping(): Mapping {
-		return new Mapping(this.doc.getGraph(), this);
+		return new Mapping(this.doc.getGraph());
 	}
 
 	/** Lists all Variants on the current Document. */

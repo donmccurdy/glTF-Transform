@@ -30,10 +30,17 @@ const { R, G, B, A } = TextureChannel;
  * Converts a {@link Material} to a spec/gloss workflow. See {@link MaterialsPBRSpecularGlossiness}.
  */
 export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossiness> {
-	public readonly propertyType = 'PBRSpecularGlossiness';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 	public static EXTENSION_NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+	public declare extensionName: typeof KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+	public declare propertyType: 'PBRSpecularGlossiness';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+		this.propertyType = 'PBRSpecularGlossiness';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IPBRSpecularGlossiness> {
 		return Object.assign(super.getDefaults() as IProperty, {

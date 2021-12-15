@@ -55,7 +55,7 @@ export class MaterialsEmissiveStrength extends Extension {
 
 	/** Creates a new EmissiveStrength property for use on a {@link Material}. */
 	public createEmissiveStrength(): EmissiveStrength {
-		return new EmissiveStrength(this.doc.getGraph(), this);
+		return new EmissiveStrength(this.doc.getGraph());
 	}
 
 	/** @hidden */

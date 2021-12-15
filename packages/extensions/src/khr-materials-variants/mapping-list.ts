@@ -12,10 +12,17 @@ interface IMappingList extends IProperty {
  * List of material variant {@link Mapping}s. See {@link MaterialsVariants}.
  */
 export class MappingList extends ExtensionProperty<IMappingList> {
-	public readonly propertyType = 'MappingList';
-	public readonly parentTypes = [PropertyType.PRIMITIVE];
-	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
+	public declare extensionName: typeof KHR_MATERIALS_VARIANTS;
+	public declare propertyType: 'MappingList';
+	public declare parentTypes: [PropertyType.PRIMITIVE];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_VARIANTS;
+		this.propertyType = 'MappingList';
+		this.parentTypes = [PropertyType.PRIMITIVE];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IMappingList> {
 		return Object.assign(super.getDefaults() as IProperty, { mappings: [] });

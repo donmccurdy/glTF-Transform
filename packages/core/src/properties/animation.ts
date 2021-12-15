@@ -45,7 +45,12 @@ interface IAnimation extends IExtensibleProperty {
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class Animation extends ExtensibleProperty<IAnimation> {
-	public readonly propertyType = PropertyType.ANIMATION;
+	public declare propertyType: PropertyType.ANIMATION;
+
+	protected init(): this {
+		this.propertyType = PropertyType.ANIMATION;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IAnimation> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { channels: [], samplers: [] });

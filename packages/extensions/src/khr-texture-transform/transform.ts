@@ -15,10 +15,17 @@ interface ITransform extends IProperty {
  * Defines UV transform for a {@link TextureInfo}. See {@link TextureTransform}.
  */
 export class Transform extends ExtensionProperty<ITransform> {
-	public readonly propertyType = 'Transform';
-	public readonly parentTypes = [PropertyType.TEXTURE_INFO];
-	public readonly extensionName = KHR_TEXTURE_TRANSFORM;
 	public static EXTENSION_NAME = KHR_TEXTURE_TRANSFORM;
+	public declare extensionName: typeof KHR_TEXTURE_TRANSFORM;
+	public declare propertyType: 'Transform';
+	public declare parentTypes: [PropertyType.TEXTURE_INFO];
+
+	protected init(): this {
+		this.extensionName = KHR_TEXTURE_TRANSFORM;
+		this.propertyType = 'Transform';
+		this.parentTypes = [PropertyType.TEXTURE_INFO];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ITransform> {
 		return Object.assign(super.getDefaults() as IProperty, {

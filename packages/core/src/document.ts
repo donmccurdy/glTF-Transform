@@ -137,8 +137,8 @@ export class Document {
 		propertyMap.set(other._root, this._root);
 
 		// 3. Create stub classes for every Property in other Document.
-		for (const link of other._graph.listLinks()) {
-			for (const thisProp of [link.getParent() as Property, link.getChild() as Property]) {
+		for (const edge of other._graph.listEdges()) {
+			for (const thisProp of [edge.getParent() as Property, edge.getChild() as Property]) {
 				if (visited.has(thisProp)) continue;
 
 				let otherProp: Property;
@@ -147,11 +147,8 @@ export class Document {
 					otherProp = thisProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as new (g: Graph<Property>, e?: Extension) => Property;
-					otherProp =
-						thisProp instanceof ExtensionProperty
-							? new PropertyClass(this._graph, thisExtensions[thisProp.extensionName])
-							: new PropertyClass(this._graph);
+					const PropertyClass = thisProp.constructor as new (g: Graph<Property>) => Property;
+					otherProp = new PropertyClass(this._graph);
 				}
 
 				propertyMap.set(thisProp as Property, otherProp);
@@ -159,7 +156,7 @@ export class Document {
 			}
 		}
 
-		// 4. Assemble the links between Properties.
+		// 4. Assemble the edges between Properties.
 		const resolve = (p: Property): Property => {
 			const resolved = propertyMap.get(p);
 			if (!resolved) throw new Error('Could resolve property.');
@@ -220,37 +217,27 @@ export class Document {
 
 	/** Creates a new {@link Scene} attached to this document's {@link Root}. */
 	createScene(name = ''): Scene {
-		const scene = new Scene(this._graph, name);
-		this._root._addChildOfRoot(scene);
-		return scene;
+		return new Scene(this._graph, name);
 	}
 
 	/** Creates a new {@link Node} attached to this document's {@link Root}. */
 	createNode(name = ''): Node {
-		const node = new Node(this._graph, name);
-		this._root._addChildOfRoot(node);
-		return node;
+		return new Node(this._graph, name);
 	}
 
 	/** Creates a new {@link Camera} attached to this document's {@link Root}. */
 	createCamera(name = ''): Camera {
-		const camera = new Camera(this._graph, name);
-		this._root._addChildOfRoot(camera);
-		return camera;
+		return new Camera(this._graph, name);
 	}
 
 	/** Creates a new {@link Skin} attached to this document's {@link Root}. */
 	createSkin(name = ''): Skin {
-		const skin = new Skin(this._graph, name);
-		this._root._addChildOfRoot(skin);
-		return skin;
+		return new Skin(this._graph, name);
 	}
 
 	/** Creates a new {@link Mesh} attached to this document's {@link Root}. */
 	createMesh(name = ''): Mesh {
-		const mesh = new Mesh(this._graph, name);
-		this._root._addChildOfRoot(mesh);
-		return mesh;
+		return new Mesh(this._graph, name);
 	}
 
 	/**
@@ -271,23 +258,17 @@ export class Document {
 
 	/** Creates a new {@link Material} attached to this document's {@link Root}. */
 	createMaterial(name = ''): Material {
-		const material = new Material(this._graph, name);
-		this._root._addChildOfRoot(material);
-		return material;
+		return new Material(this._graph, name);
 	}
 
 	/** Creates a new {@link Texture} attached to this document's {@link Root}. */
 	createTexture(name = ''): Texture {
-		const texture = new Texture(this._graph, name);
-		this._root._addChildOfRoot(texture);
-		return texture;
+		return new Texture(this._graph, name);
 	}
 
 	/** Creates a new {@link Animation} attached to this document's {@link Root}. */
 	createAnimation(name = ''): Animation {
-		const animation = new Animation(this._graph, name);
-		this._root._addChildOfRoot(animation);
-		return animation;
+		return new Animation(this._graph, name);
 	}
 
 	/**
@@ -311,15 +292,11 @@ export class Document {
 		if (!buffer) {
 			buffer = this.getRoot().listBuffers()[0];
 		}
-		const accessor = new Accessor(this._graph, name).setBuffer(buffer);
-		this._root._addChildOfRoot(accessor);
-		return accessor;
+		return new Accessor(this._graph, name).setBuffer(buffer);
 	}
 
 	/** Creates a new {@link Buffer} attached to this document's {@link Root}. */
 	createBuffer(name = ''): Buffer {
-		const buffer = new Buffer(this._graph, name);
-		this._root._addChildOfRoot(buffer);
-		return buffer;
+		return new Buffer(this._graph, name);
 	}
 }

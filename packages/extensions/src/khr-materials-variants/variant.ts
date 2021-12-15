@@ -1,4 +1,4 @@
-import { ExtensionProperty, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants';
 
 /**
@@ -7,8 +7,15 @@ import { KHR_MATERIALS_VARIANTS } from '../constants';
  * Defines a variant of a {@link Material}. See {@link MaterialsVariants}.
  */
 export class Variant extends ExtensionProperty {
-	public readonly propertyType = 'Variant';
-	public readonly parentTypes = [PropertyType.ROOT, 'MappingList'];
-	public readonly extensionName = KHR_MATERIALS_VARIANTS;
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
+	public declare extensionName: typeof KHR_MATERIALS_VARIANTS;
+	public declare propertyType: 'Variant';
+	public declare parentTypes: ['MappingList'];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_VARIANTS;
+		this.propertyType = 'Variant';
+		this.parentTypes = ['MappingList'];
+		return this;
+	}
 }

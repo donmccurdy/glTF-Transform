@@ -7,7 +7,7 @@ const EXTENSION_NAME = 'TEST_node_gizmo';
 
 class GizmoExtension extends Extension {
 	static EXTENSION_NAME = EXTENSION_NAME;
-	extensionName = EXTENSION_NAME;
+	public extensionName = EXTENSION_NAME;
 
 	constructor(doc) {
 		super(doc);
@@ -39,11 +39,17 @@ class GizmoExtension extends Extension {
 }
 
 class Gizmo extends ExtensionProperty {
-	extensionName = EXTENSION_NAME;
-	propertyType = 'Gizmo';
-	parentTypes = [PropertyType.NODE];
+	declare extensionName: typeof EXTENSION_NAME;
+	declare propertyType: 'Gizmo';
+	declare parentTypes: [PropertyType.NODE];
 	constructor(graph, extension) {
 		super(graph, extension);
+	}
+	init(): this {
+		this.extensionName = EXTENSION_NAME;
+		this.propertyType = 'Gizmo';
+		this.parentTypes = [PropertyType.NODE];
+		return this;
 	}
 }
 

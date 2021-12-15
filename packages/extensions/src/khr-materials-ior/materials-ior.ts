@@ -43,7 +43,7 @@ export class MaterialsIOR extends Extension {
 
 	/** Creates a new IOR property for use on a {@link Material}. */
 	public createIOR(): IOR {
-		return new IOR(this.doc.getGraph(), this);
+		return new IOR(this.doc.getGraph());
 	}
 
 	/** @hidden */
