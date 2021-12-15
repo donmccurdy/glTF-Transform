@@ -54,7 +54,7 @@ export class MaterialsSheen extends Extension {
 
 	/** Creates a new Sheen property for use on a {@link Material}. */
 	public createSheen(): Sheen {
-		return new Sheen(this.doc.getGraph(), this);
+		return new Sheen(this.doc.getGraph());
 	}
 
 	/** @hidden */

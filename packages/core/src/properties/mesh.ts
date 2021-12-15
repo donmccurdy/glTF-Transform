@@ -41,7 +41,12 @@ interface IMesh extends IExtensibleProperty {
  * @category Properties
  */
 export class Mesh extends ExtensibleProperty<IMesh> {
-	public readonly propertyType = PropertyType.MESH;
+	public declare propertyType: PropertyType.MESH;
+
+	protected init(): this {
+		this.propertyType = PropertyType.MESH;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IMesh> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { weights: [], primitives: [] });

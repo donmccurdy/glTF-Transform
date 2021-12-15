@@ -70,11 +70,16 @@ interface IRoot extends IProperty {
  * @category Properties
  */
 export class Root extends Property<IRoot> {
-	public readonly propertyType = PropertyType.ROOT;
+	public declare propertyType: PropertyType.ROOT;
 
 	private readonly _extensions: Set<Extension> = new Set();
 
-	getDefaults(): Nullable<IRoot> {
+	protected init(): this {
+		this.propertyType = PropertyType.ROOT;
+		return this;
+	}
+
+	protected getDefaults(): Nullable<IRoot> {
 		return Object.assign(super.getDefaults() as IProperty, {
 			asset: {
 				generator: `glTF-Transform ${VERSION}`,
@@ -97,7 +102,9 @@ export class Root extends Property<IRoot> {
 	/** @internal */
 	constructor(graph: Graph<Property>) {
 		super(graph);
-		graph.on('clone', (target) => this._addChildOfRoot(target));
+		graph.addEventListener('node:create', (event) => {
+			this._addChildOfRoot(event.target as Property);
+		});
 	}
 
 	public clone(): this {
@@ -106,33 +113,21 @@ export class Root extends Property<IRoot> {
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
-		// the Document during cloning. The Root, and only the Root, should keep existing links
-		// while copying to avoid overwriting existing links during a merge.
+		// the Document during cloning. The Root, and only the Root, should keep existing
+		// references while copying to avoid overwriting during a merge.
 		if (resolve === COPY_IDENTITY) throw new Error('Root cannot be copied.');
 
-		// IMPORTANT: Root cannot call super.copy(), which removes existing links.
+		// IMPORTANT: Root cannot call super.copy(), which removes existing references.
 
 		this.set('asset', { ...other.get('asset') });
 		this.setName(other.getName());
 		this.setExtras({ ...other.getExtras() });
 		this.setDefaultScene(other.getDefaultScene() ? resolve(other.getDefaultScene()!) : null);
 
-		other.listScenes().forEach((prop) => this.addRef('scenes', resolve(prop)));
-		other.listNodes().forEach((prop) => this.addRef('nodes', resolve(prop)));
-		other.listCameras().forEach((prop) => this.addRef('cameras', resolve(prop)));
-		other.listSkins().forEach((prop) => this.addRef('skins', resolve(prop)));
-		other.listMeshes().forEach((prop) => this.addRef('meshes', resolve(prop)));
-		other.listMaterials().forEach((prop) => this.addRef('materials', resolve(prop)));
-		other.listTextures().forEach((prop) => this.addRef('textures', resolve(prop)));
-		other.listAnimations().forEach((prop) => this.addRef('animations', resolve(prop)));
-		other.listAccessors().forEach((prop) => this.addRef('accessors', resolve(prop)));
-		other.listBuffers().forEach((prop) => this.addRef('buffers', resolve(prop)));
-
 		return this;
 	}
 
-	/** @internal */
-	public _addChildOfRoot(child: unknown): this {
+	private _addChildOfRoot(child: Property): this {
 		if (child instanceof Scene) {
 			this.addRef('scenes', child);
 		} else if (child instanceof Node) {

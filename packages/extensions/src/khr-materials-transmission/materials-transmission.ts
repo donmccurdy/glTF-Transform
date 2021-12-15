@@ -49,7 +49,7 @@ export class MaterialsTransmission extends Extension {
 
 	/** Creates a new Transmission property for use on a {@link Material}. */
 	public createTransmission(): Transmission {
-		return new Transmission(this.doc.getGraph(), this);
+		return new Transmission(this.doc.getGraph());
 	}
 
 	/** @hidden */

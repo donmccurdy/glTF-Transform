@@ -27,10 +27,17 @@ const { G } = TextureChannel;
  * Defines volume on a PBR {@link Material}. See {@link MaterialsVolume}.
  */
 export class Volume extends ExtensionProperty<IVolume> {
-	public readonly propertyType = 'Volume';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_VOLUME;
 	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;
+	public declare extensionName: typeof KHR_MATERIALS_VOLUME;
+	public declare propertyType: 'Volume';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_VOLUME;
+		this.propertyType = 'Volume';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IVolume> {
 		return Object.assign(super.getDefaults() as IProperty, {

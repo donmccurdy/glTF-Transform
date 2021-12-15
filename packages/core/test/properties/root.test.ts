@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, JSONDocument, NodeIO, Root } from '../../';
+import { Document, JSONDocument, NodeIO } from '../../';
 
 test('@gltf-transform/core::root', (t) => {
 	const doc = new Document();
@@ -27,17 +27,17 @@ test('@gltf-transform/core::root', (t) => {
 	t.deepEqual(doc.getRoot().listSkins(), [skin], 'listSkins()');
 	t.deepEqual(doc.getRoot().listTextures(), [texture], 'listTextures()');
 
-	const root2 = new Root(doc.getGraph()).copy(doc.getRoot(), (o) => o);
-	t.deepEqual(root2.listAccessors(), [accessor], 'listAccessors()');
-	t.deepEqual(root2.listAnimations(), [animation], 'listAnimations()');
-	t.deepEqual(root2.listBuffers(), [buffer], 'listBuffers()');
-	t.deepEqual(root2.listCameras(), [camera], 'listCameras()');
-	t.deepEqual(root2.listMaterials(), [material], 'listMaterials()');
-	t.deepEqual(root2.listMeshes(), [mesh], 'listMeshes()');
-	t.deepEqual(root2.listNodes(), [node], 'listNodes()');
-	t.deepEqual(root2.listScenes(), [scene], 'listScenes()');
-	t.deepEqual(root2.listSkins(), [skin], 'listSkins()');
-	t.deepEqual(root2.listTextures(), [texture], 'listTextures()');
+	const root2 = doc.clone().getRoot();
+	t.deepEqual(root2.listAccessors().length, 1, 'listAccessors()');
+	t.deepEqual(root2.listAnimations().length, 1, 'listAnimations()');
+	t.deepEqual(root2.listBuffers().length, 1, 'listBuffers()');
+	t.deepEqual(root2.listCameras().length, 1, 'listCameras()');
+	t.deepEqual(root2.listMaterials().length, 1, 'listMaterials()');
+	t.deepEqual(root2.listMeshes().length, 1, 'listMeshes()');
+	t.deepEqual(root2.listNodes().length, 1, 'listNodes()');
+	t.deepEqual(root2.listScenes().length, 1, 'listScenes()');
+	t.deepEqual(root2.listSkins().length, 1, 'listSkins()');
+	t.deepEqual(root2.listTextures().length, 1, 'listTextures()');
 
 	t.throws(() => root2.clone(), 'no cloning');
 	t.throws(() => root2.copy(doc.getRoot()), 'no direct copy');

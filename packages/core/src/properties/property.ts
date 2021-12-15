@@ -1,15 +1,6 @@
 import { Nullable } from '../constants';
-import { $attributes, $immutableKeys, Graph, GraphNode, Link } from 'property-graph';
-import {
-	equalsArray,
-	equalsRef,
-	equalsRefList,
-	equalsRefMap,
-	isPlainObject,
-	isRef,
-	isRefList,
-	isRefMap,
-} from '../utils';
+import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge, isRef, isRefList, isRefMap } from 'property-graph';
+import { equalsArray, equalsRef, equalsRefList, equalsRefMap, isPlainObject } from '../utils';
 import type { Ref, RefMap, UnknownRef } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -70,7 +61,10 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
 		(this as Property).set('name', name);
+		this.init().dispatchEvent({ type: 'create' });
 	}
+
+	protected abstract init(): this;
 
 	protected getDefaults(): Nullable<T> {
 		return Object.assign(super.getDefaults(), { name: '', extras: {} });
@@ -126,15 +120,8 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * Makes a copy of this property, with the same resources (by reference) as the original.
 	 */
 	public clone(): this {
-		// NOTICE: Keep in sync with `./extension-property.ts`.
-
 		const PropertyClass = this.constructor as new (g: Graph<Property>) => this;
-		const child = new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
-
-		// Root needs this event to link cloned properties.
-		this.graph.emit('clone', child);
-
-		return child;
+		return new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 	}
 
 	/**
@@ -147,18 +134,18 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 		// Remove previous references.
 		for (const key in this[$attributes]) {
 			const value = this[$attributes][key];
-			if (value instanceof Link) {
+			if (value instanceof GraphEdge) {
 				if (!this[$immutableKeys].has(key)) {
 					value.dispose();
 				}
-			} else if (Array.isArray(value) && value[0] instanceof Link) {
-				for (const link of value as Ref[]) {
-					link.dispose();
+			} else if (Array.isArray(value) && value[0] instanceof GraphEdge) {
+				for (const ref of value as Ref[]) {
+					ref.dispose();
 				}
-			} else if (isPlainObject(value) && Object.values(value)[0] instanceof Link) {
+			} else if (isPlainObject(value) && Object.values(value)[0] instanceof GraphEdge) {
 				for (const subkey in value) {
-					const link = value[subkey] as Ref;
-					link.dispose();
+					const ref = value[subkey] as Ref;
+					ref.dispose();
 				}
 			}
 		}
@@ -167,24 +154,24 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 		for (const key in other[$attributes]) {
 			const thisValue = this[$attributes][key];
 			const otherValue = other[$attributes][key];
-			if (otherValue instanceof Link) {
+			if (otherValue instanceof GraphEdge) {
 				if (this[$immutableKeys].has(key)) {
-					const link = thisValue as unknown as Ref;
-					link.getChild().copy(resolve(otherValue.getChild()), resolve);
+					const ref = thisValue as unknown as Ref;
+					ref.getChild().copy(resolve(otherValue.getChild()), resolve);
 				} else {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
 				}
-			} else if (Array.isArray(otherValue) && otherValue[0] instanceof Link) {
-				for (const link of otherValue as Ref[]) {
+			} else if (Array.isArray(otherValue) && otherValue[0] instanceof GraphEdge) {
+				for (const ref of otherValue as Ref[]) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.addRef(key as any, resolve(link.getChild()), link.getAttributes());
+					this.addRef(key as any, resolve(ref.getChild()), ref.getAttributes());
 				}
-			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof Link) {
+			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof GraphEdge) {
 				for (const subkey in otherValue) {
-					const link = otherValue[subkey] as Ref;
+					const ref = otherValue[subkey] as Ref;
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.setRefMap(key as any, link.getName(), resolve(link.getChild()), link.getAttributes());
+					this.setRefMap(key as any, subkey, resolve(ref.getChild()), ref.getAttributes());
 				}
 			} else if (isPlainObject(otherValue)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));
@@ -266,6 +253,6 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * ```
 	 */
 	public listParents(): Property[] {
-		return this.listGraphParents() as Property[];
+		return this.graph.listParents(this);
 	}
 }

@@ -7,16 +7,10 @@ const EXTENSION_NAME = 'TEST_node_gizmo';
 
 class GizmoExtension extends Extension {
 	static EXTENSION_NAME = EXTENSION_NAME;
-	extensionName = EXTENSION_NAME;
-
-	constructor(doc) {
-		super(doc);
-	}
-
+	public extensionName = EXTENSION_NAME;
 	createGizmo() {
-		return new Gizmo(this.doc.getGraph(), this);
+		return new Gizmo(this.doc.getGraph());
 	}
-
 	write(context: WriterContext): this {
 		for (const node of this.doc.getRoot().listNodes()) {
 			if (node.getExtension(EXTENSION_NAME)) {
@@ -26,7 +20,6 @@ class GizmoExtension extends Extension {
 		}
 		return this;
 	}
-
 	read(context) {
 		context.jsonDoc.json.nodes.forEach((nodeDef, index) => {
 			const extensionDef = nodeDef.extensions && nodeDef.extensions.TEST_node_gizmo;
@@ -39,11 +32,14 @@ class GizmoExtension extends Extension {
 }
 
 class Gizmo extends ExtensionProperty {
-	extensionName = EXTENSION_NAME;
-	propertyType = 'Gizmo';
-	parentTypes = [PropertyType.NODE];
-	constructor(graph, extension) {
-		super(graph, extension);
+	declare extensionName: typeof EXTENSION_NAME;
+	declare propertyType: 'Gizmo';
+	declare parentTypes: [PropertyType.NODE];
+	init(): this {
+		this.extensionName = EXTENSION_NAME;
+		this.propertyType = 'Gizmo';
+		this.parentTypes = [PropertyType.NODE];
+		return this;
 	}
 }
 

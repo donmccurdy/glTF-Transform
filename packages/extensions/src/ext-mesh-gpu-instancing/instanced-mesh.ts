@@ -14,10 +14,17 @@ export const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
  * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link MeshGPUInstancing}.
  */
 export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
-	public readonly propertyType = 'InstancedMesh';
-	public readonly parentTypes = [PropertyType.NODE];
-	public readonly extensionName = EXT_MESH_GPU_INSTANCING;
 	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;
+	public declare extensionName: typeof EXT_MESH_GPU_INSTANCING;
+	public declare propertyType: 'InstancedMesh';
+	public declare parentTypes: [PropertyType.NODE];
+
+	protected init(): this {
+		this.extensionName = EXT_MESH_GPU_INSTANCING;
+		this.propertyType = 'InstancedMesh';
+		this.parentTypes = [PropertyType.NODE];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IInstancedMesh> {
 		return Object.assign(super.getDefaults() as IProperty, { attributes: {} });

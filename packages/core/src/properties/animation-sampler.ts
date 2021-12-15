@@ -51,7 +51,7 @@ interface IAnimationSampler extends IExtensibleProperty {
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
-	public readonly propertyType = PropertyType.ANIMATION_SAMPLER;
+	public declare propertyType: PropertyType.ANIMATION_SAMPLER;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -70,6 +70,11 @@ export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.ANIMATION_SAMPLER;
+		return this;
+	}
 
 	protected getDefaultAttributes(): Nullable<IAnimationSampler> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

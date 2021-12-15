@@ -62,7 +62,7 @@ interface IMaterial extends IExtensibleProperty {
  * @category Properties
  */
 export class Material extends ExtensibleProperty<IMaterial> {
-	public readonly propertyType = PropertyType.MATERIAL;
+	public declare propertyType: PropertyType.MATERIAL;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -89,6 +89,11 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.MATERIAL;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IMaterial> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

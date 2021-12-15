@@ -133,8 +133,12 @@ export class WriterContext {
 
 		const needsBounds = this._doc
 			.getGraph()
-			.listParentLinks(accessor)
-			.some((link) => link.getName() === 'POSITION' || link.getName() === 'input');
+			.listParentEdges(accessor)
+			.some(
+				(edge) =>
+					(edge.getName() === 'attributes' && edge.getAttributes().key === 'POSITION') ||
+					edge.getName() === 'input'
+			);
 		if (needsBounds) {
 			accessorDef.max = accessor.getMax([]).map(Math.fround);
 			accessorDef.min = accessor.getMin([]).map(Math.fround);
@@ -173,13 +177,13 @@ export class WriterContext {
 		const cachedUsage = this._accessorUsageMap.get(accessor);
 		if (cachedUsage) return cachedUsage;
 
-		for (const link of this._doc.getGraph().listParentLinks(accessor)) {
-			const { usage } = link.getAttributes() as { usage: BufferViewUsage | undefined };
+		for (const edge of this._doc.getGraph().listParentEdges(accessor)) {
+			const { usage } = edge.getAttributes() as { usage: BufferViewUsage | undefined };
 
 			if (usage) return usage;
 
-			if (link.getParent().propertyType !== PropertyType.ROOT) {
-				this._doc.getLogger().warn(`Missing attribute ".usage" on link, "${link.getName()}".`);
+			if (edge.getParent().propertyType !== PropertyType.ROOT) {
+				this._doc.getLogger().warn(`Missing attribute ".usage" on edge, "${edge.getName()}".`);
 			}
 		}
 

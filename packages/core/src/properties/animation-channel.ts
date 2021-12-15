@@ -40,7 +40,7 @@ interface IAnimationChannel extends IExtensibleProperty {
  * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
  */
 export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
-	public readonly propertyType = PropertyType.ANIMATION_CHANNEL;
+	public declare propertyType: PropertyType.ANIMATION_CHANNEL;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -61,6 +61,11 @@ export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.ANIMATION_CHANNEL;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IAnimationChannel> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

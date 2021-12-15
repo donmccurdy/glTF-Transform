@@ -29,7 +29,12 @@ interface ITexture extends IExtensibleProperty {
  * @category Properties
  */
 export class Texture extends ExtensibleProperty<ITexture> {
-	public readonly propertyType = PropertyType.TEXTURE;
+	public declare propertyType: PropertyType.TEXTURE;
+
+	protected init(): this {
+		this.propertyType = PropertyType.TEXTURE;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ITexture> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { image: null, mimeType: '', uri: '' });

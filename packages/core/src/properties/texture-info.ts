@@ -32,7 +32,7 @@ interface ITextureInfo extends IExtensibleProperty {
  * @category Properties
  */
 export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
-	public readonly propertyType = PropertyType.TEXTURE_INFO;
+	public declare propertyType: PropertyType.TEXTURE_INFO;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -75,6 +75,11 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.TEXTURE_INFO;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ITextureInfo> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

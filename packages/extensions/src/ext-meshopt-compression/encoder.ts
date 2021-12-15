@@ -133,15 +133,17 @@ export function getMeshoptMode(accessor: Accessor, usage: string): MeshoptMode {
 }
 
 export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: MeshoptFilter; bits?: number } {
-	const semantics = doc
+	const refs = doc
 		.getGraph()
-		.listParentLinks(accessor)
-		.filter((link) => !(link.getParent() instanceof Root))
-		.map((link) => link.getName());
+		.listParentEdges(accessor)
+		.filter((edge) => !(edge.getParent() instanceof Root));
 
-	for (const semantic of semantics) {
+	for (const ref of refs) {
+		const refName = ref.getName();
+		const refKey = (ref.getAttributes().key || '') as string;
+
 		// Indices.
-		if (semantic === 'indices') return { filter: MeshoptFilter.NONE };
+		if (refName === 'indices') return { filter: MeshoptFilter.NONE };
 
 		// Attributes.
 		//
@@ -151,23 +153,25 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 		// - POSITION and TEXCOORD_0 could use exponential filtering, but this produces broken
 		//   output in some cases (e.g. Matilda.glb), for unknown reasons. gltfpack uses manual
 		//   quantization for these attributes.
-		if (semantic === 'POSITION') return { filter: MeshoptFilter.NONE };
-		if (semantic === 'TEXCOORD_0') return { filter: MeshoptFilter.NONE };
-		if (semantic === 'NORMAL') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
-		if (semantic === 'TANGENT') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
-		if (semantic.startsWith('JOINTS_')) return { filter: MeshoptFilter.NONE };
-		if (semantic.startsWith('WEIGHTS_')) return { filter: MeshoptFilter.NONE };
+		if (refName === 'attributes') {
+			if (refKey === 'POSITION') return { filter: MeshoptFilter.NONE };
+			if (refKey === 'TEXCOORD_0') return { filter: MeshoptFilter.NONE };
+			if (refKey === 'NORMAL') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
+			if (refKey === 'TANGENT') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
+			if (refKey.startsWith('JOINTS_')) return { filter: MeshoptFilter.NONE };
+			if (refKey.startsWith('WEIGHTS_')) return { filter: MeshoptFilter.NONE };
+		}
 
 		// Animation.
-		if (semantic === 'output') {
+		if (refName === 'output') {
 			const targetPath = getTargetPath(accessor);
 			if (targetPath === 'rotation') return { filter: MeshoptFilter.QUATERNION, bits: 16 };
 			if (targetPath === 'translation') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
 			if (targetPath === 'scale') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
 			return { filter: MeshoptFilter.NONE };
 		}
-		if (semantic === 'input') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
-		if (semantic === 'inverseBindMatrices') return { filter: MeshoptFilter.NONE };
+		if (refName === 'input') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
+		if (refName === 'inverseBindMatrices') return { filter: MeshoptFilter.NONE };
 	}
 
 	return { filter: MeshoptFilter.NONE };

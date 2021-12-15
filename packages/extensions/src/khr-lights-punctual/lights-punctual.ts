@@ -58,8 +58,8 @@ export class LightsPunctual extends Extension {
 	public static readonly EXTENSION_NAME = NAME;
 
 	/** Creates a new punctual Light property for use on a {@link Node}. */
-	public createLight(): Light {
-		return new Light(this.doc.getGraph(), this);
+	public createLight(name = ''): Light {
+		return new Light(this.doc.getGraph(), name);
 	}
 
 	/** @hidden */

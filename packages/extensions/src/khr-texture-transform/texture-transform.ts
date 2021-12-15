@@ -53,7 +53,7 @@ export class TextureTransform extends Extension {
 
 	/** Creates a new Transform property for use on a {@link TextureInfo}. */
 	public createTransform(): Transform {
-		return new Transform(this.doc.getGraph(), this);
+		return new Transform(this.doc.getGraph());
 	}
 
 	/** @hidden */

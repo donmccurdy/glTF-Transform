@@ -1,12 +1,5 @@
-import { Graph } from 'property-graph';
 import { ExtensibleProperty } from './extensible-property';
-import { COPY_IDENTITY, Property, IProperty } from './property';
-
-/** @hidden */
-export interface ExtensionPropertyParent {
-	addExtensionProperty(ext: ExtensionProperty): this;
-	removeExtensionProperty(ext: ExtensionProperty): this;
-}
+import { Property, IProperty } from './property';
 
 /**
  * # ExtensionProperty
@@ -30,29 +23,6 @@ export abstract class ExtensionProperty<T extends IProperty = IProperty> extends
 
 	/** List of supported {@link Property} types. */
 	public abstract readonly parentTypes: string[];
-
-	/** @hidden */
-	constructor(graph: Graph<Property>, private readonly _extension: ExtensionPropertyParent) {
-		super(graph);
-		this._extension.addExtensionProperty(this);
-	}
-
-	public clone(): this {
-		// NOTICE: Keep in sync with `./property.ts`.
-
-		const PropertyClass = this.constructor as new (g: Graph<Property>, e: ExtensionPropertyParent) => this;
-		const child = new PropertyClass(this.graph, this._extension).copy(this, COPY_IDENTITY);
-
-		// Root needs this event to link cloned properties.
-		this.graph.emit('clone', child);
-
-		return child;
-	}
-
-	public dispose(): void {
-		this._extension.removeExtensionProperty(this);
-		super.dispose();
-	}
 
 	/** @hidden */
 	public _validateParent(parent: ExtensibleProperty): void {

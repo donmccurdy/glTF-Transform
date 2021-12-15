@@ -48,7 +48,7 @@ interface IPrimitive extends IExtensibleProperty {
  * @category Properties
  */
 export class Primitive extends ExtensibleProperty<IPrimitive> {
-	public readonly propertyType = PropertyType.PRIMITIVE;
+	public declare propertyType: PropertyType.PRIMITIVE;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -82,6 +82,11 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.PRIMITIVE;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IPrimitive> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {

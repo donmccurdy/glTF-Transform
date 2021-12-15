@@ -52,25 +52,25 @@ export function formatHeader(title: string): string {
 /** Returns names of all texture slots using the given texture. */
 export function getTextureSlots (doc: Document, texture: Texture): string[] {
 	const root = doc.getRoot();
-	const slots = doc.getGraph().listParentLinks(texture)
-		.filter((link) => link.getParent() !== root)
-		.map((link) => link.getName());
+	const slots = doc.getGraph().listParentEdges(texture)
+		.filter((edge) => edge.getParent() !== root)
+		.map((edge) => edge.getName());
 	return Array.from(new Set(slots));
 }
 
 /** Returns bit mask of all texture channels used by the given texture. */
 export function getTextureChannels (doc: Document, texture: Texture): number {
 	let mask = 0x0000;
-	for (const link of doc.getGraph().listParentLinks(texture)) {
-		const { channels } = link.getAttributes() as { channels: number | undefined };
+	for (const edge of doc.getGraph().listParentEdges(texture)) {
+		const { channels } = edge.getAttributes() as { channels: number | undefined };
 
 		if (channels) {
 			mask |= channels;
 			continue;
 		}
 
-		if (link.getParent().propertyType !== PropertyType.ROOT) {
-			doc.getLogger().warn(`Missing attribute ".channels" on link, "${link.getName()}".`);
+		if (edge.getParent().propertyType !== PropertyType.ROOT) {
+			doc.getLogger().warn(`Missing attribute ".channels" on edge, "${edge.getName()}".`);
 		}
 	}
 	return mask;

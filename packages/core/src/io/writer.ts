@@ -1,7 +1,7 @@
 import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
 import { Document } from '../document';
 import { Extension } from '../extension';
-import { Link } from 'property-graph';
+import { GraphEdge } from 'property-graph';
 import { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
 import { GLTF } from '../types/gltf';
@@ -202,18 +202,18 @@ export class GLTFWriter {
 
 		/* Data use pre-processing. */
 
-		const accessorLinks = new Map<Accessor, Link<Property, Accessor>[]>();
+		const accessorRefs = new Map<Accessor, GraphEdge<Property, Accessor>[]>();
 
 		// Gather all accessors, creating a map to look up their uses.
-		for (const link of doc.getGraph().listLinks()) {
-			if (link.getParent() === root) continue;
+		for (const ref of doc.getGraph().listEdges()) {
+			if (ref.getParent() === root) continue;
 
-			const child = link.getChild();
+			const child = ref.getChild();
 
 			if (child instanceof Accessor) {
-				const uses = accessorLinks.get(child) || [];
-				uses.push(link as Link<Property, Accessor>);
-				accessorLinks.set(child, uses);
+				const uses = accessorRefs.get(child) || [];
+				uses.push(ref as GraphEdge<Property, Accessor>);
+				accessorRefs.set(child, uses);
 			}
 		}
 
@@ -263,14 +263,14 @@ export class GLTFWriter {
 			if (context.accessorIndexMap.has(accessor)) return;
 
 			// Assign usage for core accessor usage types (explicit targets and implicit usage).
-			const accessorRefs = accessorLinks.get(accessor) || [];
+			const accessorEdges = accessorRefs.get(accessor) || [];
 			const usage = context.getAccessorUsage(accessor);
 			context.addAccessorToUsageGroup(accessor, usage);
 
 			// For accessor usage that requires grouping by parent (vertex and instance
 			// attributes) organize buffer views accordingly.
 			if (groupByParent.has(usage)) {
-				const parent = accessorRefs[0].getParent();
+				const parent = accessorEdges[0].getParent();
 				const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
 				parentAccessors.add(accessor);
 				accessorParents.set(parent, parentAccessors);

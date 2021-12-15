@@ -31,10 +31,17 @@ const { R, G, B } = TextureChannel;
  * Defines clear coat for a PBR material. See {@link MaterialsClearcoat}.
  */
 export class Clearcoat extends ExtensionProperty<IClearcoat> {
-	public readonly propertyType = 'Clearcoat';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_CLEARCOAT;
 	public static EXTENSION_NAME = KHR_MATERIALS_CLEARCOAT;
+	public declare extensionName: typeof KHR_MATERIALS_CLEARCOAT;
+	public declare propertyType: 'Clearcoat';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_CLEARCOAT;
+		this.propertyType = 'Clearcoat';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IClearcoat> {
 		return Object.assign(super.getDefaults() as IProperty, {

@@ -1,22 +1,10 @@
-import { Link } from 'property-graph';
+import { GraphEdge } from 'property-graph';
 import { BufferViewUsage } from '../constants';
 import type { Property } from '../properties';
 
-export type Ref = Link<Property, Property>;
+export type Ref = GraphEdge<Property, Property>;
 export type RefMap = { [key: string]: Ref };
 export type UnknownRef = Ref | Ref[] | RefMap | unknown;
-
-export function isRef(value: Ref | unknown): boolean {
-	return value instanceof Link;
-}
-
-export function isRefList(value: Ref[] | unknown): boolean {
-	return Array.isArray(value) && value[0] instanceof Link;
-}
-
-export function isRefMap(value: RefMap | unknown): boolean {
-	return !!(value && typeof value === 'object' && Object.values(value)[0] instanceof Link);
-}
 
 export function equalsRef(refA: Ref, refB: Ref): boolean {
 	if (!!refA !== !!refB) return false;
@@ -79,14 +67,14 @@ export function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> 
 	return true;
 }
 
-export type LinkAttributes = Record<string, unknown>;
+export type RefAttributes = Record<string, unknown>;
 
-export interface AccessorLinkAttributes extends LinkAttributes {
+export interface AccessorRefAttributes extends RefAttributes {
 	/** Usage role of an accessor reference. */
 	usage: BufferViewUsage | string;
 }
 
-export interface TextureLinkAttributes extends LinkAttributes {
+export interface TextureRefAttributes extends RefAttributes {
 	/** Bitmask for {@link TextureChannel TextureChannels} used by a texture reference. */
 	channels: number;
 }

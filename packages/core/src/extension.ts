@@ -1,7 +1,8 @@
+import { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from 'property-graph';
 import { PropertyType } from './constants';
 import { Document } from './document';
 import { ReaderContext, WriterContext } from './io';
-import { ExtensionProperty, ExtensionPropertyParent } from './properties';
+import { ExtensionProperty } from './properties';
 
 /**
  * # Extension
@@ -25,7 +26,7 @@ import { ExtensionProperty, ExtensionPropertyParent } from './properties';
  *
  * @category Extensions
  */
-export abstract class Extension implements ExtensionPropertyParent {
+export abstract class Extension {
 	/** Official name of the extension. */
 	public static EXTENSION_NAME: string;
 	/** Official name of the extension. */
@@ -55,13 +56,32 @@ export abstract class Extension implements ExtensionPropertyParent {
 	protected properties: Set<ExtensionProperty> = new Set();
 
 	/** @hidden */
+	private _listener: (event: unknown) => void;
+
+	/** @hidden */
 	constructor(protected readonly doc: Document) {
 		doc.getRoot()._enableExtension(this);
+
+		this._listener = (_event: unknown): void => {
+			const event = _event as GraphNodeEvent | GraphEdgeEvent | GraphEvent;
+			const target = event.target as ExtensionProperty | unknown;
+			if (target instanceof ExtensionProperty && target.extensionName === this.extensionName) {
+				if (event.type === 'node:create') this._addExtensionProperty(target);
+				if (event.type === 'node:dispose') this._removeExtensionProperty(target);
+			}
+		};
+
+		const graph = doc.getGraph();
+		graph.addEventListener('node:create', this._listener);
+		graph.addEventListener('node:dispose', this._listener);
 	}
 
 	/** Disables and removes the extension from the Document. */
 	public dispose(): void {
 		this.doc.getRoot()._disableExtension(this);
+		const graph = this.doc.getGraph();
+		graph.removeEventListener('node:create', this._listener);
+		graph.removeEventListener('node:dispose', this._listener);
 		for (const property of this.properties) {
 			property.dispose();
 		}
@@ -91,17 +111,17 @@ export abstract class Extension implements ExtensionPropertyParent {
 	}
 
 	/**********************************************************************************************
-	 * ExtensionPropertyParent implementation.
+	 * ExtensionProperty management.
 	 */
 
-	/** @hidden */
-	public addExtensionProperty(property: ExtensionProperty): this {
+	/** @internal */
+	private _addExtensionProperty(property: ExtensionProperty): this {
 		this.properties.add(property);
 		return this;
 	}
 
-	/** @hidden */
-	public removeExtensionProperty(property: ExtensionProperty): this {
+	/** @internal */
+	private _removeExtensionProperty(property: ExtensionProperty): this {
 		this.properties.delete(property);
 		return this;
 	}

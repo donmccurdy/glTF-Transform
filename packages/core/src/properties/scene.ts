@@ -25,7 +25,12 @@ interface IScene extends IExtensibleProperty {
  * @category Properties
  */
 export class Scene extends ExtensibleProperty<IScene> {
-	public readonly propertyType = PropertyType.SCENE;
+	public declare propertyType: PropertyType.SCENE;
+
+	protected init(): this {
+		this.propertyType = PropertyType.SCENE;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IScene> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { children: [] });
@@ -43,15 +48,15 @@ export class Scene extends ExtensibleProperty<IScene> {
 		// Remove existing parent.
 		if (node._parent) node._parent.removeChild(node);
 
-		// Link in graph.
+		// Edge in graph.
 		this.addRef('children', node);
 
 		// Set new parent.
 		// TODO(cleanup): Avoid using $attributes here?
 		node._parent = this;
-		const childrenLinks = this[$attributes]['children'];
-		const link = childrenLinks[childrenLinks.length - 1];
-		link.onDispose(() => (node._parent = null));
+		const childrenRefs = this[$attributes]['children'];
+		const ref = childrenRefs[childrenRefs.length - 1];
+		ref.addEventListener('dispose', () => (node._parent = null));
 		return this;
 	}
 

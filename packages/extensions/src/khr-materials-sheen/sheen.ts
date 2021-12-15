@@ -28,10 +28,17 @@ const { R, G, B, A } = TextureChannel;
  * Defines sheen on a PBR {@link Material}. See {@link MaterialsSheen}.
  */
 export class Sheen extends ExtensionProperty<ISheen> {
-	public readonly propertyType = 'Sheen';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_SHEEN;
 	public static EXTENSION_NAME = KHR_MATERIALS_SHEEN;
+	public declare extensionName: typeof KHR_MATERIALS_SHEEN;
+	public declare propertyType: 'Sheen';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_SHEEN;
+		this.propertyType = 'Sheen';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ISheen> {
 		return Object.assign(super.getDefaults() as IProperty, {

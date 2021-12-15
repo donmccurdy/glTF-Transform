@@ -271,16 +271,17 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 		},
 		'primitiveDef 1/2'
 	);
+	// Order of attributes reverses, because shared POSITION is cloned.
 	t.deepEquals(
 		primitiveDefs[1],
 		{
 			mode: Primitive.Mode.TRIANGLES,
 			indices: 2,
-			attributes: { POSITION: 3, COLOR_0: 4 },
+			attributes: { COLOR_0: 3, POSITION: 4 },
 			extensions: {
 				KHR_draco_mesh_compression: {
 					bufferView: 1,
-					attributes: { POSITION: 0, COLOR_0: 1 },
+					attributes: { COLOR_0: 0, POSITION: 1 },
 				},
 			},
 		},

@@ -11,10 +11,17 @@ interface IIOR extends IProperty {
  * Defines index of refraction for a PBR {@link Material}. See {@link MaterialsIOR}.
  */
 export class IOR extends ExtensionProperty<IIOR> {
-	public readonly propertyType = 'IOR';
-	public readonly parentTypes = [PropertyType.MATERIAL];
-	public readonly extensionName = KHR_MATERIALS_IOR;
 	public static EXTENSION_NAME = KHR_MATERIALS_IOR;
+	public declare extensionName: typeof KHR_MATERIALS_IOR;
+	public declare propertyType: 'IOR';
+	public declare parentTypes: [PropertyType.MATERIAL];
+
+	protected init(): this {
+		this.extensionName = KHR_MATERIALS_IOR;
+		this.propertyType = 'IOR';
+		this.parentTypes = [PropertyType.MATERIAL];
+		return this;
+	}
 
 	protected getDefaults(): Nullable<IIOR> {
 		return Object.assign(super.getDefaults() as IProperty, { ior: 0 });

@@ -41,7 +41,7 @@ interface ICamera extends IExtensibleProperty {
  * @category Properties
  */
 export class Camera extends ExtensibleProperty<ICamera> {
-	public readonly propertyType = PropertyType.CAMERA;
+	public declare propertyType: PropertyType.CAMERA;
 
 	/**********************************************************************************************
 	 * Constants.
@@ -57,6 +57,11 @@ export class Camera extends ExtensibleProperty<ICamera> {
 	/**********************************************************************************************
 	 * Instance.
 	 */
+
+	protected init(): this {
+		this.propertyType = PropertyType.CAMERA;
+		return this;
+	}
 
 	protected getDefaults(): Nullable<ICamera> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {
