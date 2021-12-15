@@ -33,11 +33,10 @@ export class Sheen extends ExtensionProperty<ISheen> {
 	public declare propertyType: 'Sheen';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_SHEEN;
 		this.propertyType = 'Sheen';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ISheen> {

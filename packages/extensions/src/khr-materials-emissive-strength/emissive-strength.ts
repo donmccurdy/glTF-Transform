@@ -17,11 +17,10 @@ export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
 	public declare propertyType: 'EmissiveStrength';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_EMISSIVE_STRENGTH;
 		this.propertyType = 'EmissiveStrength';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IEmissiveStrength> {

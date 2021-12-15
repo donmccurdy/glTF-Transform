@@ -58,9 +58,8 @@ export class Camera extends ExtensibleProperty<ICamera> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.CAMERA;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ICamera> {

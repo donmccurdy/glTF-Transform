@@ -19,11 +19,10 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	public declare propertyType: 'InstancedMesh';
 	public declare parentTypes: [PropertyType.NODE];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = EXT_MESH_GPU_INSTANCING;
 		this.propertyType = 'InstancedMesh';
 		this.parentTypes = [PropertyType.NODE];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IInstancedMesh> {

@@ -63,9 +63,8 @@ interface IBuffer extends IExtensibleProperty {
 export class Buffer extends ExtensibleProperty<IBuffer> {
 	public declare propertyType: PropertyType.BUFFER;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.BUFFER;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IBuffer> {

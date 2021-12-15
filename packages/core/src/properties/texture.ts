@@ -31,9 +31,8 @@ interface ITexture extends IExtensibleProperty {
 export class Texture extends ExtensibleProperty<ITexture> {
 	public declare propertyType: PropertyType.TEXTURE;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.TEXTURE;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ITexture> {

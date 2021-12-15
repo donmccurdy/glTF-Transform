@@ -83,9 +83,8 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.PRIMITIVE;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IPrimitive> {

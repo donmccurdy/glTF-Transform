@@ -38,11 +38,10 @@ export class Light extends ExtensionProperty<ILight> {
 	 * INSTANCE.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_LIGHTS_PUNCTUAL;
 		this.propertyType = 'Light';
 		this.parentTypes = [PropertyType.NODE];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ILight> {

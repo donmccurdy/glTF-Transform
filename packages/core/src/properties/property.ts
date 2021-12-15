@@ -60,12 +60,23 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	/** @hidden */
 	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
-		(this as Property).set('name', name);
-		this.init().dispatchEvent({ type: 'create' });
+		(this as Property)[$attributes]['name'] = name;
+		this.init();
+		this.dispatchEvent({ type: 'create' });
 	}
 
-	protected abstract init(): this;
+	/**
+	 * Initializes instance data for a subclass. Because subclass constructors run after the
+	 * constructor of the parent class, and 'create' events dispatched by the parent class
+	 * assume the instance is fully initialized, it's best to do any initialization here.
+	 * @hidden
+	 */
+	protected abstract init(): void;
 
+	/**
+	 * Returns default attributes for the property. Empty lists and maps should be initialized
+	 * to empty arrays and objects. Always invoke `super.getDefaults()` and extend the result.
+	 */
 	protected getDefaults(): Nullable<T> {
 		return Object.assign(super.getDefaults(), { name: '', extras: {} });
 	}

@@ -20,11 +20,10 @@ export class Transform extends ExtensionProperty<ITransform> {
 	public declare propertyType: 'Transform';
 	public declare parentTypes: [PropertyType.TEXTURE_INFO];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_TEXTURE_TRANSFORM;
 		this.propertyType = 'Transform';
 		this.parentTypes = [PropertyType.TEXTURE_INFO];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ITransform> {

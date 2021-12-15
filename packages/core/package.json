@@ -11,6 +11,11 @@
   "source": "src/core.ts",
   "types": "dist/core.d.ts",
   "sideEffects": false,
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "node >= 14"
+  ],
   "scripts": {
     "dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
     "watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
@@ -36,7 +41,7 @@
   },
   "dependencies": {
     "gl-matrix": "~3.4.3",
-    "property-graph": "^0.2.3"
+    "property-graph": "^0.2.4"
   },
   "mangle": {
     "regex": "^_"

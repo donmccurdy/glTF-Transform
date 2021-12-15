@@ -28,11 +28,10 @@ export class Transmission extends ExtensionProperty<ITransmission> {
 	public declare propertyType: 'Transmission';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_TRANSMISSION;
 		this.propertyType = 'Transmission';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ITransmission> {

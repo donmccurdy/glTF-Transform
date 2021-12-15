@@ -11,6 +11,11 @@
   "source": "src/extensions.ts",
   "types": "dist/extensions.d.ts",
   "sideEffects": false,
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "node >= 14"
+  ],
   "scripts": {
     "dist": "microbundle --format modern,cjs",
     "watch": "microbundle watch --format modern,cjs",

@@ -32,11 +32,10 @@ export class Volume extends ExtensionProperty<IVolume> {
 	public declare propertyType: 'Volume';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_VOLUME;
 		this.propertyType = 'Volume';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IVolume> {

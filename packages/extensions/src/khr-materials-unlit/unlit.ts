@@ -13,10 +13,9 @@ export class Unlit extends ExtensionProperty {
 	public declare propertyType: 'Unlit';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_UNLIT;
 		this.propertyType = 'Unlit';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 }

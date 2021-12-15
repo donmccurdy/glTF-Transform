@@ -47,9 +47,8 @@ interface IAnimation extends IExtensibleProperty {
 export class Animation extends ExtensibleProperty<IAnimation> {
 	public declare propertyType: PropertyType.ANIMATION;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.ANIMATION;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IAnimation> {

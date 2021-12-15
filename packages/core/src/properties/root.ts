@@ -74,9 +74,8 @@ export class Root extends Property<IRoot> {
 
 	private readonly _extensions: Set<Extension> = new Set();
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.ROOT;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IRoot> {

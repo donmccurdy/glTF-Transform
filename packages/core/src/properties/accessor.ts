@@ -132,9 +132,8 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.ACCESSOR;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IAccessor> {

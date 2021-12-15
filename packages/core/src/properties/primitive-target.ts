@@ -25,9 +25,8 @@ interface IPrimitiveTarget extends IExtensibleProperty {
 export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public declare propertyType: PropertyType.PRIMITIVE_TARGET;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.PRIMITIVE_TARGET;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IPrimitiveTarget> {

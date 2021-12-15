@@ -23,9 +23,8 @@ interface ISkin extends IExtensibleProperty {
 export class Skin extends ExtensibleProperty<ISkin> {
 	public declare propertyType: PropertyType.SKIN;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.SKIN;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ISkin> {

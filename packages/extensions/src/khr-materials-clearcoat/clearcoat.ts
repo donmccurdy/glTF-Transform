@@ -36,11 +36,10 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	public declare propertyType: 'Clearcoat';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_CLEARCOAT;
 		this.propertyType = 'Clearcoat';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IClearcoat> {

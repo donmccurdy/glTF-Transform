@@ -35,11 +35,10 @@ class Gizmo extends ExtensionProperty {
 	declare extensionName: typeof EXTENSION_NAME;
 	declare propertyType: 'Gizmo';
 	declare parentTypes: [PropertyType.NODE];
-	init(): this {
+	init(): void {
 		this.extensionName = EXTENSION_NAME;
 		this.propertyType = 'Gizmo';
 		this.parentTypes = [PropertyType.NODE];
-		return this;
 	}
 }
 

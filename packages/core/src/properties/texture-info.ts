@@ -76,9 +76,8 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.TEXTURE_INFO;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<ITextureInfo> {

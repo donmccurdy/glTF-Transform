@@ -12,10 +12,9 @@ export class Variant extends ExtensionProperty {
 	public declare propertyType: 'Variant';
 	public declare parentTypes: ['MappingList'];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_VARIANTS;
 		this.propertyType = 'Variant';
 		this.parentTypes = ['MappingList'];
-		return this;
 	}
 }

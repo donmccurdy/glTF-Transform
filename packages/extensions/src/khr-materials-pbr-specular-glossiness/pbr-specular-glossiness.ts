@@ -35,11 +35,10 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	public declare propertyType: 'PBRSpecularGlossiness';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 		this.propertyType = 'PBRSpecularGlossiness';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IPBRSpecularGlossiness> {

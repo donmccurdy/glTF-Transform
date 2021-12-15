@@ -62,9 +62,8 @@ export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.ANIMATION_CHANNEL;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IAnimationChannel> {

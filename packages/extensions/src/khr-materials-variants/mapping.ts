@@ -18,11 +18,10 @@ export class Mapping extends ExtensionProperty<IMapping> {
 	public declare propertyType: 'Mapping';
 	public declare parentTypes: ['MappingList'];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_VARIANTS;
 		this.propertyType = 'Mapping';
 		this.parentTypes = ['MappingList'];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IMapping> {

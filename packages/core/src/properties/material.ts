@@ -90,9 +90,8 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.MATERIAL;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IMaterial> {

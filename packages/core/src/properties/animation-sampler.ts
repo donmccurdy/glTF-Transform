@@ -71,9 +71,8 @@ export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	 * Instance.
 	 */
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.ANIMATION_SAMPLER;
-		return this;
 	}
 
 	protected getDefaultAttributes(): Nullable<IAnimationSampler> {

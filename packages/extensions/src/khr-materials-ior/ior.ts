@@ -16,11 +16,10 @@ export class IOR extends ExtensionProperty<IIOR> {
 	public declare propertyType: 'IOR';
 	public declare parentTypes: [PropertyType.MATERIAL];
 
-	protected init(): this {
+	protected init(): void {
 		this.extensionName = KHR_MATERIALS_IOR;
 		this.propertyType = 'IOR';
 		this.parentTypes = [PropertyType.MATERIAL];
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IIOR> {

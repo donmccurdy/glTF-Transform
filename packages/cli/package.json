@@ -9,6 +9,9 @@
   "main": "dist/cli.js",
   "source": "src/cli.ts",
   "types": "dist/cli.d.ts",
+  "browserslist": [
+    "node >= 14"
+  ],
   "scripts": {
     "dist": "microbundle --format cjs",
     "watch": "microbundle watch --format cjs",

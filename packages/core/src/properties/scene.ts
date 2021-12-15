@@ -27,9 +27,8 @@ interface IScene extends IExtensibleProperty {
 export class Scene extends ExtensibleProperty<IScene> {
 	public declare propertyType: PropertyType.SCENE;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.SCENE;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<IScene> {

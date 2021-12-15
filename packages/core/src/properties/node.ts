@@ -53,9 +53,8 @@ export class Node extends ExtensibleProperty<INode> {
 	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
 	public _parent: SceneNode | null = null;
 
-	protected init(): this {
+	protected init(): void {
 		this.propertyType = PropertyType.NODE;
-		return this;
 	}
 
 	protected getDefaults(): Nullable<INode> {
