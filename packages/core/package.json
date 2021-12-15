@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "gl-matrix": "~3.4.3",
-    "property-graph": "^0.2.2"
+    "property-graph": "^0.2.3"
   },
   "mangle": {
     "regex": "^_"

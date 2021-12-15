@@ -1,6 +1,6 @@
 import { Nullable, PropertyType, VERSION } from '../constants';
 import { Extension } from '../extension';
-import { Graph, GraphNode, GraphNodeEvent } from 'property-graph';
+import { Graph } from 'property-graph';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';

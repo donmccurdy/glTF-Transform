@@ -7253,10 +7253,10 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-property-graph@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-0.2.2.tgz#c083b3b69615032ad6f6bbdabda57f197bd83c8d"
-  integrity sha512-zhgxKqZYmiaC59o88aSCHHQmpR3c5T4bXpH3u4WJmbRtAnztVe09f6LY5/BaszWF/ZxmxAEKgqB1eVY21yzp2w==
+property-graph@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-0.2.3.tgz#8dfc598175ac3e2f70976aca48061e5e9c84c9b7"
+  integrity sha512-1Pkji/hvwHwgBIVOZjbYPFAaqY7oHMzNtpe9a2R0XHnp6DMNuH9ey9N56Zk+Yuh+Y7hEAdcpEuvE40sdJcDjoA==
 
 proto-list@~1.2.1:
   version "1.2.4"

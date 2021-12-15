@@ -1,4 +1,3 @@
-import { $attributes } from 'property-graph';
 import { Nullable } from '../constants';
 import { ExtensionProperty } from './extension-property';
 import { Property, IProperty } from './property';

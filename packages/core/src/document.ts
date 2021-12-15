@@ -8,7 +8,6 @@ import {
 	AnimationSampler,
 	Buffer,
 	Camera,
-	ExtensionProperty,
 	Material,
 	Mesh,
 	Node,
