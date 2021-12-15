@@ -28,14 +28,14 @@ export interface EncodedPrimitive {
 	numVertices: number;
 	numIndices: number;
 	data: Uint8Array;
-	attributeIDs: {[key: string]: number};
+	attributeIDs: { [key: string]: number };
 }
 
 export interface EncoderOptions {
 	decodeSpeed?: number;
 	encodeSpeed?: number;
 	method?: EncoderMethod;
-	quantizationBits?: {[key: string]: number};
+	quantizationBits?: { [key: string]: number };
 	quantizationVolume?: 'mesh' | 'scene' | bbox;
 }
 
@@ -47,7 +47,7 @@ const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
 	quantizationVolume: 'mesh',
 };
 
-export function initEncoderModule (_encoderModule: EncoderModule): void {
+export function initEncoderModule(_encoderModule: EncoderModule): void {
 	encoderModule = _encoderModule;
 }
 
@@ -56,15 +56,15 @@ export function initEncoderModule (_encoderModule: EncoderModule): void {
  * - https://github.com/mrdoob/three.js/blob/dev/examples/js/exporters/DRACOExporter.js
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
-export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
-	const options = {...DEFAULT_ENCODER_OPTIONS, ..._options} as Required<EncoderOptions>;
-	options.quantizationBits = {...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits};
+export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
+	const options = { ...DEFAULT_ENCODER_OPTIONS, ..._options } as Required<EncoderOptions>;
+	options.quantizationBits = { ...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits };
 
 	const encoder = new encoderModule.Encoder();
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
 
-	const attributeIDs: {[key: string]: number} = {};
+	const attributeIDs: { [key: string]: number } = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
 
 	for (const semantic of prim.listSemantics()) {
@@ -84,16 +84,13 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 
 		attributeIDs[semantic] = attributeID;
 		if (options.quantizationVolume === 'mesh' || semantic !== 'POSITION') {
-			encoder.SetAttributeQuantization(
-				encoderModule[attributeEnum],
-				options.quantizationBits[attributeEnum]
-			);
+			encoder.SetAttributeQuantization(encoderModule[attributeEnum], options.quantizationBits[attributeEnum]);
 		} else if (typeof options.quantizationVolume === 'object') {
-			const {quantizationVolume} = options;
+			const { quantizationVolume } = options;
 			const range = Math.max(
 				quantizationVolume.max[0] - quantizationVolume.min[0],
 				quantizationVolume.max[1] - quantizationVolume.min[1],
-				quantizationVolume.max[2] - quantizationVolume.min[2],
+				quantizationVolume.max[2] - quantizationVolume.min[2]
 			);
 			encoder.SetAttributeExplicitQuantization(
 				encoderModule[attributeEnum],
@@ -110,11 +107,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	const indices = prim.getIndices();
 	if (!indices) throw new Error('Primitive must have indices.');
 
-	builder.AddFacesToMesh(
-		mesh,
-		indices.getCount() / 3,
-		indices.getArray() as unknown as Uint32Array
-	);
+	builder.AddFacesToMesh(mesh, indices.getCount() / 3, indices.getArray() as unknown as Uint32Array);
 
 	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
 	encoder.SetTrackEncodedProperties(true);
@@ -139,9 +132,9 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
 
 	if (prim.listTargets().length > 0 && numVertices !== prevNumVertices) {
-		throw new Error(''
-			+ 'Compression reduced vertex count unexpectedly, corrupting morph targets.'
-			+ ' Applying the "weld" function before compression may resolve the issue.'
+		throw new Error(
+			'Compression reduced vertex count unexpectedly, corrupting morph targets.' +
+				' Applying the "weld" function before compression may resolve the issue.'
 		);
 	}
 
@@ -150,7 +143,7 @@ export function encodeGeometry (prim: Primitive, _options: EncoderOptions = DEFA
 	encoderModule.destroy(builder);
 	encoderModule.destroy(encoder);
 
-	return {numVertices, numIndices, data, attributeIDs};
+	return { numVertices, numIndices, data, attributeIDs };
 }
 
 function getAttributeEnum(semantic: string): AttributeEnum {

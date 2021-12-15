@@ -129,7 +129,6 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * Makes a copy of this property, with the same resources (by reference) as the original.
 	 */
 	public clone(): this {
-		// NOTICE: Keep in sync with `./extension-property.ts`.
 		const PropertyClass = this.constructor as new (g: Graph<Property>) => this;
 		return new PropertyClass(this.graph).copy(this, COPY_IDENTITY);
 	}

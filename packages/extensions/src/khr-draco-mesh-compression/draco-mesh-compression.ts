@@ -373,13 +373,13 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 			const indices = prim.getIndices()!; // Condition for 'included' list.
 			const dstIndices = indices.clone();
 			accessorIndices.set(dstIndices, doc.getRoot().listAccessors().length - 1);
-			prim.swap(indices, dstIndices);
+			prim.swap(indices, dstIndices); // TODO(cleanup): I/O should not modify Document.
 		}
 		for (const attribute of prim.listAttributes()) {
 			if (includedAccessors.has(attribute)) {
 				const dstAttribute = attribute.clone();
 				accessorIndices.set(dstAttribute, doc.getRoot().listAccessors().length - 1);
-				prim.swap(attribute, dstAttribute);
+				prim.swap(attribute, dstAttribute); // TODO(cleanup): I/O should not modify Document.
 			}
 		}
 
@@ -398,7 +398,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	// For each compressed Accessor, ensure that it isn't used except by a Primitive.
 	for (const accessor of Array.from(includedAccessors.keys())) {
 		const parentTypes = new Set(accessor.listParents().map((prop) => prop.propertyType));
-		if (parentTypes.size !== 2 || !parentTypes.has('Primitive') || !parentTypes.has('Root')) {
+		if (parentTypes.size !== 2 || !parentTypes.has(PropertyType.PRIMITIVE) || !parentTypes.has(PropertyType.ROOT)) {
 			throw new Error(`[${NAME}] Compressed accessors must only be used as indices or vertex attributes.`);
 		}
 	}
