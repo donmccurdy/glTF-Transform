@@ -1,4 +1,4 @@
-import { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from '../../../../property-graph/dist';
+import { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from 'property-graph';
 import { PropertyType } from './constants';
 import { Document } from './document';
 import { ReaderContext, WriterContext } from './io';
