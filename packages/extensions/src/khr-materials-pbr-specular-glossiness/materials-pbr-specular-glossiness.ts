@@ -52,7 +52,7 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 
 	/** Creates a new PBRSpecularGlossiness property for use on a {@link Material}. */
 	public createPBRSpecularGlossiness(): PBRSpecularGlossiness {
-		return new PBRSpecularGlossiness(this.doc.getGraph());
+		return new PBRSpecularGlossiness(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -103,7 +103,7 @@ export class MaterialsPBRSpecularGlossiness extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

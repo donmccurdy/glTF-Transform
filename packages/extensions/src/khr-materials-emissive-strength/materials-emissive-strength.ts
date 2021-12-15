@@ -55,7 +55,7 @@ export class MaterialsEmissiveStrength extends Extension {
 
 	/** Creates a new EmissiveStrength property for use on a {@link Material}. */
 	public createEmissiveStrength(): EmissiveStrength {
-		return new EmissiveStrength(this.doc.getGraph());
+		return new EmissiveStrength(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -84,7 +84,7 @@ export class MaterialsEmissiveStrength extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

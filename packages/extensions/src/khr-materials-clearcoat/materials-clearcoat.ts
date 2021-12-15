@@ -52,7 +52,7 @@ export class MaterialsClearcoat extends Extension {
 
 	/** Creates a new Clearcoat property for use on a {@link Material}. */
 	public createClearcoat(): Clearcoat {
-		return new Clearcoat(this.doc.getGraph());
+		return new Clearcoat(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -109,7 +109,7 @@ export class MaterialsClearcoat extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

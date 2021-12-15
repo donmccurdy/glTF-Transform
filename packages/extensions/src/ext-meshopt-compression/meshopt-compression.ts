@@ -276,15 +276,15 @@ export class MeshoptCompression extends Extension {
 		const encoder = this._encoder!;
 		const options = this._encoderOptions;
 
-		const fallbackBuffer = this.doc.createBuffer(); // Disposed on write.
-		const fallbackBufferIndex = this.doc.getRoot().listBuffers().indexOf(fallbackBuffer);
+		const fallbackBuffer = this.document.createBuffer(); // Disposed on write.
+		const fallbackBufferIndex = this.document.getRoot().listBuffers().indexOf(fallbackBuffer);
 
 		this._encoderFallbackBuffer = fallbackBuffer;
 		this._encoderBufferViews = {};
 		this._encoderBufferViewData = {};
 		this._encoderBufferViewAccessors = {};
 
-		for (const accessor of this.doc.getRoot().listAccessors()) {
+		for (const accessor of this.document.getRoot().listAccessors()) {
 			// See: https://github.com/donmccurdy/glTF-Transform/pull/323#issuecomment-898791251
 			// Example: https://skfb.ly/6qAD8
 			if (getTargetPath(accessor) === 'weights') continue;
@@ -293,14 +293,14 @@ export class MeshoptCompression extends Extension {
 			const mode = getMeshoptMode(accessor, usage);
 			const filter =
 				options.method === EncoderMethod.FILTER
-					? getMeshoptFilter(accessor, this.doc)
+					? getMeshoptFilter(accessor, this.document)
 					: { filter: MeshoptFilter.NONE };
 			const preparedAccessor = prepareAccessor(accessor, encoder, mode, filter);
 			const { array, byteStride } = preparedAccessor;
 
 			const buffer = accessor.getBuffer();
 			if (!buffer) throw new Error(`${NAME}: Missing buffer for accessor.`);
-			const bufferIndex = this.doc.getRoot().listBuffers().indexOf(buffer);
+			const bufferIndex = this.document.getRoot().listBuffers().indexOf(buffer);
 
 			// Buffer view grouping key.
 			const key = [usage, mode, filter.filter, byteStride, bufferIndex].join(':');
@@ -358,7 +358,7 @@ export class MeshoptCompression extends Extension {
 		for (const key in this._encoderBufferViews) {
 			const bufferView = this._encoderBufferViews[key];
 			const bufferViewData = this._encoderBufferViewData[key];
-			const buffer = this.doc.getRoot().listBuffers()[bufferView.extensions[NAME].buffer];
+			const buffer = this.document.getRoot().listBuffers()[bufferView.extensions[NAME].buffer];
 			const otherBufferViews = context.otherBufferViews.get(buffer) || [];
 
 			const { count, byteStride, mode } = bufferView.extensions[NAME];

@@ -9,10 +9,10 @@ class GizmoExtension extends Extension {
 	static EXTENSION_NAME = EXTENSION_NAME;
 	public extensionName = EXTENSION_NAME;
 	createGizmo() {
-		return new Gizmo(this.doc.getGraph());
+		return new Gizmo(this.document.getGraph());
 	}
 	write(context: WriterContext): this {
-		for (const node of this.doc.getRoot().listNodes()) {
+		for (const node of this.document.getRoot().listNodes()) {
 			if (node.getExtension(EXTENSION_NAME)) {
 				const nodeDef = context.jsonDoc.json.nodes[context.nodeIndexMap.get(node)];
 				nodeDef.extensions = { TEST_node_gizmo: { isGizmo: true } };
@@ -24,7 +24,7 @@ class GizmoExtension extends Extension {
 		context.jsonDoc.json.nodes.forEach((nodeDef, index) => {
 			const extensionDef = nodeDef.extensions && nodeDef.extensions.TEST_node_gizmo;
 			if (!extensionDef || !extensionDef.isGizmo) return;
-			const extension = this.doc.createExtension(GizmoExtension) as GizmoExtension;
+			const extension = this.document.createExtension(GizmoExtension) as GizmoExtension;
 			context.nodes[index].setExtension(EXTENSION_NAME, extension.createGizmo());
 		});
 		return this;
