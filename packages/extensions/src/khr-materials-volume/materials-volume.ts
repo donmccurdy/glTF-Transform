@@ -71,7 +71,7 @@ export class MaterialsVolume extends Extension {
 
 	/** Creates a new Volume property for use on a {@link Material}. */
 	public createVolume(): Volume {
-		return new Volume(this.doc.getGraph());
+		return new Volume(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -116,7 +116,7 @@ export class MaterialsVolume extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

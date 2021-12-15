@@ -43,7 +43,7 @@ export class MaterialsIOR extends Extension {
 
 	/** Creates a new IOR property for use on a {@link Material}. */
 	public createIOR(): IOR {
-		return new IOR(this.doc.getGraph());
+		return new IOR(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -72,7 +72,7 @@ export class MaterialsIOR extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

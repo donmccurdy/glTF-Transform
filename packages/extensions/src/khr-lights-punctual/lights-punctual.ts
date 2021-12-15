@@ -59,7 +59,7 @@ export class LightsPunctual extends Extension {
 
 	/** Creates a new punctual Light property for use on a {@link Node}. */
 	public createLight(name = ''): Light {
-		return new Light(this.doc.getGraph(), name);
+		return new Light(this.document.getGraph(), name);
 	}
 
 	/** @hidden */
@@ -126,7 +126,7 @@ export class LightsPunctual extends Extension {
 			lightIndexMap.set(light, lightDefs.length - 1);
 		}
 
-		this.doc
+		this.document
 			.getRoot()
 			.listNodes()
 			.forEach((node) => {

@@ -48,7 +48,7 @@ export class MaterialsUnlit extends Extension {
 
 	/** Creates a new Unlit property for use on a {@link Material}. */
 	public createUnlit(): Unlit {
-		return new Unlit(this.doc.getGraph());
+		return new Unlit(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -67,7 +67,7 @@ export class MaterialsUnlit extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

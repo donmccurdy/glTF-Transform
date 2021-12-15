@@ -95,17 +95,17 @@ export class MaterialsVariants extends Extension {
 
 	/** Creates a new MappingList property. */
 	public createMappingList(): MappingList {
-		return new MappingList(this.doc.getGraph());
+		return new MappingList(this.document.getGraph());
 	}
 
 	/** Creates a new Variant property. */
 	public createVariant(name = ''): Variant {
-		return new Variant(this.doc.getGraph(), name);
+		return new Variant(this.document.getGraph(), name);
 	}
 
 	/** Creates a new Mapping property. */
 	public createMapping(): Mapping {
-		return new Mapping(this.doc.getGraph());
+		return new Mapping(this.document.getGraph());
 	}
 
 	/** Lists all Variants on the current Document. */
@@ -175,7 +175,7 @@ export class MaterialsVariants extends Extension {
 		}
 
 		// For each mesh primitive, write its material/variant mappings.
-		for (const mesh of this.doc.getRoot().listMeshes()) {
+		for (const mesh of this.document.getRoot().listMeshes()) {
 			const meshIndex = context.meshIndexMap.get(mesh)!;
 
 			mesh.listPrimitives().forEach((prim, primIndex) => {

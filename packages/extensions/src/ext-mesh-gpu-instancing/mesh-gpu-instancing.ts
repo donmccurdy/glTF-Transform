@@ -87,7 +87,7 @@ export class MeshGPUInstancing extends Extension {
 
 	/** Creates a new InstancedMesh property for use on a {@link Node}. */
 	public createInstancedMesh(): InstancedMesh {
-		return new InstancedMesh(this.doc.getGraph());
+		return new InstancedMesh(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -128,7 +128,7 @@ export class MeshGPUInstancing extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listNodes()
 			.forEach((node) => {

@@ -134,7 +134,7 @@ export class TextureWebP extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listTextures()
 			.forEach((texture) => {

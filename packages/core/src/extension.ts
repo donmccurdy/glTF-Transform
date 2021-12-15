@@ -50,6 +50,9 @@ export abstract class Extension {
 	public readonly writeDependencies: string[] = [];
 
 	/** @hidden */
+	protected readonly document: Document;
+
+	/** @hidden */
 	protected required = false;
 
 	/** @hidden */
@@ -59,8 +62,10 @@ export abstract class Extension {
 	private _listener: (event: unknown) => void;
 
 	/** @hidden */
-	constructor(protected readonly doc: Document) {
-		doc.getRoot()._enableExtension(this);
+	constructor(document: Document) {
+		this.document = document;
+
+		document.getRoot()._enableExtension(this);
 
 		this._listener = (_event: unknown): void => {
 			const event = _event as GraphNodeEvent | GraphEdgeEvent | GraphEvent;
@@ -71,15 +76,15 @@ export abstract class Extension {
 			}
 		};
 
-		const graph = doc.getGraph();
+		const graph = document.getGraph();
 		graph.addEventListener('node:create', this._listener);
 		graph.addEventListener('node:dispose', this._listener);
 	}
 
 	/** Disables and removes the extension from the Document. */
 	public dispose(): void {
-		this.doc.getRoot()._disableExtension(this);
-		const graph = this.doc.getGraph();
+		this.document.getRoot()._disableExtension(this);
+		const graph = this.document.getGraph();
 		graph.removeEventListener('node:create', this._listener);
 		graph.removeEventListener('node:dispose', this._listener);
 		for (const property of this.properties) {

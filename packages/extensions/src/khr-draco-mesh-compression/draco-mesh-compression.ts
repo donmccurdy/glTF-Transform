@@ -160,7 +160,7 @@ export class DracoMeshCompression extends Extension {
 			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.decoder".`);
 		}
 
-		const logger = this.doc.getLogger();
+		const logger = this.document.getLogger();
 		const jsonDoc = context.jsonDoc;
 		const dracoMeshes: Map<number, [Decoder, Mesh]> = new Map();
 
@@ -226,18 +226,18 @@ export class DracoMeshCompression extends Extension {
 			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.encoder".`);
 		}
 
-		const logger = this.doc.getLogger();
+		const logger = this.document.getLogger();
 		logger.debug(`[${NAME}] Compression options: ${JSON.stringify(this._encoderOptions)}`);
 
-		const primitiveHashMap = listDracoPrimitives(this.doc);
+		const primitiveHashMap = listDracoPrimitives(this.document);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
 
 		let quantizationVolume: bbox | 'mesh' = 'mesh';
 		if (this._encoderOptions.quantizationVolume === 'scene') {
-			if (this.doc.getRoot().listScenes().length !== 1) {
+			if (this.document.getRoot().listScenes().length !== 1) {
 				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
 			} else {
-				quantizationVolume = bounds(this.doc.getRoot().listScenes().pop()!);
+				quantizationVolume = bounds(this.document.getRoot().listScenes().pop()!);
 			}
 		}
 
@@ -274,7 +274,7 @@ export class DracoMeshCompression extends Extension {
 			}
 
 			// Map compressed buffer view to a Buffer.
-			const buffer = prim.getAttribute('POSITION')!.getBuffer() || this.doc.getRoot().listBuffers()[0];
+			const buffer = prim.getAttribute('POSITION')!.getBuffer() || this.document.getRoot().listBuffers()[0];
 			if (!context.otherBufferViews.has(buffer)) context.otherBufferViews.set(buffer, []);
 			context.otherBufferViews.get(buffer)!.push(encodedPrim.data);
 		}
@@ -293,7 +293,7 @@ export class DracoMeshCompression extends Extension {
 	public write(context: WriterContext): this {
 		const dracoContext: DracoWriterContext = context.extensionData[NAME] as DracoWriterContext;
 
-		for (const mesh of this.doc.getRoot().listMeshes()) {
+		for (const mesh of this.document.getRoot().listMeshes()) {
 			const meshDef = context.jsonDoc.json.meshes![context.meshIndexMap.get(mesh)!];
 			for (let i = 0; i < mesh.listPrimitives().length; i++) {
 				const prim = mesh.listPrimitives()[i];

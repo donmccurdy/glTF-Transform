@@ -50,7 +50,7 @@ export class MaterialsSpecular extends Extension {
 
 	/** Creates a new Specular property for use on a {@link Material}. */
 	public createSpecular(): Specular {
-		return new Specular(this.doc.getGraph());
+		return new Specular(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -98,7 +98,7 @@ export class MaterialsSpecular extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {

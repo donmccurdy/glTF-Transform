@@ -54,7 +54,7 @@ export class MaterialsSheen extends Extension {
 
 	/** Creates a new Sheen property for use on a {@link Material}. */
 	public createSheen(): Sheen {
-		return new Sheen(this.doc.getGraph());
+		return new Sheen(this.document.getGraph());
 	}
 
 	/** @hidden */
@@ -102,7 +102,7 @@ export class MaterialsSheen extends Extension {
 	public write(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		this.doc
+		this.document
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
