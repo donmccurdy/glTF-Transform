@@ -47,7 +47,7 @@ export class NodeIO extends PlatformIO {
 	constructor() {
 		super();
 		// Excluded from browser builds with 'package.browser' field.
-		this._fs = require('fs/promises');
+		this._fs = require('fs').promises;
 		this._path = require('path');
 	}
 
