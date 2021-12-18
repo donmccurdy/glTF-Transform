@@ -17,8 +17,6 @@ import { PlatformIO } from './platform-io';
  * Usage:
  *
  * ```typescript
- * const fs = require('fs');
- * const path = require('path');
  * const { NodeIO } = require('@gltf-transform/core');
  *
  * const io = new NodeIO();
@@ -29,8 +27,8 @@ import { PlatformIO } from './platform-io';
  * document = await io.readBinary(glb);   // Uint8Array → Document
  *
  * // Write.
- * await io.write('model.glb', doc);      // → void
- * const glb = await io.writeBinary(doc); // Document → Uint8Array
+ * await io.write('model.glb', document);      // → void
+ * const glb = await io.writeBinary(document); // Document → Uint8Array
  * ```
  *
  * @category I/O

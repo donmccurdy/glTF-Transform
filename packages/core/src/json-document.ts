@@ -16,6 +16,8 @@ import { GLTF } from './types/gltf';
  * Usage:
  *
  * ```ts
+ * import fs from 'fs/promises';
+ *
  * const jsonDocument = {
  * 	// glTF JSON schema.
  * 	json: {
@@ -25,8 +27,8 @@ import { GLTF } from './types/gltf';
  *
  * 	// URI → ArrayBuffer mapping.
  * 	resources: {
- * 		'image1.png': fs.readFileSync('image1.png'),
- * 		'image2.png': fs.readFileSync('image2.png'),
+ * 		'image1.png': await fs.readFile('image1.png'),
+ * 		'image2.png': await fs.readFile('image2.png'),
  * 	}
  * };
  *

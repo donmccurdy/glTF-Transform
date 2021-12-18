@@ -27,7 +27,7 @@ const DEFAULT_INIT: RequestInit = {};
  * document = await io.readBinary(glb);    // Uint8Array → Document
  *
  * // Write.
- * const glb = await io.writeBinary(doc); // Document → Uint8Array
+ * const glb = await io.writeBinary(document); // Document → Uint8Array
  * ```
  *
  * @category I/O

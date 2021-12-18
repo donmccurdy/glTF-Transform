@@ -77,7 +77,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  *	});
  *
  * // Read and decode.
- * const document = io.read('compressed.glb');
+ * const document = await io.read('compressed.glb');
  *
  * // Write and encode. (Medium, -c)
  * await document.transform(reorder(), quantize());
