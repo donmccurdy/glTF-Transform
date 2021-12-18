@@ -6,7 +6,7 @@ import { MaterialsSpecular, Specular } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-specular', (t) => {
+test('@gltf-transform/extensions::materials-specular', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const specularExtension = doc.createExtension(MaterialsSpecular);
@@ -24,7 +24,7 @@ test('@gltf-transform/extensions::materials-specular', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_specular'), specular, 'specular is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsSpecular]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([MaterialsSpecular]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -45,7 +45,7 @@ test('@gltf-transform/extensions::materials-specular', (t) => {
 	specularExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_specular'), null, 'specular is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([MaterialsSpecular]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsSpecular]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Specular>('KHR_materials_specular');
 

@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '../../';
 
-test('@gltf-transform/core::texture | read', (t) => {
+test('@gltf-transform/core::texture | read', async (t) => {
 	const jsonDoc = {
 		json: {
 			asset: { version: '2.0' },
@@ -22,7 +22,7 @@ test('@gltf-transform/core::texture | read', (t) => {
 	};
 
 	const io = new NodeIO();
-	const doc = io.readJSON(jsonDoc as unknown as JSONDocument);
+	const doc = await io.readJSON(jsonDoc as unknown as JSONDocument);
 	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
@@ -38,7 +38,7 @@ test('@gltf-transform/core::texture | read', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | write', (t) => {
+test('@gltf-transform/core::texture | write', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const image1 = new Uint8Array(1);
@@ -52,7 +52,7 @@ test('@gltf-transform/core::texture | write', (t) => {
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = new NodeIO();
-	const jsonDoc = io.writeJSON(doc, { basename: 'basename' });
+	const jsonDoc = await io.writeJSON(doc, { basename: 'basename' });
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
@@ -80,13 +80,13 @@ test('@gltf-transform/core::texture | copy', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | extras', (t) => {
+test('@gltf-transform/core::texture | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createBuffer();
 	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new Uint8Array(10)).setMimeType('image/png');
 
-	const doc2 = io.readJSON(io.writeJSON(doc));
+	const doc2 = await io.readJSON(await io.writeJSON(doc));
 
 	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
@@ -94,7 +94,7 @@ test('@gltf-transform/core::texture | extras', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::texture | padding', (t) => {
+test('@gltf-transform/core::texture | padding', async (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
 
@@ -104,7 +104,7 @@ test('@gltf-transform/core::texture | padding', (t) => {
 	doc.createTexture().setImage(new Uint8Array(21)).setMimeType('image/png');
 	doc.createTexture().setImage(new Uint8Array(20)).setMimeType('image/png');
 
-	const jsonDoc = new NodeIO().writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await new NodeIO().writeJSON(doc, { format: Format.GLB });
 
 	t.deepEqual(
 		jsonDoc.json.images,

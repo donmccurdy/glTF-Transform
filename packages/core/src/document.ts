@@ -44,16 +44,17 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
  * 'create' methods on the document. Resources are destroyed by calling {@link Property.dispose}().
  *
  * ```ts
+ * import fs from 'fs/promises';
  * import { Document } from '@gltf-transform/core';
  * import { dedup } from '@gltf-transform/functions';
  *
  * const doc = new Document();
  *
  * const texture1 = doc.createTexture('myTexture')
- * 	.setImage(arrayBuffer)
+ * 	.setImage(await fs.readFile('path/to/image.png'))
  * 	.setMimeType('image/png');
  * const texture2 = doc.createTexture('myTexture2')
- * 	.setImage(arrayBuffer)
+ * 	.setImage(await fs.readFile('path/to/image2.png'))
  * 	.setMimeType('image/png');
  *
  * // Document containing duplicate copies of the same texture.

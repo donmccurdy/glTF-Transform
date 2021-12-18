@@ -87,17 +87,17 @@ interface DracoWriterContext {
  *	});
  *
  * // Read and decode.
- * const doc = io.read('compressed.glb');
+ * const document = await io.read('compressed.glb');
  *
  * // Write and encode.
- * doc.createExtension(DracoMeshCompression)
+ * document.createExtension(DracoMeshCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({
  * 		method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
  * 		encodeSpeed: 5,
  * 		decodeSpeed: 5,
  * 	});
- * io.write('compressed.glb', doc);
+ * await io.write('compressed.glb', document);
  * ```
  */
 export class DracoMeshCompression extends Extension {

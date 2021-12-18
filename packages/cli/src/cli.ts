@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import fs from 'fs';
+import {promises as fs} from 'fs';
 import minimatch from 'minimatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
@@ -67,7 +67,7 @@ Use --format=csv or --format=md for alternative display formats.
 	.action(async ({args, options, logger}) => {
 		io.setLogger(logger as unknown as Logger);
 		await inspect(
-			io.readAsJSON(args.input as string),
+			await io.readAsJSON(args.input as string),
 			io,
 			logger as unknown as Logger,
 			options.format as InspectFormat
@@ -268,16 +268,14 @@ and can be skipped. Other compression strategies, like Meshopt and quantization,
 work best when combined with gzip.
 `)
 	.argument('<input>', INPUT_DESC)
-	.action(({args, logger}) => {
-		const inBuffer = fs.readFileSync(args.input as string);
-		return gzip(inBuffer)
-			.then((outBuffer) => {
-				const fileName = args.input + '.gz';
-				const inSize = formatBytes(inBuffer.byteLength);
-				const outSize = formatBytes(outBuffer.byteLength);
-				fs.writeFileSync(fileName, outBuffer);
-				logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
-			});
+	.action(async ({args, logger}) => {
+		const inBuffer = await fs.readFile(args.input as string);
+		const outBuffer = await gzip(inBuffer);
+		const fileName = args.input + '.gz';
+		const inSize = formatBytes(inBuffer.byteLength);
+		const outSize = formatBytes(outBuffer.byteLength);
+		await fs.writeFile(fileName, outBuffer);
+		logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 	});
 
 program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
@@ -670,7 +668,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 		const pattern = options.pattern
 			? minimatch.makeRe(String(options.pattern), {nocase: true})
 			: null;
-		return await Session.create(io, logger, args.input, args.output)
+		return Session.create(io, logger, args.input, args.output)
 			.transform(textureResize({
 				size: [options.width, options.height] as vec2,
 				filter: options.filter as TextureResizeFilter,

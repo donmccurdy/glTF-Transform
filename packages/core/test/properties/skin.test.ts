@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Accessor, AnimationChannel, Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::skin', (t) => {
+test('@gltf-transform/core::skin', async (t) => {
 	const doc = new Document();
 
 	const joints = [doc.createNode('joint1'), doc.createNode('joint2'), doc.createNode('joint3')];
@@ -45,7 +45,7 @@ test('@gltf-transform/core::skin', (t) => {
 	doc.createAnimation().addChannel(channel).addSampler(sampler);
 
 	const io = new NodeIO();
-	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, {})));
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, {})));
 
 	t.deepEqual(
 		jsonDoc.json.nodes[3],
@@ -101,12 +101,12 @@ test('@gltf-transform/core::skin | copy', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::skin | extras', (t) => {
+test('@gltf-transform/core::skin | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createSkin('A').setExtras({ foo: 1, bar: 2 });
 
-	const doc2 = io.readJSON(io.writeJSON(doc));
+	const doc2 = await io.readJSON(await io.writeJSON(doc));
 
 	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');

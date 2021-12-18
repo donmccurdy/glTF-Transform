@@ -7,9 +7,9 @@ import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
 import { MaterialsTransmission } from '@gltf-transform/extensions';
 
-test('@gltf-transform/functions::dedup | accessors', (t) => {
+test('@gltf-transform/functions::dedup | accessors', async (t) => {
 	const io = new NodeIO();
-	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
 	dedup({ propertyTypes: [PropertyType.TEXTURE] })(doc);
@@ -73,9 +73,9 @@ test('@gltf-transform/functions::dedup | materials', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/functions::dedup | meshes', (t) => {
+test('@gltf-transform/functions::dedup | meshes', async (t) => {
 	const io = new NodeIO();
-	const doc = io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	const root = doc.getRoot();
 	t.equal(root.listMeshes().length, 501, 'begins with duplicate meshes');
 

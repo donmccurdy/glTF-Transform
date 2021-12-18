@@ -47,7 +47,7 @@ export async function inspect (
 	// Parse.
 	let doc;
 	try {
-		doc = io.readJSON(jsonDoc);
+		doc = await io.readJSON(jsonDoc);
 	} catch (e) {
 		logger.warn('Unable to parse document.');
 		throw e;

@@ -8,7 +8,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([MeshGPUInstancing]);
 
-test('@gltf-transform/extensions::mesh-gpu-instancing', (t) => {
+test('@gltf-transform/extensions::mesh-gpu-instancing', async (t) => {
 	const doc = new Document();
 	const data = doc
 		.createAccessor('unused')
@@ -31,7 +31,7 @@ test('@gltf-transform/extensions::mesh-gpu-instancing', (t) => {
 
 	t.equal(node.getExtension('EXT_mesh_gpu_instancing'), batch, 'batch is attached');
 
-	const jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.equal(jsonDoc.json.bufferViews.length, 3, 'creates three buffer views');
@@ -49,7 +49,7 @@ test('@gltf-transform/extensions::mesh-gpu-instancing', (t) => {
 	t.equal(jsonDoc.json.accessors[2].bufferView, 1, 'buffer view assignment (3/4)');
 	t.equal(jsonDoc.json.accessors[3].bufferView, 2, 'buffer view assignment (4/4)');
 
-	const rtDoc = io.readJSON(jsonDoc);
+	const rtDoc = await io.readJSON(jsonDoc);
 	const rtNode = rtDoc.getRoot().listNodes().pop();
 	const batch2 = rtNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
 

@@ -23,7 +23,7 @@
  * import { dedup, quantize, weld } from '@gltf-transform/functions';
  *
  * const io = new NodeIO();
- * const document = io.read('input.glb');
+ * const document = await io.read('input.glb');
  *
  * await document.transform(
  * 	weld(),
@@ -31,7 +31,7 @@
  * 	dedup()
  * );
  *
- * io.write('output.glb', document);
+ * await io.write('output.glb', document);
  * ```
  *
  * @module functions

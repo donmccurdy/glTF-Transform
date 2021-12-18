@@ -18,10 +18,10 @@ test('@gltf-transform/cli::copy', async (t) => {
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.write(input, doc);
+	await io.write(input, doc);
 
-	return program.exec(['copy', input, output]).then(() => {
-		const doc2 = io.read(output);
+	return program.exec(['copy', input, output]).then(async () => {
+		const doc2 = await io.read(output);
 		t.ok(doc2, 'roundtrip document');
 		t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
 	});
@@ -36,7 +36,7 @@ test('@gltf-transform/cli::validate', async (_t) => {
 	doc.createBuffer();
 	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	io.write(input, doc);
+	await io.write(input, doc);
 
 	return program.exec(['validate', input], { silent: true });
 });
@@ -53,7 +53,7 @@ test('@gltf-transform/cli::inspect', async (_t) => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
 	doc.createAnimation();
-	io.write(input, doc);
+	await io.write(input, doc);
 
 	return program.exec(['inspect', input], { silent: true });
 });
@@ -72,7 +72,7 @@ test('@gltf-transform/cli::merge', async (t) => {
 	docA.createAccessor()
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setBuffer(bufA);
-	io.write(inputA, docA);
+	await io.write(inputA, docA);
 
 	const docB = new Document();
 	docB.createScene('SceneB');
@@ -80,7 +80,7 @@ test('@gltf-transform/cli::merge', async (t) => {
 	docB.createAccessor()
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setBuffer(bufB);
-	io.write(inputB, docB);
+	await io.write(inputB, docB);
 
 	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
 
@@ -88,8 +88,8 @@ test('@gltf-transform/cli::merge', async (t) => {
 		program
 			// https://github.com/mattallty/Caporal.js/issues/195
 			.exec(['merge', [inputA, inputB, inputC, output].join(',')], { silent: true })
-			.then(() => {
-				const doc = io.read(output);
+			.then(async () => {
+				const doc = await io.read(output);
 				const sceneNames = doc
 					.getRoot()
 					.listScenes()

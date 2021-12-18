@@ -4,7 +4,7 @@ import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MappingList, MaterialsVariants } from '../';
 
-test('@gltf-transform/extensions::materials-variants', (t) => {
+test('@gltf-transform/extensions::materials-variants', async (t) => {
 	const doc = new Document();
 	const variantsExtension = doc.createExtension(MaterialsVariants);
 	const var2 = variantsExtension.createVariant('Damaged1');
@@ -27,7 +27,7 @@ test('@gltf-transform/extensions::materials-variants', (t) => {
 	//
 
 	const io = new NodeIO().registerExtensions([MaterialsVariants]);
-	const rtDoc = io.readJSON(io.writeJSON(doc, {}));
+	const rtDoc = await io.readJSON(await io.writeJSON(doc, {}));
 	const rtPrim1 = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const rtPrim2 = rtDoc.getRoot().listMeshes()[1].listPrimitives()[0];
 	const rtMappingList = rtPrim1.getExtension<MappingList>('KHR_materials_variants');

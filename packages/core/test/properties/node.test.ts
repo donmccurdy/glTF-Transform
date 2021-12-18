@@ -94,12 +94,12 @@ test('@gltf-transform/core::node | setMatrix', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | extras', (t) => {
+test('@gltf-transform/core::node | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createNode('A').setExtras({ foo: 1, bar: 2 });
 
-	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
+	const doc2 = await io.readJSON(await io.writeJSON(doc, { basename: 'test' }));
 
 	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
@@ -107,7 +107,7 @@ test('@gltf-transform/core::node | extras', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::node | identity transforms', (t) => {
+test('@gltf-transform/core::node | identity transforms', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 
@@ -115,7 +115,7 @@ test('@gltf-transform/core::node | identity transforms', (t) => {
 	doc.createNode('B').setTranslation([1, 2, 1]);
 	doc.createNode('C').setTranslation([1, 2, 1]).setRotation([1, 0, 0, 0]).setScale([1, 2, 1]);
 
-	const { nodes } = io.writeJSON(doc, { basename: 'test' }).json;
+	const { nodes } = (await io.writeJSON(doc, { basename: 'test' })).json;
 
 	const a = nodes.find((n) => n.name === 'A');
 	const b = nodes.find((n) => n.name === 'B');

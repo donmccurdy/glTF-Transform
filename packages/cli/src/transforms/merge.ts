@@ -13,11 +13,11 @@ const merge = (options: MergeOptions): Transform => {
 
 	const {paths, io} = options;
 
-	return (doc: Document): void => {
+	return async (doc: Document): Promise<void> => {
 
 		const logger = doc.getLogger();
 
-		paths.forEach((path, index) => {
+		await Promise.all(paths.map(async (path, index) => {
 			logger.debug(`Merging ${index + 1} / ${paths.length}, ${path}`);
 
 			const basename = FileUtils.basename(path);
@@ -28,11 +28,11 @@ const merge = (options: MergeOptions): Transform => {
 					.setMimeType(ImageUtils.extensionToMimeType(extension))
 					.setURI(basename + '.' + extension);
 			} else if (['gltf', 'glb'].includes(extension)) {
-				doc.merge(io.read(path));
+				doc.merge(await io.read(path));
 			} else {
 				throw new Error(`Unknown file extension: "${extension}".`);
 			}
-		});
+		}));
 
 		if (!options.partition) {
 			const buffer = doc.getRoot().listBuffers()[0];

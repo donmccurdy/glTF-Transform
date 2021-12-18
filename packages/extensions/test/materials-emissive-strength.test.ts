@@ -6,7 +6,7 @@ import { EmissiveStrength, MaterialsEmissiveStrength } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-emissive-strength', (t) => {
+test('@gltf-transform/extensions::materials-emissive-strength', async (t) => {
 	const doc = new Document();
 	const emissiveStrengthExtension = doc.createExtension(MaterialsEmissiveStrength);
 	const emissiveStrength = emissiveStrengthExtension.createEmissiveStrength().setEmissiveStrength(5.0);
@@ -18,7 +18,7 @@ test('@gltf-transform/extensions::materials-emissive-strength', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_emissive_strength'), emissiveStrength, 'emissive strength is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsEmissiveStrength]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([MaterialsEmissiveStrength]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -32,7 +32,7 @@ test('@gltf-transform/extensions::materials-emissive-strength', (t) => {
 	emissiveStrengthExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_emissive_strength'), null, 'emissive strength is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([MaterialsEmissiveStrength]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsEmissiveStrength]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 
 	t.equal(

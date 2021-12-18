@@ -1,22 +1,22 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
 import { MeshQuantization } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::mesh-quantization', (t) => {
+test('@gltf-transform/extensions::mesh-quantization', async (t) => {
 	const doc = new Document();
 	const quantizationExtension = doc.createExtension(MeshQuantization);
-	let jsonDoc;
+	let jsonDoc: JSONDocument;
 
-	jsonDoc = new NodeIO().registerExtensions([MeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = await new NodeIO().registerExtensions([MeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
 
 	quantizationExtension.dispose();
 
-	jsonDoc = new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = await new NodeIO().writeJSON(doc, WRITER_OPTIONS);
 	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 	t.end();
 });

@@ -96,7 +96,7 @@ test('@gltf-transform/core::extension | property', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::extension | i/o', (t) => {
+test('@gltf-transform/core::extension | i/o', async (t) => {
 	const io = new NodeIO().registerExtensions([GizmoExtension]);
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
@@ -109,19 +109,19 @@ test('@gltf-transform/core::extension | i/o', (t) => {
 
 	// Write (unregistered).
 
-	jsonDoc = new NodeIO().writeJSON(doc, options);
+	jsonDoc = await new NodeIO().writeJSON(doc, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
 
 	// Write (registered).
 
-	jsonDoc = io.writeJSON(doc, options);
+	jsonDoc = await io.writeJSON(doc, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)');
 	t.equal(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
 	t.equal(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
 
 	// Read.
 
-	resultDoc = io.readJSON(jsonDoc);
+	resultDoc = await io.readJSON(jsonDoc);
 	t.deepEqual(
 		resultDoc
 			.getRoot()
@@ -140,9 +140,9 @@ test('@gltf-transform/core::extension | i/o', (t) => {
 	// Write + read with extensionsRequired.
 
 	extension.setRequired(true);
-	jsonDoc = io.writeJSON(doc, options);
+	jsonDoc = await io.writeJSON(doc, options);
 	t.deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
-	resultDoc = io.readJSON(jsonDoc);
+	resultDoc = await io.readJSON(jsonDoc);
 	t.deepEqual(
 		resultDoc
 			.getRoot()

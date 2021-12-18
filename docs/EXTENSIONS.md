@@ -66,7 +66,7 @@ import { MaterialsUnlit } from '@gltf-transform/extensions';
 const io = new WebIO().registerExtensions([MaterialsUnlit]);
 
 // Read a file that requires the KHR_materials_unlit extension.
-const doc = await io.readGLB('unlit.glb');
+const document = await io.readGLB('unlit.glb');
 ```
 
 Reading or writing files requires registering the necessary Extensions with the I/O class. Some
@@ -87,7 +87,7 @@ const io = new NodeIO()
     'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
   });
 
-const doc = io.read('compressed.glb');
+const document = await io.read('compressed.glb');
 ```
 
 ## Custom extensions

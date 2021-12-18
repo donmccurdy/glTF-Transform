@@ -6,7 +6,7 @@ import { Light, LightsPunctual } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::lights-punctual', (t) => {
+test('@gltf-transform/extensions::lights-punctual', async (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
 	const light = lightsExtension
@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::lights-punctual', (t) => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
@@ -44,7 +44,7 @@ test('@gltf-transform/extensions::lights-punctual', (t) => {
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([LightsPunctual]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([LightsPunctual]).readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension<Light>('KHR_lights_punctual');
 
@@ -91,7 +91,7 @@ test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::lights-punctual | i/o', (t) => {
+test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(LightsPunctual);
 	const light = lightsExtension.createLight().setType(Light.Type.POINT).setIntensity(2.0);
@@ -100,7 +100,7 @@ test('@gltf-transform/extensions::lights-punctual | i/o', (t) => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');

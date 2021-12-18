@@ -6,7 +6,7 @@ import { MaterialsVolume, Volume } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-volume', (t) => {
+test('@gltf-transform/extensions::materials-volume', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const volumeExtension = doc.createExtension(MaterialsVolume);
@@ -24,7 +24,7 @@ test('@gltf-transform/extensions::materials-volume', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_volume'), volume, 'volume is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsVolume]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([MaterialsVolume]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -45,7 +45,7 @@ test('@gltf-transform/extensions::materials-volume', (t) => {
 	volumeExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_volume'), null, 'volume is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([MaterialsVolume]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsVolume]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Volume>('KHR_materials_volume');
 

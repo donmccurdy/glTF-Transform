@@ -6,7 +6,7 @@ import { MaterialsSheen, Sheen } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-sheen', (t) => {
+test('@gltf-transform/extensions::materials-sheen', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const sheenExtension = doc.createExtension(MaterialsSheen);
@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::materials-sheen', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_sheen'), sheen, 'sheen is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsSheen]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([MaterialsSheen]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -42,7 +42,7 @@ test('@gltf-transform/extensions::materials-sheen', (t) => {
 	sheenExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_sheen'), null, 'sheen is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([MaterialsSheen]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsSheen]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Sheen>('KHR_materials_sheen');
 
