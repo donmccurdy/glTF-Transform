@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::camera', (t) => {
+test('@gltf-transform/core::camera', async (t) => {
 	const doc = new Document();
 
 	doc.createCamera('p')
@@ -18,7 +18,7 @@ test('@gltf-transform/core::camera', (t) => {
 	const io = new NodeIO();
 
 	const options = { basename: 'cameraTest' };
-	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
 
 	t.deepEqual(
 		jsonDoc.json.cameras[0],

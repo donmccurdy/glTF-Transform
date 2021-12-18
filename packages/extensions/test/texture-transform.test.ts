@@ -8,7 +8,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([TextureTransform]);
 
-test('@gltf-transform/extensions::texture-transform', (t) => {
+test('@gltf-transform/extensions::texture-transform', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transformExtension = doc.createExtension(TextureTransform);
@@ -31,7 +31,7 @@ test('@gltf-transform/extensions::texture-transform', (t) => {
 	mat.setOcclusionTexture(tex3);
 
 	// Read (roundtrip) from file.
-	const rtDoc = io.readJSON(io.writeJSON(doc, WRITER_OPTIONS));
+	const rtDoc = await io.readJSON(await io.writeJSON(doc, WRITER_OPTIONS));
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 	const rtTransform1 = rtMat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
 	const rtTransform2 = rtMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
@@ -108,7 +108,7 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/extensions::texture-transform | i/o', (t) => {
+test('@gltf-transform/extensions::texture-transform | i/o', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transformExtension = doc.createExtension(TextureTransform);
@@ -125,7 +125,7 @@ test('@gltf-transform/extensions::texture-transform | i/o', (t) => {
 			transformExtension.createTransform().setTexCoord(0).setOffset([0.5, 0.5]).setRotation(Math.PI)
 		);
 
-	const jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 	const baseColorTextureInfoDef = materialDef.pbrMetallicRoughness.baseColorTexture;
 	const emissiveTextureInfoDef = materialDef.emissiveTexture;

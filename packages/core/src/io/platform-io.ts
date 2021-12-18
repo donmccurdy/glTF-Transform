@@ -108,7 +108,7 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
-	public readJSON(jsonDoc: JSONDocument): Document {
+	public async readJSON(jsonDoc: JSONDocument): Promise<Document> {
 		jsonDoc = this._copyJSON(jsonDoc);
 		this._readResourcesInternal(jsonDoc);
 		return GLTFReader.read(jsonDoc, {
@@ -119,7 +119,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public writeJSON(doc: Document, _options: PublicWriterOptions = {}): JSONDocument {
+	public async writeJSON(doc: Document, _options: PublicWriterOptions = {}): Promise<JSONDocument> {
 		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
 			throw new Error('GLB must have 0–1 buffers.');
 		}
@@ -160,7 +160,7 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
-	public binaryToJSON(glb: Uint8Array): JSONDocument {
+	public async binaryToJSON(glb: Uint8Array): Promise<JSONDocument> {
 		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
 		this._readResourcesInternal(jsonDoc);
 		const json = jsonDoc.json;
@@ -220,13 +220,13 @@ export abstract class PlatformIO {
 	 */
 
 	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
-	public readBinary(glb: Uint8Array): Document {
-		return this.readJSON(this.binaryToJSON(BufferUtils.assertView(glb)));
+	public async readBinary(glb: Uint8Array): Promise<Document> {
+		return this.readJSON(await this.binaryToJSON(BufferUtils.assertView(glb)));
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
-	public writeBinary(doc: Document): Uint8Array {
-		const { json, resources } = this.writeJSON(doc, { format: Format.GLB });
+	public async writeBinary(doc: Document): Promise<Uint8Array> {
+		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
 
 		const header = new Uint32Array([0x46546c67, 2, 12]);
 

@@ -6,7 +6,7 @@ import { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-pbr-specular-glossiness', (t) => {
+test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
@@ -21,7 +21,9 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), specGloss, 'specGloss is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsPBRSpecularGlossiness]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO()
+		.registerExtensions([MaterialsPBRSpecularGlossiness])
+		.writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(
@@ -41,7 +43,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', (t) => {
 	specGlossExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), null, 'specGloss is detached');
 
-	const roundtripDoc = new NodeIO().registerExtensions([MaterialsPBRSpecularGlossiness]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsPBRSpecularGlossiness]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
 

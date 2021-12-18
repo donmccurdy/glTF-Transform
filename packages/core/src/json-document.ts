@@ -30,7 +30,7 @@ import { GLTF } from './types/gltf';
  * 	}
  * };
  *
- * const doc = new NodeIO().readJSON(jsonDocument);
+ * const doc = await new NodeIO().readJSON(jsonDocument);
  * ```
  *
  * @category Documents

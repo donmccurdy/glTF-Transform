@@ -14,7 +14,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) 
 		.registerExtensions([MeshoptCompression, MeshQuantization])
 		.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 
-	const doc = io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
+	const doc = await io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
 	const bbox = bounds(doc.getRoot().listScenes()[0]);
 	t.deepEquals(
 		bbox.min.map((v) => +v.toFixed(3)),
@@ -37,9 +37,9 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding', async (t) 
 		'meshopt.encoder': MeshoptEncoder,
 	});
 
-	const doc = io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
-	const glb = io.writeBinary(doc);
-	const rtDoc = io.readBinary(glb);
+	const doc = await io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
+	const glb = await io.writeBinary(doc);
+	const rtDoc = await io.readBinary(glb);
 
 	const extensionsRequired = rtDoc
 		.getRoot()

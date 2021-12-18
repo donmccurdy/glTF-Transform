@@ -9,7 +9,7 @@ import { DracoMeshCompression } from '../';
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	const io = await createDecoderIO();
-	const doc = io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
+	const doc = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
 	const bbox = bounds(doc.getRoot().listScenes()[0]);
 	t.deepEquals(
 		bbox.min.map((v) => +v.toFixed(3)),
@@ -45,7 +45,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	doc.createNode().setMesh(mesh);
 
 	let io = await createEncoderIO();
-	const jsonDoc = io.writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
@@ -112,7 +112,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	t.deepEquals(jsonDoc.json.extensionsUsed, ['KHR_draco_mesh_compression'], 'included in extensionsUsed');
 
 	io = await createDecoderIO();
-	const roundtripDoc = io.readJSON(jsonDoc);
+	const roundtripDoc = await io.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes()[0];
 	const bbox = bounds(roundtripNode);
 	t.deepEquals(
@@ -146,7 +146,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	const mesh = doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
 	const io = await createEncoderIO();
-	const jsonDoc = io.writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
@@ -189,7 +189,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
 	const io = await createEncoderIO();
-	const jsonDoc = io.writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	// The two primitives have different indices, and must be encoded as entirely separate buffer
@@ -251,7 +251,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
 	const io = await createEncoderIO();
-	const jsonDoc = io.writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
 	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
 
 	// The two primitives have different attributes, and must be encoded as entirely separate

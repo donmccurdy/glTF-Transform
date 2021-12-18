@@ -44,7 +44,7 @@ test('@gltf-transform/core::root', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::root | default scene', (t) => {
+test('@gltf-transform/core::root | default scene', async (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
 	const sceneA = doc.createScene('A');
@@ -64,7 +64,11 @@ test('@gltf-transform/core::root | default scene', (t) => {
 
 	t.equals(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
 
-	t.equals(io.readJSON(io.writeJSON(doc, {})).getRoot().getDefaultScene().getName(), 'B', 'read / write persistence');
+	t.equals(
+		(await io.readJSON(await io.writeJSON(doc, {}))).getRoot().getDefaultScene().getName(),
+		'B',
+		'read / write persistence'
+	);
 
 	t.end();
 });
@@ -79,16 +83,16 @@ test('@gltf-transform/core::root | clone child of root', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::root | extras', (t) => {
+test('@gltf-transform/core::root | extras', async (t) => {
 	const doc = new Document();
 	const io = new NodeIO();
 
-	const jsonDocNoExtras = io.writeJSON(doc);
+	const jsonDocNoExtras = await io.writeJSON(doc);
 	doc.getRoot().setExtras({ custom: 'value' });
-	const jsonDocExtras = io.writeJSON(doc);
+	const jsonDocExtras = await io.writeJSON(doc);
 
-	const rtDocNoExtras = io.readJSON(jsonDocNoExtras);
-	const rtDocExtras = io.readJSON(jsonDocExtras);
+	const rtDocNoExtras = await io.readJSON(jsonDocNoExtras);
+	const rtDocExtras = await io.readJSON(jsonDocExtras);
 
 	t.equals(jsonDocNoExtras.json.extras, undefined, 'no empty extras');
 	t.deepEquals(jsonDocExtras.json.extras, { custom: 'value' }, 'write extras');
@@ -97,7 +101,7 @@ test('@gltf-transform/core::root | extras', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::root | asset', (t) => {
+test('@gltf-transform/core::root | asset', async (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
 	const io = new NodeIO();
@@ -105,16 +109,16 @@ test('@gltf-transform/core::root | asset', (t) => {
 	let jsonDoc: JSONDocument;
 	let generator: string;
 
-	jsonDoc = io.writeJSON(doc);
+	jsonDoc = await io.writeJSON(doc);
 	generator = jsonDoc.json.asset.generator;
 	t.match(generator, /^glTF-Transform.*/i, 'write default generator');
 
 	root.getAsset().generator = 'Custom Tool v123';
-	jsonDoc = io.writeJSON(doc);
+	jsonDoc = await io.writeJSON(doc);
 	generator = jsonDoc.json.asset.generator;
 	t.match(generator, /^Custom Tool.*/i, 'write custom generator');
 
-	generator = io.readJSON(jsonDoc).getRoot().getAsset().generator;
+	generator = (await io.readJSON(jsonDoc)).getRoot().getAsset().generator;
 	t.match(generator, /^glTF-Transform.*/i, 'read default generator');
 	t.end();
 });

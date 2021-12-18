@@ -24,12 +24,13 @@ import { PlatformIO } from './platform-io';
  * const io = new NodeIO();
  *
  * // Read.
- * io.read('model.glb');       // → Document
- * io.readBinary(glb);         // Uint8Array → Document
+ * let document;
+ * document = await io.read('model.glb'); // → Document
+ * document = await io.readBinary(glb);   // Uint8Array → Document
  *
  * // Write.
- * io.write('model.glb', doc); // → void
- * io.writeBinary(doc);        // Document → Uint8Array
+ * await io.write('model.glb', doc);      // → void
+ * const glb = await io.writeBinary(doc); // Document → Uint8Array
  * ```
  *
  * @category I/O
@@ -58,7 +59,7 @@ export class NodeIO extends PlatformIO {
 
 	/** Loads a local path and returns a {@link Document} instance. */
 	public async read(uri: string): Promise<Document> {
-		return this.readJSON(await this.readAsJSON(uri));
+		return await this.readJSON(await this.readAsJSON(uri));
 	}
 
 	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */

@@ -31,7 +31,7 @@
  * 	dedup()
  * );
  *
- * io.write('output.glb', document);
+ * await io.write('output.glb', document);
  * ```
  *
  * @module functions

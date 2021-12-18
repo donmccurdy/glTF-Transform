@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Accessor, Document, NodeIO } from '../../';
 
-test('@gltf-transform/core::animation', (t) => {
+test('@gltf-transform/core::animation', async (t) => {
 	const doc = new Document();
 
 	const buffer = doc.createBuffer('default');
@@ -31,7 +31,7 @@ test('@gltf-transform/core::animation', (t) => {
 	const io = new NodeIO();
 
 	const options = { basename: 'animationTest' };
-	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
 
 	t.deepEqual(
 		jsonDoc.json.animations[0],
@@ -57,7 +57,7 @@ test('@gltf-transform/core::animation', (t) => {
 		'animation samplers and channels'
 	);
 
-	const finalDoc = io.readJSON(jsonDoc);
+	const finalDoc = await io.readJSON(jsonDoc);
 
 	t.deepEqual(finalDoc.getRoot().listAccessors()[0].getArray(), input.getArray(), 'sampler times');
 	t.deepEqual(finalDoc.getRoot().listAccessors()[1].getArray(), output.getArray(), 'sampler values');
@@ -109,7 +109,7 @@ test('@gltf-transform/core::animationSampler | copy', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::animation | extras', (t) => {
+test('@gltf-transform/core::animation | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAnimation('A')
@@ -117,7 +117,7 @@ test('@gltf-transform/core::animation | extras', (t) => {
 		.addChannel(doc.createAnimationChannel().setExtras({ channel: true }))
 		.addSampler(doc.createAnimationSampler().setExtras({ sampler: true }));
 
-	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
+	const doc2 = await io.readJSON(await io.writeJSON(doc, { basename: 'test' }));
 
 	const anim = doc.getRoot().listAnimations()[0];
 	const anim2 = doc2.getRoot().listAnimations()[0];

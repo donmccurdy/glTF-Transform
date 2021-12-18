@@ -343,7 +343,7 @@ test('@gltf-transform/core::material | equals', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::material | i/o', (t) => {
+test('@gltf-transform/core::material | i/o', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 
@@ -366,7 +366,7 @@ test('@gltf-transform/core::material | i/o', (t) => {
 		.setOcclusionStrength(0.4);
 
 	const io = new NodeIO();
-	const rtDoc = io.readJSON(io.writeJSON(doc, { format: Format.GLB }));
+	const rtDoc = await io.readJSON(await io.writeJSON(doc, { format: Format.GLB }));
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 
 	t.ok(rtMat.getBaseColorTexture(), 'baseColorTexture');

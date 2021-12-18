@@ -50,7 +50,7 @@ interface IBuffer extends IExtensibleProperty {
  *
  * // Write to disk. Each mesh's binary data will be in a separate binary file;
  * // any remaining accessors will be in a third (default) buffer.
- * new NodeIO().write('scene.gltf', doc);
+ * await new NodeIO().write('scene.gltf', doc);
  * // → scene.gltf, part1.bin, part2.bin
  * ```
  *

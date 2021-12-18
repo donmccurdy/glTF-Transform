@@ -7,8 +7,8 @@ import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, NodeIO } from 
 
 test('@gltf-transform/core::io | common', (t) => {
 	t.throws(
-		() =>
-			new NodeIO().readJSON({
+		async () =>
+			await new NodeIO().readJSON({
 				json: { asset: { version: '1.0' } },
 				resources: {},
 			}),
@@ -17,22 +17,21 @@ test('@gltf-transform/core::io | common', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb without optional buffer', (t) => {
+test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 	const doc = new Document();
 	doc.createScene().addChild(doc.createNode('MyNode'));
 
 	const io = new NodeIO();
-	const json = io.writeJSON(doc, { format: Format.GLB });
-	const binary = io.writeBinary(doc);
+	const json = await io.writeJSON(doc, { format: Format.GLB });
+	const binary = await io.writeBinary(doc);
 
 	t.ok(json, 'writes json');
 	t.ok(binary, 'writes binary');
 	t.equals(Object.values(json.resources).length, 0, 'no buffers');
-	t.ok(io.readJSON(json), 'reads json');
-	t.ok(io.readBinary(binary), 'reads binary');
+	t.ok(await io.readJSON(json), 'reads json');
+	t.ok(await io.readBinary(binary), 'reads binary');
 	t.deepEquals(
-		io
-			.readBinary(binary)
+		(await io.readBinary(binary))
 			.getRoot()
 			.listNodes()
 			.map((n) => n.getName()),
@@ -42,15 +41,15 @@ test('@gltf-transform/core::io | glb without optional buffer', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb without required buffer', (t) => {
+test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	const io = new NodeIO();
 
 	let doc = new Document();
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 
-	t.throws(() => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	t.throws(() => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	t.throws(async () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
+	t.throws(async () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
 
 	doc.createBuffer();
 
@@ -61,31 +60,31 @@ test('@gltf-transform/core::io | glb without required buffer', (t) => {
 	doc.createAccessor().setArray(new Float32Array(10));
 	doc.createAccessor().setArray(new Float32Array(20));
 
-	t.throws(() => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	t.throws(() => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	t.throws(async () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
+	t.throws(async () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
 
 	doc.createBuffer();
 
-	t.ok(io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
-	t.ok(io.writeBinary(doc), 'writeBinary succeeds');
+	t.ok(await io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
+	t.ok(await io.writeBinary(doc), 'writeBinary succeeds');
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb with texture-only buffer', (t) => {
+test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
 	const doc = new Document();
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 	doc.createBuffer();
 
 	const io = new NodeIO();
-	const json = io.writeJSON(doc, { format: Format.GLB });
-	const binary = io.writeBinary(doc);
+	const json = await io.writeJSON(doc, { format: Format.GLB });
+	const binary = await io.writeBinary(doc);
 
 	t.ok(json, 'writes json');
 	t.ok(binary, 'writes binary');
 	t.equals(Object.values(json.resources).length, 1, 'writes 1 buffer');
 
-	const rtTextures = io.readBinary(binary).getRoot().listTextures();
+	const rtTextures = (await io.readBinary(binary)).getRoot().listTextures();
 
 	t.equals(rtTextures[0].getName(), 'TexA', 'reads texture 1');
 	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');
@@ -94,7 +93,7 @@ test('@gltf-transform/core::io | glb with texture-only buffer', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | glb with data uri', (t) => {
+test('@gltf-transform/core::io | glb with data uri', async (t) => {
 	const doc = new Document();
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
@@ -103,7 +102,7 @@ test('@gltf-transform/core::io | glb with data uri', (t) => {
 	// (1) Write JSONDocument and replace resources with Data URIs.
 
 	const io = new NodeIO();
-	const { json, resources } = io.writeJSON(doc, { format: Format.GLB });
+	const { json, resources } = await io.writeJSON(doc, { format: Format.GLB });
 	for (const buffer of json.buffers!) {
 		const uri = buffer.uri || GLB_BUFFER;
 		const resource = resources[uri]!;
@@ -131,7 +130,7 @@ test('@gltf-transform/core::io | glb with data uri', (t) => {
 
 	// (3) Test that we can read GLBs with Data URIs.
 
-	const rtTextures = io.readBinary(binary).getRoot().listTextures();
+	const rtTextures = (await io.readBinary(binary)).getRoot().listTextures();
 
 	t.equals(rtTextures[0].getName(), 'TexA', 'reads texture 1');
 	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');
@@ -140,7 +139,7 @@ test('@gltf-transform/core::io | glb with data uri', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | gltf embedded', (t) => {
+test('@gltf-transform/core::io | gltf embedded', async (t) => {
 	const io = new NodeIO();
 	const jsonPath = path.resolve(__dirname, '../in/Box_glTF-Embedded/Box.gltf');
 	const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
@@ -148,7 +147,7 @@ test('@gltf-transform/core::io | gltf embedded', (t) => {
 	const jsonDoc = { json, resources: {} } as JSONDocument;
 	const jsonDocCopy = JSON.parse(JSON.stringify(jsonDoc));
 
-	t.ok(io.readJSON(jsonDoc), 'reads document');
+	t.ok(await io.readJSON(jsonDoc), 'reads document');
 	t.deepEquals(jsonDoc, jsonDocCopy, 'original unchanged');
 	t.end();
 });

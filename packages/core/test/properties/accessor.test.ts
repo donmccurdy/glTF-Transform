@@ -80,7 +80,7 @@ test('@gltf-transform/core::accessor | getElementSize', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::accessor | interleaved', (t) => {
+test('@gltf-transform/core::accessor | interleaved', async (t) => {
 	const resources = {
 		'test.bin': new Uint8Array(
 			new Uint16Array([
@@ -151,7 +151,7 @@ test('@gltf-transform/core::accessor | interleaved', (t) => {
 	};
 
 	const io = new NodeIO();
-	const doc = io.readJSON({ json, resources });
+	const doc = await io.readJSON({ json, resources });
 	const arrays = doc
 		.getRoot()
 		.listAccessors()
@@ -163,7 +163,7 @@ test('@gltf-transform/core::accessor | interleaved', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::accessor | sparse', (t) => {
+test('@gltf-transform/core::accessor | sparse', async (t) => {
 	const resources = {
 		'indices.bin': new Uint8Array(new Uint16Array([10, 50, 51]).buffer),
 		'values.bin': new Uint8Array(new Float32Array([1, 2, 3, 10, 12, 14, 25, 50, 75]).buffer),
@@ -211,7 +211,7 @@ test('@gltf-transform/core::accessor | sparse', (t) => {
 	};
 
 	const io = new NodeIO();
-	const doc = io.readJSON({ json, resources });
+	const doc = await io.readJSON({ json, resources });
 	const accessors = doc.getRoot().listAccessors();
 
 	const actual = [];
@@ -237,7 +237,7 @@ test('@gltf-transform/core::accessor | minmax', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::accessor | extras', (t) => {
+test('@gltf-transform/core::accessor | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createAccessor('A')
@@ -245,7 +245,7 @@ test('@gltf-transform/core::accessor | extras', (t) => {
 		.setExtras({ foo: 1, bar: 2 })
 		.setBuffer(doc.createBuffer());
 
-	const doc2 = io.readBinary(io.writeBinary(doc));
+	const doc2 = await io.readBinary(await io.writeBinary(doc));
 
 	t.deepEqual(doc.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');

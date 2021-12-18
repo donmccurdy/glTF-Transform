@@ -6,7 +6,7 @@ import { MaterialsUnlit } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-unlit', (t) => {
+test('@gltf-transform/extensions::materials-unlit', async (t) => {
 	const doc = new Document();
 	const unlitExtension = doc.createExtension(MaterialsUnlit);
 	const unlit = unlitExtension.createUnlit();
@@ -20,14 +20,14 @@ test('@gltf-transform/extensions::materials-unlit', (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_unlit'), unlit, 'unlit is attached');
 
-	const jsonDoc = new NodeIO().registerExtensions([MaterialsUnlit]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([MaterialsUnlit]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
 	t.deepEqual(materialDef.extensions, { KHR_materials_unlit: {} }, 'writes unlit extension');
 	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsUnlit.EXTENSION_NAME], 'writes extensionsUsed');
 
-	const rtDoc = new NodeIO().registerExtensions([MaterialsUnlit]).readJSON(jsonDoc);
+	const rtDoc = await new NodeIO().registerExtensions([MaterialsUnlit]).readJSON(jsonDoc);
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 	t.ok(rtMat.getExtension('KHR_materials_unlit'), 'unlit is round tripped');
 

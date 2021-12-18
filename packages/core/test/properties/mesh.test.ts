@@ -47,7 +47,7 @@ test('@gltf-transform/core::mesh | primitive', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::mesh | primitive targets', (t) => {
+test('@gltf-transform/core::mesh | primitive targets', async (t) => {
 	const doc = new Document();
 	const mesh = doc.createMesh('mesh');
 	const prim = doc.createPrimitive();
@@ -78,7 +78,7 @@ test('@gltf-transform/core::mesh | primitive targets', (t) => {
 
 	const io = new NodeIO();
 	const options = { basename: 'targetTest' };
-	const jsonDoc = io.writeJSON(io.readJSON(io.writeJSON(doc, options)), options);
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
 	const meshDef = jsonDoc.json.meshes[0];
 
 	t.deepEquals(meshDef.extras.targetNames, ['trg1', 'trg2', 'trg3'], 'writes target names');
@@ -121,14 +121,14 @@ test('@gltf-transform/core::primitive | copy', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::mesh | extras', (t) => {
+test('@gltf-transform/core::mesh | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createMesh('A')
 		.setExtras({ foo: 1, bar: 2 })
 		.addPrimitive(doc.createPrimitive().setExtras({ baz: 3 }));
 
-	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
+	const doc2 = await io.readJSON(await io.writeJSON(doc, { basename: 'test' }));
 
 	t.deepEqual(doc.getRoot().listMeshes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores mesh extras');
 	t.deepEqual(doc2.getRoot().listMeshes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips mesh extras');
@@ -141,7 +141,7 @@ test('@gltf-transform/core::mesh | extras', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::mesh | empty i/o', (t) => {
+test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 	// Technically meshes must have primitives for the file to be valid, but we'll test that
 	// reading/writing works anyway.
 
@@ -149,14 +149,14 @@ test('@gltf-transform/core::mesh | empty i/o', (t) => {
 	doc.createMesh('EmptyMesh').setWeights([1, 0, 0, 0]);
 
 	const io = new NodeIO();
-	let rtDoc = io.readJSON(io.writeJSON(doc, {}));
+	let rtDoc = await io.readJSON(await io.writeJSON(doc, {}));
 	let rtMesh = rtDoc.getRoot().listMeshes()[0];
 
 	t.deepEquals(rtMesh.listPrimitives(), [], 'primitives');
 	t.deepEquals(rtMesh.getName(), 'EmptyMesh', 'name');
 	t.deepEquals(rtMesh.getWeights(), [1, 0, 0, 0], 'weights');
 
-	rtDoc = io.readJSON({
+	rtDoc = await io.readJSON({
 		json: {
 			asset: { version: '2.0' },
 			meshes: [
@@ -177,7 +177,7 @@ test('@gltf-transform/core::mesh | empty i/o', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::mesh | primitive i/o', (t) => {
+test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 	const doc = new Document();
 	const prim = doc.createPrimitive();
 	const buffer = doc.createBuffer();
@@ -235,7 +235,7 @@ test('@gltf-transform/core::mesh | primitive i/o', (t) => {
 	doc.createMesh().addPrimitive(prim);
 
 	const io = new NodeIO();
-	const rtDoc = io.readBinary(io.writeBinary(doc));
+	const rtDoc = await io.readBinary(await io.writeBinary(doc));
 	const rtPrim = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
 
 	t.deepEquals(rtPrim.getAttribute('POSITION').getArray(), new Float32Array([0, 0, 0]), 'float32');
@@ -247,7 +247,7 @@ test('@gltf-transform/core::mesh | primitive i/o', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::mesh | primitive vertex layout', (t) => {
+test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 	const doc = new Document();
 	const prim = doc.createPrimitive();
 	const buffer = doc.createBuffer();
@@ -291,7 +291,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', (t) => {
 	const io = new NodeIO();
 
 	io.setVertexLayout(VertexLayout.INTERLEAVED);
-	const interleavedJSON = io.binaryToJSON(io.writeBinary(doc));
+	const interleavedJSON = await io.binaryToJSON(await io.writeBinary(doc));
 	t.deepEquals(
 		interleavedJSON.json.bufferViews,
 		[{ buffer: 0, target: 34962, byteOffset: 0, byteLength: 36, byteStride: 36 }],
@@ -299,7 +299,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', (t) => {
 	);
 
 	io.setVertexLayout(VertexLayout.SEPARATE);
-	const separateJSON = io.binaryToJSON(io.writeBinary(doc));
+	const separateJSON = await io.binaryToJSON(await io.writeBinary(doc));
 	t.deepEquals(
 		separateJSON.json.bufferViews,
 		[

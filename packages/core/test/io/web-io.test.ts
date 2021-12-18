@@ -172,7 +172,7 @@ test('@gltf-transform/core::io | web read + data URIs', async (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::io | web readJSON + data URIs', (t) => {
+test('@gltf-transform/core::io | web readJSON + data URIs', async (t) => {
 	const images = [new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
@@ -190,7 +190,7 @@ test('@gltf-transform/core::io | web readJSON + data URIs', (t) => {
 
 	const io = new WebIO();
 
-	const doc = io.readJSON({
+	const doc = await io.readJSON({
 		json: {
 			asset: { version: '2.0' },
 			images: uris.map((uri) => ({ uri })),

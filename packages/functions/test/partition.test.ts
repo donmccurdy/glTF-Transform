@@ -5,9 +5,10 @@ import test from 'tape';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { partition } from '../';
 
-test('@gltf-transform/functions::partition', (t) => {
+test('@gltf-transform/functions::partition', async (t) => {
 	const io = new NodeIO();
-	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb')).setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
+	doc.setLogger(new Logger(Logger.Verbosity.SILENT));
 	t.equal(doc.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 
 	partition({ meshes: [] })(doc);
@@ -17,7 +18,7 @@ test('@gltf-transform/functions::partition', (t) => {
 
 	partition({ meshes: ['CubeA', 'CubeB'] })(doc);
 
-	const jsonDoc = io.writeJSON(doc, { basename: 'partition-test' });
+	const jsonDoc = await io.writeJSON(doc, { basename: 'partition-test' });
 	t.deepEqual(
 		jsonDoc.json.buffers,
 		[

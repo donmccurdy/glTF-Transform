@@ -92,7 +92,7 @@ export class Session {
 
 	public async transform (...transforms: Transform[]): Promise<void> {
 		const doc = this._input
-			? this._io.read(this._input).setLogger(this._logger)
+			? (await this._io.read(this._input)).setLogger(this._logger)
 			: new Document().setLogger(this._logger);
 
 		// Warn and remove lossy compression, to avoid increasing loss on round trip.
@@ -107,7 +107,7 @@ export class Session {
 
 		await doc.transform(...transforms);
 
-		this._io.write(this._output, doc);
+		await this._io.write(this._output, doc);
 
 		const {lastReadBytes, lastWriteBytes} = this._io;
 		if (!this._input) {

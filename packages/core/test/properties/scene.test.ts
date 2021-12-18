@@ -21,12 +21,12 @@ test('@gltf-transform/core::scene | traverse', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::scene | extras', (t) => {
+test('@gltf-transform/core::scene | extras', async (t) => {
 	const io = new NodeIO();
 	const doc = new Document();
 	doc.createScene('A').setExtras({ foo: 1, bar: 2 });
 
-	const doc2 = io.readJSON(io.writeJSON(doc, { basename: 'test' }));
+	const doc2 = await io.readJSON(await io.writeJSON(doc, { basename: 'test' }));
 
 	t.deepEqual(doc.getRoot().listScenes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listScenes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');

@@ -22,11 +22,12 @@ const DEFAULT_INIT: RequestInit = {};
  * const io = new WebIO({credentials: 'include'});
  *
  * // Read.
- * const doc = await io.read('model.glb');  // → Document
- * const doc = io.readBinary(glb);  // Uint8Array → Document
+ * let document;
+ * document = await io.read('model.glb');  // → Document
+ * document = await io.readBinary(glb);    // Uint8Array → Document
  *
  * // Write.
- * const glb = io.writeBinary(doc); // Document → Uint8Array
+ * const glb = await io.writeBinary(doc); // Document → Uint8Array
  * ```
  *
  * @category I/O
@@ -45,12 +46,12 @@ export class WebIO extends PlatformIO {
 	 */
 
 	/** Loads a URI and returns a {@link Document} instance. */
-	public read(uri: string): Promise<Document> {
+	public async read(uri: string): Promise<Document> {
 		return this.readAsJSON(uri).then((jsonDoc) => this.readJSON(jsonDoc));
 	}
 
 	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
-	public readAsJSON(uri: string): Promise<JSONDocument> {
+	public async readAsJSON(uri: string): Promise<JSONDocument> {
 		const isGLB =
 			uri.match(/^data:application\/octet-stream;/) ||
 			new URL(uri, window.location.href).pathname.match(/\.glb$/);
@@ -66,15 +67,12 @@ export class WebIO extends PlatformIO {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
-			(resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
+			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
-				return fetch(_resolve(dir, uri), this._fetchConfig)
-					.then((response) => response.arrayBuffer())
-					.then((arrayBuffer) => {
-						jsonDoc.resources[uri] = new Uint8Array(arrayBuffer);
-					});
+				const res = await fetch(_resolve(dir, uri), this._fetchConfig);
+				jsonDoc.resources[uri] = new Uint8Array(await res.arrayBuffer());
 			}
 		);
 		return Promise.all(pendingResources).then(() => undefined);
@@ -85,30 +83,23 @@ export class WebIO extends PlatformIO {
 	 */
 
 	/** @internal */
-	private _readGLTF(uri: string): Promise<JSONDocument> {
-		const jsonDoc = { json: {}, resources: {} } as JSONDocument;
-		return fetch(uri, this._fetchConfig)
-			.then((response) => response.json())
-			.then(async (json: GLTF.IGLTF) => {
-				jsonDoc.json = json;
-				// Read external resources first, before Data URIs are replaced.
-				await this._readResourcesExternal(jsonDoc, _dirname(uri));
-				this._readResourcesInternal(jsonDoc);
-				return jsonDoc;
-			});
+	private async _readGLTF(uri: string): Promise<JSONDocument> {
+		const json = await fetch(uri, this._fetchConfig).then((response) => response.json());
+		const jsonDoc: JSONDocument = { json, resources: {} };
+		// Read external resources first, before Data URIs are replaced.
+		await this._readResourcesExternal(jsonDoc, _dirname(uri));
+		this._readResourcesInternal(jsonDoc);
+		return jsonDoc;
 	}
 
 	/** @internal */
-	private _readGLB(uri: string): Promise<JSONDocument> {
-		return fetch(uri, this._fetchConfig)
-			.then((response) => response.arrayBuffer())
-			.then(async (arrayBuffer) => {
-				const jsonDoc = this._binaryToJSON(new Uint8Array(arrayBuffer));
-				// Read external resources first, before Data URIs are replaced.
-				await this._readResourcesExternal(jsonDoc, _dirname(uri));
-				this._readResourcesInternal(jsonDoc);
-				return jsonDoc;
-			});
+	private async _readGLB(uri: string): Promise<JSONDocument> {
+		const arrayBuffer = await fetch(uri, this._fetchConfig).then((response) => response.arrayBuffer());
+		const jsonDoc = this._binaryToJSON(new Uint8Array(arrayBuffer));
+		// Read external resources first, before Data URIs are replaced.
+		await this._readResourcesExternal(jsonDoc, _dirname(uri));
+		this._readResourcesInternal(jsonDoc);
+		return jsonDoc;
 	}
 }
 

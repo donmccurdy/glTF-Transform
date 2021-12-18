@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { BufferUtils, Document, ImageUtils, NodeIO } from '@gltf-transform/core';
+import { BufferUtils, Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
 import { TextureWebP } from '../';
 
 const IS_NODEJS = typeof window === 'undefined';
@@ -16,7 +16,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([TextureWebP]);
 
-test('@gltf-transform/extensions::texture-webp', (t) => {
+test('@gltf-transform/extensions::texture-webp', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const webpExtension = doc.createExtension(TextureWebP);
@@ -24,18 +24,22 @@ test('@gltf-transform/extensions::texture-webp', (t) => {
 	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new Uint8Array(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
 
-	let jsonDoc;
+	let jsonDoc: JSONDocument;
 
-	jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
 
 	// Writing to file.
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['EXT_texture_webp'], 'writes extensionsUsed');
 	t.equal(jsonDoc.json.textures[0].source, undefined, 'omits .source on WebP texture');
 	t.equal(jsonDoc.json.textures[1].source, 1, 'includes .source on PNG texture');
-	t.equal(jsonDoc.json.textures[0].extensions['EXT_texture_webp'].source, 0, 'includes .source on WebP extension');
+	t.equal(
+		(jsonDoc.json.textures[0].extensions['EXT_texture_webp'] as GLTF.ITexture).source,
+		0,
+		'includes .source on WebP extension'
+	);
 
 	// Read (roundtrip) from file.
-	const rtDoc = io.readJSON(jsonDoc);
+	const rtDoc = await io.readJSON(jsonDoc);
 	const rtRoot = rtDoc.getRoot();
 	t.equal(rtRoot.listTextures()[0].getMimeType(), 'image/webp', 'reads WebP mimetype');
 	t.equal(rtRoot.listTextures()[1].getMimeType(), 'image/png', 'reads PNG mimetype');
@@ -45,7 +49,7 @@ test('@gltf-transform/extensions::texture-webp', (t) => {
 	// Clean up extension data, revert to core glTF.
 	webpExtension.dispose();
 	tex1.dispose();
-	jsonDoc = io.writeJSON(doc, WRITER_OPTIONS);
+	jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
 	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 	t.equal(jsonDoc.json.textures.length, 1, 'writes only 1 texture');
 	t.equal(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
