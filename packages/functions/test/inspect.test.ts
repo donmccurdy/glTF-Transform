@@ -5,9 +5,10 @@ import test from 'tape';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { inspect } from '../';
 
-test('@gltf-transform/functions::inspect', (t) => {
+test('@gltf-transform/functions::inspect', async (t) => {
 	const io = new NodeIO();
-	const doc = io.read(path.join(__dirname, 'in/TwoCubes.glb')).setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
+	doc.setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	doc.createAnimation('TestAnim');
 	doc.createTexture('TestTex').setImage(new Uint8Array(10)).setMimeType('image/fake');

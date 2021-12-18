@@ -5,13 +5,24 @@ import fs from 'fs';
 import path from 'path';
 import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, NodeIO } from '../../';
 
-test('@gltf-transform/core::io | common', (t) => {
-	t.throws(
-		async () =>
-			await new NodeIO().readJSON({
+const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
+	try {
+		await fn();
+		t.fail(msg);
+	} catch (e) {
+		t.match((e as Error).message, re, msg);
+	}
+};
+
+test('@gltf-transform/core::io | common', async (t) => {
+	await throwsAsync(
+		t,
+		() =>
+			new NodeIO().readJSON({
 				json: { asset: { version: '1.0' } },
 				resources: {},
 			}),
+		/Unsupported/,
 		'1.0'
 	);
 	t.end();
@@ -48,8 +59,8 @@ test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 
-	t.throws(async () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	t.throws(async () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	await throwsAsync(t, () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
+	await throwsAsync(t, () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
 
 	doc.createBuffer();
 
@@ -60,8 +71,8 @@ test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	doc.createAccessor().setArray(new Float32Array(10));
 	doc.createAccessor().setArray(new Float32Array(20));
 
-	t.throws(async () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	t.throws(async () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	await throwsAsync(t, () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
+	await throwsAsync(t, () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
 
 	doc.createBuffer();
 

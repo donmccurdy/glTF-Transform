@@ -7,6 +7,15 @@ import { Accessor, Buffer, Document, Format, NodeIO, Primitive } from '@gltf-tra
 import { bounds } from '@gltf-transform/functions';
 import { DracoMeshCompression } from '../';
 
+const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
+	try {
+		await fn();
+		t.fail(msg);
+	} catch (e) {
+		t.match((e as Error).message, re, msg);
+	}
+};
+
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	const io = await createDecoderIO();
 	const doc = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
@@ -299,7 +308,12 @@ test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent'
 	doc.createMesh().addPrimitive(prim);
 
 	const io = await createEncoderIO();
-	t.throws(() => io.writeJSON(doc, { format: Format.GLB }), 'invalid accessor reuse');
+	await throwsAsync(
+		t,
+		() => io.writeJSON(doc, { format: Format.GLB }),
+		/indices or vertex attributes/,
+		'invalid accessor reuse'
+	);
 	t.end();
 });
 
