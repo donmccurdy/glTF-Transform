@@ -29,16 +29,16 @@
     "@types/command-exists": "1.2.0",
     "@types/draco3dgltf": "1.4.0",
     "@types/ndarray": "1.0.11",
-    "@types/node": "16.11.12",
+    "@types/node": "16.11.14",
     "@types/node-gzip": "1.1.0",
     "@types/tape": "4.13.2",
-    "@typescript-eslint/eslint-plugin": "5.6.0",
-    "@typescript-eslint/parser": "5.6.0",
+    "@typescript-eslint/eslint-plugin": "5.7.0",
+    "@typescript-eslint/parser": "5.7.0",
     "canvas": "2.8.0",
-    "concurrently": "6.4.0",
+    "concurrently": "6.5.1",
     "coveralls": "3.1.1",
     "draco3dgltf": "1.5.0",
-    "eslint": "8.4.1",
+    "eslint": "8.5.0",
     "eslint-config-prettier": "8.3.0",
     "gltf-validator": "2.0.0-dev.3.5",
     "lerna": "4.0.0",
@@ -52,6 +52,6 @@
     "tape": "5.3.2",
     "ts-node": "10.4.0",
     "typedoc": "0.21.2",
-    "typescript": "4.5.3"
+    "typescript": "4.5.4"
   }
 }
