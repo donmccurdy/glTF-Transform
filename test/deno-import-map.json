@@ -1,0 +1,10 @@
+{
+   "imports": {
+      "tape": "../test/deno-tape.ts",
+      "canvas": "https://deno.land/x/canvas/mod.ts",
+      "@gltf-transform/core": "../packages/core/dist/core.modern.js",
+      "gl-matrix/mat4": "../node_modules/gl-matrix/esm/mat4.js",
+      "gl-matrix/vec3": "../node_modules/gl-matrix/esm/vec3.js",
+      "property-graph": "../node_modules/property-graph/dist/property-graph.modern.js"
+   }
+}
