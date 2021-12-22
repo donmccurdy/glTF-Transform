@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, TypedArray } from '../../';
+import { Accessor, Document, GLTF, NodeIO, TypedArray } from '@gltf-transform/core';
 
 test('@gltf-transform/core::accessor | getScalar/setScalar', (t) => {
 	const accessor = new Document()

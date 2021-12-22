@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { MathUtils } from '../../';
+import { MathUtils } from '@gltf-transform/core';
 
 test('@gltf-transform/core::math-utils | identity', (t) => {
 	t.equals(MathUtils.identity(25), 25, 'identity');

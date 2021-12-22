@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, Primitive, Property, VertexLayout } from '../../';
+import { Accessor, Document, GLTF, NodeIO, Primitive, Property, VertexLayout } from '@gltf-transform/core';
 
 test('@gltf-transform/core::mesh', (t) => {
 	const doc = new Document();

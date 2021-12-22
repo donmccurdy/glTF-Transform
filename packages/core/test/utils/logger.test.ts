@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Logger } from '../../';
+import { Logger } from '@gltf-transform/core';
 
 test('@gltf-transform/core::logger', (t) => {
 	const { debug, info, warn, error } = console;

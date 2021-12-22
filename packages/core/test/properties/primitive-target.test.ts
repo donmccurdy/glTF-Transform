@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Document, Property } from '../../';
+import { Document, Property } from '@gltf-transform/core';
 
 const toType = (p: Property): string => p.propertyType;
 

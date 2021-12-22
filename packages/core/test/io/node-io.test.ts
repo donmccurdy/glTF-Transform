@@ -1,9 +1,7 @@
-require('source-map-support').install();
-
 const IS_NODEJS = typeof window === 'undefined';
 
 import test from 'tape';
-import { NodeIO } from '../../';
+import { NodeIO } from '@gltf-transform/core';
 
 let fs, glob, path;
 if (IS_NODEJS) {

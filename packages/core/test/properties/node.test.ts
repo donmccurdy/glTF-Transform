@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Document, MathUtils, NodeIO, mat4, vec3, vec4 } from '../../';
+import { Document, MathUtils, NodeIO, mat4, vec3, vec4 } from '@gltf-transform/core';
 
 test('@gltf-transform/core::node | parent', (t) => {
 	const doc = new Document();

@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { BufferUtils } from '../../';
+import { BufferUtils } from '@gltf-transform/core';
 
 const IS_NODEJS = typeof window === 'undefined';
 

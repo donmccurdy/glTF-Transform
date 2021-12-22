@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Document } from '../';
+import { Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::document | transform', async (t) => {
 	const doc = new Document();

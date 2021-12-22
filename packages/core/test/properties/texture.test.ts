@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '../../';
+import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '@gltf-transform/core';
 
 test('@gltf-transform/core::texture | read', async (t) => {
 	const jsonDoc = {

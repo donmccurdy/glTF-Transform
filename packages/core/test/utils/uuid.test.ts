@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { uuid } from '../../';
+import { uuid } from '@gltf-transform/core';
 
 test('@gltf-transform/core::uuid', (t) => {
 	const set = new Set();

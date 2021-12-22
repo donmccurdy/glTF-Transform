@@ -1,10 +1,8 @@
-require('source-map-support').install();
-
 const IS_NODEJS = typeof window === 'undefined';
 
 import { createCanvas } from 'canvas';
 import test from 'tape';
-import { BufferUtils, ImageUtils } from '../../';
+import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 
 let fs, path;
 if (IS_NODEJS) {

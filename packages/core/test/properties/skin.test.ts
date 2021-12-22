@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Accessor, AnimationChannel, Document, NodeIO } from '../../';
+import { Accessor, AnimationChannel, Document, NodeIO } from '@gltf-transform/core';
 
 test('@gltf-transform/core::skin', async (t) => {
 	const doc = new Document();

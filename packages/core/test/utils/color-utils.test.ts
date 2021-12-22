@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { ColorUtils } from '../../';
+import { ColorUtils } from '@gltf-transform/core';
 
 test('@gltf-transform/core::color-utils', (t) => {
 	t.deepEquals(ColorUtils.hexToFactor(0xff0000, []), [1, 0, 0], 'hexToFactor');

@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { FileUtils } from '../../';
+import { FileUtils } from '@gltf-transform/core';
 
 test('@gltf-transform/core::file-utils | basename', (t) => {
 	t.equals(FileUtils.basename('http://foo.com/path/to/index.html'), 'index', 'URI');

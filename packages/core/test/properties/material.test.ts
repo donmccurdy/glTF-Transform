@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import test from 'tape';
-import { Document, Format, NodeIO, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '../../';
+import { Document, Format, NodeIO, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
 
 const { R, G, B, A } = TextureChannel;
 

@@ -1,9 +1,7 @@
-require('source-map-support').install();
-
 import test from 'tape';
 import fs from 'fs';
 import path from 'path';
-import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, NodeIO } from '../../';
+import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, NodeIO } from '@gltf-transform/core';
 
 const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
 	try {
