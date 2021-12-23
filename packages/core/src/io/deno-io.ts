@@ -1,4 +1,11 @@
-import { NodeIO } from './node-io';
+import { PlatformIO } from '.';
+
+declare global {
+	const Deno: {
+		readFile: (path: string) => Promise<Uint8Array>;
+		readTextFile: (path: string) => Promise<string>;
+	};
+}
 
 /**
  * # DenoIO
@@ -17,14 +24,42 @@ import { NodeIO } from './node-io';
  * const io = new DenoIO();
  *
  * // Read.
- * io.read('model.glb');             // → Document
- * io.readBinary(ArrayBuffer);       // → Document
+ * let document;
+ * document = io.read('model.glb');  // → Document
+ * document = io.readBinary(glb);    // Uint8Array → Document
  *
  * // Write.
- * io.write('model.glb', doc); // → void
- * io.writeBinary(doc);        // → ArrayBuffer
+ * const glb = io.writeBinary(document);  // Document → Uint8Array
  * ```
  *
  * @category I/O
  */
-export class DenoIO extends NodeIO {}
+export class DenoIO extends PlatformIO {
+	private _path;
+
+	constructor() {
+		super();
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		this._path = await import('https://deno.land/std/path/mod.ts');
+	}
+
+	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(uri: string, type: 'text'): Promise<string>;
+	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+		switch (type) {
+			case 'view':
+				return Deno.readFile(uri);
+			case 'text':
+				return Deno.readTextFile(uri);
+		}
+	}
+
+	protected resolve(directory: string, path: string): string {
+		return this._path.resolve(directory, path);
+	}
+
+	protected dirname(uri: string): string {
+		return this._path.dirname(uri);
+	}
+}

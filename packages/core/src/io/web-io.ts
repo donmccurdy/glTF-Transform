@@ -1,6 +1,3 @@
-import { Document } from '../document';
-import { JSONDocument } from '../json-document';
-import { GLTF } from '../types/gltf';
 import { PlatformIO } from './platform-io';
 
 const DEFAULT_INIT: RequestInit = {};
@@ -41,72 +38,31 @@ export class WebIO extends PlatformIO {
 		super();
 	}
 
-	/**********************************************************************************************
-	 * Public.
-	 */
-
-	/** Loads a URI and returns a {@link Document} instance. */
-	public async read(uri: string): Promise<Document> {
-		return this.readAsJSON(uri).then((jsonDoc) => this.readJSON(jsonDoc));
+	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(uri: string, type: 'text'): Promise<string>;
+	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+		const response = await fetch(uri, this._fetchConfig);
+		switch (type) {
+			case 'view':
+				return new Uint8Array(await response.arrayBuffer());
+			case 'text':
+				return response.text();
+		}
 	}
 
-	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
-	public async readAsJSON(uri: string): Promise<JSONDocument> {
-		const isGLB =
-			uri.match(/^data:application\/octet-stream;/) ||
-			new URL(uri, window.location.href).pathname.match(/\.glb$/);
-		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
+	protected resolve(directory: string, path: string): string {
+		return _resolve(directory, path);
 	}
 
-	/**********************************************************************************************
-	 * Protected.
-	 */
-
-	/** @internal */
-	private _readResourcesExternal(jsonDoc: JSONDocument, dir: string): Promise<void> {
-		const images = jsonDoc.json.images || [];
-		const buffers = jsonDoc.json.buffers || [];
-		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
-			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
-				const uri = resource.uri;
-				if (!uri || uri.match(/data:/)) return Promise.resolve();
-
-				const res = await fetch(_resolve(dir, uri), this._fetchConfig);
-				jsonDoc.resources[uri] = new Uint8Array(await res.arrayBuffer());
-			}
-		);
-		return Promise.all(pendingResources).then(() => undefined);
-	}
-
-	/**********************************************************************************************
-	 * Private.
-	 */
-
-	/** @internal */
-	private async _readGLTF(uri: string): Promise<JSONDocument> {
-		const json = await fetch(uri, this._fetchConfig).then((response) => response.json());
-		const jsonDoc: JSONDocument = { json, resources: {} };
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, _dirname(uri));
-		this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
-	}
-
-	/** @internal */
-	private async _readGLB(uri: string): Promise<JSONDocument> {
-		const arrayBuffer = await fetch(uri, this._fetchConfig).then((response) => response.arrayBuffer());
-		const jsonDoc = this._binaryToJSON(new Uint8Array(arrayBuffer));
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, _dirname(uri));
-		this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
+	protected dirname(uri: string): string {
+		return _dirname(uri);
 	}
 }
 
 function _dirname(path: string): string {
 	const index = path.lastIndexOf('/');
 	if (index === -1) return './';
-	return path.substr(0, index + 1);
+	return path.substring(0, index + 1);
 }
 
 function _resolve(base: string, path: string) {

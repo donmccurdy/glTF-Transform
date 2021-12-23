@@ -21,6 +21,9 @@ test('@gltf-transform/core::io | web read glb', (t) => {
 	mockWindow('https://www.example.com/test');
 	mockFetch({
 		arrayBuffer: () => BufferUtils.createBufferFromDataURI(SAMPLE_GLB),
+		text: () => {
+			throw new Error('Do not call.');
+		},
 		json: () => {
 			throw new Error('Do not call.');
 		},
@@ -73,7 +76,10 @@ test('@gltf-transform/core::io | web read glb + resources', (t) => {
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
 		arrayBuffer: () => responses.pop(),
-		json: () => () => {
+		text: () => {
+			throw new Error('Do not call.');
+		},
+		json: () => {
 			throw new Error('Do not call.');
 		},
 	});
@@ -106,16 +112,17 @@ test('@gltf-transform/core::io | web read gltf', (t) => {
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
 		arrayBuffer: () => images.pop(),
-		json: () => ({
-			asset: { version: '2.0' },
-			scenes: [{ name: 'Default Scene' }],
-			images: [
-				{ uri: 'image1.png' },
-				{ uri: '/abs/path/image2.png' },
-				{ uri: './rel/path/image3.png' },
-				{ uri: 'rel/path/image3.png' },
-			],
-		}),
+		text: () =>
+			JSON.stringify({
+				asset: { version: '2.0' },
+				scenes: [{ name: 'Default Scene' }],
+				images: [
+					{ uri: 'image1.png' },
+					{ uri: '/abs/path/image2.png' },
+					{ uri: './rel/path/image3.png' },
+					{ uri: 'rel/path/image3.png' },
+				],
+			}),
 	});
 
 	const io = new WebIO();
@@ -151,10 +158,11 @@ test('@gltf-transform/core::io | web read + data URIs', async (t) => {
 		arrayBuffer: () => {
 			throw new Error('Do not call.');
 		},
-		json: () => ({
-			asset: { version: '2.0' },
-			images: uris.map((uri) => ({ uri })),
-		}),
+		text: () =>
+			JSON.stringify({
+				asset: { version: '2.0' },
+				images: uris.map((uri) => ({ uri })),
+			}),
 	});
 
 	const io = new WebIO();
@@ -179,6 +187,9 @@ test('@gltf-transform/core::io | web readJSON + data URIs', async (t) => {
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
 		arrayBuffer: () => {
+			throw new Error('Do not call.');
+		},
+		text: () => {
 			throw new Error('Do not call.');
 		},
 		json: () => () => {
