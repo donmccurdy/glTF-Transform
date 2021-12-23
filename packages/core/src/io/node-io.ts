@@ -1,7 +1,5 @@
 import { Format } from '../constants';
 import { Document } from '../document';
-import { JSONDocument } from '../json-document';
-import { GLTF } from '../types/gltf';
 import { FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
 
@@ -37,12 +35,6 @@ export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
 
-	/** @hidden */
-	public lastReadBytes = 0;
-
-	/** @hidden */
-	public lastWriteBytes = 0;
-
 	/** Constructs a new NodeIO service. Instances are reusable. */
 	constructor() {
 		super();
@@ -51,20 +43,28 @@ export class NodeIO extends PlatformIO {
 		this._path = require('path');
 	}
 
+	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(uri: string, type: 'text'): Promise<string>;
+	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+		switch (type) {
+			case 'view':
+				return this._fs.readFile(uri);
+			case 'text':
+				return this._fs.readFile(uri, 'utf8');
+		}
+	}
+
+	protected resolve(directory: string, path: string): string {
+		return this._path.resolve(directory, path);
+	}
+
+	protected dirname(uri: string): string {
+		return this._path.dirname(uri);
+	}
+
 	/**********************************************************************************************
 	 * Public.
 	 */
-
-	/** Loads a local path and returns a {@link Document} instance. */
-	public async read(uri: string): Promise<Document> {
-		return await this.readJSON(await this.readAsJSON(uri));
-	}
-
-	/** Loads a local path and returns a {@link JSONDocument} struct, without parsing. */
-	public async readAsJSON(uri: string): Promise<JSONDocument> {
-		const isGLB = !!(uri.match(/\.glb$/) || uri.match(/^data:application\/octet-stream;/));
-		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
-	}
 
 	/** Writes a {@link Document} instance to a local path. */
 	public async write(uri: string, doc: Document): Promise<void> {
@@ -73,49 +73,8 @@ export class NodeIO extends PlatformIO {
 	}
 
 	/**********************************************************************************************
-	 * Protected.
-	 */
-
-	/** @internal */
-	private async _readResourcesExternal(jsonDoc: JSONDocument, dir: string): Promise<void> {
-		const images = jsonDoc.json.images || [];
-		const buffers = jsonDoc.json.buffers || [];
-		const resources = [...images, ...buffers].map(async (resource: GLTF.IBuffer | GLTF.IImage) => {
-			if (resource.uri && !resource.uri.match(/data:/)) {
-				const absURI = this._path.resolve(dir, resource.uri);
-				jsonDoc.resources[resource.uri] = await this._fs.readFile(absURI);
-				this.lastReadBytes += jsonDoc.resources[resource.uri].byteLength;
-			}
-		});
-		await Promise.all(resources);
-	}
-
-	/**********************************************************************************************
 	 * Private.
 	 */
-
-	/** @internal */
-	private async _readGLB(uri: string): Promise<JSONDocument> {
-		const buffer: Buffer = await this._fs.readFile(uri);
-		this.lastReadBytes = buffer.byteLength;
-		const jsonDoc = this._binaryToJSON(buffer);
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
-		await this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
-	}
-
-	/** @internal */
-	private async _readGLTF(uri: string): Promise<JSONDocument> {
-		this.lastReadBytes = 0;
-		const jsonContent = await this._fs.readFile(uri, 'utf8');
-		this.lastReadBytes += jsonContent.length;
-		const jsonDoc = { json: JSON.parse(jsonContent), resources: {} } as JSONDocument;
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, this._path.dirname(uri));
-		await this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
-	}
 
 	/** @internal */
 	private async _writeGLTF(uri: string, doc: Document): Promise<void> {

@@ -27,7 +27,7 @@ export {
 	COPY_IDENTITY,
 } from './properties';
 export { Graph, GraphEdge } from 'property-graph';
-export { PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io';
+export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io';
 export {
 	BufferUtils,
 	ColorUtils,

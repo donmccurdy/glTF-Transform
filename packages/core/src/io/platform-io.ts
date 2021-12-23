@@ -23,7 +23,7 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  * Methods are also available for converting in-memory representations of raw glTF files, both
  * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
  *
- * For platform-specific implementations, see {@link NodeIO} and {@link WebIO}.
+ * For platform-specific implementations, see {@link NodeIO}, {@link WebIO}, and {@link DenoIO}.
  *
  * @category I/O
  */
@@ -32,6 +32,12 @@ export abstract class PlatformIO {
 	private _extensions = new Set<typeof Extension>();
 	private _dependencies: { [key: string]: unknown } = {};
 	private _vertexLayout = VertexLayout.INTERLEAVED;
+
+	/** @hidden */
+	public lastReadBytes = 0;
+
+	/** @hidden */
+	public lastWriteBytes = 0;
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
 	public setLogger(logger: Logger): this {
@@ -64,11 +70,148 @@ export abstract class PlatformIO {
 	}
 
 	/**********************************************************************************************
-	 * Common.
+	 * Abstract.
 	 */
 
-	/** @internal */
-	protected _readResourcesInternal(jsonDoc: JSONDocument): void {
+	protected abstract readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected abstract readURI(uri: string, type: 'text'): Promise<string>;
+	protected abstract readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string>;
+
+	protected abstract resolve(directory: string, path: string): string;
+	protected abstract dirname(uri: string): string;
+
+	/**********************************************************************************************
+	 * Public Read API.
+	 */
+
+	/** Reads a {@link Document} from the given URI. */
+	public async read(uri: string): Promise<Document> {
+		return await this.readJSON(await this.readAsJSON(uri));
+	}
+
+	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
+	public async readAsJSON(uri: string): Promise<JSONDocument> {
+		const isGLB = uri.match(/^data:application\/octet-stream;/) || FileUtils.extension(uri) === 'glb';
+		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
+	}
+
+	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
+	public async readJSON(jsonDoc: JSONDocument): Promise<Document> {
+		jsonDoc = this._copyJSON(jsonDoc);
+		this._readResourcesInternal(jsonDoc);
+		return GLTFReader.read(jsonDoc, {
+			extensions: Array.from(this._extensions),
+			dependencies: this._dependencies,
+			logger: this._logger,
+		});
+	}
+
+	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
+	public async binaryToJSON(glb: Uint8Array): Promise<JSONDocument> {
+		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
+		this._readResourcesInternal(jsonDoc);
+		const json = jsonDoc.json;
+
+		// Check for external references, which can't be resolved by this method.
+		if (json.buffers && json.buffers.some((bufferDef) => isExternalBuffer(jsonDoc, bufferDef))) {
+			throw new Error('Cannot resolve external buffers with binaryToJSON().');
+		} else if (json.images && json.images.some((imageDef) => isExternalImage(jsonDoc, imageDef))) {
+			throw new Error('Cannot resolve external images with binaryToJSON().');
+		}
+
+		return jsonDoc;
+	}
+
+	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
+	public async readBinary(glb: Uint8Array): Promise<Document> {
+		return this.readJSON(await this.binaryToJSON(BufferUtils.assertView(glb)));
+	}
+
+	/**********************************************************************************************
+	 * Public Write API.
+	 */
+
+	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
+	public async writeJSON(doc: Document, _options: PublicWriterOptions = {}): Promise<JSONDocument> {
+		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
+			throw new Error('GLB must have 0–1 buffers.');
+		}
+		return GLTFWriter.write(doc, {
+			format: _options.format || Format.GLTF,
+			basename: _options.basename || '',
+			logger: this._logger,
+			vertexLayout: this._vertexLayout,
+			dependencies: { ...this._dependencies },
+			extensions: Array.from(this._extensions),
+		} as Required<WriterOptions>);
+	}
+
+	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
+	public async writeBinary(doc: Document): Promise<Uint8Array> {
+		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
+
+		const header = new Uint32Array([0x46546c67, 2, 12]);
+
+		const jsonText = JSON.stringify(json);
+		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
+		const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
+		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
+		header[header.length - 1] += jsonChunk.byteLength;
+
+		const binBuffer = Object.values(resources)[0];
+		if (!binBuffer || !binBuffer.byteLength) {
+			return BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
+		}
+
+		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
+		const binChunkHeader = BufferUtils.toView(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
+		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
+		header[header.length - 1] += binChunk.byteLength;
+
+		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
+	}
+
+	/**********************************************************************************************
+	 * Internal.
+	 */
+
+	private async _readGLTF(uri: string): Promise<JSONDocument> {
+		this.lastReadBytes = 0;
+		const jsonContent = await this.readURI(uri, 'text');
+		this.lastReadBytes += jsonContent.length;
+		const jsonDoc: JSONDocument = { json: JSON.parse(jsonContent), resources: {} };
+		// Read external resources first, before Data URIs are replaced.
+		await this._readResourcesExternal(jsonDoc, this.dirname(uri));
+		this._readResourcesInternal(jsonDoc);
+		return jsonDoc;
+	}
+
+	private async _readGLB(uri: string): Promise<JSONDocument> {
+		const view = await this.readURI(uri, 'view');
+		this.lastReadBytes = view.byteLength;
+		const jsonDoc = this._binaryToJSON(view);
+		// Read external resources first, before Data URIs are replaced.
+		await this._readResourcesExternal(jsonDoc, this.dirname(uri));
+		this._readResourcesInternal(jsonDoc);
+		return jsonDoc;
+	}
+
+	private async _readResourcesExternal(jsonDoc: JSONDocument, dir: string): Promise<void> {
+		const images = jsonDoc.json.images || [];
+		const buffers = jsonDoc.json.buffers || [];
+		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
+			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
+				const uri = resource.uri;
+				if (!uri || uri.match(/data:/)) return Promise.resolve();
+
+				jsonDoc.resources[uri] = await this.readURI(this.resolve(dir, uri), 'view');
+				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
+			}
+		);
+		await Promise.all(pendingResources);
+	}
+
+	private _readResourcesInternal(jsonDoc: JSONDocument): void {
 		// NOTICE: This method may be called more than once during the loading
 		// process (e.g. WebIO.read) and should handle that safely.
 
@@ -103,36 +246,6 @@ export abstract class PlatformIO {
 		buffers.forEach(resolveResource);
 	}
 
-	/**********************************************************************************************
-	 * JSON.
-	 */
-
-	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
-	public async readJSON(jsonDoc: JSONDocument): Promise<Document> {
-		jsonDoc = this._copyJSON(jsonDoc);
-		this._readResourcesInternal(jsonDoc);
-		return GLTFReader.read(jsonDoc, {
-			extensions: Array.from(this._extensions),
-			dependencies: this._dependencies,
-			logger: this._logger,
-		});
-	}
-
-	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
-	public async writeJSON(doc: Document, _options: PublicWriterOptions = {}): Promise<JSONDocument> {
-		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
-			throw new Error('GLB must have 0–1 buffers.');
-		}
-		return GLTFWriter.write(doc, {
-			format: _options.format || Format.GLTF,
-			basename: _options.basename || '',
-			logger: this._logger,
-			vertexLayout: this._vertexLayout,
-			dependencies: { ...this._dependencies },
-			extensions: Array.from(this._extensions),
-		} as Required<WriterOptions>);
-	}
-
 	/**
 	 * Creates a shallow copy of glTF-formatted {@link JSONDocument}.
 	 *
@@ -155,28 +268,8 @@ export abstract class PlatformIO {
 		return jsonDoc;
 	}
 
-	/**********************************************************************************************
-	 * Binary -> JSON.
-	 */
-
-	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
-	public async binaryToJSON(glb: Uint8Array): Promise<JSONDocument> {
-		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
-		this._readResourcesInternal(jsonDoc);
-		const json = jsonDoc.json;
-
-		// Check for external references, which can't be resolved by this method.
-		if (json.buffers && json.buffers.some((bufferDef) => isExternalBuffer(jsonDoc, bufferDef))) {
-			throw new Error('Cannot resolve external buffers with binaryToJSON().');
-		} else if (json.images && json.images.some((imageDef) => isExternalImage(jsonDoc, imageDef))) {
-			throw new Error('Cannot resolve external images with binaryToJSON().');
-		}
-
-		return jsonDoc;
-	}
-
-	/** @internal For internal use by WebIO and NodeIO. Does not warn about external resources. */
-	protected _binaryToJSON(glb: Uint8Array): JSONDocument {
+	/** Internal version of binaryToJSON; does not warn about external resources. */
+	private _binaryToJSON(glb: Uint8Array): JSONDocument {
 		// Decode and verify GLB header.
 		const header = new Uint32Array(glb.buffer, glb.byteOffset, 3);
 		if (header[0] !== 0x46546c67) {
@@ -213,40 +306,6 @@ export abstract class PlatformIO {
 		const binBuffer = BufferUtils.toView(glb, binByteOffset + 8, binByteLength);
 
 		return { json, resources: { [GLB_BUFFER]: binBuffer } };
-	}
-
-	/**********************************************************************************************
-	 * Binary.
-	 */
-
-	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
-	public async readBinary(glb: Uint8Array): Promise<Document> {
-		return this.readJSON(await this.binaryToJSON(BufferUtils.assertView(glb)));
-	}
-
-	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
-	public async writeBinary(doc: Document): Promise<Uint8Array> {
-		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
-
-		const header = new Uint32Array([0x46546c67, 2, 12]);
-
-		const jsonText = JSON.stringify(json);
-		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-		const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
-		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
-		header[header.length - 1] += jsonChunk.byteLength;
-
-		const binBuffer = Object.values(resources)[0];
-		if (!binBuffer || !binBuffer.byteLength) {
-			return BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
-		}
-
-		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
-		const binChunkHeader = BufferUtils.toView(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
-		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
-		header[header.length - 1] += binChunk.byteLength;
-
-		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
 	}
 }
 
