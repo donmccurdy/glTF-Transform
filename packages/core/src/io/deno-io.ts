@@ -7,6 +7,11 @@ declare global {
 	};
 }
 
+interface Path {
+	resolve(directory: string, path: string): string;
+	dirname(uri: string): string;
+}
+
 /**
  * # DenoIO
  *
@@ -20,8 +25,9 @@ declare global {
  *
  * ```typescript
  * import { DenoIO } from 'https://esm.sh/@gltf-transform/core';
+ * import * as path from 'https://deno.land/std/path/mod.ts';
  *
- * const io = new DenoIO();
+ * const io = new DenoIO(path);
  *
  * // Read.
  * let document;
@@ -35,13 +41,11 @@ declare global {
  * @category I/O
  */
 export class DenoIO extends PlatformIO {
-	private _path;
+	private _path: Path;
 
-	constructor() {
+	constructor(path: unknown) {
 		super();
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		this._path = await import('https://deno.land/std/path/mod.ts');
+		this._path = path as Path;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
