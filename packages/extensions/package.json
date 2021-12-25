@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@gltf-transform/core": "^2.0.0-alpha.3",
-    "ktx-parse": "^0.2.1"
+    "ktx-parse": "^0.2.2"
   },
   "files": [
     "dist/",

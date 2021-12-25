@@ -30,7 +30,7 @@
     "csv-stringify": "^5.6.5",
     "draco3dgltf": "^1.4.3",
     "gltf-validator": "^2.0.0-dev.3.5",
-    "ktx-parse": "^0.2.1",
+    "ktx-parse": "^0.2.2",
     "meshoptimizer": "^0.17.0",
     "mikktspace": "^1.1.0",
     "minimatch": "^3.0.4",

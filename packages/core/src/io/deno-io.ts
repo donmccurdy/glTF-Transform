@@ -1,4 +1,4 @@
-import { PlatformIO } from '.';
+import { PlatformIO } from './platform-io';
 
 interface Path {
 	resolve(directory: string, path: string): string;

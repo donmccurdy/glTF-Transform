@@ -7,8 +7,7 @@ export enum Environment {
 	NODE,
 }
 
-export const environment =
-	typeof window !== 'undefined' ? Environment.WEB : typeof Deno !== 'undefined' ? Environment.DENO : Environment.NODE;
+export const environment = (typeof window !== 'undefined' ? Environment.WEB : Environment.NODE) as Environment;
 
 export const createPlatformIO = async (): Promise<PlatformIO> => {
 	switch (environment) {
