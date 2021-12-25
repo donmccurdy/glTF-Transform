@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::buffer', async (t) => {
 	const doc = new Document();
@@ -19,7 +20,7 @@ test('@gltf-transform/core::buffer', async (t) => {
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setBuffer(buffer3);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const jsonDoc = await io.writeJSON(doc, { basename: 'basename' });
 
 	t.true('mybuffer.bin' in jsonDoc.resources, 'explicitly named buffer');
@@ -40,7 +41,7 @@ test('@gltf-transform/core::buffer | copy', (t) => {
 });
 
 test('@gltf-transform/core::buffer | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	const buffer = doc.createBuffer('A').setExtras({ foo: 1, bar: 2 });
 	doc.createAccessor()

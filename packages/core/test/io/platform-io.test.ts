@@ -1,22 +1,15 @@
 import test from 'tape';
 import fs from 'fs';
 import path from 'path';
-import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, NodeIO } from '@gltf-transform/core';
-
-const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
-	try {
-		await fn();
-		t.fail(msg);
-	} catch (e) {
-		t.match((e as Error).message, re, msg);
-	}
-};
+import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
+import { throwsAsync, createPlatformIO } from '../../../test-utils';
 
 test('@gltf-transform/core::io | common', async (t) => {
+	const io = await createPlatformIO();
 	await throwsAsync(
 		t,
 		() =>
-			new NodeIO().readJSON({
+			io.readJSON({
 				json: { asset: { version: '1.0' } },
 				resources: {},
 			}),
@@ -30,7 +23,7 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 	const doc = new Document();
 	doc.createScene().addChild(doc.createNode('MyNode'));
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const json = await io.writeJSON(doc, { format: Format.GLB });
 	const binary = await io.writeBinary(doc);
 
@@ -51,7 +44,7 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 });
 
 test('@gltf-transform/core::io | glb without required buffer', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	let doc = new Document();
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
@@ -85,7 +78,7 @@ test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 	doc.createBuffer();
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const json = await io.writeJSON(doc, { format: Format.GLB });
 	const binary = await io.writeBinary(doc);
 
@@ -110,7 +103,7 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 
 	// (1) Write JSONDocument and replace resources with Data URIs.
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const { json, resources } = await io.writeJSON(doc, { format: Format.GLB });
 	for (const buffer of json.buffers!) {
 		const uri = buffer.uri || GLB_BUFFER;
@@ -149,7 +142,7 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 });
 
 test('@gltf-transform/core::io | gltf embedded', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const jsonPath = path.resolve(__dirname, '../in/Box_glTF-Embedded/Box.gltf');
 	const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
 	const json = JSON.parse(jsonContent);

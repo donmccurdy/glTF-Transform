@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, Format, JSONDocument, NodeIO, TextureInfo } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document, Format, JSONDocument, TextureInfo } from '@gltf-transform/core';
 
 test('@gltf-transform/core::texture | read', async (t) => {
 	const jsonDoc = {
@@ -19,7 +20,7 @@ test('@gltf-transform/core::texture | read', async (t) => {
 		},
 	};
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = await io.readJSON(jsonDoc as unknown as JSONDocument);
 	const root = doc.getRoot();
 	const mat1 = root.listMaterials()[0];
@@ -49,7 +50,7 @@ test('@gltf-transform/core::texture | write', async (t) => {
 		.getBaseColorTextureInfo()
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const jsonDoc = await io.writeJSON(doc, { basename: 'basename' });
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
@@ -79,7 +80,7 @@ test('@gltf-transform/core::texture | copy', (t) => {
 });
 
 test('@gltf-transform/core::texture | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createBuffer();
 	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new Uint8Array(10)).setMimeType('image/png');
@@ -102,7 +103,8 @@ test('@gltf-transform/core::texture | padding', async (t) => {
 	doc.createTexture().setImage(new Uint8Array(21)).setMimeType('image/png');
 	doc.createTexture().setImage(new Uint8Array(20)).setMimeType('image/png');
 
-	const jsonDoc = await new NodeIO().writeJSON(doc, { format: Format.GLB });
+	const io = await createPlatformIO();
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
 
 	t.deepEqual(
 		jsonDoc.json.images,

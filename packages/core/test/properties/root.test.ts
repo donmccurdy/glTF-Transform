@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document, JSONDocument } from '@gltf-transform/core';
 
 test('@gltf-transform/core::root', (t) => {
 	const doc = new Document();
@@ -47,7 +48,7 @@ test('@gltf-transform/core::root | default scene', async (t) => {
 	const root = doc.getRoot();
 	const sceneA = doc.createScene('A');
 	const sceneB = doc.createScene('B');
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	t.equals(root.getDefaultScene(), null, 'default scene initially null');
 
@@ -83,7 +84,7 @@ test('@gltf-transform/core::root | clone child of root', (t) => {
 
 test('@gltf-transform/core::root | extras', async (t) => {
 	const doc = new Document();
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	const jsonDocNoExtras = await io.writeJSON(doc);
 	doc.getRoot().setExtras({ custom: 'value' });
@@ -102,7 +103,7 @@ test('@gltf-transform/core::root | extras', async (t) => {
 test('@gltf-transform/core::root | asset', async (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	let jsonDoc: JSONDocument;
 	let generator: string;

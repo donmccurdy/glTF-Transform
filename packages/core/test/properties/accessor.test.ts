@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, TypedArray } from '@gltf-transform/core';
+import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
 
 test('@gltf-transform/core::accessor | getScalar/setScalar', (t) => {
 	const accessor = new Document()
@@ -148,7 +149,7 @@ test('@gltf-transform/core::accessor | interleaved', async (t) => {
 		],
 	};
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = await io.readJSON({ json, resources });
 	const arrays = doc
 		.getRoot()
@@ -208,7 +209,7 @@ test('@gltf-transform/core::accessor | sparse', async (t) => {
 		],
 	};
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = await io.readJSON({ json, resources });
 	const accessors = doc.getRoot().listAccessors();
 
@@ -236,7 +237,7 @@ test('@gltf-transform/core::accessor | minmax', (t) => {
 });
 
 test('@gltf-transform/core::accessor | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createAccessor('A')
 		.setArray(new Uint8Array([1, 2, 3]))

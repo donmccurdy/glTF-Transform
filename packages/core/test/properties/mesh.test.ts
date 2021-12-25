@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Accessor, Document, GLTF, NodeIO, Primitive, Property, VertexLayout } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Accessor, Document, GLTF, Primitive, Property, VertexLayout } from '@gltf-transform/core';
 
 test('@gltf-transform/core::mesh', (t) => {
 	const doc = new Document();
@@ -74,7 +75,7 @@ test('@gltf-transform/core::mesh | primitive targets', async (t) => {
 	t.deepEqual(prim.listTargets(), [trg1, trg2, trg3], 'links targets');
 	t.deepEqual(trg1.listParents().map(toType), ['Primitive'], 'links targets');
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const options = { basename: 'targetTest' };
 	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
 	const meshDef = jsonDoc.json.meshes[0];
@@ -120,7 +121,7 @@ test('@gltf-transform/core::primitive | copy', (t) => {
 });
 
 test('@gltf-transform/core::mesh | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createMesh('A')
 		.setExtras({ foo: 1, bar: 2 })
@@ -146,7 +147,7 @@ test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 	const doc = new Document();
 	doc.createMesh('EmptyMesh').setWeights([1, 0, 0, 0]);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	let rtDoc = await io.readJSON(await io.writeJSON(doc, {}));
 	let rtMesh = rtDoc.getRoot().listMeshes()[0];
 
@@ -232,7 +233,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 
 	doc.createMesh().addPrimitive(prim);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const rtDoc = await io.readBinary(await io.writeBinary(doc));
 	const rtPrim = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
 
@@ -286,7 +287,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 
 	doc.createMesh().addPrimitive(prim);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	io.setVertexLayout(VertexLayout.INTERLEAVED);
 	const interleavedJSON = await io.binaryToJSON(await io.writeBinary(doc));

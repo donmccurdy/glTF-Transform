@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, MathUtils, NodeIO, mat4, vec3, vec4 } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
 
 test('@gltf-transform/core::node | parent', (t) => {
 	const doc = new Document();
@@ -93,7 +94,7 @@ test('@gltf-transform/core::node | setMatrix', (t) => {
 });
 
 test('@gltf-transform/core::node | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createNode('A').setExtras({ foo: 1, bar: 2 });
 
@@ -106,7 +107,7 @@ test('@gltf-transform/core::node | extras', async (t) => {
 });
 
 test('@gltf-transform/core::node | identity transforms', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 
 	doc.createNode('A');

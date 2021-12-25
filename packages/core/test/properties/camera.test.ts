@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::camera', async (t) => {
 	const doc = new Document();
@@ -13,7 +14,7 @@ test('@gltf-transform/core::camera', async (t) => {
 
 	doc.createCamera('o').setType('orthographic').setZNear(10).setZFar(100).setXMag(50).setYMag(25);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	const options = { basename: 'cameraTest' };
 	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);

@@ -1,10 +1,9 @@
-const IS_NODEJS = typeof window === 'undefined';
-
 import test from 'tape';
+import { environment, Environment } from '../../../test-utils';
 import { NodeIO } from '@gltf-transform/core';
 
 let fs, glob, path;
-if (IS_NODEJS) {
+if (environment === Environment.NODE) {
 	fs = require('fs');
 	glob = require('glob');
 	path = require('path');
@@ -15,7 +14,7 @@ function ensureDir(uri) {
 	if (!fs.existsSync(outdir)) fs.mkdirSync(outdir);
 }
 
-test('@gltf-transform/core::io | node.js read glb', { skip: !IS_NODEJS }, (t) => {
+test('@gltf-transform/core::io | node.js read glb', { skip: environment !== Environment.NODE }, async (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -30,7 +29,7 @@ test('@gltf-transform/core::io | node.js read glb', { skip: !IS_NODEJS }, (t) =>
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js read gltf', { skip: !IS_NODEJS }, (t) => {
+test('@gltf-transform/core::io | node.js read gltf', { skip: environment !== Environment.NODE }, async (t) => {
 	let count = 0;
 	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
 		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
@@ -45,7 +44,7 @@ test('@gltf-transform/core::io | node.js read gltf', { skip: !IS_NODEJS }, (t) =
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js write glb', { skip: !IS_NODEJS }, async (t) => {
+test('@gltf-transform/core::io | node.js write glb', { skip: environment !== Environment.NODE }, async (t) => {
 	let count = 0;
 	const uris = glob.sync(path.join(__dirname, '../in/**/*.gltf'));
 	await Promise.all(
@@ -66,7 +65,7 @@ test('@gltf-transform/core::io | node.js write glb', { skip: !IS_NODEJS }, async
 	t.end();
 });
 
-test('@gltf-transform/core::io | node.js write gltf', { skip: !IS_NODEJS }, async (t) => {
+test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== Environment.NODE }, async (t) => {
 	let count = 0;
 	const uris = glob.sync(path.join(__dirname, '../in/**/*.glb'));
 	await Promise.all(

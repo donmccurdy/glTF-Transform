@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::scene | copy', (t) => {
 	const doc = new Document();
@@ -20,7 +21,7 @@ test('@gltf-transform/core::scene | traverse', (t) => {
 });
 
 test('@gltf-transform/core::scene | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createScene('A').setExtras({ foo: 1, bar: 2 });
 

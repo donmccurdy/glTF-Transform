@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, Format, NodeIO, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Document, Format, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -363,7 +364,7 @@ test('@gltf-transform/core::material | i/o', async (t) => {
 		.setOcclusionTexture(occlusion)
 		.setOcclusionStrength(0.4);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const rtDoc = await io.readJSON(await io.writeJSON(doc, { format: Format.GLB }));
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
 

@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Accessor, AnimationChannel, Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::skin', async (t) => {
 	const doc = new Document();
@@ -42,7 +43,7 @@ test('@gltf-transform/core::skin', async (t) => {
 		.setTargetPath(AnimationChannel.TargetPath.TRANSLATION);
 	doc.createAnimation().addChannel(channel).addSampler(sampler);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, {})));
 
 	t.deepEqual(
@@ -100,7 +101,7 @@ test('@gltf-transform/core::skin | copy', (t) => {
 });
 
 test('@gltf-transform/core::skin | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createSkin('A').setExtras({ foo: 1, bar: 2 });
 

@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Document, Extension, ExtensionProperty, NodeIO, PropertyType, WriterContext } from '@gltf-transform/core';
+import { Document, Extension, ExtensionProperty, PropertyType, WriterContext } from '@gltf-transform/core';
+import { createPlatformIO } from '../../test-utils';
 
 const EXTENSION_NAME = 'TEST_node_gizmo';
 
@@ -95,7 +96,7 @@ test('@gltf-transform/core::extension | property', (t) => {
 });
 
 test('@gltf-transform/core::extension | i/o', async (t) => {
-	const io = new NodeIO().registerExtensions([GizmoExtension]);
+	const io = (await createPlatformIO()).registerExtensions([GizmoExtension]);
 	const doc = new Document();
 	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
 	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
@@ -107,7 +108,7 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 
 	// Write (unregistered).
 
-	jsonDoc = await new NodeIO().writeJSON(doc, options);
+	jsonDoc = await (await createPlatformIO()).writeJSON(doc, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
 
 	// Write (registered).

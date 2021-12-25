@@ -1,5 +1,6 @@
 import test from 'tape';
-import { Accessor, Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO } from '../../../test-utils';
+import { Accessor, Document } from '@gltf-transform/core';
 
 test('@gltf-transform/core::animation', async (t) => {
 	const doc = new Document();
@@ -26,7 +27,7 @@ test('@gltf-transform/core::animation', async (t) => {
 
 	doc.createAnimation('BallBounce').addChannel(channel).addSampler(sampler);
 
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 
 	const options = { basename: 'animationTest' };
 	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
@@ -108,7 +109,7 @@ test('@gltf-transform/core::animationSampler | copy', (t) => {
 });
 
 test('@gltf-transform/core::animation | extras', async (t) => {
-	const io = new NodeIO();
+	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createAnimation('A')
 		.setExtras({ foo: 1, bar: 2 })
