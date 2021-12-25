@@ -1,5 +1,5 @@
 import CLITable from 'cli-table3';
-import stringify from 'csv-stringify';
+import { stringify } from 'csv-stringify';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import { InspectAnimationReport, InspectMaterialReport, InspectMeshReport, InspectPropertyReport, InspectSceneReport, InspectTextureReport, inspect as inspectDoc } from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
