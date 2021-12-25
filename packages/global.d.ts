@@ -37,3 +37,10 @@ declare module 'gl-matrix/mat3' {
 	import { mat3 } from 'gl-matrix';
 	export = mat3;
 }
+
+/** Deno */
+
+declare const Deno: {
+	readFile: (path: string) => Promise<Uint8Array>;
+	readTextFile: (path: string) => Promise<string>;
+};

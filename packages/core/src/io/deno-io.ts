@@ -1,12 +1,5 @@
 import { PlatformIO } from '.';
 
-declare global {
-	const Deno: {
-		readFile: (path: string) => Promise<Uint8Array>;
-		readTextFile: (path: string) => Promise<string>;
-	};
-}
-
 interface Path {
 	resolve(directory: string, path: string): string;
 	dirname(uri: string): string;
