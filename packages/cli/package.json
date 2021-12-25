@@ -28,7 +28,7 @@
     "cli-table3": "^0.6.0",
     "command-exists": "^1.2.9",
     "csv-stringify": "^6.0.4",
-    "draco3dgltf": "^1.4.3",
+    "draco3dgltf": "^1.5.0",
     "gltf-validator": "^2.0.0-dev.3.5",
     "ktx-parse": "^0.2.2",
     "meshoptimizer": "^0.17.0",

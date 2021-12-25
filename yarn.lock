@@ -3556,15 +3556,10 @@ dotignore@^0.1.2:
   dependencies:
     minimatch "^3.0.4"
 
-draco3dgltf@1.5.0:
+draco3dgltf@1.5.0, draco3dgltf@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/draco3dgltf/-/draco3dgltf-1.5.0.tgz#3ca6f661f7ab2060d42abea8cb8786bd28eeb4d5"
   integrity sha512-FgTDYWQIIOw45hcUHT8N5rYSSE23rpdd581vAhL5+N93C5LXa3SRdcdL0mnePvb7HbCmuHtOymoAlF6r72L8Tg==
-
-draco3dgltf@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/draco3dgltf/-/draco3dgltf-1.4.3.tgz#45a222e0c8bd79fc25e504f1f67ee02dd3e522b1"
-  integrity sha512-f84JhoT//qvjS0RTTFt9Iq09Xvk8Z777idT6pvgxa5DOglKY8aNe+HnDVRFfdqBHVYOFFhF0ssy2TyAef4HTpQ==
 
 duplexer@0.1.1:
   version "0.1.1"
