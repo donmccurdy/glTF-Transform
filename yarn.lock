@@ -3322,6 +3322,11 @@ data-uri-to-buffer@0.0.3:
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-0.0.3.tgz#18ae979a6a0ca994b0625853916d2662bbae0b1a"
   integrity sha1-GK6XmmoMqZSwYlhTkW0mYruuCxo=
 
+data-uri-to-buffer@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.0.tgz#b5db46aea50f6176428ac05b73be39a57701a64b"
+  integrity sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==
+
 date-fns@^2.16.1:
   version "2.21.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.21.1.tgz#679a4ccaa584c0706ea70b3fa92262ac3009d2b0"
@@ -4003,6 +4008,13 @@ fecha@^4.2.0:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.0.tgz#3ffb6395453e3f3efff850404f0a59b6747f5f41"
   integrity sha512-aN3pcx/DSmtyoovUudctc8+6Hl4T+hI9GBBHLjA76jdZl7+b1sgh5g4k+u/GL3dTy1/pnYzKp69FpJ0OicE3Wg==
 
+fetch-blob@^3.1.2:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/fetch-blob/-/fetch-blob-3.1.3.tgz#a7dca4855e39d3e3c5a1da62d4ee335c37d26012"
+  integrity sha512-ax1Y5I9w+9+JiM+wdHkhBoxew+zG4AJ2SvAD1v1szpddUIiPERVGBxrMcB2ZqW0Y3PP8bOWYv2zqQq1Jp2kqUQ==
+  dependencies:
+    web-streams-polyfill "^3.0.3"
+
 figures@^1.0.1, figures@^1.4.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-1.7.0.tgz#cbe1e3affcf1cd44b80cadfed28dc793a9701d2e"
@@ -4129,6 +4141,13 @@ form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
+
+formdata-polyfill@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.yarnpkg.com/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz#24807c31c9d402e002ab3d8c720144ceb8848423"
+  integrity sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==
+  dependencies:
+    fetch-blob "^3.1.2"
 
 fraction.js@^4.0.13:
   version "4.0.13"
@@ -6139,6 +6158,15 @@ node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+
+node-fetch@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.1.0.tgz#714f4922dc270239487654eaeeab86b8206cb52e"
+  integrity sha512-QU0WbIfMUjd5+MUzQOYhenAazakV7Irh1SGkWCsRzBwvm4fAhzEUaHMJ6QLP7gWT6WO9/oH2zhKMMGMuIrDyKw==
+  dependencies:
+    data-uri-to-buffer "^4.0.0"
+    fetch-blob "^3.1.2"
+    formdata-polyfill "^4.0.10"
 
 node-gyp@^5.0.2:
   version "5.1.1"
@@ -8995,6 +9023,11 @@ wcwidth@^1.0.0:
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
   dependencies:
     defaults "^1.0.3"
+
+web-streams-polyfill@^3.0.3:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz#a6b74026b38e4885869fb5c589e90b95ccfc7965"
+  integrity sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==
 
 webidl-conversions@^6.1.0:
   version "6.1.0"
