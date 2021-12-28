@@ -34,17 +34,19 @@ import { PlatformIO } from './platform-io';
 export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
-	private _nodeFetch;
+	private _fetch;
 	private _httpRegex = /https?:\/\//;
 	public useFetch = false;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
-	constructor() {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	constructor(fetch?: any) {
 		super();
 		// Excluded from browser builds with 'package.browser' field.
 		this._fs = require('fs').promises;
 		this._path = require('path');
-		this._nodeFetch = require('node-fetch');
+		this._fetch = fetch;
+    this.useFetch = !!fetch;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
@@ -53,14 +55,14 @@ export class NodeIO extends PlatformIO {
 		switch (type) {
 			case 'view': {
         if(this.useFetch && this._httpRegex.exec(uri)) {
-					const response = await this._nodeFetch(uri);
+					const response = await this._fetch(uri);
 					return new Uint8Array(await response.arrayBuffer());
 				} 
 				return this._fs.readFile(uri);
       }
 			case 'text': {
         if(this.useFetch && this._httpRegex.exec(uri)) {
-					const response = await this._nodeFetch(uri);
+					const response = await this._fetch(uri);
 					return await response.text();
 				} 
 				return this._fs.readFile(uri, 'utf8');
