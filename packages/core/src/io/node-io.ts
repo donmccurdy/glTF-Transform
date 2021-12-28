@@ -72,7 +72,7 @@ export class NodeIO extends PlatformIO {
 
 	protected resolve(directory: string, path: string): string {
     if(this.useFetch) return `${directory}/${path}`;
-		return this._path.resolve(directory, path);
+		return this._path.join(directory, path);
 	}
 
 	protected dirname(uri: string): string {
