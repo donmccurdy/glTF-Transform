@@ -34,9 +34,9 @@ import { PlatformIO } from './platform-io';
 export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
-	public _nodeFetch;
-	public _httpRegex = /https?:\/\//;
-	public allowFetch = false;
+	private _nodeFetch;
+	private _httpRegex = /https?:\/\//;
+	public useFetch = false;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
 	constructor() {
@@ -50,28 +50,31 @@ export class NodeIO extends PlatformIO {
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
-    console.log('readURI', this, uri, type);
 		switch (type) {
-			case 'view':
-				if(this.allowFetch && this._httpRegex.exec(uri)) {
+			case 'view': {
+        if(this.useFetch && this._httpRegex.exec(uri)) {
 					const response = await this._nodeFetch(uri);
-					return await response.arrayBuffer();
+					return new Uint8Array(await response.arrayBuffer());
 				} 
 				return this._fs.readFile(uri);
-			case 'text':
-				if(this.allowFetch && this._httpRegex.exec(uri)) {
+      }
+			case 'text': {
+        if(this.useFetch && this._httpRegex.exec(uri)) {
 					const response = await this._nodeFetch(uri);
 					return await response.text();
 				} 
 				return this._fs.readFile(uri, 'utf8');
+      }
 		}
 	}
 
 	protected resolve(directory: string, path: string): string {
+    if(this.useFetch) return `${directory}/${path}`;
 		return this._path.resolve(directory, path);
 	}
 
 	protected dirname(uri: string): string {
+    if(this.useFetch) return uri.split('/').slice(0, -1).join('/');
 		return this._path.dirname(uri);
 	}
 
@@ -96,14 +99,14 @@ export class NodeIO extends PlatformIO {
 			format: Format.GLTF,
 			basename: FileUtils.basename(uri),
 		});
-		const { _fs: fs, _path: path } = this;
-		const dir = path.dirname(uri);
+		const { _fs: fs } = this;
+		const dir = this.dirname(uri);
 		const jsonContent = JSON.stringify(json, null, 2);
 		this.lastWriteBytes += jsonContent.length;
 		await fs.writeFile(uri, jsonContent);
 		const pending = Object.keys(resources).map(async (resourceName) => {
 			const resource = Buffer.from(resources[resourceName]);
-			await fs.writeFile(path.join(dir, resourceName), resource);
+			await fs.writeFile(this.resolve(dir, resourceName), resource);
 			this.lastWriteBytes += resource.byteLength;
 		});
 		await Promise.all(pending);
