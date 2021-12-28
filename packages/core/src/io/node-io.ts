@@ -35,7 +35,7 @@ export class NodeIO extends PlatformIO {
 	private _fs;
 	private _path;
 	public _nodeFetch;
-	public _httpRegex = /https?:\/\//
+	public _httpRegex = /https?:\/\//;
 	public allowFetch = false;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
@@ -50,17 +50,18 @@ export class NodeIO extends PlatformIO {
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+    console.log('readURI', this, uri, type);
 		switch (type) {
 			case 'view':
 				if(this.allowFetch && this._httpRegex.exec(uri)) {
-					const response = await this._nodeFetch(uri)
-					return await response.arrayBuffer()
+					const response = await this._nodeFetch(uri);
+					return await response.arrayBuffer();
 				} 
 				return this._fs.readFile(uri);
 			case 'text':
 				if(this.allowFetch && this._httpRegex.exec(uri)) {
-					const response = await this._nodeFetch(uri)
-					return await response.text()
+					const response = await this._nodeFetch(uri);
+					return await response.text();
 				} 
 				return this._fs.readFile(uri, 'utf8');
 		}
