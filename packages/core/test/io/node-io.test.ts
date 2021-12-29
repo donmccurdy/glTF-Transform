@@ -127,5 +127,5 @@ test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== En
 	t.end();
 });
 
-test.onFinish(server.close);
-test.onFailure(server.close);
+test.onFinish(() => server.close());
+test.onFailure(() => server.close());
