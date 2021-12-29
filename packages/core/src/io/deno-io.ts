@@ -52,8 +52,8 @@ export class DenoIO extends PlatformIO {
 		}
 	}
 
-	protected resolve(directory: string, path: string): string {
-		return this._path.resolve(directory, path);
+	protected resolve(base: string, path: string): string {
+		return this._path.resolve(base, path);
 	}
 
 	protected dirname(uri: string): string {

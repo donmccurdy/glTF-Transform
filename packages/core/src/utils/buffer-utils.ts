@@ -125,7 +125,6 @@ export class BufferUtils {
 	static assertView(view: Uint8Array): Uint8Array;
 	static assertView(view: Uint8Array | null): Uint8Array | null;
 	static assertView(view: Uint8Array | null): Uint8Array | null {
-    console.log(view)
 		if (view && !ArrayBuffer.isView(view)) {
 			throw new Error('Method requires Uint8Array parameter. Got instead' + typeof view);
 		}

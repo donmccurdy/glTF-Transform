@@ -2,6 +2,7 @@ import { Format } from '../constants';
 import { Document } from '../document';
 import { FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
+import { _resolve } from './util-functions';
 
 /**
  * # NodeIO
@@ -36,7 +37,6 @@ export class NodeIO extends PlatformIO {
 	private _path;
 	private _fetch;
 	private _httpRegex = /https?:\/\//;
-	public useFetch = false;
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,37 +46,32 @@ export class NodeIO extends PlatformIO {
 		this._fs = require('fs').promises;
 		this._path = require('path');
 		this._fetch = fetch;
-    this.useFetch = !!fetch;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+		if (this._httpRegex.exec(uri)) {
+			if (!this._fetch) throw new Error('Cannot parse URL as no fetch implementation has been provided');
+			const response = await this._fetch(uri);
+			if (type === 'text') return await response.text();
+			else if (type === 'view') return new Uint8Array(await response.arrayBuffer());
+		}
 		switch (type) {
-			case 'view': {
-        if(this.useFetch && this._httpRegex.exec(uri)) {
-					const response = await this._fetch(uri);
-					return new Uint8Array(await response.arrayBuffer());
-				} 
+			case 'view':
 				return this._fs.readFile(uri);
-      }
-			case 'text': {
-        if(this.useFetch && this._httpRegex.exec(uri)) {
-					const response = await this._fetch(uri);
-					return await response.text();
-				} 
+			case 'text':
 				return this._fs.readFile(uri, 'utf8');
-      }
 		}
 	}
 
-	protected resolve(directory: string, path: string): string {
-    if(this.useFetch) return `${directory}/${path}`;
-		return this._path.join(directory, path);
+	protected resolve(base: string, path: string): string {
+		if (this._httpRegex.exec(base) || this._httpRegex.exec(path)) return _resolve(base, path);
+		return this._path.resolve(base, path);
 	}
 
 	protected dirname(uri: string): string {
-    if(this.useFetch) return uri.split('/').slice(0, -1).join('/');
+		if (this._httpRegex.exec(uri)) return uri.split('/').slice(0, -1).join('/');
 		return this._path.dirname(uri);
 	}
 
@@ -86,6 +81,7 @@ export class NodeIO extends PlatformIO {
 
 	/** Writes a {@link Document} instance to a local path. */
 	public async write(uri: string, doc: Document): Promise<void> {
+		if (this._httpRegex.exec(uri)) throw new Error('Cannot write to a URL');
 		const isGLB = !!uri.match(/\.glb$/);
 		await (isGLB ? this._writeGLB(uri, doc) : this._writeGLTF(uri, doc));
 	}
@@ -101,14 +97,14 @@ export class NodeIO extends PlatformIO {
 			format: Format.GLTF,
 			basename: FileUtils.basename(uri),
 		});
-		const { _fs: fs } = this;
-		const dir = this.dirname(uri);
+		const { _fs: fs, _path: path } = this;
+		const dir = path.dirname(uri);
 		const jsonContent = JSON.stringify(json, null, 2);
 		this.lastWriteBytes += jsonContent.length;
 		await fs.writeFile(uri, jsonContent);
 		const pending = Object.keys(resources).map(async (resourceName) => {
 			const resource = Buffer.from(resources[resourceName]);
-			await fs.writeFile(this.resolve(dir, resourceName), resource);
+			await fs.writeFile(path.join(dir, resourceName), resource);
 			this.lastWriteBytes += resource.byteLength;
 		});
 		await Promise.all(pending);
