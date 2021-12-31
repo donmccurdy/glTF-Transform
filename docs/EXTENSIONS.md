@@ -90,6 +90,12 @@ const io = new NodeIO()
 const document = await io.read('compressed.glb');
 ```
 
+To support web requests in node, supply a 'fetch' api implementation (such as 'node-fetch') to the NodeIO constructor:
+
+```typescript
+const io = new NodeIO(require('node-fetch'))
+```
+
 ## Custom extensions
 
 In addition to the official Khronos and multi-vendor extensions, the glTF format can be extended
