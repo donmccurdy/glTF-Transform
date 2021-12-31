@@ -40,12 +40,12 @@ export class NodeIO extends PlatformIO {
 
 	/** Constructs a new NodeIO service. Instances are reusable. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(fetch?: any) {
+	constructor(_fetch?: typeof fetch) {
 		super();
 		// Excluded from browser builds with 'package.browser' field.
 		this._fs = require('fs').promises;
 		this._path = require('path');
-		this._fetch = fetch;
+		this._fetch = _fetch;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
@@ -71,7 +71,7 @@ export class NodeIO extends PlatformIO {
 	}
 
 	protected dirname(uri: string): string {
-		if (this._httpRegex.exec(uri)) return uri.split('/').slice(0, -1).join('/');
+		if (this._httpRegex.exec(uri)) return uri.split('/').slice(0, -1).join('/').concat('/');
 		return this._path.dirname(uri);
 	}
 

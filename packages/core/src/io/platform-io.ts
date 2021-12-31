@@ -203,7 +203,6 @@ export abstract class PlatformIO {
 			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
-
 				jsonDoc.resources[uri] = await this.readURI(this.resolve(dir, uri), 'view');
 				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
 			}
