@@ -10,7 +10,8 @@ import {
 	InspectTextureReport,
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
-import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
+import { formatBytes, formatHeader, formatLong, formatParagraph, formatXMP } from './util';
+import { Packet } from 'extensions/dist/khr-xmp-json-ld';
 
 export enum InspectFormat {
 	PRETTY = 'pretty',
@@ -52,7 +53,7 @@ export async function inspect(
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
 	const extensionsRequired = jsonDoc.json.extensionsRequired || [];
-	console.log(formatHeader('metadata'));
+	console.log(formatHeader('overview'));
 	console.log(
 		(await formatTable(
 			format,
@@ -73,6 +74,19 @@ export async function inspect(
 	} catch (e) {
 		logger.warn('Unable to parse document.');
 		throw e;
+	}
+
+	// XMP report.
+	const rootPacket = doc.getRoot().getExtension<Packet>('KHR_xmp_json_ld');
+	if (rootPacket && rootPacket.listProperties().length > 0) {
+		console.log(formatHeader('metadata'));
+		console.log(
+			(await formatTable(
+				format,
+				['key', 'value'],
+				rootPacket.listProperties().map((name) => [name, formatXMP(rootPacket.getProperty(name)) as string])
+			)) + '\n\n'
+		);
 	}
 
 	// Detailed report.

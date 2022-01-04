@@ -46,6 +46,24 @@ export function formatHeader(title: string): string {
 	return '' + '\n ' + title.toUpperCase() + '\n ────────────────────────────────────────────';
 }
 
+export function formatXMP(value: string | Record<string, unknown> | null): string | null {
+	if (!value || typeof value === 'string') {
+		return value;
+	}
+
+	if (value['@list']) {
+		const list = value['@list'] as string[];
+		const hasCommas = list.some((value) => value.indexOf(',') > 0);
+		return list.join(hasCommas ? '; ' : ', ');
+	}
+
+	if (value['@type'] === 'rdf:Alt') {
+		return (value['rdf:_1'] as Record<string, string>)['@value'];
+	}
+
+	return JSON.stringify(value);
+}
+
 // Textures.
 
 /** Returns names of all texture slots using the given texture. */

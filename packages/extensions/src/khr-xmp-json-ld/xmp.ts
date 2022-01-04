@@ -44,9 +44,9 @@ export class XMP extends Extension {
 
 		const packets = extensionDef.packets.map((packetDef) => this.createPacket().fromJSONLD(packetDef));
 
-		const assetDef = context.jsonDoc.json.asset;
-		if (assetDef.extensions && assetDef.extensions[NAME]) {
-			const def = assetDef.extensions[NAME] as XMPPropertyDef;
+		const { asset } = context.jsonDoc.json;
+		if (asset.extensions && asset.extensions[NAME]) {
+			const def = asset.extensions[NAME] as XMPPropertyDef;
 			this.document.getRoot().setExtension(NAME, packets[def.packet]);
 		}
 
@@ -75,7 +75,7 @@ export class XMP extends Extension {
 
 				switch (parent.propertyType) {
 					case PropertyType.ROOT:
-						parentDef = json;
+						parentDef = json.asset;
 						break;
 					case PropertyType.SCENE:
 						parentDef = json.scenes![context.sceneIndexMap.get(parent as Scene)!];
