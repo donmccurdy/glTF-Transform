@@ -30,16 +30,15 @@ import { HTTPUtils } from '../utils';
  * const glb = await io.writeBinary(document); // Document → Uint8Array
  * ```
  *
- * When initialized without constructor arguments (`new NodeIO()`), NodeIO reads/writes to disk
- * using Node.js `fs` utilities. When initialized with a Fetch API implementation such as
- * [`node-fetch`](https://www.npmjs.com/package/node-fetch), and optional
- * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters,
- * NodeIO can also make HTTP requests for resources:
+ * By default, NodeIO can only read/write paths on disk. To enable HTTP requests, provide a Fetch
+ * API implementation (such as [`node-fetch`](https://www.npmjs.com/package/node-fetch)) and enable
+ * {@link setAllowHTTP}. HTTP requests may optionally be configured with
+ * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters.
  *
  * ```typescript
  * import fetch from 'node-fetch';
  *
- * const io = new NodeIO(fetch, {headers: {...}});
+ * const io = new NodeIO(fetch, {headers: {...}}).setAllowHTTP(true);
  *
  * const document = await io.read('https://example.com/path/to/model.glb');
  * ```
@@ -52,10 +51,12 @@ export class NodeIO extends PlatformIO {
 	private readonly _fetch: typeof fetch | null;
 	private readonly _fetchConfig: RequestInit;
 
+	private _fetchEnabled = false;
+
 	/**
-	 * Constructs a new NodeIO service. Instances are reusable. When the optional Fetch API
-	 * parameters are included, NodeIO can make HTTP requests for resources. Without them,
-	 * only paths on disk are supported.
+	 * Constructs a new NodeIO service. Instances are reusable. By default, only NodeIO can only
+	 * read/write paths on disk. To enable HTTP requests, provide a Fetch API implementation and
+	 * enable {@link setAllowHTTP}.
 	 *
 	 * @param fetch Implementation of Fetch API.
 	 * @param fetchConfig Configuration object for Fetch API.
@@ -69,12 +70,20 @@ export class NodeIO extends PlatformIO {
 		this._fetchConfig = _fetchConfig;
 	}
 
+	public setAllowHTTP(allow: boolean): this {
+		if (allow && !this._fetch) {
+			throw new Error('NodeIO requires a Fetch API implementation for HTTP requests.');
+		}
+		this._fetchEnabled = allow;
+		return this;
+	}
+
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
 		if (HTTPUtils.isAbsoluteURL(uri)) {
-			if (!this._fetch) {
-				throw new Error('NodeIO requires a Fetch API implementation for HTTP requests.');
+			if (!this._fetchEnabled || !this._fetch) {
+				throw new Error('Network request blocked. Allow HTTP requests explicitly, if needed.');
 			}
 
 			const response = await this._fetch(uri, this._fetchConfig);
