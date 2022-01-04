@@ -8,7 +8,7 @@ import { HTTPUtils } from '../utils';
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.
  * Methods are also available for converting in-memory representations of raw glTF files, both
- * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
+ * binary (*Uint8Array*) and JSON ({@link JSONDocument}).
  *
  * Usage:
  *

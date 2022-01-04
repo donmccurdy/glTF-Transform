@@ -25,7 +25,7 @@ import { GLTF } from './types/gltf';
  * 		images: [{uri: 'image1.png'}, {uri: 'image2.png'}]
  * 	},
  *
- * 	// URI → ArrayBuffer mapping.
+ * 	// URI → Uint8Array mapping.
  * 	resources: {
  * 		'image1.png': await fs.readFile('image1.png'),
  * 		'image2.png': await fs.readFile('image2.png'),

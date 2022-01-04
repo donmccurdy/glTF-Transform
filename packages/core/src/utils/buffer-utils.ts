@@ -3,7 +3,7 @@ import { TypedArray } from '../constants';
 /**
  * # BufferUtils
  *
- * *Common utilities for working with ArrayBuffer and Buffer objects.*
+ * *Common utilities for working with Uint8Array and Buffer objects.*
  *
  * @category Utilities
  */

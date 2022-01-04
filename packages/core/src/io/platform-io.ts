@@ -21,7 +21,7 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.
  * Methods are also available for converting in-memory representations of raw glTF files, both
- * binary (*ArrayBuffer*) and JSON ({@link JSONDocument}).
+ * binary (*Uint8Array*) and JSON ({@link JSONDocument}).
  *
  * For platform-specific implementations, see {@link NodeIO}, {@link WebIO}, and {@link DenoIO}.
  *
@@ -106,7 +106,7 @@ export abstract class PlatformIO {
 		});
 	}
 
-	/** Converts a GLB-formatted ArrayBuffer to a {@link JSONDocument}. */
+	/** Converts a GLB-formatted Uint8Array to a {@link JSONDocument}. */
 	public async binaryToJSON(glb: Uint8Array): Promise<JSONDocument> {
 		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
 		this._readResourcesInternal(jsonDoc);
@@ -122,7 +122,7 @@ export abstract class PlatformIO {
 		return jsonDoc;
 	}
 
-	/** Converts a GLB-formatted ArrayBuffer to a {@link Document}. */
+	/** Converts a GLB-formatted Uint8Array to a {@link Document}. */
 	public async readBinary(glb: Uint8Array): Promise<Document> {
 		return this.readJSON(await this.binaryToJSON(BufferUtils.assertView(glb)));
 	}
@@ -146,7 +146,7 @@ export abstract class PlatformIO {
 		} as Required<WriterOptions>);
 	}
 
-	/** Converts a {@link Document} to a GLB-formatted ArrayBuffer. */
+	/** Converts a {@link Document} to a GLB-formatted Uint8Array. */
 	public async writeBinary(doc: Document): Promise<Uint8Array> {
 		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
 
