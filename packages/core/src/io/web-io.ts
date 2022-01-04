@@ -1,7 +1,5 @@
 import { PlatformIO } from './platform-io';
-import { _dirname, _resolve } from './util-functions';
-
-const DEFAULT_INIT: RequestInit = {};
+import { HTTPUtils } from '../utils';
 
 /**
  * # WebIO
@@ -31,12 +29,15 @@ const DEFAULT_INIT: RequestInit = {};
  * @category I/O
  */
 export class WebIO extends PlatformIO {
+	private readonly _fetchConfig: RequestInit;
+
 	/**
 	 * Constructs a new WebIO service. Instances are reusable.
-	 * @param _fetchConfig Configuration object for Fetch API.
+	 * @param fetchConfig Configuration object for Fetch API.
 	 */
-	constructor(private readonly _fetchConfig: RequestInit = DEFAULT_INIT) {
+	constructor(fetchConfig = HTTPUtils.DEFAULT_INIT) {
 		super();
+		this._fetchConfig = fetchConfig;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
@@ -52,10 +53,10 @@ export class WebIO extends PlatformIO {
 	}
 
 	protected resolve(base: string, path: string): string {
-		return _resolve(base, path);
+		return HTTPUtils.resolve(base, path);
 	}
 
 	protected dirname(uri: string): string {
-		return _dirname(uri);
+		return HTTPUtils.dirname(uri);
 	}
 }

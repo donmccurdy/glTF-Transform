@@ -2,7 +2,7 @@ import { Format } from '../constants';
 import { Document } from '../document';
 import { FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
-import { _resolve } from './util-functions';
+import { HTTPUtils } from '../utils';
 
 /**
  * # NodeIO
@@ -30,48 +30,81 @@ import { _resolve } from './util-functions';
  * const glb = await io.writeBinary(document); // Document → Uint8Array
  * ```
  *
+ * When initialized without constructor arguments (`new NodeIO()`), NodeIO reads/writes to disk
+ * using Node.js `fs` utilities. When initialized with a Fetch API implementation such as
+ * [`node-fetch`](https://www.npmjs.com/package/node-fetch), and optional
+ * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters,
+ * NodeIO can also make HTTP requests for resources:
+ *
+ * ```typescript
+ * import fetch from 'node-fetch';
+ *
+ * const io = new NodeIO(fetch, {headers: {...}});
+ *
+ * const document = await io.read('https://example.com/path/to/model.glb');
+ * ```
+ *
  * @category I/O
  */
 export class NodeIO extends PlatformIO {
-	private _fs;
-	private _path;
-	private _fetch;
-	private _httpRegex = /https?:\/\//;
+	private readonly _fs;
+	private readonly _path;
+	private readonly _fetch: typeof fetch | null;
+	private readonly _fetchConfig: RequestInit;
 
-	/** Constructs a new NodeIO service. Instances are reusable. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(_fetch?: typeof fetch) {
+	/**
+	 * Constructs a new NodeIO service. Instances are reusable. When the optional Fetch API
+	 * parameters are included, NodeIO can make HTTP requests for resources. Without them,
+	 * only paths on disk are supported.
+	 *
+	 * @param fetch Implementation of Fetch API.
+	 * @param fetchConfig Configuration object for Fetch API.
+	 */
+	constructor(_fetch: unknown = null, _fetchConfig = HTTPUtils.DEFAULT_INIT) {
 		super();
 		// Excluded from browser builds with 'package.browser' field.
 		this._fs = require('fs').promises;
 		this._path = require('path');
-		this._fetch = _fetch;
+		this._fetch = _fetch as typeof fetch | null;
+		this._fetchConfig = _fetchConfig;
 	}
 
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
-		if (this._httpRegex.exec(uri)) {
-			if (!this._fetch) throw new Error('Cannot parse URL as no fetch implementation has been provided');
-			const response = await this._fetch(uri);
-			if (type === 'text') return await response.text();
-			else if (type === 'view') return new Uint8Array(await response.arrayBuffer());
-		}
-		switch (type) {
-			case 'view':
-				return this._fs.readFile(uri);
-			case 'text':
-				return this._fs.readFile(uri, 'utf8');
+		if (HTTPUtils.isAbsoluteURL(uri)) {
+			if (!this._fetch) {
+				throw new Error('NodeIO requires a Fetch API implementation for HTTP requests.');
+			}
+
+			const response = await this._fetch(uri, this._fetchConfig);
+			switch (type) {
+				case 'view':
+					return new Uint8Array(await response.arrayBuffer());
+				case 'text':
+					return response.text();
+			}
+		} else {
+			switch (type) {
+				case 'view':
+					return this._fs.readFile(uri);
+				case 'text':
+					return this._fs.readFile(uri, 'utf8');
+			}
 		}
 	}
 
 	protected resolve(base: string, path: string): string {
-		if (this._httpRegex.exec(base) || this._httpRegex.exec(path)) return _resolve(base, path);
+		if (HTTPUtils.isAbsoluteURL(base) || HTTPUtils.isAbsoluteURL(path)) {
+			return HTTPUtils.resolve(base, path);
+		}
 		return this._path.resolve(base, path);
 	}
 
 	protected dirname(uri: string): string {
-		if (this._httpRegex.exec(uri)) return uri.split('/').slice(0, -1).join('/').concat('/');
+		if (HTTPUtils.isAbsoluteURL(uri)) {
+			return HTTPUtils.dirname(uri);
+		}
 		return this._path.dirname(uri);
 	}
 
@@ -81,7 +114,6 @@ export class NodeIO extends PlatformIO {
 
 	/** Writes a {@link Document} instance to a local path. */
 	public async write(uri: string, doc: Document): Promise<void> {
-		if (this._httpRegex.exec(uri)) throw new Error('Cannot write to a URL');
 		const isGLB = !!uri.match(/\.glb$/);
 		await (isGLB ? this._writeGLB(uri, doc) : this._writeGLTF(uri, doc));
 	}

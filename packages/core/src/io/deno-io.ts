@@ -1,7 +1,7 @@
 import { PlatformIO } from './platform-io';
 
 interface Path {
-	resolve(directory: string, path: string): string;
+	resolve(base: string, path: string): string;
 	dirname(uri: string): string;
 }
 

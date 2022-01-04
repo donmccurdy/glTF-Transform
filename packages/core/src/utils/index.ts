@@ -8,3 +8,4 @@ export * from './logger';
 export * from './math-utils';
 export * from './property-utils';
 export * from './uuid';
+export * from './http-utils';

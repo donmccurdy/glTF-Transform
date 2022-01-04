@@ -196,14 +196,15 @@ export abstract class PlatformIO {
 		return jsonDoc;
 	}
 
-	private async _readResourcesExternal(jsonDoc: JSONDocument, dir: string): Promise<void> {
+	private async _readResourcesExternal(jsonDoc: JSONDocument, base: string): Promise<void> {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
 			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
-				jsonDoc.resources[uri] = await this.readURI(this.resolve(dir, uri), 'view');
+
+				jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
 				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
 			}
 		);
