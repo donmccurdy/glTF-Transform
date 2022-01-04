@@ -60,7 +60,7 @@ test('@gltf-transform/core::io | node.js read glb http', { skip: environment !==
 		glob.sync(path.join(__dirname, '../in/**/*.glb')).map(async (inputURI) => {
 			const basepath = inputURI.replace(path.join(__dirname, '../in'), MOCK_DOMAIN);
 
-			const io = new NodeIO(fetch);
+			const io = new NodeIO(fetch).setAllowHTTP(true);
 			const doc = await io.read(basepath);
 
 			t.ok(doc, `Read "${basepath}".`);
@@ -77,7 +77,7 @@ test('@gltf-transform/core::io | node.js read gltf http', { skip: environment !=
 		glob.sync(path.join(__dirname, '../in/**/*.gltf')).map(async (inputURI) => {
 			const basepath = inputURI.replace(path.join(__dirname, '../in'), MOCK_DOMAIN);
 
-			const io = new NodeIO(fetch);
+			const io = new NodeIO(fetch).setAllowHTTP(true);
 			const doc = await io.read(basepath);
 
 			t.ok(doc, `Read "${basepath}".`);

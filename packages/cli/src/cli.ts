@@ -15,6 +15,7 @@ import { ValidateOptions, validate } from './validate';
 let io: NodeIO;
 
 // Use require() so microbundle doesn't compile these.
+const fetch = require('node-fetch');
 const draco3d = require('draco3dgltf');
 const mikktspace = require('mikktspace');
 const { MeshoptDecoder, MeshoptEncoder } = require('meshoptimizer');
@@ -26,7 +27,7 @@ const programReady = new Promise<void>((resolve) => {
 		MeshoptDecoder.ready,
 		MeshoptEncoder.ready,
 	]).then(([decoder, encoder, _]) => {
-		io = new NodeIO()
+		io = new NodeIO(fetch)
 			.registerExtensions(ALL_EXTENSIONS)
 			.registerDependencies({
 				'draco3d.decoder': decoder,
@@ -974,7 +975,15 @@ so this workflow is not a replacement for video playback.
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
 
-program.option('--vertex-layout <layout>', 'Vertex layout method', {
+program.option('--allow-http', 'Allows reads from HTTP requests.', {
+	global: true,
+	default: false,
+	validator: program.BOOLEAN,
+	action: ({options}) => {
+		if (options.allowHttp) io.setAllowHTTP(true);
+	},
+});
+program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
 	global: true,
 	default: VertexLayout.INTERLEAVED,
 	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
