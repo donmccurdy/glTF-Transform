@@ -8,7 +8,7 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transfor
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp } from './transforms';
 import { Session, formatBytes } from './util';
 import { ValidateOptions, validate } from './validate';
 
@@ -278,6 +278,26 @@ work best when combined with gzip.
 		await fs.writeFile(fileName, outBuffer);
 		logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 	});
+
+// XMP
+program
+	.command('xmp', 'Add or modify XMP metadata')
+	.help(`
+TODO
+`)
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--packet <path>', 'Path to XMP packet (.jsonld or .json)')
+	.action(async ({args, options, logger}) => {
+		try {
+			return await Session.create(io, logger, args.input, args.output)
+				.transform(xmp({...options} as XMPOptions));
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
+	}
+	);
 
 program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
 

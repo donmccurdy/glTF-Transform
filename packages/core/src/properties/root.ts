@@ -8,10 +8,11 @@ import { Camera } from './camera';
 import { Material } from './material';
 import { Mesh } from './mesh';
 import { Node } from './node';
-import { COPY_IDENTITY, IProperty, Property } from './property';
+import { COPY_IDENTITY, Property } from './property';
 import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
 interface IAsset {
 	version: string;
@@ -21,7 +22,7 @@ interface IAsset {
 	[key: string]: unknown;
 }
 
-interface IRoot extends IProperty {
+interface IRoot extends IExtensibleProperty {
 	asset: IAsset;
 	defaultScene: Scene;
 
@@ -69,7 +70,7 @@ interface IRoot extends IProperty {
  *
  * @category Properties
  */
-export class Root extends Property<IRoot> {
+export class Root extends ExtensibleProperty<IRoot> {
 	public declare propertyType: PropertyType.ROOT;
 
 	private readonly _extensions: Set<Extension> = new Set();
@@ -79,7 +80,7 @@ export class Root extends Property<IRoot> {
 	}
 
 	protected getDefaults(): Nullable<IRoot> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			asset: {
 				generator: `glTF-Transform ${VERSION}`,
 				version: '2.0',

@@ -662,7 +662,7 @@ export class GLTFWriter {
 
 		/** Animations. */
 
-		json.animations = root.listAnimations().map((animation) => {
+		json.animations = root.listAnimations().map((animation, index) => {
 			const animationDef = context.createPropertyDef(animation) as GLTF.IAnimation;
 
 			const samplerIndexMap: Map<AnimationSampler, number> = new Map();
@@ -686,14 +686,16 @@ export class GLTFWriter {
 				return channelDef;
 			});
 
+			context.animationIndexMap.set(animation, index);
 			return animationDef;
 		});
 
 		/* Scenes. */
 
-		json.scenes = root.listScenes().map((scene) => {
+		json.scenes = root.listScenes().map((scene, index) => {
 			const sceneDef = context.createPropertyDef(scene) as GLTF.IScene;
 			sceneDef.nodes = scene.listChildren().map((node) => context.nodeIndexMap.get(node)!);
+			context.sceneIndexMap.set(scene, index);
 			return sceneDef;
 		});
 

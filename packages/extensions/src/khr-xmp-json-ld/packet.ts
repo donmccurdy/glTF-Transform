@@ -14,6 +14,14 @@ const PARENT_TYPES = [
 	PropertyType.ANIMATION,
 ];
 
+// TODO(impl): Missing 'model3d' context.
+const DEFAULT_CONTEXT: Record<Term, TermDefinition> = {
+	dc: 'http://purl.org/dc/elements/1.1/',
+	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+	xmp: 'http://ns.adobe.com/xap/1.0/',
+	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
+};
+
 interface IPacket extends IProperty {
 	// https://json-ld.org/spec/latest/json-ld/#the-context
 	context: Record<Term, TermDefinition>;
@@ -33,7 +41,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 	}
 
 	protected getDefaults(): Nullable<IPacket> {
-		return Object.assign(super.getDefaults(), { context: {} });
+		return Object.assign(super.getDefaults(), { context: DEFAULT_CONTEXT, properties: {} });
 	}
 
 	/**********************************************************************************************
@@ -87,10 +95,15 @@ export class Packet extends ExtensionProperty<IPacket> {
 	 */
 
 	public toJSONLD(): Record<string, unknown> {
-		return {
-			'@context': copyJSON(this.get('context')),
-			...copyJSON(this.get('properties')),
-		};
+		const availableContext = this.get('context');
+		const context = {} as Record<Term, TermDefinition>;
+		const properties = copyJSON(this.get('properties'));
+		// Include only required context terms.
+		for (const name in properties) {
+			const prefix = name.split(':')[0];
+			context[prefix] = availableContext[prefix];
+		}
+		return { '@context': context, ...properties };
 	}
 
 	public fromJSONLD(jsonld: Record<string, unknown>): this {
@@ -98,7 +111,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 
 		// Context.
 		const context = jsonld['@context'] as Record<Term, TermDefinition>;
-		if (context) this.set('context', context);
+		if (context) this.set('context', { ...DEFAULT_CONTEXT, ...context });
 		delete jsonld['@context'];
 
 		// Properties.
