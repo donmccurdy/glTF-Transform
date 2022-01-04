@@ -77,7 +77,7 @@ export abstract class PlatformIO {
 	protected abstract readURI(uri: string, type: 'text'): Promise<string>;
 	protected abstract readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string>;
 
-	protected abstract resolve(directory: string, path: string): string;
+	protected abstract resolve(base: string, path: string): string;
 	protected abstract dirname(uri: string): string;
 
 	/**********************************************************************************************
@@ -203,7 +203,6 @@ export abstract class PlatformIO {
 			async (resource: GLTF.IBuffer | GLTF.IImage): Promise<void> => {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
-
 				jsonDoc.resources[uri] = await this.readURI(this.resolve(dir, uri), 'view');
 				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
 			}

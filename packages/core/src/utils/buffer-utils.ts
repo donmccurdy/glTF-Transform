@@ -126,7 +126,7 @@ export class BufferUtils {
 	static assertView(view: Uint8Array | null): Uint8Array | null;
 	static assertView(view: Uint8Array | null): Uint8Array | null {
 		if (view && !ArrayBuffer.isView(view)) {
-			throw new Error('Method requires Uint8Array parameter.');
+			throw new Error('Method requires Uint8Array parameter. Got instead' + typeof view);
 		}
 		return view as Uint8Array;
 	}

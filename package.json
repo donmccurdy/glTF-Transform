@@ -45,6 +45,7 @@
     "meshoptimizer": "0.17.0",
     "microbundle": "0.14.2",
     "mikktspace": "1.1.0",
+    "node-ip": "^0.1.2",
     "nyc": "15.1.0",
     "prettier": "2.5.1",
     "source-map-support": "0.5.21",

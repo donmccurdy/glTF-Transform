@@ -1,13 +1,21 @@
 import test from 'tape';
 import { environment, Environment } from '../../../test-utils';
 import { NodeIO } from '@gltf-transform/core';
+import { Response } from 'node-fetch';
 
+const ip = 'https://mock.site';
 let fs, glob, path;
 if (environment === Environment.NODE) {
 	fs = require('fs');
 	glob = require('glob');
 	path = require('path');
 }
+
+const fetch = async (input: RequestInfo, init: RequestInit) => {
+  console.log(input);
+  const relPath = input.toString().replace(ip, (path.join(__dirname, '../in')));
+  return new Response(fs.readFileSync(relPath));
+};
 
 function ensureDir(uri) {
 	const outdir = path.dirname(uri);
@@ -40,6 +48,36 @@ test('@gltf-transform/core::io | node.js read gltf', { skip: environment !== Env
 		t.ok(doc, `Read "${basepath}".`);
 		count++;
 	});
+	t.ok(count > 0, 'tests completed');
+	t.end();
+});
+
+test('@gltf-transform/core::io | node.js read glb http', { skip: environment !== Environment.NODE }, async (t) => {
+	let count = 0;
+	await Promise.all(glob.sync(path.join(__dirname, '../in/**/*.glb')).map(async (inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), ip);
+
+		const io = new NodeIO(fetch);
+		const doc = await io.read(basepath);
+
+		t.ok(doc, `Read "${basepath}".`);
+		count++;
+	}));
+	t.ok(count > 0, 'tests completed');
+	t.end();
+});
+
+test('@gltf-transform/core::io | node.js read gltf http', { skip: environment !== Environment.NODE }, async (t) => {
+	let count = 0;
+	await Promise.all(glob.sync(path.join(__dirname, '../in/**/*.gltf')).map(async (inputURI) => {
+		const basepath = inputURI.replace(path.join(__dirname, '../in'), ip);
+
+		const io = new NodeIO(fetch);
+		const doc = await io.read(basepath);
+
+		t.ok(doc, `Read "${basepath}".`);
+		count++;
+	}));
 	t.ok(count > 0, 'tests completed');
 	t.end();
 });
