@@ -975,20 +975,20 @@ so this workflow is not a replacement for video playback.
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
 
-program.option('--vertex-layout <layout>', 'Vertex layout method', {
-	global: true,
-	default: VertexLayout.INTERLEAVED,
-	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
-	action: ({options}) => {
-		io.setVertexLayout(options.vertexLayout as VertexLayout);
-	},
-});
-program.option('--allow-http', 'Allows HTTP requests', {
+program.option('--allow-http', 'Allows reads from HTTP requests.', {
 	global: true,
 	default: false,
 	validator: program.BOOLEAN,
 	action: ({options}) => {
 		if (options.allowHttp) io.setAllowHTTP(true);
+	},
+});
+program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
+	global: true,
+	default: VertexLayout.INTERLEAVED,
+	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
+	action: ({options}) => {
+		io.setVertexLayout(options.vertexLayout as VertexLayout);
 	},
 });
 program.disableGlobalOption('--quiet');
