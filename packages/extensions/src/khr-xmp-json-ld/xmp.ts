@@ -7,7 +7,7 @@ export class XMP extends Extension {
 	public static readonly EXTENSION_NAME = KHR_XMP_JSON_LD;
 
 	public createPacket(): Packet {
-		return new Packet(this.doc.getGraph(), this);
+		return new Packet(this.document.getGraph());
 	}
 
 	public listPackets(): Packet[] {

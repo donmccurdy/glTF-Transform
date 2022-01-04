@@ -4,6 +4,16 @@ import { KHR_XMP_JSON_LD } from '../constants';
 type Term = string;
 type TermDefinition = string | Record<string, string>;
 
+const PARENT_TYPES = [
+	PropertyType.ROOT,
+	PropertyType.SCENE,
+	PropertyType.NODE,
+	PropertyType.MESH,
+	PropertyType.MATERIAL,
+	PropertyType.TEXTURE,
+	PropertyType.ANIMATION,
+];
+
 interface IPacket extends IProperty {
 	// https://json-ld.org/spec/latest/json-ld/#the-context
 	context: Record<Term, TermDefinition>;
@@ -11,18 +21,16 @@ interface IPacket extends IProperty {
 }
 
 export class Packet extends ExtensionProperty<IPacket> {
-	public readonly propertyType = 'Packet';
-	public readonly parentTypes = [
-		PropertyType.ROOT,
-		PropertyType.SCENE,
-		PropertyType.NODE,
-		PropertyType.MESH,
-		PropertyType.MATERIAL,
-		PropertyType.TEXTURE,
-		PropertyType.ANIMATION,
-	];
-	public readonly extensionName = KHR_XMP_JSON_LD;
+	public declare propertyType: 'Packet';
+	public declare parentTypes: typeof PARENT_TYPES;
+	public declare extensionName: typeof KHR_XMP_JSON_LD;
 	public static EXTENSION_NAME = KHR_XMP_JSON_LD;
+
+	protected init(): void {
+		this.extensionName = KHR_XMP_JSON_LD;
+		this.propertyType = 'Packet';
+		this.parentTypes = PARENT_TYPES;
+	}
 
 	protected getDefaults(): Nullable<IPacket> {
 		return Object.assign(super.getDefaults(), { context: {} });
