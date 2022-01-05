@@ -65,7 +65,7 @@ export class XMP extends Extension {
 
 			for (const parent of packet.listParents()) {
 				let parentDef:
-					| GLTF.IGLTF
+					| GLTF.IAsset
 					| GLTF.IScene
 					| GLTF.INode
 					| GLTF.IMesh

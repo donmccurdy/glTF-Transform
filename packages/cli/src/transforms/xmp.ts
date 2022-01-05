@@ -303,6 +303,8 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 			throw new Error('xmp: No properties added.');
 		}
 
+		root.setExtension('KHR_xmp_json_ld', packet);
+
 		logger.debug(`[xmp] packet: ${JSON.stringify(packet.toJSONLD(), null, 2)}`);
 		logger.debug(`[xmp]: Complete.`);
 	};
