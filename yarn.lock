@@ -1991,6 +1991,11 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
 
+"@types/language-tags@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.0.tgz#81829b5c50e324c0e6637264cd0d2754e7d7ba1a"
+  integrity sha512-pSCb1l71akSb46t3+kKyjEEe1Gb1NxxWfVeUacXwpYc4KGKF1+QnECQ26cGwVCTp9lqKAmNNN2d0FYMO2LV03Q==
+
 "@types/lodash@4.14.149":
   version "4.14.149"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
@@ -2064,6 +2069,11 @@
   integrity sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==
   dependencies:
     "@types/node" "*"
+
+"@types/spdx-correct@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/spdx-correct/-/spdx-correct-2.0.0.tgz#a05eabf6702cf805ded7555c27b3581d189dba3f"
+  integrity sha512-bRgZHHanvpuebouqS6KCLurnvUY9M9tJMgI0le+rpExldOtZT/NpcHW4V7FKDFPLJivBD5vkABgV048zrJlpyw==
 
 "@types/table@5.0.0":
   version "5.0.0"
@@ -5547,6 +5557,18 @@ kuler@1.0.x:
   dependencies:
     colornames "^1.1.1"
 
+language-subtag-registry@~0.3.2:
+  version "0.3.21"
+  resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.21.tgz#04ac218bea46f04cb039084602c6da9e788dd45a"
+  integrity sha512-L0IqwlIXjilBVVYKFT37X9Ih11Um5NEl9cbJIuU/SwP/zEEAbBPOnEeeuxVMf45ydWQRDQN3Nqc96OgbH1K+Pg==
+
+language-tags@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/language-tags/-/language-tags-1.0.5.tgz#d321dbc4da30ba8bf3024e040fa5c14661f9193a"
+  integrity sha1-0yHbxNowuovzAk4ED6XBRmH5GTo=
+  dependencies:
+    language-subtag-registry "~0.3.2"
+
 lcov-parse@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/lcov-parse/-/lcov-parse-1.0.0.tgz#eb0d46b54111ebc561acb4c408ef9363bdc8f7e0"
@@ -8215,7 +8237,7 @@ spawn-wrap@^2.0.0:
     signal-exit "^3.0.2"
     which "^2.0.1"
 
-spdx-correct@^3.0.0:
+spdx-correct@^3.0.0, spdx-correct@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.1.1.tgz#dece81ac9c1e6713e5f7d1b6f17d468fa53d89a9"
   integrity sha512-cOYcUWwhCuHCXi49RhFRCyJEK3iPj1Ziz9DpViV3tbZOwXD49QzIN3MpOLJNxh2qwq2lJJZaKMVw9qNi4jTC0w==

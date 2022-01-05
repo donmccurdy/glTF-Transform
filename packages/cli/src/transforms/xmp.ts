@@ -1,6 +1,8 @@
 import { Document, Logger, Transform } from '@gltf-transform/core';
-import { XMP } from '@gltf-transform/extensions';
+import { Packet, XMP } from '@gltf-transform/extensions';
 import inquirer from 'inquirer';
+import { check as validateLanguage } from 'language-tags';
+import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
 import path from 'path';
 import { formatXMP } from '../util';
@@ -28,11 +30,7 @@ enum Prompt {
 }
 
 async function* generateQuestions(results: Record<string, unknown>): AsyncGenerator<inquirer.Question> {
-	let lang = DEFAULT_LANG;
-
-	// TODO(impl): Validation.
-
-	// TODO(impl): Display current values as interactive session defaults.
+	let lang = (results['dc:language'] as string) || DEFAULT_LANG;
 
 	yield {
 		type: 'checkbox',
@@ -65,7 +63,8 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			type: 'input',
 			name: 'dc:language',
 			message: 'Language?',
-			suffix: ' See IETF RFC 3066. (dc:language)',
+			suffix: ' (dc:language)',
+			validate: (input: string) => (validateLanguage(input) ? true : 'Invalid language; refer to IETF RFC 3066.'),
 			default: DEFAULT_LANG,
 		};
 
@@ -186,6 +185,8 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 					name: 'model3d:spdxLicense',
 					message: 'What is the SPDX license ID?',
 					suffix: ' (model3d:spdxLicense)',
+					validate: (input: string) =>
+						validateSPDX(input) ? true : 'Invalid SPDX ID; refer to https://spdx.dev/.',
 				};
 			} else {
 				yield {
@@ -207,6 +208,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			message: 'Date created?',
 			suffix: ' (xmp:CreateDate)',
 			default: new Date().toISOString().substring(0, 10),
+			validate: validateDate,
 		};
 	}
 
@@ -217,6 +219,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			message: 'Date modified?',
 			suffix: ' (xmp:ModifyDate)',
 			default: new Date().toISOString().substring(0, 10),
+			validate: validateDate,
 		};
 	}
 
@@ -250,7 +253,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 					name: 'human_face (worn or displayed on a human face)',
 				},
 			],
-			filter: (input) => createList(input),
+			filter: (input) => (input.length ? createList(input) : null),
 			transformer: formatXMP,
 		} as inquirer.Question;
 	}
@@ -260,20 +263,22 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 	const options = { ...XMP_DEFAULTS, ..._options } as Required<XMPOptions>;
 
 	return async (document: Document): Promise<void> => {
+		const root = document.getRoot();
 		const xmpExtension = document.createExtension(XMP);
-		const packet = xmpExtension.createPacket();
-		document.getRoot().setExtension('KHR_xmp_json_ld', packet);
 
 		if (options.packet) {
 			const packetJSON = await fs.readFile(path.resolve(options.packet), 'utf-8');
 			const packetDef = validatePacket(JSON.parse(packetJSON));
-			packet.fromJSONLD(packetDef);
+			const packet = xmpExtension.createPacket().fromJSONLD(packetDef);
+			root.setExtension('KHR_xmp_json_ld', packet);
 			return;
 		}
 
 		const logger = document.getLogger();
 		const inquirer = require('inquirer');
-		const results = {} as Record<string, unknown>;
+
+		const packet = root.getExtension<Packet>('KHR_xmp_json_ld') || xmpExtension.createPacket();
+		const results = packet.toJSONLD();
 
 		try {
 			for await (const question of generateQuestions(results)) {
@@ -288,7 +293,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 
 		for (const name in results) {
 			// NOTICE: Calling 'continue' in this context hits a Babel bug.
-			if (!name.startsWith('_')) {
+			if (!name.startsWith('_') && !name.startsWith('@') && results[name]) {
 				packet.setProperty(name, results[name] as string);
 				numProperties++;
 			}
@@ -357,4 +362,14 @@ function createLanguageAlternative(value: string, language: string): Record<stri
 function createList(...list: string[]): Record<string, unknown> | null {
 	if (!list) return null;
 	return { '@list': list };
+}
+
+function validateDate(input: string): boolean | string {
+	const [date, _] = input.split('T');
+
+	if (!/\d{4}-\d{2}-\d{2}/.test(date) || new Date(date).toISOString().substring(0, 10) !== date) {
+		return 'Invalid ISO date string.';
+	}
+
+	return true;
 }

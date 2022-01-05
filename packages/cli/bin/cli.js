@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Uncomment for better stack traces during local development.
-require('source-map-support').install();
+// require('source-map-support').install();
 
 const { program, programReady } = require('../');
 

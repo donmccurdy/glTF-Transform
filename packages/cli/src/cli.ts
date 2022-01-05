@@ -283,20 +283,20 @@ work best when combined with gzip.
 program
 	.command('xmp', 'Add or modify XMP metadata')
 	.help(`
-TODO
+XMP metadata provides standardized fields describing the content, provenance, usage restrictions,
+or other attributes of a 3D model. Such metadata does not generally affect the parsing or runtime
+behavior of the content in any way — for that, use custom extensions, custom vertex attributes, or
+extras.
+
+Documentation
+- https://gltf-transform.donmccurdy.com/classes/extensions.xmp.html
 `)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--packet <path>', 'Path to XMP packet (.jsonld or .json)')
-	.action(async ({args, options, logger}) => {
-		try {
-			return await Session.create(io, logger, args.input, args.output)
-				.transform(xmp({...options} as XMPOptions));
-		} catch (e) {
-			console.error(e);
-			throw e;
-		}
-	}
+	.action(async ({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(xmp({...options} as XMPOptions))
 	);
 
 program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
