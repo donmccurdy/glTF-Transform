@@ -1,48 +1,70 @@
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
 import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
-import { InspectAnimationReport, InspectMaterialReport, InspectMeshReport, InspectPropertyReport, InspectSceneReport, InspectTextureReport, inspect as inspectDoc } from '@gltf-transform/functions';
+import {
+	InspectAnimationReport,
+	InspectMaterialReport,
+	InspectMeshReport,
+	InspectPropertyReport,
+	InspectSceneReport,
+	InspectTextureReport,
+	inspect as inspectDoc,
+} from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph } from './util';
 
 export enum InspectFormat {
 	PRETTY = 'pretty',
 	CSV = 'csv',
-	MD = 'md'
+	MD = 'md',
 }
 
-type AnyPropertyReport = InspectSceneReport
+type AnyPropertyReport =
+	| InspectSceneReport
 	| InspectMeshReport
 	| InspectMaterialReport
 	| InspectTextureReport
 	| InspectAnimationReport;
 
 const CLI_TABLE_MARKDOWN_CHARS = {
-	'top': '', 'top-mid': '', 'top-left': '', 'top-right': '',
-	'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': '',
-	'left': '|', 'left-mid': '', 'mid': '', 'mid-mid': '',
-	'right': '|', 'right-mid': '', 'middle': '|'
+	top: '',
+	'top-mid': '',
+	'top-left': '',
+	'top-right': '',
+	bottom: '',
+	'bottom-mid': '',
+	'bottom-left': '',
+	'bottom-right': '',
+	left: '|',
+	'left-mid': '',
+	mid: '',
+	'mid-mid': '',
+	right: '|',
+	'right-mid': '',
+	middle: '|',
 };
 
-export async function inspect (
-		jsonDoc: JSONDocument,
-		io: NodeIO | WebIO,
-		logger: Logger,
-		format: InspectFormat): Promise<void> {
-
+export async function inspect(
+	jsonDoc: JSONDocument,
+	io: NodeIO | WebIO,
+	logger: Logger,
+	format: InspectFormat
+): Promise<void> {
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
 	const extensionsRequired = jsonDoc.json.extensionsRequired || [];
 	console.log(formatHeader('metadata'));
-	console.log(await formatTable(
-		format,
-		['key', 'value'],
-		[
-			['version', jsonDoc.json.asset.version],
-			['generator', jsonDoc.json.asset.generator || ''],
-			['extensionsUsed', extensionsUsed.join(', ') || 'none'],
-			['extensionsRequired', extensionsRequired.join(', ') || 'none'],
-		]
-	) + '\n\n');
+	console.log(
+		(await formatTable(
+			format,
+			['key', 'value'],
+			[
+				['version', jsonDoc.json.asset.version],
+				['generator', jsonDoc.json.asset.generator || ''],
+				['extensionsUsed', extensionsUsed.join(', ') || 'none'],
+				['extensionsRequired', extensionsRequired.join(', ') || 'none'],
+			]
+		)) + '\n\n'
+	);
 
 	// Parse.
 	let doc;
@@ -63,10 +85,11 @@ export async function inspect (
 }
 
 async function reportSection(
-		type: string,
-		format: InspectFormat,
-		logger: Logger,
-		section: InspectPropertyReport<AnyPropertyReport>) {
+	type: string,
+	format: InspectFormat,
+	logger: Logger,
+	section: InspectPropertyReport<AnyPropertyReport>
+) {
 	const properties = section.properties;
 
 	console.log(formatHeader(type));
@@ -75,10 +98,9 @@ async function reportSection(
 		return;
 	}
 
-	const formattedRecords = properties
-		.map((property: AnyPropertyReport, index: number) => {
-			return formatPropertyReport(property, index, format);
-		});
+	const formattedRecords = properties.map((property: AnyPropertyReport, index: number) => {
+		return formatPropertyReport(property, index, format);
+	});
 	const header = Object.keys(formattedRecords[0]);
 	const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
 	const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
@@ -90,13 +112,10 @@ async function reportSection(
 	console.log('\n');
 }
 
-async function formatTable(
-		format: InspectFormat,
-		head: string[],
-		rows: string[][]): Promise<string> {
+async function formatTable(format: InspectFormat, head: string[], rows: string[][]): Promise<string> {
 	switch (format) {
 		case InspectFormat.PRETTY: {
-			const table = new CLITable({head});
+			const table = new CLITable({ head });
 			table.push(...rows);
 			return table.toString();
 		}
@@ -107,20 +126,20 @@ async function formatTable(
 				});
 			});
 		case InspectFormat.MD: {
-			const table = new CLITable({head, chars: CLI_TABLE_MARKDOWN_CHARS});
+			const table = new CLITable({ head, chars: CLI_TABLE_MARKDOWN_CHARS });
 			table.push(new Array(rows[0].length).fill('---'));
 			table.push(...rows);
 			return table.toString();
 		}
 	}
-
 }
 
 function formatPropertyReport(
-		property: AnyPropertyReport,
-		index: number,
-		format: InspectFormat): Record<string, string> {
-	const row: Record<string, string|number> = {'#': index};
+	property: AnyPropertyReport,
+	index: number,
+	format: InspectFormat
+): Record<string, string> {
+	const row: Record<string, string | number> = { '#': index };
 	for (const key in property) {
 		const value = (property as unknown as Record<string, string | number>)[key];
 		if (Array.isArray(value)) {
@@ -144,19 +163,19 @@ function getFootnotes(type: string, rows: string[][], header: string[]): string[
 		for (let i = 0; i < header.length; i++) {
 			if (header[i] === 'size') header[i] += '¹';
 		}
-		footnotes.push(''
-			+ '¹ size estimates GPU memory required by a mesh, in isolation. If accessors are\n'
-			+ '  shared by other mesh primitives, but the meshes themselves are not reused, then\n'
-			+ '  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".'
+		footnotes.push(
+			'¹ size estimates GPU memory required by a mesh, in isolation. If accessors are\n' +
+				'  shared by other mesh primitives, but the meshes themselves are not reused, then\n' +
+				'  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".'
 		);
 	}
 	if (type === 'textures') {
 		for (let i = 0; i < header.length; i++) {
 			if (header[i] === 'gpuSize') header[i] += '¹';
 		}
-		footnotes.push(''
-			+ '¹ gpuSize estimates minimum GPU memory allocation. Older devices may require\n'
-			+ '  additional memory for GPU compression formats.'
+		footnotes.push(
+			'¹ gpuSize estimates minimum GPU memory allocation. Older devices may require\n' +
+				'  additional memory for GPU compression formats.'
 		);
 	}
 	return footnotes;

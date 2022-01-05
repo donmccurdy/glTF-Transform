@@ -1,5 +1,5 @@
 packages/functions/src/**
-packages/cli/src/**
+packages/cli/src/cli.ts
 **/dist
 **/in
 **/out

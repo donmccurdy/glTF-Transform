@@ -6,7 +6,7 @@ import { getTextureSlots } from '../util';
 
 const NAME = 'ktxfix';
 
-export function ktxfix (): Transform {
+export function ktxfix(): Transform {
 	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
@@ -25,9 +25,7 @@ export function ktxfix (): Transform {
 			// Don't make changes if we have no information.
 			if (slots.length === 0) continue;
 
-			const isLinear = !slots.find(
-				(slot) => minimatch(slot, '*{color,emissive}*', {nocase: true})
-			);
+			const isLinear = !slots.find((slot) => minimatch(slot, '*{color,emissive}*', { nocase: true }));
 			const colorPrimaries = isLinear ? KTX2Primaries.UNSPECIFIED : KTX2Primaries.SRGB;
 			const name = texture.getURI() || texture.getName();
 

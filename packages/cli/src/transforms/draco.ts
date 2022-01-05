@@ -26,24 +26,25 @@ export const DRACO_DEFAULTS: DracoCLIOptions = {
 };
 
 export const draco = (_options: DracoCLIOptions): Transform => {
-	const options = {...DRACO_DEFAULTS, ..._options} as Required<DracoCLIOptions>;
+	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoCLIOptions>;
 	return (doc: Document): void => {
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)
 			.setEncoderOptions({
-				method: options.method === 'edgebreaker'
-					? DracoMeshCompression.EncoderMethod.EDGEBREAKER
-					: DracoMeshCompression.EncoderMethod.SEQUENTIAL,
+				method:
+					options.method === 'edgebreaker'
+						? DracoMeshCompression.EncoderMethod.EDGEBREAKER
+						: DracoMeshCompression.EncoderMethod.SEQUENTIAL,
 				encodeSpeed: options.encodeSpeed,
 				decodeSpeed: options.decodeSpeed,
 				quantizationBits: {
-					'POSITION': options.quantizePosition,
-					'NORMAL': options.quantizeNormal,
-					'COLOR': options.quantizeColor,
-					'TEX_COORD': options.quantizeTexcoord,
-					'GENERIC': options.quantizeGeneric,
+					POSITION: options.quantizePosition,
+					NORMAL: options.quantizeNormal,
+					COLOR: options.quantizeColor,
+					TEX_COORD: options.quantizeTexcoord,
+					GENERIC: options.quantizeGeneric,
 				},
-				quantizationVolume: options.quantizationVolume
+				quantizationVolume: options.quantizationVolume,
 			});
 	};
 };
