@@ -77,7 +77,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			name: 'dc:creator',
 			message: 'Creator of the model?',
 			suffix: ' (dc:creator)',
-			filter: (input: string) => createList(input),
+			filter: (input: string) => createList([input]),
 			transformer: formatXMP,
 		} as inquirer.Question;
 	}
@@ -110,7 +110,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			name: 'dc:relation',
 			message: 'Related links?',
 			suffix: ' Comma-separated URLs. (dc:relation)',
-			filter: (input: string) => createList(...input.split(/[,\n]/).map((url) => url.trim())),
+			filter: (input: string) => createList(input.split(/[,\n]/).map((url) => url.trim())),
 			transformer: formatXMP,
 		} as inquirer.Question;
 	}
@@ -152,7 +152,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 				name: 'xmpRights:Owner',
 				message: 'Who is the intellectual property (IP) owner?',
 				suffix: ' (xmpRights:Owner)',
-				filter: (input: string) => createList(input),
+				filter: (input: string) => createList([input]),
 				transformer: formatXMP,
 			} as inquirer.Question;
 
@@ -253,7 +253,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 					name: 'human_face (worn or displayed on a human face)',
 				},
 			],
-			filter: (input) => (input.length ? createList(input) : null),
+			filter: (input: string[]) => createList(input),
 			transformer: formatXMP,
 		} as inquirer.Question;
 	}
@@ -359,13 +359,14 @@ function createLanguageAlternative(value: string, language: string): Record<stri
 }
 
 /** Creates a List entry. */
-function createList(...list: string[]): Record<string, unknown> | null {
-	if (!list) return null;
+function createList(list: string[]): Record<string, unknown> | null {
+	list = list.filter((value) => !!value);
+	if (!list.length) return null;
 	return { '@list': list };
 }
 
 function validateDate(input: string): boolean | string {
-	const [date, _] = input.split('T');
+	const [date] = input.split('T');
 
 	if (!/\d{4}-\d{2}-\d{2}/.test(date) || new Date(date).toISOString().substring(0, 10) !== date) {
 		return 'Invalid ISO date string.';
