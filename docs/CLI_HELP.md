@@ -1,5 +1,5 @@
 
-  gltf-transform 2.0.0-alpha.3 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 2.0.0-alpha.4 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -22,6 +22,7 @@
     dedup                                Deduplicate accessors and textures                     
     prune                                Remove unreferenced properties from the file           
     gzip                                 Compress the model with lossless gzip                  
+    xmp                                  Add or modify XMP metadata                             
                                                                                                 
                                                                                                 
                                          🌍 SCENE ────────────────────────────────────────────  
@@ -61,6 +62,8 @@
     -h, --help                           Display global help or command-related help.           
     -V, --version                        Display version.                                       
     -v, --verbose                        Verbose mode: will also output debug messages.         
-    --vertex-layout <layout>             Vertex layout method                                   
+    --allow-http                         Allows reads from HTTP requests.                       
+                                         boolean                                                
+    --vertex-layout <layout>             Vertex buffer layout preset.                           
                                          one of "interleaved","separate", default: "interleaved"
 
