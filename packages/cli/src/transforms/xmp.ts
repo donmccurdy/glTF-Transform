@@ -312,7 +312,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 function validatePacket(packetDef: Record<string, unknown>): Record<string, unknown> {
 	// Check context.
 	const context = packetDef['@context'] as Record<string, unknown>;
-	if (context) {
+	if (!context) {
 		throw new Error('Missing @context in packet.');
 	}
 
