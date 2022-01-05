@@ -13,6 +13,7 @@
 
 - API for custom extensions updated. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 - I/O, Texture and other classes use Uint8Array for binary data, not ArrayBuffer. [#447](https://github.com/donmccurdy/glTF-Transform/pull/447)
+- Removed support for Node.js ≤ 12.x
 
 ## v1.x
 
