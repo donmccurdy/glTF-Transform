@@ -5,6 +5,11 @@
 			"description": "https://github.com/TypeStrong/typedoc/issues/1633",
 			"matchPackageNames": ["typedoc"],
 			"enabled": false
+		},
+		{
+			"description": "https://github.com/node-fetch/node-fetch/issues/1279",
+			"matchPackageNames": ["node-fetch"],
+			"enabled": false
 		}
 	]
 }
