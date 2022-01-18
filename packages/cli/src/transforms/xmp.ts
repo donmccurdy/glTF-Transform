@@ -27,7 +27,6 @@ enum Prompt {
 	RELATED,
 	PREFERRED_SURFACE,
 	CREATE_DATE,
-	MODIFY_DATE,
 	RIGHTS,
 }
 
@@ -46,12 +45,11 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			{ value: Prompt.DESCRIPTION, name: 'Description' },
 			{ value: Prompt.RELATED, name: 'Related links' },
 			new inquirer.Separator(),
+			{ value: Prompt.CREATE_DATE, name: 'Date created' },
+			new inquirer.Separator(),
 			{ value: Prompt.LANGUAGE, name: 'Language' },
 			new inquirer.Separator(),
 			{ value: Prompt.RIGHTS, name: 'License and rights' },
-			new inquirer.Separator(),
-			{ value: Prompt.CREATE_DATE, name: 'Date created' },
-			{ value: Prompt.MODIFY_DATE, name: 'Date modified' },
 			new inquirer.Separator(),
 			{ value: Prompt.PREFERRED_SURFACE, name: 'Preferred surfaces (AR)' },
 		],
@@ -209,17 +207,6 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			name: 'xmp:CreateDate',
 			message: 'Date created?',
 			suffix: ' (xmp:CreateDate)',
-			default: new Date().toISOString().substring(0, 10),
-			validate: validateDate,
-		};
-	}
-
-	if (prompts.has(Prompt.MODIFY_DATE)) {
-		yield {
-			type: 'input',
-			name: 'xmp:ModifyDate',
-			message: 'Date modified?',
-			suffix: ' (xmp:ModifyDate)',
 			default: new Date().toISOString().substring(0, 10),
 			validate: validateDate,
 		};

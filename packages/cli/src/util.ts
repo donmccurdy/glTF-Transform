@@ -2,7 +2,7 @@
 const { spawnSync: _spawnSync } = require('child_process');
 
 import { sync as _commandExistsSync } from 'command-exists';
-import { Document, FileUtils, Logger, NodeIO, PropertyType, Texture, Transform } from '@gltf-transform/core';
+import { Document, PropertyType, Texture } from '@gltf-transform/core';
 
 // Mock for tests.
 
@@ -93,49 +93,4 @@ export function getTextureChannels(doc: Document, texture: Texture): number {
 		}
 	}
 	return mask;
-}
-
-/** Helper class for managing a CLI command session. */
-export class Session {
-	constructor(private _io: NodeIO, private _logger: Logger, private _input: string, private _output: string) {
-		_io.setLogger(_logger);
-	}
-
-	public static create(io: NodeIO, logger: unknown, input: unknown, output: unknown): Session {
-		return new Session(io, logger as Logger, input as string, output as string);
-	}
-
-	public async transform(...transforms: Transform[]): Promise<void> {
-		const doc = this._input
-			? (await this._io.read(this._input)).setLogger(this._logger)
-			: new Document().setLogger(this._logger);
-
-		// Warn and remove lossy compression, to avoid increasing loss on round trip.
-		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-			const extension = doc
-				.getRoot()
-				.listExtensionsUsed()
-				.find((extension) => extension.extensionName === extensionName);
-			if (extension) {
-				extension.dispose();
-				this._logger.warn(`Decoded ${extensionName}. Further compression will be lossy.`);
-			}
-		}
-
-		await doc.transform(...transforms);
-
-		await this._io.write(this._output, doc);
-
-		const { lastReadBytes, lastWriteBytes } = this._io;
-		if (!this._input) {
-			const output = FileUtils.basename(this._output) + '.' + FileUtils.extension(this._output);
-			this._logger.info(`${output} (${formatBytes(lastWriteBytes)})`);
-		} else {
-			const input = FileUtils.basename(this._input) + '.' + FileUtils.extension(this._input);
-			const output = FileUtils.basename(this._output) + '.' + FileUtils.extension(this._output);
-			this._logger.info(
-				`${input} (${formatBytes(lastReadBytes)})` + ` → ${output} (${formatBytes(lastWriteBytes)})`
-			);
-		}
-	}
 }

@@ -9,7 +9,8 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp } from './transforms';
-import { Session, formatBytes } from './util';
+import { formatBytes } from './util';
+import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
