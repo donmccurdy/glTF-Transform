@@ -1,4 +1,5 @@
 import { GraphEdge } from 'property-graph';
+import { isPlainObject } from './is-plain-object';
 import { BufferViewUsage } from '../constants';
 import type { Property } from '../properties';
 
@@ -67,6 +68,40 @@ export function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> 
 	return true;
 }
 
+export function equalsObject(_a: unknown, _b: unknown): boolean {
+	if (typeof _a === 'string' || typeof _a === 'number' || typeof _a === 'boolean') {
+		return _a === _b;
+	}
+	if (_a === _b) return true;
+	if (!!_a !== !!_b) return false;
+
+	const a = _a as Record<string, unknown>;
+	const b = _b as Record<string, unknown>;
+
+	let numKeysA = 0;
+	let numKeysB = 0;
+
+	let key: string;
+
+	for (key in a) numKeysA++;
+	for (key in b) numKeysB++;
+	if (numKeysA !== numKeysB) return false;
+
+	for (key in a) {
+		const valueA = a[key];
+		const valueB = b[key];
+		if (isArray(valueA) && isArray(valueB)) {
+			if (!equalsArray(valueA as [], valueB as [])) return false;
+		} else if (isPlainObject(valueA) && isPlainObject(valueB)) {
+			if (!equalsObject(valueA, valueB)) return false;
+		} else {
+			if (valueA !== valueB) return false;
+		}
+	}
+
+	return true;
+}
+
 export type RefAttributes = Record<string, unknown>;
 
 export interface AccessorRefAttributes extends RefAttributes {
@@ -77,4 +112,8 @@ export interface AccessorRefAttributes extends RefAttributes {
 export interface TextureRefAttributes extends RefAttributes {
 	/** Bitmask for {@link TextureChannel TextureChannels} used by a texture reference. */
 	channels: number;
+}
+
+export function isArray(value: unknown): boolean {
+	return Array.isArray(value) || ArrayBuffer.isView(value);
 }
