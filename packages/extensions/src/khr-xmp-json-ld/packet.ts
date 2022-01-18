@@ -4,6 +4,8 @@ import { KHR_XMP_JSON_LD } from '../constants';
 type Term = string;
 type TermDefinition = string | Record<string, string>;
 
+type Value = string | number | boolean;
+
 const PARENT_TYPES = [
 	PropertyType.ROOT,
 	PropertyType.SCENE,
@@ -25,7 +27,7 @@ const DEFAULT_CONTEXT: Record<Term, TermDefinition> = {
 interface IPacket extends IProperty {
 	// https://json-ld.org/spec/latest/json-ld/#the-context
 	context: Record<Term, TermDefinition>;
-	properties: Record<string, string | Record<string, unknown>>;
+	properties: Record<string, Value | Record<string, unknown>>;
 }
 
 export class Packet extends ExtensionProperty<IPacket> {
@@ -74,11 +76,11 @@ export class Packet extends ExtensionProperty<IPacket> {
 		return Object.keys(this.get('properties'));
 	}
 
-	public getProperty(name: string): string | Record<string, unknown> {
+	public getProperty(name: string): Value | Record<string, unknown> {
 		return this.get('properties')[name];
 	}
 
-	public setProperty(name: string, value: string | Record<string, unknown>): this {
+	public setProperty(name: string, value: Value | Record<string, unknown>): this {
 		this._assertContext(name);
 
 		const properties = { ...this.get('properties') };
@@ -98,8 +100,9 @@ export class Packet extends ExtensionProperty<IPacket> {
 		const availableContext = this.get('context');
 		const context = {} as Record<Term, TermDefinition>;
 		const properties = copyJSON(this.get('properties'));
+
 		// Include only required context terms.
-		for (const name in properties) {
+		for (const name of listPrefixes(properties)) {
 			const prefix = name.split(':')[0];
 			context[prefix] = availableContext[prefix];
 		}
@@ -125,11 +128,27 @@ export class Packet extends ExtensionProperty<IPacket> {
 	private _assertContext(name: string) {
 		const prefix = name.split(':')[0];
 		if (!(prefix in this.get('context'))) {
-			throw new Error(`${KHR_XMP_JSON_LD}: Missing context for term, "${prefix}".`);
+			throw new Error(`${KHR_XMP_JSON_LD}: Missing context for term, "${name}".`);
 		}
 	}
 }
 
 function copyJSON<T>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
+}
+
+function listPrefixes(_object: unknown, acc: Set<string> = new Set()): Set<string> {
+	if (Object.prototype.toString.call(_object) !== '[object Object]') return acc;
+
+	const object = _object as Record<string, unknown>;
+	for (const key in object) {
+		const value = object[key];
+		const [prefix, suffix] = key.split(':');
+		if (prefix && suffix) {
+			acc.add(prefix);
+			listPrefixes(value, acc);
+		}
+	}
+
+	return acc;
 }

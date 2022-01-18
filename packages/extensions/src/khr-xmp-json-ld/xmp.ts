@@ -18,6 +18,15 @@ const NAME = KHR_XMP_JSON_LD;
 
 type XMPPacketDef = Record<string, unknown>;
 
+type XMPParentDef =
+	| GLTF.IAsset
+	| GLTF.IScene
+	| GLTF.INode
+	| GLTF.IMesh
+	| GLTF.IMaterial
+	| GLTF.ITexture
+	| GLTF.IAnimation;
+
 interface XMPPropertyDef {
 	packet: number;
 }
@@ -42,15 +51,42 @@ export class XMP extends Extension {
 		const extensionDef = context.jsonDoc.json.extensions?.[NAME] as XMPRootDef | undefined;
 		if (!extensionDef || !extensionDef.packets) return this;
 
+		// Deserialize packets.
+		const json = context.jsonDoc.json;
+		const root = this.document.getRoot();
 		const packets = extensionDef.packets.map((packetDef) => this.createPacket().fromJSONLD(packetDef));
 
-		const { asset } = context.jsonDoc.json;
-		if (asset.extensions && asset.extensions[NAME]) {
-			const def = asset.extensions[NAME] as XMPPropertyDef;
-			this.document.getRoot().setExtension(NAME, packets[def.packet]);
-		}
+		const defLists = [
+			[json.asset],
+			json.scenes,
+			json.nodes,
+			json.meshes,
+			json.materials,
+			json.textures,
+			json.animations,
+		];
 
-		// TODO(impl): Support non-root attachments.
+		const propertyLists = [
+			[root],
+			root.listScenes(),
+			root.listNodes(),
+			root.listMeshes(),
+			root.listMaterials(),
+			root.listTextures(),
+			root.listAnimations(),
+		];
+
+		// Assign packets.
+		for (let i = 0; i < defLists.length; i++) {
+			const defs = defLists[i] || [];
+			for (let j = 0; j < defs.length; j++) {
+				const def = defs[j];
+				if (def.extensions && def.extensions[NAME]) {
+					const xmpDef = def.extensions[NAME] as XMPPropertyDef;
+					propertyLists[i][j].setExtension(NAME, packets[xmpDef.packet]);
+				}
+			}
+		}
 
 		return this;
 	}
@@ -61,17 +97,12 @@ export class XMP extends Extension {
 		const packetDefs = [];
 
 		for (const packet of this.properties as Set<Packet>) {
+			// Serialize packets.
 			packetDefs.push(packet.toJSONLD());
 
+			// Assign packets.
 			for (const parent of packet.listParents()) {
-				let parentDef:
-					| GLTF.IAsset
-					| GLTF.IScene
-					| GLTF.INode
-					| GLTF.IMesh
-					| GLTF.IMaterial
-					| GLTF.ITexture
-					| GLTF.IAnimation;
+				let parentDef: XMPParentDef;
 
 				switch (parent.propertyType) {
 					case PropertyType.ROOT:
