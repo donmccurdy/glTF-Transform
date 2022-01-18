@@ -294,6 +294,10 @@ Documentation
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--packet <path>', 'Path to XMP packet (.jsonld or .json)')
+	.option('--reset', 'Reset all metadata and remove XMP extension', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
 	.action(async ({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(xmp({...options} as XMPOptions))

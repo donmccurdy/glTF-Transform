@@ -11,10 +11,12 @@ const DEFAULT_LANG = 'en-US';
 
 export interface XMPOptions {
 	packet?: string;
+	reset?: boolean;
 }
 
 export const XMP_DEFAULTS = {
 	packet: '',
+	reset: false,
 };
 
 enum Prompt {
@@ -263,18 +265,28 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 	const options = { ...XMP_DEFAULTS, ..._options } as Required<XMPOptions>;
 
 	return async (document: Document): Promise<void> => {
+		const logger = document.getLogger();
 		const root = document.getRoot();
 		const xmpExtension = document.createExtension(XMP);
 
-		if (options.packet) {
-			const packetJSON = await fs.readFile(path.resolve(options.packet), 'utf-8');
-			const packetDef = validatePacket(JSON.parse(packetJSON));
-			const packet = xmpExtension.createPacket().fromJSONLD(packetDef);
-			root.setExtension('KHR_xmp_json_ld', packet);
+		if (options.reset) {
+			xmpExtension.dispose();
+			logger.info('[xmp]: Reset XMP metadata.');
+			logger.debug('[xmp]: Complete.');
 			return;
 		}
 
-		const logger = document.getLogger();
+		if (options.packet) {
+			const packetPath = path.resolve(options.packet);
+			logger.info(`[xmp]: Loading "${packetPath}"...`);
+			const packetJSON = await fs.readFile(packetPath, 'utf-8');
+			const packetDef = validatePacket(JSON.parse(packetJSON));
+			const packet = xmpExtension.createPacket().fromJSONLD(packetDef);
+			root.setExtension('KHR_xmp_json_ld', packet);
+			logger.debug('[xmp]: Complete.');
+			return;
+		}
+
 		const inquirer = require('inquirer');
 
 		const packet = root.getExtension<Packet>('KHR_xmp_json_ld') || xmpExtension.createPacket();
@@ -306,7 +318,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 		root.setExtension('KHR_xmp_json_ld', packet);
 
 		logger.debug(`[xmp] packet: ${JSON.stringify(packet.toJSONLD(), null, 2)}`);
-		logger.debug(`[xmp]: Complete.`);
+		logger.debug('[xmp]: Complete.');
 	};
 };
 
