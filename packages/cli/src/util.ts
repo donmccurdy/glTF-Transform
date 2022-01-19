@@ -46,9 +46,9 @@ export function formatHeader(title: string): string {
 	return '' + '\n ' + title.toUpperCase() + '\n ────────────────────────────────────────────';
 }
 
-export function formatXMP(value: string | Record<string, unknown> | null): string | null {
-	if (!value || typeof value === 'string') {
-		return value;
+export function formatXMP(value: string | number | boolean | Record<string, unknown> | null): string {
+	if (!value || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+		return value + '';
 	}
 
 	if (value['@list']) {
