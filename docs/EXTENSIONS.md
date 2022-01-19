@@ -36,6 +36,7 @@ as prescribed by the extension itself.
 - {@link MeshQuantization KHR_mesh_quantization}
 - {@link TextureBasisu KHR_texture_basisu}
 - {@link TextureTransform KHR_texture_transform}
+- {@link XMP KHR_xmp_json_ld}
 
 ## Vendor Extensions
 
