@@ -116,8 +116,9 @@ export class Packet extends ExtensionProperty<IPacket> {
 	 * packet.getProperty('xmp:CreateDate'); // → "2022-01-01"
 	 * ```
 	 */
-	public getProperty(name: string): Value | Record<string, unknown> {
-		return this.get('properties')[name];
+	public getProperty(name: string): Value | Record<string, unknown> | null {
+		const properties = this.get('properties');
+		return name in properties ? properties[name] : null;
 	}
 
 	/**

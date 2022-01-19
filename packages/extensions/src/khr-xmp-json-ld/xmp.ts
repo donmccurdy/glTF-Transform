@@ -104,7 +104,7 @@ export class XMP extends Extension {
 			json.nodes,
 			json.meshes,
 			json.materials,
-			json.textures,
+			json.images,
 			json.animations,
 		];
 
@@ -144,8 +144,9 @@ export class XMP extends Extension {
 			packetDefs.push(packet.toJSONLD());
 
 			// Assign packets.
+
 			for (const parent of packet.listParents()) {
-				let parentDef: XMPParentDef;
+				let parentDef: XMPParentDef | null;
 
 				switch (parent.propertyType) {
 					case PropertyType.ROOT:
@@ -164,17 +165,20 @@ export class XMP extends Extension {
 						parentDef = json.materials![context.materialIndexMap.get(parent as Material)!];
 						break;
 					case PropertyType.TEXTURE:
-						parentDef = json.textures![context.imageIndexMap.get(parent as Texture)!];
+						parentDef = json.images![context.imageIndexMap.get(parent as Texture)!];
 						break;
 					case PropertyType.ANIMATION:
 						parentDef = json.animations![context.animationIndexMap.get(parent as Animation)!];
 						break;
 					default:
+						parentDef = null;
 						this.document
 							.getLogger()
 							.warn(`[${NAME}]: Unsupported parent property, "${parent.propertyType}"`);
-						continue;
+						break;
 				}
+
+				if (!parentDef) continue;
 
 				parentDef.extensions = parentDef.extensions || {};
 				parentDef.extensions[NAME] = { packet: packetDefs.length - 1 };
