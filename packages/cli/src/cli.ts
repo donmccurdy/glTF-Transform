@@ -286,8 +286,7 @@ program
 	.help(`
 XMP metadata provides standardized fields describing the content, provenance, usage restrictions,
 or other attributes of a 3D model. Such metadata does not generally affect the parsing or runtime
-behavior of the content in any way — for that, use custom extensions, custom vertex attributes, or
-extras.
+behavior of the content — for that, use custom extensions, custom vertex attributes, or extras.
 
 The easiest (and default) mode of the CLI 'xmp' command provides interactive prompts, walking
 through a series of questions and then constructing appropriate JSON LD output. These interactive

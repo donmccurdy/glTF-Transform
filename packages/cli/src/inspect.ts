@@ -11,7 +11,7 @@ import {
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph, formatXMP } from './util';
-import { Packet } from 'extensions/dist/khr-xmp-json-ld';
+import { Packet } from '@gltf-transform/extensions';
 
 export enum InspectFormat {
 	PRETTY = 'pretty',
@@ -77,7 +77,7 @@ export async function inspect(
 	}
 
 	// XMP report.
-	const rootPacket = doc.getRoot().getExtension<Packet>('KHR_xmp_json_ld');
+	const rootPacket = doc.getRoot().getExtension('KHR_xmp_json_ld') as Packet | null;
 	if (rootPacket && rootPacket.listProperties().length > 0) {
 		console.log(formatHeader('metadata'));
 		console.log(
