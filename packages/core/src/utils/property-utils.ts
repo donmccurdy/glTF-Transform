@@ -69,11 +69,11 @@ export function equalsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> 
 }
 
 export function equalsObject(_a: unknown, _b: unknown): boolean {
-	if (typeof _a === 'string' || typeof _a === 'number' || typeof _a === 'boolean') {
-		return _a === _b;
-	}
 	if (_a === _b) return true;
 	if (!!_a !== !!_b) return false;
+	if (!isPlainObject(_a) || !isPlainObject(_b)) {
+		return _a === _b;
+	}
 
 	const a = _a as Record<string, unknown>;
 	const b = _b as Record<string, unknown>;

@@ -304,7 +304,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 
 		root.setExtension('KHR_xmp_json_ld', packet);
 
-		logger.debug(`[xmp] packet: ${JSON.stringify(packet.toJSONLD(), null, 2)}`);
+		logger.debug(`[xmp]: Packet contents: ${JSON.stringify(packet.toJSONLD(), null, 2)}`);
 		logger.debug('[xmp]: Complete.');
 	};
 };
@@ -319,7 +319,7 @@ function validatePacket(packetDef: Record<string, unknown>): Record<string, unkn
 
 	// Check properties.
 	for (const name in packetDef) {
-		if (name === '@context') continue;
+		if (name.startsWith('@')) continue;
 
 		const prefix = name.split(':')[0];
 		if (!prefix) {

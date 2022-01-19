@@ -55,9 +55,9 @@ function updateMetadata(document: Document): void {
 	if (!xmpExtension) return;
 
 	const rootPacket = root.getExtension<Packet>('KHR_xmp_json_ld') || xmpExtension.createPacket();
-	const date = new Date().toISOString().substring(0, 10);
 
 	// xmp:MetadataDate should be the same as, or more recent than, xmp:ModifyDate.
 	// https://github.com/adobe/xmp-docs/blob/master/XMPNamespaces/xmp.md
+	const date = new Date().toISOString().substring(0, 10);
 	rootPacket.setProperty('xmp:ModifyDate', date).setProperty('xmp:MetadataDate', date);
 }
