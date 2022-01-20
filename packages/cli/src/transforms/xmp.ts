@@ -302,6 +302,9 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 			throw new Error('xmp: No properties added.');
 		}
 
+		// xmp:MetadataDate should be the same as, or more recent than, xmp:ModifyDate.
+		packet.setProperty('xmp:MetadataDate', new Date().toISOString().substring(0, 10));
+
 		root.setExtension('KHR_xmp_json_ld', packet);
 
 		logger.debug(`[xmp]: Packet contents: ${JSON.stringify(packet.toJSONLD(), null, 2)}`);
