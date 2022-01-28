@@ -19,6 +19,14 @@ export const XMP_DEFAULTS = {
 	reset: false,
 };
 
+const Context: Record<string, string> = {
+	dc: 'http://purl.org/dc/elements/1.1/',
+	model3d: 'https://schema.khronos.org/model3d/xsd/1.0/',
+	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+	xmp: 'http://ns.adobe.com/xap/1.0/',
+	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
+};
+
 enum Prompt {
 	CREATOR,
 	DESCRIPTION,
@@ -302,6 +310,9 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 			throw new Error('xmp: No properties added.');
 		}
 
+		// Context.
+		packet.setContext({ ...packet.getContext(), ...createContext(results) });
+
 		// xmp:MetadataDate should be the same as, or more recent than, xmp:ModifyDate.
 		packet.setProperty('xmp:MetadataDate', new Date().toISOString().substring(0, 10));
 
@@ -377,4 +388,20 @@ function validateDate(input: string): boolean | string {
 	}
 
 	return true;
+}
+
+function createContext(_object: unknown, acc: Record<string, string> = {}): Record<string, string> {
+	if (Object.prototype.toString.call(_object) !== '[object Object]') return acc;
+
+	const object = _object as Record<string, unknown>;
+	for (const key in object) {
+		const value = object[key];
+		const [prefix, suffix] = key.split(':');
+		if (prefix && suffix && prefix in Context) {
+			acc[prefix] = Context[prefix];
+			createContext(value, acc);
+		}
+	}
+
+	return acc;
 }

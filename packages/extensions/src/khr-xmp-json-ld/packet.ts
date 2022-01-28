@@ -16,14 +16,6 @@ const PARENT_TYPES = [
 	PropertyType.ANIMATION,
 ];
 
-const DEFAULT_CONTEXT: Record<Term, TermDefinition> = {
-	dc: 'http://purl.org/dc/elements/1.1/',
-	model3d: 'https://schema.khronos.org/model3d/xsd/1.0/',
-	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-	xmp: 'http://ns.adobe.com/xap/1.0/',
-	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
-};
-
 interface IPacket extends IProperty {
 	// https://json-ld.org/spec/latest/json-ld/#the-context
 	context: Record<Term, TermDefinition>;
@@ -48,7 +40,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 	}
 
 	protected getDefaults(): Nullable<IPacket> {
-		return Object.assign(super.getDefaults(), { context: DEFAULT_CONTEXT, properties: {} });
+		return Object.assign(super.getDefaults(), { context: {}, properties: {} });
 	}
 
 	/**********************************************************************************************
@@ -56,36 +48,32 @@ export class Packet extends ExtensionProperty<IPacket> {
 	 */
 
 	/**
-	 * Lists defined XMP context terms.
-	 * See: https://json-ld.org/spec/latest/json-ld/#the-context
-	 */
-	public listContextTerms(): Term[] {
-		return Object.keys(this.get('context'));
-	}
-
-	/**
 	 * Returns the XMP context definition URL for the given term.
 	 * See: https://json-ld.org/spec/latest/json-ld/#the-context
 	 * @param term Case-sensitive term. Usually a concise, lowercase, alphanumeric identifier.
 	 */
-	public getContext(term: Term): TermDefinition | null {
-		return this.get('context')[term] || null;
+	public getContext(): Record<Term, TermDefinition> {
+		return this.get('context');
 	}
 
 	/**
 	 * Sets the XMP context definition URL for the given term.
 	 * See: https://json-ld.org/spec/latest/json-ld/#the-context
+	 *
+	 * Example:
+	 *
+	 * ```typescript
+	 * packet.setContext({
+	 *   dc: 'http://purl.org/dc/elements/1.1/',
+	 *   model3d: 'https://schema.khronos.org/model3d/xsd/1.0/',
+	 * });
+	 * ```
+	 *
 	 * @param term Case-sensitive term. Usually a concise, lowercase, alphanumeric identifier.
 	 * @param definition URI for XMP namespace.
 	 */
-	public setContext(term: Term, definition: TermDefinition | null): this {
-		const context = { ...this.get('context') };
-		if (definition) {
-			context[term] = definition;
-		} else {
-			delete context[term];
-		}
-		return this.set('context', context);
+	public setContext(context: Record<Term, TermDefinition>): this {
+		return this.set('context', { ...context });
 	}
 
 	/**********************************************************************************************
@@ -155,15 +143,8 @@ export class Packet extends ExtensionProperty<IPacket> {
 	 * Serializes the packet context and properties to a JSONLD object.
 	 */
 	public toJSONLD(): Record<string, unknown> {
-		const availableContext = this.get('context');
-		const context = {} as Record<Term, TermDefinition>;
+		const context = copyJSON(this.get('context'));
 		const properties = copyJSON(this.get('properties'));
-
-		// Include only required context terms.
-		for (const name of listPrefixes(properties)) {
-			const prefix = name.split(':')[0];
-			context[prefix] = availableContext[prefix];
-		}
 		return { '@context': context, ...properties };
 	}
 
@@ -176,7 +157,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 
 		// Context.
 		const context = jsonld['@context'] as Record<Term, TermDefinition>;
-		if (context) this.set('context', { ...DEFAULT_CONTEXT, ...context });
+		if (context) this.set('context', context);
 		delete jsonld['@context'];
 
 		// Properties.
@@ -198,20 +179,4 @@ export class Packet extends ExtensionProperty<IPacket> {
 
 function copyJSON<T>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
-}
-
-function listPrefixes(_object: unknown, acc: Set<string> = new Set()): Set<string> {
-	if (Object.prototype.toString.call(_object) !== '[object Object]') return acc;
-
-	const object = _object as Record<string, unknown>;
-	for (const key in object) {
-		const value = object[key];
-		const [prefix, suffix] = key.split(':');
-		if (prefix && suffix) {
-			acc.add(prefix);
-			listPrefixes(value, acc);
-		}
-	}
-
-	return acc;
 }

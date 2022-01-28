@@ -29,16 +29,14 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 
 	// Context.
 	t.throws(() => packet.setProperty('test:Foo', true), /context/i, 'throws on unknown context');
-	packet.setContext('test', MOCK_CONTEXT_URL);
-	t.equals(packet.getContext('test'), MOCK_CONTEXT_URL, 'sets context');
-	packet.setContext('test', null);
-	t.equals(packet.getContext('test'), null, 'removes context');
-	packet.setContext('test', MOCK_CONTEXT_URL);
-	t.deepEquals(
-		packet.listContextTerms(),
-		['dc', 'model3d', 'rdf', 'xmp', 'xmpRights', 'test'],
-		'lists context terms'
-	);
+	packet.setContext({ test: MOCK_CONTEXT_URL });
+	t.deepEquals(packet.getContext(), { test: MOCK_CONTEXT_URL }, 'sets context');
+	packet.setContext({});
+	t.deepEquals(packet.getContext(), {}, 'removes context');
+	packet.setContext({
+		test: MOCK_CONTEXT_URL,
+		dc: 'http://purl.org/dc/elements/1.1/',
+	});
 	t.doesNotThrow(() => packet.setProperty('test:Foo', true), 'accepts known context');
 
 	// Properties.
@@ -74,6 +72,10 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 	t.notOk(packet.equals(packet2), 'not equal');
 	packet2.copy(packet);
 	t.ok(packet.equals(packet2), 'not equal');
+	packet2.setContext({
+		...packet2.getContext(),
+		xmp: 'http://ns.adobe.com/xap/1.0/',
+	});
 	packet2.setProperty('xmp:CreateDate', '2022-01-05');
 	t.notOk(packet.equals(packet2), 'not equal');
 

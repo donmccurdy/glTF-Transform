@@ -65,6 +65,9 @@ interface XMPRootDef {
  *
  * // Create Packet property.
  * const packet = xmpExtension.createPacket()
+ * 	.setContext({
+ * 		dc: 'http://purl.org/dc/elements/1.1/',
+ * 	})
  *	.setProperty('dc:Creator', {"@list": ["Acme, Inc."]});
  *
  * // Option 1: Assign to Document Root.
