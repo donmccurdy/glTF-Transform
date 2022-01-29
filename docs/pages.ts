@@ -15,6 +15,9 @@ export namespace Extensions {}
 /** [[include:CONTRIBUTING.md]] */
 export namespace Contributing {}
 
+/** [[include:CREDITS.md]] */
+export namespace Credits {}
+
 /**
  * # CLI
  *

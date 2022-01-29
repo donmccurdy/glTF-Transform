@@ -28,3 +28,7 @@ To get started, head over to the [documentation](https://gltf-transform.donmccur
 ## License
 
 Copyright 2021, MIT License.
+
+## Credits
+
+See [*Credits*](https://gltf-transform.donmccurdy.com/credits.html).

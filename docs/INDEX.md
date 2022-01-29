@@ -42,3 +42,11 @@ const { Document, Scene, WebIO } = require('@gltf-transform/core');
 ```
 
 All classes described by this documentation are imported from the core package, as shown above. Most projects should start with the {@link Document} or {@link PlatformIO} classes.
+
+## License
+
+Copyright 2021, MIT License.
+
+## Credits
+
+See [*Credits*](/credits.html).

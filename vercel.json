@@ -11,7 +11,7 @@
   ],
   "rewrites": [
     {
-      "source": "/:page(concepts|contributing|extensions|cli){.html}?",
+      "source": "/:page(concepts|contributing|extensions|cli|credits){.html}?",
       "destination": "/modules/pages.:page.html"
     },
     {
