@@ -52,6 +52,27 @@ interface XMPRootDef {
  * specific subsets of a document, XMP Packets may be attached to {@link Scene}, {@link Node},
  * {@link Mesh}, {@link Material}, {@link Texture}, or {@link Animation} properties.
  *
+ * Within each packet, XMP properties become available when an
+ * [XMP namespace](https://www.adobe.io/xmp/docs/XMPNamespaces/) is registered
+ * with {@link Packet.setContext}. Packets cannot use properties whose namespaces are not
+ * registered as context. While not all XMP namespaces are relevant to 3D assets, some common
+ * namespaces provide useful metadata about authorship and provenance. Additionally, the `model3d`
+ * namespace provides certain properties specific to 3D content, such as Augmented Reality (AR)
+ * orientation data.
+ *
+ * Common XMP contexts for 3D models include:
+ *
+ * | Prefix      | URI                                         | Name                           |
+ * |:------------|:--------------------------------------------|:-------------------------------|
+ * | `dc`        | http://purl.org/dc/elements/1.1/            | Dublin Core                    |
+ * | `model3d`   | https://schema.khronos.org/model3d/xsd/1.0/ | Model 3D                       |
+ * | `rdf`       | http://www.w3.org/1999/02/22-rdf-syntax-ns# | Resource Description Framework |
+ * | `xmp`       | http://ns.adobe.com/xap/1.0/                | XMP                            |
+ * | `xmpRights` | http://ns.adobe.com/xap/1.0/rights/         | XMP Rights Management          |
+ *
+ * Only the XMP contexts required for a packet should be assigned, and different packets
+ * in the same asset may use different contexts.
+ *
  * Properties:
  * - {@link Packet}
  *
