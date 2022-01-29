@@ -2,17 +2,24 @@
 
 ## v2.x
 
-### v2.0 — 🚧 Unreleased ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
+### v2.1 — 🚧 Unreleased
+
+### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
 **Features:**
 
 - Improved and simplified extension API. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 - Add `a.equals(b)` method for all property types. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
+- Add `KHR_xmp_json_ld` extension. [#468](https://github.com/donmccurdy/glTF-Transform/pull/468)
+- Add `NodeIO.setAllowHTTP(<boolean>)`. [#466](https://github.com/donmccurdy/glTF-Transform/pull/466)
+- Non-blocking NodeIO read/write. [#441](https://github.com/donmccurdy/glTF-Transform/pull/441)
+- Add `DenoIO` (experimental). [#380](https://github.com/donmccurdy/glTF-Transform/pull/380)
 
 **Breaking changes:**
 
 - API for custom extensions updated. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 - I/O, Texture and other classes use Uint8Array for binary data, not ArrayBuffer. [#447](https://github.com/donmccurdy/glTF-Transform/pull/447)
+- I/O read/write methods are now asynchronous. [#441](https://github.com/donmccurdy/glTF-Transform/pull/441)
 - Removed support for Node.js ≤ 12.x
 
 ## v1.x

@@ -8,11 +8,14 @@ interface Path {
 /**
  * # DenoIO
  *
- * *I/O service for Deno.*
+ * *I/O service for [Deno](https://deno.land/).*
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.
  * Methods are also available for converting in-memory representations of raw glTF files, both
  * binary (*Uint8Array*) and JSON ({@link JSONDocument}).
+ *
+ * _*NOTICE:* Support for the Deno environment is currently experimental. See
+ * [glTF-Transform#457](https://github.com/donmccurdy/glTF-Transform/issues/457)._
  *
  * Usage:
  *
