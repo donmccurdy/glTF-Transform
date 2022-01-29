@@ -143,9 +143,10 @@ export class NodeIO extends PlatformIO {
 		const jsonContent = JSON.stringify(json, null, 2);
 		this.lastWriteBytes += jsonContent.length;
 		await fs.writeFile(uri, jsonContent);
-		const pending = Object.keys(resources).map(async (resourceName) => {
-			const resource = Buffer.from(resources[resourceName]);
-			await fs.writeFile(path.join(dir, resourceName), resource);
+		const pending = Object.keys(resources).map(async (resourceURI) => {
+			if (HTTPUtils.isAbsoluteURL(resourceURI)) return;
+			const resource = Buffer.from(resources[resourceURI]);
+			await fs.writeFile(path.join(dir, resourceURI), resource);
 			this.lastWriteBytes += resource.byteLength;
 		});
 		await Promise.all(pending);
