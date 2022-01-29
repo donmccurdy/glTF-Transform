@@ -1,10 +1,8 @@
-/* eslint-disable max-len */
-
 /**
  * Global internal type definitions.
  *
  * Definitions provided here cannot be used in public APIs, as they aren't
- * bundled with the published packages. declareing an interface that depends on
+ * bundled with the published packages. declaring an interface that depends on
  * them will yield, "Property 'X' of exported interface has or is using private
  * name 'Y'.ts(4033)".
  */

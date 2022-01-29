@@ -1,7 +1,20 @@
 import { BufferViewUsage, Format, PropertyType } from '../constants';
 import { Document } from '../document';
 import { JSONDocument } from '../json-document';
-import { Accessor, Buffer, Camera, Material, Mesh, Node, Property, Skin, Texture, TextureInfo } from '../properties';
+import {
+	Accessor,
+	Animation,
+	Buffer,
+	Camera,
+	Material,
+	Mesh,
+	Node,
+	Property,
+	Scene,
+	Skin,
+	Texture,
+	TextureInfo,
+} from '../properties';
 import { GLTF } from '../types/gltf';
 import { ImageUtils, Logger } from '../utils';
 import { WriterOptions } from './writer';
@@ -35,6 +48,7 @@ export class WriterContext {
 	};
 
 	public readonly accessorIndexMap = new Map<Accessor, number>();
+	public readonly animationIndexMap = new Map<Animation, number>();
 	public readonly bufferIndexMap = new Map<Buffer, number>();
 	public readonly cameraIndexMap = new Map<Camera, number>();
 	public readonly skinIndexMap = new Map<Skin, number>();
@@ -45,6 +59,7 @@ export class WriterContext {
 	public readonly textureDefIndexMap = new Map<string, number>(); // textureDef JSON -> index
 	public readonly textureInfoDefMap = new Map<TextureInfo, GLTF.ITextureInfo>();
 	public readonly samplerDefIndexMap = new Map<string, number>(); // samplerDef JSON -> index
+	public readonly sceneIndexMap = new Map<Scene, number>();
 
 	public readonly imageBufferViews: Uint8Array[] = [];
 	public readonly otherBufferViews = new Map<Buffer, Uint8Array[]>();

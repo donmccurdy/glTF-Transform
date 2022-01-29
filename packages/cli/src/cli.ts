@@ -8,8 +8,9 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transfor
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions } from './transforms';
-import { Session, formatBytes } from './util';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp } from './transforms';
+import { formatBytes } from './util';
+import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
@@ -278,6 +279,38 @@ work best when combined with gzip.
 		await fs.writeFile(fileName, outBuffer);
 		logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 	});
+
+// XMP
+program
+	.command('xmp', 'Add or modify XMP metadata')
+	.help(`
+XMP metadata provides standardized fields describing the content, provenance, usage restrictions,
+or other attributes of a 3D model. Such metadata does not generally affect the parsing or runtime
+behavior of the content — for that, use custom extensions, custom vertex attributes, or extras.
+
+The easiest (and default) mode of the CLI 'xmp' command provides interactive prompts, walking
+through a series of questions and then constructing appropriate JSONLD output. These interactive
+prompts do not include all possible XMP namespaces and fields, but should cover most common cases.
+
+For more advanced cases, provide an external .jsonld or .json file specified by the --packet
+flag, or use the scripting API to manually input JSONLD fields.
+
+To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
+
+Documentation
+- https://gltf-transform.donmccurdy.com/classes/extensions.xmp.html
+`)
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--packet <path>', 'Path to XMP packet (.jsonld or .json)')
+	.option('--reset', 'Reset metadata and remove XMP extension', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
+	.action(async ({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(xmp({...options} as XMPOptions))
+	);
 
 program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
 

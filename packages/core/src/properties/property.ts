@@ -1,6 +1,6 @@
 import { Nullable } from '../constants';
 import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge, isRef, isRefList, isRefMap } from 'property-graph';
-import { equalsArray, equalsRef, equalsRefList, equalsRefMap, isPlainObject } from '../utils';
+import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils';
 import type { Ref, RefMap, UnknownRef } from '../utils';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -228,8 +228,8 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 					return false;
 				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {
-				// Skip object literal, or empty RefMap. We don't currently compare extras.
-			} else if (Array.isArray(a) || Array.isArray(b) || ArrayBuffer.isView(a) || ArrayBuffer.isView(b)) {
+				if (!equalsObject(a, b)) return false;
+			} else if (isArray(a) || isArray(b)) {
 				if (!equalsArray(a as [], b as [])) return false;
 			} else {
 				// Literal.
