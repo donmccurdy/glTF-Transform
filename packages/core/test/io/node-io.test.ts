@@ -1,6 +1,6 @@
 import test from 'tape';
 import { environment, Environment } from '../../../test-utils';
-import { NodeIO } from '@gltf-transform/core';
+import { Document, NodeIO } from '@gltf-transform/core';
 
 const MOCK_DOMAIN = 'https://mock.site';
 
@@ -20,8 +20,7 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 };
 
 function ensureDir(uri) {
-	const outdir = path.dirname(uri);
-	if (!fs.existsSync(outdir)) fs.mkdirSync(outdir);
+	if (!fs.existsSync(uri)) fs.mkdirSync(uri);
 }
 
 test('@gltf-transform/core::io | node.js read glb', { skip: environment !== Environment.NODE }, async (t) => {
@@ -99,7 +98,7 @@ test('@gltf-transform/core::io | node.js write glb', { skip: environment !== Env
 			const io = new NodeIO();
 			const doc = await io.read(inputURI);
 
-			ensureDir(outputURI);
+			ensureDir(path.dirname(outputURI));
 			await io.write(outputURI.replace('.gltf', '.glb'), doc);
 			t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
@@ -120,7 +119,7 @@ test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== En
 			const io = new NodeIO();
 			const doc = await io.read(inputURI);
 
-			ensureDir(outputURI);
+			ensureDir(path.dirname(outputURI));
 			await io.write(outputURI.replace('.glb', '.gltf'), doc);
 			t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
@@ -129,3 +128,30 @@ test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== En
 	t.ok(count > 0, 'tests completed');
 	t.end();
 });
+
+test(
+	'@gltf-transform/core::io | node.js write gltf with HTTP',
+	{ skip: environment !== Environment.NODE },
+	async (t) => {
+		const document = new Document();
+		document.createBuffer();
+		document
+			.createTexture('Internal Texture')
+			.setURI('internal.png')
+			.setMimeType('image/png')
+			.setImage(new Uint8Array(1024));
+		document
+			.createTexture('External Texture')
+			.setURI('https://test.example/external.png')
+			.setMimeType('image/png')
+			.setImage(new Uint8Array(1024));
+		const io = new NodeIO();
+		const outputURI = path.join(__dirname, '../out', 'node-io-external-test');
+		ensureDir(outputURI);
+		await io.write(path.join(outputURI, 'scene.gltf'), document);
+		t.ok(fs.existsSync(path.join(outputURI, 'internal.png')), 'writes internal image');
+		t.notOk(fs.existsSync(path.join(outputURI, 'external.png')), 'skips external image');
+		t.ok(io.lastWriteBytes < 2048, 'writes < 2048 bytes');
+		t.end();
+	}
+);
