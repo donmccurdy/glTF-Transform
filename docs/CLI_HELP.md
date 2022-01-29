@@ -1,5 +1,5 @@
 
-  gltf-transform 2.0.0-alpha.6 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 2.0.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
