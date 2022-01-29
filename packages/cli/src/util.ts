@@ -4,6 +4,16 @@ const { spawnSync: _spawnSync } = require('child_process');
 import { sync as _commandExistsSync } from 'command-exists';
 import { Document, PropertyType, Texture } from '@gltf-transform/core';
 
+// Constants.
+
+export const XMPContext: Record<string, string> = {
+	dc: 'http://purl.org/dc/elements/1.1/',
+	model3d: 'https://schema.khronos.org/model3d/xsd/1.0/',
+	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+	xmp: 'http://ns.adobe.com/xap/1.0/',
+	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
+};
+
 // Mock for tests.
 
 export let spawnSync = _spawnSync;
@@ -46,9 +56,9 @@ export function formatHeader(title: string): string {
 	return '' + '\n ' + title.toUpperCase() + '\n ────────────────────────────────────────────';
 }
 
-export function formatXMP(value: string | number | boolean | Record<string, unknown> | null): string | null {
+export function formatXMP(value: string | number | boolean | Record<string, unknown> | null): string {
 	if (!value) {
-		return null;
+		return '';
 	}
 
 	if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {

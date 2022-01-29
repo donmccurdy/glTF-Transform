@@ -1,6 +1,6 @@
 import { Document, NodeIO, Logger, FileUtils, Transform } from '@gltf-transform/core';
 import { Packet, XMP } from '@gltf-transform/extensions';
-import { formatBytes } from './util';
+import { formatBytes, XMPContext } from './util';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
@@ -59,5 +59,8 @@ function updateMetadata(document: Document): void {
 	// xmp:MetadataDate should be the same as, or more recent than, xmp:ModifyDate.
 	// https://github.com/adobe/xmp-docs/blob/master/XMPNamespaces/xmp.md
 	const date = new Date().toISOString().substring(0, 10);
-	rootPacket.setProperty('xmp:ModifyDate', date).setProperty('xmp:MetadataDate', date);
+	rootPacket
+		.setContext({ ...rootPacket.getContext(), xmp: XMPContext.xmp })
+		.setProperty('xmp:ModifyDate', date)
+		.setProperty('xmp:MetadataDate', date);
 }

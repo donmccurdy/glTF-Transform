@@ -5,7 +5,7 @@ import { check as validateLanguage } from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
 import path from 'path';
-import { formatXMP } from '../util';
+import { formatXMP, XMPContext } from '../util';
 
 const DEFAULT_LANG = 'en-US';
 
@@ -17,14 +17,6 @@ export interface XMPOptions {
 export const XMP_DEFAULTS = {
 	packet: '',
 	reset: false,
-};
-
-const Context: Record<string, string> = {
-	dc: 'http://purl.org/dc/elements/1.1/',
-	model3d: 'https://schema.khronos.org/model3d/xsd/1.0/',
-	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-	xmp: 'http://ns.adobe.com/xap/1.0/',
-	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
 };
 
 enum Prompt {
@@ -296,8 +288,15 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 			throw e;
 		}
 
-		let numProperties = 0;
+		// Context.
+		packet.setContext({
+			...packet.getContext(),
+			...createContext(results),
+			xmp: XMPContext.xmp, // required for xmp:MetadataDate below.
+		});
 
+		// Properties.
+		let numProperties = 0;
 		for (const name in results) {
 			// NOTICE: Calling 'continue' in this context hits a Babel bug.
 			if (!name.startsWith('_') && !name.startsWith('@') && results[name]) {
@@ -309,9 +308,6 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 		if (numProperties === 0) {
 			throw new Error('xmp: No properties added.');
 		}
-
-		// Context.
-		packet.setContext({ ...packet.getContext(), ...createContext(results) });
 
 		// xmp:MetadataDate should be the same as, or more recent than, xmp:ModifyDate.
 		packet.setProperty('xmp:MetadataDate', new Date().toISOString().substring(0, 10));
@@ -397,8 +393,8 @@ function createContext(_object: unknown, acc: Record<string, string> = {}): Reco
 	for (const key in object) {
 		const value = object[key];
 		const [prefix, suffix] = key.split(':');
-		if (prefix && suffix && prefix in Context) {
-			acc[prefix] = Context[prefix];
+		if (prefix && suffix && prefix in XMPContext) {
+			acc[prefix] = XMPContext[prefix];
 			createContext(value, acc);
 		}
 	}

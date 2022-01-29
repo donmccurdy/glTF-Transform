@@ -94,7 +94,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 	}
 
 	/**
-	 * Returns the value of a property, as a literal or JSON LD object.
+	 * Returns the value of a property, as a literal or JSONLD object.
 	 *
 	 * Example:
 	 *
@@ -110,7 +110,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 	}
 
 	/**
-	 * Sets the value of a property, as a literal or JSON LD object.
+	 * Sets the value of a property, as a literal or JSONLD object.
 	 *
 	 * Example:
 	 *

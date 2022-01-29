@@ -289,11 +289,11 @@ or other attributes of a 3D model. Such metadata does not generally affect the p
 behavior of the content — for that, use custom extensions, custom vertex attributes, or extras.
 
 The easiest (and default) mode of the CLI 'xmp' command provides interactive prompts, walking
-through a series of questions and then constructing appropriate JSON LD output. These interactive
+through a series of questions and then constructing appropriate JSONLD output. These interactive
 prompts do not include all possible XMP namespaces and fields, but should cover most common cases.
 
 For more advanced cases, provide an external .jsonld or .json file specified by the --packet
-flag, or use the scripting API to manually input JSON LD fields.
+flag, or use the scripting API to manually input JSONLD fields.
 
 To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
 
