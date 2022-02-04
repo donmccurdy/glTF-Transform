@@ -9,7 +9,6 @@
 **Features:**
 
 - Improved and simplified extension API. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
-- Add `KHR_xmp_json_ld` extension / XMP metadata. [#468](https://github.com/donmccurdy/glTF-Transform/pull/468)
 - Add `a.equals(b)` method for all property types. [#437](https://github.com/donmccurdy/glTF-Transform/pull/437)
 - Add `KHR_xmp_json_ld` extension. [#468](https://github.com/donmccurdy/glTF-Transform/pull/468)
 - Add `NodeIO.setAllowHTTP(<boolean>)`. [#466](https://github.com/donmccurdy/glTF-Transform/pull/466)
