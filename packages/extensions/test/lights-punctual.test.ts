@@ -34,8 +34,10 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 					intensity: 2,
 					color: [1, 2, 0],
 					range: 50,
-					innerConeAngle: 0.5,
-					outerConeAngle: 0.75,
+					spot: {
+						innerConeAngle: 0.5,
+						outerConeAngle: 0.75,
+					},
 				},
 			],
 		},
