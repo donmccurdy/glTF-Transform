@@ -57,29 +57,29 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	 * Diffuse.
 	 */
 
-	/** Diffuse; linear multiplier. See {@link getDiffuseTexture}. */
+	/** Diffuse; Linear-sRGB components. See {@link getDiffuseTexture}. */
 	public getDiffuseFactor(): vec4 {
 		return this.get('diffuseFactor');
 	}
 
-	/** Diffuse; linear multiplier. See {@link getDiffuseTexture}. */
+	/** Diffuse; Linear-sRGB components. See {@link getDiffuseTexture}. */
 	public setDiffuseFactor(factor: vec4): this {
 		return this.set('diffuseFactor', factor);
 	}
 
-	/** Diffuse; hex color in sRGB colorspace. */
+	/** Diffuse; sRGB hexadecimal color. */
 	public getDiffuseHex(): number {
 		return ColorUtils.factorToHex(this.getDiffuseFactor());
 	}
 
-	/** Diffuse; hex color in sRGB colorspace. */
+	/** Diffuse; sRGB hexadecimal color. */
 	public setDiffuseHex(hex: number): this {
 		const factor = this.getDiffuseFactor().slice() as vec4;
 		return this.setDiffuseFactor(ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**
-	 * Diffuse texture; linear multiplier. Alternative to baseColorTexture used within the
+	 * Diffuse texture; sRGB. Alternative to baseColorTexture, used within the
 	 * spec/gloss PBR workflow.
 	 */
 	public getDiffuseTexture(): Texture | null {

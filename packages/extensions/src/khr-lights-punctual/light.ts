@@ -59,22 +59,22 @@ export class Light extends ExtensionProperty<ILight> {
 	 * COLOR.
 	 */
 
-	/** Components (R, G, B) of light's color in linear space. */
+	/** Light color; Linear-sRGB components. */
 	public getColor(): vec3 {
 		return this.get('color');
 	}
 
-	/** Components (R, G, B) of light's color in linear space. */
+	/** Light color; Linear-sRGB components. */
 	public setColor(color: vec3): this {
 		return this.set('color', color);
 	}
 
-	/** Hex light color in sRGB colorspace. */
+	/** Light color; sRGB hexadecimal color. */
 	public getColorHex(): number {
 		return ColorUtils.factorToHex(this.getColor());
 	}
 
-	/** Hex light color in sRGB colorspace. */
+	/** Light color; sRGB hexadecimal color. */
 	public setColorHex(hex: number): this {
 		const color = this.getColor().slice() as vec3;
 		ColorUtils.hexToFactor(hex, color);

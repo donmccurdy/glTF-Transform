@@ -192,27 +192,25 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Base color.
 	 */
 
-	/** Base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
+	/** Base color / albedo factor; Linear-sRGB components. See {@link getBaseColorTexture}. */
 	public getBaseColorFactor(): vec4 {
 		return this.get('baseColorFactor');
 	}
 
-	/** Sets the base color / albedo factor in linear space. See {@link getBaseColorTexture}. */
+	/** Base color / albedo factor; Linear-sRGB components. See {@link getBaseColorTexture}. */
 	public setBaseColorFactor(baseColorFactor: vec4): this {
 		return this.set('baseColorFactor', baseColorFactor);
 	}
 
 	/**
-	 * Base color / albedo as hexadecimal in sRGB colorspace. Converted automatically from
-	 * baseColorFactor in linear space. See {@link getBaseColorTexture}.
+	 * Base color / albedo; sRGB hexadecimal color. See {@link getBaseColorTexture}.
 	 */
 	public getBaseColorHex(): number {
 		return ColorUtils.factorToHex(this.get('baseColorFactor'));
 	}
 
 	/**
-	 * Sets base color / albedo as hexadecimal in sRGB colorspace. Converted automatically to
-	 * baseColorFactor in linear space. See {@link getBaseColorTexture}.
+	 * Base color / albedo; sRGB hexadecimal color. See {@link getBaseColorTexture}.
 	 */
 	public setBaseColorHex(hex: number): this {
 		const factor = this.get('baseColorFactor').slice() as vec4;
@@ -250,28 +248,22 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Emissive.
 	 */
 
-	/** Emissive color; linear multiplier. See {@link getEmissiveTexture}. */
+	/** Emissive color; Linear-sRGB components. See {@link getEmissiveTexture}. */
 	public getEmissiveFactor(): vec3 {
 		return this.get('emissiveFactor');
 	}
 
-	/** Sets the emissive color; linear multiplier. See {@link getEmissiveTexture}. */
+	/** Emissive color; Linear-sRGB components. See {@link getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
 		return this.set('emissiveFactor', emissiveFactor);
 	}
 
-	/**
-	 * Emissive as hexadecimal in sRGB colorspace. Converted automatically from
-	 * emissiveFactor in linear space. See {@link getBaseColorTexture}.
-	 */
+	/** Emissive; sRGB hexadecimal color. See {@link getBaseColorTexture}. */
 	public getEmissiveHex(): number {
 		return ColorUtils.factorToHex(this.get('emissiveFactor'));
 	}
 
-	/**
-	 * Sets emissive as hexadecimal in sRGB colorspace. Converted automatically to
-	 * emissiveFactor in linear space. See {@link getEmissiveTexture}.
-	 */
+	/** Emissive; sRGB hexadecimal color. See {@link getEmissiveTexture}. */
 	public setEmissiveHex(hex: number): this {
 		const factor = this.get('emissiveFactor').slice() as vec3;
 		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, factor));
@@ -312,7 +304,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.get('normalScale');
 	}
 
-	/** Sets normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
+	/** Normal (surface detail) factor; linear multiplier. Affects `.normalTexture`. */
 	public setNormalScale(scale: number): this {
 		return this.set('normalScale', scale);
 	}
@@ -320,11 +312,10 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	/**
 	 * Normal (surface detail) texture.
 	 *
-	 * A tangent space normal map. The texture contains RGB components in linear space. Each texel
-	 * represents the XYZ components of a normal vector in tangent space. Red [0 to 255] maps to X
-	 * [-1 to 1]. Green [0 to 255] maps to Y [-1 to 1]. Blue [128 to 255] maps to Z [1/255 to 1].
-	 * The normal vectors use OpenGL conventions where +X is right and +Y is up. +Z points toward
-	 * the viewer.
+	 * A tangent space normal map. The texture contains RGB components. Each texel represents the
+	 * XYZ components of a normal vector in tangent space. Red [0 to 255] maps to X [-1 to 1].
+	 * Green [0 to 255] maps to Y [-1 to 1]. Blue [128 to 255] maps to Z [1/255 to 1]. The normal
+	 * vectors use OpenGL conventions where +X is right and +Y is up. +Z points toward the viewer.
 	 *
 	 * Reference:
 	 * - [glTF → material.normalTexture](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialnormaltexture)
