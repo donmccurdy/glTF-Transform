@@ -1,11 +1,7 @@
 /** @internal */
 export class HTTPUtils {
 	static readonly DEFAULT_INIT: RequestInit = {};
-	static readonly URL_REGEXP = /https?:\/\//;
-
-	static isAbsoluteURL(path: string) {
-		return this.URL_REGEXP.test(path);
-	}
+	static readonly PROTOCOL_REGEXP = /^[a-zA-Z]+:\/\//;
 
 	static dirname(path: string): string {
 		const index = path.lastIndexOf('/');
@@ -30,6 +26,18 @@ export class HTTPUtils {
 		return stack.join('/');
 	}
 
+	/**
+	 * Returns true for URLs containing a protocol, and false for both
+	 * absolute and relative paths.
+	 */
+	static isAbsoluteURL(path: string) {
+		return this.PROTOCOL_REGEXP.test(path);
+	}
+
+	/**
+	 * Returns true for paths that are declared relative to some unknown base
+	 * path. For example, "foo/bar/" is relative both "/foo/bar/" is not.
+	 */
 	static isRelativePath(path: string): boolean {
 		return !/^(?:[a-zA-Z]+:)?\//.test(path);
 	}
