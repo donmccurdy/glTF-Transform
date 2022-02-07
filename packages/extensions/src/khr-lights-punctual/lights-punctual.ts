@@ -17,9 +17,11 @@ interface LightDef {
 	color?: vec3;
 	intensity?: number;
 	range?: number;
-	innerConeAngle?: number;
-	outerConeAngle?: number;
 	type: 'spot' | 'point' | 'directional';
+	spot?: {
+		innerConeAngle?: number;
+		outerConeAngle?: number;
+	};
 }
 
 /**
@@ -79,11 +81,11 @@ export class LightsPunctual extends Extension {
 			if (lightDef.intensity !== undefined) light.setIntensity(lightDef.intensity);
 			if (lightDef.range !== undefined) light.setRange(lightDef.range);
 
-			if (lightDef.innerConeAngle !== undefined) {
-				light.setInnerConeAngle(lightDef.innerConeAngle);
+			if (lightDef.spot?.innerConeAngle !== undefined) {
+				light.setInnerConeAngle(lightDef.spot.innerConeAngle);
 			}
-			if (lightDef.outerConeAngle !== undefined) {
-				light.setOuterConeAngle(lightDef.outerConeAngle);
+			if (lightDef.spot?.outerConeAngle !== undefined) {
+				light.setOuterConeAngle(lightDef.spot.outerConeAngle);
 			}
 
 			return light;
@@ -115,11 +117,13 @@ export class LightsPunctual extends Extension {
 			if (light.getIntensity() !== 1) lightDef.intensity = light.getIntensity();
 			if (light.getRange() != null) lightDef.range = light.getRange()!;
 
-			if (light.getName()) lightDef['name'] = light.getName();
+			if (light.getName()) lightDef.name = light.getName();
 
 			if (light.getType() === Light.Type.SPOT) {
-				lightDef['innerConeAngle'] = light.getInnerConeAngle();
-				lightDef['outerConeAngle'] = light.getOuterConeAngle();
+				lightDef.spot = {
+					innerConeAngle: light.getInnerConeAngle(),
+					outerConeAngle: light.getOuterConeAngle(),
+				};
 			}
 
 			lightDefs.push(lightDef);
