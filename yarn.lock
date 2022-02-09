@@ -2742,9 +2742,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001181:
-  version "1.0.30001249"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001249.tgz"
-  integrity sha512-vcX4U8lwVXPdqzPWi6cAJ3FnQaqXbBqy/GZseKNQzRj37J7qZdGcBtxq/QLFNLLlfsoXLUdHw8Iwenri86Tagw==
+  version "1.0.30001309"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001309.tgz"
+  integrity sha512-Pl8vfigmBXXq+/yUz1jUwULeq9xhMJznzdc/xwl4WclDAuebcTHVefpz8lE/bMI+UN7TOkSSe7B7RnZd6+dzjA==
 
 canvas@2.9.0:
   version "2.9.0"
@@ -7420,10 +7420,10 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-property-graph@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-0.2.4.tgz#0d1e301592af6fda1ad1cb89499aa7db0b738a3e"
-  integrity sha512-txzVfcWk6nubQRB3jWNUI8i3vJYVFdpesWRUAfloG0igtTF7Id4kDXmxZcAajUueOSNxhrKjfGPdmczkah3a1Q==
+property-graph@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-0.2.6.tgz#add988a436745936d4b2ae19f747f2556296c828"
+  integrity sha512-QiBHxNZlwIarbkxsqCY688aP1ANbwtoQFBYgTZopQ0Bvku6/EYp3H4KH0ygxkhWQbJv5DEONspLy1rHi5xIycg==
 
 proto-list@~1.2.1:
   version "1.2.4"
