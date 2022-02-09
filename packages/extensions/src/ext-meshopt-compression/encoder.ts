@@ -170,7 +170,10 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 			if (targetPath === 'scale') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
 			return { filter: MeshoptFilter.NONE };
 		}
-		if (refName === 'input') return { filter: MeshoptFilter.EXPONENTIAL, bits: 12 };
+
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/489
+		if (refName === 'input') return { filter: MeshoptFilter.NONE };
+
 		if (refName === 'inverseBindMatrices') return { filter: MeshoptFilter.NONE };
 	}
 
