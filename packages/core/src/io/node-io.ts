@@ -144,7 +144,12 @@ export class NodeIO extends PlatformIO {
 		this.lastWriteBytes += jsonContent.length;
 		await fs.writeFile(uri, jsonContent);
 		const pending = Object.keys(resources).map(async (resourceURI) => {
-			if (HTTPUtils.isAbsoluteURL(resourceURI)) return;
+			if (HTTPUtils.isAbsoluteURL(resourceURI)) {
+				if (FileUtils.extension(resourceURI) === 'bin') {
+					throw new Error(`Cannot write buffer to path "${resourceURI}".`);
+				}
+				return;
+			}
 			const resource = Buffer.from(resources[resourceURI]);
 			await fs.writeFile(path.join(dir, resourceURI), resource);
 			this.lastWriteBytes += resource.byteLength;
