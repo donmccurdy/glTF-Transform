@@ -212,3 +212,15 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 	t.ok(rtRoot.listAnimations()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from animation');
 	t.end();
 });
+
+test('@gltf-transform/extensions::xmp | clone', async (t) => {
+	const document1 = new Document();
+	const xmpExtension = document1.createExtension(XMP);
+	const packet1 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
+	document1.getRoot().setExtension('KHR_xmp_json_ld', packet1);
+	t.equals(document1.getRoot().getExtension('KHR_xmp_json_ld'), packet1, 'sets packet');
+	const document2 = document1.clone();
+	const packet2 = document2.getRoot().getExtension('KHR_xmp_json_ld') as Packet;
+	t.ok(packet2, 'clones packet');
+	t.deepEquals(packet1.toJSONLD(), packet2.toJSONLD(), 'equal packet');
+});
