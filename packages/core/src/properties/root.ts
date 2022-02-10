@@ -13,6 +13,7 @@ import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+import { ExtensionProperty } from './extension-property';
 
 interface IAsset {
 	version: string;
@@ -123,6 +124,11 @@ export class Root extends ExtensibleProperty<IRoot> {
 		this.setName(other.getName());
 		this.setExtras({ ...other.getExtras() });
 		this.setDefaultScene(other.getDefaultScene() ? resolve(other.getDefaultScene()!) : null);
+
+		for (const extensionName of other.listRefMapKeys('extensions')) {
+			const otherExtension = other.getExtension(extensionName) as ExtensionProperty;
+			this.setExtension(extensionName, resolve(otherExtension));
+		}
 
 		return this;
 	}
