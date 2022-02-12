@@ -45,6 +45,7 @@ export * from './dequantize';
 export * from './inspect';
 export * from './instance';
 export * from './metal-rough';
+export * from './normals';
 export * from './partition';
 export * from './prune';
 export * from './quantize';
