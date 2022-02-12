@@ -16,14 +16,14 @@ const NORMALS_DEFAULTS: Required<NormalsOptions> = {
 };
 
 /**
- * Generates float vertex normals for mesh primitives.
+ * Generates flat vertex normals for mesh primitives.
  *
  * Example:
  *
  * ```ts
  * import { normals } from '@gltf-transform/functions';
  *
- * await document.transform(normals());
+ * await document.transform(normals({overwrite: true}));
  * ```
  */
 export function normals(_options: NormalsOptions = NORMALS_DEFAULTS): Transform {
@@ -85,6 +85,10 @@ export function normals(_options: NormalsOptions = NORMALS_DEFAULTS): Transform 
 function computeNormal(a: vec3, b: vec3, c: vec3): vec3 {
 	const A = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
 	const B = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-	const n = [A[1] * B[2] - A[2] * B[1], A[2] * B[0] - A[0] * B[2], A[0] * B[1] - A[1] * B[0]] as vec3;
+	const n = [
+		A[1] * B[2] - A[2] * B[1], //
+		A[2] * B[0] - A[0] * B[2],
+		A[0] * B[1] - A[1] * B[0],
+	] as vec3;
 	return normalize([0, 0, 0], n) as vec3;
 }

@@ -1,4 +1,3 @@
-packages/functions/src/**
 packages/cli/src/cli.ts
 **/dist
 **/in
