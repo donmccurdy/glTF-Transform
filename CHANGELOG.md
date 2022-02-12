@@ -4,6 +4,10 @@
 
 ### v2.1 — 🚧 Unreleased
 
+**Features:**
+
+- Add `normals()` function. [#497](https://github.com/donmccurdy/glTF-Transform/pull/497)
+
 ### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
 **Features:**
