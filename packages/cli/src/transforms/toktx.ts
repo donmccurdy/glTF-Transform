@@ -98,9 +98,9 @@ export const UASTC_DEFAULTS = {
  */
 
 export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform {
-	options = {...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS), ...options};
+	options = { ...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS), ...options };
 
-	return (doc: Document): void =>  {
+	return (doc: Document): void => {
 		const logger = doc.getLogger();
 
 		// Confirm recent version of KTX-Software is installed.
@@ -115,9 +115,10 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			.forEach((texture, textureIndex) => {
 				const slots = getTextureSlots(doc, texture);
 				const channels = getTextureChannels(doc, texture);
-				const textureLabel = texture.getURI()
-					|| texture.getName()
-					|| `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
+				const textureLabel =
+					texture.getURI() ||
+					texture.getName() ||
+					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
 				logger.debug(`Texture ${textureLabel} (${slots.join(', ')})`);
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
@@ -125,12 +126,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				if (texture.getMimeType() === 'image/ktx2') {
 					logger.debug('• Skipping, already KTX.');
 					return;
-				} else if (texture.getMimeType() !== 'image/png'
-						&& texture.getMimeType() !== 'image/jpeg') {
+				} else if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
 					logger.warn(`• Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
-				} else if (options.slots !== '*'
-						&& !slots.find((slot) => minimatch(slot, options.slots, {nocase: true}))) {
+				} else if (
+					options.slots !== '*' &&
+					!slots.find((slot) => minimatch(slot, options.slots, { nocase: true }))
+				) {
 					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`);
 					return;
 				}
@@ -148,22 +150,18 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const extension = texture.getURI()
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
-				const inPath = tmp.tmpNameSync({postfix: '.' + extension});
-				const outPath = tmp.tmpNameSync({postfix: '.ktx2'});
+				const inPath = tmp.tmpNameSync({ postfix: '.' + extension });
+				const outPath = tmp.tmpNameSync({ postfix: '.ktx2' });
 
 				const inBytes = image.byteLength;
 				fs.writeFileSync(inPath, Buffer.from(image));
 
-				const params = [
-					...createParams(slots, channels, size, logger, options),
-					outPath,
-					inPath
-				];
+				const params = [...createParams(slots, channels, size, logger, options), outPath, inPath];
 				logger.debug(`• toktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `toktx` CLI tool.
 
-				const {status, stderr} = spawnSync('toktx', params, {stdio: [process.stderr]});
+				const { status, stderr } = spawnSync('toktx', params, { stdio: [process.stderr] });
 
 				if (status !== 0) {
 					logger.error(`• Texture compression failed:\n\n${stderr.toString()}`);
@@ -172,9 +170,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				// PACK: Replace image data in the glTF asset.
 
-				texture
-					.setImage(fs.readFileSync(outPath))
-					.setMimeType('image/ktx2');
+				texture.setImage(fs.readFileSync(outPath)).setMimeType('image/ktx2');
 
 				if (texture.getURI()) {
 					texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
@@ -190,7 +186,12 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 			logger.warn('No textures were found, or none were selected for compression.');
 		}
 
-		if (!doc.getRoot().listTextures().find((t) => t.getMimeType() === 'image/ktx2')) {
+		const usesKTX2 = doc
+			.getRoot()
+			.listTextures()
+			.some((t) => t.getMimeType() === 'image/ktx2');
+
+		if (!usesKTX2) {
 			basisuExtension.dispose();
 		}
 	};
@@ -202,12 +203,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
 function createParams(
-		slots: string[],
-		channels: number,
-		size: vec2,
-		logger: Logger,
-		options: ETC1SOptions | UASTCOptions): (string|number)[] {
-	const params: (string|number)[] = [];
+	slots: string[],
+	channels: number,
+	size: vec2,
+	logger: Logger,
+	options: ETC1SOptions | UASTCOptions
+): (string | number)[] {
+	const params: (string | number)[] = [];
 	params.push('--genmipmap');
 	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter!);
 	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
@@ -252,13 +254,12 @@ function createParams(
 			params.push('--selector_rdo_threshold', _options.rdoThreshold);
 		}
 
-		if (slots.find((slot) => minimatch(slot, '*normal*', {nocase: true}))) {
+		if (slots.find((slot) => minimatch(slot, '*normal*', { nocase: true }))) {
 			params.push('--normal_map');
 		}
 	}
 
-	if (slots.length
-			&& !slots.find((slot) => minimatch(slot, '*{color,emissive}*', {nocase: true}))) {
+	if (slots.length && !slots.find((slot) => minimatch(slot, '*{color,emissive}*', { nocase: true }))) {
 		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
 		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
 	}
@@ -269,6 +270,9 @@ function createParams(
 		params.push('--target_type', 'RG');
 	}
 
+	// Minimum size on any dimension is 4px.
+	// See: https://github.com/donmccurdy/glTF-Transform/issues/502
+
 	let width: number;
 	let height: number;
 	if (options.powerOfTwo) {
@@ -277,8 +281,8 @@ function createParams(
 	} else {
 		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
 			logger.warn(
-				`Texture dimensions ${size[0]}x${size[1]} are NPOT, and may`
-				+ ' fail in older APIs (including WebGL 1.0) on certain devices.'
+				`Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
+					' fail in older APIs (including WebGL 1.0) on certain devices.'
 			);
 		}
 		width = isMultipleOfFour(size[0]) ? size[0] : ceilMultipleOfFour(size[0]);
@@ -287,10 +291,10 @@ function createParams(
 
 	if (width !== size[0] || height !== size[1]) {
 		if (width > 4096 || height > 4096) {
-			logger.warn( ''
-				+ `Resizing to nearest power of two, ${width}x${height}px. Texture dimensions`
-				+ ' greater than 4096px may not render on some mobile devices.'
-				+ ' Resize to a lower resolution before compressing, if needed.'
+			logger.warn(
+				`Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
+					' greater than 4096px may not render on some mobile devices.' +
+					' Resize to a lower resolution before compressing, if needed.'
 			);
 		}
 		params.push('--resize', `${width}x${height}`);
@@ -301,13 +305,17 @@ function createParams(
 
 function checkKTXSoftware(logger: Logger): void {
 	if (!commandExistsSync('toktx') && !process.env.CI) {
-		throw new Error('Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software');
+		throw new Error(
+			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software'
+		);
 	}
 
-	const {status, stdout, stderr} = spawnSync('toktx', ['--version'], {encoding: 'utf-8'});
+	const { status, stdout, stderr } = spawnSync('toktx', ['--version'], { encoding: 'utf-8' });
 
 	const version = ((stdout || stderr) as string)
-		.replace(/toktx\s+/, '').replace(/~\d+/, '').trim();
+		.replace(/toktx\s+/, '')
+		.replace(/~\d+/, '')
+		.trim();
 
 	if (status !== 0 || !semver.valid(semver.clean(version))) {
 		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
@@ -324,7 +332,6 @@ function isPowerOfTwo(value: number): boolean {
 }
 
 function preferredPowerOfTwo(value: number): number {
-	if (value <= 2) return value;
 	if (value <= 4) return 4;
 
 	const lo = floorPowerOfTwo(value);
@@ -347,7 +354,6 @@ function isMultipleOfFour(value: number): boolean {
 }
 
 function ceilMultipleOfFour(value: number): number {
-	if (value <= 2) return value;
 	if (value <= 4) return 4;
-	return value % 4 ? value + 4 - value % 4 : value;
+	return value % 4 ? value + 4 - (value % 4) : value;
 }
