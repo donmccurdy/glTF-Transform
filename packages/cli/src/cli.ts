@@ -8,10 +8,12 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transfor
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp, oxipng, SquooshOptions, mozjpeg, webp } from './transforms';
 import { formatBytes } from './util';
 import { Session } from './session';
-import { ValidateOptions, validate } from './validate';
+
+// // https://github.com/GoogleChromeLabs/squoosh/pull/1176
+// import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
 
@@ -77,40 +79,40 @@ Use --format=csv or --format=md for alternative display formats.
 	});
 
 // VALIDATE
-program
-	.command('validate', 'Validate the model against the glTF spec')
-	.help(`
-Validate the model with official glTF validator. The validator detects whether
-a file conforms correctly to the glTF specification, and is useful for
-debugging issues with a model. Validation errors typically suggest a problem
-in the authoring process, and can be reported as bugs on the software used to
-export the file. Certain lower-priority issues are not technically invalid, but
-may indicate an unintended situation in the file, like unused data not attached
-to any particular scene.
+// program
+// 	.command('validate', 'Validate the model against the glTF spec')
+// 	.help(`
+// Validate the model with official glTF validator. The validator detects whether
+// a file conforms correctly to the glTF specification, and is useful for
+// debugging issues with a model. Validation errors typically suggest a problem
+// in the authoring process, and can be reported as bugs on the software used to
+// export the file. Certain lower-priority issues are not technically invalid, but
+// may indicate an unintended situation in the file, like unused data not attached
+// to any particular scene.
 
-For more details about the official validation suite used here, see:
-https://github.com/KhronosGroup/glTF-Validator
+// For more details about the official validation suite used here, see:
+// https://github.com/KhronosGroup/glTF-Validator
 
-Example:
+// Example:
 
-  ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
-	`.trim())
-	.argument('<input>', INPUT_DESC)
-	.option('--limit <limit>', 'Limit number of issues to display', {
-		validator: program.NUMBER,
-		default: 1e7,
-	})
-	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
-		validator: program.ARRAY,
-		default: [],
-	})
-	.action(({args, options, logger}) => {
-		validate(
-			args.input as string,
-			options as unknown as ValidateOptions,
-			logger as unknown as Logger
-		);
-	});
+//   ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
+// 	`.trim())
+// 	.argument('<input>', INPUT_DESC)
+// 	.option('--limit <limit>', 'Limit number of issues to display', {
+// 		validator: program.NUMBER,
+// 		default: 1e7,
+// 	})
+// 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
+// 		validator: program.ARRAY,
+// 		default: [],
+// 	})
+// 	.action(({args, options, logger}) => {
+// 		validate(
+// 			args.input as string,
+// 			options as unknown as ValidateOptions,
+// 			logger as unknown as Logger
+// 		);
+// 	});
 
 program.command('', '\n\n📦 PACKAGE ──────────────────────────────────────────');
 
@@ -952,6 +954,109 @@ affects only the container metadata.`.trim())
 	.action(({args, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(ktxfix())
+	);
+
+const SQUOOSH_SUMMARY = `
+Compresses textures with {VARIANT}, using @squoosh/lib. Reduces transmitted file
+size. Compared to GPU texture compression like KTX/Basis, PNG/JPEG/WebP must
+be fully decompressed in GPU memory — this makes texture GPU upload much
+slower, and may consume 4-8x more GPU memory. However, the PNG/JPEG/WebP
+compression methods are typically more forgiving than GPU texture compression,
+and require less tuning to achieve good visual and filesize results.
+By default, compression levels are chosen automatically based on a target
+visual distance, configurable with --auto-target.`.trim();
+
+// WEBP
+program
+	.command('webp', 'WebP texture compression')
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: '*'}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--auto-rounds <rounds>',
+		'Maximum number of rounds to use for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--auto-target <distance>',
+		'Target Butteraugli distance for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(webp(options as unknown as SquooshOptions))
+	);
+
+// OXIPNG
+program
+	.command('oxipng', 'OxiPNG texture compression')
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'OxiPNG'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: 'png'}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--auto-rounds <rounds>',
+		'Maximum number of rounds, for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--auto-target <distance>',
+		'Target Butteraugli distance, for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(oxipng(options as unknown as SquooshOptions))
+	);
+
+// MOZJPEG
+program
+	.command('mozjpeg', 'MozJPEG texture compression')
+	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'MozJPEG'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include',
+		{validator: ['png', 'jpeg', '*'], default: 'jpeg'}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.option(
+		'--auto-rounds <rounds>',
+		'Maximum number of rounds to use for auto optimizer.',
+		{validator: program.NUMBER, default: 6}
+	)
+	.option(
+		'--auto-target <distance>',
+		'Target Butteraugli distance for auto optimizer.',
+		{validator: program.NUMBER, default: 1.4}
+	)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(mozjpeg(options as unknown as SquooshOptions))
 	);
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');

@@ -13,9 +13,9 @@
     "node >= 14"
   ],
   "scripts": {
-    "dist": "microbundle --format cjs",
-    "watch": "microbundle watch --format cjs",
-    "watch:debug": "microbundle watch --no-compress --format cjs"
+    "dist": "microbundle --format cjs --target node",
+    "watch": "microbundle watch --format cjs --target node",
+    "watch:debug": "microbundle watch --no-compress --format cjs --target node"
   },
   "bin": {
     "gltf-transform": "bin/cli.js"
@@ -25,6 +25,7 @@
     "@gltf-transform/core": "^2.0.5",
     "@gltf-transform/extensions": "^2.0.5",
     "@gltf-transform/functions": "^2.0.5",
+    "@squoosh/lib": "^0.4.0",
     "@types/inquirer": "^8.1.3",
     "@types/language-tags": "^1.0.0",
     "@types/spdx-correct": "^2.0.0",
