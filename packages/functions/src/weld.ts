@@ -1,28 +1,30 @@
 import { Accessor, Document, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
-import { getGLPrimitiveCount, createTransform } from './utils';
+import { createTransform } from './utils';
 
 const NAME = 'weld';
 
 /** Options for the {@link weld} function. */
 export interface WeldOptions {
 	/** Per-attribute tolerance used when merging similar vertices. */
-	tolerance?: number
+	tolerance?: number;
 }
 
-const WELD_DEFAULTS: Required<WeldOptions> = {tolerance: 1e-4};
+const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1e-4 };
 
 /**
  * Index {@link Primitive}s and (optionally) merge similar vertices.
  */
-export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
-	const options = {...WELD_DEFAULTS, ..._options} as Required<WeldOptions>;
+export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
+	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				if (options.tolerance === 0) {
+				if (prim.getMode() === Primitive.Mode.POINTS) {
+					continue;
+				} else if (options.tolerance === 0) {
 					weldOnly(doc, prim);
 				} else {
 					weldAndMerge(doc, prim, options);
@@ -35,18 +37,13 @@ export function weld (_options: WeldOptions = WELD_DEFAULTS): Transform {
 }
 
 /**  In-place weld, adds indices without changing number of vertices. */
-function weldOnly (doc: Document, prim: Primitive): void {
+function weldOnly(doc: Document, prim: Primitive): void {
 	if (prim.getIndices()) return;
 	const attr = prim.listAttributes()[0];
 	const numVertices = attr.getCount();
 	const buffer = attr.getBuffer();
-	const indicesArray = numVertices <= 65534
-		? new Uint16Array(getGLPrimitiveCount(prim) * 3)
-		: new Uint32Array(getGLPrimitiveCount(prim) * 3);
-	const indices = doc.createAccessor()
-		.setBuffer(buffer)
-		.setType(Accessor.Type.SCALAR)
-		.setArray(indicesArray);
+	const indicesArray = numVertices <= 65534 ? new Uint16Array(numVertices) : new Uint32Array(numVertices);
+	const indices = doc.createAccessor().setBuffer(buffer).setType(Accessor.Type.SCALAR).setArray(indicesArray);
 	for (let i = 0; i < indices.getCount(); i++) indices.setScalar(i, i);
 	prim.setIndices(indices);
 }
@@ -55,16 +52,14 @@ function weldOnly (doc: Document, prim: Primitive): void {
  * Weld and merge, combining vertices that are similar on all vertex attributes. Morph target
  * attributes are not considered when scoring vertex similarity, but are retained when merging.
  */
-function weldAndMerge (doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
+function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const tolerance = Math.max(options.tolerance, Number.EPSILON);
 	const decimalShift = Math.log10(1 / tolerance);
 	const shiftFactor = Math.pow(10, decimalShift);
 
-	const hashToIndex: {[key: string]: number} = {};
+	const hashToIndex: { [key: string]: number } = {};
 	const srcIndices = prim.getIndices();
-	const vertexCount = srcIndices
-		? srcIndices.getCount()
-		: prim.listAttributes()[0].getCount();
+	const vertexCount = srcIndices ? srcIndices.getCount() : prim.listAttributes()[0].getCount();
 
 	// Prepare storage for new elements of each attribute.
 	const dstAttributes = new Map<Accessor, number[][]>();
@@ -85,7 +80,7 @@ function weldAndMerge (doc: Document, prim: Primitive, options: Required<WeldOpt
 		const el: number[] = [];
 		for (const attribute of prim.listAttributes()) {
 			for (let j = 0; j < attribute.getElementSize(); j++) {
-				hashElements.push(~ ~ (attribute.getElement(index, el)[j] * shiftFactor));
+				hashElements.push(~~(attribute.getElement(index, el)[j] * shiftFactor));
 			}
 		}
 
@@ -128,17 +123,15 @@ function weldAndMerge (doc: Document, prim: Primitive, options: Required<WeldOpt
 		}
 	}
 	if (srcIndices) {
-		const dstIndicesTypedArray
-			= createArrayOfType(srcIndices.getArray()!, dstIndicesArray.length);
+		const dstIndicesTypedArray = createArrayOfType(srcIndices.getArray()!, dstIndicesArray.length);
 		dstIndicesTypedArray.set(dstIndicesArray);
 		prim.setIndices(srcIndices.clone().setArray(dstIndicesTypedArray));
 
 		// Clean up.
 		if (srcIndices.listParents().length === 1) srcIndices.dispose();
 	} else {
-		const indicesArray = srcVertexCount <= 65534
-			? new Uint16Array(dstIndicesArray)
-			: new Uint32Array(dstIndicesArray);
+		const indicesArray =
+			srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : new Uint32Array(dstIndicesArray);
 		prim.setIndices(doc.createAccessor().setArray(indicesArray));
 	}
 }
@@ -150,10 +143,7 @@ function createArrayOfType<T extends TypedArray>(array: T, length: number): T {
 }
 
 /** Replaces an {@link Attribute}, creating a new one with the given elements. */
-function swapAttributes(
-		parent: Primitive | PrimitiveTarget,
-		srcAttr: Accessor,
-		dstAttrElements: number[][]): void {
+function swapAttributes(parent: Primitive | PrimitiveTarget, srcAttr: Accessor, dstAttrElements: number[][]): void {
 	const dstAttrArrayLength = dstAttrElements.length * srcAttr.getElementSize();
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstAttrArrayLength);
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
