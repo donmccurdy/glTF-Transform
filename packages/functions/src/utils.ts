@@ -21,10 +21,10 @@ export function isTransformPending(context: TransformContext | undefined, initia
 
 /** Maps pixels from source to target textures, with a per-pixel callback. */
 export async function rewriteTexture(
-		source: Texture,
-		target: Texture,
-		fn: (pixels: NdArray, i: number, j: number) => void): Promise<Texture|null> {
-
+	source: Texture,
+	target: Texture,
+	fn: (pixels: NdArray, i: number, j: number) => void
+): Promise<Texture | null> {
 	if (!source) return null;
 
 	const srcImage = source.getImage();
@@ -32,8 +32,8 @@ export async function rewriteTexture(
 
 	const pixels = await getPixels(srcImage, source.getMimeType());
 
-	for(let i = 0; i < pixels.shape[0]; ++i) {
-		for(let j = 0; j < pixels.shape[1]; ++j) {
+	for (let i = 0; i < pixels.shape[0]; ++i) {
+		for (let j = 0; j < pixels.shape[1]; ++j) {
 			fn(pixels, i, j);
 		}
 	}
@@ -51,17 +51,13 @@ export function getGLPrimitiveCount(prim: Primitive): number {
 		case Primitive.Mode.POINTS:
 			return position.getCount();
 		case Primitive.Mode.LINES:
-			return indices
-				? indices.getCount() / 2
-				: position.getCount() / 2;
+			return indices ? indices.getCount() / 2 : position.getCount() / 2;
 		case Primitive.Mode.LINE_LOOP:
 			return position.getCount();
 		case Primitive.Mode.LINE_STRIP:
 			return position.getCount() - 1;
 		case Primitive.Mode.TRIANGLES:
-			return indices
-				? indices.getCount() / 3
-				: position.getCount() / 3;
+			return indices ? indices.getCount() / 3 : position.getCount() / 3;
 		case Primitive.Mode.TRIANGLE_STRIP:
 		case Primitive.Mode.TRIANGLE_FAN:
 			return position.getCount() - 2;
