@@ -1,6 +1,8 @@
 require('source-map-support').install();
 
 import test from 'tape';
+import fs from 'fs/promises';
+import path from 'path';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
@@ -75,5 +77,32 @@ test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
 	// 65535 is primitive restart; use 65534 as limit.
 	t.equals(smPrim.getIndices().getArray().constructor, Uint16Array, 'u16 <= 65534');
 	t.equals(lgPrim.getIndices().getArray().constructor, Uint32Array, 'u32 > 65534');
+	t.end();
+});
+
+test('@gltf-transform/functions::weld | modes', async (t) => {
+	// Extracted primitive data from (unindexed) 01–06 samples:
+	// https://github.com/KhronosGroup/glTF-Asset-Generator/tree/master/Output/Positive/Mesh_PrimitiveMode
+	const datasetPath = path.resolve(__dirname, 'in/Mesh_PrimitiveMode_01_to_06.json');
+	const dataset = JSON.parse(await fs.readFile(datasetPath, 'utf-8'));
+
+	for (let i = 0; i < dataset.length; i++) {
+		const primDef = dataset[i];
+		const document = new Document();
+		const position = document
+			.createAccessor()
+			.setArray(new Float32Array(primDef.attributes.POSITION))
+			.setType('VEC3');
+		const prim = document.createPrimitive().setMode(primDef.mode).setAttribute('POSITION', position);
+		document.createMesh().addPrimitive(prim);
+
+		await document.transform(weld({ tolerance: 0 }));
+
+		t.deepEquals(
+			Array.from(primDef.indices),
+			Array.from(prim.getIndices().getArray()),
+			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`
+		);
+	}
 	t.end();
 });
