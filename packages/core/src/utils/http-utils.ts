@@ -1,4 +1,16 @@
-/** @internal */
+import { FileUtils } from './file-utils';
+
+// Need a placeholder domain to construct a URL from a relative path. We only
+// access `url.pathname`, so the domain doesn't matter.
+const NULL_DOMAIN = 'https://null.example';
+
+/**
+ * # HTTPUtils
+ *
+ * *Utility class for working with URLs.*
+ *
+ * @category Utilities
+ */
 export class HTTPUtils {
 	static readonly DEFAULT_INIT: RequestInit = {};
 	static readonly PROTOCOL_REGEXP = /^[a-zA-Z]+:\/\//;
@@ -7,6 +19,22 @@ export class HTTPUtils {
 		const index = path.lastIndexOf('/');
 		if (index === -1) return './';
 		return path.substring(0, index + 1);
+	}
+
+	/**
+	 * Extracts the basename from a URL, e.g. "folder/model.glb" -> "model".
+	 * See: {@link FileUtils.basename}
+	 */
+	static basename(uri: string): string {
+		return FileUtils.basename(new URL(uri, NULL_DOMAIN).pathname);
+	}
+
+	/**
+	 * Extracts the extension from a URL, e.g. "folder/model.glb" -> "glb".
+	 * See: {@link FileUtils.extension}
+	 */
+	static extension(uri: string): string {
+		return FileUtils.extension(new URL(uri, NULL_DOMAIN).pathname);
 	}
 
 	static resolve(base: string, path: string) {

@@ -78,6 +78,13 @@ export class NodeIO extends PlatformIO {
 		return this;
 	}
 
+	/** @hidden */
+	protected detectFormat(uri: string): Format {
+		// Override PlatformIO, which only uses HTTPUtils.
+		const extension = HTTPUtils.isAbsoluteURL(uri) ? HTTPUtils.extension(uri) : FileUtils.extension(uri);
+		return extension === 'glb' ? Format.GLB : Format.GLTF;
+	}
+
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
@@ -145,7 +152,7 @@ export class NodeIO extends PlatformIO {
 		await fs.writeFile(uri, jsonContent);
 		const pending = Object.keys(resources).map(async (resourceURI) => {
 			if (HTTPUtils.isAbsoluteURL(resourceURI)) {
-				if (FileUtils.extension(resourceURI) === 'bin') {
+				if (HTTPUtils.extension(resourceURI) === 'bin') {
 					throw new Error(`Cannot write buffer to path "${resourceURI}".`);
 				}
 				return;
