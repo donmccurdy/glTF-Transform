@@ -78,13 +78,6 @@ export class NodeIO extends PlatformIO {
 		return this;
 	}
 
-	/** @hidden */
-	protected detectFormat(uri: string): Format {
-		// Override PlatformIO, which only uses HTTPUtils.
-		const extension = HTTPUtils.isAbsoluteURL(uri) ? HTTPUtils.extension(uri) : FileUtils.extension(uri);
-		return extension === 'glb' ? Format.GLB : Format.GLTF;
-	}
-
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {

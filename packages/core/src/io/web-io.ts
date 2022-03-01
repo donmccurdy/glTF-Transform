@@ -1,5 +1,6 @@
 import { PlatformIO } from './platform-io';
 import { HTTPUtils } from '../utils';
+import { Format } from '../constants';
 
 /**
  * # WebIO
@@ -58,5 +59,10 @@ export class WebIO extends PlatformIO {
 
 	protected dirname(uri: string): string {
 		return HTTPUtils.dirname(uri);
+	}
+
+	/** @hidden */
+	protected detectFormat(uri: string): Format {
+		return HTTPUtils.extension(uri) === 'glb' ? Format.GLB : Format.GLTF;
 	}
 }

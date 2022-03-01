@@ -177,8 +177,9 @@ export abstract class PlatformIO {
 
 	/** @hidden */
 	protected detectFormat(uri: string): Format {
-		// NodeIO overrides this to use FileUtils, instead.
-		return HTTPUtils.extension(uri) === 'glb' ? Format.GLB : Format.GLTF;
+		// Overriden by WebIO, which only uses HTTPUtils.
+		const extension = HTTPUtils.isAbsoluteURL(uri) ? HTTPUtils.extension(uri) : FileUtils.extension(uri);
+		return extension === 'glb' ? Format.GLB : Format.GLTF;
 	}
 
 	private async _readGLTF(uri: string): Promise<JSONDocument> {
