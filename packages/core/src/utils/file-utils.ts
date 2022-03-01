@@ -1,6 +1,4 @@
-// Need a placeholder domain to construct a URL from a relative path. We only
-// access `url.pathname`, so the domain doesn't matter.
-const NULL_DOMAIN = 'https://null.example';
+import { ImageUtils } from './image-utils';
 
 /**
  * # FileUtils
@@ -10,24 +8,30 @@ const NULL_DOMAIN = 'https://null.example';
  * @category Utilities
  */
 export class FileUtils {
-	/** Extracts the basename from a path, e.g. "folder/model.glb" -> "model". */
-	static basename(path: string): string {
-		path = new URL(path, NULL_DOMAIN).pathname;
-		const fileName = path.split(/[\\/]/).pop()!;
+	/**
+	 * Extracts the basename from a file path, e.g. "folder/model.glb" -> "model".
+	 * See: {@link HTTPUtils.basename}
+	 */
+	static basename(uri: string): string {
+		const fileName = uri.split(/[\\/]/).pop()!;
 		return fileName.substring(0, fileName.lastIndexOf('.'));
 	}
 
-	/** Extracts the extension from a path, e.g. "folder/model.glb" -> "glb". */
-	static extension(path: string): string {
-		if (path.indexOf('data:') !== 0) {
-			path = new URL(path, NULL_DOMAIN).pathname;
-			return path.split(/[\\/]/).pop()!.split(/[.]/).pop()!;
-		} else if (path.indexOf('data:image/png') === 0) {
-			return 'png';
-		} else if (path.indexOf('data:image/jpeg') === 0) {
-			return 'jpeg';
-		} else {
+	/**
+	 * Extracts the extension from a file path, e.g. "folder/model.glb" -> "glb".
+	 * See: {@link HTTPUtils.extension}
+	 */
+	static extension(uri: string): string {
+		if (uri.startsWith('data:image/')) {
+			const mimeType = uri.match(/data:(image\/\w+)/)![1];
+			return ImageUtils.mimeTypeToExtension(mimeType);
+		} else if (uri.startsWith('data:model/gltf+json')) {
+			return 'gltf';
+		} else if (uri.startsWith('data:model/gltf-binary')) {
+			return 'glb';
+		} else if (uri.startsWith('data:application/')) {
 			return 'bin';
 		}
+		return uri.split(/[\\/]/).pop()!.split(/[.]/).pop()!;
 	}
 }

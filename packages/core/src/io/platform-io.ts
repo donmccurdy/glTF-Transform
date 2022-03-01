@@ -3,7 +3,7 @@ import { Document } from '../document';
 import { Extension } from '../extension';
 import { JSONDocument } from '../json-document';
 import { GLTF } from '../types/gltf';
-import { BufferUtils, FileUtils, Logger, uuid } from '../utils/';
+import { BufferUtils, FileUtils, HTTPUtils, Logger, uuid } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
@@ -91,7 +91,7 @@ export abstract class PlatformIO {
 
 	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
 	public async readAsJSON(uri: string): Promise<JSONDocument> {
-		const isGLB = uri.match(/^data:application\/octet-stream;/) || FileUtils.extension(uri) === 'glb';
+		const isGLB = uri.match(/^data:application\/octet-stream;/) || this.detectFormat(uri) === Format.GLB;
 		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
 	}
 
@@ -174,6 +174,13 @@ export abstract class PlatformIO {
 	/**********************************************************************************************
 	 * Internal.
 	 */
+
+	/** @hidden */
+	protected detectFormat(uri: string): Format {
+		// Overriden by WebIO, which only uses HTTPUtils.
+		const extension = HTTPUtils.isAbsoluteURL(uri) ? HTTPUtils.extension(uri) : FileUtils.extension(uri);
+		return extension === 'glb' ? Format.GLB : Format.GLTF;
+	}
 
 	private async _readGLTF(uri: string): Promise<JSONDocument> {
 		this.lastReadBytes = 0;
