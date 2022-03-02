@@ -1,14 +1,14 @@
 # Changelog
 
-## v2.x
+## v2.x ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
 ### v2.1 — 🚧 Unreleased
 
 **Features:**
 
-- Add `normals()` function. [#497](https://github.com/donmccurdy/glTF-Transform/pull/497)
+- Add `KHR_materials_iridescence` extension. [#518](https://github.com/donmccurdy/glTF-Transform/pull/518)
 
-### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
+### v2.0
 
 **Features:**
 
@@ -18,6 +18,7 @@
 - Add `NodeIO.setAllowHTTP(<boolean>)`. [#466](https://github.com/donmccurdy/glTF-Transform/pull/466)
 - Non-blocking NodeIO read/write. [#441](https://github.com/donmccurdy/glTF-Transform/pull/441)
 - Add `DenoIO` (experimental). [#380](https://github.com/donmccurdy/glTF-Transform/pull/380)
+- Add `normals()` function. [#497](https://github.com/donmccurdy/glTF-Transform/pull/497)
 
 **Breaking changes:**
 
