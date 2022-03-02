@@ -1,14 +1,14 @@
 # Changelog
 
-## v2.x ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
+## v2.x
 
-### v2.1 — 🚧 Unreleased
+### v2.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/18)) — 🚧 Unreleased
 
 **Features:**
 
 - Add `KHR_materials_iridescence` extension. [#518](https://github.com/donmccurdy/glTF-Transform/pull/518)
 
-### v2.0
+### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
 **Features:**
 
