@@ -8,6 +8,7 @@ import { LightsPunctual } from './khr-lights-punctual';
 import { MaterialsClearcoat } from './khr-materials-clearcoat';
 import { MaterialsEmissiveStrength } from './khr-materials-emissive-strength';
 import { MaterialsIOR } from './khr-materials-ior';
+import { MaterialsIridescence } from './khr-materials-iridescence';
 import { MaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';
 import { MaterialsSheen } from './khr-materials-sheen';
 import { MaterialsSpecular } from './khr-materials-specular';
@@ -26,6 +27,7 @@ export const KHRONOS_EXTENSIONS = [
 	MaterialsClearcoat,
 	MaterialsEmissiveStrength,
 	MaterialsIOR,
+	MaterialsIridescence,
 	MaterialsPBRSpecularGlossiness,
 	MaterialsSpecular,
 	MaterialsSheen,
@@ -49,6 +51,7 @@ export * from './khr-lights-punctual';
 export * from './khr-materials-clearcoat';
 export * from './khr-materials-emissive-strength';
 export * from './khr-materials-ior';
+export * from './khr-materials-iridescence';
 export * from './khr-materials-sheen';
 export * from './khr-materials-specular';
 export * from './khr-materials-pbr-specular-glossiness';
