@@ -65,9 +65,10 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { MeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptDecoder } from 'meshoptimizer';
+ * import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
  *
  * await MeshoptDecoder.ready;
+ * await MeshoptEncoder.ready;
  *
  * const io = new NodeIO()
  *	.registerExtensions([MeshoptCompression])
@@ -80,7 +81,10 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * const document = await io.read('compressed.glb');
  *
  * // Write and encode. (Medium, -c)
- * await document.transform(reorder(), quantize());
+ * await document.transform(
+ * 	reorder({encoder: MeshoptEncoder}),
+ * 	quantize()
+ * );
  * document.createExtension(MeshoptCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({ method: MeshoptCompression.EncoderMethod.QUANTIZE });
@@ -88,7 +92,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  *
  * // Write and encode. (High, -cc)
  * await document.transform(
- * 	reorder(),
+ * 	reorder({encoder: MeshoptEncoder}),
  * 	quantize({pattern: /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/}),
  * );
  * document.createExtension(MeshoptCompression)
