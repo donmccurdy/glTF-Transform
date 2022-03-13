@@ -8,12 +8,12 @@ const NAME = 'reorder';
 /** Options for the {@link reorder} function. */
 export interface ReorderOptions {
 	/** MeshoptEncoder instance. */
-	encoder?: typeof MeshoptEncoder,
+	encoder?: typeof MeshoptEncoder;
 	/**
 	 * Whether the order should be optimal for transmission size (recommended for Web)
 	 * or for GPU rendering performance. Default is 'size'.
 	 */
-	target?: 'size' | 'performance',
+	target?: 'size' | 'performance';
 }
 
 const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
@@ -37,14 +37,20 @@ interface LayoutPlan {
  * import { MeshoptEncoder } from 'meshoptimizer';
  * import { reorder } from '@gltf-transform/functions';
  *
+ * await MeshoptEncoder.ready;
+ *
  * await document.transform(
  * 	reorder({encoder: MeshoptEncoder})
  * );
  * ```
  */
-export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform {
-	const options = {...REORDER_DEFAULTS, ..._options} as Required<ReorderOptions>;
+export function reorder(_options: ReorderOptions = REORDER_DEFAULTS): Transform {
+	const options = { ...REORDER_DEFAULTS, ..._options } as Required<ReorderOptions>;
 	const encoder = options.encoder;
+
+	if (!encoder) {
+		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
+	}
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -88,7 +94,7 @@ export function reorder (_options: ReorderOptions = REORDER_DEFAULTS): Transform
 		}
 
 		// Clean up any attributes left unused by earlier cloning.
-		await doc.transform(prune({propertyTypes: [PropertyType.ACCESSOR]}));
+		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
 
 		if (!plan.indicesToAttributes.size) {
 			logger.warn(`${NAME}: No qualifying primitives found; may need to weld first.`);
@@ -138,7 +144,7 @@ function preprocessPrimitives(doc: Document): LayoutPlan {
 		}
 	}
 
-	return {indicesToAttributes, indicesToMode, attributesToPrimitives};
+	return { indicesToAttributes, indicesToMode, attributesToPrimitives };
 }
 
 function listAttributes(prim: Primitive): Accessor[] {
