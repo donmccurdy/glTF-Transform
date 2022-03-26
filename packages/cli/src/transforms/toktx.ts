@@ -171,18 +171,17 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				if (status !== 0) {
 					logger.error(`• Texture compression failed:\n\n${stderr.toString()}`);
-					throw new Error('Texture compression failed');
+				} else {
+					// PACK: Replace image data in the glTF asset.
+
+					texture.setImage(await fs.readFile(outPath)).setMimeType('image/ktx2');
+
+					if (texture.getURI()) {
+						texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
+					}
+
+					numCompressed++;
 				}
-
-				// PACK: Replace image data in the glTF asset.
-
-				texture.setImage(await fs.readFile(outPath)).setMimeType('image/ktx2');
-
-				if (texture.getURI()) {
-					texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
-				}
-
-				numCompressed++;
 
 				const outBytes = texture.getImage()!.byteLength;
 				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
