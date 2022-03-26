@@ -41,6 +41,7 @@
     "minimatch": "^5.0.0",
     "node-fetch": "^2.6.6",
     "node-gzip": "^1.1.2",
+    "p-limit": "^3.1.0",
     "semver": "^7.3.5",
     "spdx-correct": "^3.1.1",
     "tmp": "^0.2.1"
