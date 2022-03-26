@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs');
+const fs = require('fs/promises');
 const minimatch = require('minimatch');
+const os = require('os');
 const semver = require('semver');
 const tmp = require('tmp');
+const pLimit = require('p-limit');
 
 import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { commandExistsSync, formatBytes, getTextureChannels, getTextureSlots, spawnSync } from '../util';
+import { commandExists, formatBytes, getTextureChannels, getTextureSlots } from '../util';
+import { spawn, ChildProcess } from 'child_process';
 
 tmp.setGracefulCleanup();
 
@@ -48,6 +51,7 @@ interface GlobalOptions {
 	filter?: string;
 	filterScale?: number;
 	powerOfTwo?: boolean;
+	jobs?: number;
 }
 
 export interface ETC1SOptions extends GlobalOptions {
@@ -74,6 +78,7 @@ const GLOBAL_DEFAULTS = {
 	filterScale: 1,
 	powerOfTwo: false,
 	slots: '*',
+	jobs: os.cpus().length / 2,
 };
 
 export const ETC1S_DEFAULTS = {
@@ -100,19 +105,21 @@ export const UASTC_DEFAULTS = {
 export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform {
 	options = { ...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS), ...options };
 
-	return (doc: Document): void => {
+	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		// Confirm recent version of KTX-Software is installed.
-		checkKTXSoftware(logger);
+		await checkKTXSoftware(logger);
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
 		let numCompressed = 0;
 
-		doc.getRoot()
-			.listTextures()
-			.forEach((texture, textureIndex) => {
+		const limit = pLimit(options.jobs!);
+		const textures = doc.getRoot().listTextures();
+		const numTextures = textures.length;
+		const promises = textures.map((texture, textureIndex) =>
+			limit(async () => {
 				const slots = getTextureSlots(doc, texture);
 				const channels = getTextureChannels(doc, texture);
 				const textureLabel =
@@ -154,14 +161,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const outPath = tmp.tmpNameSync({ postfix: '.ktx2' });
 
 				const inBytes = image.byteLength;
-				fs.writeFileSync(inPath, Buffer.from(image));
+				await fs.writeFile(inPath, Buffer.from(image));
 
-				const params = [...createParams(slots, channels, size, logger, options), outPath, inPath];
+				const params = [...createParams(slots, channels, size, logger, numTextures, options), outPath, inPath];
 				logger.debug(`• toktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `toktx` CLI tool.
-
-				const { status, stderr } = spawnSync('toktx', params, { stdio: [process.stderr] });
+				const [status, stdout, stderr] = await waitExit(spawn('toktx', params));
 
 				if (status !== 0) {
 					logger.error(`• Texture compression failed:\n\n${stderr.toString()}`);
@@ -170,7 +176,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				// PACK: Replace image data in the glTF asset.
 
-				texture.setImage(fs.readFileSync(outPath)).setMimeType('image/ktx2');
+				texture.setImage(await fs.readFile(outPath)).setMimeType('image/ktx2');
 
 				if (texture.getURI()) {
 					texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
@@ -180,7 +186,10 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				const outBytes = texture.getImage()!.byteLength;
 				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
-			});
+			})
+		);
+
+		await Promise.all(promises);
 
 		if (numCompressed === 0) {
 			logger.warn('No textures were found, or none were selected for compression.');
@@ -207,6 +216,7 @@ function createParams(
 	channels: number,
 	size: vec2,
 	logger: Logger,
+	numTextures: number,
 	options: ETC1SOptions | UASTCOptions
 ): (string | number)[] {
 	const params: (string | number)[] = [];
@@ -300,17 +310,22 @@ function createParams(
 		params.push('--resize', `${width}x${height}`);
 	}
 
+	// See https://github.com/donmccurdy/glTF-Transform/pull/389/commits/c4935a7348a401587b8d3bf1319bc8481d90ac8e#r733235207
+	if (options.jobs && options.jobs > 1 && numTextures > 1) {
+		params.push('--threads', '1');
+	}
+
 	return params;
 }
 
-function checkKTXSoftware(logger: Logger): void {
-	if (!commandExistsSync('toktx') && !process.env.CI) {
+async function checkKTXSoftware(logger: Logger): Promise<void> {
+	if (!(await commandExists('toktx')) && !process.env.CI) {
 		throw new Error(
 			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software'
 		);
 	}
 
-	const { status, stdout, stderr } = spawnSync('toktx', ['--version'], { encoding: 'utf-8' });
+	const [status, stdout, stderr] = await waitExit(spawn('toktx', ['--version']));
 
 	const version = ((stdout || stderr) as string)
 		.replace(/toktx\s+/, '')
@@ -324,6 +339,25 @@ function checkKTXSoftware(logger: Logger): void {
 	} else {
 		logger.debug(`Found KTX-Software ${version}.`);
 	}
+}
+
+async function waitExit(process: ChildProcess): Promise<[unknown, string, string]> {
+	let stdout = '';
+	if (process.stdout) {
+		for await (const chunk of process.stdout) {
+			stdout += chunk;
+		}
+	}
+	let stderr = '';
+	if (process.stderr) {
+		for await (const chunk of process.stderr) {
+			stderr += chunk;
+		}
+	}
+	const status = await new Promise((resolve, _) => {
+		process.on('close', resolve);
+	});
+	return [status, stdout, stderr];
 }
 
 function isPowerOfTwo(value: number): boolean {

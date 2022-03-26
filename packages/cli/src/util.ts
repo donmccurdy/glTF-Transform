@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { spawnSync: _spawnSync } = require('child_process');
+const { spawn: _spawn } = require('child_process');
 
-import { sync as _commandExistsSync } from 'command-exists';
+import _commandExists from 'command-exists';
 import { Document, PropertyType, Texture } from '@gltf-transform/core';
 
 // Constants.
@@ -16,15 +16,15 @@ export const XMPContext: Record<string, string> = {
 
 // Mock for tests.
 
-export let spawnSync = _spawnSync;
-export let commandExistsSync = _commandExistsSync;
+export let spawn = _spawn;
+export let commandExists = _commandExists;
 
-export function mockSpawnSync(_spawnSync: unknown): void {
-	spawnSync = _spawnSync;
+export function mockSpawn(_spawn: unknown): void {
+	spawn = _spawn;
 }
 
-export function mockCommandExistsSync(_commandExistsSync: (n: string) => boolean): void {
-	commandExistsSync = _commandExistsSync;
+export function mockCommandExists(_commandExists: (n: string) => Promise<boolean>): void {
+	commandExists = _commandExists as any;
 }
 
 // Formatting.

@@ -806,6 +806,11 @@ normal maps and ETC1S for other textures, for example.`.trim()),
 		+ ' faster, less noisy output, but lower quality per output bit).',
 		{validator: program.BOOLEAN}
 	)
+	.option(
+		'--jobs <num_jobs>',
+		'Spawns up to num_jobs instances of toktx',
+		{validator: program.NUMBER, default: ETC1S_DEFAULTS.jobs}
+	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(toktx({mode: Mode.ETC1S, ...options}))
@@ -920,6 +925,11 @@ for textures where the quality is sufficient.`.trim()),
 		+ '\n21    | 67 MB       |'
 		+ '\n22    | 134 MB      |',
 		{validator: program.NUMBER, default: UASTC_DEFAULTS.zstd}
+	)
+	.option(
+		'--jobs <num_jobs>',
+		'Spawns up to num_jobs instances of toktx',
+		{validator: program.NUMBER, default: UASTC_DEFAULTS.jobs}
 	)
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
