@@ -131,7 +131,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					texture.getName() ||
 					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
 				const prefix = `toktx:texture(${textureLabel})`;
-				logger.debug(`${prefix}: Slots → ${slots.join(', ')}`);
+				logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
