@@ -3,6 +3,7 @@ const { spawn: _spawn } = require('child_process');
 
 import _commandExists from 'command-exists';
 import { Document, PropertyType, Texture } from '@gltf-transform/core';
+import type { ChildProcess } from 'child_process';
 
 // Constants.
 
@@ -18,6 +19,7 @@ export const XMPContext: Record<string, string> = {
 
 export let spawn = _spawn;
 export let commandExists = _commandExists;
+export let waitExit = _waitExit;
 
 export function mockSpawn(_spawn: unknown): void {
 	spawn = _spawn;
@@ -25,6 +27,29 @@ export function mockSpawn(_spawn: unknown): void {
 
 export function mockCommandExists(_commandExists: (n: string) => Promise<boolean>): void {
 	commandExists = _commandExists as any;
+}
+
+export function mockWaitExit(_waitExit: (process: ChildProcess) => Promise<[unknown, string, string]>): void {
+	waitExit = _waitExit;
+}
+
+export async function _waitExit(process: ChildProcess): Promise<[unknown, string, string]> {
+	let stdout = '';
+	if (process.stdout) {
+		for await (const chunk of process.stdout) {
+			stdout += chunk;
+		}
+	}
+	let stderr = '';
+	if (process.stderr) {
+		for await (const chunk of process.stderr) {
+			stderr += chunk;
+		}
+	}
+	const status = await new Promise((resolve, _) => {
+		process.on('close', resolve);
+	});
+	return [status, stdout, stderr];
 }
 
 // Formatting.

@@ -8,8 +8,7 @@ const pLimit = require('p-limit');
 
 import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { commandExists, formatBytes, getTextureChannels, getTextureSlots } from '../util';
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, commandExists, formatBytes, getTextureChannels, getTextureSlots, waitExit } from '../util';
 
 tmp.setGracefulCleanup();
 
@@ -78,7 +77,7 @@ const GLOBAL_DEFAULTS = {
 	filterScale: 1,
 	powerOfTwo: false,
 	slots: '*',
-	jobs: os.cpus().length / 2,
+	jobs: Math.max(Math.ceil(os.cpus().length / 2), 1),
 };
 
 export const ETC1S_DEFAULTS = {
@@ -338,25 +337,6 @@ async function checkKTXSoftware(logger: Logger): Promise<void> {
 	} else {
 		logger.debug(`Found KTX-Software ${version}.`);
 	}
-}
-
-async function waitExit(process: ChildProcess): Promise<[unknown, string, string]> {
-	let stdout = '';
-	if (process.stdout) {
-		for await (const chunk of process.stdout) {
-			stdout += chunk;
-		}
-	}
-	let stderr = '';
-	if (process.stderr) {
-		for await (const chunk of process.stderr) {
-			stderr += chunk;
-		}
-	}
-	const status = await new Promise((resolve, _) => {
-		process.on('close', resolve);
-	});
-	return [status, stdout, stderr];
 }
 
 function isPowerOfTwo(value: number): boolean {
