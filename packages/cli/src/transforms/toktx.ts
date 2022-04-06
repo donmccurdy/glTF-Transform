@@ -77,7 +77,7 @@ const GLOBAL_DEFAULTS = {
 	filterScale: 1,
 	powerOfTwo: false,
 	slots: '*',
-	jobs: os.cpus().length / 2,
+	jobs: Math.max(Math.ceil(os.cpus().length / 2), 1),
 };
 
 export const ETC1S_DEFAULTS = {
