@@ -11,9 +11,7 @@ import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp, oxipng, SquooshOptions, mozjpeg, webp } from './transforms';
 import { formatBytes } from './util';
 import { Session } from './session';
-
-// // https://github.com/GoogleChromeLabs/squoosh/pull/1176
-// import { ValidateOptions, validate } from './validate';
+import { ValidateOptions, validate } from './validate';
 
 let io: NodeIO;
 
@@ -79,40 +77,40 @@ Use --format=csv or --format=md for alternative display formats.
 	});
 
 // VALIDATE
-// program
-// 	.command('validate', 'Validate the model against the glTF spec')
-// 	.help(`
-// Validate the model with official glTF validator. The validator detects whether
-// a file conforms correctly to the glTF specification, and is useful for
-// debugging issues with a model. Validation errors typically suggest a problem
-// in the authoring process, and can be reported as bugs on the software used to
-// export the file. Certain lower-priority issues are not technically invalid, but
-// may indicate an unintended situation in the file, like unused data not attached
-// to any particular scene.
+program
+	.command('validate', 'Validate the model against the glTF spec')
+	.help(`
+Validate the model with official glTF validator. The validator detects whether
+a file conforms correctly to the glTF specification, and is useful for
+debugging issues with a model. Validation errors typically suggest a problem
+in the authoring process, and can be reported as bugs on the software used to
+export the file. Certain lower-priority issues are not technically invalid, but
+may indicate an unintended situation in the file, like unused data not attached
+to any particular scene.
 
-// For more details about the official validation suite used here, see:
-// https://github.com/KhronosGroup/glTF-Validator
+For more details about the official validation suite used here, see:
+https://github.com/KhronosGroup/glTF-Validator
 
-// Example:
+Example:
 
-//   ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
-// 	`.trim())
-// 	.argument('<input>', INPUT_DESC)
-// 	.option('--limit <limit>', 'Limit number of issues to display', {
-// 		validator: program.NUMBER,
-// 		default: 1e7,
-// 	})
-// 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
-// 		validator: program.ARRAY,
-// 		default: [],
-// 	})
-// 	.action(({args, options, logger}) => {
-// 		validate(
-// 			args.input as string,
-// 			options as unknown as ValidateOptions,
-// 			logger as unknown as Logger
-// 		);
-// 	});
+  ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.option('--limit <limit>', 'Limit number of issues to display', {
+		validator: program.NUMBER,
+		default: 1e7,
+	})
+	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
+		validator: program.ARRAY,
+		default: [],
+	})
+	.action(({args, options, logger}) => {
+		validate(
+			args.input as string,
+			options as unknown as ValidateOptions,
+			logger as unknown as Logger
+		);
+	});
 
 program.command('', '\n\n📦 PACKAGE ──────────────────────────────────────────');
 
