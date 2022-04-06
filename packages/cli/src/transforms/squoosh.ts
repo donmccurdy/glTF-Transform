@@ -28,7 +28,7 @@ interface SquooshInternalOptions extends SquooshOptions {
 	codec: Codec;
 }
 
-const SQUOOSH_DEFAULTS: SquooshInternalOptions = {
+const SQUOOSH_DEFAULTS: Required<SquooshInternalOptions> = {
 	formats: '*',
 	slots: '*',
 	autoRounds: 6,
@@ -37,8 +37,8 @@ const SQUOOSH_DEFAULTS: SquooshInternalOptions = {
 };
 
 const WEBP_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS };
-const MOZJPEG_DEFAULTS: SquooshOptions = { formats: 'jpeg', ...SQUOOSH_DEFAULTS };
-const OXIPNG_DEFAULTS: SquooshOptions = { formats: 'png', ...SQUOOSH_DEFAULTS };
+const MOZJPEG_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS, formats: 'jpeg' };
+const OXIPNG_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS, formats: 'png' };
 
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
