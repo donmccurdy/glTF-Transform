@@ -6,6 +6,7 @@
 
 **Features:**
 
+- Vastly improved KTX compression speed. [#389](https://github.com/donmccurdy/glTF-Transform/pull/389) by [@mikejurka](https://github.com/mikejurka), [@spatialsys](https://github.com/spatialsys)
 - Add `KHR_materials_iridescence` extension. [#518](https://github.com/donmccurdy/glTF-Transform/pull/518)
 
 ### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
