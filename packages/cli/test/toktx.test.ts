@@ -4,7 +4,8 @@ import fs from 'fs/promises';
 import test from 'tape';
 import { Document, Logger, TextureChannel, vec2 } from '@gltf-transform/core';
 import { MaterialsClearcoat } from '@gltf-transform/extensions';
-import { Mode, mockCommandExists, mockSpawn, toktx } from '../';
+import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '../';
+import type { ChildProcess } from 'child_process';
 
 const { R, G } = TextureChannel;
 
@@ -61,14 +62,20 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 	}
 
 	let actualParams: string[];
-	mockSpawn(async (_, params: string[]) => {
+	mockSpawn(async (_, params: string[]): Promise<ChildProcess> => {
 		// Mock `toktx` version check.
-		if (params.join() === '--version') return { status: 0, stdout: 'v4.0.0' };
+		if (params.join() === '--version') {
+			return { status: 0, stdout: 'v4.0.0', stderr: '' } as unknown as ChildProcess;
+		}
 
 		// Mock `toktx` compression.
 		actualParams = params;
 		await fs.writeFile(params[params.length - 2], new Uint8Array(8));
-		return { status: 0 };
+		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
+	});
+	mockWaitExit(async (process) => {
+		const { status, stdout, stderr } = await process;
+		return [status, stdout, stderr];
 	});
 	mockCommandExists(() => Promise.resolve(true));
 
