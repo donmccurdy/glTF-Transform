@@ -2,7 +2,6 @@
 const { spawn: _spawn } = require('child_process');
 
 import _commandExists from 'command-exists';
-import { Document, Material, PropertyType, Texture, TextureChannel } from '@gltf-transform/core';
 import type { ChildProcess } from 'child_process';
 
 // Constants.
@@ -109,45 +108,4 @@ export function formatXMP(value: string | number | boolean | Record<string, unkn
 
 export function underline(str: string): string {
 	return `\x1b[4m${str}\x1b[0m`;
-}
-
-// Textures.
-
-/** Returns names of all texture slots using the given texture. */
-export function getTextureSlots(doc: Document, texture: Texture): string[] {
-	const root = doc.getRoot();
-	const slots = doc
-		.getGraph()
-		.listParentEdges(texture)
-		.filter((edge) => edge.getParent() !== root)
-		.map((edge) => edge.getName());
-	return Array.from(new Set(slots));
-}
-
-/** Returns bit mask of all texture channels used by the given texture. */
-export function getTextureChannels(doc: Document, texture: Texture): number {
-	let mask = 0x0000;
-	for (const edge of doc.getGraph().listParentEdges(texture)) {
-		const parent = edge.getParent();
-		let { channels } = edge.getAttributes() as { channels: number | undefined };
-
-		if (
-			channels &&
-			edge.getName() === 'baseColorTexture' &&
-			parent instanceof Material &&
-			parent.getAlphaMode() === Material.AlphaMode.OPAQUE
-		) {
-			channels &= ~TextureChannel.A;
-		}
-
-		if (channels) {
-			mask |= channels;
-			continue;
-		}
-
-		if (parent.propertyType !== PropertyType.ROOT) {
-			doc.getLogger().warn(`Missing attribute ".channels" on edge, "${edge.getName()}".`);
-		}
-	}
-	return mask;
 }

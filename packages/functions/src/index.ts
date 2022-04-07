@@ -56,3 +56,5 @@ export * from './tangents';
 export * from './texture-resize';
 export * from './unweld';
 export * from './weld';
+export * from './list-texture-channels';
+export * from './list-texture-slots';

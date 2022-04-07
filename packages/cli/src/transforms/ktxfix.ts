@@ -2,7 +2,8 @@ const micromatch = require('micromatch');
 
 import { KTX2Primaries, read, write } from 'ktx-parse';
 import { Document, Transform } from '@gltf-transform/core';
-import { getTextureSlots, MICROMATCH_OPTIONS } from '../util';
+import { MICROMATCH_OPTIONS } from '../util';
+import { listTextureSlots } from '@gltf-transform/functions';
 
 const NAME = 'ktxfix';
 
@@ -20,7 +21,7 @@ export function ktxfix(): Transform {
 
 			const ktx = read(image);
 			const dfd = ktx.dataFormatDescriptor[0];
-			const slots = getTextureSlots(doc, texture);
+			const slots = listTextureSlots(doc, texture);
 
 			// Don't make changes if we have no information.
 			if (slots.length === 0) continue;

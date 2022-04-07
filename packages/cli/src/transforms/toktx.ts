@@ -8,15 +8,8 @@ const pLimit = require('p-limit');
 
 import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import {
-	spawn,
-	commandExists,
-	formatBytes,
-	getTextureChannels,
-	getTextureSlots,
-	waitExit,
-	MICROMATCH_OPTIONS,
-} from '../util';
+import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
+import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
 
 tmp.setGracefulCleanup();
 
@@ -127,8 +120,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		const numTextures = textures.length;
 		const promises = textures.map((texture, textureIndex) =>
 			limit(async () => {
-				const slots = getTextureSlots(doc, texture);
-				const channels = getTextureChannels(doc, texture);
+				const slots = listTextureSlots(doc, texture);
+				const channels = getTextureChannelMask(doc, texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||

@@ -1,7 +1,8 @@
 import { ImagePool } from '@squoosh/lib';
 import { Document, TextureChannel, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
-import { formatBytes, getTextureChannels, getTextureSlots } from '../util';
+import { formatBytes } from '../util';
+import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 
 const NAME = 'squoosh';
 
@@ -98,8 +99,8 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 
 		await Promise.all(
 			textures.map(async (texture, textureIndex) => {
-				const slots = getTextureSlots(document, texture);
-				const channels = getTextureChannels(document, texture);
+				const slots = listTextureSlots(document, texture);
+				const channels = getTextureChannelMask(document, texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||
