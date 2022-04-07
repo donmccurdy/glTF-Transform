@@ -1,8 +1,8 @@
-import { ImagePool } from '@squoosh/lib';
 import { Document, TextureChannel, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
-import { formatBytes } from '../util';
+import { formatBytes } from './utils';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
+import type * as SquooshLib from '@squoosh/lib'; // types only! not a prod dependency.
 
 const NAME = 'squoosh';
 
@@ -24,6 +24,7 @@ const CODEC_TO_MIME_TYPE: Record<Codec, string> = {
 // are, I'm happy to expose more here.
 // See: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
 export interface SquooshOptions {
+	squoosh: unknown;
 	formats?: RegExp;
 	slots?: RegExp;
 	auto?: boolean;
@@ -33,22 +34,22 @@ interface SquooshInternalOptions extends SquooshOptions {
 	codec: Codec;
 }
 
-const SQUOOSH_DEFAULTS: Required<Omit<SquooshInternalOptions, 'codec'>> = {
+const SQUOOSH_DEFAULTS: Required<Omit<Omit<SquooshInternalOptions, 'codec'>, 'squoosh'>> = {
 	formats: /.*/,
 	slots: /.*/,
 	auto: false,
 };
 
-const WEBP_DEFAULTS: SquooshInternalOptions = {
+const WEBP_DEFAULTS: Omit<SquooshInternalOptions, 'squoosh'> = {
 	...SQUOOSH_DEFAULTS,
 	codec: Codec.WEBP,
 };
-const MOZJPEG_DEFAULTS: SquooshInternalOptions = {
+const MOZJPEG_DEFAULTS: Omit<SquooshInternalOptions, 'squoosh'> = {
 	...SQUOOSH_DEFAULTS,
 	codec: Codec.MOZJPEG,
 	formats: /^image\/jpeg$/,
 };
-const OXIPNG_DEFAULTS: SquooshInternalOptions = {
+const OXIPNG_DEFAULTS: Omit<SquooshInternalOptions, 'squoosh'> = {
 	...SQUOOSH_DEFAULTS,
 	codec: Codec.OXIPNG,
 	formats: /^image\/png$/,
@@ -56,28 +57,12 @@ const OXIPNG_DEFAULTS: SquooshInternalOptions = {
 
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-interface ImagePool {
-	ingestImage(image: Uint8Array): Image;
-	close(): Promise<void>;
-}
-
-interface Image {
-	preprocess(settings: Record<string, unknown>): Promise<void>;
-	encode(settings: Record<string, unknown>): Promise<unknown>;
-	encodedWith: Record<Codec, Promise<EncodedImage>>;
-}
-
-interface EncodedImage {
-	optionsUsed: Record<string, unknown>;
-	binary: Uint8Array;
-}
-
-let pool: ImagePool | null = null;
+let pool: SquooshLib.ImagePool | null = null;
 let poolUsers = 0;
 
-const requestImagePool = (): ImagePool => {
+const requestImagePool = (squoosh: typeof SquooshLib): SquooshLib.ImagePool => {
 	if (!pool) {
-		pool = new ImagePool(require('os').cpus().length);
+		pool = new squoosh.ImagePool(require('os').cpus().length);
 	}
 	poolUsers++;
 	return pool!;
@@ -89,13 +74,19 @@ const releaseImagePool = (): void => {
 	}
 };
 
+/** @internal Shared base for {@link webp()}, {@link mozjpeg()}, and {@link oxipng()}. */
 export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	const options = { ...SQUOOSH_DEFAULTS, ..._options } as Required<SquooshInternalOptions>;
+	const squoosh = options.squoosh as typeof SquooshLib | null;
+
+	if (!squoosh) {
+		throw new Error(`${NAME}: squoosh dependency required — install "@squoosh/lib".`);
+	}
 
 	return async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 		const textures = document.getRoot().listTextures();
-		const pool = requestImagePool();
+		const pool = requestImagePool(squoosh);
 
 		await Promise.all(
 			textures.map(async (texture, textureIndex) => {
@@ -149,7 +140,8 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	};
 };
 
-export const webp = function (options: SquooshOptions = WEBP_DEFAULTS): Transform {
+/** Converts images to WebP, using the {@link TextureWebP} extension. */
+export const webp = function (options: SquooshOptions): Transform {
 	const _options = { ...WEBP_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
 		document.createExtension(TextureWebP).setRequired(true);
@@ -157,14 +149,16 @@ export const webp = function (options: SquooshOptions = WEBP_DEFAULTS): Transfor
 	};
 };
 
-export const mozjpeg = function (options: SquooshOptions = MOZJPEG_DEFAULTS): Transform {
+/** Optimizes JPEG images by default, optionally converting PNG textures to JPEG. */
+export const mozjpeg = function (options: SquooshOptions): Transform {
 	const _options = { ...MOZJPEG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
 		return squoosh(_options)(document);
 	};
 };
 
-export const oxipng = function (options: SquooshOptions = OXIPNG_DEFAULTS): Transform {
+/** Optimizes PNG images by default, optionally converting JPEG textures to PNG. */
+export const oxipng = function (options: SquooshOptions): Transform {
 	const _options = { ...OXIPNG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
 		return squoosh(_options)(document);
