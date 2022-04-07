@@ -1,4 +1,4 @@
-import { Document, Transform } from '@gltf-transform/core';
+import type { Document, Transform } from '@gltf-transform/core';
 import { MaterialsUnlit } from '@gltf-transform/extensions';
 
 export const unlit = (): Transform => {

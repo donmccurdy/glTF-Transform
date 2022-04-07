@@ -1,7 +1,7 @@
 import { Document, Transform } from '@gltf-transform/core';
 import { DracoMeshCompression } from '@gltf-transform/extensions';
 
-export interface DracoCLIOptions {
+export interface DracoOptions {
 	method?: 'edgebreaker' | 'sequential';
 	encodeSpeed?: number;
 	decodeSpeed?: number;
@@ -13,7 +13,7 @@ export interface DracoCLIOptions {
 	quantizationVolume?: 'mesh' | 'scene';
 }
 
-export const DRACO_DEFAULTS: DracoCLIOptions = {
+export const DRACO_DEFAULTS: DracoOptions = {
 	method: 'edgebreaker',
 	encodeSpeed: 5,
 	decodeSpeed: 5,
@@ -25,8 +25,14 @@ export const DRACO_DEFAULTS: DracoCLIOptions = {
 	quantizationVolume: 'mesh',
 };
 
-export const draco = (_options: DracoCLIOptions): Transform => {
-	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoCLIOptions>;
+/**
+ * Applies Draco compression using {@link DracoMeshCompression KHR_draco_mesh_compression}.
+ * This type of compression can reduce the size of triangle geometry.
+ *
+ * This function is a thin wrapper around the {@link DracoMeshCompression} extension itself.
+ */
+export const draco = (_options: DracoOptions): Transform => {
+	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
 	return (doc: Document): void => {
 		doc.createExtension(DracoMeshCompression)
 			.setRequired(true)

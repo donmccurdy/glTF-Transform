@@ -4,7 +4,7 @@ import fs from 'fs';
 import test from 'tape';
 import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
-import { draco, program, programReady, unlit } from '../';
+import { program, programReady } from '../';
 
 tmp.setGracefulCleanup();
 
@@ -99,22 +99,4 @@ test('@gltf-transform/cli::merge', async (t) => {
 				t.equals(texName, FileUtils.basename(inputC), 'merge textures');
 			})
 	);
-});
-
-test('@gltf-transform/cli::draco', async (t) => {
-	const doc = new Document();
-	await doc.transform(draco({ method: 'edgebreaker' }));
-	await doc.transform(draco({ method: 'sequential' }));
-	const dracoExtension = doc.getRoot().listExtensionsUsed()[0];
-	t.equals(dracoExtension.extensionName, 'KHR_draco_mesh_compression', 'adds extension');
-	t.end();
-});
-
-test('@gltf-transform/cli::unlit', async (t) => {
-	const doc = new Document();
-	doc.createMaterial();
-	await doc.transform(unlit());
-	const unlitExtension = doc.getRoot().listExtensionsUsed()[0];
-	t.equals(unlitExtension.extensionName, 'KHR_materials_unlit', 'adds extension');
-	t.end();
 });
