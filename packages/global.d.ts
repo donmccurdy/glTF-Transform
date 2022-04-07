@@ -42,3 +42,31 @@ declare const Deno: {
 	readFile: (path: string) => Promise<Uint8Array>;
 	readTextFile: (path: string) => Promise<string>;
 };
+
+/** Squoosh */
+
+// https://github.com/GoogleChromeLabs/squoosh/issues/1223
+declare module '@squoosh/lib' {
+	enum Codec {
+		OXIPNG = 'oxipng',
+		MOZJPEG = 'mozjpeg',
+		WEBP = 'webp',
+	}
+
+	export class ImagePool {
+		constructor(jobs: number);
+		ingestImage(image: Uint8Array): Image;
+		close(): Promise<void>;
+	}
+
+	export class Image {
+		preprocess(settings: Record<string, unknown>): Promise<void>;
+		encode(settings: Record<string, unknown>): Promise<unknown>;
+		encodedWith: Record<Codec, Promise<EncodedImage>>;
+	}
+
+	export class EncodedImage {
+		optionsUsed: Record<string, unknown>;
+		binary: Uint8Array;
+	}
+}

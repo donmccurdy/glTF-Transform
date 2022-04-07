@@ -2,7 +2,6 @@
 const { spawn: _spawn } = require('child_process');
 
 import _commandExists from 'command-exists';
-import { Document, PropertyType, Texture } from '@gltf-transform/core';
 import type { ChildProcess } from 'child_process';
 
 // Constants.
@@ -14,6 +13,10 @@ export const XMPContext: Record<string, string> = {
 	xmp: 'http://ns.adobe.com/xap/1.0/',
 	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
 };
+
+// Using 'micromatch' because 'contains: true' did not work as expected with
+// minimatch. Need to ensure that '*' matches patterns like 'image/png'.
+export const MICROMATCH_OPTIONS = { nocase: true, contains: true };
 
 // Mock for tests.
 
@@ -104,33 +107,6 @@ export function formatXMP(value: string | number | boolean | Record<string, unkn
 	return JSON.stringify(value);
 }
 
-// Textures.
-
-/** Returns names of all texture slots using the given texture. */
-export function getTextureSlots(doc: Document, texture: Texture): string[] {
-	const root = doc.getRoot();
-	const slots = doc
-		.getGraph()
-		.listParentEdges(texture)
-		.filter((edge) => edge.getParent() !== root)
-		.map((edge) => edge.getName());
-	return Array.from(new Set(slots));
-}
-
-/** Returns bit mask of all texture channels used by the given texture. */
-export function getTextureChannels(doc: Document, texture: Texture): number {
-	let mask = 0x0000;
-	for (const edge of doc.getGraph().listParentEdges(texture)) {
-		const { channels } = edge.getAttributes() as { channels: number | undefined };
-
-		if (channels) {
-			mask |= channels;
-			continue;
-		}
-
-		if (edge.getParent().propertyType !== PropertyType.ROOT) {
-			doc.getLogger().warn(`Missing attribute ".channels" on edge, "${edge.getName()}".`);
-		}
-	}
-	return mask;
+export function underline(str: string): string {
+	return `\x1b[4m${str}\x1b[0m`;
 }
