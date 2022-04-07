@@ -11,7 +11,7 @@ const validator = createValidator();
 function createValidator(): typeof Validator {
 	// Workaround for https://github.com/GoogleChromeLabs/squoosh/pull/1176.
 	const navigator = global.navigator;
-	delete (global as Record<string, unknown>).navigator;
+	delete (global as unknown as Record<string, unknown>).navigator;
 	try {
 		return require('gltf-validator');
 	} finally {

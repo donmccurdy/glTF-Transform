@@ -15,6 +15,10 @@ export const XMPContext: Record<string, string> = {
 	xmpRights: 'http://ns.adobe.com/xap/1.0/rights/',
 };
 
+// Using 'micromatch' because 'contains: true' did not work as expected with
+// minimatch. Need to ensure that '*' matches patterns like 'image/png'.
+export const MICROMATCH_OPTIONS = { nocase: true, contains: true };
+
 // Mock for tests.
 
 export let spawn = _spawn;

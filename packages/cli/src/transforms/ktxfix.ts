@@ -1,8 +1,8 @@
-const minimatch = require('minimatch');
+const micromatch = require('micromatch');
 
 import { KTX2Primaries, read, write } from 'ktx-parse';
 import { Document, Transform } from '@gltf-transform/core';
-import { getTextureSlots } from '../util';
+import { getTextureSlots, MICROMATCH_OPTIONS } from '../util';
 
 const NAME = 'ktxfix';
 
@@ -25,7 +25,7 @@ export function ktxfix(): Transform {
 			// Don't make changes if we have no information.
 			if (slots.length === 0) continue;
 
-			const isLinear = !slots.find((slot) => minimatch(slot, '*{color,emissive}*', { nocase: true }));
+			const isLinear = !slots.find((slot) => micromatch.isMatch(slot, '*{color,emissive}*', MICROMATCH_OPTIONS));
 			const colorPrimaries = isLinear ? KTX2Primaries.UNSPECIFIED : KTX2Primaries.SRGB;
 			const name = texture.getURI() || texture.getName();
 

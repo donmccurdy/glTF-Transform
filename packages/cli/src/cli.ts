@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import {promises as fs} from 'fs';
-import minimatch from 'minimatch';
+import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
@@ -9,7 +9,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp, oxipng, SquooshOptions, mozjpeg, webp } from './transforms';
-import { formatBytes } from './util';
+import { formatBytes, MICROMATCH_OPTIONS } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 
@@ -508,7 +508,7 @@ Requires KHR_mesh_quantization support.`.trim())
 		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
 	.action(({args, options, logger}) => {
-		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(quantize({...options, pattern}));
 	});
@@ -529,7 +529,7 @@ Removes KHR_mesh_quantization, if present.`.trim())
 		default: '!JOINTS_*',
 	})
 	.action(({args, options, logger}) => {
-		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(dequantize({...options, pattern}));
 	});
@@ -700,7 +700,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	})
 	.action(async ({args, options, logger}) => {
 		const pattern = options.pattern
-			? minimatch.makeRe(String(options.pattern), {nocase: true})
+			? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS)
 			: null;
 		return Session.create(io, logger, args.input, args.output)
 			.transform(textureResize({
@@ -972,8 +972,8 @@ program
 	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--formats <formats>',
-		'Texture formats to include',
-		{validator: ['png', 'jpeg', '*'], default: '*'}
+		'Texture formats to include (glob)',
+		{validator: ['image/png', 'image/jpeg', '*'], default: '*'}
 	)
 	.option(
 		'--slots <slots>',
@@ -990,10 +990,12 @@ program
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(webp(options as unknown as SquooshOptions))
-	);
+	.action(({args, options, logger}) => {
+		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		return Session.create(io, logger, args.input, args.output)
+			.transform(webp({...options, formats, slots}));
+	});
 
 // OXIPNG
 program
@@ -1003,8 +1005,8 @@ program
 	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--formats <formats>',
-		'Texture formats to include',
-		{validator: ['png', 'jpeg', '*'], default: 'png'}
+		'Texture formats to include (glob)',
+		{validator: ['image/png', 'image/jpeg', '*'], default: 'image/png'}
 	)
 	.option(
 		'--slots <slots>',
@@ -1021,10 +1023,12 @@ program
 		'Target Butteraugli distance, for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(oxipng(options as unknown as SquooshOptions))
-	);
+	.action(({args, options, logger}) => {
+		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		return Session.create(io, logger, args.input, args.output)
+			.transform(oxipng({...options, formats, slots}));
+	});
 
 // MOZJPEG
 program
@@ -1034,8 +1038,8 @@ program
 	.argument('<output>', OUTPUT_DESC)
 	.option(
 		'--formats <formats>',
-		'Texture formats to include',
-		{validator: ['png', 'jpeg', '*'], default: 'jpeg'}
+		'Texture formats to include (glob)',
+		{validator: ['image/png', 'image/jpeg', '*'], default: 'image/jpeg'}
 	)
 	.option(
 		'--slots <slots>',
@@ -1052,10 +1056,12 @@ program
 		'Target Butteraugli distance for auto optimizer.',
 		{validator: program.NUMBER, default: 1.4}
 	)
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(mozjpeg(options as unknown as SquooshOptions))
-	);
+	.action(({args, options, logger}) => {
+		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		return Session.create(io, logger, args.input, args.output)
+			.transform(mozjpeg({...options, formats, slots}));
+	});
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
 
@@ -1116,7 +1122,7 @@ so this workflow is not a replacement for video playback.
 		default: true,
 	})
 	.action(({args, options, logger}) => {
-		const pattern = minimatch.makeRe(String(options.pattern), {nocase: true});
+		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});

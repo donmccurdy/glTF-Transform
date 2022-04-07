@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs/promises');
-const minimatch = require('minimatch');
+const micromatch = require('micromatch');
 const os = require('os');
 const semver = require('semver');
 const tmp = require('tmp');
@@ -8,7 +8,15 @@ const pLimit = require('p-limit');
 
 import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
-import { spawn, commandExists, formatBytes, getTextureChannels, getTextureSlots, waitExit } from '../util';
+import {
+	spawn,
+	commandExists,
+	formatBytes,
+	getTextureChannels,
+	getTextureSlots,
+	waitExit,
+	MICROMATCH_OPTIONS,
+} from '../util';
 
 tmp.setGracefulCleanup();
 
@@ -137,7 +145,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				} else if (
 					options.slots !== '*' &&
-					!slots.find((slot) => minimatch(slot, options.slots, { nocase: true }))
+					!slots.find((slot) => micromatch.isMatch(slot, options.slots, MICROMATCH_OPTIONS))
 				) {
 					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`);
 					return;
@@ -262,12 +270,12 @@ function createParams(
 			params.push('--selector_rdo_threshold', _options.rdoThreshold);
 		}
 
-		if (slots.find((slot) => minimatch(slot, '*normal*', { nocase: true }))) {
+		if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
 			params.push('--normal_map');
 		}
 	}
 
-	if (slots.length && !slots.find((slot) => minimatch(slot, '*{color,emissive}*', { nocase: true }))) {
+	if (slots.length && !slots.find((slot) => micromatch.isMatch(slot, '*{color,emissive}*', MICROMATCH_OPTIONS))) {
 		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
 		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
 	}
