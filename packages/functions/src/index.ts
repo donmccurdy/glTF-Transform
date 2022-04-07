@@ -42,6 +42,7 @@ export * from './center';
 export * from './colorspace';
 export * from './dedup';
 export * from './dequantize';
+export * from './draco';
 export * from './inspect';
 export * from './instance';
 export * from './meshopt';
