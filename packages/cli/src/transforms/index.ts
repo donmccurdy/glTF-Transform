@@ -3,5 +3,4 @@ export * from './ktxfix';
 export * from './merge';
 export * from './meshopt';
 export * from './toktx';
-export * from './unlit';
 export * from './xmp';
