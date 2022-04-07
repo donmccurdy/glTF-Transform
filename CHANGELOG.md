@@ -9,7 +9,8 @@
 - Vastly improved KTX compression speed. [#389](https://github.com/donmccurdy/glTF-Transform/pull/389) by [@mikejurka](https://github.com/mikejurka), [@spatialsys](https://github.com/spatialsys)
 - Add `KHR_materials_iridescence` extension. [#518](https://github.com/donmccurdy/glTF-Transform/pull/518)
 - Add WebP, OxiPNG, and MozJPEG image optimization with [`@squoosh/lib`](https://www.npmjs.com/package/@squoosh/lib). [#506](https://github.com/donmccurdy/glTF-Transform/pull/506)
-- Add `draco()`, `meshopt()`, `unlit()`, and `ktxfix()` functions to `@gltf-transform/functions`. [#544](https://github.com/donmccurdy/glTF-Transform/issues/544)
+- Add `draco()`, `meshopt()`, `unlit()`, and `ktxfix()` functions to `@gltf-transform/functions` (moved from CLI). [#544](https://github.com/donmccurdy/glTF-Transform/issues/544)
+- Add `listTextureSlots()`, `listTextureChannels()`, `getTextureChannelMask()`. [#506](https://github.com/donmccurdy/glTF-Transform/pull/506)
 
 ### v2.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/17))
 
