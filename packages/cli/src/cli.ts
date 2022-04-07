@@ -8,8 +8,8 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transfor
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp, oxipng, SquooshOptions, mozjpeg, webp } from './transforms';
-import { formatBytes, MICROMATCH_OPTIONS } from './util';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, unlit, meshopt, MeshoptCLIOptions, XMPOptions, xmp, oxipng, mozjpeg, webp } from './transforms';
+import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 
@@ -297,7 +297,7 @@ flag, or use the scripting API to manually input JSONLD fields.
 
 To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
 
-Documentation
+${underline('Documentation')}
 - https://gltf-transform.donmccurdy.com/classes/extensions.xmp.html
 `)
 	.argument('<input>', INPUT_DESC)
@@ -372,10 +372,10 @@ only geometry data — animation and textures are not compressed.
 Compresses
 - geometry (only triangle meshes)
 
-Documentation
+${underline('Documentation')}
 - https://gltf-transform.donmccurdy.com/classes/extensions.dracomeshcompression.html
 
-References
+${underline('References')}
 - draco: https://github.com/google/draco
 - KHR_draco_mesh_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/
 `.trim())
@@ -436,10 +436,10 @@ Compresses
 - morph targets
 - animation tracks
 
-Documentation
+${underline('Documentation')}
 - https://gltf-transform.donmccurdy.com/classes/extensions.meshoptcompression.html
 
-References
+${underline('References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
 - EXT_meshopt_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_meshopt_compression/
 `.trim())
@@ -719,10 +719,10 @@ more attention to compression settings to get similar visual results.
 
 {DETAILS}
 
-Documentation:
+${underline('Documentation')}
 https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu
 
-Dependencies:
+${underline('Dependencies')}
 KTX-Software (https://github.com/KhronosGroup/KTX-Software/)
 `;
 
@@ -961,8 +961,19 @@ be fully decompressed in GPU memory — this makes texture GPU upload much
 slower, and may consume 4-8x more GPU memory. However, the PNG/JPEG/WebP
 compression methods are typically more forgiving than GPU texture compression,
 and require less tuning to achieve good visual and filesize results.
-By default, compression levels are chosen automatically based on a target
-visual distance, configurable with --auto-target.`.trim();
+
+The experimental auto-optimization mode, --auto, can be used to iteratively
+refine and optimize encoder settings against perceptual metrics (Butteraugli
+distance). Slower, with typically higher-quality and larger images compared to
+the default encoder settings.
+
+${underline('NOTICE')}: Only a small subset of the available @squoosh/lib
+encoder configuration options are currently exposed by this commandline. If any
+contributors would like to recommend, test, and document additional encoder
+options, please open a pull request.
+
+See: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
+`.trim();
 
 // WEBP
 program
@@ -981,16 +992,14 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--auto-rounds <rounds>',
-		'Maximum number of rounds to use for auto optimizer.',
-		{validator: program.NUMBER, default: 6}
-	)
-	.option(
-		'--auto-target <distance>',
-		'Target Butteraugli distance for auto optimizer.',
-		{validator: program.NUMBER, default: 1.4}
+		'--auto',
+		'Enables experimental auto-optimization with perceptual metrics.'
+		+ ' Slower, with typically higher-quality and larger images'
+		+ ' compared to the default encoder settings.',
+		{validator: program.BOOLEAN, default: false}
 	)
 	.action(({args, options, logger}) => {
+		console.log(options);
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
@@ -1014,14 +1023,11 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--auto-rounds <rounds>',
-		'Maximum number of rounds, for auto optimizer.',
-		{validator: program.NUMBER, default: 6}
-	)
-	.option(
-		'--auto-target <distance>',
-		'Target Butteraugli distance, for auto optimizer.',
-		{validator: program.NUMBER, default: 1.4}
+		'--auto',
+		'Enables experimental auto-optimization with perceptual metrics.'
+		+ ' Slower, with typically higher-quality and larger images'
+		+ ' compared to the default encoder settings.',
+		{validator: program.BOOLEAN, default: false}
 	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
@@ -1047,14 +1053,11 @@ program
 		{validator: program.STRING, default: '*'}
 	)
 	.option(
-		'--auto-rounds <rounds>',
-		'Maximum number of rounds to use for auto optimizer.',
-		{validator: program.NUMBER, default: 6}
-	)
-	.option(
-		'--auto-target <distance>',
-		'Target Butteraugli distance for auto optimizer.',
-		{validator: program.NUMBER, default: 1.4}
+		'--auto',
+		'Enables experimental auto-optimization with perceptual metrics.'
+		+ ' Slower, with typically higher-quality and larger images'
+		+ ' compared to the default encoder settings.',
+		{validator: program.BOOLEAN, default: false}
 	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);

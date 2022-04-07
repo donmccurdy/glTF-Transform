@@ -1,7 +1,7 @@
 import { ImagePool } from '@squoosh/lib';
-import { Document, Transform } from '@gltf-transform/core';
+import { Document, TextureChannel, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
-import { formatBytes, getTextureSlots } from '../util';
+import { formatBytes, getTextureChannels, getTextureSlots } from '../util';
 
 const NAME = 'squoosh';
 
@@ -17,28 +17,41 @@ const CODEC_TO_MIME_TYPE: Record<Codec, string> = {
 	[Codec.WEBP]: 'image/webp',
 };
 
+// TODO(feat): There are _many_ other encoder options for each of the
+// codecs provided here, but the options are mostly undocumented. If
+// anyone is willing to contribute documentation on what the options
+// are, I'm happy to expose more here.
+// See: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
 export interface SquooshOptions {
 	formats?: RegExp;
 	slots?: RegExp;
-	autoRounds?: number;
-	autoTarget?: number;
+	auto?: boolean;
 }
 
 interface SquooshInternalOptions extends SquooshOptions {
 	codec: Codec;
 }
 
-const SQUOOSH_DEFAULTS: Required<SquooshInternalOptions> = {
+const SQUOOSH_DEFAULTS: Required<Omit<SquooshInternalOptions, 'codec'>> = {
 	formats: /.*/,
 	slots: /.*/,
-	autoRounds: 6,
-	autoTarget: 1.4,
-	codec: Codec.OXIPNG,
+	auto: false,
 };
 
-const WEBP_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS };
-const MOZJPEG_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS, formats: /^image\/jpeg$/ };
-const OXIPNG_DEFAULTS: SquooshOptions = { ...SQUOOSH_DEFAULTS, formats: /^image\/png$/ };
+const WEBP_DEFAULTS: SquooshInternalOptions = {
+	...SQUOOSH_DEFAULTS,
+	codec: Codec.WEBP,
+};
+const MOZJPEG_DEFAULTS: SquooshInternalOptions = {
+	...SQUOOSH_DEFAULTS,
+	codec: Codec.MOZJPEG,
+	formats: /^image\/jpeg$/,
+};
+const OXIPNG_DEFAULTS: SquooshInternalOptions = {
+	...SQUOOSH_DEFAULTS,
+	codec: Codec.OXIPNG,
+	formats: /^image\/png$/,
+};
 
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -75,7 +88,7 @@ const releaseImagePool = (): void => {
 	}
 };
 
-export const squoosh = function (_options: SquooshInternalOptions = SQUOOSH_DEFAULTS): Transform {
+export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	const options = { ...SQUOOSH_DEFAULTS, ..._options } as Required<SquooshInternalOptions>;
 
 	return async (document: Document): Promise<void> => {
@@ -86,6 +99,7 @@ export const squoosh = function (_options: SquooshInternalOptions = SQUOOSH_DEFA
 		await Promise.all(
 			textures.map(async (texture, textureIndex) => {
 				const slots = getTextureSlots(document, texture);
+				const channels = getTextureChannels(document, texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||
@@ -103,6 +117,9 @@ export const squoosh = function (_options: SquooshInternalOptions = SQUOOSH_DEFA
 				} else if (slots.length && !slots.some((slot) => options.slots.test(slot))) {
 					logger.debug(`${prefix}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
 					return;
+				} else if (options.codec === Codec.MOZJPEG && channels & TextureChannel.A) {
+					logger.warn(`${prefix}: Skipping, [${slots.join(', ')}] requires alpha channel.`);
+					return;
 				}
 
 				logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
@@ -112,7 +129,7 @@ export const squoosh = function (_options: SquooshInternalOptions = SQUOOSH_DEFA
 				const image = pool.ingestImage(texture.getImage()!);
 				const srcByteLength = texture.getImage()!.byteLength;
 
-				await image.encode({ [options.codec]: {} });
+				await image.encode({ [options.codec]: options.auto ? 'auto' : {} });
 
 				const encodedImage = await image.encodedWith[options.codec];
 
@@ -132,23 +149,23 @@ export const squoosh = function (_options: SquooshInternalOptions = SQUOOSH_DEFA
 };
 
 export const webp = function (options: SquooshOptions = WEBP_DEFAULTS): Transform {
-	options = { ...WEBP_DEFAULTS, ...options };
+	const _options = { ...WEBP_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
 		document.createExtension(TextureWebP).setRequired(true);
-		return squoosh({ formats: options.formats, slots: options.slots, codec: Codec.WEBP })(document);
+		return squoosh(_options)(document);
 	};
 };
 
 export const mozjpeg = function (options: SquooshOptions = MOZJPEG_DEFAULTS): Transform {
-	options = { ...MOZJPEG_DEFAULTS, ...options };
+	const _options = { ...MOZJPEG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
-		return squoosh({ formats: options.formats, slots: options.slots, codec: Codec.MOZJPEG })(document);
+		return squoosh(_options)(document);
 	};
 };
 
 export const oxipng = function (options: SquooshOptions = OXIPNG_DEFAULTS): Transform {
-	options = { ...OXIPNG_DEFAULTS, ...options };
+	const _options = { ...OXIPNG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
-		return squoosh({ formats: options.formats, slots: options.slots, codec: Codec.OXIPNG })(document);
+		return squoosh(_options)(document);
 	};
 };
