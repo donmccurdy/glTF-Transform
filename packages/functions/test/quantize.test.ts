@@ -15,6 +15,7 @@ import {
 	Scene,
 	vec3,
 } from '@gltf-transform/core';
+import { MaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -352,6 +353,34 @@ test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) =
 	t.equals(node.getMesh(), null, 'reparent mesh');
 	t.equals(weightsChannel.getTargetNode(), node.listChildren()[0], 'retarget non-TRS animation');
 	t.equals(scaleChannel.getTargetNode(), node, "don't retarget TRS animation");
+
+	t.end();
+});
+
+test('@gltf-transform/functions::quantize | volumetric materials', async (t) => {
+	const doc = new Document().setLogger(logger);
+	createScene(doc);
+	const primA = doc.getRoot().listNodes()[0].getMesh().listPrimitives()[0];
+	const primB = doc.getRoot().listNodes()[1].getMesh().listPrimitives()[0];
+
+	// Add volumetric material (thickness is in local units).
+	const volumeExtension = doc.createExtension(MaterialsVolume);
+	const volume = volumeExtension.createVolume().setThicknessFactor(1.0);
+	const material = doc.createMaterial().setExtension('KHR_materials_volume', volume);
+	primA.setMaterial(material);
+	primB.setMaterial(material);
+
+	await doc.transform(quantize());
+
+	t.ok(primA.getMaterial() !== material, 'new material for prim A');
+	t.ok(primB.getMaterial() !== material, 'new material for prim B');
+	t.ok(material.isDisposed(), 'dispose old material');
+	t.equals(doc.getRoot().listMaterials().length, 2, 'material count = 2');
+
+	const volumeA = primA.getMaterial().getExtension<Volume>('KHR_materials_volume');
+	const volumeB = primB.getMaterial().getExtension<Volume>('KHR_materials_volume');
+	t.equals(volumeA.getThicknessFactor(), 1 / 2.5, 'volumeA.thickness');
+	t.equals(volumeB.getThicknessFactor(), 1 / 50, 'volumeB.thickness');
 
 	t.end();
 });
