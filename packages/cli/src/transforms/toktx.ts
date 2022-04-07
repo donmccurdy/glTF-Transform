@@ -155,6 +155,10 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					logger.warn(`${prefix}: Skipping, unreadable texture.`);
 					return;
 				}
+				if (size[0] <= 4 && size[1] <= 4) {
+					logger.warn(`${prefix}: Skipping, texture is 4x4 or smaller.`);
+					return;
+				}
 
 				// PREPARE: Create temporary in/out paths for the 'toktx' CLI tool, and determine
 				// necessary commandline flags.
