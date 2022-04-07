@@ -19,7 +19,7 @@ import {
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
-import { MeshQuantization } from '@gltf-transform/extensions';
+import { MeshQuantization, Volume } from '@gltf-transform/extensions';
 import { prune } from './prune';
 import { createTransform } from './utils';
 
@@ -101,6 +101,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 			if (nodeTransform && options.pattern.test('POSITION')) {
 				transformMeshParents(doc, mesh, nodeTransform);
+				transformMeshMaterials(mesh, 1 / nodeTransform.scale);
 			}
 
 			for (const prim of mesh.listPrimitives()) {
@@ -112,8 +113,8 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		}
 
 		await doc.transform(
-			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN] }),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR] })
+			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL] }),
+			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL] })
 		);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -201,33 +202,31 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTransform<vec3>): void {
 	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
-		if (parent instanceof Node) {
-			const animChannels = parent
-				.listParents()
-				.filter((p) => p instanceof AnimationChannel) as AnimationChannel[];
-			const isAnimated = animChannels.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
-			const isParentNode = parent.listChildren().length > 0;
+		if (!(parent instanceof Node)) continue;
 
-			if (parent.getSkin()) {
-				parent.setSkin(transformSkin(parent.getSkin()!, nodeTransform));
-				continue;
-			}
+		const animChannels = parent.listParents().filter((p) => p instanceof AnimationChannel) as AnimationChannel[];
+		const isAnimated = animChannels.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
+		const isParentNode = parent.listChildren().length > 0;
 
-			let targetNode: Node;
-			if (isParentNode || isAnimated) {
-				targetNode = doc.createNode('').setMesh(mesh);
-				parent.addChild(targetNode).setMesh(null);
-				animChannels
-					.filter((channel) => channel.getTargetPath() === WEIGHTS)
-					.forEach((channel) => channel.setTargetNode(targetNode));
-			} else {
-				targetNode = parent;
-			}
-
-			const nodeMatrix = targetNode.getMatrix();
-			multiplyMat4(nodeMatrix, nodeMatrix, transformMatrix);
-			targetNode.setMatrix(nodeMatrix);
+		if (parent.getSkin()) {
+			parent.setSkin(transformSkin(parent.getSkin()!, nodeTransform));
+			continue;
 		}
+
+		let targetNode: Node;
+		if (isParentNode || isAnimated) {
+			targetNode = doc.createNode('').setMesh(mesh);
+			parent.addChild(targetNode).setMesh(null);
+			animChannels
+				.filter((channel) => channel.getTargetPath() === WEIGHTS)
+				.forEach((channel) => channel.setTargetNode(targetNode));
+		} else {
+			targetNode = parent;
+		}
+
+		const nodeMatrix = targetNode.getMatrix();
+		multiplyMat4(nodeMatrix, nodeMatrix, transformMatrix);
+		targetNode.setMatrix(nodeMatrix);
 	}
 }
 
@@ -243,6 +242,22 @@ function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
 		inverseBindMatrices.setElement(i, ibm);
 	}
 	return skin.setInverseBindMatrices(inverseBindMatrices);
+}
+
+/** Applies corrective scale to volumetric materials, which give thickness in local units. */
+function transformMeshMaterials(mesh: Mesh, scale: number) {
+	for (const prim of mesh.listPrimitives()) {
+		let material = prim.getMaterial();
+		if (!material) continue;
+
+		let volume = material.getExtension('KHR_materials_volume') as Volume | null;
+		if (!volume || volume.getThicknessFactor() <= 0) continue;
+
+		// dedup() pass will clean up any leftover materials later.
+		volume = volume.clone().setThicknessFactor(volume.getThicknessFactor() * scale);
+		material = material.clone().setExtension('KHR_materials_volume', volume);
+		prim.setMaterial(material);
+	}
 }
 
 /**
