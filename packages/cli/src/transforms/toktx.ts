@@ -12,6 +12,7 @@ import { spawn, commandExists, formatBytes, getTextureChannels, getTextureSlots,
 
 tmp.setGracefulCleanup();
 
+const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
 
 const { R, G } = TextureChannel;
@@ -77,16 +78,17 @@ const GLOBAL_DEFAULTS = {
 	filterScale: 1,
 	powerOfTwo: false,
 	slots: '*',
-	jobs: Math.max(Math.ceil(os.cpus().length / 2), 1),
+	// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
+	jobs: 2 * NUM_CPUS,
 };
 
-export const ETC1S_DEFAULTS = {
+export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'mode'> = {
 	quality: 128,
 	compression: 1,
 	...GLOBAL_DEFAULTS,
 };
 
-export const UASTC_DEFAULTS = {
+export const UASTC_DEFAULTS: Omit<UASTCOptions, 'mode'> = {
 	level: 2,
 	rdo: 0,
 	rdoDictionarySize: 32768,
@@ -102,7 +104,10 @@ export const UASTC_DEFAULTS = {
  */
 
 export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform {
-	options = { ...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS), ...options };
+	options = {
+		...(options.mode === Mode.ETC1S ? ETC1S_DEFAULTS : UASTC_DEFAULTS),
+		...options,
+	};
 
 	return async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -125,28 +130,29 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					texture.getURI() ||
 					texture.getName() ||
 					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
-				logger.debug(`Texture ${textureLabel} (${slots.join(', ')})`);
+				const prefix = `toktx:texture(${textureLabel})`;
+				logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
 				if (texture.getMimeType() === 'image/ktx2') {
-					logger.debug('• Skipping, already KTX.');
+					logger.debug(`${prefix}: Skipping, already KTX.`);
 					return;
 				} else if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
-					logger.warn(`• Skipping, unsupported texture type "${texture.getMimeType()}".`);
+					logger.warn(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
 				} else if (
 					options.slots !== '*' &&
 					!slots.find((slot) => minimatch(slot, options.slots, { nocase: true }))
 				) {
-					logger.debug(`• Skipping, excluded by pattern "${options.slots}".`);
+					logger.debug(`${prefix}: Skipping, excluded by pattern "${options.slots}".`);
 					return;
 				}
 
 				const image = texture.getImage();
 				const size = texture.getSize();
 				if (!image || !size) {
-					logger.warn('• Skipping, unreadable texture.');
+					logger.warn(`${prefix}: Skipping, unreadable texture.`);
 					return;
 				}
 
@@ -163,13 +169,14 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				await fs.writeFile(inPath, Buffer.from(image));
 
 				const params = [...createParams(slots, channels, size, logger, numTextures, options), outPath, inPath];
-				logger.debug(`• toktx ${params.join(' ')}`);
+				logger.debug(`${prefix}: Spawning → toktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `toktx` CLI tool.
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const [status, stdout, stderr] = await waitExit(spawn('toktx', params));
 
 				if (status !== 0) {
-					logger.error(`• Texture compression failed:\n\n${stderr.toString()}`);
+					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
 				} else {
 					// PACK: Replace image data in the glTF asset.
 
@@ -183,14 +190,14 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				}
 
 				const outBytes = texture.getImage()!.byteLength;
-				logger.debug(`• ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes.`);
+				logger.debug(`${prefix}: ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes`);
 			})
 		);
 
 		await Promise.all(promises);
 
 		if (numCompressed === 0) {
-			logger.warn('No textures were found, or none were selected for compression.');
+			logger.warn('toktx: No textures were found, or none were selected for compression.');
 		}
 
 		const usesKTX2 = doc
@@ -289,7 +296,7 @@ function createParams(
 	} else {
 		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
 			logger.warn(
-				`Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
+				`toktx: Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
 					' fail in older APIs (including WebGL 1.0) on certain devices.'
 			);
 		}
@@ -300,7 +307,7 @@ function createParams(
 	if (width !== size[0] || height !== size[1]) {
 		if (width > 4096 || height > 4096) {
 			logger.warn(
-				`Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
+				`toktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
 					' greater than 4096px may not render on some mobile devices.' +
 					' Resize to a lower resolution before compressing, if needed.'
 			);
@@ -308,9 +315,10 @@ function createParams(
 		params.push('--resize', `${width}x${height}`);
 	}
 
-	// See https://github.com/donmccurdy/glTF-Transform/pull/389/commits/c4935a7348a401587b8d3bf1319bc8481d90ac8e#r733235207
 	if (options.jobs && options.jobs > 1 && numTextures > 1) {
-		params.push('--threads', '1');
+		// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
+		const threads = Math.max(2, Math.min(NUM_CPUS, (3 * NUM_CPUS) / numTextures));
+		params.push('--threads', threads);
 	}
 
 	return params;
@@ -333,9 +341,9 @@ async function checkKTXSoftware(logger: Logger): Promise<void> {
 	if (status !== 0 || !semver.valid(semver.clean(version))) {
 		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
 	} else if (semver.lt(semver.clean(version), KTX_SOFTWARE_VERSION_MIN)) {
-		logger.warn(`Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
+		logger.warn(`toktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
-		logger.debug(`Found KTX-Software ${version}.`);
+		logger.debug(`toktx: Found KTX-Software ${version}.`);
 	}
 }
 
