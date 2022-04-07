@@ -19,7 +19,8 @@ import {
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
-import { MeshQuantization, Volume } from '@gltf-transform/extensions';
+import { MeshQuantization } from '@gltf-transform/extensions';
+import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune';
 import { createTransform } from './utils';
 
@@ -250,10 +251,10 @@ function transformMeshMaterials(mesh: Mesh, scale: number) {
 		let material = prim.getMaterial();
 		if (!material) continue;
 
-		let volume = material.getExtension('KHR_materials_volume') as Volume | null;
+		let volume = material.getExtension<Volume>('KHR_materials_volume');
 		if (!volume || volume.getThicknessFactor() <= 0) continue;
 
-		// dedup() pass will clean up any leftover materials later.
+		// prune()+dedup() will clean this up later.
 		volume = volume.clone().setThicknessFactor(volume.getThicknessFactor() * scale);
 		material = material.clone().setExtension('KHR_materials_volume', volume);
 		prim.setMaterial(material);
