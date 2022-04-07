@@ -3,13 +3,23 @@ import { MeshoptCompression } from '@gltf-transform/extensions';
 import { reorder, quantize } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 
-export interface MeshoptCLIOptions {
+export interface MeshoptOptions {
 	level?: 'medium' | 'high';
 }
-export const MESHOPT_DEFAULTS: Required<MeshoptCLIOptions> = { level: 'high' };
+export const MESHOPT_DEFAULTS: Required<MeshoptOptions> = { level: 'high' };
 
-export const meshopt = (_options: MeshoptCLIOptions): Transform => {
-	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptCLIOptions>;
+/**
+ * Applies Meshopt compression using {@link MeshoptCompression EXT_meshopt_compression}.
+ * This type of compression can reduce the size of point, line, and triangle geometry,
+ * morph targets, and animation data.
+ *
+ * This function is a thin wrapper around {@link reorder}, {@link quantize}, and
+ * {@link MeshoptCompression}, and exposes relatively few configuration options.
+ * To access more options (like quantization bits) direct use of the underlying
+ * functions is recommended.
+ */
+export const meshopt = (_options: MeshoptOptions): Transform => {
+	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;
 	return async (document: Document): Promise<void> => {
 		await document.transform(
 			reorder({

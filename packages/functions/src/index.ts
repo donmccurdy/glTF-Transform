@@ -44,6 +44,7 @@ export * from './dedup';
 export * from './dequantize';
 export * from './inspect';
 export * from './instance';
+export * from './meshopt';
 export * from './metal-rough';
 export * from './normals';
 export * from './partition';

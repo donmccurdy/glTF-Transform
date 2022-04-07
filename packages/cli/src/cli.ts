@@ -6,9 +6,9 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, MeshoptOptions } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
-import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, meshopt, MeshoptCLIOptions, XMPOptions, xmp } from './transforms';
+import { DRACO_DEFAULTS, DracoCLIOptions, ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, draco, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
@@ -452,7 +452,7 @@ ${underline('References')}
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-				.transform(meshopt(options as unknown as MeshoptCLIOptions))
+				.transform(meshopt(options as unknown as MeshoptOptions))
 	);
 
 // QUANTIZE
