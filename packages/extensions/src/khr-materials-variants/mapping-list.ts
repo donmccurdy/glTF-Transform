@@ -1,6 +1,6 @@
 import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants';
-import { Mapping } from './mapping';
+import type { Mapping } from './mapping';
 
 interface IMappingList extends IProperty {
 	mappings: Mapping[];

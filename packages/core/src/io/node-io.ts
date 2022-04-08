@@ -1,5 +1,5 @@
 import { Format } from '../constants';
-import { Document } from '../document';
+import type { Document } from '../document';
 import { FileUtils } from '../utils/';
 import { PlatformIO } from './platform-io';
 import { HTTPUtils } from '../utils';

@@ -1,4 +1,4 @@
-import { TypedArray } from '../constants';
+import type { TypedArray } from '../constants';
 
 /**
  * # BufferUtils

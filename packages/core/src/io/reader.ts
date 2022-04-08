@@ -1,9 +1,9 @@
 import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
 import { Document } from '../document';
-import { Extension } from '../extension';
-import { JSONDocument } from '../json-document';
+import type { Extension } from '../extension';
+import type { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera } from '../properties';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils, ImageUtils, Logger, MathUtils } from '../utils';
 import { ReaderContext } from './reader-context';
 

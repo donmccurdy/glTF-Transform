@@ -1,8 +1,8 @@
 import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { ColorUtils } from '../utils';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { Texture } from './texture';
+import type { Texture } from './texture';
 import { TextureInfo } from './texture-info';
 
 const { R, G, B, A } = TextureChannel;

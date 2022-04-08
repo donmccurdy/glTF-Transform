@@ -1,6 +1,6 @@
 import { Nullable, PropertyType } from '../constants';
-import { AnimationChannel } from './animation-channel';
-import { AnimationSampler } from './animation-sampler';
+import type { AnimationChannel } from './animation-channel';
+import type { AnimationSampler } from './animation-sampler';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
 interface IAnimation extends IExtensibleProperty {

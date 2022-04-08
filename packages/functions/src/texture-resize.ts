@@ -1,7 +1,7 @@
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import { Document, Transform, vec2 } from '@gltf-transform/core';
+import type { Document, Transform, vec2 } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'textureResize';
@@ -31,7 +31,7 @@ export enum TextureResizeFilter {
 export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
 	size: [2048, 2048],
 	filter: TextureResizeFilter.LANCZOS3,
-	pattern: null
+	pattern: null,
 };
 
 /**
@@ -39,18 +39,15 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
  * Implementation provided by {@link https://github.com/donmccurdy/ndarray-lanczos ndarray-lanczos} package.
  */
 export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DEFAULTS): Transform {
-	const options = {...TEXTURE_RESIZE_DEFAULTS, ..._options} as Required<TextureResizeOptions>;
+	const options = { ...TEXTURE_RESIZE_DEFAULTS, ..._options } as Required<TextureResizeOptions>;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
-
 		const logger = doc.getLogger();
 
 		for (const texture of doc.getRoot().listTextures()) {
 			const name = texture.getName();
 			const uri = texture.getURI();
-			const match = !options.pattern
-				|| options.pattern.test(name)
-				|| options.pattern.test(uri);
+			const match = !options.pattern || options.pattern.test(name) || options.pattern.test(uri);
 			if (!match) continue;
 
 			if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
@@ -81,13 +78,9 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 
 			const srcImage = texture.getImage()!;
 			const srcPixels = await getPixels(srcImage, texture.getMimeType());
-			const dstPixels = ndarray(
-				new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]
-			);
+			const dstPixels = ndarray(new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]);
 
-			logger.debug(
-				`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`
-			);
+			logger.debug(`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`);
 
 			try {
 				options.filter === TextureResizeFilter.LANCZOS3
@@ -105,7 +98,5 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-
 	});
-
 }

@@ -1,5 +1,5 @@
-import { JSONDocument } from '../json-document';
-import {
+import type { JSONDocument } from '../json-document';
+import type {
 	Accessor,
 	Animation,
 	Buffer,
@@ -12,7 +12,7 @@ import {
 	Texture,
 	TextureInfo,
 } from '../properties';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 
 /**
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used

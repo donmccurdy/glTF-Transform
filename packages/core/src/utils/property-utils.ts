@@ -1,6 +1,6 @@
-import { GraphEdge } from 'property-graph';
+import type { GraphEdge } from 'property-graph';
 import { isPlainObject } from './is-plain-object';
-import { BufferViewUsage } from '../constants';
+import type { BufferViewUsage } from '../constants';
 import type { Property } from '../properties';
 
 export type Ref = GraphEdge<Property, Property>;

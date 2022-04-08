@@ -1,5 +1,5 @@
 import { Nullable, PropertyType } from '../constants';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
 interface ICamera extends IExtensibleProperty {

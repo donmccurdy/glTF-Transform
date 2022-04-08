@@ -1,6 +1,6 @@
 import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import { GLTF } from '../types/gltf';
-import { Accessor } from './accessor';
+import type { GLTF } from '../types/gltf';
+import type { Accessor } from './accessor';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 
 interface IAnimationSampler extends IExtensibleProperty {

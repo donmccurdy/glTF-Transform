@@ -1,7 +1,7 @@
 import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import { Accessor } from './accessor';
+import type { Accessor } from './accessor';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { Node } from './node';
+import type { Node } from './node';
 
 interface ISkin extends IExtensibleProperty {
 	skeleton: Node;

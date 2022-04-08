@@ -1,4 +1,4 @@
-import { GLTF, TypedArray } from '@gltf-transform/core';
+import type { GLTF, TypedArray } from '@gltf-transform/core';
 
 export enum EncoderMethod {
 	QUANTIZE = 'quantize',

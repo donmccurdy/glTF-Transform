@@ -1,4 +1,4 @@
-import { vec3, vec4 } from '../constants';
+import type { vec3, vec4 } from '../constants';
 
 /**
  * # ColorUtils

@@ -1,10 +1,10 @@
 import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
-import { Document } from '../document';
-import { Extension } from '../extension';
-import { GraphEdge } from 'property-graph';
-import { JSONDocument } from '../json-document';
+import type { Document } from '../document';
+import type { Extension } from '../extension';
+import type { GraphEdge } from 'property-graph';
+import type { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { BufferUtils, Logger, MathUtils } from '../utils';
 import { WriterContext } from './writer-context';
 

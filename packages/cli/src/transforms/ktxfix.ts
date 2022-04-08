@@ -1,7 +1,7 @@
 const micromatch = require('micromatch');
 
 import { KTX2Primaries, read, write } from 'ktx-parse';
-import { Document, Transform } from '@gltf-transform/core';
+import type { Document, Transform } from '@gltf-transform/core';
 import { MICROMATCH_OPTIONS } from '../util';
 import { listTextureSlots } from '@gltf-transform/functions';
 

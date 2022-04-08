@@ -1,4 +1,4 @@
-import { Document, Transform } from '@gltf-transform/core';
+import type { Document, Transform } from '@gltf-transform/core';
 import { DracoMeshCompression } from '@gltf-transform/extensions';
 
 export interface DracoOptions {

@@ -1,7 +1,7 @@
 import { BufferViewUsage, Format, PropertyType } from '../constants';
-import { Document } from '../document';
-import { JSONDocument } from '../json-document';
-import {
+import type { Document } from '../document';
+import type { JSONDocument } from '../json-document';
+import type {
 	Accessor,
 	Animation,
 	Buffer,
@@ -15,9 +15,9 @@ import {
 	Texture,
 	TextureInfo,
 } from '../properties';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { ImageUtils, Logger } from '../utils';
-import { WriterOptions } from './writer';
+import type { WriterOptions } from './writer';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 

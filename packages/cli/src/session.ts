@@ -1,5 +1,5 @@
 import { Document, NodeIO, Logger, FileUtils, Transform } from '@gltf-transform/core';
-import { Packet, XMP } from '@gltf-transform/extensions';
+import type { Packet, XMP } from '@gltf-transform/extensions';
 import { formatBytes, XMPContext } from './util';
 
 /** Helper class for managing a CLI command session. */

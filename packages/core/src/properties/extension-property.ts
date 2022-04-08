@@ -1,4 +1,4 @@
-import { ExtensibleProperty } from './extensible-property';
+import type { ExtensibleProperty } from './extensible-property';
 import { Property, IProperty } from './property';
 
 /**

@@ -1,6 +1,6 @@
 import { Nullable, PropertyType } from '../constants';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { Primitive } from './primitive';
+import type { Primitive } from './primitive';
 
 interface IMesh extends IExtensibleProperty {
 	weights: number[];

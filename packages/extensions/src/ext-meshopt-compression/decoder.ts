@@ -1,6 +1,6 @@
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { GLTF } from '@gltf-transform/core';
-import { MeshoptBufferExtension } from './constants';
+import type { GLTF } from '@gltf-transform/core';
+import type { MeshoptBufferExtension } from './constants';
 
 /**
  * Returns true for a fallback buffer, else false.

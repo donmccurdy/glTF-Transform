@@ -1,8 +1,8 @@
 import { Nullable, PropertyType } from '../constants';
-import { GLTF } from '../types/gltf';
-import { AnimationSampler } from './animation-sampler';
+import type { GLTF } from '../types/gltf';
+import type { AnimationSampler } from './animation-sampler';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { Node } from './node';
+import type { Node } from './node';
 
 interface IAnimationChannel extends IExtensibleProperty {
 	targetPath: GLTF.AnimationChannelTargetPath | null;

@@ -1,7 +1,7 @@
 import { determinant, getRotation } from 'gl-matrix/mat4';
 import { length } from 'gl-matrix/vec3';
-import { mat4, vec3, vec4 } from '../constants';
-import { GLTF } from '../types/gltf';
+import type { mat4, vec3, vec4 } from '../constants';
+import type { GLTF } from '../types/gltf';
 
 /** @hidden */
 export class MathUtils {

@@ -1,6 +1,6 @@
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
-import { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
+import type { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
 import {
 	InspectAnimationReport,
 	InspectMaterialReport,
@@ -11,7 +11,7 @@ import {
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph, formatXMP } from './util';
-import { Packet } from '@gltf-transform/extensions';
+import type { Packet } from '@gltf-transform/extensions';
 
 export enum InspectFormat {
 	PRETTY = 'pretty',

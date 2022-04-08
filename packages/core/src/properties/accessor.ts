@@ -1,7 +1,7 @@
 import { Nullable, PropertyType, TypedArray } from '../constants';
-import { GLTF } from '../types/gltf';
+import type { GLTF } from '../types/gltf';
 import { MathUtils } from '../utils';
-import { Buffer } from './buffer';
+import type { Buffer } from './buffer';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
 import { COPY_IDENTITY } from './property';
 

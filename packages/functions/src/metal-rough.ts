@@ -1,5 +1,10 @@
-import { Document, Texture, Transform } from '@gltf-transform/core';
-import { MaterialsIOR, MaterialsPBRSpecularGlossiness, MaterialsSpecular, PBRSpecularGlossiness } from '@gltf-transform/extensions';
+import type { Document, Texture, Transform } from '@gltf-transform/core';
+import {
+	MaterialsIOR,
+	MaterialsPBRSpecularGlossiness,
+	MaterialsSpecular,
+	PBRSpecularGlossiness,
+} from '@gltf-transform/extensions';
 import { createTransform, rewriteTexture } from './utils';
 
 const NAME = 'metalRough';
@@ -17,15 +22,17 @@ const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};
  *
  * No options are currently implemented for this function.
  */
-export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
+export function metalRough(_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = {...METALROUGH_DEFAULTS, ..._options} as Required<MetalRoughOptions>;
+	const options = { ...METALROUGH_DEFAULTS, ..._options } as Required<MetalRoughOptions>;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
-
 		const logger = doc.getLogger();
 
-		const extensionsUsed = doc.getRoot().listExtensionsUsed().map((ext) => ext.extensionName);
+		const extensionsUsed = doc
+			.getRoot()
+			.listExtensionsUsed()
+			.map((ext) => ext.extensionName);
 		if (!extensionsUsed.includes('KHR_materials_pbrSpecularGlossiness')) {
 			logger.warn(`${NAME}: KHR_materials_pbrSpecularGlossiness not found on document.`);
 			return;
@@ -38,12 +45,12 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 		const inputTextures = new Set<Texture | null>();
 
 		for (const material of doc.getRoot().listMaterials()) {
-			const specGloss = material
-				.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
+			const specGloss = material.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
 			if (!specGloss) continue;
 
 			// Create specular extension.
-			const specular = specExtension.createSpecular()
+			const specular = specExtension
+				.createSpecular()
 				.setSpecularFactor(1.0)
 				.setSpecularColorFactor(specGloss.getSpecularFactor());
 
@@ -116,7 +123,5 @@ export function metalRough (_options: MetalRoughOptions = METALROUGH_DEFAULTS): 
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-
 	});
-
 }

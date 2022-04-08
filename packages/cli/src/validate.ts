@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import CLITable from 'cli-table3';
 import type Validator from 'gltf-validator';
-import { Logger } from '@gltf-transform/core';
+import type { Logger } from '@gltf-transform/core';
 import { formatHeader } from './util';
 
 const validator = createValidator();

@@ -1,4 +1,4 @@
-import { NdArray } from 'ndarray';
+import type { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import { Primitive, Texture, Transform, TransformContext } from '@gltf-transform/core';
 

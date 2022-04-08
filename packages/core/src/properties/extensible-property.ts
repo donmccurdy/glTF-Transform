@@ -1,5 +1,5 @@
-import { Nullable } from '../constants';
-import { ExtensionProperty } from './extension-property';
+import type { Nullable } from '../constants';
+import type { ExtensionProperty } from './extension-property';
 import { Property, IProperty } from './property';
 
 export interface IExtensibleProperty extends IProperty {

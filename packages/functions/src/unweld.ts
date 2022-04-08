@@ -1,4 +1,4 @@
-import { Accessor, Document, Logger, Transform, TypedArray } from '@gltf-transform/core';
+import type { Accessor, Document, Logger, Transform, TypedArray } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'unweld';
@@ -16,12 +16,11 @@ const UNWELD_DEFAULTS: UnweldOptions = {};
  *
  * No options are currently implemented for this function.
  */
-export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
+export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = {...UNWELD_DEFAULTS, ..._options} as Required<UnweldOptions>;
+	const options = { ...UNWELD_DEFAULTS, ..._options } as Required<UnweldOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
-
 		const logger = doc.getLogger();
 		const visited = new Map<Accessor, Map<Accessor, Accessor>>();
 
@@ -32,10 +31,7 @@ export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 
 				// Vertex attributes.
 				for (const srcAttribute of prim.listAttributes()) {
-					prim.swap(
-						srcAttribute,
-						unweldAttribute(srcAttribute, indices, logger, visited)
-					);
+					prim.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
 
 					// Clean up.
 					if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
@@ -44,10 +40,7 @@ export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 				// Morph target vertex attributes.
 				for (const target of prim.listTargets()) {
 					for (const srcAttribute of target.listAttributes()) {
-						target.swap(
-							srcAttribute,
-							unweldAttribute(srcAttribute, indices, logger, visited)
-						);
+						target.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
 
 						// Clean up.
 						if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
@@ -65,21 +58,19 @@ export function unweld (_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 }
 
 function unweldAttribute(
-		srcAttribute: Accessor,
-		indices: Accessor,
-		logger: Logger,
-		visited: Map<Accessor, Map<Accessor, Accessor>>): Accessor {
+	srcAttribute: Accessor,
+	indices: Accessor,
+	logger: Logger,
+	visited: Map<Accessor, Map<Accessor, Accessor>>
+): Accessor {
 	if (visited.has(srcAttribute) && visited.get(srcAttribute)!.has(indices)) {
 		logger.debug(`${NAME}: Cache hit for reused attribute, "${srcAttribute.getName()}".`);
 		return visited.get(srcAttribute)!.get(indices)!;
 	}
 
 	const dstAttribute = srcAttribute.clone();
-	const ArrayCtor = srcAttribute.getArray()!.constructor as
-		new (len: number) => TypedArray;
-	dstAttribute.setArray(
-		new ArrayCtor(indices.getCount() * srcAttribute.getElementSize())
-	);
+	const ArrayCtor = srcAttribute.getArray()!.constructor as new (len: number) => TypedArray;
+	dstAttribute.setArray(new ArrayCtor(indices.getCount() * srcAttribute.getElementSize()));
 
 	const el: number[] = [];
 	for (let i = 0; i < indices.getCount(); i++) {

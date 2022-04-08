@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
+import type { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 import { MeshQuantization } from '@gltf-transform/extensions';
 import { createTransform } from './utils';
 
@@ -23,7 +23,7 @@ const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
  * necessary for compatibility with applications that don't support quantization.
  */
 export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): Transform {
-	const options = {...DEQUANTIZE_DEFAULTS, ..._options} as Required<DequantizeOptions>;
+	const options = { ...DEQUANTIZE_DEFAULTS, ..._options } as Required<DequantizeOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();

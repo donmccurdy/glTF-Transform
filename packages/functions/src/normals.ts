@@ -1,4 +1,4 @@
-import { Document, Transform, vec3 } from '@gltf-transform/core';
+import type { Document, Transform, vec3 } from '@gltf-transform/core';
 import { unweld } from './unweld';
 import { createTransform } from './utils';
 import { normalize } from 'gl-matrix/vec3';

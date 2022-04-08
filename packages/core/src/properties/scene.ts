@@ -1,7 +1,7 @@
 import { Nullable, PropertyType } from '../constants';
 import { $attributes } from 'property-graph';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { Node } from './node';
+import type { Node } from './node';
 import { COPY_IDENTITY } from './property';
 
 interface IScene extends IExtensibleProperty {

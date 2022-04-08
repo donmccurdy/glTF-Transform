@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/core';
+import type { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'colorspace';
@@ -6,7 +6,7 @@ const NAME = 'colorspace';
 /** Options for the {@link colorspace} function. */
 export interface ColorspaceOptions {
 	/** Must be `"sRGB"`. Required. */
-    inputEncoding: string;
+	inputEncoding: string;
 }
 
 /**
@@ -14,10 +14,8 @@ export interface ColorspaceOptions {
  * as linear values, and this function provides a way to correct vertex colors that are
  * (incorrectly) sRGB.
  */
-export function colorspace (options: ColorspaceOptions): Transform {
-
+export function colorspace(options: ColorspaceOptions): Transform {
 	return createTransform(NAME, (doc: Document): void => {
-
 		const logger = doc.getLogger();
 
 		if (options.inputEncoding === 'linear') {
@@ -27,8 +25,8 @@ export function colorspace (options: ColorspaceOptions): Transform {
 
 		if (options.inputEncoding !== 'sRGB') {
 			logger.error(
-				`${NAME}: Unknown input encoding "${options.inputEncoding}" – should be "sRGB" or `
-				+ '"linear". Skipping conversion.'
+				`${NAME}: Unknown input encoding "${options.inputEncoding}" – should be "sRGB" or ` +
+					'"linear". Skipping conversion.'
 			);
 			return;
 		}
@@ -36,12 +34,8 @@ export function colorspace (options: ColorspaceOptions): Transform {
 		const converted = new Set<Accessor>();
 
 		// Source: THREE.Color
-		function sRGBToLinear( c: number ): number {
-
-			return ( c < 0.04045 )
-				? c * 0.0773993808
-				: Math.pow( c * 0.9478672986 + 0.0521327014, 2.4 );
-
+		function sRGBToLinear(c: number): number {
+			return c < 0.04045 ? c * 0.0773993808 : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4);
 		}
 
 		function updatePrimitive(primitive: Primitive): void {
@@ -67,7 +61,5 @@ export function colorspace (options: ColorspaceOptions): Transform {
 			.forEach((mesh) => mesh.listPrimitives().forEach(updatePrimitive));
 
 		logger.debug(`${NAME}: Complete.`);
-
 	});
-
-};
+}

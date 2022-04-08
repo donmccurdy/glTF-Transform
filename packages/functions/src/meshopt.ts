@@ -1,4 +1,4 @@
-import { Document, Transform } from '@gltf-transform/core';
+import type { Document, Transform } from '@gltf-transform/core';
 import { MeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { reorder } from './reorder';

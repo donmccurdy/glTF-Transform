@@ -1,8 +1,8 @@
 import { Format, GLB_BUFFER, VertexLayout } from '../constants';
-import { Document } from '../document';
-import { Extension } from '../extension';
-import { JSONDocument } from '../json-document';
-import { GLTF } from '../types/gltf';
+import type { Document } from '../document';
+import type { Extension } from '../extension';
+import type { JSONDocument } from '../json-document';
+import type { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils, HTTPUtils, Logger, uuid } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';

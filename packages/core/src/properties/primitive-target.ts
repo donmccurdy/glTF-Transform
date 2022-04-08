@@ -1,6 +1,6 @@
 import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import { Accessor } from './accessor';
-import { IExtensibleProperty } from './extensible-property';
+import type { Accessor } from './accessor';
+import type { IExtensibleProperty } from './extensible-property';
 import { Property } from './property';
 
 interface IPrimitiveTarget extends IExtensibleProperty {

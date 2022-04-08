@@ -1,4 +1,4 @@
-import { vec2 } from '../constants';
+import type { vec2 } from '../constants';
 import { BufferUtils } from './buffer-utils';
 
 /** Implements support for an image format in the {@link ImageUtils} class. */

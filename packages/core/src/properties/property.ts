@@ -1,4 +1,4 @@
-import { Nullable } from '../constants';
+import type { Nullable } from '../constants';
 import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge, isRef, isRefList, isRefMap } from 'property-graph';
 import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils';
 import type { Ref, RefMap, UnknownRef } from '../utils';

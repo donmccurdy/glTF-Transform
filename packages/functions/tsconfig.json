@@ -7,5 +7,6 @@
   "compilerOptions": {
     "outDir": "dist",
     "strict": true,
+    "importsNotUsedAsValues": "error",
   }
 }

@@ -1,4 +1,4 @@
-import { Document, Logger, Transform } from '@gltf-transform/core';
+import type { Document, Logger, Transform } from '@gltf-transform/core';
 import { Packet, XMP } from '@gltf-transform/extensions';
 import inquirer from 'inquirer';
 import { check as validateLanguage } from 'language-tags';

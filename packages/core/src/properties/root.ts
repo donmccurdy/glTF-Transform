@@ -1,6 +1,6 @@
 import { Nullable, PropertyType, VERSION } from '../constants';
-import { Extension } from '../extension';
-import { Graph } from 'property-graph';
+import type { Extension } from '../extension';
+import type { Graph } from 'property-graph';
 import { Accessor } from './accessor';
 import { Animation } from './animation';
 import { Buffer } from './buffer';
@@ -13,7 +13,7 @@ import { Scene } from './scene';
 import { Skin } from './skin';
 import { Texture } from './texture';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import { ExtensionProperty } from './extension-property';
+import type { ExtensionProperty } from './extension-property';
 
 interface IAsset {
 	version: string;

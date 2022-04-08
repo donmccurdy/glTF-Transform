@@ -1,7 +1,7 @@
-import { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from 'property-graph';
-import { PropertyType } from './constants';
-import { Document } from './document';
-import { ReaderContext, WriterContext } from './io';
+import type { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from 'property-graph';
+import type { PropertyType } from './constants';
+import type { Document } from './document';
+import type { ReaderContext, WriterContext } from './io';
 import { ExtensionProperty } from './properties';
 
 /**
