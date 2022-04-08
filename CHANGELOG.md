@@ -2,7 +2,11 @@
 
 ## v2.x
 
-### v2.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/18)) — 🚧 Unreleased
+### v2.2 — 🚧 Unreleased
+
+_TBD._
+
+### v2.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/18))
 
 **Features:**
 
