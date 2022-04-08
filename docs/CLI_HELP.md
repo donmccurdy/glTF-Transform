@@ -1,5 +1,5 @@
 
-  gltf-transform 2.0.5 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 2.1.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -51,6 +51,9 @@
     etc1s                                KTX + Basis ETC1S texture compression                  
     uastc                                KTX + Basis UASTC texture compression                  
     ktxfix                               Fixes common issues in KTX texture metadata            
+    webp                                 WebP texture compression                               
+    oxipng                               OxiPNG texture compression                             
+    mozjpeg                              MozJPEG texture compression                            
                                                                                                 
                                                                                                 
                                          ⏯  ANIMATION ────────────────────────────────────────  
