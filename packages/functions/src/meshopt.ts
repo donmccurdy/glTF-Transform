@@ -1,12 +1,17 @@
 import { Document, Transform } from '@gltf-transform/core';
 import { MeshoptCompression } from '@gltf-transform/extensions';
-import { reorder, quantize } from '@gltf-transform/functions';
-import { MeshoptEncoder } from 'meshoptimizer';
+import type { MeshoptEncoder } from 'meshoptimizer';
+import { reorder } from './reorder';
+import { quantize } from './quantize';
 
 export interface MeshoptOptions {
+	encoder: typeof MeshoptEncoder;
 	level?: 'medium' | 'high';
 }
-export const MESHOPT_DEFAULTS: Required<MeshoptOptions> = { level: 'high' };
+
+export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = { level: 'high' };
+
+const NAME = 'meshopt';
 
 /**
  * Applies Meshopt compression using {@link MeshoptCompression EXT_meshopt_compression}.
@@ -17,13 +22,32 @@ export const MESHOPT_DEFAULTS: Required<MeshoptOptions> = { level: 'high' };
  * {@link MeshoptCompression}, and exposes relatively few configuration options.
  * To access more options (like quantization bits) direct use of the underlying
  * functions is recommended.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { MeshoptEncoder } from 'meshoptimizer';
+ * import { reorder } from '@gltf-transform/functions';
+ *
+ * await MeshoptEncoder.ready;
+ *
+ * await document.transform(
+ *   reorder({encoder: MeshoptEncoder, level: 'medium'})
+ * );
+ * ```
  */
 export const meshopt = (_options: MeshoptOptions): Transform => {
 	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;
+	const encoder = options.encoder;
+
+	if (!encoder) {
+		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
+	}
+
 	return async (document: Document): Promise<void> => {
 		await document.transform(
 			reorder({
-				encoder: MeshoptEncoder,
+				encoder: encoder,
 				target: 'size',
 			}),
 			quantize({

@@ -8,7 +8,7 @@ const NAME = 'reorder';
 /** Options for the {@link reorder} function. */
 export interface ReorderOptions {
 	/** MeshoptEncoder instance. */
-	encoder?: typeof MeshoptEncoder;
+	encoder: typeof MeshoptEncoder;
 	/**
 	 * Whether the order should be optimal for transmission size (recommended for Web)
 	 * or for GPU rendering performance. Default is 'size'.
@@ -44,7 +44,7 @@ interface LayoutPlan {
  * );
  * ```
  */
-export function reorder(_options: ReorderOptions = REORDER_DEFAULTS): Transform {
+export function reorder(_options: ReorderOptions): Transform {
 	const options = { ...REORDER_DEFAULTS, ..._options } as Required<ReorderOptions>;
 	const encoder = options.encoder;
 

@@ -1,8 +1,9 @@
 import { Document, TextureChannel, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
+import { getTextureChannelMask } from './list-texture-channels';
+import { listTextureSlots } from './list-texture-slots';
+import type { SquooshLib } from './types/squoosh-lib';
 import { formatBytes } from './utils';
-import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
-import type * as SquooshLib from '@squoosh/lib'; // types only! not a prod dependency.
 
 const NAME = 'squoosh';
 
@@ -140,7 +141,24 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	};
 };
 
-/** Converts images to WebP, using the {@link TextureWebP} extension. */
+/**
+ * Converts images to WebP, using the {@link TextureWebP} extension.
+ *
+ * Requires `@squoosh/lib`, and currently works only in Node.js
+ * environments. Support for encoding in web browsers may be available pending
+ * [GoogleChromeLabs/squoosh#1084](https://github.com/GoogleChromeLabs/squoosh/issues/1084).
+ *
+ * Example:
+ *
+ * ```javascript
+ * import * as squoosh from '@squoosh/lib';
+ * import { webp } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	webp({ squoosh, auto: false })
+ * );
+ * ```
+ */
 export const webp = function (options: SquooshOptions): Transform {
 	const _options = { ...WEBP_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
@@ -149,7 +167,24 @@ export const webp = function (options: SquooshOptions): Transform {
 	};
 };
 
-/** Optimizes JPEG images by default, optionally converting PNG textures to JPEG. */
+/**
+ * Optimizes JPEG images by default, optionally converting PNG textures to JPEG.
+ *
+ * Requires `@squoosh/lib`, and currently works only in Node.js
+ * environments. Support for encoding in web browsers may be available pending
+ * [GoogleChromeLabs/squoosh#1084](https://github.com/GoogleChromeLabs/squoosh/issues/1084).
+ *
+ * Example:
+ *
+ * ```javascript
+ * import * as squoosh from '@squoosh/lib';
+ * import { mozjpeg } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	mozjpeg({ squoosh, auto: false })
+ * );
+ * ```
+ */
 export const mozjpeg = function (options: SquooshOptions): Transform {
 	const _options = { ...MOZJPEG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
@@ -157,7 +192,24 @@ export const mozjpeg = function (options: SquooshOptions): Transform {
 	};
 };
 
-/** Optimizes PNG images by default, optionally converting JPEG textures to PNG. */
+/**
+ * Optimizes PNG images by default, optionally converting JPEG textures to PNG.
+ *
+ * Requires `@squoosh/lib`, and currently works only in Node.js
+ * environments. Support for encoding in web browsers may be available pending
+ * [GoogleChromeLabs/squoosh#1084](https://github.com/GoogleChromeLabs/squoosh/issues/1084).
+ *
+ * Example:
+ *
+ * ```javascript
+ * import * as squoosh from '@squoosh/lib';
+ * import { oxipng } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	oxipng({ squoosh, auto: false })
+ * );
+ * ```
+ */
 export const oxipng = function (options: SquooshOptions): Transform {
 	const _options = { ...OXIPNG_DEFAULTS, ...options } as SquooshInternalOptions;
 	return (document: Document): void => {
