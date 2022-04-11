@@ -40,7 +40,7 @@
     "draco3dgltf": "1.5.2",
     "eslint": "8.13.0",
     "eslint-config-prettier": "8.5.0",
-    "gltf-validator": "2.0.0-dev.3.5",
+    "gltf-validator": "2.0.0-dev.3.6",
     "lerna": "4.0.0",
     "meshoptimizer": "0.17.0",
     "microbundle": "0.14.2",
@@ -49,7 +49,7 @@
     "prettier": "2.6.2",
     "source-map-support": "0.5.21",
     "tap-spec": "5.0.0",
-    "tape": "5.5.2",
+    "tape": "5.5.3",
     "ts-node": "10.7.0",
     "typedoc": "0.21.2",
     "typescript": "4.6.3"
