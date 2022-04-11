@@ -161,9 +161,14 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
  */
 export const webp = function (options: SquooshOptions): Transform {
 	const _options = { ...WEBP_DEFAULTS, ...options } as SquooshInternalOptions;
-	return (document: Document): void => {
-		document.createExtension(TextureWebP).setRequired(true);
-		return squoosh(_options)(document);
+	return async (document: Document): Promise<void> => {
+		await squoosh(_options)(document);
+
+		// Attach EXT_texture_web if needed.
+		const textures = document.getRoot().listTextures();
+		if (textures.some((texture) => texture.getMimeType() === CODEC_TO_MIME_TYPE[Codec.WEBP])) {
+			document.createExtension(TextureWebP).setRequired(true);
+		}
 	};
 };
 
