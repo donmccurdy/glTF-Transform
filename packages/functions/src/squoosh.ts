@@ -5,8 +5,6 @@ import { listTextureSlots } from './list-texture-slots';
 import type { SquooshLib } from './types/squoosh-lib';
 import { formatBytes } from './utils';
 
-const NAME = 'squoosh';
-
 enum Codec {
 	OXIPNG = 'oxipng',
 	MOZJPEG = 'mozjpeg',
@@ -66,12 +64,14 @@ const requestImagePool = (squoosh: typeof SquooshLib): SquooshLib.ImagePool => {
 		pool = new squoosh.ImagePool(require('os').cpus().length);
 	}
 	poolUsers++;
-	return pool!;
+	return pool;
 };
 
 const releaseImagePool = (): void => {
-	if (--poolUsers === 0) {
-		pool!.close(); // Required for process to exit.
+	poolUsers--;
+	if (pool && poolUsers <= 0) {
+		pool.close(); // Required for process to exit.
+		pool = null;
 	}
 };
 
@@ -79,9 +79,10 @@ const releaseImagePool = (): void => {
 export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	const options = { ...SQUOOSH_DEFAULTS, ..._options } as Required<SquooshInternalOptions>;
 	const squoosh = options.squoosh as typeof SquooshLib | null;
+	const codec = options.codec;
 
 	if (!squoosh) {
-		throw new Error(`${NAME}: squoosh dependency required — install "@squoosh/lib".`);
+		throw new Error(`${codec}: squoosh dependency required — install "@squoosh/lib".`);
 	}
 
 	return async (document: Document): Promise<void> => {
@@ -97,7 +98,7 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 					texture.getURI() ||
 					texture.getName() ||
 					`${textureIndex + 1}/${document.getRoot().listTextures().length}`;
-				const prefix = `${NAME}:texture(${textureLabel})`;
+				const prefix = `${codec}:texture(${textureLabel})`;
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
@@ -137,7 +138,7 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 
 		releaseImagePool();
 
-		logger.debug(`${NAME}: Complete.`);
+		logger.debug(`${codec}: Complete.`);
 	};
 };
 
