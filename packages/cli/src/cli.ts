@@ -1000,7 +1000,6 @@ program
 		{validator: program.BOOLEAN, default: false}
 	)
 	.action(({args, options, logger}) => {
-		console.log(options);
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
