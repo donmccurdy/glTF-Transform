@@ -7,8 +7,13 @@
 			"enabled": false
 		},
 		{
-			"description": "https://github.com/node-fetch/node-fetch/issues/1279",
+			"description": "ESM / Tape conflict: https://github.com/node-fetch/node-fetch/issues/1279",
 			"matchPackageNames": ["node-fetch"],
+			"enabled": false
+		},
+		{
+			"description": "ESM / Tape conflict: https://github.com/sindresorhus/p-limit/issues/57",
+			"matchPackageNames": ["p-limit"],
 			"enabled": false
 		}
 	]
