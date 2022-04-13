@@ -27,7 +27,7 @@ interface ITextureInfo extends IExtensibleProperty {
  * For example, see {@link Material.getBaseColorTextureInfo}.
  *
  * References:
- * - [glTF → Texture Info](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-textureinfo)
+ * - [glTF → Texture Info](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#reference-textureinfo)
  *
  * @category Properties
  */

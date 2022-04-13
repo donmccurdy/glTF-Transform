@@ -65,7 +65,7 @@ interface IAccessor extends IExtensibleProperty {
  * attributes will typically be interleaved by default, regardless of the input file.
  *
  * References:
- * - [glTF → Accessors](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#accessors)
+ * - [glTF → Accessors](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#accessors)
  *
  * @category Properties
  */

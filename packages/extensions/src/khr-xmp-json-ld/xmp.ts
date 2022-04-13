@@ -38,7 +38,7 @@ interface XMPRootDef {
 /**
  * # XMP
  *
- * [KHR_xmp_json_ld](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_xmp_json_ld/)
+ * [KHR_xmp_json_ld](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_xmp_json_ld/)
  * defines XMP metadata associated with a glTF asset.
  *
  * XMP metadata provides standardized fields describing the content, provenance, usage

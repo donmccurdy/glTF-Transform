@@ -14,7 +14,7 @@ interface TransformDef {
 /**
  * # TextureTransform
  *
- * [`KHR_texture_transform`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_texture_transform/)
+ * [`KHR_texture_transform`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_texture_transform/)
  * adds offset, rotation, and scale to {@link TextureInfo} properties.
  *
  * Affine UV transforms are useful for reducing the number of textures the GPU must load, improving

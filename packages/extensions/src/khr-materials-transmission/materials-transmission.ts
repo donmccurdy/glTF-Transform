@@ -12,7 +12,7 @@ interface TransmissionDef {
 /**
  * # MaterialsTransmission
  *
- * [`KHR_materials_transmission`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_transmission/)
+ * [`KHR_materials_transmission`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_transmission/)
  * provides a common type of optical transparency: infinitely-thin materials with no refraction,
  * scattering, or dispersion.
  *

@@ -31,7 +31,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
 /**
  * # MeshoptCompression
  *
- * [`EXT_meshopt_compression`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_meshopt_compression/)
+ * [`EXT_meshopt_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/)
  * provides compression and fast decoding for geometry, morph targets, and animations.
  *
  * [[include:VENDOR_EXTENSIONS_NOTE.md]]

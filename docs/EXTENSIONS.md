@@ -95,7 +95,7 @@ const document = await io.read('compressed.glb');
 ## Custom extensions
 
 In addition to the official Khronos and multi-vendor extensions, the glTF format can be extended
-with [custom extensions](https://github.com/KhronosGroup/glTF/blob/master/extensions/README.md)
+with [custom extensions](https://github.com/KhronosGroup/gltf/blob/main/extensions/README.md)
 for specific applications. glTF-Transform supports reading/writing custom extensions, without
 modifications to the core codebase. Any extension implemented correctly and registered with the I/O
 instance may be read from a file, modified programmatically, and written back to a file.

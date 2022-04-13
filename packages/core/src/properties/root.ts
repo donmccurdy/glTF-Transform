@@ -67,7 +67,7 @@ interface IRoot extends IExtensibleProperty {
  * console.log(root.listScenes()); // → [scene x 1]
  * ```
  *
- * Reference: [glTF → Concepts](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#concepts)
+ * Reference: [glTF → Concepts](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#concepts)
  *
  * @category Properties
  */
@@ -163,7 +163,7 @@ export class Root extends ExtensibleProperty<IRoot> {
 	 * Returns the `asset` object, which specifies the target glTF version of the asset. Additional
 	 * metadata can be stored in optional properties such as `generator` or `copyright`.
 	 *
-	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#asset)
+	 * Reference: [glTF → Asset](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#asset)
 	 */
 	public getAsset(): IAsset {
 		return this.get('asset');

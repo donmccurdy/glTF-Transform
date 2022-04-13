@@ -167,7 +167,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * 	involved with `BLEND` transparency.
 	 *
 	 * Reference:
-	 * - [glTF → material.alphaMode](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialalphamode)
+	 * - [glTF → material.alphaMode](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#materialalphamode)
 	 */
 	public getAlphaMode(): GLTF.MaterialAlphaMode {
 		return this.get('alphaMode');
@@ -225,7 +225,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * will have varying effects, based on the setting of {@link getAlphaMode}.
 	 *
 	 * Reference:
-	 * - [glTF → material.pbrMetallicRoughness.baseColorFactor](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#pbrmetallicroughnessbasecolorfactor)
+	 * - [glTF → material.pbrMetallicRoughness.baseColorFactor](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#pbrmetallicroughnessbasecolorfactor)
 	 */
 	public getBaseColorTexture(): Texture | null {
 		return this.getRef('baseColorTexture');
@@ -276,7 +276,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * post-processing effect called "bloom".
 	 *
 	 * Reference:
-	 * - [glTF → material.emissiveTexture](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialemissivetexture)
+	 * - [glTF → material.emissiveTexture](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#materialemissivetexture)
 	 */
 	public getEmissiveTexture(): Texture | null {
 		return this.getRef('emissiveTexture');
@@ -318,7 +318,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * vectors use OpenGL conventions where +X is right and +Y is up. +Z points toward the viewer.
 	 *
 	 * Reference:
-	 * - [glTF → material.normalTexture](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialnormaltexture)
+	 * - [glTF → material.normalTexture](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#materialnormaltexture)
 	 */
 	public getNormalTexture(): Texture | null {
 		return this.getRef('normalTexture');
@@ -361,7 +361,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * should receive full indirect lighting and lower values indicate no indirect lighting.
 	 *
 	 * Reference:
-	 * - [glTF → material.occlusionTexture](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materialocclusiontexture)
+	 * - [glTF → material.occlusionTexture](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#materialocclusiontexture)
 	 */
 	public getOcclusionTexture(): Texture | null {
 		return this.getRef('occlusionTexture');
@@ -423,7 +423,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * illumination to appear well-lit.
 	 *
 	 * Reference:
-	 * - [glTF → material.pbrMetallicRoughness.metallicRoughnessTexture](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#pbrmetallicroughnessmetallicroughnesstexture)
+	 * - [glTF → material.pbrMetallicRoughness.metallicRoughnessTexture](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#pbrmetallicroughnessmetallicroughnesstexture)
 	 */
 	public getMetallicRoughnessTexture(): Texture | null {
 		return this.getRef('metallicRoughnessTexture');

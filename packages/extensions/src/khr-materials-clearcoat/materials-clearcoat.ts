@@ -15,7 +15,7 @@ interface ClearcoatDef {
 /**
  * # MaterialsClearcoat
  *
- * [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/)
+ * [KHR_materials_clearcoat](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_clearcoat/)
  * defines a clear coating on a glTF PBR material.
  *
  * ![Illustration](/media/extensions/khr-materials-clearcoat.png)

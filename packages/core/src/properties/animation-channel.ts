@@ -37,7 +37,7 @@ interface IAnimationChannel extends IExtensibleProperty {
  * ```
  *
  * Reference
- * - [glTF → Animations](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#animations)
+ * - [glTF → Animations](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#animations)
  */
 export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	public declare propertyType: PropertyType.ANIMATION_CHANNEL;

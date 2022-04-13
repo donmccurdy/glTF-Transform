@@ -20,7 +20,7 @@ interface IPrimitiveTarget extends IExtensibleProperty {
  * particular instantiation of a {@link Mesh}, using {@link Node.getWeights}.
  *
  * Reference:
- * - [glTF → Morph Targets](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#morph-targets)
+ * - [glTF → Morph Targets](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#morph-targets)
  */
 export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public declare propertyType: PropertyType.PRIMITIVE_TARGET;
