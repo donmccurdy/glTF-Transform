@@ -41,8 +41,10 @@ jobs:
   coverage:
     runs-on: macos-latest
     needs: build
+    env:
+      CI: true
     steps:
-      - uses: actions/checkout@v3
-      - uses: codecov/codecov-action@v2
-        with:
-          files: .coverage.lcov
+    - uses: actions/checkout@v3
+    - uses: codecov/codecov-action@v2
+      with:
+        files: .coverage.lcov
