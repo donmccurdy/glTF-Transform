@@ -9,9 +9,10 @@ jobs:
     runs-on: macos-latest # Better `headless-gl` support on macOS.
     strategy:
       matrix:
-        node-version: [14.x, 16.x] # Latest prebuilt binaries for `headless-gl`
+        node-version: [14.x, 16.x] # Latest prebuilt binaries for `headless-gl`.
     env:
       CI: true
+      COVERAGE: ${{ matrix.node-version == '16.x' && true || false }}
     steps:
     # Setup.
     - uses: actions/checkout@v3
@@ -39,12 +40,12 @@ jobs:
 
     # Coverage.
     - name: Run coverage
-      # if: matrix.node-version == '16.x'
+      if: COVERAGE
       run: |
         yarn coverage
         yarn coverage:report
     - name: Report coverage
-      # if: matrix.node-version == '16.x'
+      if: COVERAGE
       uses: codecov/codecov-action@v2
       with:
         files: .nyc_output/coverage.lcov
