@@ -15,7 +15,6 @@ jobs:
     steps:
     # Setup.
     - uses: actions/checkout@v3
-    - uses: codecov/codecov-action@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -37,3 +36,9 @@ jobs:
     - run: yarn dist
     - run: yarn test
     - run: yarn lint
+
+    # Coverage.
+    - run: yarn coverage:report
+    - uses: codecov/codecov-action@v2
+      with:
+        files: ./nyc_output/coverage.lcov
