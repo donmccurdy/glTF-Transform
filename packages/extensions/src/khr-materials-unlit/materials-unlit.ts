@@ -7,7 +7,7 @@ const NAME = KHR_MATERIALS_UNLIT;
 /**
  * # MaterialsUnlit
  *
- * [`KHR_materials_unlit`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_unlit/)
+ * [`KHR_materials_unlit`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_unlit/)
  * defines an unlit shading model for use in glTF 2.0 materials.
  *
  * ![Illustration](/media/extensions/khr-materials-unlit.png)

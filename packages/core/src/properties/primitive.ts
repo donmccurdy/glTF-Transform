@@ -43,7 +43,7 @@ interface IPrimitive extends IExtensibleProperty {
  * ```
  *
  * References:
- * - [glTF → Geometry](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#geometry)
+ * - [glTF → Geometry](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#geometry)
  *
  * @category Properties
  */
@@ -164,7 +164,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * Returns the GPU draw mode (`TRIANGLES`, `LINES`, `POINTS`...) as a WebGL enum value.
 	 *
 	 * Reference:
-	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
+	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#primitivemode)
 	 */
 	public getMode(): GLTF.MeshPrimitiveMode {
 		return this.get('mode');
@@ -174,7 +174,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 	 * Sets the GPU draw mode (`TRIANGLES`, `LINES`, `POINTS`...) as a WebGL enum value.
 	 *
 	 * Reference:
-	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#primitivemode)
+	 * - [glTF → `primitive.mode`](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#primitivemode)
 	 */
 	public setMode(mode: GLTF.MeshPrimitiveMode): this {
 		return this.set('mode', mode);

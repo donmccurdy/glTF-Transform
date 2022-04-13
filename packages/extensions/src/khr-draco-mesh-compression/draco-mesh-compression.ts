@@ -33,7 +33,7 @@ interface DracoWriterContext {
 /**
  * # DracoMeshCompression
  *
- * [`KHR_draco_mesh_compression`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/)
+ * [`KHR_draco_mesh_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/)
  * provides advanced compression for mesh geometry.
  *
  * For models where geometry is a significant factor (>1 MB), Draco can reduce filesize by ~95%

@@ -16,7 +16,7 @@ interface ISkin extends IExtensibleProperty {
  * instances.*
  *
  * Reference
- * - [glTF → Skins](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#skins)
+ * - [glTF → Skins](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#skins)
  *
  * @category Properties
  */

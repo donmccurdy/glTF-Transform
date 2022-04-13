@@ -16,7 +16,7 @@ interface IridescenceDef {
 /**
  * # MaterialsIridescence
  *
- * [`KHR_materials_iridescence`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_iridescence/)
+ * [`KHR_materials_iridescence`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_iridescence/)
  * defines iridescence (thin film interference) on a PBR material.
  *
  * Iridescence describes an effect where hue varies depending on the viewing

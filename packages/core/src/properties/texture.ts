@@ -23,8 +23,8 @@ interface ITexture extends IExtensibleProperty {
  * For properties associated with a particular _use_ of a texture, see {@link TextureInfo}.
  *
  * Reference:
- * - [glTF → Textures](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#textures)
- * - [glTF → Images](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#images)
+ * - [glTF → Textures](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#textures)
+ * - [glTF → Images](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#images)
  *
  * @category Properties
  */

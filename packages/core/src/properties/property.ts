@@ -42,7 +42,7 @@ export interface IProperty {
  * ```
  *
  * Reference:
- * - [glTF → Concepts](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#concepts)
+ * - [glTF → Concepts](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#concepts)
  *
  * @category Properties
  */

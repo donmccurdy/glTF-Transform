@@ -11,7 +11,7 @@ interface IORDef {
 /**
  * # MaterialsIOR
  *
- * [KHR_materials_ior](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_ior/)
+ * [KHR_materials_ior](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_ior/)
  * defines index of refraction on a glTF PBR material.
  *
  * The dielectric BRDF of the metallic-roughness material in glTF uses a fixed value of 1.5 for the

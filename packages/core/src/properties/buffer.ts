@@ -55,8 +55,8 @@ interface IBuffer extends IExtensibleProperty {
  * ```
  *
  * References:
- * - [glTF → Buffers and Buffer Views](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#buffers-and-buffer-views)
- * - [glTF → Accessors](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#accessors)
+ * - [glTF → Buffers and Buffer Views](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#buffers-and-buffer-views)
+ * - [glTF → Accessors](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#accessors)
  *
  * @category Properties
  */

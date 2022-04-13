@@ -15,7 +15,7 @@ import { Property, IProperty } from './property';
  * For more information on available extensions and their usage, see [Extensions](/extensions).
  *
  * Reference:
- * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
+ * - [glTF → Extensions](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#specifying-extensions)
  */
 export abstract class ExtensionProperty<T extends IProperty = IProperty> extends Property<T> {
 	public static EXTENSION_NAME: string;

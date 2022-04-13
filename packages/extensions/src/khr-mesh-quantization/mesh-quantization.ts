@@ -6,7 +6,7 @@ const NAME = KHR_MESH_QUANTIZATION;
 /**
  * # MeshQuantization
  *
- * [`KHR_mesh_quantization`](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_mesh_quantization/)
+ * [`KHR_mesh_quantization`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_mesh_quantization/)
  * expands allowed component types for vertex attributes to include 16- and 8-bit storage.
  *
  * Quantization provides a memory/precision tradeoff — depending on the application needs, 16-bit or

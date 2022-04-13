@@ -378,7 +378,7 @@ ${underline('Documentation')}
 
 ${underline('References')}
 - draco: https://github.com/google/draco
-- KHR_draco_mesh_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression/
+- KHR_draco_mesh_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -442,7 +442,7 @@ ${underline('Documentation')}
 
 ${underline('References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
-- EXT_meshopt_compression: https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_meshopt_compression/
+- EXT_meshopt_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/
 `.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)

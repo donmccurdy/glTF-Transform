@@ -36,7 +36,7 @@ interface ICamera extends IExtensibleProperty {
  * ```
  *
  * References:
- * - [glTF → Cameras](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#cameras)
+ * - [glTF → Cameras](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#cameras)
  *
  * @category Properties
  */

@@ -21,8 +21,8 @@ import { ExtensionProperty } from './properties';
  * For more information on available extensions and their usage, see [Extensions](/extensions).
  *
  * Reference:
- * - [glTF → Extensions](https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#specifying-extensions)
- * - [glTF Extension Registry](https://github.com/KhronosGroup/glTF/blob/master/extensions)
+ * - [glTF → Extensions](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#specifying-extensions)
+ * - [glTF Extension Registry](https://github.com/KhronosGroup/gltf/blob/main/extensions)
  *
  * @category Extensions
  */
