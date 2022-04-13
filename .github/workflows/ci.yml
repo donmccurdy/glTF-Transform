@@ -39,11 +39,12 @@ jobs:
 
     # Coverage.
     - name: Run coverage
-      if: matrix.os == '16.x'
+      # if: matrix.node-version == '16.x'
       run: |
         yarn coverage
         yarn coverage:report
     - name: Report coverage
+      # if: matrix.node-version == '16.x'
       uses: codecov/codecov-action@v2
       with:
         files: .nyc_output/coverage.lcov
