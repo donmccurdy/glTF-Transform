@@ -124,7 +124,7 @@ export class MaterialsIridescence extends Extension {
 
 					const iridescenceDef = (materialDef.extensions[NAME] = {} as IridescenceDef);
 
-					if (iridescence.getIridescenceFactor() !== 1) {
+					if (iridescence.getIridescenceFactor() > 0) {
 						iridescenceDef.iridescenceFactor = iridescence.getIridescenceFactor();
 					}
 					if (iridescence.getIridescenceIOR() !== 1.3) {
