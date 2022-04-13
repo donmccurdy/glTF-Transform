@@ -40,12 +40,12 @@ jobs:
 
     # Coverage.
     - name: Run coverage
-      if: COVERAGE
+      if: env.COVERAGE
       run: |
         yarn coverage
         yarn coverage:report
     - name: Report coverage
-      if: COVERAGE
+      if: env.COVERAGE
       uses: codecov/codecov-action@v2
       with:
         files: .nyc_output/coverage.lcov
