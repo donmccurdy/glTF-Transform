@@ -40,12 +40,12 @@ jobs:
 
     # Coverage.
     - name: Run coverage
-      if: ${{ env.COVERAGE == true }}
+      if: ${{ env.COVERAGE == 'true' }}
       run: |
         yarn coverage
         yarn coverage:report
     - name: Report coverage
-      if: ${{ env.COVERAGE == true }}
+      if: ${{ env.COVERAGE == 'true' }}
       uses: codecov/codecov-action@v2
       with:
         files: .nyc_output/coverage.lcov
