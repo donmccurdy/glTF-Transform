@@ -36,15 +36,14 @@ jobs:
     - run: yarn dist
     - run: yarn test
     - run: yarn lint
-    - run: yarn coverage && yarn coverage:report
 
-  coverage:
-    runs-on: macos-latest
-    needs: build
-    env:
-      CI: true
-    steps:
-    - uses: actions/checkout@v3
-    - uses: codecov/codecov-action@v2
+    # Coverage.
+    - name: Run coverage
+      if: matrix.os == '16.x'
+      run: |
+        yarn coverage
+        yarn coverage:report
+    - name: Report coverage
+      uses: codecov/codecov-action@v2
       with:
         files: .nyc_output/coverage.lcov
