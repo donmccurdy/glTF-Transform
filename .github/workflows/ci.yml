@@ -36,7 +36,7 @@ jobs:
     - run: yarn dist
     - run: yarn test
     - run: yarn lint
-    - run: yarn coverage:report
+    - run: yarn coverage && yarn coverage:report
 
   coverage:
     runs-on: macos-latest
@@ -47,4 +47,4 @@ jobs:
     - uses: actions/checkout@v3
     - uses: codecov/codecov-action@v2
       with:
-        files: .coverage.lcov
+        files: .nyc_output/coverage.lcov

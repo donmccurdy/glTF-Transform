@@ -15,7 +15,7 @@
     "clean:deps": "rm -rf packages/*/node_modules/**",
     "test": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
-    "coverage:report": "nyc report --reporter=text-lcov > .coverage.lcov",
+    "coverage:report": "nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
     "validate": "scripts/validate.js",
     "preversion": "yarn run test",
