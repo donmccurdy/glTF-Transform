@@ -1,9 +1,11 @@
 {
-    "exclude": [
-        "packages/*/vendor",
-        "packages/*/test",
-        "packages/core/src/constants.ts",
-        "packages/cli/src/cli.ts",
-        "packages/cli/src/transforms/toktx.ts"
-    ]
+	"exclude": [
+		"packages/*/vendor",
+		"packages/*/test",
+		"packages/test-utils.ts",
+		"packages/core/src/constants.ts",
+		"packages/cli/src/cli.ts",
+		"packages/cli/src/transforms/toktx.ts",
+		"packages/cli/src/transforms/xmp.ts"
+	]
 }
