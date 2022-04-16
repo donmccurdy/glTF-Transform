@@ -40,7 +40,7 @@
     "language-tags": "^1.0.5",
     "meshoptimizer": "^0.17.0",
     "micromatch": "^4.0.5",
-    "mikktspace": "^1.1.0",
+    "mikktspace": "^1.1.1",
     "node-fetch": "^2.6.6",
     "node-gzip": "^1.1.2",
     "p-limit": "3.1.0",

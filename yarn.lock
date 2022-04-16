@@ -5996,10 +5996,15 @@ micromatch@^4.0.5:
     braces "^3.0.2"
     picomatch "^2.3.1"
 
-mikktspace@1.1.0, mikktspace@^1.1.0:
+mikktspace@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-1.1.0.tgz#be30ff8ce4cc67f75d8a066bfe68f9a3421a3753"
   integrity sha512-A3e33fEegM0MuxRcuyJIewc0ogrL+738n5EA5aHS0cJcYwwCI5Qum/OkDZKehXCMwtg5qbizEMwvWtZuT3WA9w==
+
+mikktspace@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/mikktspace/-/mikktspace-1.1.1.tgz#0fcee5ee7a6afbeb7d33f4d89bb9920f038f4dfc"
+  integrity sha512-w+n5O2YLFsv/aRi3QUF0jxR+mEsl2J08ZkRItJHE08MWqiDIy8amyZN9vetBfbLhlWGMb8G3mzSPwtKHvBF7hQ==
 
 mime-db@1.45.0:
   version "1.45.0"
