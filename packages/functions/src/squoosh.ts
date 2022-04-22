@@ -24,6 +24,7 @@ const CODEC_TO_MIME_TYPE: Record<Codec, string> = {
 // See: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
 export interface SquooshOptions {
 	squoosh: unknown;
+	jobs?: number;
 	formats?: RegExp;
 	slots?: RegExp;
 	auto?: boolean;
@@ -34,6 +35,7 @@ interface SquooshInternalOptions extends SquooshOptions {
 }
 
 const SQUOOSH_DEFAULTS: Required<Omit<Omit<SquooshInternalOptions, 'codec'>, 'squoosh'>> = {
+	jobs: 4,
 	formats: /.*/,
 	slots: /.*/,
 	auto: false,
@@ -59,9 +61,9 @@ const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 let pool: SquooshLib.ImagePool | null = null;
 let poolUsers = 0;
 
-const requestImagePool = (squoosh: typeof SquooshLib): SquooshLib.ImagePool => {
+const requestImagePool = (squoosh: typeof SquooshLib, jobs: number): SquooshLib.ImagePool => {
 	if (!pool) {
-		pool = new squoosh.ImagePool(require('os').cpus().length);
+		pool = new squoosh.ImagePool(jobs);
 	}
 	poolUsers++;
 	return pool;
@@ -88,7 +90,7 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
 	return async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 		const textures = document.getRoot().listTextures();
-		const pool = requestImagePool(squoosh);
+		const pool = requestImagePool(squoosh, options.jobs);
 
 		await Promise.all(
 			textures.map(async (texture, textureIndex) => {
@@ -152,11 +154,12 @@ export const squoosh = function (_options: SquooshInternalOptions): Transform {
  * Example:
  *
  * ```javascript
+ * import { cpus } from 'os';
  * import * as squoosh from '@squoosh/lib';
  * import { webp } from '@gltf-transform/functions';
  *
  * await document.transform(
- * 	webp({ squoosh, auto: false })
+ * 	webp({ squoosh, jobs: cpus().length })
  * );
  * ```
  */
@@ -183,11 +186,12 @@ export const webp = function (options: SquooshOptions): Transform {
  * Example:
  *
  * ```javascript
+ * import { cpus } from 'os';
  * import * as squoosh from '@squoosh/lib';
  * import { mozjpeg } from '@gltf-transform/functions';
  *
  * await document.transform(
- * 	mozjpeg({ squoosh, auto: false })
+ * 	mozjpeg({ squoosh, jobs: cpus().length })
  * );
  * ```
  */
@@ -208,11 +212,12 @@ export const mozjpeg = function (options: SquooshOptions): Transform {
  * Example:
  *
  * ```javascript
+ * import { cpus } from 'os';
  * import * as squoosh from '@squoosh/lib';
  * import { oxipng } from '@gltf-transform/functions';
  *
  * await document.transform(
- * 	oxipng({ squoosh, auto: false })
+ * 	oxipng({ squoosh, jobs: cpus().length })
  * );
  * ```
  */
