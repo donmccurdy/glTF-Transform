@@ -7,7 +7,7 @@ const NAME = KHR_MATERIALS_IRIDESCENCE;
 interface IridescenceDef {
 	iridescenceFactor: number;
 	iridescenceTexture: GLTF.ITextureInfo;
-	iridescenceIOR: number;
+	iridescenceIor: number;
 	iridescenceThicknessMinimum: number;
 	iridescenceThicknessMaximum: number;
 	iridescenceThicknessTexture: GLTF.ITextureInfo;
@@ -76,8 +76,8 @@ export class MaterialsIridescence extends Extension {
 				if (iridescenceDef.iridescenceFactor !== undefined) {
 					iridescence.setIridescenceFactor(iridescenceDef.iridescenceFactor);
 				}
-				if (iridescenceDef.iridescenceIOR !== undefined) {
-					iridescence.setIridescenceIOR(iridescenceDef.iridescenceIOR);
+				if (iridescenceDef.iridescenceIor !== undefined) {
+					iridescence.setIridescenceIOR(iridescenceDef.iridescenceIor);
 				}
 				if (iridescenceDef.iridescenceThicknessMinimum !== undefined) {
 					iridescence.setIridescenceThicknessMinimum(iridescenceDef.iridescenceThicknessMinimum);
@@ -128,7 +128,7 @@ export class MaterialsIridescence extends Extension {
 						iridescenceDef.iridescenceFactor = iridescence.getIridescenceFactor();
 					}
 					if (iridescence.getIridescenceIOR() !== 1.3) {
-						iridescenceDef.iridescenceIOR = iridescence.getIridescenceIOR();
+						iridescenceDef.iridescenceIor = iridescence.getIridescenceIOR();
 					}
 					if (iridescence.getIridescenceThicknessMinimum() !== 100) {
 						iridescenceDef.iridescenceThicknessMinimum = iridescence.getIridescenceThicknessMinimum();

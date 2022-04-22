@@ -35,7 +35,7 @@ test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 		{
 			KHR_materials_iridescence: {
 				iridescenceFactor: 0.9,
-				iridescenceIOR: 1.5,
+				iridescenceIor: 1.5,
 				iridescenceThicknessMinimum: 50,
 				iridescenceThicknessMaximum: 500,
 				iridescenceTexture: { index: 0 },
