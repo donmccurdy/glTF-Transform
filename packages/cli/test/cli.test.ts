@@ -75,7 +75,7 @@ test('@gltf-transform/cli::merge', async (t) => {
 	await io.write(inputA, docA);
 
 	const docB = new Document();
-	docB.createScene('SceneB');
+	docB.createScene('');
 	const bufB = docB.createBuffer('BufferB');
 	docB.createAccessor()
 		.setArray(new Uint8Array([1, 2, 3]))
@@ -84,19 +84,15 @@ test('@gltf-transform/cli::merge', async (t) => {
 
 	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
 
-	return (
-		program
-			// https://github.com/mattallty/Caporal.js/issues/195
-			.exec(['merge', [inputA, inputB, inputC, output].join(',')], { silent: true })
-			.then(async () => {
-				const doc = await io.read(output);
-				const sceneNames = doc
-					.getRoot()
-					.listScenes()
-					.map((s) => s.getName());
-				const texName = doc.getRoot().listTextures()[0].getName();
-				t.deepEquals(sceneNames, ['SceneA', 'SceneB'], 'merge scenes');
-				t.equals(texName, FileUtils.basename(inputC), 'merge textures');
-			})
-	);
+	await program
+		// https://github.com/mattallty/Caporal.js/issues/195
+		.exec(['merge', [inputA, inputB, inputC, output].join(',')], { silent: true });
+
+	const doc = await io.read(output);
+	const root = doc.getRoot();
+	const sceneNames = root.listScenes().map((s) => s.getName());
+	const texName = root.listTextures()[0].getName();
+	t.deepEquals(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');
+	t.equals(texName, FileUtils.basename(inputC), 'merge textures');
+	t.end();
 });
