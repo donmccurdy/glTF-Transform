@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { Document, FileUtils, ImageUtils, NodeIO, Transform } from '@gltf-transform/core';
+import { unpartition } from '@gltf-transform/functions';
 
 const NAME = 'merge';
 
@@ -37,13 +38,7 @@ const merge = (options: MergeOptions): Transform => {
 		doc.getRoot().setDefaultScene(doc.getRoot().listScenes()[0]);
 
 		if (!options.partition) {
-			const buffer = doc.getRoot().listBuffers()[0];
-			doc.getRoot()
-				.listAccessors()
-				.forEach((a) => a.setBuffer(buffer));
-			doc.getRoot()
-				.listBuffers()
-				.forEach((b, index) => (index > 0 ? b.dispose() : null));
+			await doc.transform(unpartition());
 		}
 
 		logger.debug(`${NAME}: Complete.`);

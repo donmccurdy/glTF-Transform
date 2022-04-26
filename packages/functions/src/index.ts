@@ -58,6 +58,7 @@ export * from './squoosh';
 export * from './tangents';
 export * from './texture-resize';
 export * from './unlit';
+export * from './unpartition';
 export * from './unweld';
 export * from './weld';
 export * from './list-texture-channels';
