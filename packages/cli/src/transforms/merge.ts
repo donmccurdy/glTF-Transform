@@ -28,11 +28,13 @@ const merge = (options: MergeOptions): Transform => {
 					.setMimeType(ImageUtils.extensionToMimeType(extension))
 					.setURI(basename + '.' + extension);
 			} else if (['gltf', 'glb'].includes(extension)) {
-				doc.merge(await io.read(path));
+				doc.merge(renameScenes(basename, await io.read(path)));
 			} else {
 				throw new Error(`Unknown file extension: "${extension}".`);
 			}
 		}
+
+		doc.getRoot().setDefaultScene(doc.getRoot().listScenes()[0]);
 
 		if (!options.partition) {
 			const buffer = doc.getRoot().listBuffers()[0];
@@ -47,5 +49,17 @@ const merge = (options: MergeOptions): Transform => {
 		logger.debug(`${NAME}: Complete.`);
 	};
 };
+
+function renameScenes(name: string, document: Document): Document {
+	const scenes = document.getRoot().listScenes();
+
+	for (let i = 0; i < scenes.length; i++) {
+		if (!scenes[i].getName()) {
+			scenes[i].setName(name + (scenes.length > 1 ? ` (${i + 1}/${scenes.length})` : ''));
+		}
+	}
+
+	return document;
+}
 
 export { merge };
