@@ -1,11 +1,15 @@
-import { Document, NodeIO, Logger, FileUtils, Transform } from '@gltf-transform/core';
+import { Document, NodeIO, Logger, FileUtils, Transform, Format } from '@gltf-transform/core';
 import type { Packet, XMP } from '@gltf-transform/extensions';
+import { unpartition } from '@gltf-transform/functions';
 import { formatBytes, XMPContext } from './util';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
+	private _outputFormat: Format;
+
 	constructor(private _io: NodeIO, private _logger: Logger, private _input: string, private _output: string) {
 		_io.setLogger(_logger);
+		this._outputFormat = FileUtils.extension(_output) === 'glb' ? Format.GLB : Format.GLTF;
 	}
 
 	public static create(io: NodeIO, logger: unknown, input: unknown, output: unknown): Session {
@@ -30,6 +34,10 @@ export class Session {
 		}
 
 		await doc.transform(...transforms, updateMetadata);
+
+		if (this._outputFormat === Format.GLB) {
+			await doc.transform(unpartition());
+		}
 
 		await this._io.write(this._output, doc);
 
