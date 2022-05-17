@@ -71,7 +71,9 @@ interface XMPRootDef {
  * | `xmpRights` | http://ns.adobe.com/xap/1.0/rights/         | XMP Rights Management          |
  *
  * Only the XMP contexts required for a packet should be assigned, and different packets
- * in the same asset may use different contexts.
+ * in the same asset may use different contexts. For greater detail on available XMP 
+ * contexts and how to use them in glTF assets, see the
+ * [3DC Metadata Recommendations](https://github.com/KhronosGroup/3DC-Metadata-Recommendations/blob/main/model3d.md).
  *
  * Properties:
  * - {@link Packet}
