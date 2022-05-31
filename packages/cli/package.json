@@ -12,6 +12,9 @@
   "browserslist": [
     "node >= 14"
   ],
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "dist": "microbundle --format cjs --target node",
     "watch": "microbundle watch --format cjs --target node",
