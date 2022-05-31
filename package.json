@@ -40,7 +40,7 @@
     "eslint": "8.16.0",
     "eslint-config-prettier": "8.5.0",
     "gltf-validator": "2.0.0-dev.3.8",
-    "lerna": "4.0.0",
+    "lerna": "5.0.0",
     "meshoptimizer": "0.17.0",
     "microbundle": "0.15.0",
     "mikktspace": "1.1.1",
