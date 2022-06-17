@@ -455,9 +455,9 @@ export class GLTFReader {
 				const channel = doc
 					.createAnimationChannel()
 					.setSampler(samplers[channelDef.sampler])
-					.setTargetNode(context.nodes[channelDef.target.node])
 					.setTargetPath(channelDef.target.path);
 
+				if (channelDef.target.node !== undefined) channel.setTargetNode(context.nodes[channelDef.target.node]);
 				if (channelDef.extras) channel.setExtras(channelDef.extras);
 
 				animation.addChannel(channel);

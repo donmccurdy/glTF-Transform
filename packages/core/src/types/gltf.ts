@@ -161,9 +161,9 @@ export declare module GLTF {
 	 */
 	interface IAnimationChannelTarget extends IProperty {
 		/**
-		 * The index of the node to target
+		 * The index of the node to target, when undefined, the animated object MAY be defined by an extension.
 		 */
-		node: number;
+		node?: number;
 		/**
 		 * The name of the node's TRS property to modify, or the weights of the Morph Targets it
 		 * instantiates
