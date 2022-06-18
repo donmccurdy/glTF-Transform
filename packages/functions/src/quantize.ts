@@ -54,6 +54,8 @@ export interface QuantizeOptions {
 	quantizeWeight?: number;
 	/** Quantization bits for application-specific (`_*`) attributes. */
 	quantizeGeneric?: number;
+	/** Normalize weight attributes. */
+	normalizeWeights?: boolean;
 }
 
 export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
@@ -65,6 +67,7 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
 	quantizeColor: 8,
 	quantizeWeight: 8,
 	quantizeGeneric: 12,
+	normalizeWeights: true,
 };
 
 /**
@@ -162,7 +165,7 @@ function quantizePrimitive(
 	}
 
 	// Normalize skinning weights.
-	if (prim.getAttribute('WEIGHTS_0')) {
+	if (options.normalizeWeights && prim.getAttribute('WEIGHTS_0')) {
 		normalizeWeights(prim);
 	}
 
