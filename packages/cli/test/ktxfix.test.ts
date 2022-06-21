@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import fs from 'fs';
 import path from 'path';
-import { KTX2Primaries, read } from 'ktx-parse';
+import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';
 import test from 'tape';
 import { Document, Logger, Texture } from '@gltf-transform/core';
 import { ktxfix } from '../';
@@ -15,32 +15,32 @@ test('@gltf-transform/cli::ktxfix', async (t) => {
 		.setMimeType('image/ktx2')
 		.setImage(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2')));
 
-	t.equals(getColorPrimaries(texture), KTX2Primaries.SRGB, 'initial - sRGB');
+	t.equals(getColorPrimaries(texture), KHR_DF_PRIMARIES_BT709, 'initial - sRGB');
 
 	await doc.transform(ktxfix());
 
-	t.equals(getColorPrimaries(texture), KTX2Primaries.SRGB, 'unused - no change');
+	t.equals(getColorPrimaries(texture), KHR_DF_PRIMARIES_BT709, 'unused - no change');
 
 	material.setOcclusionTexture(texture);
 	await doc.transform(ktxfix());
 
-	t.equals(getColorPrimaries(texture), KTX2Primaries.UNSPECIFIED, 'occlusion - unspecified');
+	t.equals(getColorPrimaries(texture), KHR_DF_PRIMARIES_UNSPECIFIED, 'occlusion - unspecified');
 
 	texture.detach();
 	await doc.transform(ktxfix());
 
-	t.equals(getColorPrimaries(texture), KTX2Primaries.UNSPECIFIED, 'unused - no change');
+	t.equals(getColorPrimaries(texture), KHR_DF_PRIMARIES_UNSPECIFIED, 'unused - no change');
 
 	material.setBaseColorTexture(texture);
 	await doc.transform(ktxfix());
 
-	t.equals(getColorPrimaries(texture), KTX2Primaries.SRGB, 'base color - sRGB');
+	t.equals(getColorPrimaries(texture), KHR_DF_PRIMARIES_BT709, 'base color - sRGB');
 
 	t.end();
 });
 
-function getColorPrimaries(texture: Texture): KTX2Primaries {
-	const image = texture.getImage();
+function getColorPrimaries(texture: Texture): number {
+	const image = texture.getImage()!;
 	const ktx = read(image);
 	return ktx.dataFormatDescriptor[0].colorPrimaries;
 }
