@@ -165,7 +165,7 @@ export class Document {
 		for (const otherProp of visited) {
 			const thisProp = propertyMap.get(otherProp);
 			if (!thisProp) throw new Error('Could resolve property.');
-			// TextureInfo copy handled by Material or its extensions.
+			// TextureInfo copy handled by Material or ExtensionProperty.
 			if (thisProp.propertyType !== PropertyType.TEXTURE_INFO) {
 				thisProp.copy(otherProp, resolve);
 			}
