@@ -106,6 +106,9 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	t.ok(dstTransform1, 'cloned baseColorTexture transform added');
 	t.ok(dstTransform2, 'cloned emissiveColorTexture transform added');
 
+	t.notEqual(srcTransform1, dstTransform1, 'baseColorTexture transform cloned');
+	t.notEqual(srcTransform2, dstTransform2, 'emissiveColorTexture transform cloned');
+
 	t.equal(dstTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
 	t.deepEqual(dstTransform1.getScale(), [100, 100], 'baseColorTexture.scale');
 	t.deepEqual(dstTransform1.getOffset(), [0, 0], 'baseColorTexture.offset');
