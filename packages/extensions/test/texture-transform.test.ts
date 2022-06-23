@@ -63,47 +63,58 @@ test('@gltf-transform/extensions::texture-transform', async (t) => {
 });
 
 test('@gltf-transform/extensions::texture-transform | clone', (t) => {
-	let doc = new Document();
-	const transformExtension = doc.createExtension(TextureTransform);
-	const tex1 = doc.createTexture();
-	const tex2 = doc.createTexture();
-	const tex3 = doc.createTexture();
+	const srcDoc = new Document();
+	const transformExtension = srcDoc.createExtension(TextureTransform);
+	const tex1 = srcDoc.createTexture();
+	const tex2 = srcDoc.createTexture();
+	const tex3 = srcDoc.createTexture();
 
-	let mat = doc.createMaterial();
-	mat.setBaseColorTexture(tex1)
+	const srcMat = srcDoc.createMaterial();
+	srcMat
+		.setBaseColorTexture(tex1)
 		.getBaseColorTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
 			transformExtension.createTransform().setTexCoord(2).setScale([100, 100])
 		);
-	mat.setEmissiveTexture(tex2)
+	srcMat
+		.setEmissiveTexture(tex2)
 		.getEmissiveTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
 			transformExtension.createTransform().setTexCoord(1).setOffset([0.5, 0.5]).setRotation(Math.PI)
 		);
-	mat.setOcclusionTexture(tex3);
+	srcMat.setOcclusionTexture(tex3);
 
-	// Clone the Document, and ensure data is intact.
-	doc = doc.clone();
-	mat = doc.getRoot().listMaterials()[0];
-	const transform1 = mat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
-	const transform2 = mat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
-	const transform3 = mat.getOcclusionTextureInfo().getExtension<Transform>('KHR_texture_transform');
+	// Clone the Document.
+	const dstDoc = srcDoc.clone();
 
-	t.ok(transform1, 'baseColorTexture transform');
-	t.ok(transform2, 'emissiveColorTexture transform');
-	t.notOk(transform3, 'occlusionColorTexture transform');
+	// Ensure source Document is unchanged.
 
-	t.equal(transform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
-	t.deepEqual(transform1.getScale(), [100, 100], 'baseColorTexture.scale');
-	t.deepEqual(transform1.getOffset(), [0, 0], 'baseColorTexture.offset');
-	t.deepEqual(transform1.getRotation(), 0, 'baseColorTexture.rotation');
+	const srcTransform1 = srcMat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
+	const srcTransform2 = srcMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
 
-	t.equal(transform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
-	t.deepEqual(transform2.getScale(), [1, 1], 'emissiveColorTexture.scale');
-	t.deepEqual(transform2.getOffset(), [0.5, 0.5], 'emissiveColorTexture.offset');
-	t.deepEqual(transform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
+	t.ok(srcTransform1, 'original baseColorTexture transform unchanged');
+	t.ok(srcTransform2, 'original emissiveColorTexture transform unchanged');
+
+	// Ensure target Document matches.
+
+	const dstMat = dstDoc.getRoot().listMaterials()[0];
+	const dstTransform1 = dstMat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
+	const dstTransform2 = dstMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
+
+	t.ok(dstTransform1, 'cloned baseColorTexture transform added');
+	t.ok(dstTransform2, 'cloned emissiveColorTexture transform added');
+
+	t.equal(dstTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
+	t.deepEqual(dstTransform1.getScale(), [100, 100], 'baseColorTexture.scale');
+	t.deepEqual(dstTransform1.getOffset(), [0, 0], 'baseColorTexture.offset');
+	t.deepEqual(dstTransform1.getRotation(), 0, 'baseColorTexture.rotation');
+
+	t.equal(dstTransform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
+	t.deepEqual(dstTransform2.getScale(), [1, 1], 'emissiveColorTexture.scale');
+	t.deepEqual(dstTransform2.getOffset(), [0.5, 0.5], 'emissiveColorTexture.offset');
+	t.deepEqual(dstTransform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
 
 	t.end();
 });
