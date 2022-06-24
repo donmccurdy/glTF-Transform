@@ -138,21 +138,21 @@ export class Document {
 
 		// 3. Create stub classes for every Property in other Document.
 		for (const edge of other._graph.listEdges()) {
-			for (const thisProp of [edge.getParent() as Property, edge.getChild() as Property]) {
-				if (visited.has(thisProp)) continue;
+			for (const otherProp of [edge.getParent() as Property, edge.getChild() as Property]) {
+				if (visited.has(otherProp)) continue;
 
-				let otherProp: Property;
-				if (thisProp.propertyType === PropertyType.TEXTURE_INFO) {
+				let thisProp: Property;
+				if (otherProp.propertyType === PropertyType.TEXTURE_INFO) {
 					// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-					otherProp = thisProp as Property;
+					thisProp = otherProp as Property;
 				} else {
 					// For other property types, create stub classes.
-					const PropertyClass = thisProp.constructor as new (g: Graph<Property>) => Property;
-					otherProp = new PropertyClass(this._graph);
+					const PropertyClass = otherProp.constructor as new (g: Graph<Property>) => Property;
+					thisProp = new PropertyClass(this._graph);
 				}
 
-				propertyMap.set(thisProp as Property, otherProp);
-				visited.add(thisProp);
+				propertyMap.set(otherProp as Property, thisProp);
+				visited.add(otherProp);
 			}
 		}
 
@@ -165,7 +165,10 @@ export class Document {
 		for (const otherProp of visited) {
 			const thisProp = propertyMap.get(otherProp);
 			if (!thisProp) throw new Error('Could resolve property.');
-			thisProp.copy(otherProp, resolve);
+			// TextureInfo copy handled by Material or ExtensionProperty.
+			if (thisProp.propertyType !== PropertyType.TEXTURE_INFO) {
+				thisProp.copy(otherProp, resolve);
+			}
 		}
 
 		return this;
