@@ -8,6 +8,7 @@ import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { program, programReady } from '../';
 
+const draco3d = require('draco3dgltf');
 const { MeshoptDecoder } = require('meshoptimizer');
 
 tmp.setGracefulCleanup();
@@ -43,6 +44,21 @@ test('@gltf-transform/cli::meshopt', async (t) => {
 	return program.exec(['meshopt', input, output], { silent: true }).then(async () => {
 		const doc2 = await io.read(output);
 		t.ok(doc2, 'meshopt succeeds');
+	});
+});
+
+test('@gltf-transform/cli::draco', async (t) => {
+	await programReady;
+	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
+		'draco3d.decoder': await draco3d.createDecoderModule(),
+		'draco3d.encoder': await draco3d.createEncoderModule(),
+	});
+	const input = path.join(__dirname, 'in', 'chr_knight.glb');
+	const output = tmp.tmpNameSync({ postfix: '.glb' });
+
+	return program.exec(['draco', input, output], { silent: true }).then(async () => {
+		const doc2 = await io.read(output);
+		t.ok(doc2, 'draco succeeds');
 	});
 });
 
