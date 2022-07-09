@@ -452,7 +452,7 @@ ${underline('References')}
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-				.transform(meshopt(options as unknown as MeshoptOptions))
+				.transform(meshopt({encoder: MeshoptEncoder, ...options}))
 	);
 
 // QUANTIZE
