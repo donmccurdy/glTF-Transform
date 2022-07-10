@@ -7,7 +7,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "main": "dist/extensions.js",
-  "module": "dist/extensions.modern.js",
+  "module": "dist/extensions.modern.mjs",
   "source": "src/extensions.ts",
   "types": "dist/extensions.d.ts",
   "sideEffects": false,
