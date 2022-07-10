@@ -7,7 +7,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "main": "dist/functions.js",
-  "module": "dist/functions.modern.js",
+  "module": "dist/functions.modern.mjs",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": false,
