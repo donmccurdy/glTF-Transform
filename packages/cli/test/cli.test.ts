@@ -1,10 +1,14 @@
 require('source-map-support').install();
 
 import fs from 'fs';
+import path from 'path';
 import test from 'tape';
 import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { program, programReady } from '../';
+
+const { MeshoptDecoder } = require('meshoptimizer');
 
 tmp.setGracefulCleanup();
 
@@ -24,6 +28,21 @@ test('@gltf-transform/cli::copy', async (t) => {
 		const doc2 = await io.read(output);
 		t.ok(doc2, 'roundtrip document');
 		t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
+	});
+});
+
+test('@gltf-transform/cli::meshopt', async (t) => {
+	await programReady;
+	await MeshoptDecoder.ready;
+	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
+		'meshopt.decoder': MeshoptDecoder,
+	});
+	const input = path.join(__dirname, 'in', 'chr_knight.glb');
+	const output = tmp.tmpNameSync({ postfix: '.glb' });
+
+	return program.exec(['meshopt', input, output], { silent: true }).then(async () => {
+		const doc2 = await io.read(output);
+		t.ok(doc2, 'meshopt succeeds');
 	});
 });
 

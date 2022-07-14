@@ -1,4 +1,4 @@
-import { KTX2Model, read as readKTX } from 'ktx-parse';
+import { read as readKTX, KHR_DF_MODEL_ETC1S, KDF_DF_MODEL_UASTC } from 'ktx-parse';
 import {
 	Extension,
 	ImageUtils,
@@ -40,10 +40,10 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 	getChannels(array: Uint8Array): number {
 		const container = readKTX(array);
 		const dfd = container.dataFormatDescriptor[0];
-		if (dfd.colorModel === KTX2Model.ETC1S) {
-			return dfd.samples.length === 2 && (dfd.samples[1].channelID & 0xf) === 15 ? 4 : 3;
-		} else if (dfd.colorModel === KTX2Model.UASTC) {
-			return (dfd.samples[0].channelID & 0xf) === 3 ? 4 : 3;
+		if (dfd.colorModel === KHR_DF_MODEL_ETC1S) {
+			return dfd.samples.length === 2 && (dfd.samples[1].channelType & 0xf) === 15 ? 4 : 3;
+		} else if (dfd.colorModel === KDF_DF_MODEL_UASTC) {
+			return (dfd.samples[0].channelType & 0xf) === 3 ? 4 : 3;
 		}
 		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 	}

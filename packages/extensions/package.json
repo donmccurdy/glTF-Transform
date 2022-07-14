@@ -1,13 +1,13 @@
 {
   "name": "@gltf-transform/extensions",
-  "version": "2.1.5",
+  "version": "2.1.8",
   "repository": "github:donmccurdy/glTF-Transform",
   "homepage": "https://gltf-transform.donmccurdy.com/extensions.html",
   "description": "Adds extension support to @gltf-transform/core",
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "main": "dist/extensions.js",
-  "module": "dist/extensions.modern.js",
+  "module": "dist/extensions.modern.mjs",
   "source": "src/extensions.ts",
   "types": "dist/extensions.d.ts",
   "sideEffects": false,
@@ -29,8 +29,8 @@
     "threejs"
   ],
   "dependencies": {
-    "@gltf-transform/core": "^2.1.5",
-    "ktx-parse": "^0.2.2"
+    "@gltf-transform/core": "^2.1.8",
+    "ktx-parse": "^0.3.3"
   },
   "files": [
     "dist/",

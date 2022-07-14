@@ -1,13 +1,13 @@
 {
   "name": "@gltf-transform/functions",
-  "version": "2.1.5",
+  "version": "2.1.8",
   "repository": "github:donmccurdy/glTF-Transform",
   "homepage": "https://gltf-transform.donmccurdy.com/functions.html",
   "description": "Functions for common glTF modifications, written using the core API",
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "main": "dist/functions.js",
-  "module": "dist/functions.modern.js",
+  "module": "dist/functions.modern.mjs",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": false,
@@ -29,8 +29,8 @@
     "threejs"
   ],
   "dependencies": {
-    "@gltf-transform/core": "^2.1.5",
-    "@gltf-transform/extensions": "^2.1.5",
+    "@gltf-transform/core": "^2.1.8",
+    "@gltf-transform/extensions": "^2.1.8",
     "gl-matrix": "~3.4.3",
     "ndarray": "^1.0.19",
     "ndarray-lanczos": "^0.1.2",
