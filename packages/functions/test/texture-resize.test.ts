@@ -20,7 +20,11 @@ test('@gltf-transform/functions::textureResize', async (t) => {
 
 	await document.transform(textureResize({ size: [100, 100], pattern: /other/ }));
 
-	t.equal(texture.getImage(), gradientImage, 'no match');
+	t.equal(texture.getImage(), gradientImage, 'no match - pattern');
+
+	await document.transform(textureResize({ size: [100, 100], slots: /NotAMatch/ }));
+
+	t.equal(texture.getImage(), gradientImage, 'no match - slots');
 
 	await document.transform(textureResize({ size: [4, 4], pattern: /target/ }));
 
