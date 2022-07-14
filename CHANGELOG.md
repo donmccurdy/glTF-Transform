@@ -2,9 +2,14 @@
 
 ## v2.x
 
-### v2.2 — 🚧 Unreleased
+### v2.3 — 🚧 Unreleased
 
-_TBD._
+### v2.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/19))
+
+**Features:**
+
+- Changed `package.json#module` entrypoint extension to `.mjs` [#619](https://github.com/donmccurdy/glTF-Transform/pull/619)
+- Add 'slots' option to `textureResize()` function. [#622](https://github.com/donmccurdy/glTF-Transform/pull/622) by [@snagy](https://github.com/snagy)
 
 ### v2.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/18))
 
