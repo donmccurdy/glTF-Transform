@@ -52,17 +52,19 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			const name = texture.getName();
 			const uri = texture.getURI();
 			const match = !options.pattern || options.pattern.test(name) || options.pattern.test(uri);
-			if (!match) continue;
+			if (!match) {
+				logger.debug(`${NAME}: Skipping, excluded by "pattern" parameter.`);
+				continue;
+			}
 
 			if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
-				logger.warn(`Skipping unsupported texture type, "${texture.getMimeType()}".`);
+				logger.warn(`${NAME}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
 				continue;
 			}
 
 			const slots = listTextureSlots(doc, texture);
-			logger.debug(`${NAME}: Slots → [${slots.join(', ')}]`);
 			if (options.slots && !slots.some((slot) => options.slots?.test(slot))) {
-				logger.debug(`${NAME}: Skipping excluded by pattern "${options.slots}".`);
+				logger.debug(`${NAME}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
 				continue;
 			}
 
@@ -70,7 +72,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			const [srcWidth, srcHeight] = texture.getSize()!;
 
 			if (srcWidth <= maxWidth && srcHeight <= maxHeight) {
-				logger.debug(`${NAME}: Skipping "${uri || name}", within size range.`);
+				logger.debug(`${NAME}: Skipping, not within size range.`);
 				continue;
 			}
 
@@ -92,6 +94,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			const dstPixels = ndarray(new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]);
 
 			logger.debug(`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`);
+			logger.debug(`${NAME}: Slots → [${slots.join(', ')}]`);
 
 			try {
 				options.filter === TextureResizeFilter.LANCZOS3
