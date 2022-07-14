@@ -2,6 +2,7 @@ import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import type { Document, Transform, vec2 } from '@gltf-transform/core';
+import { listTextureSlots } from '@gltf-transform/functions';
 import { createTransform } from './utils';
 
 const NAME = 'textureResize';
@@ -18,6 +19,8 @@ export interface TextureResizeOptions {
 	filter?: TextureResizeFilter;
 	/** Pattern identifying textures to resize, matched to name or URI. */
 	pattern?: RegExp | null;
+	/** Pattern to match slots usage for resizing. */
+	slots?: RegExp | null;
 }
 
 /** Resampling filter methods. LANCZOS3 is sharper, LANCZOS2 is smoother. */
@@ -32,6 +35,7 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
 	size: [2048, 2048],
 	filter: TextureResizeFilter.LANCZOS3,
 	pattern: null,
+	slots: null,
 };
 
 /**
@@ -52,6 +56,13 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 
 			if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
 				logger.warn(`Skipping unsupported texture type, "${texture.getMimeType()}".`);
+				continue;
+			}
+
+			const slots = listTextureSlots(doc, texture);
+			logger.debug(`${NAME}: Slots → [${slots.join(', ')}]`);
+			if (options.slots && !slots.some((slot) => options.slots?.test(slot))) {
+				logger.debug(`${NAME}: Skipping excluded by pattern "${options.slots}".`);
 				continue;
 			}
 
