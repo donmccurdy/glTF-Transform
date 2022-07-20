@@ -2,6 +2,11 @@
 	"extends": ["github>donmccurdy/renovate-config"],
 	"packageRules": [
 		{
+			"description": "Microbundle",
+			"matchPackageNames": ["microbundle"],
+			"enabled": false
+		},
+		{
 			"description": "https://github.com/TypeStrong/typedoc/issues/1633",
 			"matchPackageNames": ["typedoc"],
 			"enabled": false

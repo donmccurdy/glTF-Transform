@@ -42,7 +42,7 @@
     "gltf-validator": "2.0.0-dev.3.9",
     "lerna": "5.1.8",
     "meshoptimizer": "0.17.0",
-    "microbundle": "0.15.0",
+    "microbundle": "0.14.2",
     "mikktspace": "1.1.1",
     "nyc": "15.1.0",
     "prettier": "2.7.1",
