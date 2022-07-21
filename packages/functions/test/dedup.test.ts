@@ -54,18 +54,22 @@ test('@gltf-transform/functions::dedup | animation accessors', (t) => {
 	t.end();
 });
 
-test('@gltf-transform/functions::dedup | materials', (t) => {
+test.only('@gltf-transform/functions::dedup | materials', (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
-	const mat1 = doc.createMaterial('MyMat').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('BLEND');
-	const mat2 = mat1.clone();
-	mat1.clone().setAlphaMode('OPAQUE');
+	const mat1 = doc.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
 
-	t.ok(mat1.equals(mat2), 'material.equals(material.clone())');
+	t.ok(mat1.equals(mat1.clone()), 'material.equals(material.clone())');
 
+	const mat2 = mat1.clone().setName('MatB').setAlphaMode('MASK');
+	dedup()(doc);
+
+	t.equal(root.listMaterials().length, 3, 'no-op when unequal');
+
+	mat2.setAlphaMode('OPAQUE');
 	dedup({ propertyTypes: [] })(doc);
 
-	t.equal(root.listMaterials().length, 3, 'has no effect when disabled');
+	t.equal(root.listMaterials().length, 3, 'no-op when disabled');
 
 	dedup()(doc);
 
