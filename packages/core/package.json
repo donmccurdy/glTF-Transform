@@ -7,7 +7,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "license": "MIT",
   "main": "dist/core.js",
-  "module": "dist/core.modern.mjs",
+  "module": "dist/core.modern.js",
   "source": "src/core.ts",
   "types": "dist/core.d.ts",
   "sideEffects": false,
