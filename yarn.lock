@@ -5856,10 +5856,10 @@ kleur@^4.1.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"
   integrity sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
 
-ktx-parse@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/ktx-parse/-/ktx-parse-0.4.3.tgz#d2d73353c6d255e071968a9818b94f0786c69568"
-  integrity sha512-ufymOwzu1VLFpZukNaav+ro1I5JGIQuRw12s0iqXOgNvjbHLFC5qOThNW2dWbAcpGtovONpHlNvJhZ5kbRSYrA==
+ktx-parse@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/ktx-parse/-/ktx-parse-0.4.4.tgz#03c2708cbc5e8b2ae30eafb5f4ecf061ec561f59"
+  integrity sha512-Qiu7lB2fz6qZgYhE2K/0Fjy+3xYJxRonIQfg5+cKDorZOmdjS2EDbe7mvYEQEqD/UiM+pCVOnO8yveEntuIgZA==
 
 kuler@1.0.x:
   version "1.0.1"
