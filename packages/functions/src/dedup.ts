@@ -1,4 +1,17 @@
-import { Accessor, BufferUtils, Document, Logger, Material, Mesh, Primitive, PrimitiveTarget, PropertyType, Root, Texture, Transform } from '@gltf-transform/core';
+import {
+	Accessor,
+	BufferUtils,
+	Document,
+	Logger,
+	Material,
+	Mesh,
+	Primitive,
+	PrimitiveTarget,
+	PropertyType,
+	Root,
+	Texture,
+	Transform,
+} from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'dedup';
@@ -9,12 +22,7 @@ export interface DedupOptions {
 }
 
 const DEDUP_DEFAULTS: Required<DedupOptions> = {
-	propertyTypes: [
-		PropertyType.ACCESSOR,
-		PropertyType.MESH,
-		PropertyType.TEXTURE,
-		PropertyType.MATERIAL,
-	],
+	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE, PropertyType.MATERIAL],
 };
 
 /**
@@ -34,7 +42,7 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
  * ```
  */
 export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transform {
-	const options = {...DEDUP_DEFAULTS, ..._options} as Required<DedupOptions>;
+	const options = { ...DEDUP_DEFAULTS, ..._options } as Required<DedupOptions>;
 
 	const propertyTypes = new Set(options.propertyTypes);
 	for (const propertyType of options.propertyTypes) {
@@ -43,7 +51,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		}
 	}
 
-	return createTransform(NAME, (doc: Document): void =>  {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
@@ -53,7 +61,6 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-
 };
 
 function dedupAccessors(logger: Logger, doc: Document): void {
@@ -66,7 +73,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	const meshes = doc.getRoot().listMeshes();
 	meshes.forEach((mesh) => {
 		mesh.listPrimitives().forEach((primitive) => {
-			primitive.listAttributes().forEach((accessor) => (attributeAccessors.add(accessor)));
+			primitive.listAttributes().forEach((accessor) => attributeAccessors.add(accessor));
 			const indices = primitive.getIndices();
 			if (indices) indicesAccessors.add(indices);
 		});
@@ -111,21 +118,18 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	}
 
 	const duplicateIndices = detectDuplicates(Array.from(indicesAccessors));
-	logger.debug(
-		`${NAME}: Found ${duplicateIndices.size} duplicates among ${indicesAccessors.size} indices.`
-	);
+	logger.debug(`${NAME}: Found ${duplicateIndices.size} duplicates among ${indicesAccessors.size} indices.`);
 
 	const duplicateAttributes = detectDuplicates(Array.from(attributeAccessors));
 	logger.debug(
-		`${NAME}: Found ${duplicateAttributes.size} duplicates among ${attributeAccessors.size}`
-		+ ' attributes.'
+		`${NAME}: Found ${duplicateAttributes.size} duplicates among ${attributeAccessors.size}` + ' attributes.'
 	);
 
 	const duplicateInputs = detectDuplicates(Array.from(inputAccessors));
 	const duplicateOutputs = detectDuplicates(Array.from(outputAccessors));
 	logger.debug(
-		`${NAME}: Found ${duplicateInputs.size + duplicateOutputs.size} duplicates among`
-		+ ` ${inputAccessors.size + outputAccessors.size} animation accessors.`
+		`${NAME}: Found ${duplicateInputs.size + duplicateOutputs.size} duplicates among` +
+			` ${inputAccessors.size + outputAccessors.size} animation accessors.`
 	);
 
 	// Dissolve duplicate vertex attributes and indices.
@@ -166,7 +170,7 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 	const root = doc.getRoot();
 
 	// Create Reference -> ID lookup table.
-	const refs = new Map<Accessor|Material, number>();
+	const refs = new Map<Accessor | Material, number>();
 	root.listAccessors().forEach((accessor, index) => refs.set(accessor, index));
 	root.listMaterials().forEach((material, index) => refs.set(material, index));
 
@@ -196,9 +200,7 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 		}
 	}
 
-	logger.debug(
-		`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`
-	);
+	logger.debug(`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`);
 }
 
 function dedupImages(logger: Logger, doc: Document): void {
@@ -235,9 +237,7 @@ function dedupImages(logger: Logger, doc: Document): void {
 		}
 	}
 
-	logger.debug(
-		`${NAME}: Found ${duplicates.size} duplicates among ${root.listTextures().length} textures.`
-	);
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${root.listTextures().length} textures.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
@@ -251,20 +251,21 @@ function dedupMaterials(logger: Logger, doc: Document): void {
 	const root = doc.getRoot();
 	const materials = root.listMaterials();
 	const duplicates: Map<Material, Material> = new Map();
+	const skip = new Set(['name']);
 
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
-	for (let i = 0; i < materials.length; i++){
+	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
 
 		if (duplicates.has(a)) continue;
 
-		for (let j = 0; j < materials.length; j++){
+		for (let j = 0; j < materials.length; j++) {
 			const b = materials[j];
 
 			if (a === b) continue;
 			if (duplicates.has(b)) continue;
 
-			if (a.equals(b)) {
+			if (a.equals(b, skip)) {
 				duplicates.set(b, a);
 			}
 		}
@@ -284,10 +285,7 @@ function dedupMaterials(logger: Logger, doc: Document): void {
 }
 
 /** Generates a key unique to the content of a primitive or target. */
-function createPrimitiveKey(
-	prim: Primitive | PrimitiveTarget,
-	refs: Map<Accessor|Material, number>
-): string {
+function createPrimitiveKey(prim: Primitive | PrimitiveTarget, refs: Map<Accessor | Material, number>): string {
 	const primKeyItems = [];
 	for (const semantic of prim.listSemantics()) {
 		const attribute = prim.getAttribute(semantic)!;

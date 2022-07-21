@@ -11,6 +11,8 @@ export interface IProperty {
 	extras: Record<string, unknown>;
 }
 
+const EMPTY_SET = new Set<string>();
+
 /**
  * # Property
  *
@@ -203,15 +205,20 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 
 	/**
 	 * Returns true if two properties are deeply equivalent, recursively comparing the attributes
-	 * of the properties. For example, two {@link Primitive Primitives} are equivalent if they
-	 * have accessors and materials with equivalent content — but not necessarily the same specific
-	 * accessors and materials.
+	 * of the properties. Optionally, a 'skip' set may be included, specifying attributes whose
+	 * values should not be considered in the comparison.
+	 *
+	 * Example: Two {@link Primitive Primitives} are equivalent if they have accessors and
+	 * materials with equivalent content — but not necessarily the same specific accessors
+	 * and materials.
 	 */
-	public equals(other: this): boolean {
+	public equals(other: this, skip = EMPTY_SET): boolean {
 		if (this === other) return true;
 		if (this.propertyType !== other.propertyType) return false;
 
 		for (const key in this[$attributes]) {
+			if (skip.has(key)) continue;
+
 			const a = this[$attributes][key] as UnknownRef;
 			const b = other[$attributes][key] as UnknownRef;
 
