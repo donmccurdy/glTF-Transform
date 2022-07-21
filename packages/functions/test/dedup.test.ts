@@ -54,26 +54,28 @@ test('@gltf-transform/functions::dedup | animation accessors', (t) => {
 	t.end();
 });
 
-test.only('@gltf-transform/functions::dedup | materials', (t) => {
+test('@gltf-transform/functions::dedup | materials', (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
-	const mat1 = doc.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
 
-	t.ok(mat1.equals(mat1.clone()), 'material.equals(material.clone())');
+	const mat = doc.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
+	const matCloned = mat.clone();
+	const matRenamed = mat.clone().setName('MatC');
+	const matUnequal = mat.clone().setName('MatD').setAlphaMode('MASK');
 
-	const mat2 = mat1.clone().setName('MatB').setAlphaMode('MASK');
-	dedup()(doc);
+	t.ok(mat.equals(matCloned), 'material.equals(material.clone())');
 
-	t.equal(root.listMaterials().length, 3, 'no-op when unequal');
-
-	mat2.setAlphaMode('OPAQUE');
 	dedup({ propertyTypes: [] })(doc);
 
-	t.equal(root.listMaterials().length, 3, 'no-op when disabled');
+	t.equals(root.listMaterials().length, 4, 'no-op when disabled');
 
 	dedup()(doc);
 
-	t.equal(root.listMaterials().length, 2, 'prunes duplicate materials');
+	t.equal(root.listMaterials().length, 2, 'removes all duplicate materials');
+	t.notOk(mat.isDisposed(), 'base = ✓');
+	t.ok(matCloned.isDisposed(), 'cloned = ⨉');
+	t.ok(matRenamed.isDisposed(), 'renamed = ⨉');
+	t.notOk(matUnequal.isDisposed(), 'unequal = ✓');
 	t.end();
 });
 
