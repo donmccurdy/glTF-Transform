@@ -2,7 +2,7 @@
 	"extends": ["github>donmccurdy/renovate-config"],
 	"packageRules": [
 		{
-			"description": "Microbundle",
+			"description": "https://github.com/donmccurdy/glTF-Transform/pull/631",
 			"matchPackageNames": ["microbundle"],
 			"enabled": false
 		},
