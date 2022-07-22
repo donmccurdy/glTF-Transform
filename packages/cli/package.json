@@ -39,7 +39,7 @@
     "draco3dgltf": "^1.5.2",
     "gltf-validator": "^2.0.0-dev.3.5",
     "inquirer": "^8.2.2",
-    "ktx-parse": "^0.3.3",
+    "ktx-parse": "^0.4.5",
     "language-tags": "^1.0.5",
     "meshoptimizer": "^0.17.0",
     "micromatch": "^4.0.5",
