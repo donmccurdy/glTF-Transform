@@ -18,10 +18,11 @@ export const XMPContext: Record<string, string> = {
 // minimatch. Need to ensure that '*' matches patterns like 'image/png'.
 export const MICROMATCH_OPTIONS = { nocase: true, contains: true };
 
-// Mock for tests.
+// Mocks for tests.
 
 export let spawn = _spawn;
-export let commandExists = _commandExists;
+// See https://github.com/mathisonian/command-exists/issues/22
+export let commandExists = (cmd: string) => _commandExists(cmd).catch(() => false);
 export let waitExit = _waitExit;
 
 export function mockSpawn(_spawn: unknown): void {
