@@ -15,6 +15,7 @@ tmp.setGracefulCleanup();
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
+const KTX_SOFTWARE_VERSION_ACTIVE = '4.1.0-rc1';
 
 const { R, G } = TextureChannel;
 
@@ -114,7 +115,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		const logger = doc.getLogger();
 
 		// Confirm recent version of KTX-Software is installed.
-		await checkKTXSoftware(logger);
+		const version = await checkKTXSoftware(logger);
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
@@ -169,7 +170,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const inBytes = image.byteLength;
 				await fs.writeFile(inPath, Buffer.from(image));
 
-				const params = [...createParams(slots, channels, size, logger, numTextures, options), outPath, inPath];
+				const params = [
+					...createParams(slots, channels, size, logger, numTextures, options, version),
+					outPath,
+					inPath,
+				];
 				logger.debug(`${prefix}: Spawning → toktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `toktx` CLI tool.
@@ -223,7 +228,8 @@ function createParams(
 	size: vec2,
 	logger: Logger,
 	numTextures: number,
-	options: ETC1SOptions | UASTCOptions
+	options: ETC1SOptions | UASTCOptions,
+	version: string
 ): (string | number)[] {
 	const params: (string | number)[] = [];
 	params.push('--genmipmap');
@@ -271,7 +277,7 @@ function createParams(
 		}
 
 		if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
-			params.push('--normal_map');
+			params.push(semver.lt(version, KTX_SOFTWARE_VERSION_ACTIVE) ? '--normal_map' : '--normal_mode');
 		}
 	}
 
@@ -325,7 +331,7 @@ function createParams(
 	return params;
 }
 
-async function checkKTXSoftware(logger: Logger): Promise<void> {
+async function checkKTXSoftware(logger: Logger): Promise<string> {
 	if (!(await commandExists('toktx')) && !process.env.CI) {
 		throw new Error(
 			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software'
@@ -346,6 +352,8 @@ async function checkKTXSoftware(logger: Logger): Promise<void> {
 	} else {
 		logger.debug(`toktx: Found KTX-Software ${version}.`);
 	}
+
+	return semver.clean(version);
 }
 
 function isPowerOfTwo(value: number): boolean {
