@@ -275,9 +275,14 @@ function createParams(
 			params.push('--endpoint_rdo_threshold', _options.rdoThreshold);
 			params.push('--selector_rdo_threshold', _options.rdoThreshold);
 		}
+	}
 
-		if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
-			params.push(semver.lt(version, KTX_SOFTWARE_VERSION_ACTIVE) ? '--normal_map' : '--normal_mode');
+	if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
+		// See: https://github.com/KhronosGroup/KTX-Software/issues/600
+		if (semver.gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
+			params.push('--normal_mode', '--input_swizzle', 'rgb1');
+		} else if (options.mode === Mode.ETC1S) {
+			params.push('--normal_map');
 		}
 	}
 
