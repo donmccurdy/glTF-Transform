@@ -301,6 +301,6 @@ function toPrecision(v: number[]): number[] {
 function accessorToTypeLabel(accessor: Accessor): string {
 	const array = accessor.getArray()!;
 	const base = NumericTypeLabels[array.constructor.name] || '?';
-	console.log({ base, NumericTypeLabels, name: array.constructor.name });
-	return base + (accessor.getNormalized() ? '_norm' : '');
+	const suffix = accessor.getNormalized() ? '_norm' : '';
+	return base + suffix;
 }
