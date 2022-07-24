@@ -5,7 +5,6 @@ import {
 	GLTF,
 	ImageUtils,
 	Texture,
-	TypedArray,
 	bounds,
 	PropertyType,
 } from '@gltf-transform/core';
@@ -56,7 +55,7 @@ function listMeshes(doc: Document): InspectPropertyReport<InspectMeshReport> {
 			mesh.listPrimitives().forEach((prim) => {
 				for (const semantic of prim.listSemantics()) {
 					const attr = prim.getAttribute(semantic)!;
-					semantics.add(semantic + ':' + arrayToType(attr.getArray()!));
+					semantics.add(semantic + ':' + accessorToTypeLabel(attr));
 					meshAccessors.add(attr);
 				}
 				for (const targ of prim.listTargets()) {
@@ -64,7 +63,7 @@ function listMeshes(doc: Document): InspectPropertyReport<InspectMeshReport> {
 				}
 				const indices = prim.getIndices();
 				if (indices) {
-					meshIndices.add(arrayToType(indices.getArray()!));
+					meshIndices.add(accessorToTypeLabel(indices));
 					meshAccessors.add(indices);
 				}
 				verts += prim.listAttributes()[0].getCount();
@@ -280,6 +279,16 @@ const MeshPrimitiveModeLabels = [
 	'TRIANGLE_FAN',
 ];
 
+const NumericTypeLabels: Record<string, string> = {
+	Float32Array: 'f32',
+	Uint32Array: 'u32',
+	Uint16Array: 'u16',
+	Uint8Array: 'u8',
+	Int32Array: 'i32',
+	Int16Array: 'i16',
+	Int8Array: 'i8',
+};
+
 /** Maps values in a vector to a finite precision. */
 function toPrecision(v: number[]): number[] {
 	for (let i = 0; i < v.length; i++) {
@@ -288,6 +297,9 @@ function toPrecision(v: number[]): number[] {
 	return v;
 }
 
-function arrayToType(array: TypedArray): string {
-	return array.constructor.name.replace('Array', '').toLowerCase();
+function accessorToTypeLabel(accessor: Accessor): string {
+	const array = accessor.getArray()!;
+	const base = NumericTypeLabels[array.constructor.name] || '?';
+	const suffix = accessor.getNormalized() ? '_norm' : '';
+	return base + suffix;
 }
