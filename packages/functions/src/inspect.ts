@@ -5,7 +5,6 @@ import {
 	GLTF,
 	ImageUtils,
 	Texture,
-	TypedArray,
 	bounds,
 	PropertyType,
 } from '@gltf-transform/core';
