@@ -14,8 +14,6 @@ interface EmissiveStrengthDef {
  * [KHR_materials_emissive_strength](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_emissive_strength/)
  * defines emissive strength and enables high-dynamic-range (HDR) emissive materials.
  *
- * [[include:UNRATIFIED_EXTENSIONS_NOTE.md]]
- *
  * The core glTF 2.0 material model includes {@link Material.setEmissiveFactor `emissiveFactor`}
  * and {@link Material.setEmissiveTexture `emissiveTexture`} to control the color and intensity
  * of the light being emitted by the material, clamped to the range [0.0, 1.0]. However, in
