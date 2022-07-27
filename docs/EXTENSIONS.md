@@ -24,9 +24,9 @@ as prescribed by the extension itself.
 - {@link DracoMeshCompression KHR_draco_mesh_compression}
 - {@link LightsPunctual KHR_lights_punctual}
 - {@link MaterialsClearcoat KHR_materials_clearcoat}
-- {@link MaterialsEmissiveStrength KHR_materials_emissive_strength} ⚠️ *experimental*
+- {@link MaterialsEmissiveStrength KHR_materials_emissive_strength}
 - {@link MaterialsIOR KHR_materials_ior}
-- {@link MaterialsIridescence KHR_materials_iridescence} ⚠️ *experimental*
+- {@link MaterialsIridescence KHR_materials_iridescence}
 - {@link MaterialsPBRSpecularGlossiness KHR_materials_pbrSpecularGlossiness}
 - {@link MaterialsSheen KHR_materials_sheen}
 - {@link MaterialsSpecular KHR_materials_specular}
