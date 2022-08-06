@@ -48,7 +48,7 @@ export class GLTFWriter {
 			.filter((ext) => extensionsRegistered.has(ext.extensionName));
 
 		if (extensionsUsed.length < doc.getRoot().listExtensionsUsed().length) {
-			logger.debug('Some extensions were not registered for I/O, and will not be written.');
+			logger.warn('Some extensions were not registered for I/O, and will not be written.');
 		}
 
 		for (const extension of extensionsUsed) {
