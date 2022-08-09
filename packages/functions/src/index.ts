@@ -54,6 +54,7 @@ export * from './quantize';
 export * from './resample';
 export * from './reorder';
 export * from './sequence';
+export * from './simplify';
 export * from './squoosh';
 export * from './tangents';
 export * from './texture-resize';

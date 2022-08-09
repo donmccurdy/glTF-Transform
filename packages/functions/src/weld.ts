@@ -1,5 +1,15 @@
-import { Accessor, Document, Primitive, PrimitiveTarget, Transform, TypedArray } from '@gltf-transform/core';
-import { createTransform } from './utils';
+import {
+	Accessor,
+	Document,
+	Primitive,
+	PrimitiveTarget,
+	PropertyType,
+	Transform,
+	TransformContext,
+	TypedArray,
+} from '@gltf-transform/core';
+import { dedup } from './dedup';
+import { createTransform, formatDeltaOp, isTransformPending } from './utils';
 
 const NAME = 'weld';
 
@@ -7,9 +17,11 @@ const NAME = 'weld';
 export interface WeldOptions {
 	/** Per-attribute tolerance used when merging similar vertices. */
 	tolerance?: number;
+	/** Whether to overwrite existing indices. */
+	overwrite?: boolean;
 }
 
-const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1e-4 };
+const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1e-4, overwrite: true };
 
 /**
  * Index {@link Primitive}s and (optionally) merge similar vertices.
@@ -17,12 +29,14 @@ const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1e-4 };
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
 
-	return createTransform(NAME, (doc: Document): void => {
+	return createTransform(NAME, async (doc: Document, context?: TransformContext): Promise<void> => {
 		const logger = doc.getLogger();
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				if (prim.getMode() === Primitive.Mode.POINTS) {
+				if (prim.getIndices() && !options.overwrite) {
+					continue;
+				} else if (prim.getMode() === Primitive.Mode.POINTS) {
 					continue;
 				} else if (options.tolerance === 0) {
 					weldOnly(doc, prim);
@@ -30,6 +44,12 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 					weldAndMerge(doc, prim, options);
 				}
 			}
+		}
+
+		// TODO(perf): Suppose we just invoked simplify(), and dedup is not explicitly
+		// in the transform stack .... now we are going to run it twice!
+		if (!isTransformPending(context, NAME, 'dedup')) {
+			await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 		}
 
 		logger.debug(`${NAME}: Complete.`);
@@ -53,6 +73,7 @@ function weldOnly(doc: Document, prim: Primitive): void {
  * attributes are not considered when scoring vertex similarity, but are retained when merging.
  */
 function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
+	const logger = doc.getLogger();
 	const tolerance = Math.max(options.tolerance, Number.EPSILON);
 	const decimalShift = Math.log10(1 / tolerance);
 	const shiftFactor = Math.pow(10, decimalShift);
@@ -105,7 +126,7 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 
 	const srcVertexCount = prim.listAttributes()[0].getCount();
 	const dstVertexCount = dstAttributes.get(prim.getAttribute('POSITION')!)!.length;
-	doc.getLogger().debug(`${NAME}: ${srcVertexCount} → ${dstVertexCount} vertices.`);
+	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
 	// Update the primitive.
 	for (const srcAttr of prim.listAttributes()) {

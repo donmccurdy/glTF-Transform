@@ -1,5 +1,6 @@
+
 import type { Accessor, Document, ILogger, Transform, TypedArray } from '@gltf-transform/core';
-import { createTransform } from './utils';
+import { createTransform, formatDeltaOp } from './utils';
 
 const NAME = 'unweld';
 
@@ -29,6 +30,8 @@ export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 				const indices = prim.getIndices();
 				if (!indices) continue;
 
+				const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
+
 				// Vertex attributes.
 				for (const srcAttribute of prim.listAttributes()) {
 					prim.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
@@ -46,6 +49,9 @@ export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 						if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 					}
 				}
+
+				const dstVertexCount = prim.getAttribute('POSITION')!.getCount();
+				logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
 				// Clean up.
 				prim.setIndices(null);

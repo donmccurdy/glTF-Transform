@@ -58,7 +58,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 		positionTargetArray.slice(9, 18), // Uses later targets, because of index order.
 		'morph targets on prim2'
 	);
-	t.equals(doc.getRoot().listAccessors().length, 5, 'keeps only needed accessors');
+	t.equals(doc.getRoot().listAccessors().length, 4, 'keeps only needed accessors');
 	t.end();
 });
 

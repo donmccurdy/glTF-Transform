@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SimplifyOptions, SIMPLIFY_DEFAULTS } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
@@ -20,7 +20,7 @@ let io: NodeIO;
 const fetch = require('node-fetch');
 const draco3d = require('draco3dgltf');
 const mikktspace = require('mikktspace');
-const { MeshoptDecoder, MeshoptEncoder } = require('meshoptimizer');
+const { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } = require('meshoptimizer');
 
 const programReady = new Promise<void>((resolve) => {
 	Promise.all([
@@ -624,6 +624,37 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 		Session.create(io, logger, args.input, args.output)
 			.transform(reorder({encoder: MeshoptEncoder, ...options}))
 	);
+
+// SIMPLIFY
+program
+.command('simplify', 'Simplify mesh, reducing number of vertices')
+.help(`
+Simplify mesh, reducing number of vertices.
+
+Simplification algorithm producing meshes with fewer triangles and
+vertices. Simplification is lossy, but the algorithm aims to
+preserve visual quality as much as possible, for given parameters.
+
+Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
+`.trim())
+.argument('<input>', INPUT_DESC)
+.argument('<output>', OUTPUT_DESC)
+.option('--ratio <ratio>', 'Target ratio (0–1) of vertices to keep', {
+	validator: program.NUMBER,
+	default: SIMPLIFY_DEFAULTS.ratio,
+})
+.option('--error <error>', 'Target error, as a fraction of mesh radius', {
+	validator: program.NUMBER,
+	default: SIMPLIFY_DEFAULTS.error,
+})
+.option('--lock-border <lockBorder>', 'Whether to lock topological borders of the mesh', {
+	validator: program.BOOLEAN,
+	default: SIMPLIFY_DEFAULTS.lockBorder,
+})
+.action(async ({args, options, logger}) =>
+	Session.create(io, logger, args.input, args.output)
+		.transform(simplify({simplifier: MeshoptSimplifier, ...options}))
+);
 
 program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
 
