@@ -1,4 +1,4 @@
-import type { Document, Logger, Transform } from '@gltf-transform/core';
+import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { Packet, XMP } from '@gltf-transform/extensions';
 import inquirer from 'inquirer';
 import { check as validateLanguage } from 'language-tags';
@@ -348,7 +348,7 @@ function validatePacket(packetDef: Record<string, unknown>): Record<string, unkn
  * environments. Check errors and try to provide a useful warning to the user.
  * See: https://github.com/SBoudrias/Inquirer.js#Support.
  */
-function checkTTY(error: unknown, logger: Logger) {
+function checkTTY(error: unknown, logger: ILogger) {
 	if ((error as { isTtyError?: boolean }).isTtyError) {
 		logger.warn(
 			'Unable to run "inquirer" session in this terminal environment.' +

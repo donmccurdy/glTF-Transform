@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import CLITable from 'cli-table3';
 import type Validator from 'gltf-validator';
-import type { Logger } from '@gltf-transform/core';
+import type { ILogger } from '@gltf-transform/core';
 import { formatHeader } from './util';
 
 const validator = createValidator();
@@ -32,7 +32,7 @@ interface ValidatorMessage {
 	severity: number;
 }
 
-export function validate(input: string, options: ValidateOptions, logger: Logger): void {
+export function validate(input: string, options: ValidateOptions, logger: ILogger): void {
 	const buffer = fs.readFileSync(input);
 	return validator
 		.validateBytes(new Uint8Array(buffer), {
@@ -55,7 +55,7 @@ export function validate(input: string, options: ValidateOptions, logger: Logger
 		});
 }
 
-function printIssueSection(header: string, severity: number, report: ValidatorReport, logger: Logger): void {
+function printIssueSection(header: string, severity: number, report: ValidatorReport, logger: ILogger): void {
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {

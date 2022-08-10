@@ -1,4 +1,4 @@
-import { Accessor, Document, Logger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
+import { Accessor, Document, ILogger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'tangents';
@@ -11,9 +11,9 @@ export interface TangentsOptions {
 	 * [mikktspace](https://github.com/donmccurdy/mikktspace-wasm) library, which is not
 	 * included by default.
 	 */
-	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array,
+	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array;
 	/** Whether to overwrite existing `TANGENT` attributes. */
-	overwrite?: boolean,
+	overwrite?: boolean;
 }
 
 const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
@@ -36,12 +36,12 @@ const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
  * );
  * ```
  */
-export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
+export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
 	if (!_options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
 	}
 
-	const options = {...TANGENTS_DEFAULTS, ..._options} as Required<TangentsOptions>;
+	const options = { ...TANGENTS_DEFAULTS, ..._options } as Required<TangentsOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -102,10 +102,7 @@ export function tangents (_options: TangentsOptions = TANGENTS_DEFAULTS): Transf
 				// See: https://github.com/KhronosGroup/glTF-Sample-Models/issues/174
 				for (let i = 3; i < tangentArray.length; i += 4) tangentArray[i] *= -1;
 
-				tangent = doc.createAccessor()
-					.setBuffer(tangentBuffer)
-					.setArray(tangentArray)
-					.setType('VEC4');
+				tangent = doc.createAccessor().setBuffer(tangentBuffer).setArray(tangentArray).setType('VEC4');
 				prim.setAttribute('TANGENT', tangent);
 
 				tangentCache.set(attributeHash, tangent);
@@ -135,37 +132,28 @@ function getNormalTexcoord(prim: Primitive): string {
 	return 'TEXCOORD_0';
 }
 
-function filterPrimitive(
-		prim: Primitive,
-		logger: Logger,
-		meshName: string,
-		i: number,
-		overwrite: boolean): boolean {
-
-	if (prim.getMode() !== Primitive.Mode.TRIANGLES
-			|| !prim.getAttribute('POSITION')
-			|| !prim.getAttribute('NORMAL')
-			|| !prim.getAttribute('TEXCOORD_0')) {
+function filterPrimitive(prim: Primitive, logger: ILogger, meshName: string, i: number, overwrite: boolean): boolean {
+	if (
+		prim.getMode() !== Primitive.Mode.TRIANGLES ||
+		!prim.getAttribute('POSITION') ||
+		!prim.getAttribute('NORMAL') ||
+		!prim.getAttribute('TEXCOORD_0')
+	) {
 		logger.debug(
-			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must`
-			+ ' have attributes=[POSITION, NORMAL, TEXCOORD_0] and mode=TRIANGLES.'
+			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must` +
+				' have attributes=[POSITION, NORMAL, TEXCOORD_0] and mode=TRIANGLES.'
 		);
 		return false;
 	}
 
 	if (prim.getAttribute('TANGENT') && !overwrite) {
-		logger.debug(
-			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": TANGENT found.`
-		);
+		logger.debug(`${NAME}: Skipping primitive ${i} of mesh "${meshName}": TANGENT found.`);
 		return false;
 	}
 
 	if (prim.getIndices()) {
 		// TODO(feat): Do this automatically for qualifying primitives.
-		logger.warn(
-			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must`
-			+ ' be unwelded.'
-		);
+		logger.warn(`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must` + ' be unwelded.');
 		return false;
 	}
 

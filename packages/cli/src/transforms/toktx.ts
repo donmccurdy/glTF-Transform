@@ -6,7 +6,16 @@ const semver = require('semver');
 const tmp = require('tmp');
 const pLimit = require('p-limit');
 
-import { Document, FileUtils, ImageUtils, Logger, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
+import {
+	Document,
+	FileUtils,
+	ILogger,
+	ImageUtils,
+	Logger,
+	TextureChannel,
+	Transform,
+	vec2,
+} from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
@@ -226,7 +235,7 @@ function createParams(
 	slots: string[],
 	channels: number,
 	size: vec2,
-	logger: Logger,
+	logger: ILogger,
 	numTextures: number,
 	options: ETC1SOptions | UASTCOptions,
 	version: string
@@ -336,7 +345,7 @@ function createParams(
 	return params;
 }
 
-async function checkKTXSoftware(logger: Logger): Promise<string> {
+async function checkKTXSoftware(logger: ILogger): Promise<string> {
 	if (!(await commandExists('toktx')) && !process.env.CI) {
 		throw new Error(
 			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software'

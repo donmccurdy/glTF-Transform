@@ -1,6 +1,6 @@
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
-import type { JSONDocument, Logger, NodeIO, WebIO } from '@gltf-transform/core';
+import type { JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
 import {
 	InspectAnimationReport,
 	InspectMaterialReport,
@@ -47,7 +47,7 @@ const CLI_TABLE_MARKDOWN_CHARS = {
 export async function inspect(
 	jsonDoc: JSONDocument,
 	io: NodeIO | WebIO,
-	logger: Logger,
+	logger: ILogger,
 	format: InspectFormat
 ): Promise<void> {
 	// Summary (does not require parsing).
@@ -101,7 +101,7 @@ export async function inspect(
 async function reportSection(
 	type: string,
 	format: InspectFormat,
-	logger: Logger,
+	logger: ILogger,
 	section: InspectPropertyReport<AnyPropertyReport>
 ) {
 	const properties = section.properties;

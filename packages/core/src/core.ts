@@ -34,6 +34,7 @@ export {
 	FileUtils,
 	ImageUtils,
 	ImageUtilsFormat,
+	ILogger,
 	Logger,
 	MathUtils,
 	bounds,

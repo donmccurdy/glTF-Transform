@@ -1,4 +1,4 @@
-import { Document, Logger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
+import { Document, ILogger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
 import { createTransform } from './utils';
 
@@ -13,9 +13,9 @@ const INSTANCE_DEFAULTS: Required<InstanceOptions> = {};
  * Creates GPU instances (with `EXT_mesh_gpu_instancing`) for shared {@link Mesh} references. No
  * options are currently implemented for this function.
  */
-export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
+export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = {...INSTANCE_DEFAULTS, ..._options} as Required<InstanceOptions>;
+	const options = { ...INSTANCE_DEFAULTS, ..._options } as Required<InstanceOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -50,9 +50,7 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 				const batchRotation = batch.getAttribute('ROTATION')!;
 				const batchScale = batch.getAttribute('SCALE')!;
 
-				const batchNode = doc.createNode()
-					.setMesh(mesh)
-					.setExtension('EXT_mesh_gpu_instancing', batch);
+				const batchNode = doc.createNode().setMesh(mesh).setExtension('EXT_mesh_gpu_instancing', batch);
 				scene.addChild(batchNode);
 
 				let needsTranslation = false;
@@ -64,9 +62,9 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 					let t: vec3, r: vec4, s: vec3;
 					const node = nodes[i];
 
-					batchTranslation.setElement(i, t = node.getWorldTranslation());
-					batchRotation.setElement(i, r = node.getWorldRotation());
-					batchScale.setElement(i, s = node.getWorldScale());
+					batchTranslation.setElement(i, (t = node.getWorldTranslation()));
+					batchRotation.setElement(i, (r = node.getWorldRotation()));
+					batchScale.setElement(i, (s = node.getWorldScale()));
 
 					if (!MathUtils.eq(t, [0, 0, 0])) needsTranslation = true;
 					if (!MathUtils.eq(r, [0, 0, 0, 1])) needsRotation = true;
@@ -89,9 +87,7 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 		}
 
 		if (numBatches > 0) {
-			logger.info(
-				`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`
-			);
+			logger.info(`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`);
 		} else {
 			logger.info(`${NAME}: No meshes with multiple parent nodes were found.`);
 			batchExtension.dispose();
@@ -99,18 +95,19 @@ export function instance (_options: InstanceOptions = INSTANCE_DEFAULTS): Transf
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-
 }
 
-function pruneUnusedNodes(nodes: Node[], logger: Logger): void {
+function pruneUnusedNodes(nodes: Node[], logger: ILogger): void {
 	let node: Node | undefined;
 	let unusedNodes = 0;
 	while ((node = nodes.pop())) {
-		if (node.listChildren().length
-				|| node.getCamera()
-				|| node.getMesh()
-				|| node.getSkin()
-				|| node.listExtensions().length) {
+		if (
+			node.listChildren().length ||
+			node.getCamera() ||
+			node.getMesh() ||
+			node.getSkin() ||
+			node.listExtensions().length
+		) {
 			continue;
 		}
 		const nodeParent = node.getParent();
@@ -124,27 +121,27 @@ function pruneUnusedNodes(nodes: Node[], logger: Logger): void {
 	logger.debug(`${NAME}: Removed ${unusedNodes} unused nodes.`);
 }
 
-function createBatch(
-		doc: Document,
-		batchExtension: MeshGPUInstancing,
-		mesh: Mesh,
-		count: number): InstancedMesh {
+function createBatch(doc: Document, batchExtension: MeshGPUInstancing, mesh: Mesh, count: number): InstancedMesh {
 	const buffer = mesh.listPrimitives()[0].getAttribute('POSITION')!.getBuffer();
 
-	const batchTranslation = doc.createAccessor()
+	const batchTranslation = doc
+		.createAccessor()
 		.setType('VEC3')
 		.setArray(new Float32Array(3 * count))
 		.setBuffer(buffer);
-	const batchRotation = doc.createAccessor()
+	const batchRotation = doc
+		.createAccessor()
 		.setType('VEC4')
 		.setArray(new Float32Array(4 * count))
 		.setBuffer(buffer);
-	const batchScale = doc.createAccessor()
+	const batchScale = doc
+		.createAccessor()
 		.setType('VEC3')
 		.setArray(new Float32Array(3 * count))
 		.setBuffer(buffer);
 
-	return batchExtension.createInstancedMesh()
+	return batchExtension
+		.createInstancedMesh()
 		.setAttribute('TRANSLATION', batchTranslation)
 		.setAttribute('ROTATION', batchRotation)
 		.setAttribute('SCALE', batchScale);

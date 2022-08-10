@@ -2,7 +2,7 @@ import {
 	Accessor,
 	BufferUtils,
 	Document,
-	Logger,
+	ILogger,
 	Material,
 	Mesh,
 	Primitive,
@@ -63,7 +63,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 	});
 };
 
-function dedupAccessors(logger: Logger, doc: Document): void {
+function dedupAccessors(logger: ILogger, doc: Document): void {
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
 	const attributeAccessors: Set<Accessor> = new Set();
@@ -166,7 +166,7 @@ function dedupAccessors(logger: Logger, doc: Document): void {
 	Array.from(duplicateOutputs.keys()).forEach((output) => output.dispose());
 }
 
-function dedupMeshes(logger: Logger, doc: Document): void {
+function dedupMeshes(logger: ILogger, doc: Document): void {
 	const root = doc.getRoot();
 
 	// Create Reference -> ID lookup table.
@@ -203,7 +203,7 @@ function dedupMeshes(logger: Logger, doc: Document): void {
 	logger.debug(`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`);
 }
 
-function dedupImages(logger: Logger, doc: Document): void {
+function dedupImages(logger: ILogger, doc: Document): void {
 	const root = doc.getRoot();
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
@@ -247,7 +247,7 @@ function dedupImages(logger: Logger, doc: Document): void {
 	});
 }
 
-function dedupMaterials(logger: Logger, doc: Document): void {
+function dedupMaterials(logger: ILogger, doc: Document): void {
 	const root = doc.getRoot();
 	const materials = root.listMaterials();
 	const duplicates: Map<Material, Material> = new Map();

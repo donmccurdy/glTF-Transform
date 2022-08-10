@@ -19,7 +19,7 @@ import {
 	Skin,
 	Texture,
 } from './properties';
-import { Logger } from './utils';
+import { ILogger, Logger } from './utils';
 
 export interface TransformContext {
 	stack: string[];
@@ -78,7 +78,7 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
 export class Document {
 	private _graph: Graph<Property> = new Graph<Property>();
 	private _root: Root = new Root(this._graph);
-	private _logger = Logger.DEFAULT_INSTANCE;
+	private _logger: ILogger = Logger.DEFAULT_INSTANCE;
 
 	/** Returns the glTF {@link Root} property. */
 	public getRoot(): Root {
@@ -95,7 +95,7 @@ export class Document {
 	}
 
 	/** Returns the {@link Logger} instance used for any operations performed on this document. */
-	public getLogger(): Logger {
+	public getLogger(): ILogger {
 		return this._logger;
 	}
 
@@ -110,7 +110,7 @@ export class Document {
 	 * 	.transform(dedup(), weld());
 	 * ```
 	 */
-	public setLogger(logger: Logger): Document {
+	public setLogger(logger: ILogger): Document {
 		this._logger = logger;
 		return this;
 	}
