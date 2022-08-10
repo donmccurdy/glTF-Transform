@@ -6,16 +6,7 @@ const semver = require('semver');
 const tmp = require('tmp');
 const pLimit = require('p-limit');
 
-import {
-	Document,
-	FileUtils,
-	ILogger,
-	ImageUtils,
-	Logger,
-	TextureChannel,
-	Transform,
-	vec2,
-} from '@gltf-transform/core';
+import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';

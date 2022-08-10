@@ -37,6 +37,7 @@ export {
 	ILogger,
 	Logger,
 	MathUtils,
+	Verbosity,
 	bounds,
 	uuid,
 } from './utils';
