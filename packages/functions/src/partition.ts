@@ -1,4 +1,4 @@
-import { Document, ILogger, Logger, PropertyType, Transform } from '@gltf-transform/core';
+import { Document, ILogger, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune';
 import { createTransform } from './utils';
 
