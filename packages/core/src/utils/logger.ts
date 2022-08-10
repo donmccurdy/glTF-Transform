@@ -1,3 +1,28 @@
+/** Logger verbosity thresholds. */
+export enum Verbosity {
+	/** No events are logged. */
+	SILENT = 4,
+
+	/** Only error events are logged. */
+	ERROR = 3,
+
+	/** Only error and warn events are logged. */
+	WARN = 2,
+
+	/** Only error, warn, and info events are logged. (DEFAULT) */
+	INFO = 1,
+
+	/** All events are logged. */
+	DEBUG = 0,
+}
+
+export interface ILogger {
+	debug(text: string): void;
+	info(text: string): void;
+	warn(text: string): void;
+	error(text: string): void;
+}
+
 /**
  * # Logger
  *
@@ -5,26 +30,9 @@
  *
  * @category Utilities
  */
-class Logger {
-	/**
-	 * Log verbosity thresholds.
-	 */
-	static Verbosity = {
-		/** No events are logged. */
-		SILENT: 4,
-
-		/** Only error events are logged. */
-		ERROR: 3,
-
-		/** Only error and warn events are logged. */
-		WARN: 2,
-
-		/** Only error, warn, and info events are logged. (DEFAULT) */
-		INFO: 1,
-
-		/** All events are logged. */
-		DEBUG: 0,
-	};
+export class Logger implements ILogger {
+	/** Logger verbosity thresholds. */
+	static Verbosity = Verbosity;
 
 	/** Default logger instance. */
 	public static DEFAULT_INSTANCE = new Logger(Logger.Verbosity.INFO);
@@ -60,5 +68,3 @@ class Logger {
 		}
 	}
 }
-
-export { Logger };

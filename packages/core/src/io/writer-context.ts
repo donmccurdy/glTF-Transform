@@ -16,7 +16,7 @@ import type {
 	TextureInfo,
 } from '../properties';
 import type { GLTF } from '../types/gltf';
-import { ImageUtils, Logger } from '../utils';
+import { ILogger, ImageUtils } from '../utils';
 import type { WriterOptions } from './writer';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -68,7 +68,7 @@ export class WriterContext {
 
 	public bufferURIGenerator: UniqueURIGenerator;
 	public imageURIGenerator: UniqueURIGenerator;
-	public logger: Logger;
+	public logger: ILogger;
 
 	private readonly _accessorUsageMap = new Map<Accessor, BufferViewUsage | string>();
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);

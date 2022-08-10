@@ -3,7 +3,7 @@ import type { Document } from '../document';
 import type { Extension } from '../extension';
 import type { JSONDocument } from '../json-document';
 import type { GLTF } from '../types/gltf';
-import { BufferUtils, FileUtils, HTTPUtils, Logger, uuid } from '../utils/';
+import { BufferUtils, FileUtils, HTTPUtils, ILogger, Logger, uuid } from '../utils/';
 import { GLTFReader } from './reader';
 import { GLTFWriter, WriterOptions } from './writer';
 
@@ -28,7 +28,7 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  * @category I/O
  */
 export abstract class PlatformIO {
-	protected _logger = Logger.DEFAULT_INSTANCE;
+	protected _logger: ILogger = Logger.DEFAULT_INSTANCE;
 	private _extensions = new Set<typeof Extension>();
 	private _dependencies: { [key: string]: unknown } = {};
 	private _vertexLayout = VertexLayout.INTERLEAVED;
@@ -40,7 +40,7 @@ export abstract class PlatformIO {
 	public lastWriteBytes = 0;
 
 	/** Sets the {@link Logger} used by this I/O instance. Defaults to Logger.DEFAULT_INSTANCE. */
-	public setLogger(logger: Logger): this {
+	public setLogger(logger: ILogger): this {
 		this._logger = logger;
 		return this;
 	}

@@ -3,7 +3,7 @@ import {
 	AnimationChannel,
 	bbox,
 	Document,
-	Logger,
+	ILogger,
 	mat4,
 	Mesh,
 	Node,
@@ -303,7 +303,7 @@ function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bit
 function getQuantizationSettings(
 	semantic: string,
 	attribute: Accessor,
-	logger: Logger,
+	logger: ILogger,
 	options: Required<QuantizeOptions>
 ): { bits: number; ctor?: TypedArrayConstructor } {
 	const min = attribute.getMinNormalized([]);

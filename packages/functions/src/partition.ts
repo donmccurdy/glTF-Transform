@@ -1,4 +1,4 @@
-import { Document, Logger, PropertyType, Transform } from '@gltf-transform/core';
+import { Document, ILogger, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune';
 import { createTransform } from './utils';
 
@@ -9,7 +9,7 @@ export interface PartitionOptions {
 	meshes?: boolean | Array<string>;
 }
 
-const PARTITION_DEFAULTS: Required<PartitionOptions> =  {
+const PARTITION_DEFAULTS: Required<PartitionOptions> = {
 	animations: true,
 	meshes: true,
 };
@@ -30,8 +30,7 @@ const PARTITION_DEFAULTS: Required<PartitionOptions> =  {
  * ```
  */
 const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform => {
-
-	const options = {...PARTITION_DEFAULTS, ..._options} as Required<PartitionOptions>;
+	const options = { ...PARTITION_DEFAULTS, ..._options } as Required<PartitionOptions>;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -43,73 +42,77 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 			logger.warn(`${NAME}: Select animations or meshes to create a partition.`);
 		}
 
-		await doc.transform(prune({propertyTypes: [PropertyType.BUFFER]}));
+		await doc.transform(prune({ propertyTypes: [PropertyType.BUFFER] }));
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-
 };
 
-function partitionMeshes (doc: Document, logger: Logger, options: PartitionOptions): void {
-	const existingURIs = new Set<string>(doc.getRoot().listBuffers().map((b) => b.getURI()));
+function partitionMeshes(doc: Document, logger: ILogger, options: PartitionOptions): void {
+	const existingURIs = new Set<string>(
+		doc
+			.getRoot()
+			.listBuffers()
+			.map((b) => b.getURI())
+	);
 
-	doc.getRoot().listMeshes()
+	doc.getRoot()
+		.listMeshes()
 		.forEach((mesh, meshIndex) => {
 			if (Array.isArray(options.meshes) && !options.meshes.includes(mesh.getName())) {
-				logger.debug(
-					`${NAME}: Skipping mesh #${meshIndex} with name "${mesh.getName()}".`
-				);
+				logger.debug(`${NAME}: Skipping mesh #${meshIndex} with name "${mesh.getName()}".`);
 				return;
 			}
 
 			logger.debug(`${NAME}: Creating buffer for mesh "${mesh.getName()}".`);
 
-			const buffer = doc.createBuffer(mesh.getName())
+			const buffer = doc
+				.createBuffer(mesh.getName())
 				.setURI(createBufferURI(mesh.getName() || 'mesh', existingURIs));
 
-			mesh.listPrimitives()
-				.forEach((primitive) => {
-					const indices = primitive.getIndices();
-					if (indices) indices.setBuffer(buffer);
-					primitive.listAttributes()
-						.forEach((attribute) => attribute.setBuffer(buffer));
-					primitive.listTargets()
-						.forEach((primTarget) => {
-							primTarget.listAttributes()
-								.forEach((attribute) => attribute.setBuffer(buffer));
-						});
+			mesh.listPrimitives().forEach((primitive) => {
+				const indices = primitive.getIndices();
+				if (indices) indices.setBuffer(buffer);
+				primitive.listAttributes().forEach((attribute) => attribute.setBuffer(buffer));
+				primitive.listTargets().forEach((primTarget) => {
+					primTarget.listAttributes().forEach((attribute) => attribute.setBuffer(buffer));
 				});
+			});
 		});
 }
 
-function partitionAnimations (doc: Document, logger: Logger, options: PartitionOptions): void {
-	const existingURIs = new Set<string>(doc.getRoot().listBuffers().map((b) => b.getURI()));
+function partitionAnimations(doc: Document, logger: ILogger, options: PartitionOptions): void {
+	const existingURIs = new Set<string>(
+		doc
+			.getRoot()
+			.listBuffers()
+			.map((b) => b.getURI())
+	);
 
-	doc.getRoot().listAnimations()
+	doc.getRoot()
+		.listAnimations()
 		.forEach((anim, animIndex) => {
 			if (Array.isArray(options.animations) && !options.animations.includes(anim.getName())) {
-				logger.debug(
-					`${NAME}: Skipping animation #${animIndex} with name "${anim.getName()}".`
-				);
+				logger.debug(`${NAME}: Skipping animation #${animIndex} with name "${anim.getName()}".`);
 				return;
 			}
 
 			logger.debug(`${NAME}: Creating buffer for animation "${anim.getName()}".`);
 
-			const buffer = doc.createBuffer(anim.getName())
+			const buffer = doc
+				.createBuffer(anim.getName())
 				.setURI(createBufferURI(anim.getName() || 'animation', existingURIs));
 
-			anim.listSamplers()
-				.forEach((sampler) => {
-					const input = sampler.getInput();
-					const output = sampler.getOutput();
-					if (input) input.setBuffer(buffer);
-					if (output) output.setBuffer(buffer);
-				});
+			anim.listSamplers().forEach((sampler) => {
+				const input = sampler.getInput();
+				const output = sampler.getOutput();
+				if (input) input.setBuffer(buffer);
+				if (output) output.setBuffer(buffer);
+			});
 		});
 }
 
-function createBufferURI (basename: string, existing: Set<string>): string {
+function createBufferURI(basename: string, existing: Set<string>): string {
 	let uri = `${basename}.bin`;
 	let i = 1;
 	while (existing.has(uri)) uri = `${basename}_${i++}.bin`;

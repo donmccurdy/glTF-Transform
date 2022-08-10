@@ -1,4 +1,4 @@
-import { Document, NodeIO, Logger, FileUtils, Transform, Format } from '@gltf-transform/core';
+import { Document, NodeIO, Logger, FileUtils, Transform, Format, ILogger } from '@gltf-transform/core';
 import type { Packet, XMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { formatBytes, XMPContext } from './util';
@@ -7,7 +7,7 @@ import { formatBytes, XMPContext } from './util';
 export class Session {
 	private _outputFormat: Format;
 
-	constructor(private _io: NodeIO, private _logger: Logger, private _input: string, private _output: string) {
+	constructor(private _io: NodeIO, private _logger: ILogger, private _input: string, private _output: string) {
 		_io.setLogger(_logger);
 		this._outputFormat = FileUtils.extension(_output) === 'glb' ? Format.GLB : Format.GLTF;
 	}

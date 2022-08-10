@@ -4,7 +4,7 @@ import type { Extension } from '../extension';
 import type { JSONDocument } from '../json-document';
 import { Accessor, AnimationSampler, Camera } from '../properties';
 import type { GLTF } from '../types/gltf';
-import { BufferUtils, FileUtils, ImageUtils, Logger, MathUtils } from '../utils';
+import { BufferUtils, FileUtils, ILogger, ImageUtils, Logger, MathUtils } from '../utils';
 import { ReaderContext } from './reader-context';
 
 const ComponentTypeToTypedArray = {
@@ -17,7 +17,7 @@ const ComponentTypeToTypedArray = {
 };
 
 export interface ReaderOptions {
-	logger?: Logger;
+	logger?: ILogger;
 	extensions: typeof Extension[];
 	dependencies: { [key: string]: unknown };
 }

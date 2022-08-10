@@ -34,8 +34,10 @@ export {
 	FileUtils,
 	ImageUtils,
 	ImageUtilsFormat,
+	ILogger,
 	Logger,
 	MathUtils,
+	Verbosity,
 	bounds,
 	uuid,
 } from './utils';

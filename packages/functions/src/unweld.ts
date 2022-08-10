@@ -1,4 +1,4 @@
-import type { Accessor, Document, Logger, Transform, TypedArray } from '@gltf-transform/core';
+import type { Accessor, Document, ILogger, Transform, TypedArray } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'unweld';
@@ -60,7 +60,7 @@ export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 function unweldAttribute(
 	srcAttribute: Accessor,
 	indices: Accessor,
-	logger: Logger,
+	logger: ILogger,
 	visited: Map<Accessor, Map<Accessor, Accessor>>
 ): Accessor {
 	if (visited.has(srcAttribute) && visited.get(srcAttribute)!.has(indices)) {
