@@ -93,6 +93,26 @@ test('@gltf-transform/core::texture | extras', async (t) => {
 	t.end();
 });
 
+test('@gltf-transform/core::textureInfo | extras', async (t) => {
+	const io = await createPlatformIO();
+	const doc = new Document();
+	doc.createBuffer();
+	const texture = doc
+		.createTexture('A')
+		.setExtras({ foo: 1, bar: 2 })
+		.setImage(new Uint8Array(10))
+		.setMimeType('image/png');
+	const material = doc.createMaterial().setBaseColorTexture(texture);
+	material.getBaseColorTextureInfo()!.setExtras({ textureInfoID: 12345 });
+	const doc2 = await io.readJSON(await io.writeJSON(doc));
+	const rtMaterial = doc2.getRoot().listMaterials()[0];
+
+	t.deepEqual(material.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'storage');
+	t.deepEqual(rtMaterial.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'roundtrip');
+
+	t.end();
+});
+
 test('@gltf-transform/core::texture | padding', async (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935

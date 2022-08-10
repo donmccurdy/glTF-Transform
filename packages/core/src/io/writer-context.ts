@@ -123,6 +123,9 @@ export class WriterContext {
 		if (textureInfo.getTexCoord() !== 0) {
 			textureInfoDef.texCoord = textureInfo.getTexCoord();
 		}
+		if (Object.keys(textureInfo.getExtras()).length > 0) {
+			textureInfoDef.extras = textureInfo.getExtras();
+		}
 
 		this.textureInfoDefMap.set(textureInfo, textureInfoDef);
 

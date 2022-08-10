@@ -44,6 +44,9 @@ export class ReaderContext {
 		if (textureInfoDef.texCoord !== undefined) {
 			textureInfo.setTexCoord(textureInfoDef.texCoord);
 		}
+		if (textureInfoDef.extras !== undefined) {
+			textureInfo.setExtras(textureInfoDef.extras);
+		}
 
 		const textureDef = this.jsonDoc.json.textures![textureInfoDef.index];
 
