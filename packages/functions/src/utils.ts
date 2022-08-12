@@ -1,6 +1,6 @@
 import type { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import { Primitive, Texture, Transform, TransformContext } from '@gltf-transform/core';
+import { Accessor, Primitive, Texture, Transform, TransformContext } from '@gltf-transform/core';
 
 /**
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
@@ -101,4 +101,59 @@ export function formatBytes(bytes: number, decimals = 2): string {
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
 
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+export function formatLong(x: number): string {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export function formatDelta(a: number, b: number, decimals = 2): string {
+	const prefix = a > b ? '–' : '+';
+	const suffix = '%';
+	return prefix + ((Math.abs(a - b) / a) * 100).toFixed(decimals) + suffix;
+}
+
+export function formatDeltaOp(a: number, b: number) {
+	return `${formatLong(a)} → ${formatLong(b)} (${formatDelta(a, b)})`;
+}
+
+/**
+ * Returns a list of all unique vertex attributes on the given primitive and
+ * its morph targets.
+ */
+export function deepListAttributes(prim: Primitive): Accessor[] {
+	const accessors: Accessor[] = [];
+
+	for (const attribute of prim.listAttributes()) {
+		accessors.push(attribute);
+	}
+	for (const target of prim.listTargets()) {
+		for (const attribute of target.listAttributes()) {
+			accessors.push(attribute);
+		}
+	}
+
+	return Array.from(new Set(accessors));
+}
+
+export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor): void {
+	prim.swap(src, dst);
+	for (const target of prim.listTargets()) {
+		target.swap(src, dst);
+	}
+}
+
+export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {
+	const elementSize = attribute.getElementSize();
+	const srcCount = attribute.getCount();
+	const srcArray = attribute.getArray()!;
+	const dstArray = srcArray.slice(0, dstCount * elementSize);
+
+	for (let i = 0; i < srcCount; i++) {
+		for (let j = 0; j < elementSize; j++) {
+			dstArray[remap[i] * elementSize + j] = srcArray[i * elementSize + j];
+		}
+	}
+
+	attribute.setArray(dstArray);
 }

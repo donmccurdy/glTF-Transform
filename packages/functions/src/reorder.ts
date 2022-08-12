@@ -1,6 +1,6 @@
 import { Accessor, Document, GLTF, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune';
-import { createTransform, SetMap } from './utils';
+import { createTransform, deepListAttributes, remapAttribute, SetMap } from './utils';
 import type { MeshoptEncoder } from 'meshoptimizer';
 
 const NAME = 'reorder';
@@ -19,12 +19,6 @@ export interface ReorderOptions {
 const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
 	target: 'size',
 };
-
-interface LayoutPlan {
-	indicesToMode: Map<Accessor, GLTF.MeshPrimitiveMode>;
-	indicesToAttributes: SetMap<Accessor, Accessor>;
-	attributesToPrimitives: SetMap<Accessor, Primitive>;
-}
 
 /**
  * Optimizes {@link Mesh} {@link Primitive Primitives} for locality of reference. Choose whether
@@ -57,7 +51,7 @@ export function reorder(_options: ReorderOptions): Transform {
 
 		await encoder.ready;
 
-		const plan = preprocessPrimitives(doc);
+		const plan = createLayoutPlan(doc);
 
 		for (const srcIndices of plan.indicesToAttributes.keys()) {
 			const dstIndices = srcIndices.clone();
@@ -104,40 +98,31 @@ export function reorder(_options: ReorderOptions): Transform {
 	});
 }
 
-function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {
-	const elementSize = attribute.getElementSize();
-	const srcCount = attribute.getCount();
-	const srcArray = attribute.getArray()!;
-	const dstArray = srcArray.slice(0, dstCount * elementSize);
-
-	for (let i = 0; i < srcCount; i++) {
-		for (let j = 0; j < elementSize; j++) {
-			dstArray[remap[i] * elementSize + j] = srcArray[i * elementSize + j];
-		}
-	}
-
-	attribute.setArray(dstArray);
+interface LayoutPlan {
+	indicesToMode: Map<Accessor, GLTF.MeshPrimitiveMode>;
+	indicesToAttributes: SetMap<Accessor, Accessor>;
+	attributesToPrimitives: SetMap<Accessor, Primitive>;
 }
 
 /**
- * Constructs a plan for creating optimal vertex cache order, based on unique
+ * Constructs a plan for processing vertex streams, based on unique
  * index:attribute[] groups. Where different indices are used with the same
  * attributes, we'll end up splitting the primitives to not share attributes,
  * which appears to be consistent with the Meshopt implementation.
  */
-function preprocessPrimitives(doc: Document): LayoutPlan {
+export function createLayoutPlan(document: Document): LayoutPlan {
 	const indicesToAttributes = new SetMap<Accessor, Accessor>();
 	const indicesToMode = new Map<Accessor, GLTF.MeshPrimitiveMode>();
 	const attributesToPrimitives = new SetMap<Accessor, Primitive>();
 
-	for (const mesh of doc.getRoot().listMeshes()) {
+	for (const mesh of document.getRoot().listMeshes()) {
 		for (const prim of mesh.listPrimitives()) {
 			const indices = prim.getIndices();
 			if (!indices) continue;
 
 			indicesToMode.set(indices, prim.getMode());
 
-			for (const attribute of listAttributes(prim)) {
+			for (const attribute of deepListAttributes(prim)) {
 				indicesToAttributes.add(indices, attribute);
 				attributesToPrimitives.add(attribute, prim);
 			}
@@ -145,19 +130,4 @@ function preprocessPrimitives(doc: Document): LayoutPlan {
 	}
 
 	return { indicesToAttributes, indicesToMode, attributesToPrimitives };
-}
-
-function listAttributes(prim: Primitive): Accessor[] {
-	const accessors: Accessor[] = [];
-
-	for (const attribute of prim.listAttributes()) {
-		accessors.push(attribute);
-	}
-	for (const target of prim.listTargets()) {
-		for (const attribute of target.listAttributes()) {
-			accessors.push(attribute);
-		}
-	}
-
-	return Array.from(new Set(accessors));
 }
