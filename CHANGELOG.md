@@ -2,7 +2,16 @@
 
 ## v2.x
 
-### v2.3 — 🚧 Unreleased
+### v2.4 — 🚧 Unreleased
+
+### v2.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/20))
+
+**Features:**
+
+- Add `simplify()` function. [#655](https://github.com/donmccurdy/glTF-Transform/pull/655)
+- Add `ILogger` interface for user-specified logging. [#653](https://github.com/donmccurdy/glTF-Transform/pull/653)
+- Add support for `.extras`  on TextureInfo. [#646](https://github.com/donmccurdy/glTF-Transform/pull/646)
+- Show normalized attributes in `inspect()` output. [#638](https://github.com/donmccurdy/glTF-Transform/pull/638)
 
 ### v2.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/19))
 
