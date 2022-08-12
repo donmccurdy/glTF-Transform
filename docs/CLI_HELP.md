@@ -1,5 +1,5 @@
 
-  gltf-transform 2.2.3 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 2.3.0 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -39,6 +39,7 @@
     unweld                               De-index geometry, disconnecting any shared vertices   
     tangents                             Generate MikkTSpace vertex tangents                    
     reorder                              Optimize vertex data for locality of reference         
+    simplify                             Simplify mesh, reducing number of vertices             
                                                                                                 
                                                                                                 
                                          ✨ MATERIAL ─────────────────────────────────────────  
