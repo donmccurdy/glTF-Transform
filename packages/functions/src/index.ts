@@ -59,6 +59,7 @@ export * from './sort-primitive-weights';
 export * from './squoosh';
 export * from './tangents';
 export * from './texture-resize';
+export * from './transform-mesh';
 export * from './unlit';
 export * from './unpartition';
 export * from './unweld';
