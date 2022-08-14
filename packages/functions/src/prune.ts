@@ -152,14 +152,13 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 
 		/** Iteratively prunes leaf Nodes without contents. */
 		function nodeTreeShake(prop: Node | Scene): void {
-			if (prop.listChildren().length > 0) {
-				prop.listChildren().forEach(nodeTreeShake);
-			}
+			prop.listChildren().forEach(nodeTreeShake);
 
 			if (prop instanceof Scene) return;
 
 			const isAnimated = graph.listParentEdges(prop).some((e) => e.getName() === 'targetNode');
-			if (!isAnimated && graph.listChildren(prop).length === 0) {
+			const isEmpty = graph.listChildren(prop).length === 0;
+			if (isEmpty && !isAnimated) {
 				prop.dispose();
 				markDisposed(prop);
 			}
