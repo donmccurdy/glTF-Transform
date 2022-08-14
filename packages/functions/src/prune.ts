@@ -1,4 +1,14 @@
-import { AnimationChannel, Document, Graph, Property, PropertyType, Root, Transform } from '@gltf-transform/core';
+import {
+	AnimationChannel,
+	Document,
+	Graph,
+	Property,
+	PropertyType,
+	Root,
+	Transform,
+	Node,
+	Scene,
+} from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'prune';
@@ -6,6 +16,8 @@ const NAME = 'prune';
 export interface PruneOptions {
 	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
 	propertyTypes?: string[];
+	/** Whether to keep empty leaf nodes. */
+	keepLeaves?: boolean;
 }
 const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	propertyTypes: [
@@ -20,7 +32,8 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 		PropertyType.TEXTURE,
 		PropertyType.ACCESSOR,
 		PropertyType.BUFFER,
-	]
+	],
+	keepLeaves: false,
 };
 
 /**
@@ -42,10 +55,10 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
  */
 export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = {...PRUNE_DEFAULTS, ..._options} as Required<PruneOptions>;
+	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
 	const propertyTypes = options.propertyTypes;
 
-	return createTransform(NAME, (doc: Document): void =>  {
+	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const graph = doc.getGraph();
@@ -55,6 +68,7 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		// Prune top-down, so that low-level properties like accessors can be removed if the
 		// properties referencing them are removed.
 
+		if (!options.keepLeaves) root.listScenes().forEach(nodeTreeShake);
 		if (propertyTypes.includes(PropertyType.NODE)) root.listNodes().forEach(treeShake);
 		if (propertyTypes.includes(PropertyType.SKIN)) root.listSkins().forEach(treeShake);
 		if (propertyTypes.includes(PropertyType.MESH)) root.listMeshes().forEach(treeShake);
@@ -100,7 +114,9 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		// use by an Extension are correctly preserved, in the meantime.
 
 		if (Object.keys(disposed).length) {
-			const str = Object.keys(disposed).map((t) => `${t} (${disposed[t]})`).join(', ');
+			const str = Object.keys(disposed)
+				.map((t) => `${t} (${disposed[t]})`)
+				.join(', ');
 			logger.info(`${NAME}: Removed types... ${str}`);
 		} else {
 			logger.info(`${NAME}: No unused properties found.`);
@@ -114,8 +130,7 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		function treeShake(prop: Property): void {
 			// Consider a property unused if it has no references from another property, excluding
 			// types Root and AnimationChannel.
-			const parents = prop.listParents()
-				.filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
+			const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
 			if (!parents.length) {
 				prop.dispose();
 				markDisposed(prop);
@@ -128,10 +143,25 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		 * but since they're not on the graph they don't need to be tree-shaken.
 		 */
 		function indirectTreeShake(graph: Graph<Property>, propertyType: string): void {
-			graph.listEdges()
+			graph
+				.listEdges()
 				.map((edge) => edge.getParent())
 				.filter((parent) => parent.propertyType === propertyType)
 				.forEach(treeShake);
+		}
+
+		/** Iteratively prunes leaf Nodes without contents. */
+		function nodeTreeShake(prop: Node | Scene): void {
+			prop.listChildren().forEach(nodeTreeShake);
+
+			if (prop instanceof Scene) return;
+
+			const isAnimated = graph.listParentEdges(prop).some((e) => e.getName() === 'targetNode');
+			const isEmpty = graph.listChildren(prop).length === 0;
+			if (isEmpty && !isAnimated) {
+				prop.dispose();
+				markDisposed(prop);
+			}
 		}
 
 		/** Records properties disposed by type. */
@@ -139,7 +169,5 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 			disposed[prop.propertyType] = disposed[prop.propertyType] || 0;
 			disposed[prop.propertyType]++;
 		}
-
 	});
-
 };
