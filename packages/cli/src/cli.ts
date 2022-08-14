@@ -234,9 +234,7 @@ compression and instancing, to be more effective.
 		if (options.textures) propertyTypes.push(PropertyType.TEXTURE);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(dedup({propertyTypes}));
-	}
-
-	);
+	});
 
 // PRUNE
 program
@@ -251,6 +249,10 @@ that are children of a scene.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--keep-leaves <keepLeaves>', 'Whether to keep empty leaf nodes', {
+		validator: program.BOOLEAN,
+		default: false,
+	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(prune(options as unknown as PruneOptions))
