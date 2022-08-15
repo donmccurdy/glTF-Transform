@@ -7,9 +7,10 @@ import {
 	Transform,
 	TransformContext,
 	TypedArray,
+	vec3,
 } from '@gltf-transform/core';
 import { dedup } from './dedup';
-import { createTransform, formatDeltaOp, isTransformPending } from './utils';
+import { createIndices, createTransform, formatDeltaOp, isTransformPending } from './utils';
 
 const NAME = 'weld';
 
@@ -22,6 +23,8 @@ export interface WeldOptions {
 }
 
 const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1e-4, overwrite: true };
+
+const KEEP = Math.pow(2, 32) - 1;
 
 /**
  * Index {@link Primitive}s and (optionally) merge similar vertices.
@@ -74,86 +77,99 @@ function weldOnly(doc: Document, prim: Primitive): void {
  */
 function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const logger = doc.getLogger();
-	const tolerance = Math.max(options.tolerance, Number.EPSILON);
-	const decimalShift = Math.log10(1 / tolerance);
-	const shiftFactor = Math.pow(10, decimalShift);
 
-	const hashToIndex: { [key: string]: number } = {};
+	const srcPosition = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices();
-	const vertexCount = srcIndices ? srcIndices.getCount() : prim.listAttributes()[0].getCount();
+	const uniqueIndicesArray = srcIndices
+		? new Uint32Array(new Set(srcIndices.getArray()!))
+		: createIndices(srcPosition.getCount());
 
-	// Prepare storage for new elements of each attribute.
-	const dstAttributes = new Map<Accessor, number[][]>();
-	prim.listAttributes().forEach((attr) => dstAttributes.set(attr, []));
-	prim.listTargets().forEach((target) => {
-		target.listAttributes().forEach((attr) => dstAttributes.set(attr, []));
+	// (1) Compute per-attribute tolerances, pre-sort vertices.
+
+	const tolerance = Math.max(options.tolerance, Number.EPSILON);
+	const attributeTolerance: Record<string, number> = {};
+	for (const semantic of prim.listSemantics()) {
+		attributeTolerance[semantic] = getAttributeTolerance(semantic, prim.getAttribute(semantic)!, tolerance);
+	}
+
+	const posA: vec3 = [0, 0, 0];
+	const posB: vec3 = [0, 0, 0];
+
+	uniqueIndicesArray.sort((a, b) => {
+		srcPosition.getElement(a, posA);
+		srcPosition.getElement(b, posB);
+		return posA[0] > posB[0] ? 1 : -1; // TODO(test): if this order is reversed...
 	});
 
-	const dstIndicesArray = [];
-	let nextIndex = 0;
+	console.log({ sorted: uniqueIndicesArray }); // TODO(cleanup)
 
-	// For each vertex, compute a hash based on its tolerance and merge with any sufficiently
-	// similar vertices.
-	for (let i = 0; i < vertexCount; i++) {
-		const index = srcIndices ? srcIndices.getScalar(i) : i;
+	// (2) Compare and identify vertices to weld. Use sort to keep iterations below O(n²),
 
-		const hashElements: number[] = [];
-		const el: number[] = [];
-		for (const attribute of prim.listAttributes()) {
-			for (let j = 0; j < attribute.getElementSize(); j++) {
-				hashElements.push(~~(attribute.getElement(index, el)[j] * shiftFactor));
-			}
-		}
+	const reorder = new Uint32Array(uniqueIndicesArray.length).fill(KEEP);
+	let weldCount = 0;
 
-		const hash = hashElements.join('|');
-		if (hash in hashToIndex) {
-			dstIndicesArray.push(hashToIndex[hash]);
-		} else {
-			for (const attr of prim.listAttributes()) {
-				dstAttributes.get(attr)!.push(attr.getElement(index, []));
-			}
-			for (const target of prim.listTargets()) {
-				for (const attr of target.listAttributes()) {
-					dstAttributes.get(attr)!.push(attr.getElement(index, []));
-				}
+	for (let i = 0; i < uniqueIndicesArray.length; i++) {
+		const a = uniqueIndicesArray[i];
+		for (let j = i - 1; j >= 0; j--) {
+			let b = uniqueIndicesArray[j];
+			if (reorder[b] < KEEP) b = reorder[b];
+
+			srcPosition.getElement(a, posA);
+			srcPosition.getElement(b, posB);
+
+			// Sort order allows early exit on X-axis distance.
+			if (posA[0] < posB[0] - attributeTolerance['POSITION']) {
+				break;
 			}
 
-			hashToIndex[hash] = nextIndex;
-			dstIndicesArray.push(nextIndex);
-			nextIndex++;
+			// Weld if base attributes and morph target attributes match.
+			const isBaseMatch = prim.listSemantics().every((semantic) => {
+				const attribute = prim.getAttribute(semantic)!;
+				const tolerance = attributeTolerance[semantic];
+				return compareAttributes(attribute, a, b, tolerance);
+			});
+			const isTargetMatch = prim.listTargets().every((target) => {
+				return target.listSemantics().every((semantic) => {
+					const attribute = prim.getAttribute(semantic)!;
+					const tolerance = attributeTolerance[semantic];
+					return compareAttributes(attribute, a, b, tolerance);
+				});
+			});
+			if (isBaseMatch && isTargetMatch) {
+				reorder[a] = b;
+				weldCount++;
+			}
 		}
 	}
 
-	const srcVertexCount = prim.listAttributes()[0].getCount();
-	const dstVertexCount = dstAttributes.get(prim.getAttribute('POSITION')!)!.length;
+	const srcVertexCount = srcPosition.getCount();
+	const dstVertexCount = srcVertexCount - weldCount;
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	// Update the primitive.
-	for (const srcAttr of prim.listAttributes()) {
-		swapAttributes(prim, srcAttr, dstAttributes.get(srcAttr)!);
+	// (3) Update indices.
 
-		// Clean up.
-		if (srcAttr.listParents().length === 1) srcAttr.dispose();
+	const dstIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount * 3;
+	const dstIndicesArray = createIndices(dstIndicesCount);
+	for (let i = 0; i < dstIndicesCount; i++) {
+		const srcIndex = srcIndices ? srcIndices.getScalar(i) : i;
+		dstIndicesArray[i] = reorder[srcIndex];
+	}
+	if (srcIndices) {
+		prim.setIndices(srcIndices.clone().setArray(dstIndicesArray));
+		if (srcIndices.listParents().length === 1) srcIndices.dispose();
+	} else {
+		prim.setIndices(doc.createAccessor().setArray(dstIndicesArray));
+	}
+
+	// (4) Update vertex attributes.
+
+	for (const srcAttr of prim.listAttributes()) {
+		swapAttributes(prim, srcAttr, reorder, dstVertexCount);
 	}
 	for (const target of prim.listTargets()) {
 		for (const srcAttr of target.listAttributes()) {
-			swapAttributes(target, srcAttr, dstAttributes.get(srcAttr)!);
-
-			// Clean up.
-			if (srcAttr.listParents().length === 1) srcAttr.dispose();
+			swapAttributes(target, srcAttr, reorder, dstVertexCount);
 		}
-	}
-	if (srcIndices) {
-		const dstIndicesTypedArray = createArrayOfType(srcIndices.getArray()!, dstIndicesArray.length);
-		dstIndicesTypedArray.set(dstIndicesArray);
-		prim.setIndices(srcIndices.clone().setArray(dstIndicesTypedArray));
-
-		// Clean up.
-		if (srcIndices.listParents().length === 1) srcIndices.dispose();
-	} else {
-		const indicesArray =
-			srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : new Uint32Array(dstIndicesArray);
-		prim.setIndices(doc.createAccessor().setArray(indicesArray));
 	}
 }
 
@@ -164,14 +180,60 @@ function createArrayOfType<T extends TypedArray>(array: T, length: number): T {
 }
 
 /** Replaces an {@link Attribute}, creating a new one with the given elements. */
-function swapAttributes(parent: Primitive | PrimitiveTarget, srcAttr: Accessor, dstAttrElements: number[][]): void {
-	const dstAttrArrayLength = dstAttrElements.length * srcAttr.getElementSize();
-	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstAttrArrayLength);
+function swapAttributes(
+	parent: Primitive | PrimitiveTarget,
+	srcAttr: Accessor,
+	reorder: Uint32Array,
+	dstCount: number
+): void {
+	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
 
-	for (let i = 0; i < dstAttrElements.length; i++) {
-		dstAttr.setElement(i, dstAttrElements[i]);
+	for (let i = 0, j = 0, el = [] as number[]; i < reorder.length; i++) {
+		if (reorder[i] === KEEP) {
+			dstAttr.setElement(j++, srcAttr.getElement(i, el));
+		}
 	}
 
 	parent.swap(srcAttr, dstAttr);
+
+	// Clean up.
+	if (srcAttr.listParents().length === 1) srcAttr.dispose();
+}
+
+const BASE_TOLERANCE = 0.0001;
+const BASE_TOLERANCE_TEXCOORD = 0.0001; // [0, 1]
+const BASE_TOLERANCE_COLOR = 1.0; // [0, 256]
+const BASE_TOLERANCE_NORMAL = 0.01; // [-1, 1]
+const BASE_TOLERANCE_JOINTS = 0.0; // [0, ∞]
+const BASE_TOLERANCE_WEIGHTS = 0.01; // [0, ∞]
+
+const _a = [] as number[];
+const _b = [] as number[];
+
+/** Computes a per-attribute tolerance, based on domain and usage of the attribute. */
+function getAttributeTolerance(semantic: string, attribute: Accessor, toleranceFactor: number): number {
+	if (semantic === 'NORMAL' || semantic === 'TANGENT') return BASE_TOLERANCE_NORMAL * toleranceFactor;
+	if (semantic.startsWith('COLOR_')) return BASE_TOLERANCE_COLOR * toleranceFactor;
+	if (semantic.startsWith('TEXCOORD_')) return BASE_TOLERANCE_TEXCOORD * toleranceFactor;
+	if (semantic.startsWith('JOINTS_')) return BASE_TOLERANCE_JOINTS * toleranceFactor;
+	if (semantic.startsWith('WEIGHTS_')) return BASE_TOLERANCE_WEIGHTS * toleranceFactor;
+
+	_a.length = _b.length = 0;
+	attribute.getMinNormalized(_a);
+	attribute.getMaxNormalized(_b);
+	const range = Math.max(..._b) - Math.min(..._a) || 1;
+	return BASE_TOLERANCE * range * toleranceFactor;
+}
+
+/** Compares two vertex attributes against a tolerance threshold. */
+function compareAttributes(attribute: Accessor, a: number, b: number, tolerance: number): boolean {
+	attribute.getElement(a, _a);
+	attribute.getElement(b, _b);
+	for (let i = 0, il = attribute.getElementSize(); i < il; i++) {
+		if (Math.abs(_a[i] - _b[i]) > tolerance) {
+			return false;
+		}
+	}
+	return true;
 }

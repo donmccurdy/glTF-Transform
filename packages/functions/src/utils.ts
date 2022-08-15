@@ -157,3 +157,9 @@ export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount
 
 	attribute.setArray(dstArray);
 }
+
+export function createIndices(end: number): Uint16Array | Uint32Array {
+	const array = end <= 65534 ? new Uint16Array(end) : new Uint32Array(end);
+	for (let i = 0; i < array.length; i++) array[i] = i;
+	return array;
+}
