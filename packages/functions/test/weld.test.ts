@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import fs from 'fs/promises';
 import path from 'path';
-import { Accessor, Document, Primitive } from '@gltf-transform/core';
+import { Accessor, Document, Logger, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
 test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
@@ -28,8 +28,55 @@ test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 	t.end();
 });
 
+test('@gltf-transform/functions::weld | TEMP', async (t) => {
+	const doc = new Document().setLogger(new Logger(Logger.Verbosity.DEBUG));
+	// prettier-ignore
+	const positionArray = new Float32Array([
+		5, 0, 0,
+		0, 0, 0,
+		5.000001, 0, 0,
+		1, 0, 0,
+		10, 0, 0,
+		0, 0, 0,
+	]);
+	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
+
+	const prim = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.TRIANGLES);
+
+	// prettier-ignore
+	const primIndices = doc.createAccessor().setArray(new Uint32Array([
+		0, 1, 2,
+		3, 4, 5,
+		0, 2, 4,
+	]));
+
+	doc.createMesh().addPrimitive(prim);
+
+	await doc.transform(weld());
+
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getIndices()!.getArray()!), [
+			2, 0, 2, 1, 3, 0
+		],
+		'indices on prim1'
+	);
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getAttribute('POSITION')!.getArray()!),
+		[
+			5, 0, 0,
+			0, 0, 0,
+			1, 0, 0,
+			10, 0, 0,
+		],
+		'vertices on prim1'
+	);
+	t.end();
+});
+
 test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(new Logger(Logger.Verbosity.DEBUG));
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
 	const positionTargetArray = new Float32Array([0, 10, 0, 0, 10, 1, 0, 10, -1, 0, 15, 0, 0, 15, 1, 0, 15, -1]);
 	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
@@ -47,10 +94,10 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 		.addTarget(prim2Target);
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
-	await doc.transform(weld({ tolerance: 1e-8 }));
+	await doc.transform(weld());
 
 	t.deepEquals(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim1');
-	t.deepEquals(prim2.getIndices().getArray(), new Uint32Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');
+	t.deepEquals(prim2.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');
 	t.deepEquals(prim1.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim1');
 	t.deepEquals(prim2.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim2');
 	t.deepEquals(
@@ -58,7 +105,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 		positionTargetArray.slice(9, 18), // Uses later targets, because of index order.
 		'morph targets on prim2'
 	);
-	t.equals(doc.getRoot().listAccessors().length, 4, 'keeps only needed accessors');
+	t.equals(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
 	t.end();
 });
 

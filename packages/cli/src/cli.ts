@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SimplifyOptions, SIMPLIFY_DEFAULTS } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SimplifyOptions, SIMPLIFY_DEFAULTS, WELD_DEFAULTS } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
@@ -543,14 +543,19 @@ program
 	.help(`
 Index geometry and optionally merge similar vertices. When merged and indexed,
 data is shared more efficiently between vertices. File size can be reduced, and
-the GPU can sometimes use the vertex cache more efficiently. With --tolerance=0,
-geometry is indexed in place, without merging.
+the GPU can sometimes use the vertex cache more efficiently.
+
+With --tolerance=1 (default), a default tolerance is applied to each vertex
+attribute when deciding which to weld, based on the type of attribute and
+(in some cases) the min/max values of the attribute. Higher or lower tolerance
+values scale the default thresholds. With --tolerance=0, geometry is indexed
+in place, without merging.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--tolerance', 'Per-attribute tolerance to merge similar vertices', {
+	.option('--tolerance', 'Tolerance factor applied to per-attribute weld thresholds', {
 		validator: program.NUMBER,
-		default: 1e-4,
+		default: WELD_DEFAULTS.tolerance,
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)

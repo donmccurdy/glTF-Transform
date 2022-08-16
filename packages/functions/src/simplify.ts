@@ -67,7 +67,9 @@ const simplify = (_options: SimplifyOptions): Transform => {
 		const logger = document.getLogger();
 
 		await simplifier.ready;
+		console.time('simplify::weld');
 		await document.transform(weld({ overwrite: false }));
+		console.timeEnd('simplify::weld');
 
 		// Simplify mesh primitives.
 		for (const mesh of document.getRoot().listMeshes()) {

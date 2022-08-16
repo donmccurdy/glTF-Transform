@@ -10,7 +10,7 @@ import draco3d from 'draco3dgltf';
 
 async function createIO(): Promise<NodeIO> {
 	const io = new NodeIO()
-		.setLogger(new Logger(Logger.Verbosity.SILENT))
+		.setLogger(new Logger(Logger.Verbosity.DEBUG))
 		.registerExtensions([DracoMeshCompression, MeshQuantization])
 		.registerDependencies({
 			'draco3d.decoder': await draco3d.createDecoderModule(),
@@ -27,10 +27,20 @@ test('@gltf-transform/functions::simplify | welded', async (t) => {
 	const srcCount = getVertexCount(document);
 	const srcBounds = roundBbox(bounds(scene), 2);
 
-	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+	// TODO: 10x increase in tolerance, no change in outcome?
+	// TODO: Why is this so slow? Is the sort order broken? Or hashmap was just better?
+	// TODO: Verify that new weld() does not regress.
+
+	console.time('weld::outer');
+	await document.transform(weld({ tolerance: 10 }));
+	console.timeEnd('weld::outer');
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(bounds(scene), 2);
+
+	console.log({ srcCount, dstCount });
 
 	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
 	t.ok(srcCount > dstCount, 'src.count > dst.count');
