@@ -54,7 +54,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * References:
  * - https://github.com/zeux/meshoptimizer/blob/master/js/README.md#simplifier
  */
-const simplify = (_options: SimplifyOptions): Transform => {
+export const simplify = (_options: SimplifyOptions): Transform => {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 
 	const simplifier = options.simplifier;
@@ -92,8 +92,10 @@ const simplify = (_options: SimplifyOptions): Transform => {
 	});
 };
 
-function simplifyPrimitive(_document: Document, prim: Primitive, options: Required<SimplifyOptions>): void {
-	const logger = _document.getLogger();
+export function simplifyPrimitive(document: Document, prim: Primitive, _options: SimplifyOptions): Primitive {
+	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
+
+	const logger = document.getLogger();
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
 	const srcVertexCount = position.getCount();
@@ -155,6 +157,6 @@ function simplifyPrimitive(_document: Document, prim: Primitive, options: Requir
 	dstIndices.setArray(srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : dstIndicesArray);
 	prim.setIndices(dstIndices);
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
-}
 
-export { simplify };
+	return prim;
+}
