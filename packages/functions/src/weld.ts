@@ -61,6 +61,10 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
 
+	if (options.tolerance > 0.1 || options.tolerance < 0) {
+		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
+	}
+
 	return createTransform(NAME, async (doc: Document, context?: TransformContext): Promise<void> => {
 		const logger = doc.getLogger();
 
@@ -240,7 +244,7 @@ const _a = [] as number[];
 const _b = [] as number[];
 
 /** Computes a per-attribute tolerance, based on domain and usage of the attribute. */
-function getAttributeTolerance(semantic: string, attribute: Accessor, toleranceFactor: number): number {
+function getAttributeTolerance(semantic: string, attribute: Accessor, tolerance: number): number {
 	// Attributes like NORMAL and COLOR_# do not vary in range like POSITION,
 	// so do not apply the given tolerance factor to these attributes.
 	if (semantic === 'NORMAL' || semantic === 'TANGENT') return Tolerance.NORMAL;
@@ -253,7 +257,7 @@ function getAttributeTolerance(semantic: string, attribute: Accessor, toleranceF
 	attribute.getMinNormalized(_a);
 	attribute.getMaxNormalized(_b);
 	const range = Math.max(..._b) - Math.min(..._a) || 1;
-	return Tolerance.DEFAULT * range * toleranceFactor;
+	return tolerance * range;
 }
 
 /** Compares two vertex attributes against a tolerance threshold. */
