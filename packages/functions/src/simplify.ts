@@ -31,7 +31,7 @@ export interface SimplifyOptions {
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
 	ratio: 0.5,
-	error: 0.01,
+	error: 0.001,
 	lockBorder: false,
 };
 

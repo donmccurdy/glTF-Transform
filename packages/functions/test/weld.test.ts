@@ -110,16 +110,16 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 		0, 1, 1, // ⎣
 	]);
 	// prettier-ignore
-	const normalArray = new Uint8Array([
-		127, 127, 0,
-		127, 127, 0,
-		127, 127, 0,
-		0, 127, 126,
-		0, 128, 127,
-		0, 150, 127, // ❌
-		127, 0, 127,
-		127, 0, 127,
-		127, 0, 127,
+	const normalArray = new Int8Array([
+		63, 63, 0,
+		63, 63, 0,
+		63, 63, 0,
+		0, 63, 64,
+		0, 62, 63,
+		0, -63, 63, // ❌
+		63, 0, 63,
+		63, 0, 63,
+		63, 0, 63,
 	]);
 	// prettier-ignore
 	const colorArray = new Uint8Array([
@@ -172,11 +172,11 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 	t.deepEquals(
 		Array.from(prim.getAttribute('NORMAL')!.getArray()!),
 		[
-			127, 127, 0,
-			127, 0, 127,
-			127, 0, 127,
-			0, 127, 126,
-			0, 150, 127,
+			63, 63, 0,
+			63, 0, 63,
+			63, 0, 63,
+			0, 63, 64,
+			0, -63, 63,
 		],
 		'normal'
 	);
