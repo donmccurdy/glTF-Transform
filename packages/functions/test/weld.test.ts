@@ -6,8 +6,10 @@ import path from 'path';
 import { Accessor, Document, Logger, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
+const LOGGER = new Logger(Logger.Verbosity.SILENT);
+
 test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
 	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
 	const indices = doc.createAccessor().setArray(new Uint32Array([3, 4, 5, 0, 1, 2]));
@@ -28,55 +30,8 @@ test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 	t.end();
 });
 
-test('@gltf-transform/functions::weld | TEMP', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.DEBUG));
-	// prettier-ignore
-	const positionArray = new Float32Array([
-		5, 0, 0,
-		0, 0, 0,
-		5.000001, 0, 0,
-		1, 0, 0,
-		10, 0, 0,
-		0, 0, 0,
-	]);
-	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
-
-	const prim = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.TRIANGLES);
-
-	// prettier-ignore
-	const primIndices = doc.createAccessor().setArray(new Uint32Array([
-		0, 1, 2,
-		3, 4, 5,
-		0, 2, 4,
-	]));
-
-	doc.createMesh().addPrimitive(prim);
-
-	await doc.transform(weld());
-
-	// prettier-ignore
-	t.deepEquals(
-		Array.from(prim.getIndices()!.getArray()!), [
-			2, 0, 2, 1, 3, 0
-		],
-		'indices on prim1'
-	);
-	// prettier-ignore
-	t.deepEquals(
-		Array.from(prim.getAttribute('POSITION')!.getArray()!),
-		[
-			5, 0, 0,
-			0, 0, 0,
-			1, 0, 0,
-			10, 0, 0,
-		],
-		'vertices on prim1'
-	);
-	t.end();
-});
-
 test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.DEBUG));
+	const doc = new Document().setLogger(LOGGER);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
 	const positionTargetArray = new Float32Array([0, 10, 0, 0, 10, 1, 0, 10, -1, 0, 15, 0, 0, 15, 1, 0, 15, -1]);
 	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
@@ -102,7 +57,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 	t.deepEquals(prim2.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim2');
 	t.deepEquals(
 		prim2.listTargets()[0].getAttribute('POSITION').getArray(),
-		positionTargetArray.slice(9, 18), // Uses later targets, because of index order.
+		positionTargetArray.slice(0, 9), // Uses later targets, because of index order.
 		'morph targets on prim2'
 	);
 	t.equals(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
@@ -110,7 +65,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 });
 
 test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	const smArray = new Float32Array(65534 * 3);
 	const lgArray = new Float32Array(65535 * 3);
 	const smPosition = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(smArray);
@@ -135,7 +90,7 @@ test('@gltf-transform/functions::weld | modes', async (t) => {
 
 	for (let i = 0; i < dataset.length; i++) {
 		const primDef = dataset[i];
-		const document = new Document();
+		const document = new Document().setLogger(LOGGER);
 		const position = document
 			.createAccessor()
 			.setArray(new Float32Array(primDef.attributes.POSITION))

@@ -201,10 +201,13 @@ function swapAttributes(
 ): void {
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
+	const done = new Uint8Array(dstCount);
 
 	for (let i = 0, el = [] as number[]; i < reorder.length; i++) {
-		// TODO(perf): Will overwrite welded vertices more than once.
-		dstAttr.setElement(reorder[i], srcAttr.getElement(i, el));
+		if (!done[reorder[i]]) {
+			dstAttr.setElement(reorder[i], srcAttr.getElement(i, el));
+			done[reorder[i]] = 1;
+		}
 	}
 
 	parent.swap(srcAttr, dstAttr);
