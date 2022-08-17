@@ -85,8 +85,6 @@ function weldOnly(doc: Document, prim: Primitive): void {
 function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const logger = doc.getLogger();
 
-	// TODO(bug): shaderball looking really bad here
-
 	const srcPosition = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices() || doc.createAccessor().setArray(createIndices(srcPosition.getCount()));
 	const uniqueIndices = new Uint32Array(new Set(srcIndices.getArray()!));
@@ -99,19 +97,21 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 		attributeTolerance[semantic] = getAttributeTolerance(semantic, prim.getAttribute(semantic)!, tolerance);
 	}
 
+	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
+
 	const posA: vec3 = [0, 0, 0];
 	const posB: vec3 = [0, 0, 0];
 
 	uniqueIndices.sort((a, b) => {
 		srcPosition.getElement(a, posA);
 		srcPosition.getElement(b, posB);
-		return posA[0] > posB[0] ? 1 : -1; // TODO(test): if this order is reversed...
+		return posA[0] > posB[0] ? 1 : -1;
 	});
 
 	// (2) Compare and identify vertices to weld. Use sort to keep iterations below O(n²),
 
-	const welds = createIndices(uniqueIndices.length); // oldIndex → oldCommonIndex
-	const reorder = createIndices(uniqueIndices.length); // oldIndex → newIndex
+	const weldMap = createIndices(uniqueIndices.length); // oldIndex → oldCommonIndex
+	const writeMap = createIndices(uniqueIndices.length); // oldIndex → newIndex
 
 	const srcVertexCount = srcPosition.getCount();
 	let dstVertexCount = 0;
@@ -121,7 +121,7 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 		const a = uniqueIndices[i];
 
 		for (let j = i - 1; j >= 0; j--) {
-			const b = welds[uniqueIndices[j]];
+			const b = weldMap[uniqueIndices[j]];
 
 			srcPosition.getElement(a, posA);
 			srcPosition.getElement(b, posB);
@@ -148,28 +148,28 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 			});
 
 			if (isBaseMatch && isTargetMatch) {
-				welds[a] = b;
+				weldMap[a] = b;
 				break;
 			}
 		}
 
 		// Output the vertex if we didn't find a match, else record the index of the match.
-		if (welds[a] === a) {
-			reorder[a] = dstVertexCount++;
+		if (weldMap[a] === a) {
+			writeMap[a] = dstVertexCount++; // note: reorders the primitive on x-axis sort.
 		} else {
-			reorder[a] = reorder[welds[a]];
+			writeMap[a] = writeMap[weldMap[a]];
 		}
 	}
 
-	console.info(`${NAME}: Average iterations per vertex: ${Math.round(backIters / uniqueIndices.length)}`);
+	logger.debug(`${NAME}: Iterations per vertex: ${Math.round(backIters / uniqueIndices.length)} (avg)`);
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
 	// (3) Update indices.
 
-	const dstIndicesCount = srcIndices.getCount();
+	const dstIndicesCount = srcIndices.getCount(); // # primitives does not change.
 	const dstIndicesArray = createIndices(dstIndicesCount, uniqueIndices.length);
 	for (let i = 0; i < dstIndicesCount; i++) {
-		dstIndicesArray[i] = reorder[srcIndices.getScalar(i)];
+		dstIndicesArray[i] = writeMap[srcIndices.getScalar(i)];
 	}
 	prim.setIndices(srcIndices.clone().setArray(dstIndicesArray));
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
@@ -177,11 +177,11 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 	// (4) Update vertex attributes.
 
 	for (const srcAttr of prim.listAttributes()) {
-		swapAttributes(prim, srcAttr, welds, dstVertexCount);
+		swapAttributes(prim, srcAttr, writeMap, dstVertexCount);
 	}
 	for (const target of prim.listTargets()) {
 		for (const srcAttr of target.listAttributes()) {
-			swapAttributes(target, srcAttr, welds, dstVertexCount);
+			swapAttributes(target, srcAttr, writeMap, dstVertexCount);
 		}
 	}
 }
@@ -202,10 +202,9 @@ function swapAttributes(
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
 
-	for (let i = 0, j = 0, el = [] as number[]; i < reorder.length; i++) {
-		if (reorder[i] === i) {
-			dstAttr.setElement(j++, srcAttr.getElement(i, el));
-		}
+	for (let i = 0, el = [] as number[]; i < reorder.length; i++) {
+		// TODO(perf): Will overwrite welded vertices more than once.
+		dstAttr.setElement(reorder[i], srcAttr.getElement(i, el));
 	}
 
 	parent.swap(srcAttr, dstAttr);
@@ -238,11 +237,14 @@ function compareAttributes(attribute: Accessor, a: number, b: number, tolerance:
 	attribute.getElement(b, _b);
 	for (let i = 0, il = attribute.getElementSize(); i < il; i++) {
 		if (Math.abs(_a[i] - _b[i]) > tolerance) {
-			if (Math.random() < 0.01) {
-				console.log(`failed on: ${semantic}, tolerance: ${tolerance}`);
-			}
 			return false;
 		}
 	}
 	return true;
+}
+
+function formatKV(kv: Record<string, unknown>): string {
+	return Object.entries(kv)
+		.map(([k, v]) => `${k}=${v}`)
+		.join(', ');
 }
