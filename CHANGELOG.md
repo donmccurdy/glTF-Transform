@@ -2,7 +2,13 @@
 
 ## v2.x
 
-### v2.4 — 🚧 Unreleased
+### v2.5 — 🚧 Unreleased
+
+### v2.4 — ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/22))
+
+**Features:**
+
+- Rewrite `weld()` function, improving weld results [#661](https://github.com/donmccurdy/glTF-Transform/pull/661)
 
 ### v2.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/21))
 
