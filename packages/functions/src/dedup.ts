@@ -55,9 +55,9 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		const logger = doc.getLogger();
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
-		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
 		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
 		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(logger, doc);
+		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
 
 		logger.debug(`${NAME}: Complete.`);
 	});
