@@ -25,7 +25,7 @@ const Tolerance = {
 
 /** Options for the {@link weld} function. */
 export interface WeldOptions {
-	/** Per-attribute tolerance used when merging similar vertices. */
+	/** Tolerance, as a fraction of primitive AABB, used when merging similar vertices. */
 	tolerance?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
