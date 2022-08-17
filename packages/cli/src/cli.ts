@@ -545,15 +545,16 @@ Index geometry and optionally merge similar vertices. When merged and indexed,
 data is shared more efficiently between vertices. File size can be reduced, and
 the GPU can sometimes use the vertex cache more efficiently.
 
-With --tolerance=1 (default), a default tolerance is applied to each vertex
-attribute when deciding which to weld, based on the type of attribute and
-(in some cases) the min/max values of the attribute. Higher or lower tolerance
-values scale the default thresholds. With --tolerance=0, geometry is indexed
-in place, without merging.
+When welding, the --tolerance threshold determines which vertices qualify for
+welding based on distance between the vertices as a fraction of the primitive's
+bounding box (AABB). For example, --tolerance=0.01 welds vertices within +/-1%
+of the AABB's longest dimension. Other vertex attributes are also compared
+during welding, with attribute-specific thresholds. For --tolerance=0, geometry
+is indexed in place, without merging.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--tolerance', 'Tolerance factor applied to per-attribute weld thresholds', {
+	.option('--tolerance', 'Tolerance for vertex welding', {
 		validator: program.NUMBER,
 		default: WELD_DEFAULTS.tolerance,
 	})

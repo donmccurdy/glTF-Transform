@@ -27,8 +27,7 @@ test('@gltf-transform/functions::simplify | welded', async (t) => {
 	const srcCount = getVertexCount(document);
 	const srcBounds = roundBbox(bounds(scene), 2);
 
-	await document.transform(weld({ tolerance: 10 }));
-	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(bounds(scene), 2);

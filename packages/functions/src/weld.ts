@@ -14,16 +14,6 @@ import { createIndices, createTransform, formatDeltaOp, isTransformPending } fro
 
 const NAME = 'weld';
 
-/** Options for the {@link weld} function. */
-export interface WeldOptions {
-	/** Per-attribute tolerance used when merging similar vertices. */
-	tolerance?: number;
-	/** Whether to overwrite existing indices. */
-	overwrite?: boolean;
-}
-
-export const WELD_DEFAULTS: Required<WeldOptions> = { tolerance: 1.0, overwrite: true };
-
 const Tolerance = {
 	DEFAULT: 0.0001,
 	TEXCOORD: 0.0001, // [0, 1]
@@ -33,8 +23,40 @@ const Tolerance = {
 	WEIGHTS: 0.01, // [0, ∞]
 };
 
+/** Options for the {@link weld} function. */
+export interface WeldOptions {
+	/** Per-attribute tolerance used when merging similar vertices. */
+	tolerance?: number;
+	/** Whether to overwrite existing indices. */
+	overwrite?: boolean;
+}
+
+export const WELD_DEFAULTS: Required<WeldOptions> = {
+	tolerance: Tolerance.DEFAULT,
+	overwrite: true,
+};
+
 /**
- * Index {@link Primitive}s and (optionally) merge similar vertices.
+ * Index {@link Primitive}s and (optionally) merge similar vertices. When merged
+ * and indexed, data is shared more efficiently between vertices. File size can
+ * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
+ *
+ * When welding, the 'tolerance' threshold determines which vertices qualify for
+ * welding based on distance between the vertices as a fraction of the primitive's
+ * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
+ * of the AABB's longest dimension. Other vertex attributes are also compared
+ * during welding, with attribute-specific thresholds. For --tolerance=0, geometry
+ * is indexed in place, without merging.
+ *
+ * Example:
+ *
+ * ```js
+ * import { weld } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	weld({ tolerance: 0.001 })
+ * );
+ * ```
  */
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
@@ -78,10 +100,7 @@ function weldOnly(doc: Document, prim: Primitive): void {
 	prim.setIndices(indices);
 }
 
-/**
- * Weld and merge, combining vertices that are similar on all vertex attributes. Morph target
- * attributes are not considered when scoring vertex similarity, but are retained when merging.
- */
+/** Weld and merge, combining vertices that are similar on all vertex attributes. */
 function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const logger = doc.getLogger();
 
@@ -94,7 +113,8 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 	const tolerance = Math.max(options.tolerance, Number.EPSILON);
 	const attributeTolerance: Record<string, number> = {};
 	for (const semantic of prim.listSemantics()) {
-		attributeTolerance[semantic] = getAttributeTolerance(semantic, prim.getAttribute(semantic)!, tolerance);
+		const attribute = prim.getAttribute(semantic)!;
+		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, tolerance);
 	}
 
 	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
@@ -221,11 +241,13 @@ const _b = [] as number[];
 
 /** Computes a per-attribute tolerance, based on domain and usage of the attribute. */
 function getAttributeTolerance(semantic: string, attribute: Accessor, toleranceFactor: number): number {
-	if (semantic === 'NORMAL' || semantic === 'TANGENT') return Tolerance.NORMAL * toleranceFactor;
-	if (semantic.startsWith('COLOR_')) return Tolerance.COLOR * toleranceFactor;
-	if (semantic.startsWith('TEXCOORD_')) return Tolerance.TEXCOORD * toleranceFactor;
-	if (semantic.startsWith('JOINTS_')) return Tolerance.JOINTS * toleranceFactor;
-	if (semantic.startsWith('WEIGHTS_')) return Tolerance.WEIGHTS * toleranceFactor;
+	// Attributes like NORMAL and COLOR_# do not vary in range like POSITION,
+	// so do not apply the given tolerance factor to these attributes.
+	if (semantic === 'NORMAL' || semantic === 'TANGENT') return Tolerance.NORMAL;
+	if (semantic.startsWith('COLOR_')) return Tolerance.COLOR;
+	if (semantic.startsWith('TEXCOORD_')) return Tolerance.TEXCOORD;
+	if (semantic.startsWith('JOINTS_')) return Tolerance.JOINTS;
+	if (semantic.startsWith('WEIGHTS_')) return Tolerance.WEIGHTS;
 
 	_a.length = _b.length = 0;
 	attribute.getMinNormalized(_a);
