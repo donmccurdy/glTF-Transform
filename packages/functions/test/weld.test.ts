@@ -11,7 +11,7 @@ const LOGGER = new Logger(Logger.Verbosity.SILENT);
 test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
-	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
+	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
 	const indices = doc.createAccessor().setArray(new Uint32Array([3, 4, 5, 0, 1, 2]));
 	const prim1 = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.TRIANGLES);
 	const prim2 = doc
@@ -32,20 +32,51 @@ test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 
 test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
-	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
-	const positionTargetArray = new Float32Array([0, 10, 0, 0, 10, 1, 0, 10, -1, 0, 15, 0, 0, 15, 1, 0, 15, -1]);
-	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);
-	const positionTarget = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionTargetArray);
+	// prettier-ignore
+	const positionArray = new Float32Array([
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, -1,
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, -1
+	]);
+	// prettier-ignore
+	const normalArray = new Float32Array([
+		0, 0, 1,
+		0, 0.5, 0.5,
+		0.5, 0.5, 0,
+		0, 0, 1,
+		0, 0.5, 0.50001, // should still be welded
+		0.5, 0.5, 0
+	]);
+	// prettier-ignore
+	const positionTargetArray = new Float32Array([
+		0, 10, 0,
+		0, 10, 1,
+		0, 10, -1,
+		0, 15, 0,
+		0, 15, 1,
+		0, 15, -1
+	]);
+	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
+	const normal = doc.createAccessor().setType('VEC3').setArray(normalArray);
+	const positionTarget = doc.createAccessor().setType('VEC3').setArray(positionTargetArray);
 
-	const prim1 = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.TRIANGLES);
+	const prim1 = doc
+		.createPrimitive()
+		.setMode(Primitive.Mode.TRIANGLES)
+		.setAttribute('POSITION', position)
+		.setAttribute('NORMAL', normal);
 
 	const prim2Indices = doc.createAccessor().setArray(new Uint32Array([3, 4, 5, 0, 1, 2]));
 	const prim2Target = doc.createPrimitiveTarget().setAttribute('POSITION', positionTarget);
 	const prim2 = doc
 		.createPrimitive()
+		.setMode(Primitive.Mode.TRIANGLES)
 		.setIndices(prim2Indices)
 		.setAttribute('POSITION', position)
-		.setMode(Primitive.Mode.TRIANGLES)
+		.setAttribute('NORMAL', normal)
 		.addTarget(prim2Target);
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
@@ -60,7 +91,107 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 		positionTargetArray.slice(0, 9), // Uses later targets, because of index order.
 		'morph targets on prim2'
 	);
-	t.equals(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
+	t.equals(doc.getRoot().listAccessors().length, 4, 'keeps only needed accessors');
+	t.end();
+});
+
+test('@gltf-transform/functions::weld | attributes', async (t) => {
+	const doc = new Document().setLogger(LOGGER);
+	// prettier-ignore
+	const positionArray = new Uint8Array([
+		0, 0, 0, // ⎡
+		0, 0, 0, // ⎢ all match, weld 3
+		0, 0, 0, // ⎣
+		1, 0, 0, // ⎡
+		1, 0, 0, // ⎢ normals differ, weld 2
+		1, 0, 0, // ⎣ ❌
+		0, 1, 1, // ⎡ ❌
+		0, 1, 1, // ⎢ colors differ, weld 2
+		0, 1, 1, // ⎣
+	]);
+	// prettier-ignore
+	const normalArray = new Uint8Array([
+		127, 127, 0,
+		127, 127, 0,
+		127, 127, 0,
+		0, 127, 126,
+		0, 128, 127,
+		0, 150, 127, // ❌
+		127, 0, 127,
+		127, 0, 127,
+		127, 0, 127,
+	]);
+	// prettier-ignore
+	const colorArray = new Uint8Array([
+		255, 0, 0, 1,
+		255, 0, 0, 1,
+		255, 0, 0, 1,
+		0, 255, 0, 1,
+		0, 255, 0, 1,
+		0, 255, 0, 1,
+		0, 0, 200, 1, // ❌
+		0, 0, 255, 1,
+		0, 0, 255, 1,
+	]);
+	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
+	const normal = doc.createAccessor().setType('VEC3').setArray(normalArray).setNormalized(true);
+	const color = doc.createAccessor().setType('VEC4').setArray(colorArray).setNormalized(true);
+	const prim = doc
+		.createPrimitive()
+		.setMode(Primitive.Mode.TRIANGLES)
+		.setAttribute('POSITION', position)
+		.setAttribute('NORMAL', normal)
+		.setAttribute('COLOR_0', color);
+	doc.createMesh().addPrimitive(prim);
+
+	await doc.transform(weld({ tolerance: 0.0001 }));
+
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getIndices()!.getArray()!),
+		[
+			0, 0, 0,
+			3, 3, 4,
+			1, 2, 2,
+		],
+		'indices'
+	);
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getAttribute('POSITION')!.getArray()!),
+		[
+			0, 0, 0,
+			0, 1, 1,
+			0, 1, 1,
+			1, 0, 0,
+			1, 0, 0,
+		],
+		'position'
+	);
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getAttribute('NORMAL')!.getArray()!),
+		[
+			127, 127, 0,
+			127, 0, 127,
+			127, 0, 127,
+			0, 127, 126,
+			0, 150, 127,
+		],
+		'normal'
+	);
+	// prettier-ignore
+	t.deepEquals(
+		Array.from(prim.getAttribute('COLOR_0')!.getArray()!),
+		[
+			255, 0, 0, 1,
+			0, 0, 200, 1,
+			0, 0, 255, 1,
+			0, 255, 0, 1,
+			0, 255, 0, 1,
+		],
+		'color'
+	);
 	t.end();
 });
 
@@ -68,8 +199,8 @@ test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	const smArray = new Float32Array(65534 * 3);
 	const lgArray = new Float32Array(65535 * 3);
-	const smPosition = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(smArray);
-	const lgPosition = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(lgArray);
+	const smPosition = doc.createAccessor().setType('VEC3').setArray(smArray);
+	const lgPosition = doc.createAccessor().setType('VEC3').setArray(lgArray);
 	const smPrim = doc.createPrimitive().setAttribute('POSITION', smPosition).setMode(Primitive.Mode.TRIANGLES);
 	const lgPrim = doc.createPrimitive().setAttribute('POSITION', lgPosition).setMode(Primitive.Mode.TRIANGLES);
 	doc.createMesh().addPrimitive(smPrim).addPrimitive(lgPrim);

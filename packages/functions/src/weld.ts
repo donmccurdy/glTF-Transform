@@ -17,7 +17,7 @@ const NAME = 'weld';
 const Tolerance = {
 	DEFAULT: 0.0001,
 	TEXCOORD: 0.0001, // [0, 1]
-	COLOR: 1.0, // [0, 256]
+	COLOR: 0.01, // [0, 1]
 	NORMAL: 0.01, // [-1, 1]
 	JOINTS: 0.0, // [0, ∞]
 	WEIGHTS: 0.01, // [0, ∞]
@@ -257,7 +257,7 @@ function getAttributeTolerance(semantic: string, attribute: Accessor, toleranceF
 }
 
 /** Compares two vertex attributes against a tolerance threshold. */
-function compareAttributes(attribute: Accessor, a: number, b: number, tolerance: number, semantic: string): boolean {
+function compareAttributes(attribute: Accessor, a: number, b: number, tolerance: number, _semantic: string): boolean {
 	attribute.getElement(a, _a);
 	attribute.getElement(b, _b);
 	for (let i = 0, il = attribute.getElementSize(); i < il; i++) {
