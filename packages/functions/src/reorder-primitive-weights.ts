@@ -19,10 +19,6 @@ export function reorderPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit
 	const jointsEl = [0, 0, 0, 0] as vec4;
 
 	for (let i = 0; i < vertexCount; i++) {
-		for (let j = 0; j < setCount * 4; j++) indices[j] = j;
-		weights.fill(0);
-		joints.fill(0);
-
 		for (let j = 0; j < setCount; j++) {
 			const weightsAttribute = prim.getAttribute(`WEIGHTS_${j}`)!;
 			const jointsAttribute = prim.getAttribute(`JOINTS_${j}`)!;
@@ -32,6 +28,7 @@ export function reorderPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit
 
 		// Sort indices to create a lookup table, indices[dstIndex] → srcIndex,
 		// indexed into the weights and joints arrays.
+		for (let j = 0; j < setCount * 4; j++) indices[j] = j;
 		indices.sort((a, b) => (weights[a] > weights[b] ? 1 : -1));
 
 		for (let j = 0; j < setCount; j++) {
