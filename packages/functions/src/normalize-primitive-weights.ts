@@ -1,5 +1,7 @@
 import type { Accessor, Primitive, PrimitiveTarget } from '@gltf-transform/core';
 
+// TODO(bug): Works when adjusting for rounding error in quantized vertex
+// attribute. But not for truncated weight sets, or non-normalized inputs.
 export function normalizePrimitiveWeights(prim: Primitive | PrimitiveTarget): void {
 	const vertexCount = prim.getAttribute('POSITION')!.getCount();
 	const weightsEl: number[] = [];

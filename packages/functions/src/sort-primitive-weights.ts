@@ -1,7 +1,7 @@
 import type { Primitive, PrimitiveTarget, vec4 } from '@gltf-transform/core';
 import { normalizePrimitiveWeights } from './normalize-primitive-weights';
 
-export function reorderPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = Infinity) {
+export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = Infinity) {
 	if ((Number.isFinite(limit) && limit % 4) || limit <= 0) {
 		throw new Error(`Limit must be a positive multiple of four.`);
 	}
@@ -29,7 +29,7 @@ export function reorderPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit
 		// Sort indices to create a lookup table, indices[dstIndex] → srcIndex,
 		// indexed into the weights and joints arrays.
 		for (let j = 0; j < setCount * 4; j++) indices[j] = j;
-		indices.sort((a, b) => (weights[a] > weights[b] ? 1 : -1));
+		indices.sort((a, b) => (weights[a] > weights[b] ? -1 : 1));
 
 		for (let j = 0; j < setCount; j++) {
 			const weightsAttribute = prim.getAttribute(`WEIGHTS_${j}`)!;
@@ -49,8 +49,8 @@ export function reorderPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit
 
 	// (2) Limit.
 	for (let i = setCount; i * 4 > limit; i--) {
-		prim.getAttribute(`WEIGHTS_${i - 1}`)!.dispose();
-		prim.getAttribute(`JOINTS_${i - 1}`)!.dispose();
+		prim.getAttribute(`WEIGHTS_${i - 1}`)!.dispose(); // TODO(bug): detach, not dispose.
+		prim.getAttribute(`JOINTS_${i - 1}`)!.dispose(); // TODO(bug): detach, not dispose.
 	}
 
 	// (3) Normalize.
