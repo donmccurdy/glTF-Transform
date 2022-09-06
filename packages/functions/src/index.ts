@@ -48,7 +48,6 @@ export * from './instance';
 export * from './meshopt';
 export * from './metal-rough';
 export * from './normals';
-export * from './normalize-primitive-weights';
 export * from './partition';
 export * from './prune';
 export * from './quantize';

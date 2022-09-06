@@ -23,7 +23,7 @@ import { MeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune';
 import { createTransform } from './utils';
-import { normalizePrimitiveWeights } from './normalize-primitive-weights';
+import { sortPrimitiveWeights } from './sort-primitive-weights';
 
 const NAME = 'quantize';
 
@@ -167,7 +167,7 @@ function quantizePrimitive(
 
 	// Normalize skinning weights.
 	if (options.normalizeWeights && prim.getAttribute('WEIGHTS_0')) {
-		normalizePrimitiveWeights(prim);
+		sortPrimitiveWeights(prim, Infinity);
 	}
 
 	if (
