@@ -35,8 +35,8 @@ test.only('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 		[
 			...prim.getAttribute('WEIGHTS_0')!.getElement(1, []),
 			...prim.getAttribute('WEIGHTS_1')!.getElement(1, []),
-		],
-		[0, 0, 0, 0, 0, 0, 0, 0],
+		].map(round(2)),
+		[0.74, 0.11, 0.11, 0.02, 0.01, 0, 0, 0],
 		'weights, vertex #2'
 	);
 
@@ -62,18 +62,30 @@ test.only('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	// prettier-ignore
 	t.deepEquals(
 		prim.getAttribute('WEIGHTS_0')!.getElement(0, []).map(round(2)),
-		[0.38, 0.2, 0.15, 0.13, 0.1, 0.04, 0, 0],
-		'weights, vertex #1'
+		[0.44, 0.23, 0.17, 0.15],
+		'weights, vertex #1 (truncated)'
 	);
 
 	// prettier-ignore
 	t.deepEquals(
 		prim.getAttribute('JOINTS_0')!.getElement(0, []),
-		[1, 6, 3, 5, 7, 4, 2, 0],
-		'joints, vertex #1'
+		[1, 6, 3, 5],
+		'joints, vertex #1 (truncated)'
 	);
 
-	// TODO(test): vert 2/2
+	// prettier-ignore
+	t.deepEquals(
+		prim.getAttribute('WEIGHTS_0')!.getElement(1, []).map(round(2)),
+		[0.75, 0.12, 0.11, 0.02],
+		'weights, vertex #2 (truncated)'
+	);
+
+	// prettier-ignore
+	t.deepEquals(
+		prim.getAttribute('JOINTS_0')!.getElement(1, []),
+		[13, 12, 8, 10],
+		'joints, vertex #2 (truncated)'
+	);
 
 	t.end();
 });
@@ -85,13 +97,13 @@ function createSkinnedPrimitive() {
 
 	// prettier-ignore
 	const weights0 = new Float32Array([
-		0, 0.38, 0, 0.15,
-		0.3, 0, 0.05, 0.04,
+		0.00, 0.38, 0.00, 0.15,
+		0.30, 0.00, 0.05, 0.04,
 	]);
 	// prettier-ignore
 	const weights1 = new Float32Array([
-		0.04, 0.13, 0.2, 0.1,
-		0.3, 2, 0, 0,
+		0.04, 0.13, 0.20, 0.10,
+		0.31, 2.00, 0.00, 0.00,
 	]);
 	// prettier-ignore
 	const joints0 = new Float32Array([

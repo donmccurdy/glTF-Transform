@@ -102,6 +102,13 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 	}
 }
 
+// TODO(cleanup)
+// function print(arr: TypedArray): string {
+// 	return Array.from(arr)
+// 		.map((v) => v.toFixed(3))
+// 		.join(',');
+// }
+
 /** Lists all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
 function getVertexElements(prim: PrimLike, vertexIndex: number, prefix: string, target: TypedArray): TypedArray {
 	let weights: Accessor | null;
