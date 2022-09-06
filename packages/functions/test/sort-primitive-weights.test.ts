@@ -4,8 +4,7 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '../';
 
-// TODO(cleanup)
-test.only('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
+test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	const prim = createSkinnedPrimitive();
 
 	sortPrimitiveWeights(prim);

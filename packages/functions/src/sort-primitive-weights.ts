@@ -1,5 +1,30 @@
 import { Accessor, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4 } from '@gltf-transform/core';
 
+/**
+ * Sorts skinning weights from high to low, for each vertex of the input
+ * {@link Primitive} or {@link PrimitiveTarget}, and normalizes the weights.
+ * Optionally, uses the given 'limit' to remove least-significant joint
+ * influences such that no vertex has more than 'limit' influences.
+ *
+ * Most realtime engines support a limited number of joint influences per vertex,
+ * often 4 or 8. Sorting and removing the additional influences can reduce file
+ * size and improve compatibility.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { sortPrimitiveWeights } from '@gltf-transform/functions';
+ *
+ * for (const mesh of document.getRoot().listMeshes()) {
+ * 	for (const prim of mesh.listPrimitives()) {
+ * 		sortPrimitiveWeights(prim, 4)
+ * 	}
+ * }
+ * ```
+ *
+ * @param prim Input, to be modified in place.
+ * @param limit Maximum number of joint influences per vertex. Must be a multiple of four.
+ */
 export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = Infinity) {
 	if ((Number.isFinite(limit) && limit % 4) || limit <= 0) {
 		throw new Error(`Limit must be positive multiple of four.`);
@@ -101,13 +126,6 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		setVertexElements(prim, i, 'WEIGHTS', weights);
 	}
 }
-
-// TODO(cleanup)
-// function print(arr: TypedArray): string {
-// 	return Array.from(arr)
-// 		.map((v) => v.toFixed(3))
-// 		.join(',');
-// }
 
 /** Lists all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
 function getVertexElements(prim: PrimLike, vertexIndex: number, prefix: string, target: TypedArray): TypedArray {
