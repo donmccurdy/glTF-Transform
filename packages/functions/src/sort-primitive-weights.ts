@@ -15,9 +15,10 @@ import { Accessor, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4 } fro
  * ```javascript
  * import { sortPrimitiveWeights } from '@gltf-transform/functions';
  *
+ * const limit = 4;
  * for (const mesh of document.getRoot().listMeshes()) {
  * 	for (const prim of mesh.listPrimitives()) {
- * 		sortPrimitiveWeights(prim, 4)
+ * 		sortPrimitiveWeights(prim, limit);
  * 	}
  * }
  * ```
