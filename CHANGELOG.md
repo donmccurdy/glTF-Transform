@@ -8,6 +8,7 @@
 
 **Features:**
 
+- Add `sortPrimitiveWeights(prim, limit)` function [#670](https://github.com/donmccurdy/glTF-Transform/pull/670)
 - Rewrite `weld()` function, improving weld results [#661](https://github.com/donmccurdy/glTF-Transform/pull/661)
 
 ### v2.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/21))
