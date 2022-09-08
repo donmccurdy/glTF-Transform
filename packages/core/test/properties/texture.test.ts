@@ -42,22 +42,25 @@ test('@gltf-transform/core::texture | write', async (t) => {
 	doc.createBuffer();
 	const image1 = new Uint8Array(1);
 	const image2 = new Uint8Array(2);
+	const image3 = new Uint8Array(3);
 	const texture1 = doc.createTexture('tex1').setImage(image1).setURI('tex1.png');
 	const texture2 = doc.createTexture('tex2').setImage(image2).setMimeType('image/jpeg');
-	doc.createMaterial('mat1').setBaseColorTexture(texture1).setNormalTexture(texture2);
+	const texture3 = doc.createTexture('tex2').setImage(image3).setMimeType('image/jpeg'); // reused name
+	doc.createMaterial('mat1').setBaseColorTexture(texture1).setNormalTexture(texture2).setOcclusionTexture(texture3);
 	doc.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = await createPlatformIO();
-	const jsonDoc = await io.writeJSON(doc, { basename: 'basename' });
+	const jsonDoc = await io.writeJSON(doc, { basename: '' });
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
-	t.true('basename_1.jpg' in jsonDoc.resources, 'writes default-named jpeg');
-	t.equals(jsonDoc.json.images.length, 2, 'reuses images');
-	t.equals(jsonDoc.json.textures.length, 3, 'writes three textures');
+	t.true('normal_1.jpg' in jsonDoc.resources, 'writes default-named normal map');
+	t.true('occlusion_1.jpg' in jsonDoc.resources, 'writes default-named occlusion map');
+	t.equals(jsonDoc.json.images.length, 3, 'reuses images');
+	t.equals(jsonDoc.json.textures.length, 4, 'writes three textures');
 	t.equals(jsonDoc.json.samplers.length, 2, 'reuses samplers');
 	t.end();
 });
