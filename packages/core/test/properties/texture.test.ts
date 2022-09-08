@@ -60,7 +60,7 @@ test('@gltf-transform/core::texture | write', async (t) => {
 	t.true('normal_1.jpg' in jsonDoc.resources, 'writes default-named normal map');
 	t.true('occlusion_1.jpg' in jsonDoc.resources, 'writes default-named occlusion map');
 	t.equals(jsonDoc.json.images.length, 3, 'reuses images');
-	t.equals(jsonDoc.json.textures.length, 4, 'writes three textures');
+	t.equals(jsonDoc.json.textures.length, 4, 'writes textures');
 	t.equals(jsonDoc.json.samplers.length, 2, 'reuses samplers');
 	t.end();
 });
