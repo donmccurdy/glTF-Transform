@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document, Logger, PropertyType } from '@gltf-transform/core';
 import { prune } from '../';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
@@ -71,7 +71,12 @@ test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 	t.ok(nodeC.isDisposed(), 'nodeC disposed');
 
 	skin.dispose();
-	await document.transform(prune());
+	await document.transform(prune({ keepLeaves: false, propertyTypes: [] }));
+
+	t.notOk(scene.isDisposed(), 'scene in tree');
+	t.notOk(nodeA.isDisposed(), 'nodeA disposed');
+
+	await document.transform(prune({ keepLeaves: false, propertyTypes: [PropertyType.NODE] }));
 
 	t.notOk(scene.isDisposed(), 'scene in tree');
 	t.ok(nodeA.isDisposed(), 'nodeA disposed');
