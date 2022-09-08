@@ -151,11 +151,11 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 				if (!this[$immutableKeys].has(key)) {
 					value.dispose();
 				}
-			} else if (Array.isArray(value) && value[0] instanceof GraphEdge) {
-				for (const ref of value as Ref[]) {
+			} else if (isRefList(value)) {
+				for (const ref of value as unknown as Ref[]) {
 					ref.dispose();
 				}
-			} else if (isPlainObject(value) && Object.values(value)[0] instanceof GraphEdge) {
+			} else if (isRefMap(value)) {
 				for (const subkey in value) {
 					const ref = value[subkey] as Ref;
 					ref.dispose();
@@ -175,12 +175,12 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
 				}
-			} else if (Array.isArray(otherValue) && otherValue[0] instanceof GraphEdge) {
-				for (const ref of otherValue as Ref[]) {
+			} else if (isRefList(otherValue)) {
+				for (const ref of otherValue as unknown as Ref[]) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.addRef(key as any, resolve(ref.getChild()), ref.getAttributes());
 				}
-			} else if (isPlainObject(otherValue) && Object.values(otherValue)[0] instanceof GraphEdge) {
+			} else if (isRefMap(otherValue)) {
 				for (const subkey in otherValue) {
 					const ref = otherValue[subkey] as Ref;
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
