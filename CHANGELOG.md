@@ -10,6 +10,8 @@
 
 - Add `sortPrimitiveWeights(prim, limit)` function [#670](https://github.com/donmccurdy/glTF-Transform/pull/670)
 - Rewrite `weld()` function, improving weld results [#661](https://github.com/donmccurdy/glTF-Transform/pull/661)
+- Handle conflicting URLs during merge [#677](https://github.com/donmccurdy/glTF-Transform/pull/677)
+- Add documentation for writing custom extensions [#678](https://github.com/donmccurdy/glTF-Transform/pull/678)
 
 ### v2.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/21))
 
