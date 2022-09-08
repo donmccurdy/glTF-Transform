@@ -66,8 +66,8 @@ export class WriterContext {
 	public readonly otherBufferViewsIndexMap = new Map<Uint8Array, number>();
 	public readonly extensionData: { [key: string]: unknown } = {};
 
-	public bufferURIGenerator: UniqueURIGenerator;
-	public imageURIGenerator: UniqueURIGenerator;
+	public bufferURIGenerator: UniqueURIGenerator<Buffer>;
+	public imageURIGenerator: UniqueURIGenerator<Texture>;
 	public logger: ILogger;
 
 	private readonly _accessorUsageMap = new Map<Accessor, BufferViewUsage | string>();
@@ -82,8 +82,11 @@ export class WriterContext {
 		const root = _doc.getRoot();
 		const numBuffers = root.listBuffers().length;
 		const numImages = root.listTextures().length;
-		this.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, options.basename);
-		this.imageURIGenerator = new UniqueURIGenerator(numImages > 1, options.basename);
+		this.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, () => options.basename || 'buffer');
+		this.imageURIGenerator = new UniqueURIGenerator(
+			numImages > 1,
+			(texture) => getSlot(_doc, texture) || options.basename || 'texture'
+		);
 		this.logger = _doc.getLogger();
 	}
 
@@ -235,18 +238,29 @@ export class WriterContext {
 	}
 }
 
-export class UniqueURIGenerator {
-	private counter = 1;
+export class UniqueURIGenerator<T extends Texture | Buffer> {
+	private counter = {} as Record<string, number>;
 
-	constructor(private readonly multiple: boolean, private readonly basename: string) {}
+	constructor(private readonly multiple: boolean, private readonly basename: (t: T) => string) {}
 
-	public createURI(object: Texture | Buffer, extension: string): string {
+	public createURI(object: T, extension: string): string {
 		if (object.getURI()) {
 			return object.getURI();
 		} else if (!this.multiple) {
-			return `${this.basename}.${extension}`;
+			return `${this.basename(object)}.${extension}`;
 		} else {
-			return `${this.basename}_${this.counter++}.${extension}`;
+			const basename = this.basename(object);
+			this.counter[basename] = this.counter[basename] || 1;
+			return `${basename}_${this.counter[basename]++}.${extension}`;
 		}
 	}
+}
+
+/** Returns the first slot (by name) to which the texture is assigned. */
+function getSlot(document: Document, texture: Texture): string {
+	const edge = document
+		.getGraph()
+		.listParentEdges(texture)
+		.find((edge) => edge.getParent() !== document.getRoot());
+	return edge ? edge.getName().replace(/texture$/i, '') : '';
 }
