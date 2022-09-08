@@ -83,11 +83,11 @@ import draco3d from 'draco3dgltf';
 // ...
 
 const io = new NodeIO()
-  .registerExtensions(KHRONOS_EXTENSIONS)
-  .registerDependencies({
-    'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
-    'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
-  });
+	.registerExtensions(KHRONOS_EXTENSIONS)
+	.registerDependencies({
+		'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
+		'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
+	});
 
 const document = await io.read('compressed.glb');
 ```
@@ -103,3 +103,106 @@ instance may be read from a file, modified programmatically, and written back to
 For implementation examples, see [packages/extensions](https://github.com/donmccurdy/glTF-Transform/tree/master/packages/extensions).
 For further details on the general Extension API, see {@link Extension} and
 {@link ExtensionProperty}.
+
+### Writing a custom extension
+
+Custom extensions must define a {@link Extension} subclass, optionally implementing read/write operations. By convention, the name of this class is an uppercase adaptation of the full extension name, e.g. `ACME_particle_emitter` → ParticleEmitter. Authors of custom extensions are encouraged to follow the Khronos [extension naming guidelines](https://github.com/KhronosGroup/glTF/tree/main/extensions#naming), and to [reserve a prefix](https://github.com/KhronosGroup/glTF/blob/main/extensions/Prefixes.md) if necessary. However, glTF-Transform's implementation does not depend on any particular naming rules for classes or extensions.
+
+```javascript
+class ParticleEmitter extends Extension {
+	extensionName = 'ACME_particle_emitter';
+	static EXTENSION_NAME = 'ACME_particle_emitter';
+
+	/** Creates a new Emitter property, for use on a Node. */
+	createEmitter(name = '') {
+		return new Emitter(this.document.getGraph(), name);
+	}
+
+	/** See https://github.com/donmccurdy/glTF-Transform/blob/main/packages/core/src/io/reader-context.ts */
+	read(context) {
+		throw new Error('ACME_particle_emitter: read() not implemented');
+	}
+
+	/** See https://github.com/donmccurdy/glTF-Transform/blob/main/packages/core/src/io/writer-context.ts */
+	write(context) {
+		throw new Error('ACME_particle_emitter: write() not implemented');
+	}
+}
+```
+
+Both `read()` and `write()` must be implemented in order to support round-trip processing of glTF files relying on the extension; otherwise they can be left stubbed. Refer to the implementations of existing extensions, and to the [`ReaderContext`](https://github.com/donmccurdy/glTF-Transform/blob/main/packages/core/src/io/reader-context.ts) and [`WriterContext`](https://github.com/donmccurdy/glTF-Transform/blob/main/packages/core/src/io/writer-context.ts) structures, for examples implementing read/write operations in similar extensions.
+
+By defining an Extension implementation, we've ensured that the `ACME_particle_emitter` extension will be added to `extensionsUsed` and (optionally) `extensionsRequired` in an output glTF file. Most extensions also define one or more properties within the file. To define those properties, we'll create subclasses of the {@link ExtensionProperty} class. These properties can be attached to other glTF properties like {@link Node} or {@link Material} instances, modifying their behavior. Alternatively, custom properties may be stored at the {@link Document} level, without being referenced by anything in the scene.
+
+```javascript
+class Emitter extends ExtensionProperty {
+	static EXTENSION_NAME = 'ACME_particle_emitter';
+
+	init() {
+		this.extensionName = 'ACME_particle_emitter';
+		this.propertyType = 'Emitter';
+		this.parentTypes = [PropertyType.NODE];
+	}
+
+	getDefaults() {
+		return Object.assign(super.getDefaults(), {
+			minVelocity: [1, 1, 1],
+			maxVelocity: [10, 10, 10],
+			meshes: []
+		});
+	}
+
+	// minVelocity
+	getMinVelocity() {
+		return this.get('minVelocity');
+	}
+	setMinVelocity(velocity) {
+		return this.set('minVelocity', velocity);
+	}
+
+	// maxVelocity
+	getMaxVelocity() {
+		return this.get('maxVelocity');
+	}
+	setMaxVelocity(velocity) {
+		return this.set('maxVelocity', velocity);
+	}
+
+	// meshes
+	listMeshes() {
+		return this.listRefs('meshes');
+	}
+	addMesh(mesh) {
+		return this.addRef('meshes', mesh);
+	}
+	removeMesh(mesh) {
+		return this.removeRef('meshes', mesh);
+	}
+}
+```
+
+Internal methods `.get`, `.set`, `.listRefs`, etc. are defined by the [`property-graph`](https://www.npmjs.com/package/property-graph) package, with optional TypeScript support available. Custom extensions may customize their public APIs as needed. Exhaustive getters and setters are not required, as long as all references are internally routed through the `property-graph` APIs. This internal graph ensures that glTF-Transform operations respect extensions' use of resources like Textures and Accessors, and detect when resources are used or unused.
+
+Because we've defined `this.parentTypes = [PropertyType.NODE];` above, the operation will fail if the end-user attempts to attach the ExtensionProperty to another parent type, such as a Texture. Multiple parent types may be defined. For resources never referenced by other glTF properties, `parentTypes` may be left empty.
+
+All ExtensionProperty instances associated with an Extension are available to that Extension as `this.properties`, for I/O. After defining an extension, you'll want to register it with the I/O class before reading or writing glTF assets:
+
+```javascript
+import { NodeIO } from '@gltf-transform/core';
+import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
+
+const io = new NodeIO()
+	.registerExtensions([...KHRONOS_EXTENSIONS, ParticleEmitter]);
+
+const document = await io.read('path/to/model.glb');
+```
+
+Or, add the extension to an existing Document:
+
+```javascript
+const emitterExtension = document.createExtension(ParticleEmitter);
+const emitter = emitterExtension.createEmitter('MyEmitter');
+node.setExtension('ACME_particle_emitter', emitter);
+```
+
+> **NOTICE:** Custom extensions cannot currently be registered locally with the `@gltf-transform/cli` package. If you need this feature, please upvote and track [glTF-Transform#85](https://github.com/donmccurdy/glTF-Transform/issues/85). In the meantime, custom extensions must be used through glTF-Transform's programmatic APIs instead.
