@@ -64,4 +64,5 @@ export * from './unpartition';
 export * from './unweld';
 export * from './weld';
 export * from './list-texture-channels';
+export * from './list-texture-info';
 export * from './list-texture-slots';
