@@ -1748,6 +1748,11 @@ body {
     font-family: Iowan Old Style,Apple Garamond,Palatino Linotype,Times New Roman,"Droid Serif",Times,serif;
 }
 
+.header-badge img {
+    vertical-align: sub;
+    margin-left: 0.5em;
+}
+
 .tsd-typography {
     line-height: 1.6em;
 }
