@@ -12,7 +12,14 @@ import {
 	WriterContext,
 } from '@gltf-transform/core';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
-import { EncodedPrimitive, encodeGeometry, EncoderMethod, EncoderOptions, initEncoderModule } from './encoder';
+import {
+	EncodedPrimitive,
+	encodeGeometry,
+	EncoderMethod,
+	EncoderOptions,
+	EncodingError,
+	initEncoderModule,
+} from './encoder';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
 import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
 
@@ -255,7 +262,17 @@ export class DracoMeshCompression extends Extension {
 			const accessorDefs = context.jsonDoc.json.accessors!;
 
 			// Create a new EncodedPrimitive.
-			const encodedPrim = encodeGeometry(prim, { ...this._encoderOptions, quantizationVolume });
+			let encodedPrim: EncodedPrimitive;
+			try {
+				encodedPrim = encodeGeometry(prim, { ...this._encoderOptions, quantizationVolume });
+			} catch (e) {
+				if (e instanceof EncodingError) {
+					logger.warn(`[${NAME}]: ${e.message} Skipping primitive compression.`);
+					continue;
+				}
+				throw e;
+			}
+
 			primitiveEncodingMap.set(primHash, encodedPrim);
 
 			// Create indices definition, update count.
@@ -303,6 +320,8 @@ export class DracoMeshCompression extends Extension {
 				if (!primHash) continue;
 
 				const encodedPrim = dracoContext.primitiveEncodingMap.get(primHash)!;
+				if (!encodedPrim) continue;
+
 				primDef.extensions = primDef.extensions || {};
 				primDef.extensions[NAME] = {
 					bufferView: context.otherBufferViewsIndexMap.get(encodedPrim.data),
