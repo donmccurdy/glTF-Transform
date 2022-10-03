@@ -105,7 +105,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	}
 
 	const indices = prim.getIndices();
-	if (!indices) throw new Error('Primitive must have indices.');
+	if (!indices) throw new EncodingError('Primitive must have indices.');
 
 	builder.AddFacesToMesh(mesh, indices.getCount() / 3, indices.getArray() as unknown as Uint32Array);
 
@@ -120,7 +120,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	}
 
 	const byteLength = encoder.EncodeMeshToDracoBuffer(mesh, dracoBuffer);
-	if (byteLength <= 0) throw new Error('Error applying Draco compression.');
+	if (byteLength <= 0) throw new EncodingError('Error applying Draco compression.');
 
 	const data = new Uint8Array(byteLength);
 	for (let i = 0; i < byteLength; ++i) {
@@ -132,7 +132,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
 
 	if (prim.listTargets().length > 0 && numVertices !== prevNumVertices) {
-		throw new Error(
+		throw new EncodingError(
 			'Compression reduced vertex count unexpectedly, corrupting morph targets.' +
 				' Applying the "weld" function before compression may resolve the issue.'
 		);
@@ -185,3 +185,5 @@ function addAttribute(
 			throw new Error(`Unexpected component type, "${componentType}".`);
 	}
 }
+
+export class EncodingError extends Error {}

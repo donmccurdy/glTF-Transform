@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import fs from 'fs/promises';
 import path from 'path';
-import { Accessor, Document, Logger, Primitive } from '@gltf-transform/core';
+import { Document, Logger, Primitive } from '@gltf-transform/core';
 import { weld } from '../';
 
 const LOGGER = new Logger(Logger.Verbosity.SILENT);
@@ -237,5 +237,56 @@ test('@gltf-transform/functions::weld | modes', async (t) => {
 			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`
 		);
 	}
+	t.end();
+});
+
+test('@gltf-transform/functions::weld | targets', async (t) => {
+	const document = new Document().setLogger(LOGGER);
+	// prettier-ignore
+	const positionArray = new Float32Array([
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, 2,
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, 2,
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, 2
+	]);
+	// prettier-ignore
+	const positionTargetArray = new Float32Array([
+		10, 0, 0, // ✅
+		10, 0, 0,
+		10, 0, 0,
+		10, 0, 0, // ✅
+		10, 0, 0,
+		10, 0, 0,
+		5, 0, 0, // ❌
+		5, 0, 0,
+		5, 0, 0,
+	]);
+	const position = document.createAccessor().setType('VEC3').setArray(positionArray);
+	const positionTarget = document.createAccessor().setType('VEC3').setArray(positionTargetArray);
+
+	const primTarget = document.createPrimitiveTarget().setAttribute('POSITION', positionTarget);
+	const prim = document
+		.createPrimitive()
+		.setMode(Primitive.Mode.TRIANGLES)
+		.setAttribute('POSITION', position)
+		.addTarget(primTarget);
+
+	document.createMesh().addPrimitive(prim);
+
+	await document.transform(weld());
+
+	t.deepEquals(prim.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2, 3, 4, 5]), 'indices');
+	t.deepEquals(prim.getAttribute('POSITION').getArray(), positionArray.slice(9, 27), 'prim positions');
+	t.deepEquals(
+		prim.listTargets()[0].getAttribute('POSITION').getArray(),
+		positionTargetArray.slice(9, 27),
+		'target positions'
+	);
+	t.equals(document.getRoot().listAccessors().length, 3, 'accessor count');
 	t.end();
 });

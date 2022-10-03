@@ -165,7 +165,7 @@ function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOpti
 			});
 			const isTargetMatch = prim.listTargets().every((target) => {
 				return target.listSemantics().every((semantic) => {
-					const attribute = prim.getAttribute(semantic)!;
+					const attribute = target.getAttribute(semantic)!;
 					const tolerance = attributeTolerance[semantic];
 					return compareAttributes(attribute, a, b, tolerance, semantic);
 				});
