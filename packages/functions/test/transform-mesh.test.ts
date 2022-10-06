@@ -8,25 +8,49 @@ import { transformMesh, transformPrimitive } from '../';
 const logger = new Logger(Logger.Verbosity.SILENT);
 
 test.skip('@gltf-transform/functions::transformMesh', async (t) => {
-	// TODO(impl): todo - test primitive overwrite, cloning, ...
+	const document = new Document().setLogger(logger);
+
+	const prim1 = createPrimitive(document);
+	const prim2 = prim1.clone();
+
+	// (1) detach shared prims
+
+	// (2) detach shared vertex streams
+
+	// (3) vertex mask
 });
 
-test('@gltf-transform/functions::transformMesh', async (t) => {
+test.only('@gltf-transform/functions::transformPrimitive', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	const prim = createPrimitive(document);
+	const normal = prim.getAttribute('NORMAL')!;
+	const tangent = prim.getAttribute('TANGENT')!;
 
 	transformPrimitive(prim, identity([]));
-	t.deepEquals(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'identity');
+	t.deepEquals(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'identity - position');
+	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'identity - normal');
+	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'identity - tangent');
+
+	transformPrimitive(prim, fromScaling([], [100, 100, 100]), new Set([0, 1, 2, 3]));
+	t.deepEquals(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'mask - position');
+	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'mask - normal');
+	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'mask - tangent');
 
 	transformPrimitive(prim, fromScaling([], [2, 1, 2]));
-	t.deepEquals(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale');
+	t.deepEquals(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale - position');
+	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'scale - normal');
+	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'scale - tangent');
 
 	transformPrimitive(prim, fromTranslation([], [0, -10, 0]));
-	t.deepEquals(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate');
+	t.deepEquals(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - positino');
+	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'translate - normal');
+	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'translate - tangent');
 
 	transformPrimitive(prim, fromRotation([], Math.PI / 2, [1, 0, 0]));
-	t.deepEquals(roundBbox(primBounds(prim)), { min: [-1, -1, 0], max: [1, 1, 0] }, 'rotate');
+	t.deepEquals(roundBbox(primBounds(prim)), { min: [-1, -1, 0], max: [1, 1, 0] }, 'rotate - position');
+	t.deepEquals(normal.getElement(0, []).map(round()), [0, 0, 1], 'rotate - normal');
+	t.deepEquals(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
 
 	t.end();
 });

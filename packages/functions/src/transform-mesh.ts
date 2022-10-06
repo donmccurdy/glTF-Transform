@@ -89,7 +89,14 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, mask = new Set
 }
 
 function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, mask: Set<number>) {
+	// An arbitrary transform may not keep vertex positions in the required
+	// range of a normalized attribute. Replace the array, instead.
 	const dstArray = new Float32Array(attribute.getCount() * 3);
+	const elementSize = attribute.getElementSize();
+
+	for (let i = 0, el: number[] = [], il = attribute.getCount(); i < il; i++) {
+		dstArray.set(attribute.getElement(i, el), i * elementSize);
+	}
 
 	const vector = createVec3() as vec3;
 	for (let i = 0; i < indices.length; i++) {
