@@ -16,13 +16,23 @@ import { createIndices } from './utils';
  * - Primitives within the mesh sharing vertex streams will continue to share those streams.
  * - For indexed primitives, only indexed vertices are modified.
  *
+ * Example:
+ *
+ * ```javascript
+ * import { fromTranslation } from 'gl-matrix/mat4';
+ * import { transformMesh } from '@gltf-transform/functions';
+ *
+ * // offset vertices, y += 10.
+ * transformMesh(mesh, fromTranslation([], [0, 10, 0]));
+ * ```
+ *
  * @param mesh
  * @param matrix
  * @param overwrite Whether to overwrite vertex streams in place. If false,
  * 		streams shared with other meshes will be detached.
- * @param mask Masks vertices, specified by index, that will _not_ be transformed.
+ * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformMesh(mesh: Mesh, matrix: mat4, overwrite: boolean, mask?: Set<number>): void {
+export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipIndices?: Set<number>): void {
 	// (1) Detach shared prims.
 	for (const prim of mesh.listPrimitives()) {
 		const isShared = prim.listParents().some((p) => p.propertyType === PropertyType.MESH && p !== mesh);
@@ -48,9 +58,9 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite: boolean, mask
 	}
 
 	// (3) Apply transform.
-	mask = mask || new Set<number>();
+	skipIndices = skipIndices || new Set<number>();
 	for (const prim of mesh.listPrimitives()) {
-		transformPrimitive(prim, matrix, mask);
+		transformPrimitive(prim, matrix, skipIndices);
 	}
 }
 
@@ -61,34 +71,44 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite: boolean, mask
  * directly in the underlying vertex streams. If streams should be detached instead,
  * see {@link transformMesh}.
  *
+ * Example:
+ *
+ * ```javascript
+ * import { fromTranslation } from 'gl-matrix/mat4';
+ * import { transformPrimitive } from '@gltf-transform/functions';
+ *
+ * // offset vertices, y += 10.
+ * transformPrimitive(prim, fromTranslation([], [0, 10, 0]));
+ * ```
+ *
  * @param prim
  * @param matrix
- * @param mask Masks vertices, specified by index, that will _not_ be transformed.
+ * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformPrimitive(prim: Primitive, matrix: mat4, mask = new Set<number>()): void {
+export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = new Set<number>()): void {
 	const position = prim.getAttribute('POSITION')!;
 	const indices = (prim.getIndices()?.getArray() || createIndices(position!.getCount())) as Uint32Array;
 
 	// Apply transform.
 	if (position) {
-		applyMatrix(matrix, position, indices, new Set(mask));
+		applyMatrix(matrix, position, indices, new Set(skipIndices));
 	}
 
 	const normal = prim.getAttribute('NORMAL');
 	if (normal) {
-		applyNormalMatrix(matrix, normal, indices, new Set(mask));
+		applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
 	}
 
 	const tangent = prim.getAttribute('TANGENT');
 	if (tangent) {
-		applyTangentMatrix(matrix, tangent, indices, new Set(mask));
+		applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
 	}
 
 	// Update mask.
-	for (let i = 0; i < indices.length; i++) mask.add(indices[i]);
+	for (let i = 0; i < indices.length; i++) skipIndices.add(indices[i]);
 }
 
-function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, mask: Set<number>) {
+function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
 	// An arbitrary transform may not keep vertex positions in the required
 	// range of a normalized attribute. Replace the array, instead.
 	const dstArray = new Float32Array(attribute.getCount() * 3);
@@ -101,19 +121,19 @@ function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, ma
 	const vector = createVec3() as vec3;
 	for (let i = 0; i < indices.length; i++) {
 		const index = indices[i];
-		if (mask.has(index)) continue;
+		if (skipIndices.has(index)) continue;
 
 		attribute.getElement(index, vector);
 		transformMat4(vector, vector, matrix);
 		dstArray.set(vector, index * 3);
 
-		mask.add(index);
+		skipIndices.add(index);
 	}
 
 	attribute.setArray(dstArray).setNormalized(false);
 }
 
-function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, mask: Set<number>) {
+function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
 	const normalMatrix = createMat3();
 	fromMat4(normalMatrix, matrix);
 	invert(normalMatrix, normalMatrix);
@@ -122,23 +142,23 @@ function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Arr
 	const vector = createVec3() as vec3;
 	for (let i = 0; i < indices.length; i++) {
 		const index = indices[i];
-		if (mask.has(index)) continue;
+		if (skipIndices.has(index)) continue;
 
 		attribute.getElement(index, vector);
 		transformMat3(vector, vector, normalMatrix);
 		normalizeVec3(vector, vector);
 		attribute.setElement(index, vector);
 
-		mask.add(index);
+		skipIndices.add(index);
 	}
 }
 
-function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, mask: Set<number>) {
+function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
 	const v3 = createVec3() as vec3;
 	const v4 = createVec4() as vec4;
 	for (let i = 0; i < indices.length; i++) {
 		const index = indices[i];
-		if (mask.has(index)) continue;
+		if (skipIndices.has(index)) continue;
 
 		attribute.getElement(index, v4);
 
@@ -154,6 +174,6 @@ function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Ar
 
 		attribute.setElement(index, v4);
 
-		mask.add(index);
+		skipIndices.add(index);
 	}
 }
