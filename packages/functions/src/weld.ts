@@ -98,9 +98,11 @@ function weldOnly(doc: Document, prim: Primitive): void {
 	const attr = prim.listAttributes()[0];
 	const numVertices = attr.getCount();
 	const buffer = attr.getBuffer();
-	const indicesArray = numVertices <= 65534 ? new Uint16Array(numVertices) : new Uint32Array(numVertices);
-	const indices = doc.createAccessor().setBuffer(buffer).setType(Accessor.Type.SCALAR).setArray(indicesArray);
-	for (let i = 0; i < indices.getCount(); i++) indices.setScalar(i, i);
+	const indices = doc
+		.createAccessor()
+		.setBuffer(buffer)
+		.setType(Accessor.Type.SCALAR)
+		.setArray(createIndices(numVertices));
 	prim.setIndices(indices);
 }
 
