@@ -10,7 +10,6 @@
     "target": "es6",
     "declaration": true,
     "stripInternal": true,
-    "experimentalDecorators": true,
     "typeRoots": ["node_modules/@types"],
 
     // Components of "strict" mode.
