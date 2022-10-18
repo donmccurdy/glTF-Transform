@@ -61,6 +61,7 @@ export * from './flatten';
 export * from './get-node-scene';
 export * from './inspect';
 export * from './instance';
+export * from './join-primitives';
 export * from './meshopt';
 export * from './metal-rough';
 export * from './normals';
