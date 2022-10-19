@@ -10,6 +10,7 @@ import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, ve
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
+import { existsSync, mkdirSync } from 'fs';
 
 tmp.setGracefulCleanup();
 
@@ -164,8 +165,13 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const extension = texture.getURI()
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
-				const inPath = tmp.tmpNameSync({ postfix: '.' + extension });
-				const outPath = tmp.tmpNameSync({ postfix: '.ktx2' });
+
+				const dir = `${tmp.tmpdir}/glTF-transform`;
+				if(!existsSync(dir)) mkdirSync(dir);
+				const tmpPrefix = `${textureIndex}`;
+				const tmpName = tmp.tmpNameSync({ dir: dir, prefix: tmpPrefix });
+				const inPath = tmpName + '.' + extension;
+				const outPath = tmpName + '.ktx2';
 
 				const inBytes = image.byteLength;
 				await fs.writeFile(inPath, Buffer.from(image));
