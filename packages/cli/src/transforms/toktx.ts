@@ -10,7 +10,7 @@ import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, ve
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
-import { exists, mkdir } from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
 
 tmp.setGracefulCleanup();
 
@@ -120,7 +120,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		
 		// Ensure the temp directory exists and create temp name for batch
 		const tmpDir = `${tmp.tmpdir}/gltf-transform`;
-		if(!(await exists(tmpDir))) await mkdir(tmpDir);
+		if(!(existsSync(tmpDir))) mkdirSync(tmpDir);
 		const tmpPathBase = tmpDir + "/" + uuid();
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
