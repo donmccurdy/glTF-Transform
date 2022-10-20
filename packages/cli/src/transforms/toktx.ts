@@ -6,11 +6,11 @@ const semver = require('semver');
 const tmp = require('tmp');
 const pLimit = require('p-limit');
 
-import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
+import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
-import { existsSync, mkdirSync } from 'fs';
+import { exists, mkdir } from 'fs/promises';
 
 tmp.setGracefulCleanup();
 
@@ -117,6 +117,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 		// Confirm recent version of KTX-Software is installed.
 		const version = await checkKTXSoftware(logger);
+		
+		// Ensure the temp directory exists and create temp name for batch
+		const tmpDir = `${tmp.tmpdir}/gltf-transform`;
+		if(!(await exists(tmpDir))) await mkdir(tmpDir);
+		const tmpPathBase = tmpDir + "/" + uuid();
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
@@ -166,10 +171,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
 
-				const dir = `${tmp.tmpdir}/glTF-transform`;
-				if(!existsSync(dir)) mkdirSync(dir);
-				const tmpPrefix = `${textureIndex}`;
-				const tmpName = tmp.tmpNameSync({ dir: dir, prefix: tmpPrefix });
+				const tmpName = tmpPathBase + "_" + textureIndex;
 				const inPath = tmpName + '.' + extension;
 				const outPath = tmpName + '.ktx2';
 
