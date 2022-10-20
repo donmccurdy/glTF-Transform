@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs/promises');
+const { existsSync, mkdirSync } = require('fs');
+const { join } = require('path');
 const micromatch = require('micromatch');
 const os = require('os');
 const semver = require('semver');
@@ -10,7 +12,6 @@ import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, ve
 import { TextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
-import { existsSync, mkdirSync } from 'fs';
 
 tmp.setGracefulCleanup();
 
@@ -117,11 +118,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 		// Confirm recent version of KTX-Software is installed.
 		const version = await checkKTXSoftware(logger);
-		
-		// Ensure the temp directory exists and create temp name for batch
-		const tmpDir = `${tmp.tmpdir}/gltf-transform`;
-		if(!(existsSync(tmpDir))) mkdirSync(tmpDir);
-		const tmpPathBase = tmpDir + "/" + uuid();
+
+		// Create workspace.
+		const batchPrefix = uuid();
+		const batchDir = join(tmp.tmpdir, 'gltf-transform');
+		if (!existsSync(batchDir)) mkdirSync(batchDir);
 
 		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
 
@@ -171,9 +172,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
 
-				const tmpName = tmpPathBase + "_" + textureIndex;
-				const inPath = tmpName + '.' + extension;
-				const outPath = tmpName + '.ktx2';
+				const inPath = join(batchDir, `${batchPrefix}_${textureIndex}.${extension}`);
+				const outPath = join(batchDir, `${batchPrefix}_${textureIndex}.ktx2`);
 
 				const inBytes = image.byteLength;
 				await fs.writeFile(inPath, Buffer.from(image));
