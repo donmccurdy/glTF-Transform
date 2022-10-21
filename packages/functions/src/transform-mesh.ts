@@ -5,14 +5,14 @@ import { create as createVec4 } from 'gl-matrix/vec4';
 import { createIndices } from './utils';
 
 /**
- * Applies transform matrix ({@link mat4}) to every {@link Primitive} in the given {@link Mesh}.
+ * Applies a transform matrix to every {@link Primitive} in the given {@link Mesh}.
  *
  * Method:
  * - If any primitives are shared by other meshes, they will be detached.
  * - If any vertex streams are shared by primitives of other meshes, vertex data
- * 		will be overwritten _unless_ `overwrite=false` or the indices are masked. If
- * 		`overwrite=false`, a detached copy of the vertex stream is made before applying
- * 		the transform.
+ *  will be overwritten unless _overwrite=false_ or the indices are masked. If
+ * 	_overwrite=false_, a detached copy of the vertex stream is made before applying
+ * 	the transform.
  * - Primitives within the mesh sharing vertex streams will continue to share those streams.
  * - For indexed primitives, only indexed vertices are modified.
  *
@@ -65,7 +65,7 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipI
 }
 
 /**
- * Applies transform matrix ({@link mat4}) to a {@link Primitive}.
+ * Applies a transform matrix to a {@link Primitive}.
  *
  * When calling {@link transformPrimitive}, any un-masked vertices are overwritten
  * directly in the underlying vertex streams. If streams should be detached instead,
