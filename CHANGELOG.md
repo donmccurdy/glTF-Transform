@@ -10,6 +10,7 @@
 
 - Add `sortPrimitiveWeights(prim, limit)` function [#670](https://github.com/donmccurdy/glTF-Transform/pull/670)
 - Add `listTextureInfo(texture)` function [#692](https://github.com/donmccurdy/glTF-Transform/pull/692)
+- Add `transformMesh(mesh, matrix)` and `transformPrimitive(prim, matrix)` functions [#657](https://github.com/donmccurdy/glTF-Transform/pull/657)
 - Rewrite `weld()` function, improving weld results [#661](https://github.com/donmccurdy/glTF-Transform/pull/661)
 - Handle conflicting URLs during merge [#677](https://github.com/donmccurdy/glTF-Transform/pull/677)
 - Add documentation for writing custom extensions [#678](https://github.com/donmccurdy/glTF-Transform/pull/678)
