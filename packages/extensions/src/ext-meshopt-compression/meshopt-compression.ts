@@ -64,6 +64,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
+ * import { reorder, quantize } from '@gltf-transform/functions';
  * import { MeshoptCompression } from '@gltf-transform/extensions';
  * import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
  *
@@ -155,6 +156,8 @@ export class MeshoptCompression extends Extension {
 	 * Example:
 	 *
 	 * ```ts
+	 * import { MeshoptCompression } from '@gltf-transform/extensions';
+	 *
 	 * doc.createExtension(MeshoptCompression)
 	 * 	.setRequired(true)
 	 * 	.setEncoderOptions({
