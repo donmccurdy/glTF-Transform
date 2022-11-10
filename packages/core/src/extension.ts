@@ -115,6 +115,15 @@ export abstract class Extension {
 		return this;
 	}
 
+	/**
+	 * Lists all {@link ExtensionProperty} instances associated with, or created by, this
+	 * extension. Includes only instances that are attached to the Document's graph; detached
+	 * instances will be excluded.
+	 */
+	public listProperties(): ExtensionProperty[] {
+		return Array.from(this.properties);
+	}
+
 	/**********************************************************************************************
 	 * ExtensionProperty management.
 	 */
