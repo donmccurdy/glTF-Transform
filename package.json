@@ -9,8 +9,8 @@
   ],
   "scripts": {
     "dist": "lerna run dist",
-    "watch": "lerna run watch --parallel",
-    "watch:debug": "lerna run watch:debug --parallel",
+    "watch": "lerna run watch --parallel --stream",
+    "watch:debug": "lerna run watch:debug --parallel --stream",
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
     "test": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
