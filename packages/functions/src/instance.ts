@@ -90,6 +90,9 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 			logger.info(`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`);
 		} else {
 			logger.info(`${NAME}: No meshes with multiple parent nodes were found.`);
+		}
+
+		if (batchExtension.listProperties().length === 0) {
 			batchExtension.dispose();
 		}
 
