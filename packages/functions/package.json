@@ -1,50 +1,50 @@
 {
-  "name": "@gltf-transform/functions",
-  "version": "2.4.5",
-  "repository": "github:donmccurdy/glTF-Transform",
-  "homepage": "https://gltf-transform.donmccurdy.com/functions.html",
-  "description": "Functions for common glTF modifications, written using the core API",
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "main": "dist/functions.js",
-  "module": "dist/functions.modern.js",
-  "source": "src/index.ts",
-  "types": "dist/index.d.ts",
-  "sideEffects": false,
-  "browserslist": [
-    "defaults",
-    "not IE 11",
-    "node >= 14"
-  ],
-  "scripts": {
-    "dist": "microbundle --format modern,cjs",
-    "watch": "microbundle watch --format modern,cjs",
-    "watch:debug": "microbundle watch --no-compress --format modern,cjs"
-  },
-  "keywords": [
-    "gltf",
-    "3d",
-    "model",
-    "webgl",
-    "threejs"
-  ],
-  "dependencies": {
-    "@gltf-transform/core": "^2.4.5",
-    "@gltf-transform/extensions": "^2.4.5",
-    "gl-matrix": "~3.4.3",
-    "ndarray": "^1.0.19",
-    "ndarray-lanczos": "^0.1.2",
-    "ndarray-pixels": "^1.0.0"
-  },
-  "files": [
-    "dist/",
-    "src/",
-    "README.md",
-    "package.json",
-    "package-lock.json"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
+	"name": "@gltf-transform/functions",
+	"version": "2.4.6",
+	"repository": "github:donmccurdy/glTF-Transform",
+	"homepage": "https://gltf-transform.donmccurdy.com/functions.html",
+	"description": "Functions for common glTF modifications, written using the core API",
+	"author": "Don McCurdy <dm@donmccurdy.com>",
+	"license": "MIT",
+	"main": "dist/functions.js",
+	"module": "dist/functions.modern.js",
+	"source": "src/index.ts",
+	"types": "dist/index.d.ts",
+	"sideEffects": false,
+	"browserslist": [
+		"defaults",
+		"not IE 11",
+		"node >= 14"
+	],
+	"scripts": {
+		"dist": "microbundle --format modern,cjs",
+		"watch": "microbundle watch --format modern,cjs",
+		"watch:debug": "microbundle watch --no-compress --format modern,cjs"
+	},
+	"keywords": [
+		"gltf",
+		"3d",
+		"model",
+		"webgl",
+		"threejs"
+	],
+	"dependencies": {
+		"@gltf-transform/core": "^2.4.6",
+		"@gltf-transform/extensions": "^2.4.6",
+		"gl-matrix": "~3.4.3",
+		"ndarray": "^1.0.19",
+		"ndarray-lanczos": "^0.1.2",
+		"ndarray-pixels": "^1.0.0"
+	},
+	"files": [
+		"dist/",
+		"src/",
+		"README.md",
+		"package.json",
+		"package-lock.json"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
 }

@@ -1,42 +1,42 @@
 {
-  "name": "@gltf-transform/extensions",
-  "version": "2.4.5",
-  "repository": "github:donmccurdy/glTF-Transform",
-  "homepage": "https://gltf-transform.donmccurdy.com/extensions.html",
-  "description": "Adds extension support to @gltf-transform/core",
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "main": "dist/extensions.js",
-  "module": "dist/extensions.modern.js",
-  "source": "src/extensions.ts",
-  "types": "dist/extensions.d.ts",
-  "sideEffects": false,
-  "browserslist": [
-    "defaults",
-    "not IE 11",
-    "node >= 14"
-  ],
-  "scripts": {
-    "dist": "microbundle --format modern,cjs",
-    "watch": "microbundle watch --format modern,cjs",
-    "watch:debug": "microbundle watch --no-compress --format modern,cjs"
-  },
-  "keywords": [
-    "gltf",
-    "3d",
-    "model",
-    "webgl",
-    "threejs"
-  ],
-  "dependencies": {
-    "@gltf-transform/core": "^2.4.5",
-    "ktx-parse": "^0.4.5"
-  },
-  "files": [
-    "dist/",
-    "src/",
-    "README.md",
-    "package.json"
-  ],
-  "gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
+	"name": "@gltf-transform/extensions",
+	"version": "2.4.6",
+	"repository": "github:donmccurdy/glTF-Transform",
+	"homepage": "https://gltf-transform.donmccurdy.com/extensions.html",
+	"description": "Adds extension support to @gltf-transform/core",
+	"author": "Don McCurdy <dm@donmccurdy.com>",
+	"license": "MIT",
+	"main": "dist/extensions.js",
+	"module": "dist/extensions.modern.js",
+	"source": "src/extensions.ts",
+	"types": "dist/extensions.d.ts",
+	"sideEffects": false,
+	"browserslist": [
+		"defaults",
+		"not IE 11",
+		"node >= 14"
+	],
+	"scripts": {
+		"dist": "microbundle --format modern,cjs",
+		"watch": "microbundle watch --format modern,cjs",
+		"watch:debug": "microbundle watch --no-compress --format modern,cjs"
+	},
+	"keywords": [
+		"gltf",
+		"3d",
+		"model",
+		"webgl",
+		"threejs"
+	],
+	"dependencies": {
+		"@gltf-transform/core": "^2.4.6",
+		"ktx-parse": "^0.4.5"
+	},
+	"files": [
+		"dist/",
+		"src/",
+		"README.md",
+		"package.json"
+	],
+	"gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
 }

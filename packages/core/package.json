@@ -1,50 +1,50 @@
 {
-  "name": "@gltf-transform/core",
-  "version": "2.4.5",
-  "repository": "github:donmccurdy/glTF-Transform",
-  "homepage": "https://gltf-transform.donmccurdy.com/",
-  "description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "main": "dist/core.js",
-  "module": "dist/core.modern.js",
-  "source": "src/core.ts",
-  "types": "dist/core.d.ts",
-  "sideEffects": false,
-  "browserslist": [
-    "defaults",
-    "not IE 11",
-    "node >= 14"
-  ],
-  "scripts": {
-    "dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
-    "watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
-    "watch:debug": "microbundle watch --no-compress --format modern,cjs --define PACKAGE_VERSION=$npm_package_version"
-  },
-  "keywords": [
-    "gltf",
-    "3d",
-    "model",
-    "webgl",
-    "threejs"
-  ],
-  "files": [
-    "dist/",
-    "src/",
-    "README.md",
-    "package.json",
-    "package-lock.json"
-  ],
-  "browser": {
-    "fs": false,
-    "path": false
-  },
-  "dependencies": {
-    "gl-matrix": "~3.4.3",
-    "property-graph": "^0.2.6"
-  },
-  "mangle": {
-    "regex": "^_"
-  },
-  "gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
+	"name": "@gltf-transform/core",
+	"version": "2.4.6",
+	"repository": "github:donmccurdy/glTF-Transform",
+	"homepage": "https://gltf-transform.donmccurdy.com/",
+	"description": "glTF 2.0 SDK for JavaScript, TypeScript, and Node.js",
+	"author": "Don McCurdy <dm@donmccurdy.com>",
+	"license": "MIT",
+	"main": "dist/core.js",
+	"module": "dist/core.modern.js",
+	"source": "src/core.ts",
+	"types": "dist/core.d.ts",
+	"sideEffects": false,
+	"browserslist": [
+		"defaults",
+		"not IE 11",
+		"node >= 14"
+	],
+	"scripts": {
+		"dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+		"watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+		"watch:debug": "microbundle watch --no-compress --format modern,cjs --define PACKAGE_VERSION=$npm_package_version"
+	},
+	"keywords": [
+		"gltf",
+		"3d",
+		"model",
+		"webgl",
+		"threejs"
+	],
+	"files": [
+		"dist/",
+		"src/",
+		"README.md",
+		"package.json",
+		"package-lock.json"
+	],
+	"browser": {
+		"fs": false,
+		"path": false
+	},
+	"dependencies": {
+		"gl-matrix": "~3.4.3",
+		"property-graph": "^0.2.6"
+	},
+	"mangle": {
+		"regex": "^_"
+	},
+	"gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
 }

@@ -1,64 +1,64 @@
 {
-  "name": "@gltf-transform/cli",
-  "version": "2.4.5",
-  "repository": "github:donmccurdy/glTF-Transform",
-  "homepage": "https://gltf-transform.donmccurdy.com/cli.html",
-  "description": "CLI interface to glTF Transform",
-  "author": "Don McCurdy <dm@donmccurdy.com>",
-  "license": "MIT",
-  "main": "dist/cli.js",
-  "source": "src/cli.ts",
-  "types": "dist/cli.d.ts",
-  "browserslist": [
-    "node >= 14"
-  ],
-  "engines": {
-    "node": ">=14"
-  },
-  "scripts": {
-    "dist": "microbundle --format cjs --target node",
-    "watch": "microbundle watch --format cjs --target node",
-    "watch:debug": "microbundle watch --no-compress --format cjs --target node"
-  },
-  "bin": {
-    "gltf-transform": "bin/cli.js"
-  },
-  "dependencies": {
-    "@caporal/core": "^2.0.2",
-    "@gltf-transform/core": "^2.4.5",
-    "@gltf-transform/extensions": "^2.4.5",
-    "@gltf-transform/functions": "^2.4.5",
-    "@squoosh/lib": "^0.4.0",
-    "@types/inquirer": "^8.2.1",
-    "@types/language-tags": "^1.0.0",
-    "@types/micromatch": "^4.0.2",
-    "@types/spdx-correct": "^3.0.0",
-    "cli-table3": "^0.6.2",
-    "command-exists": "^1.2.9",
-    "csv-stringify": "^6.2.0",
-    "draco3dgltf": "^1.5.3",
-    "gltf-validator": "^2.0.0-dev.3.9",
-    "inquirer": "^8.2.2",
-    "ktx-parse": "^0.4.5",
-    "language-tags": "^1.0.5",
-    "meshoptimizer": "^0.18.1",
-    "micromatch": "^4.0.5",
-    "mikktspace": "^1.1.1",
-    "node-fetch": "^2.6.6",
-    "node-gzip": "^1.1.2",
-    "p-limit": "3.1.0",
-    "semver": "^7.3.7",
-    "spdx-correct": "^3.1.1",
-    "tmp": "^0.2.1"
-  },
-  "files": [
-    "bin/",
-    "dist/",
-    "src/",
-    "vendor/",
-    "README.md",
-    "package.json",
-    "package-lock.json"
-  ],
-  "gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
+	"name": "@gltf-transform/cli",
+	"version": "2.4.6",
+	"repository": "github:donmccurdy/glTF-Transform",
+	"homepage": "https://gltf-transform.donmccurdy.com/cli.html",
+	"description": "CLI interface to glTF Transform",
+	"author": "Don McCurdy <dm@donmccurdy.com>",
+	"license": "MIT",
+	"main": "dist/cli.js",
+	"source": "src/cli.ts",
+	"types": "dist/cli.d.ts",
+	"browserslist": [
+		"node >= 14"
+	],
+	"engines": {
+		"node": ">=14"
+	},
+	"scripts": {
+		"dist": "microbundle --format cjs --target node",
+		"watch": "microbundle watch --format cjs --target node",
+		"watch:debug": "microbundle watch --no-compress --format cjs --target node"
+	},
+	"bin": {
+		"gltf-transform": "bin/cli.js"
+	},
+	"dependencies": {
+		"@caporal/core": "^2.0.2",
+		"@gltf-transform/core": "^2.4.6",
+		"@gltf-transform/extensions": "^2.4.6",
+		"@gltf-transform/functions": "^2.4.6",
+		"@squoosh/lib": "^0.4.0",
+		"@types/inquirer": "^8.2.1",
+		"@types/language-tags": "^1.0.0",
+		"@types/micromatch": "^4.0.2",
+		"@types/spdx-correct": "^3.0.0",
+		"cli-table3": "^0.6.2",
+		"command-exists": "^1.2.9",
+		"csv-stringify": "^6.2.0",
+		"draco3dgltf": "^1.5.3",
+		"gltf-validator": "^2.0.0-dev.3.9",
+		"inquirer": "^8.2.2",
+		"ktx-parse": "^0.4.5",
+		"language-tags": "^1.0.5",
+		"meshoptimizer": "^0.18.1",
+		"micromatch": "^4.0.5",
+		"mikktspace": "^1.1.1",
+		"node-fetch": "^2.6.6",
+		"node-gzip": "^1.1.2",
+		"p-limit": "3.1.0",
+		"semver": "^7.3.7",
+		"spdx-correct": "^3.1.1",
+		"tmp": "^0.2.1"
+	},
+	"files": [
+		"bin/",
+		"dist/",
+		"src/",
+		"vendor/",
+		"README.md",
+		"package.json",
+		"package-lock.json"
+	],
+	"gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
 }
