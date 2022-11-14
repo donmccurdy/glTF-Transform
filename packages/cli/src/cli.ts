@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SimplifyOptions, SIMPLIFY_DEFAULTS, WELD_DEFAULTS } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
@@ -643,6 +643,17 @@ Simplification algorithm producing meshes with fewer triangles and
 vertices. Simplification is lossy, but the algorithm aims to
 preserve visual quality as much as possible, for given parameters.
 
+The algorithm aims to reach the target --ratio, while minimizing error. If
+error exceeds the specified --error threshold, the algorithm will quit
+before reaching the target ratio. Examples:
+
+- ratio=0.5, error=0.001: Aims for 50% simplification, constrained to 0.1% error.
+- ratio=0.5, error=1: Aims for 50% simplification, unconstrained by error.
+- ratio=0.0, error=0.01: Aims for maximum simplification, constrained to 1% error.
+
+Topology, particularly split vertices, will also limit the simplifier. For
+best results, apply a 'weld' operation before simplification.
+
 Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 `.trim())
 .argument('<input>', INPUT_DESC)
@@ -651,7 +662,7 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 	validator: program.NUMBER,
 	default: SIMPLIFY_DEFAULTS.ratio,
 })
-.option('--error <error>', 'Target error, as a fraction of mesh radius', {
+.option('--error <error>', 'Limit on error, as a fraction of mesh radius', {
 	validator: program.NUMBER,
 	default: SIMPLIFY_DEFAULTS.error,
 })
