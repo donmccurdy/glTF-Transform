@@ -19,7 +19,7 @@ export interface SimplifyOptions {
 	simplifier: typeof MeshoptSimplifier;
 	/** Target ratio (0–1) of vertices to keep. Default: 0.5 (50%). */
 	ratio?: number;
-	/** Target error, as a fraction of mesh radius. Default: 0.01 (1%). */
+	/** Limit on error, as a fraction of mesh radius. Default: 0.01 (1%). */
 	error?: number;
 	/**
 	 * Whether to lock topological borders of the mesh. May be necessary when
@@ -40,14 +40,26 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * triangles and vertices. Simplification is lossy, but the algorithm aims to
  * preserve visual quality as much as possible for given parameters.
  *
+ * The algorithm aims to reach the target 'ratio', while minimizing error. If
+ * error exceeds the specified 'error' threshold, the algorithm will quit
+ * before reaching the target ratio. Examples:
+ *
+ * - ratio=0.5, error=0.001: Aims for 50% simplification, constrained to 0.1% error.
+ * - ratio=0.5, error=1: Aims for 50% simplification, unconstrained by error.
+ * - ratio=0.0, error=0.01: Aims for maximum simplification, constrained to 1% error.
+ *
+ * Topology, particularly split vertices, will also limit the simplifier. For
+ * best results, apply a {@link weld} operation before simplification.
+ *
  * Example:
  *
  * ```javascript
- * import { simplify } from '@gltf-transform/functions';
+ * import { simplify, weld } from '@gltf-transform/functions';
  * import { MeshoptSimplifier } from 'meshoptimizer';
  *
  * await document.transform(
- *   simplify({ simplifier: MeshoptSimplifier, ratio: 0.75 })
+ *   weld({ tolerance: 0.0001 }),
+ *   simplify({ simplifier: MeshoptSimplifier, ratio: 0.75, error: 0.001 })
  * );
  * ```
  *
