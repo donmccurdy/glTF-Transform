@@ -23,9 +23,11 @@
     "postpublish": "git push && git push --tags && yarn run docs:deploy",
     "docs": "typedoc packages/core/src/core.ts packages/extensions/src/extensions.ts packages/functions/src/index.ts docs/pages.ts --out docs/dist/ --name glTF-Transform --excludeInternal --excludeNotDocumented --theme docs/theme --media docs/media --readme docs/INDEX.md --includes docs",
     "docs:watch": "concurrently \"yarn docs --watch\" \"vercel dev\"",
-    "docs:deploy": "yarn docs && vercel --prod"
+    "docs:deploy": "yarn docs && vercel --prod",
+    "api": "lerna run api --parallel"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.33.6",
     "@types/command-exists": "1.2.0",
     "@types/draco3dgltf": "1.4.0",
     "@types/ndarray": "1.0.11",

@@ -1,0 +1,17 @@
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+	"mainEntryPointFilePath": "<projectFolder>/dist/core.d.ts",
+	"bundledPackages": [],
+	"newlineKind": "lf",
+	"enumMemberOrder": "preserve",
+
+	"docModel": {
+		"enabled": true,
+		"apiJsonFilePath": "<projectFolder>/../../docs/api/<unscopedPackageName>.api.json",
+		"projectFolderUrl": "http://github.com/donmccurdy/glTF-Transform/tree/main/packages/core"
+	},
+
+	"apiReport": { "enabled": false },
+	"dtsRollup": { "enabled": false },
+	"tsdocMetadata": { "enabled": false }
+}
