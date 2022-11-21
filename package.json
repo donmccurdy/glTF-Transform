@@ -32,12 +32,12 @@
     "@types/node": "18.11.9",
     "@types/node-gzip": "1.1.0",
     "@types/tape": "4.13.2",
-    "@typescript-eslint/eslint-plugin": "5.42.1",
-    "@typescript-eslint/parser": "5.42.1",
+    "@typescript-eslint/eslint-plugin": "5.43.0",
+    "@typescript-eslint/parser": "5.43.0",
     "canvas": "2.10.2",
-    "concurrently": "7.5.0",
+    "concurrently": "7.6.0",
     "draco3dgltf": "1.5.5",
-    "eslint": "8.27.0",
+    "eslint": "8.28.0",
     "eslint-config-prettier": "8.5.0",
     "gltf-validator": "2.0.0-dev.3.9",
     "lerna": "6.0.3",
@@ -51,6 +51,6 @@
     "tape": "5.6.1",
     "ts-node": "10.9.1",
     "typedoc": "0.21.2",
-    "typescript": "4.8.4"
+    "typescript": "4.9.3"
   }
 }
