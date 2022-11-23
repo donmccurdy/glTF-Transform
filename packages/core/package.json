@@ -20,7 +20,7 @@
 		"dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
 		"watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
 		"watch:debug": "microbundle watch --no-compress --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
-		"api": "api-extractor run --local --config ./api-extractor.json"
+		"api-extractor": "api-extractor run --local --config ./api-extractor.json"
 	},
 	"keywords": [
 		"gltf",
