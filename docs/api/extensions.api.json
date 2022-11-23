@@ -1260,8 +1260,8 @@
                 },
                 {
                   "kind": "Reference",
-                  "text": "EncoderMethod",
-                  "canonicalReference": "@gltf-transform/extensions!~EncoderMethod:enum"
+                  "text": "DracoEncoderMethod",
+                  "canonicalReference": "@gltf-transform/extensions!~DracoEncoderMethod:enum"
                 },
                 {
                   "kind": "Content",
@@ -1677,8 +1677,8 @@
                 },
                 {
                   "kind": "Reference",
-                  "text": "EncoderOptions",
-                  "canonicalReference": "@gltf-transform/extensions!~EncoderOptions:interface"
+                  "text": "DracoEncoderOptions",
+                  "canonicalReference": "@gltf-transform/extensions!~DracoEncoderOptions:interface"
                 },
                 {
                   "kind": "Content",
@@ -8752,8 +8752,8 @@
                 },
                 {
                   "kind": "Reference",
-                  "text": "EncoderMethod",
-                  "canonicalReference": "@gltf-transform/extensions!~EncoderMethod_2:enum"
+                  "text": "MeshoptEncoderMethod",
+                  "canonicalReference": "@gltf-transform/extensions!~MeshoptEncoderMethod:enum"
                 },
                 {
                   "kind": "Content",
@@ -9056,8 +9056,8 @@
                 },
                 {
                   "kind": "Reference",
-                  "text": "EncoderOptions",
-                  "canonicalReference": "@gltf-transform/extensions!~EncoderOptions_2:interface"
+                  "text": "MeshoptEncoderOptions",
+                  "canonicalReference": "@gltf-transform/extensions!~MeshoptEncoderOptions:interface"
                 },
                 {
                   "kind": "Content",

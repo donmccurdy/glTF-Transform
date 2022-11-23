@@ -1,6 +1,6 @@
 import type { GLTF, TypedArray } from '@gltf-transform/core';
 
-export enum EncoderMethod {
+export enum MeshoptEncoderMethod {
 	QUANTIZE = 'quantize',
 	FILTER = 'filter',
 }

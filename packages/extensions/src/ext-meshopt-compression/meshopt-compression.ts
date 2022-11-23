@@ -9,7 +9,7 @@ import {
 	ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
-import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
+import { MeshoptEncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
 import { EXT_MESHOPT_COMPRESSION } from '../constants';
 import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder';
 import { isFallbackBuffer } from './decoder';
@@ -17,12 +17,12 @@ import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
 const NAME = EXT_MESHOPT_COMPRESSION;
 
-interface EncoderOptions {
-	method?: EncoderMethod;
+interface MeshoptEncoderOptions {
+	method?: MeshoptEncoderMethod;
 }
 
-const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
-	method: EncoderMethod.QUANTIZE,
+const DEFAULT_ENCODER_OPTIONS: Required<MeshoptEncoderOptions> = {
+	method: MeshoptEncoderMethod.QUANTIZE,
 };
 
 type MeshoptBufferView = { extensions: { [NAME]: MeshoptBufferViewExtension } };
@@ -114,12 +114,12 @@ export class MeshoptCompression extends Extension {
 	public readonly writeDependencies = ['meshopt.encoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
-	public static readonly EncoderMethod = EncoderMethod;
+	public static readonly EncoderMethod = MeshoptEncoderMethod;
 
 	private _decoder: typeof MeshoptDecoder | null = null;
 	private _decoderFallbackBufferMap = new Map<Buffer, Buffer>();
 	private _encoder: typeof MeshoptEncoder | null = null;
-	private _encoderOptions: Required<EncoderOptions> = DEFAULT_ENCODER_OPTIONS;
+	private _encoderOptions: Required<MeshoptEncoderOptions> = DEFAULT_ENCODER_OPTIONS;
 	private _encoderFallbackBuffer: Buffer | null = null;
 	private _encoderBufferViews: { [key: string]: EncodedBufferView } = {};
 	private _encoderBufferViewData: { [key: string]: Uint8Array[] } = {};
@@ -165,7 +165,7 @@ export class MeshoptCompression extends Extension {
 	 * 	});
 	 * ```
 	 */
-	public setEncoderOptions(options: EncoderOptions): this {
+	public setEncoderOptions(options: MeshoptEncoderOptions): this {
 		this._encoderOptions = { ...DEFAULT_ENCODER_OPTIONS, ...options };
 		return this;
 	}
@@ -299,7 +299,7 @@ export class MeshoptCompression extends Extension {
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);
 			const filter =
-				options.method === EncoderMethod.FILTER
+				options.method === MeshoptEncoderMethod.FILTER
 					? getMeshoptFilter(accessor, this.document)
 					: { filter: MeshoptFilter.NONE };
 			const preparedAccessor = prepareAccessor(accessor, encoder, mode, filter);

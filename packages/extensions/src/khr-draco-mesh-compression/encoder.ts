@@ -3,7 +3,7 @@ import type { EncoderModule, Mesh, MeshBuilder } from 'draco3dgltf';
 
 export let encoderModule: EncoderModule;
 
-export enum EncoderMethod {
+export enum DracoEncoderMethod {
 	EDGEBREAKER = 1,
 	SEQUENTIAL = 0,
 }
@@ -31,18 +31,18 @@ export interface EncodedPrimitive {
 	attributeIDs: { [key: string]: number };
 }
 
-export interface EncoderOptions {
+export interface DracoEncoderOptions {
 	decodeSpeed?: number;
 	encodeSpeed?: number;
-	method?: EncoderMethod;
+	method?: DracoEncoderMethod;
 	quantizationBits?: { [key: string]: number };
 	quantizationVolume?: 'mesh' | 'scene' | bbox;
 }
 
-const DEFAULT_ENCODER_OPTIONS: EncoderOptions = {
+const DEFAULT_ENCODER_OPTIONS: DracoEncoderOptions = {
 	decodeSpeed: 5,
 	encodeSpeed: 5,
-	method: EncoderMethod.EDGEBREAKER,
+	method: DracoEncoderMethod.EDGEBREAKER,
 	quantizationBits: DEFAULT_QUANTIZATION_BITS,
 	quantizationVolume: 'mesh',
 };
@@ -56,8 +56,11 @@ export function initEncoderModule(_encoderModule: EncoderModule): void {
  * - https://github.com/mrdoob/three.js/blob/dev/examples/js/exporters/DRACOExporter.js
  * - https://github.com/CesiumGS/gltf-pipeline/blob/master/lib/compressDracoMeshes.js
  */
-export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAULT_ENCODER_OPTIONS): EncodedPrimitive {
-	const options = { ...DEFAULT_ENCODER_OPTIONS, ..._options } as Required<EncoderOptions>;
+export function encodeGeometry(
+	prim: Primitive,
+	_options: DracoEncoderOptions = DEFAULT_ENCODER_OPTIONS
+): EncodedPrimitive {
+	const options = { ...DEFAULT_ENCODER_OPTIONS, ..._options } as Required<DracoEncoderOptions>;
 	options.quantizationBits = { ...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits };
 
 	const encoder = new encoderModule.Encoder();
@@ -113,7 +116,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	encoder.SetTrackEncodedProperties(true);
 
 	// Preserve vertex order for primitives with morph targets.
-	if (options.method === EncoderMethod.SEQUENTIAL || prim.listTargets().length > 0) {
+	if (options.method === DracoEncoderMethod.SEQUENTIAL || prim.listTargets().length > 0) {
 		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
 	} else {
 		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);

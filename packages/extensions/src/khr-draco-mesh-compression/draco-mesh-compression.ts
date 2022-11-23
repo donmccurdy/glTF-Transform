@@ -15,8 +15,8 @@ import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from 
 import {
 	EncodedPrimitive,
 	encodeGeometry,
-	EncoderMethod,
-	EncoderOptions,
+	DracoEncoderMethod,
+	DracoEncoderOptions,
 	EncodingError,
 	initEncoderModule,
 } from './encoder';
@@ -124,11 +124,11 @@ export class DracoMeshCompression extends Extension {
 	 * Compression method. `EncoderMethod.EDGEBREAKER` usually provides a higher compression ratio,
 	 * while `EncoderMethod.SEQUENTIAL` better preserves original verter order.
 	 */
-	public static readonly EncoderMethod = EncoderMethod;
+	public static readonly EncoderMethod = DracoEncoderMethod;
 
 	private _decoderModule: DecoderModule | null = null;
 	private _encoderModule: EncoderModule | null = null;
-	private _encoderOptions: EncoderOptions = {};
+	private _encoderOptions: DracoEncoderOptions = {};
 
 	/** @hidden */
 	public install(key: string, dependency: unknown): this {
@@ -156,7 +156,7 @@ export class DracoMeshCompression extends Extension {
 	 * quantizationVolume?: 'mesh' | 'scene' | bbox = 'mesh';
 	 * ```
 	 */
-	public setEncoderOptions(options: EncoderOptions): this {
+	public setEncoderOptions(options: DracoEncoderOptions): this {
 		this._encoderOptions = options;
 		return this;
 	}
