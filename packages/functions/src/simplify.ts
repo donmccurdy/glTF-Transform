@@ -16,7 +16,7 @@ const NAME = 'simplify';
 /** Options for the {@link simplify} function. */
 export interface SimplifyOptions {
 	/** MeshoptSimplifier instance. */
-	simplifier: typeof MeshoptSimplifier;
+	simplifier: unknown;
 	/** Target ratio (0–1) of vertices to keep. Default: 0.5 (50%). */
 	ratio?: number;
 	/** Limit on error, as a fraction of mesh radius. Default: 0.01 (1%). */
@@ -69,7 +69,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
 export const simplify = (_options: SimplifyOptions): Transform => {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 
-	const simplifier = options.simplifier;
+	const simplifier = options.simplifier as typeof MeshoptSimplifier | undefined;
 
 	if (!simplifier) {
 		throw new Error(`${NAME}: simplifier dependency required — install "meshoptimizer".`);
@@ -106,6 +106,7 @@ export const simplify = (_options: SimplifyOptions): Transform => {
 
 export function simplifyPrimitive(document: Document, prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
+	const simplifier = options.simplifier as typeof MeshoptSimplifier;
 
 	const logger = document.getLogger();
 	const position = prim.getAttribute('POSITION')!;
@@ -141,7 +142,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	// (2) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcVertexCount) / 3) * 3;
-	const [dstIndicesArray, error] = options.simplifier.simplify(
+	const [dstIndicesArray, error] = simplifier.simplify(
 		indicesArray as Uint32Array,
 		positionArray as Float32Array,
 		3,
@@ -150,7 +151,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 		options.lockBorder ? ['LockBorder'] : []
 	);
 
-	const [remap, unique] = options.simplifier.compactMesh(dstIndicesArray);
+	const [remap, unique] = simplifier.compactMesh(dstIndicesArray);
 
 	logger.debug(`${NAME}: ${formatDeltaOp(position.getCount(), unique)} vertices, error: ${error.toFixed(4)}.`);
 

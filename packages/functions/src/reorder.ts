@@ -8,7 +8,7 @@ const NAME = 'reorder';
 /** Options for the {@link reorder} function. */
 export interface ReorderOptions {
 	/** MeshoptEncoder instance. */
-	encoder: typeof MeshoptEncoder;
+	encoder: unknown;
 	/**
 	 * Whether the order should be optimal for transmission size (recommended for Web)
 	 * or for GPU rendering performance. Default is 'size'.
@@ -40,7 +40,7 @@ const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
  */
 export function reorder(_options: ReorderOptions): Transform {
 	const options = { ...REORDER_DEFAULTS, ..._options } as Required<ReorderOptions>;
-	const encoder = options.encoder;
+	const encoder = options.encoder as typeof MeshoptEncoder | undefined;
 
 	if (!encoder) {
 		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
