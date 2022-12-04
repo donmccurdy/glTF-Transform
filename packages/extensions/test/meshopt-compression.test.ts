@@ -7,6 +7,8 @@ import { bounds } from '@gltf-transform/functions';
 import { MeshoptCompression, MeshQuantization } from '../';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
+const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
+
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	await MeshoptDecoder.ready;
 
@@ -14,18 +16,21 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) 
 		.registerExtensions([MeshoptCompression, MeshQuantization])
 		.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 
-	const doc = await io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
-	const bbox = bounds(doc.getRoot().listScenes()[0]);
-	t.deepEquals(
-		bbox.min.map((v) => +v.toFixed(3)),
-		[-0.5, -0.5, -0.5],
-		'decompress (min)'
-	);
-	t.deepEquals(
-		bbox.max.map((v) => +v.toFixed(3)),
-		[0.5, 0.5, 0.5],
-		'decompress (max)'
-	);
+	for (const input of INPUTS) {
+		const doc = await io.read(path.join(__dirname, 'in', input));
+		const bbox = bounds(doc.getRoot().listScenes()[0]);
+		t.deepEquals(
+			bbox.min.map((v) => +v.toFixed(3)),
+			[-0.5, -0.5, -0.5],
+			`decompress (min) - "${input}"`
+		);
+		t.deepEquals(
+			bbox.max.map((v) => +v.toFixed(3)),
+			[0.5, 0.5, 0.5],
+			`decompress (max) - "${input}"`
+		);
+	}
+
 	t.end();
 });
 

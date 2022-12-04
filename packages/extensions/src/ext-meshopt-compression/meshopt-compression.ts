@@ -209,7 +209,7 @@ export class MeshoptCompression extends Extension {
 			const stride = meshoptDef.byteStride;
 			const result = new Uint8Array(count * stride);
 
-			const bufferDef = jsonDoc.json.buffers![viewDef.buffer];
+			const bufferDef = jsonDoc.json.buffers![meshoptDef.buffer];
 			// TODO(cleanup): Should be encapsulated in writer-context.ts.
 			const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 			const source = BufferUtils.toView(resource, byteOffset, byteLength);
