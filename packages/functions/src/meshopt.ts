@@ -5,7 +5,7 @@ import { reorder } from './reorder';
 import { quantize } from './quantize';
 
 export interface MeshoptOptions {
-	encoder: typeof MeshoptEncoder;
+	encoder: unknown;
 	level?: 'medium' | 'high';
 }
 
@@ -38,7 +38,7 @@ const NAME = 'meshopt';
  */
 export const meshopt = (_options: MeshoptOptions): Transform => {
 	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;
-	const encoder = options.encoder;
+	const encoder = options.encoder as typeof MeshoptEncoder | undefined;
 
 	if (!encoder) {
 		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
