@@ -92,6 +92,7 @@ test('@gltf-transform/functions::dedup | meshes', async (t) => {
 	// Put unique materials on two meshes to prevent merging.
 	root.listMeshes()[0].listPrimitives()[0].setMaterial(doc.createMaterial('A'));
 	root.listMeshes()[1].listPrimitives()[0].setMaterial(doc.createMaterial('B'));
+	root.listMeshes()[2].listPrimitives()[0].setMaterial(doc.createMaterial('C').setRoughnessFactor(0.5));
 
 	dedup()(doc);
 
