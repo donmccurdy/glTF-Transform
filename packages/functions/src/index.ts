@@ -56,7 +56,7 @@ export * from './reorder';
 export * from './sequence';
 export * from './simplify';
 export * from './sort-primitive-weights';
-export * from './squoosh';
+export * from './texture-compress';
 export * from './tangents';
 export * from './texture-resize';
 export * from './transform-mesh';

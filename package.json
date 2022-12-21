@@ -31,6 +31,7 @@
     "@types/ndarray": "1.0.11",
     "@types/node": "18.11.18",
     "@types/node-gzip": "1.1.0",
+    "@types/sharp": "^0.31.0",
     "@types/tape": "4.13.2",
     "@typescript-eslint/eslint-plugin": "5.47.1",
     "@typescript-eslint/parser": "5.47.1",
