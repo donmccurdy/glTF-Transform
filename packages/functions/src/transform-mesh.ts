@@ -1,8 +1,8 @@
-import { vec3, mat4, Accessor, Primitive, vec4, Mesh, PropertyType, Property } from '@gltf-transform/core';
+import { vec3, mat4, Accessor, Primitive, vec4, Mesh, PropertyType, PrimitiveTarget } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
-import { createIndices } from './utils';
+import { createIndices, deepListAttributes } from './utils';
 
 /**
  * Applies a transform matrix to every {@link Primitive} in the given {@link Mesh}.
@@ -34,25 +34,39 @@ import { createIndices } from './utils';
  */
 export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipIndices?: Set<number>): void {
 	// (1) Detach shared prims.
-	for (const prim of mesh.listPrimitives()) {
-		const isShared = prim.listParents().some((p) => p.propertyType === PropertyType.MESH && p !== mesh);
-		if (isShared) mesh.swap(prim, prim.clone());
+	for (const srcPrim of mesh.listPrimitives()) {
+		const isShared = srcPrim.listParents().some((p) => p.propertyType === PropertyType.MESH && p !== mesh);
+		if (isShared) {
+			const dstPrim = srcPrim.clone();
+			mesh.swap(srcPrim, dstPrim);
+
+			for (const srcTarget of dstPrim.listTargets()) {
+				const dstTarget = srcTarget.clone();
+				dstPrim.swap(srcTarget, dstTarget);
+			}
+		}
 	}
 
 	// (2) Detach shared vertex streams.
 	if (!overwrite) {
-		const prims = new Set<Property>(mesh.listPrimitives());
+		const parents = new Set<Primitive | PrimitiveTarget>([
+			...mesh.listPrimitives(),
+			...mesh.listPrimitives().flatMap((prim) => prim.listTargets()),
+		]);
 		const attributes = new Map<Accessor, Accessor>();
 		for (const prim of mesh.listPrimitives()) {
-			for (const srcAttribute of prim.listAttributes()) {
+			for (const srcAttribute of deepListAttributes(prim)) {
 				const isShared = srcAttribute
 					.listParents()
-					.some((a) => a.propertyType === PropertyType.PRIMITIVE && !prims.has(a));
-				if (isShared) {
-					const dstAttribute = attributes.get(srcAttribute) || srcAttribute.clone();
-					prim.swap(srcAttribute, dstAttribute);
-					attributes.set(srcAttribute, dstAttribute);
+					.some((a) => (a instanceof Primitive || a instanceof PrimitiveTarget) && !parents.has(a));
+				if (isShared && !attributes.has(srcAttribute)) {
+					attributes.set(srcAttribute, srcAttribute.clone());
 				}
+			}
+		}
+		for (const parent of parents) {
+			for (const [srcAttribute, dstAttribute] of attributes) {
+				parent.swap(srcAttribute, dstAttribute);
 			}
 		}
 	}
@@ -89,7 +103,7 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 	const position = prim.getAttribute('POSITION')!;
 	const indices = (prim.getIndices()?.getArray() || createIndices(position!.getCount())) as Uint32Array;
 
-	// Apply transform.
+	// Apply transform to base attributes.
 	if (position) {
 		applyMatrix(matrix, position, indices, new Set(skipIndices));
 	}
@@ -102,6 +116,24 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 	const tangent = prim.getAttribute('TANGENT');
 	if (tangent) {
 		applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+	}
+
+	// Apply transform to morph attributes.
+	for (const target of prim.listTargets()) {
+		const position = target.getAttribute('POSITION');
+		if (position) {
+			applyMatrix(matrix, position, indices, new Set(skipIndices));
+		}
+
+		const normal = target.getAttribute('NORMAL');
+		if (normal) {
+			applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
+		}
+
+		const tangent = target.getAttribute('TANGENT');
+		if (tangent) {
+			applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+		}
 	}
 
 	// Update mask.

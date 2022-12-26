@@ -100,6 +100,60 @@ test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
 	t.end();
 });
 
+test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
+	const document = new Document().setLogger(logger);
+	const targetPosition = document
+		.createAccessor()
+		.setType('VEC3')
+		.setArray(
+			// prettier-ignore
+			new Float32Array([
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+				0, 1, 0,
+			])
+		);
+	const target = document.createPrimitiveTarget().setAttribute('POSITION', targetPosition);
+	const prim = createPrimitive(document).addTarget(target);
+	const meshA = document.createMesh().addPrimitive(prim);
+	const meshB = document.createMesh().addPrimitive(prim);
+
+	transformMesh(meshA, fromScaling([], [2, 2, 2]), false);
+
+	const primA = meshA.listPrimitives()[0];
+	const primB = meshB.listPrimitives()[0];
+
+	t.notOk(primA === primB, 'primA ≠ primB');
+	t.notOk(primA.listTargets()[0] === primB.listTargets()[0], 'primA.targets ≠ primB.targets');
+
+	t.deepEquals(
+		Array.from(meshA.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
+		// prettier-ignore
+		[
+			0, 2, 0,
+			0, 2, 0,
+			0, 2, 0,
+			0, 2, 0,
+		],
+		'scales target position'
+	);
+
+	t.deepEquals(
+		Array.from(meshB.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
+		// prettier-ignore
+		[
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0,
+		],
+		'skips shared target position'
+	);
+
+	t.end();
+});
+
 /* UTILITIES */
 
 /** Creates a rounding function for given decimal precision. */
