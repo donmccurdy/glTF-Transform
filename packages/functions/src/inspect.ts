@@ -9,6 +9,7 @@ import {
 	PropertyType,
 } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils';
+import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 
 /** Inspects the contents of a glTF file and returns a JSON report. */
 export function inspect(doc: Document): InspectReport {
@@ -149,12 +150,24 @@ function listTextures(doc: Document): InspectPropertyReport<InspectTextureReport
 
 			const resolution = ImageUtils.getSize(texture.getImage()!, texture.getMimeType());
 
+			let compression = '';
+			if (texture.getMimeType() === 'image/ktx2') {
+				const container = readKTX(texture.getImage()!);
+				const dfd = container.dataFormatDescriptor[0];
+				if (dfd.colorModel === KHR_DF_MODEL_ETC1S) {
+					compression = 'ETC1S';
+				} else if (dfd.colorModel === KHR_DF_MODEL_UASTC) {
+					compression = 'UASTC';
+				}
+			}
+
 			return {
 				name: texture.getName(),
 				uri: texture.getURI(),
 				slots: Array.from(new Set(slots)),
 				instances,
 				mimeType: texture.getMimeType(),
+				compression,
 				resolution: resolution ? resolution.join('x') : '',
 				size: texture.getImage()!.byteLength,
 				gpuSize: ImageUtils.getMemSize(texture.getImage()!, texture.getMimeType()),
@@ -256,6 +269,7 @@ export interface InspectTextureReport {
 	instances: number;
 	mimeType: string;
 	resolution: string;
+	compression: string;
 	size: number;
 	gpuSize: number | null;
 }
