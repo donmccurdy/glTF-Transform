@@ -249,6 +249,10 @@ that are children of a scene.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--keep-attributes <keepAttributes>', 'Whether to keep unused vertex attributes', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.option('--keep-leaves <keepLeaves>', 'Whether to keep empty leaf nodes', {
 		validator: program.BOOLEAN,
 		default: false,
