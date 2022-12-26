@@ -32,6 +32,7 @@
 		"@gltf-transform/core": "^2.4.7",
 		"@gltf-transform/extensions": "^2.4.7",
 		"gl-matrix": "~3.4.3",
+		"ktx-parse": "^0.4.5",
 		"ndarray": "^1.0.19",
 		"ndarray-lanczos": "^0.1.2",
 		"ndarray-pixels": "^1.0.0"
