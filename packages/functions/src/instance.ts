@@ -23,7 +23,9 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 		const batchExtension = doc.createExtension(MeshGPUInstancing);
 
 		if (root.listAnimations().length) {
-			throw new Error(`${NAME}: Instancing is not currently supported for animated models.`);
+			logger.warn(`${NAME}: Instancing is not currently supported for animated models.`);
+			logger.debug(`${NAME}: Complete.`);
+			return;
 		}
 
 		let numBatches = 0;
