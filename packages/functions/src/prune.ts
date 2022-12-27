@@ -8,6 +8,12 @@ import {
 	Transform,
 	Node,
 	Scene,
+	ExtensionProperty,
+	Material,
+	Primitive,
+	PrimitiveTarget,
+	Texture,
+	TextureInfo,
 } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
@@ -18,6 +24,8 @@ export interface PruneOptions {
 	propertyTypes?: string[];
 	/** Whether to keep empty leaf nodes. */
 	keepLeaves?: boolean;
+	/** Whether to keep unused vertex attributes, such as UVs without an assigned texture. */
+	keepAttributes?: boolean;
 }
 const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	propertyTypes: [
@@ -34,6 +42,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 		PropertyType.BUFFER,
 	],
 	keepLeaves: false,
+	keepAttributes: true,
 };
 
 /**
@@ -79,6 +88,18 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		}
 		if (propertyTypes.has(PropertyType.PRIMITIVE_TARGET)) {
 			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
+		}
+
+		// Prune unused vertex attributes.
+		if (!options.keepAttributes && propertyTypes.has(PropertyType.ACCESSOR)) {
+			for (const mesh of root.listMeshes()) {
+				for (const prim of mesh.listPrimitives()) {
+					const required = listRequiredSemantics(doc, prim.getMaterial());
+					const unused = listUnusedSemantics(prim, required);
+					pruneAttributes(prim, unused);
+					prim.listTargets().forEach((target) => pruneAttributes(target, unused));
+				}
+			}
 		}
 
 		// Pruning animations is a bit more complicated:
@@ -167,6 +188,12 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 			}
 		}
 
+		function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
+			for (const semantic of unused) {
+				prim.setAttribute(semantic, null);
+			}
+		}
+
 		/** Records properties disposed by type. */
 		function markDisposed(prop: Property): void {
 			disposed[prop.propertyType] = disposed[prop.propertyType] || 0;
@@ -174,3 +201,66 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		}
 	});
 };
+
+/**
+ * Lists vertex attribute semantics that are unused when rendering a given primitive.
+ */
+function listUnusedSemantics(prim: Primitive | PrimitiveTarget, required: Set<string>): string[] {
+	const unused = [];
+	for (const semantic of prim.listSemantics()) {
+		if (semantic === 'TANGENT' && !required.has(semantic)) {
+			unused.push(semantic);
+		} else if (semantic.startsWith('TEXCOORD_') && !required.has(semantic)) {
+			unused.push(semantic);
+		} else if (semantic.startsWith('COLOR_') && semantic !== 'COLOR_0') {
+			unused.push(semantic);
+		}
+	}
+	return unused;
+}
+
+/**
+ * Lists vertex attribute semantics required by a material. Does not include
+ * attributes that would be used unconditionally, like POSITION or NORMAL.
+ */
+function listRequiredSemantics(
+	document: Document,
+	material: Material | ExtensionProperty | null,
+	semantics = new Set<string>()
+): Set<string> {
+	if (!material) return semantics;
+
+	const graph = document.getGraph();
+
+	const edges = graph.listChildEdges(material);
+	const textureNames = new Set<string>();
+
+	for (const edge of edges) {
+		if (edge.getChild() instanceof Texture) {
+			textureNames.add(edge.getName());
+		}
+	}
+
+	for (const edge of edges) {
+		const name = edge.getName();
+		const child = edge.getChild();
+
+		if (child instanceof TextureInfo) {
+			if (textureNames.has(name.replace(/Info$/, ''))) {
+				semantics.add(`TEXCOORD_${child.getTexCoord()}`);
+			}
+		}
+
+		if (child instanceof Texture && name.match(/normalTexture/i)) {
+			semantics.add('TANGENT');
+		}
+
+		if (child instanceof ExtensionProperty) {
+			listRequiredSemantics(document, child, semantics);
+		}
+
+		// TODO(#748): Does KHR_materials_anisotropy imply required vertex attributes?
+	}
+
+	return semantics;
+}

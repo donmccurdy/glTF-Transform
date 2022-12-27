@@ -45,7 +45,6 @@ test('@gltf-transform/functions::prune', async (t) => {
 test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 	const document = new Document().setLogger(logger);
 
-	// Create used resources.
 	const mesh = document.createMesh();
 	const skin = document.createSkin();
 	const nodeC = document.createNode('C').setMesh(mesh);
@@ -80,6 +79,84 @@ test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 
 	t.notOk(scene.isDisposed(), 'scene in tree');
 	t.ok(nodeA.isDisposed(), 'nodeA disposed');
+
+	t.end();
+});
+
+test('@gltf-transform/functions::prune | attributes', async (t) => {
+	const document = new Document().setLogger(logger);
+
+	const position = document.createAccessor('POSITION');
+	const tangent = document.createAccessor('TANGENT');
+	const texcoord0 = document.createAccessor('TEXCOORD_0');
+	const texcoord1 = document.createAccessor('TEXCOORD_1');
+	const color0 = document.createAccessor('COLOR_0');
+	const color1 = document.createAccessor('COLOR_1');
+	const texture = document.createTexture();
+	const material = document
+		.createMaterial()
+		.setRoughnessFactor(1)
+		.setBaseColorTexture(texture)
+		.setNormalTexture(texture);
+	material.getBaseColorTextureInfo().setTexCoord(0);
+	material.getNormalTextureInfo().setTexCoord(1);
+	const prim = document
+		.createPrimitive()
+		.setMaterial(material)
+		.setAttribute('POSITION', position)
+		.setAttribute('TANGENT', tangent)
+		.setAttribute('TEXCOORD_0', texcoord0)
+		.setAttribute('TEXCOORD_1', texcoord1)
+		.setAttribute('COLOR_0', color0)
+		.setAttribute('COLOR_1', color1);
+	document.createMesh().addPrimitive(prim);
+
+	await document.transform(
+		prune({
+			propertyTypes: [PropertyType.ACCESSOR],
+			keepAttributes: true,
+		})
+	);
+
+	t.deepEquals(
+		[position, tangent, texcoord0, texcoord1, color0, color1].map((a) => a.isDisposed()),
+		new Array(6).fill(false),
+		'keeps required attributes (1/3)'
+	);
+
+	await document.transform(
+		prune({
+			propertyTypes: [PropertyType.ACCESSOR],
+			keepAttributes: false,
+		})
+	);
+
+	t.deepEquals(
+		[position, tangent, texcoord0, texcoord1, color0].map((a) => a.isDisposed()),
+		new Array(5).fill(false),
+		'keeps required attributes (2/3)'
+	);
+	t.equals(color1.isDisposed(), true, 'discards COLOR_1');
+
+	material.setNormalTexture(null);
+
+	await document.transform(
+		prune({
+			propertyTypes: [PropertyType.ACCESSOR],
+			keepAttributes: false,
+		})
+	);
+
+	t.deepEquals(
+		[position, texcoord0, color0].map((a) => a.isDisposed()),
+		[false, false, false],
+		'keeps required attributes (3/3)'
+	);
+	t.deepEquals(
+		[tangent, texcoord1].map((a) => a.isDisposed()),
+		[true, true],
+		'discards TANGENT, TEXCOORD_1'
+	);
 
 	t.end();
 });
