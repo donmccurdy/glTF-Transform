@@ -1,11 +1,23 @@
-import { Accessor, AnimationSampler, Document, Root, Transform, TransformContext } from '@gltf-transform/core';
+import {
+	Accessor,
+	AnimationSampler,
+	Document,
+	GLTF,
+	MathUtils,
+	Root,
+	Transform,
+	TransformContext,
+} from '@gltf-transform/core';
+import quat, { getAngle, slerp } from 'gl-matrix/quat';
 import { createTransform, isTransformPending } from './utils';
 
 const NAME = 'resample';
 
-export interface ResampleOptions {tolerance?: number}
+export interface ResampleOptions {
+	tolerance?: number;
+}
 
-const RESAMPLE_DEFAULTS: Required<ResampleOptions> =  {tolerance: 1e-4};
+const RESAMPLE_DEFAULTS: Required<ResampleOptions> = { tolerance: 1e-4 };
 
 /**
  * Resample {@link Animation}s, losslessly deduplicating keyframes to reduce file size. Duplicate
@@ -15,8 +27,7 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> =  {tolerance: 1e-4};
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */
 export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform => {
-
-	const options = {...RESAMPLE_DEFAULTS, ..._options} as Required<ResampleOptions>;
+	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
 
 	return createTransform(NAME, (doc: Document, context?: TransformContext): void => {
 		const accessorsVisited = new Set<Accessor>();
@@ -27,23 +38,20 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		for (const animation of doc.getRoot().listAnimations()) {
 			// Skip morph targets, see https://github.com/donmccurdy/glTF-Transform/issues/290.
-			const morphTargetSamplers = new Set<AnimationSampler>();
+			const samplerTargetPaths = new Map<AnimationSampler, GLTF.AnimationChannelTargetPath>();
 			for (const channel of animation.listChannels()) {
-				if (channel.getSampler() && channel.getTargetPath() === 'weights') {
-					morphTargetSamplers.add(channel.getSampler()!);
-				}
+				samplerTargetPaths.set(channel.getSampler()!, channel.getTargetPath()!);
 			}
 
 			for (const sampler of animation.listSamplers()) {
-				if (morphTargetSamplers.has(sampler)) {
+				if (samplerTargetPaths.get(sampler) === 'weights') {
 					didSkipMorphTargets = true;
 					continue;
 				}
-				if (sampler.getInterpolation() === 'STEP'
-					|| sampler.getInterpolation() === 'LINEAR') {
+				if (sampler.getInterpolation() === 'STEP' || sampler.getInterpolation() === 'LINEAR') {
 					accessorsVisited.add(sampler.getInput()!);
 					accessorsVisited.add(sampler.getOutput()!);
-					optimize(sampler, options);
+					optimize(sampler, samplerTargetPaths.get(sampler)!, options);
 				}
 			}
 		}
@@ -55,8 +63,8 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		if (doc.getRoot().listAccessors().length > accessorsCountPrev && !isTransformPending(context, NAME, 'dedup')) {
 			logger.warn(
-				`${NAME}: Resampling required copying accessors, some of which may be duplicates.`
-				+ ' Consider using "dedup" to consolidate any duplicates.'
+				`${NAME}: Resampling required copying accessors, some of which may be duplicates.` +
+					' Consider using "dedup" to consolidate any duplicates.'
 			);
 		}
 
@@ -66,48 +74,49 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-
 };
 
-function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
+function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPath, options: ResampleOptions): void {
 	const input = sampler.getInput()!.clone();
 	const output = sampler.getOutput()!.clone();
 
 	const tolerance = options.tolerance as number;
+	const interpolation = sampler.getInterpolation();
 
 	const lastIndex = input.getCount() - 1;
 	const tmp: number[] = [];
+	const value: number[] = [];
+	const valueNext: number[] = [];
+	const valuePrev: number[] = [];
 
 	let writeIndex = 1;
 
-	for (let i = 1; i < lastIndex; ++ i) {
+	for (let i = 1; i < lastIndex; ++i) {
+		const timePrev = input.getScalar(writeIndex - 1);
 		const time = input.getScalar(i);
-		const timePrev = input.getScalar(i - 1);
 		const timeNext = input.getScalar(i + 1);
-		const timeMix = (time - timePrev) / (timeNext - timePrev);
+		const t = (time - timePrev) / (timeNext - timePrev);
 
 		let keep = false;
 
 		// Remove unnecessary adjacent keyframes.
 		if (time !== timeNext && (i !== 1 || time !== input.getScalar(0))) {
-			for (let j = 0; j < output.getElementSize(); j++) {
-				const value = output.getElement(i, tmp)[j];
-				const valuePrev = output.getElement(i - 1, tmp)[j];
-				const valueNext = output.getElement(i + 1, tmp)[j];
+			output.getElement(writeIndex - 1, valuePrev);
+			output.getElement(i, value);
+			output.getElement(i + 1, valueNext);
 
-				if (sampler.getInterpolation() === 'LINEAR') {
-					// Prune keyframes that are colinear with prev/next keyframes.
-					if (Math.abs(value - lerp(valuePrev, valueNext, timeMix)) > tolerance) {
-						keep = true;
-						break;
-					}
-				} else if (sampler.getInterpolation() === 'STEP') {
-					// Prune keyframes that are identical to prev/next keyframes.
-					if (value !== valuePrev || value !== valueNext) {
-						keep = true;
-						break;
-					}
-				}
+			if (interpolation === 'LINEAR' && path === 'rotation') {
+				// Prune keyframes colinear with prev/next keyframes.
+				const sample = slerp(tmp as quat, valuePrev as quat, valueNext as quat, t) as number[];
+				const angle = getAngle(valuePrev as quat, valueNext as quat);
+				keep = !MathUtils.eq(value, sample, tolerance) || angle + Number.EPSILON >= Math.PI;
+			} else if (interpolation === 'LINEAR') {
+				// Prune keyframes colinear with prev/next keyframes.
+				const sample = vlerp(tmp, valuePrev, valueNext, t);
+				keep = !MathUtils.eq(value, sample, tolerance);
+			} else if (interpolation === 'STEP') {
+				// Prune keyframes identical to prev/next keyframes.
+				keep = !MathUtils.eq(value, valuePrev) || !MathUtils.eq(value, valueNext);
 			}
 		}
 
@@ -119,7 +128,6 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 			}
 			writeIndex++;
 		}
-
 	}
 
 	// Flush last keyframe (compaction looks ahead).
@@ -141,6 +149,11 @@ function optimize (sampler: AnimationSampler, options: ResampleOptions): void {
 	}
 }
 
-function lerp (v0: number, v1: number, t: number): number {
-    return v0 * (1 - t) + v1 * t;
+function lerp(v0: number, v1: number, t: number): number {
+	return v0 * (1 - t) + v1 * t;
+}
+
+function vlerp(out: number[], a: number[], b: number[], t: number): number[] {
+	for (let i = 0; i < a.length; i++) out[i] = lerp(a[i], b[i], t);
+	return out;
 }
