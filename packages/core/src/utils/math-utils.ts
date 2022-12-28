@@ -9,12 +9,11 @@ export class MathUtils {
 		return v;
 	}
 
-	public static eq(a: number[], b: number[]): boolean {
+	public static eq(a: number[], b: number[], tolerance = 10e-6): boolean {
 		if (a.length !== b.length) return false;
 
-		const eps = 10e-6;
 		for (let i = 0; i < a.length; i++) {
-			if (Math.abs(a[i] - b[i]) > eps) return false;
+			if (Math.abs(a[i] - b[i]) > tolerance) return false;
 		}
 
 		return true;

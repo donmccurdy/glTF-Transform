@@ -36,6 +36,16 @@ declare module 'gl-matrix/mat3' {
 	export = mat3;
 }
 
+declare module 'gl-matrix/quat' {
+	import { quat } from 'gl-matrix';
+	export = quat;
+}
+
+declare module 'gl-matrix/quat2' {
+	import { quat2 } from 'gl-matrix';
+	export = quat2;
+}
+
 /** Deno */
 
 declare const Deno: {
