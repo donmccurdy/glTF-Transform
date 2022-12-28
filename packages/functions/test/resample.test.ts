@@ -4,7 +4,7 @@ import test from 'tape';
 import { Accessor, Document, Logger } from '@gltf-transform/core';
 import { resample } from '../';
 
-test.only('@gltf-transform/functions::resample', async (t) => {
+test('@gltf-transform/functions::resample', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
