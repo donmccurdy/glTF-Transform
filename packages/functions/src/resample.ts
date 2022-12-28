@@ -108,7 +108,7 @@ function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPa
 			if (interpolation === 'LINEAR' && path === 'rotation') {
 				// Prune keyframes colinear with prev/next keyframes.
 				const sample = slerp(tmp as quat, valuePrev as quat, valueNext as quat, t) as number[];
-				const angle = getAngle(valuePrev as quat, valueNext as quat);
+				const angle = getAngle(valuePrev as quat, value as quat) + getAngle(value as quat, valueNext as quat);
 				keep = !MathUtils.eq(value, sample, tolerance) || angle + Number.EPSILON >= Math.PI;
 			} else if (interpolation === 'LINEAR') {
 				// Prune keyframes colinear with prev/next keyframes.
