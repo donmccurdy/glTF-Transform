@@ -85,8 +85,10 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 }
 
 export function weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
-	if (prim.getIndices() && !options.overwrite) return;
-	if (prim.getMode() === Primitive.Mode.POINTS) return;
+	if (prim.getIndices() && !options.overwrite) 
+		return;
+	if (prim.getMode() === Primitive.Mode.POINTS) 
+		return;
 	if (options.tolerance === 0) {
 		weldOnly(doc, prim);
 	} else {
