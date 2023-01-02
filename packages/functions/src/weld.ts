@@ -93,7 +93,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 }
 
 /**  In-place weld, adds indices without changing number of vertices. */
-function weldOnly(doc: Document, prim: Primitive): void {
+export function weldOnly(doc: Document, prim: Primitive): void {
 	if (prim.getIndices()) return;
 	const attr = prim.listAttributes()[0];
 	const numVertices = attr.getCount();
@@ -107,7 +107,7 @@ function weldOnly(doc: Document, prim: Primitive): void {
 }
 
 /** Weld and merge, combining vertices that are similar on all vertex attributes. */
-function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
+export function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const logger = doc.getLogger();
 
 	const srcPosition = prim.getAttribute('POSITION')!;
