@@ -13,7 +13,7 @@
 - Remove unused vertex attributes in `prune()` [#759](https://github.com/donmccurdy/glTF-Transform/pull/759)
 - Display KTX2 compression type in `inspect()` report [#757](https://github.com/donmccurdy/glTF-Transform/pull/757)
 - Add morph target support in `transformMesh()`, `transformPrimitive()` [#756](https://github.com/donmccurdy/glTF-Transform/pull/756)
-- Improve detection of duplicate meshes in `dedup()` [#663](https://github.com/donmccurdy/glTF-Transform/pull/663)
+- Improve detection of duplicate meshes in `dedup()` [#663](https://github.com/donmccurdy/glTF-Transform/pull/663) by [@robertlong](https://github.com/robertlong)
 
 ### v2.4 — ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/22))
 
