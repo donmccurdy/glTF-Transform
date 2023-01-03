@@ -2,7 +2,18 @@
 
 ## v2.x
 
-### v2.5 — 🚧 Unreleased
+### v2.6 — 🚧 Unreleased
+
+### v2.5
+
+**Features:**
+
+- Add `weldPrimitive(document, prim, options)` function [#767](https://github.com/donmccurdy/glTF-Transform/pull/767) by [@marwie](https://github.com/marwie)
+- Support resampling quaternion keyframe tracks in `resample()` [#760](https://github.com/donmccurdy/glTF-Transform/pull/760)
+- Remove unused vertex attributes in `prune()` [#759](https://github.com/donmccurdy/glTF-Transform/pull/759)
+- Display KTX2 compression type in `inspect()` report [#757](https://github.com/donmccurdy/glTF-Transform/pull/757)
+- Add morph target support in `transformMesh()`, `transformPrimitive()` [#756](https://github.com/donmccurdy/glTF-Transform/pull/756)
+- Improve detection of duplicate meshes in `dedup()` [#663](https://github.com/donmccurdy/glTF-Transform/pull/663)
 
 ### v2.4 — ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/22))
 
