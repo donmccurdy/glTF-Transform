@@ -121,6 +121,9 @@ export function weldPrimitive(doc: Document, prim: Primitive, options: Required<
 
 /** @internal Adds indices, if missing. Does not merge vertices. */
 function _indexPrimitive(doc: Document, prim: Primitive): void {
+	// No need to overwrite here, even if options.overwrite=true.
+	if (prim.getIndices()) return;
+
 	const attr = prim.listAttributes()[0];
 	const numVertices = attr.getCount();
 	const buffer = attr.getBuffer();
