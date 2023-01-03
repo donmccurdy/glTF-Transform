@@ -70,15 +70,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				if (prim.getIndices() && !options.overwrite) {
-					continue;
-				} else if (prim.getMode() === Primitive.Mode.POINTS) {
-					continue;
-				} else if (options.tolerance === 0) {
-					weldOnly(doc, prim);
-				} else {
-					weldAndMerge(doc, prim, options);
-				}
+				weldPrimitive(doc, prim, options);
 			}
 		}
 
@@ -90,6 +82,18 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 		logger.debug(`${NAME}: Complete.`);
 	});
+}
+
+export function weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
+	if (prim.getIndices() && !options.overwrite) 
+		return;
+	if (prim.getMode() === Primitive.Mode.POINTS) 
+		return;
+	if (options.tolerance === 0) {
+		weldOnly(doc, prim);
+	} else {
+		weldAndMerge(doc, prim, options);
+	}
 }
 
 /**  In-place weld, adds indices without changing number of vertices. */
