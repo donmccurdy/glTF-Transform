@@ -4,7 +4,7 @@
 
 ### v2.6 — 🚧 Unreleased
 
-### v2.5
+### v2.5 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/23))
 
 **Features:**
 
