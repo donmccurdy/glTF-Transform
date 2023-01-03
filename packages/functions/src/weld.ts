@@ -37,7 +37,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 };
 
 /**
- * Index {@link Primitive}s and (optionally) merge similar vertices. When merged
+ * Index {@link Primitive Primitives} and (optionally) merge similar vertices. When merged
  * and indexed, data is shared more efficiently between vertices. File size can
  * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
  *
@@ -50,7 +50,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  *
  * Example:
  *
- * ```js
+ * ```javascript
  * import { weld } from '@gltf-transform/functions';
  *
  * await document.transform(
@@ -84,21 +84,43 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	});
 }
 
+/**
+ * Index a {@link Primitive} and (optionally) weld similar vertices. When merged
+ * and indexed, data is shared more efficiently between vertices. File size can
+ * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
+ *
+ * When welding, the 'tolerance' threshold determines which vertices qualify for
+ * welding based on distance between the vertices as a fraction of the primitive's
+ * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
+ * of the AABB's longest dimension. Other vertex attributes are also compared
+ * during welding, with attribute-specific thresholds. For --tolerance=0, geometry
+ * is indexed in place, without merging.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { weldPrimitive } from '@gltf-transform/functions';
+ *
+ * const mesh = document.getRoot().listMeshes()
+ * 	.find((mesh) => mesh.getName() === 'Gizmo');
+ *
+ * for (const prim of mesh.listPrimitives()) {
+ *   weldPrimitive(document, prim, {tolerance: 0.0001});
+ * }
+ * ```
+ */
 export function weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
-	if (prim.getIndices() && !options.overwrite) 
-		return;
-	if (prim.getMode() === Primitive.Mode.POINTS) 
-		return;
+	if (prim.getIndices() && !options.overwrite) return;
+	if (prim.getMode() === Primitive.Mode.POINTS) return;
 	if (options.tolerance === 0) {
-		weldOnly(doc, prim);
+		_indexPrimitive(doc, prim);
 	} else {
-		weldAndMerge(doc, prim, options);
+		_weldPrimitive(doc, prim, options);
 	}
 }
 
-/**  In-place weld, adds indices without changing number of vertices. */
-function weldOnly(doc: Document, prim: Primitive): void {
-	if (prim.getIndices()) return;
+/** @internal Adds indices, if missing. Does not merge vertices. */
+function _indexPrimitive(doc: Document, prim: Primitive): void {
 	const attr = prim.listAttributes()[0];
 	const numVertices = attr.getCount();
 	const buffer = attr.getBuffer();
@@ -110,8 +132,8 @@ function weldOnly(doc: Document, prim: Primitive): void {
 	prim.setIndices(indices);
 }
 
-/** Weld and merge, combining vertices that are similar on all vertex attributes. */
-function weldAndMerge(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
+/** @internal Weld and merge, combining vertices that are similar on all vertex attributes. */
+function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
 	const logger = doc.getLogger();
 
 	const srcPosition = prim.getAttribute('POSITION')!;
