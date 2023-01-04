@@ -4,11 +4,13 @@ import {
 	Document,
 	GLTF,
 	MathUtils,
+	PropertyType,
 	Root,
 	Transform,
 	TransformContext,
 } from '@gltf-transform/core';
 import quat, { getAngle, slerp } from 'gl-matrix/quat';
+import { dedup } from './dedup';
 import { createTransform, isTransformPending } from './utils';
 
 const NAME = 'resample';
@@ -29,14 +31,14 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = { tolerance: 1e-4 };
 export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform => {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
 
-	return createTransform(NAME, (doc: Document, context?: TransformContext): void => {
+	return createTransform(NAME, async (document: Document, context?: TransformContext): Promise<void> => {
 		const accessorsVisited = new Set<Accessor>();
-		const accessorsCountPrev = doc.getRoot().listAccessors().length;
-		const logger = doc.getLogger();
+		const srcAccessorCount = document.getRoot().listAccessors().length;
+		const logger = document.getLogger();
 
 		let didSkipMorphTargets = false;
 
-		for (const animation of doc.getRoot().listAnimations()) {
+		for (const animation of document.getRoot().listAnimations()) {
 			// Skip morph targets, see https://github.com/donmccurdy/glTF-Transform/issues/290.
 			const samplerTargetPaths = new Map<AnimationSampler, GLTF.AnimationChannelTargetPath>();
 			for (const channel of animation.listChannels()) {
@@ -61,11 +63,11 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 			if (!used) accessor.dispose();
 		}
 
-		if (doc.getRoot().listAccessors().length > accessorsCountPrev && !isTransformPending(context, NAME, 'dedup')) {
-			logger.warn(
-				`${NAME}: Resampling required copying accessors, some of which may be duplicates.` +
-					' Consider using "dedup" to consolidate any duplicates.'
-			);
+		// Resampling may result in duplicate input or output sampler
+		// accessors. Find and remove the duplicates after processing.
+		const dstAccessorCount = document.getRoot().listAccessors().length;
+		if (dstAccessorCount > srcAccessorCount && !isTransformPending(context, NAME, 'dedup')) {
+			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 		}
 
 		if (didSkipMorphTargets) {
