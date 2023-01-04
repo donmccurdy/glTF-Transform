@@ -1,12 +1,12 @@
-import { BufferUtils, Document, TextureChannel, Transform } from '@gltf-transform/core';
-import { TextureWebP } from '@gltf-transform/extensions';
+import { BufferUtils, ImageUtils, Document, TextureChannel, Transform } from '@gltf-transform/core';
+import { TextureAVIF, TextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
 import type sharp from 'sharp';
 import { formatBytes } from './utils';
 
-const CODECS = ['jpeg', 'png', 'webp'] as const;
-const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const CODECS = ['jpeg', 'png', 'webp', 'avif'] as const;
+const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
 export interface TextureCompressOptions {
 	encoder: unknown;
@@ -96,12 +96,27 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				if (codec) instance.toFormat(codec);
 
 				const dstImage = BufferUtils.toView(await instance.toBuffer());
-				texture.setImage(dstImage).setMimeType(`image/${codec}`);
 				const dstByteLength = dstImage.byteLength;
+
+				texture.setImage(dstImage);
+
+				const srcMimeType = texture.getMimeType();
+				const dstMimeType = `image/${codec}`;
+				if (srcMimeType !== dstMimeType) {
+					const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
+					const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
+					const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
+					texture.setMimeType(dstExtension).setURI(dstURI);
+				}
 
 				logger.debug(`${prefix}: ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}`);
 			})
 		);
+
+		// Attach EXT_texture_avif if needed.
+		if (textures.some((texture) => texture.getMimeType() === 'image/avif')) {
+			document.createExtension(TextureAVIF).setRequired(true);
+		}
 
 		// Attach EXT_texture_web if needed.
 		if (textures.some((texture) => texture.getMimeType() === 'image/webp')) {
