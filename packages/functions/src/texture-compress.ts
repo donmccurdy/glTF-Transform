@@ -1,4 +1,4 @@
-import { BufferUtils, Document, TextureChannel, Transform } from '@gltf-transform/core';
+import { BufferUtils, Document, ImageUtils, TextureChannel, Transform } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
@@ -96,8 +96,18 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				if (codec) instance.toFormat(codec);
 
 				const dstImage = BufferUtils.toView(await instance.toBuffer());
-				texture.setImage(dstImage).setMimeType(`image/${codec}`);
 				const dstByteLength = dstImage.byteLength;
+
+				texture.setImage(dstImage);
+
+				const srcMimeType = texture.getMimeType();
+				const dstMimeType = `image/${codec}`;
+				if (srcMimeType !== dstMimeType) {
+					const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
+					const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
+					const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
+					texture.setMimeType(dstExtension).setURI(dstURI);
+				}
 
 				logger.debug(`${prefix}: ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}`);
 			})
