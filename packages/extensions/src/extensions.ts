@@ -2,6 +2,7 @@
 
 import { MeshGPUInstancing } from './ext-mesh-gpu-instancing';
 import { MeshoptCompression } from './ext-meshopt-compression';
+import { TextureAVIF } from './ext-texture-avif';
 import { TextureWebP } from './ext-texture-webp';
 import { DracoMeshCompression } from './khr-draco-mesh-compression';
 import { LightsPunctual } from './khr-lights-punctual';
@@ -41,10 +42,11 @@ export const KHRONOS_EXTENSIONS = [
 	XMP,
 ];
 
-export const ALL_EXTENSIONS = [MeshGPUInstancing, MeshoptCompression, TextureWebP, ...KHRONOS_EXTENSIONS];
+export const ALL_EXTENSIONS = [MeshGPUInstancing, MeshoptCompression, TextureAVIF, TextureWebP, ...KHRONOS_EXTENSIONS];
 
 export * from './ext-mesh-gpu-instancing';
 export * from './ext-meshopt-compression';
+export * from './ext-texture-avif';
 export * from './ext-texture-webp';
 export * from './khr-draco-mesh-compression';
 export * from './khr-lights-punctual';
