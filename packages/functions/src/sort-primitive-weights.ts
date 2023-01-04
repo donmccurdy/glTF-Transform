@@ -43,8 +43,8 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 	const dstJoints = new Uint32Array(setCount * 4);
 
 	for (let i = 0; i < vertexCount; i++) {
-		getVertexElements(prim, i, 'WEIGHTS', srcWeights);
-		getVertexElements(prim, i, 'JOINTS', srcJoints);
+		getVertexArray(prim, i, 'WEIGHTS', srcWeights);
+		getVertexArray(prim, i, 'JOINTS', srcJoints);
 
 		// Sort indices to create a lookup table, indices[dstIndex] → srcIndex,
 		// indexed into the weights and joints arrays.
@@ -57,8 +57,8 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 			dstJoints[j] = srcJoints[indices[j]];
 		}
 
-		setVertexElements(prim, i, 'WEIGHTS', dstWeights);
-		setVertexElements(prim, i, 'JOINTS', dstJoints);
+		setVertexArray(prim, i, 'WEIGHTS', dstWeights);
+		setVertexArray(prim, i, 'JOINTS', dstJoints);
 	}
 
 	// (2) Limit.
@@ -92,10 +92,12 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 	const normalized = templateAttribute.getNormalized();
 	const normalizedComponentType = normalized ? componentType : undefined;
 	const delta = normalized ? MathUtils.denormalize(1, componentType) : Number.EPSILON;
+	const joints = new Uint32Array(setCount * 4).fill(0);
 	const weights = templateArray.slice(0, setCount * 4).fill(0);
 
 	for (let i = 0; i < vertexCount; i++) {
-		getVertexElements(prim, i, 'WEIGHTS', weights, normalizedComponentType);
+		getVertexArray(prim, i, 'JOINTS', joints);
+		getVertexArray(prim, i, 'WEIGHTS', weights, normalizedComponentType);
 
 		let weightsSum = sum(weights, normalizedComponentType);
 		if (weightsSum === 0) continue;
@@ -119,18 +121,26 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		if (normalized && weightsSum !== 1) {
 			for (let j = weights.length - 1; j >= 0; j--) {
 				if (weights[j] > 0) {
-					weights[j] += 1 - weightsSum;
+					weights[j] += MathUtils.normalize(1 - weightsSum, componentType);
 					break;
 				}
 			}
 		}
 
-		setVertexElements(prim, i, 'WEIGHTS', weights, normalizedComponentType);
+		// (3) Remove joint indices whose weights have fallen to zero.
+		for (let j = weights.length - 1; j >= 0; j--) {
+			if (weights[j] === 0) {
+				joints[j] = 0;
+			}
+		}
+
+		setVertexArray(prim, i, 'JOINTS', joints);
+		setVertexArray(prim, i, 'WEIGHTS', weights, normalizedComponentType);
 	}
 }
 
 /** Lists all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
-function getVertexElements(
+function getVertexArray(
 	prim: PrimLike,
 	vertexIndex: number,
 	prefix: string,
@@ -153,7 +163,7 @@ function getVertexElements(
 }
 
 /** Sets all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
-function setVertexElements(
+function setVertexArray(
 	prim: PrimLike,
 	vertexIndex: number,
 	prefix: string,

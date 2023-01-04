@@ -25,7 +25,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 			...prim.getAttribute('JOINTS_0')!.getElement(0, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(0, []),
 		],
-		[1, 6, 3, 5, 7, 4, 2, 0],
+		[1, 6, 3, 5, 7, 4, 0, 0],
 		'joints, vertex #1'
 	);
 
@@ -45,7 +45,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 			...prim.getAttribute('JOINTS_0')!.getElement(1, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(1, []),
 		],
-		[13, 12, 8, 10, 11, 15, 14, 9],
+		[13, 12, 8, 10, 11, 0, 0, 0],
 		'joints, vertex #2'
 	);
 
