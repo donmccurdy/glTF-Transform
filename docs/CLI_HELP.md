@@ -1,5 +1,5 @@
 
-  gltf-transform 3.0.0-alpha.0 — Commandline interface for the glTF-Transform SDK.
+  gltf-transform 3.0.0-alpha.1 — Commandline interface for the glTF-Transform SDK.
 
   USAGE 
   
@@ -52,6 +52,7 @@
     etc1s                                KTX + Basis ETC1S texture compression                  
     uastc                                KTX + Basis UASTC texture compression                  
     ktxfix                               Fixes common issues in KTX texture metadata            
+    avif                                 AVIF texture compression                               
     webp                                 WebP texture compression                               
     oxipng                               OxiPNG texture compression                             
     mozjpeg                              MozJPEG texture compression                            
