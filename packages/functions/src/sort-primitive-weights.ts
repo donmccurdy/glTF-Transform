@@ -1,4 +1,4 @@
-import { Accessor, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4 } from '@gltf-transform/core';
+import { Accessor, GLTF, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4 } from '@gltf-transform/core';
 
 /**
  * Sorts skinning weights from high to low, for each vertex of the input
@@ -43,8 +43,8 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 	const dstJoints = new Uint32Array(setCount * 4);
 
 	for (let i = 0; i < vertexCount; i++) {
-		getVertexElements(prim, i, 'WEIGHTS', srcWeights);
-		getVertexElements(prim, i, 'JOINTS', srcJoints);
+		getVertexArray(prim, i, 'WEIGHTS', srcWeights);
+		getVertexArray(prim, i, 'JOINTS', srcJoints);
 
 		// Sort indices to create a lookup table, indices[dstIndex] → srcIndex,
 		// indexed into the weights and joints arrays.
@@ -57,8 +57,8 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 			dstJoints[j] = srcJoints[indices[j]];
 		}
 
-		setVertexElements(prim, i, 'WEIGHTS', dstWeights);
-		setVertexElements(prim, i, 'JOINTS', dstJoints);
+		setVertexArray(prim, i, 'WEIGHTS', dstWeights);
+		setVertexArray(prim, i, 'JOINTS', dstJoints);
 	}
 
 	// (2) Limit.
@@ -90,13 +90,16 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 	const templateArray = templateAttribute.getArray()!;
 	const componentType = templateAttribute.getComponentType();
 	const normalized = templateAttribute.getNormalized();
+	const normalizedComponentType = normalized ? componentType : undefined;
 	const delta = normalized ? MathUtils.denormalize(1, componentType) : Number.EPSILON;
+	const joints = new Uint32Array(setCount * 4).fill(0);
 	const weights = templateArray.slice(0, setCount * 4).fill(0);
 
 	for (let i = 0; i < vertexCount; i++) {
-		getVertexElements(prim, i, 'WEIGHTS', weights);
+		getVertexArray(prim, i, 'JOINTS', joints);
+		getVertexArray(prim, i, 'WEIGHTS', weights, normalizedComponentType);
 
-		let weightsSum = sum(weights);
+		let weightsSum = sum(weights, normalizedComponentType);
 		if (weightsSum === 0) continue;
 
 		// (1) If sum of weights not within δ of 1, renormalize all weights.
@@ -111,48 +114,86 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 			}
 		}
 
-		weightsSum = sum(weights);
+		weightsSum = sum(weights, normalizedComponentType);
 
 		// (2) Sum of normalized weights may still be off by δ. Compensate
 		// in least-significant weight.
 		if (normalized && weightsSum !== 1) {
 			for (let j = weights.length - 1; j >= 0; j--) {
 				if (weights[j] > 0) {
-					weights[j] += 1 - weightsSum;
+					weights[j] += MathUtils.normalize(1 - weightsSum, componentType);
 					break;
 				}
 			}
 		}
 
-		setVertexElements(prim, i, 'WEIGHTS', weights);
+		// (3) Remove joint indices whose weights have fallen to zero.
+		for (let j = weights.length - 1; j >= 0; j--) {
+			if (weights[j] === 0) {
+				joints[j] = 0;
+			}
+		}
+
+		setVertexArray(prim, i, 'JOINTS', joints);
+		setVertexArray(prim, i, 'WEIGHTS', weights, normalizedComponentType);
 	}
 }
 
 /** Lists all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
-function getVertexElements(prim: PrimLike, vertexIndex: number, prefix: string, target: TypedArray): TypedArray {
+function getVertexArray(
+	prim: PrimLike,
+	vertexIndex: number,
+	prefix: string,
+	target: TypedArray,
+	normalizedComponentType?: GLTF.AccessorComponentType
+): TypedArray {
 	let weights: Accessor | null;
 	const el = [0, 0, 0, 0] as vec4;
 	for (let i = 0; (weights = prim.getAttribute(`${prefix}_${i}`)); i++) {
 		weights.getElement(vertexIndex, el);
-		for (let j = 0; j < 4; j++) target[i * 4 + j] = el[j];
+		for (let j = 0; j < 4; j++) {
+			if (normalizedComponentType) {
+				target[i * 4 + j] = MathUtils.normalize(el[j], normalizedComponentType);
+			} else {
+				target[i * 4 + j] = el[j];
+			}
+		}
 	}
 	return target;
 }
 
 /** Sets all values of a multi-set vertex attribute (WEIGHTS_#, ...) for given vertex. */
-function setVertexElements(prim: PrimLike, vertexIndex: number, prefix: string, values: TypedArray): void {
+function setVertexArray(
+	prim: PrimLike,
+	vertexIndex: number,
+	prefix: string,
+	values: TypedArray,
+	normalizedComponentType?: GLTF.AccessorComponentType
+): void {
 	let weights: Accessor | null;
 	const el = [0, 0, 0, 0] as vec4;
 	for (let i = 0; (weights = prim.getAttribute(`${prefix}_${i}`)); i++) {
-		for (let j = 0; j < 4; j++) el[j] = values[i * 4 + j];
+		for (let j = 0; j < 4; j++) {
+			if (normalizedComponentType) {
+				el[j] = MathUtils.denormalize(values[i * 4 + j], normalizedComponentType);
+			} else {
+				el[j] = values[i * 4 + j];
+			}
+		}
 		weights.setElement(vertexIndex, el);
 	}
 }
 
 /** Sum an array of numbers. */
-function sum(values: TypedArray): number {
+function sum(values: TypedArray, normalizedComponentType?: GLTF.AccessorComponentType): number {
 	let sum = 0;
-	for (let i = 0; i < values.length; i++) sum += values[i];
+	for (let i = 0; i < values.length; i++) {
+		if (normalizedComponentType) {
+			sum += MathUtils.denormalize(values[i], normalizedComponentType);
+		} else {
+			sum += values[i];
+		}
+	}
 	return sum;
 }
 
