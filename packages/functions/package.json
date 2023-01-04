@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/functions",
-	"version": "2.5.0",
+	"version": "2.5.1",
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.donmccurdy.com/functions.html",
 	"description": "Functions for common glTF modifications, written using the core API",
@@ -29,8 +29,8 @@
 		"threejs"
 	],
 	"dependencies": {
-		"@gltf-transform/core": "^2.5.0",
-		"@gltf-transform/extensions": "^2.5.0",
+		"@gltf-transform/core": "^2.5.1",
+		"@gltf-transform/extensions": "^2.5.1",
 		"gl-matrix": "~3.4.3",
 		"ktx-parse": "^0.4.5",
 		"ndarray": "^1.0.19",
