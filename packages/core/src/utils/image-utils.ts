@@ -161,6 +161,7 @@ export class ImageUtils {
 	/** Returns the MIME type for the given file extension. */
 	public static extensionToMimeType(extension: string): string {
 		if (extension === 'jpg') return 'image/jpeg';
+		if (!extension) return '';
 		return `image/${extension}`;
 	}
 }

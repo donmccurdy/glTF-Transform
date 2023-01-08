@@ -1038,13 +1038,13 @@ program
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({codec: 'webp', encoder: sharp, formats, slots}));
+			.transform(textureCompress({targetFormat: 'webp', encoder: sharp, formats, slots}));
 	});
 
-// OXIPNG
+// PNG
 program
-	.command('oxipng', 'OxiPNG texture compression')
-	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'OxiPNG'))
+	.command('png', 'PNG texture compression')
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'PNG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
@@ -1061,13 +1061,13 @@ program
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({codec: 'png', encoder: sharp, formats, slots}));
+			.transform(textureCompress({targetFormat: 'png', encoder: sharp, formats, slots}));
 	});
 
-// MOZJPEG
+// JPEG
 program
-	.command('mozjpeg', 'MozJPEG texture compression')
-	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'MozJPEG'))
+	.command('jpeg', 'JPEG texture compression')
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'JPEG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
@@ -1084,7 +1084,7 @@ program
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({codec: 'jpeg', encoder: sharp, formats, slots}));
+			.transform(textureCompress({targetFormat: 'jpeg', encoder: sharp, formats, slots}));
 	});
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
