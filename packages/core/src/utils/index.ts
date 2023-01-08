@@ -1,4 +1,4 @@
-export * from './bounds';
+export * from './get-bounds';
 export * from './buffer-utils';
 export * from './color-utils';
 export * from './file-utils';

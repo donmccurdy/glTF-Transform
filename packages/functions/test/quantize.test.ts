@@ -5,7 +5,7 @@ import {
 	Accessor,
 	AnimationChannel,
 	bbox,
-	bounds,
+	getBounds,
 	Document,
 	Logger,
 	Mesh,
@@ -45,9 +45,9 @@ test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
 	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-	const bboxSceneCopy = bounds(scene);
-	const bboxNodeACopy = bounds(nodeA);
-	const bboxNodeBCopy = bounds(nodeB);
+	const bboxSceneCopy = getBounds(scene);
+	const bboxNodeACopy = getBounds(nodeA);
+	const bboxNodeBCopy = getBounds(nodeB);
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
@@ -59,9 +59,9 @@ test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
 
 	await doc.transform(quantize({ quantizePosition: 14 }));
 
-	const bboxScene = bounds(scene);
-	const bboxNodeA = bounds(nodeA);
-	const bboxNodeB = bounds(nodeB);
+	const bboxScene = getBounds(scene);
+	const bboxNodeA = getBounds(nodeA);
+	const bboxNodeB = getBounds(nodeB);
 	const bboxMeshA = primBounds(primA);
 	const bboxMeshB = primBounds(primB);
 
@@ -84,9 +84,9 @@ test('@gltf-transform/functions::quantize | scene volume', async (t) => {
 	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-	const bboxSceneCopy = bounds(scene);
-	const bboxNodeACopy = bounds(nodeA);
-	const bboxNodeBCopy = bounds(nodeB);
+	const bboxSceneCopy = getBounds(scene);
+	const bboxNodeACopy = getBounds(nodeA);
+	const bboxNodeBCopy = getBounds(nodeB);
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
@@ -103,9 +103,9 @@ test('@gltf-transform/functions::quantize | scene volume', async (t) => {
 		})
 	);
 
-	const bboxScene = roundBbox(bounds(scene), 3);
-	const bboxNodeA = roundBbox(bounds(nodeA), 2);
-	const bboxNodeB = roundBbox(bounds(nodeB), 3);
+	const bboxScene = roundBbox(getBounds(scene), 3);
+	const bboxNodeA = roundBbox(getBounds(nodeA), 2);
+	const bboxNodeB = roundBbox(getBounds(nodeB), 3);
 	const bboxMeshA = roundBbox(primBounds(primA), 3);
 	const bboxMeshB = roundBbox(primBounds(primB), 3);
 
@@ -128,9 +128,9 @@ test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
 	const primA = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const primB = doc.getRoot().listMeshes()[1].listPrimitives()[0];
 
-	const bboxSceneCopy = bounds(scene);
-	const bboxNodeACopy = bounds(nodeA);
-	const bboxNodeBCopy = bounds(nodeB);
+	const bboxSceneCopy = getBounds(scene);
+	const bboxNodeACopy = getBounds(nodeA);
+	const bboxNodeBCopy = getBounds(nodeB);
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
@@ -152,13 +152,13 @@ test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
 
 	await doc.transform(quantize({ quantizePosition: 14 }));
 
-	const bboxScene = bounds(scene);
-	const bboxNodeA = bounds(nodeA);
-	const bboxNodeB = bounds(nodeB);
+	const bboxScene = getBounds(scene);
+	const bboxNodeA = getBounds(nodeA);
+	const bboxNodeB = getBounds(nodeB);
 	const bboxMeshA = primBounds(primA);
 	const bboxMeshB = primBounds(primB);
 
-	// NodeA now affects scene bounds, because bounds() does not check IBMs.
+	// NodeA now affects scene bounds, because getBounds() does not check IBMs.
 	t.deepEquals(bboxScene, { min: [-0.5, -0.5, -0.5], max: [25, 15, 0.5] }, 'bbox - scene');
 	t.deepEquals(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
 	t.deepEquals(bboxNodeB, { min: [-0.5, -0.5, -0.5], max: [0.5, 0.5, 0.5] }, 'bbox - nodeB');
@@ -192,7 +192,7 @@ test('@gltf-transform/functions::quantize | morph targets', async (t) => {
 
 	const scene = doc.getRoot().listScenes().pop();
 
-	const bboxSceneCopy = bounds(scene);
+	const bboxSceneCopy = getBounds(scene);
 	const bboxMeshCopy = primBounds(prim);
 	const bboxTargetCopy = primBounds(target);
 
@@ -202,7 +202,7 @@ test('@gltf-transform/functions::quantize | morph targets', async (t) => {
 
 	await doc.transform(quantize({ quantizePosition: 14 }));
 
-	const bboxScene = roundBbox(bounds(scene), 2);
+	const bboxScene = roundBbox(getBounds(scene), 2);
 	const bboxMesh = roundBbox(primBounds(prim), 3);
 	const bboxTarget = roundBbox(primBounds(target), 3);
 

@@ -3,8 +3,7 @@ require('source-map-support').install();
 import path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import test from 'tape';
-import { Accessor, Buffer, Document, Format, NodeIO, Primitive } from '@gltf-transform/core';
-import { bounds } from '@gltf-transform/functions';
+import { Accessor, Buffer, Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
 import { DracoMeshCompression } from '../';
 
 const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
@@ -19,7 +18,7 @@ const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp,
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	const io = await createDecoderIO();
 	const doc = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
-	const bbox = bounds(doc.getRoot().listScenes()[0]);
+	const bbox = getBounds(doc.getRoot().listScenes()[0]);
 	t.deepEquals(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
@@ -123,7 +122,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	io = await createDecoderIO();
 	const roundtripDoc = await io.readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes()[0];
-	const bbox = bounds(roundtripNode);
+	const bbox = getBounds(roundtripNode);
 	t.deepEquals(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[0, -1, -1],

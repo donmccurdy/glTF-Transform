@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import path from 'path';
-import { bbox, bounds, Document, Logger, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
+import { bbox, getBounds, Document, Logger, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
 import { DracoMeshCompression, MeshQuantization } from '@gltf-transform/extensions';
 import { weld, unweld, simplify } from '../';
 import { MeshoptSimplifier } from 'meshoptimizer';
@@ -25,12 +25,12 @@ test('@gltf-transform/functions::simplify | welded', async (t) => {
 	const scene = document.getRoot().getDefaultScene()!;
 
 	const srcCount = getVertexCount(document);
-	const srcBounds = roundBbox(bounds(scene), 2);
+	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
 	const dstCount = getVertexCount(document);
-	const dstBounds = roundBbox(bounds(scene), 2);
+	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
 	t.ok(srcCount > dstCount, 'src.count > dst.count');
@@ -44,12 +44,12 @@ test('@gltf-transform/functions::simplify | unwelded', async (t) => {
 	const scene = document.getRoot().getDefaultScene()!;
 
 	const srcCount = getVertexCount(document);
-	const srcBounds = roundBbox(bounds(scene), 2);
+	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
 	const dstCount = getVertexCount(document);
-	const dstBounds = roundBbox(bounds(scene), 2);
+	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
 	t.ok(srcCount > dstCount, 'src.count > dst.count');
@@ -80,12 +80,12 @@ test('@gltf-transform/functions::simplify | shared accessors', async (t) => {
 	scene.addChild(nodeA).addChild(nodeB);
 
 	const srcCount = getVertexCount(document);
-	const srcBounds = roundBbox(bounds(scene), 2);
+	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
 	const dstCount = getVertexCount(document);
-	const dstBounds = roundBbox(bounds(scene), 2);
+	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
 	t.ok(srcCount > dstCount, 'src.count > dst.count');

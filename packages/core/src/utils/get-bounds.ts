@@ -8,10 +8,10 @@ import type { Mesh, Node, Scene } from '../properties';
  * Example:
  *
  * ```ts
- * const {min, max} = bounds(scene);
+ * const {min, max} = getBounds(scene);
  * ```
  */
-export function bounds(node: Node | Scene): bbox {
+export function getBounds(node: Node | Scene): bbox {
 	const resultBounds = createBounds();
 	const parents = node.propertyType === PropertyType.NODE ? [node] : node.listChildren();
 
@@ -29,6 +29,12 @@ export function bounds(node: Node | Scene): bbox {
 
 	return resultBounds;
 }
+
+/**
+ * @deprecated Renamed to {@link getBounds}.
+ * @hidden
+ */
+export const bounds = getBounds;
 
 /** Computes mesh bounds in local space. */
 function getMeshBounds(mesh: Mesh, worldMatrix: mat4): bbox {

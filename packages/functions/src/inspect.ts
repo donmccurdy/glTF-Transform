@@ -5,7 +5,7 @@ import {
 	GLTF,
 	ImageUtils,
 	Texture,
-	bounds,
+	getBounds,
 	PropertyType,
 } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils';
@@ -29,7 +29,7 @@ function listScenes(doc: Document): InspectPropertyReport<InspectSceneReport> {
 		.listScenes()
 		.map((scene) => {
 			const root = scene.listChildren()[0];
-			const sceneBounds = bounds(scene);
+			const sceneBounds = getBounds(scene);
 			return {
 				name: scene.getName(),
 				rootName: root ? root.getName() : '',

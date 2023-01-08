@@ -38,6 +38,7 @@ export {
 	Logger,
 	MathUtils,
 	Verbosity,
+	getBounds,
 	bounds,
 	uuid,
 } from './utils';

@@ -1,8 +1,8 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { Accessor, Document } from '@gltf-transform/core';
-import { bounds, center } from '../';
+import { Accessor, Document, getBounds } from '@gltf-transform/core';
+import { center } from '../';
 
 test('@gltf-transform/functions::center', async (t) => {
 	const doc = new Document();
@@ -18,7 +18,7 @@ test('@gltf-transform/functions::center', async (t) => {
 	await doc.transform(center({ pivot: 'center' }));
 
 	t.deepEquals(
-		bounds(scene),
+		getBounds(scene),
 		{
 			min: [-2.5, -2.5, -2.5],
 			max: [2.5, 2.5, 2.5],
@@ -29,7 +29,7 @@ test('@gltf-transform/functions::center', async (t) => {
 	await doc.transform(center({ pivot: 'above' }));
 
 	t.deepEquals(
-		bounds(scene),
+		getBounds(scene),
 		{
 			min: [-2.5, -5.0, -2.5],
 			max: [2.5, 0.0, 2.5],
@@ -40,7 +40,7 @@ test('@gltf-transform/functions::center', async (t) => {
 	await doc.transform(center({ pivot: 'below' }));
 
 	t.deepEquals(
-		bounds(scene),
+		getBounds(scene),
 		{
 			min: [-2.5, 0.0, -2.5],
 			max: [2.5, 5.0, 2.5],
