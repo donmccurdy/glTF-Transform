@@ -1,8 +1,8 @@
 import test from 'tape';
 import { Accessor, Document } from '@gltf-transform/core';
-import { bounds } from '@gltf-transform/core';
+import { getBounds } from '@gltf-transform/core';
 
-test('@gltf-transform/functions::bounds', (t) => {
+test('@gltf-transform/functions::getBounds', (t) => {
 	const doc = new Document();
 	const position = doc
 		.createAccessor()
@@ -14,7 +14,7 @@ test('@gltf-transform/functions::bounds', (t) => {
 	const scene = doc.createScene().addChild(node);
 
 	t.deepEquals(
-		bounds(scene),
+		getBounds(scene),
 		{
 			min: [100, 100, 100],
 			max: [105, 105, 105],

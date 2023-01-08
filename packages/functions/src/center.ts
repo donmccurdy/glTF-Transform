@@ -1,5 +1,5 @@
 import type { Document, Transform, vec3 } from '@gltf-transform/core';
-import { bounds } from '@gltf-transform/core';
+import { getBounds } from '@gltf-transform/core';
 import { createTransform } from './utils';
 
 const NAME = 'center';
@@ -37,7 +37,7 @@ export function center(_options: CenterOptions = CENTER_DEFAULTS): Transform {
 
 				let pivot: vec3;
 				if (typeof options.pivot === 'string') {
-					const bbox = bounds(scene);
+					const bbox = getBounds(scene);
 					pivot = [
 						(bbox.max[0] - bbox.min[0]) / 2 + bbox.min[0],
 						(bbox.max[1] - bbox.min[1]) / 2 + bbox.min[1],

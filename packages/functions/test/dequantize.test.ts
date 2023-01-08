@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
 import test from 'tape';
-import { bbox, bounds, Document, Logger, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
+import { bbox, getBounds, Document, Logger, Primitive, PrimitiveTarget, Scene, vec3 } from '@gltf-transform/core';
 import { dequantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -12,8 +12,8 @@ test('@gltf-transform/functions::dequantize', async (t) => {
 	const node = doc.getRoot().listNodes()[0];
 	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 
-	const bboxScenePrev = bounds(scene);
-	const bboxNodePrev = bounds(node);
+	const bboxScenePrev = getBounds(scene);
+	const bboxNodePrev = getBounds(node);
 	const bboxMeshPrev = primBounds(prim);
 
 	t.deepEquals(bboxScenePrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
@@ -22,8 +22,8 @@ test('@gltf-transform/functions::dequantize', async (t) => {
 
 	await doc.transform(dequantize());
 
-	const bboxScene = bounds(scene);
-	const bboxNode = bounds(node);
+	const bboxScene = getBounds(scene);
+	const bboxNode = getBounds(node);
 	const bboxMesh = primBounds(prim);
 
 	t.ok(prim.getAttribute('POSITION').getArray() instanceof Float32Array, 'position - float32');

@@ -1,7 +1,7 @@
 import {
 	Accessor,
 	bbox,
-	bounds,
+	getBounds,
 	BufferUtils,
 	Document,
 	Extension,
@@ -244,7 +244,7 @@ export class DracoMeshCompression extends Extension {
 			if (this.document.getRoot().listScenes().length !== 1) {
 				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
 			} else {
-				quantizationVolume = bounds(this.document.getRoot().listScenes().pop()!);
+				quantizationVolume = getBounds(this.document.getRoot().listScenes().pop()!);
 			}
 		}
 
