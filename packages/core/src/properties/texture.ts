@@ -71,7 +71,8 @@ export class Texture extends ExtensibleProperty<ITexture> {
 	 */
 	public setURI(uri: string): this {
 		this.set('uri', uri);
-		this.set('mimeType', ImageUtils.extensionToMimeType(FileUtils.extension(uri)));
+		const mimeType = ImageUtils.extensionToMimeType(FileUtils.extension(uri));
+		if (mimeType) this.set('mimeType', mimeType);
 		return this;
 	}
 

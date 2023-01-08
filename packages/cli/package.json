@@ -28,7 +28,6 @@
 		"@gltf-transform/core": "^2.5.1",
 		"@gltf-transform/extensions": "^2.5.1",
 		"@gltf-transform/functions": "^2.5.1",
-		"@squoosh/lib": "^0.4.0",
 		"@types/inquirer": "^8.2.1",
 		"@types/language-tags": "^1.0.0",
 		"@types/micromatch": "^4.0.2",
@@ -48,6 +47,7 @@
 		"node-gzip": "^1.1.2",
 		"p-limit": "3.1.0",
 		"semver": "^7.3.7",
+		"sharp": "^0.31.2",
 		"spdx-correct": "^3.1.1",
 		"tmp": "^0.2.1"
 	},
@@ -60,5 +60,5 @@
 		"package.json",
 		"package-lock.json"
 	],
-	"gitHead": "5cc8d10b5de17633b6a63a4fa5e10e0e60c71e84"
+	"gitHead": "381ba367afd6179de695be1e4a771b337ccdabad"
 }

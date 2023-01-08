@@ -6,13 +6,12 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, oxipng, mozjpeg, webp, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, textureResize, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, TEXTURE_COMPRESS_DEFAULTS } from '@gltf-transform/functions';
 import { InspectFormat, inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
-import * as squoosh from '@squoosh/lib';
 
 let io: NodeIO;
 
@@ -20,6 +19,7 @@ let io: NodeIO;
 const fetch = require('node-fetch');
 const draco3d = require('draco3dgltf');
 const mikktspace = require('mikktspace');
+const sharp = require('sharp');
 const { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } = require('meshoptimizer');
 
 const programReady = new Promise<void>((resolve) => {
@@ -1009,31 +1009,19 @@ affects only the container metadata.`.trim())
 			.transform(ktxfix())
 	);
 
-const SQUOOSH_SUMMARY = `
-Compresses textures with {VARIANT}, using @squoosh/lib. Reduces transmitted file
+const TEXTURE_COMPRESS_SUMMARY = `
+Compresses textures with {VARIANT}, using sharp. Reduces transmitted file
 size. Compared to GPU texture compression like KTX/Basis, PNG/JPEG/WebP must
 be fully decompressed in GPU memory — this makes texture GPU upload much
 slower, and may consume 4-8x more GPU memory. However, the PNG/JPEG/WebP
 compression methods are typically more forgiving than GPU texture compression,
 and require less tuning to achieve good visual and filesize results.
-
-The experimental auto-optimization mode, --auto, can be used to iteratively
-refine and optimize encoder settings against perceptual metrics (Butteraugli
-distance). Slower, with typically higher-quality and larger images compared to
-the default encoder settings.
-
-${underline('NOTICE')}: Only a small subset of the available @squoosh/lib
-encoder configuration options are currently exposed by this commandline. If any
-contributors would like to recommend, test, and document additional encoder
-options, please open a pull request.
-
-See: https://github.com/GoogleChromeLabs/squoosh/blob/dev/libsquoosh/src/codecs.ts
 `.trim();
 
 // WEBP
 program
 	.command('webp', 'WebP texture compression')
-	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
@@ -1046,24 +1034,17 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
-	.option(
-		'--auto',
-		'Enables experimental auto-optimization with perceptual metrics.'
-		+ ' Slower, with typically higher-quality and larger images'
-		+ ' compared to the default encoder settings.',
-		{validator: program.BOOLEAN, default: false}
-	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(webp({...options, formats, slots, squoosh}));
+			.transform(textureCompress({targetFormat: 'webp', encoder: sharp, formats, slots}));
 	});
 
-// OXIPNG
+// PNG
 program
-	.command('oxipng', 'OxiPNG texture compression')
-	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'OxiPNG'))
+	.command('png', 'PNG texture compression')
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'PNG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
@@ -1076,24 +1057,17 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
-	.option(
-		'--auto',
-		'Enables experimental auto-optimization with perceptual metrics.'
-		+ ' Slower, with typically higher-quality and larger images'
-		+ ' compared to the default encoder settings.',
-		{validator: program.BOOLEAN, default: false}
-	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(oxipng({...options, formats, slots, squoosh}));
+			.transform(textureCompress({targetFormat: 'png', encoder: sharp, formats, slots}));
 	});
 
-// MOZJPEG
+// JPEG
 program
-	.command('mozjpeg', 'MozJPEG texture compression')
-	.help(SQUOOSH_SUMMARY.replace(/{VARIANT}/g, 'MozJPEG'))
+	.command('jpeg', 'JPEG texture compression')
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'JPEG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option(
@@ -1106,18 +1080,11 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
-	.option(
-		'--auto',
-		'Enables experimental auto-optimization with perceptual metrics.'
-		+ ' Slower, with typically higher-quality and larger images'
-		+ ' compared to the default encoder settings.',
-		{validator: program.BOOLEAN, default: false}
-	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(mozjpeg({...options, formats, slots, squoosh}));
+			.transform(textureCompress({targetFormat: 'jpeg', encoder: sharp, formats, slots}));
 	});
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
