@@ -16,7 +16,7 @@ import {
 import type { MeshoptEncoder } from 'meshoptimizer';
 
 const { BYTE, SHORT, FLOAT } = Accessor.ComponentType;
-const { normalize, denormalize } = MathUtils;
+const { encodeNormalizedInt, decodeNormalizedInt } = MathUtils;
 
 /** Pre-processes array with required filters or padding. */
 export function prepareAccessor(
@@ -68,12 +68,12 @@ export function prepareAccessor(
 		result.min = accessor.getMin([]);
 		result.max = accessor.getMax([]);
 		if (accessor.getNormalized()) {
-			result.min = result.min.map((v) => denormalize(v, accessor.getComponentType()));
-			result.max = result.max.map((v) => denormalize(v, accessor.getComponentType()));
+			result.min = result.min.map((v) => decodeNormalizedInt(v, accessor.getComponentType()));
+			result.max = result.max.map((v) => decodeNormalizedInt(v, accessor.getComponentType()));
 		}
 		if (result.normalized) {
-			result.min = result.min.map((v) => normalize(v, result.componentType));
-			result.max = result.max.map((v) => normalize(v, result.componentType));
+			result.min = result.min.map((v) => encodeNormalizedInt(v, result.componentType));
+			result.max = result.max.map((v) => encodeNormalizedInt(v, result.componentType));
 		}
 	} else if (result.byteStride % 4) {
 		result.array = padArrayElements(result.array, accessor.getElementSize());
@@ -88,7 +88,7 @@ function denormalizeArray(attribute: Accessor): Float32Array {
 	const srcArray = attribute.getArray()!;
 	const dstArray = new Float32Array(srcArray.length);
 	for (let i = 0; i < srcArray.length; i++) {
-		dstArray[i] = denormalize(srcArray[i], componentType);
+		dstArray[i] = decodeNormalizedInt(srcArray[i], componentType);
 	}
 	return dstArray;
 }

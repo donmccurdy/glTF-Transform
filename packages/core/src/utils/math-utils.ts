@@ -19,7 +19,7 @@ export class MathUtils {
 		return true;
 	}
 
-	public static denormalize(c: number, componentType: GLTF.AccessorComponentType): number {
+	public static decodeNormalizedInt(c: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
 			case 5126:
@@ -37,7 +37,12 @@ export class MathUtils {
 		}
 	}
 
-	public static normalize(f: number, componentType: GLTF.AccessorComponentType): number {
+	/** @deprecated Renamed to {@link MathUtils.decodeNormalizedInt}. */
+	public static denormalize(c: number, componentType: GLTF.AccessorComponentType): number {
+		return MathUtils.decodeNormalizedInt(c, componentType);
+	}
+
+	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
 			case 5126:
@@ -53,6 +58,11 @@ export class MathUtils {
 			default:
 				throw new Error('Invalid component type.');
 		}
+	}
+
+	/** @deprecated Renamed to {@link MathUtils.encodeNormalizedInt}. */
+	public static normalize(f: number, componentType: GLTF.AccessorComponentType): number {
+		return MathUtils.encodeNormalizedInt(f, componentType);
 	}
 
 	/**
