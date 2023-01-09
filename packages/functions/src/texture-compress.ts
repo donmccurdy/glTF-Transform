@@ -1,9 +1,10 @@
-import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform } from '@gltf-transform/core';
+import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { TextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
 import type sharp from 'sharp';
 import { formatBytes } from './utils';
+import { TextureResizeFilter } from './texture-resize';
 
 const NAME = 'textureCompress';
 
@@ -21,19 +22,32 @@ export interface TextureCompressOptions {
 	 * will be converted. Default: original format.
 	 */
 	targetFormat?: Format;
-	/** Pattern matching the format(s) to be compressed or converted. Default: /.*\/. */
-	formats?: RegExp;
-	/** Pattern matching the material texture slot(s) to be compressed or converted. Default: /.*\/. */
-	slots?: RegExp;
+	/**
+	 * Resizes textures to given maximum width/height, preserving aspect ratio.
+	 * For example, a 4096x8192 texture, resized with limit [2048, 2048] will
+	 * be reduced to 1024x2048.
+	 */
+	resize?: vec2;
+	/** Interpolation used if resizing. Default: TextureResizeFilter.LANCZOS3. */
+	resizeFilter?: TextureResizeFilter;
+	/** Pattern identifying textures to compress, matched to name or URI. */
+	pattern?: RegExp | null;
+	/** Pattern matching the format(s) to be compressed or converted. */
+	formats?: RegExp | null;
+	/** Pattern matching the material texture slot(s) to be compressed or converted. */
+	slots?: RegExp | null;
 }
 
-export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<Omit<TextureCompressOptions, 'encoder'>, 'targetFormat'>> = {
-	formats: /.*/,
-	slots: /.*/,
-};
+export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'>> =
+	{
+		resizeFilter: TextureResizeFilter.LANCZOS3,
+		pattern: null,
+		formats: null,
+		slots: null,
+	};
 
 /**
- * Optimizes images, optionally converting to JPEG, PNG, or WebP formats.
+ * Optimizes images, optionally resizing or converting to JPEG, PNG, or WebP formats.
  *
  * Requires `sharp`, and is available only in Node.js environments.
  *
@@ -62,6 +76,11 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 	const targetFormat = options.targetFormat as Format | undefined;
+	const resize = options.resize as vec2 | undefined;
+	const resizeFilter = options.resizeFilter as TextureResizeFilter;
+	const patternRe = options.pattern;
+	const formatsRe = options.formats;
+	const slotsRe = options.slots;
 
 	if (!encoder) {
 		throw new Error(`${targetFormat}: encoder dependency required — install "sharp".`);
@@ -86,10 +105,13 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				if (!SUPPORTED_MIME_TYPES.includes(texture.getMimeType())) {
 					logger.debug(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
-				} else if (!options.formats.test(texture.getMimeType())) {
+				} else if (patternRe && !patternRe.test(texture.getName()) && !patternRe.test(texture.getURI())) {
+					logger.debug(`${prefix}: Skipping, excluded by "pattern" parameter.`);
+					return;
+				} else if (formatsRe && !formatsRe.test(texture.getMimeType())) {
 					logger.debug(`${prefix}: Skipping, "${texture.getMimeType()}" excluded by "formats" parameter.`);
 					return;
-				} else if (slots.length && !slots.some((slot) => options.slots.test(slot))) {
+				} else if (slotsRe && slots.length && !slots.some((slot) => slotsRe.test(slot))) {
 					logger.debug(`${prefix}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
 					return;
 				} else if (options.targetFormat === 'jpeg' && channels & TextureChannel.A) {
@@ -113,6 +135,15 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				// Convert if target and source formats differ.
 				if (srcMimeType !== dstMimeType) {
 					instance.toFormat(dstFormat);
+				}
+
+				// Resize.
+				if (resize) {
+					instance.resize(resize[0], resize[1], {
+						fit: 'inside',
+						kernel: resizeFilter,
+						withoutEnlargement: true,
+					});
 				}
 
 				const dstImage = BufferUtils.toView(await instance.toBuffer());
