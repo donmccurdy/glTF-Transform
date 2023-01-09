@@ -3,7 +3,7 @@ import path from 'path';
 import CLITable from 'cli-table3';
 import type Validator from 'gltf-validator';
 import type { ILogger } from '@gltf-transform/core';
-import { formatHeader } from './util';
+import { formatHeader, formatTable, TableFormat } from './util';
 
 const validator = createValidator();
 
@@ -22,6 +22,7 @@ function createValidator(): typeof Validator {
 export interface ValidateOptions {
 	limit: number;
 	ignore: string[];
+	format: TableFormat;
 }
 
 interface ValidatorReport {
@@ -47,21 +48,31 @@ export function validate(input: string, options: ValidateOptions, logger: ILogge
 					});
 				}),
 		})
-		.then((report: ValidatorReport) => {
-			printIssueSection('error', 0, report, logger);
-			printIssueSection('warning', 1, report, logger);
-			printIssueSection('info', 2, report, logger);
-			printIssueSection('hint', 3, report, logger);
+		.then(async (report: ValidatorReport) => {
+			await printIssueSection('error', 0, report, logger, options.format);
+			await printIssueSection('warning', 1, report, logger, options.format);
+			await printIssueSection('info', 2, report, logger, options.format);
+			await printIssueSection('hint', 3, report, logger, options.format);
 		});
 }
 
-function printIssueSection(header: string, severity: number, report: ValidatorReport, logger: ILogger): void {
+async function printIssueSection(
+	header: string,
+	severity: number,
+	report: ValidatorReport,
+	logger: ILogger,
+	format: TableFormat
+): Promise<void> {
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {
-		const table = new CLITable({ head: ['code', 'message', 'severity', 'pointer'] });
-		table.push(...messages.map((m) => Object.values(m)));
-		console.log(table.toString());
+		console.log(
+			(await formatTable(
+				format,
+				['code', 'message', 'severity', 'pointer'],
+				messages.map((m) => Object.values(m))
+			)) + '\n\n'
+		);
 	} else {
 		logger.info(`No ${header}s found.`);
 	}
