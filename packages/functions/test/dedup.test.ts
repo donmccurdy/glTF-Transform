@@ -5,7 +5,7 @@ import { createCanvas } from 'canvas';
 import test from 'tape';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
-import { MaterialsTransmission } from '@gltf-transform/extensions';
+import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 
 test('@gltf-transform/functions::dedup | accessors', async (t) => {
 	const io = new NodeIO();
@@ -102,7 +102,7 @@ test('@gltf-transform/functions::dedup | meshes', async (t) => {
 
 test('@gltf-transform/functions::dedup | textures', (t) => {
 	const doc = new Document();
-	const transmissionExt = doc.createExtension(MaterialsTransmission);
+	const transmissionExt = doc.createExtension(KHRMaterialsTransmission);
 
 	const canvas = createCanvas(100, 50);
 	const ctx = canvas.getContext('2d');

@@ -24,7 +24,7 @@ const { G } = TextureChannel;
 /**
  * # Volume
  *
- * Defines volume on a PBR {@link Material}. See {@link MaterialsVolume}.
+ * Defines volume on a PBR {@link Material}. See {@link KHRMaterialsVolume}.
  */
 export class Volume extends ExtensionProperty<IVolume> {
 	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;

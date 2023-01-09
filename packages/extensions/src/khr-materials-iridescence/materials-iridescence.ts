@@ -14,7 +14,7 @@ interface IridescenceDef {
 }
 
 /**
- * # MaterialsIridescence
+ * # KHRMaterialsIridescence
  *
  * [`KHR_materials_iridescence`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_iridescence/)
  * defines iridescence (thin film interference) on a PBR material.
@@ -32,14 +32,14 @@ interface IridescenceDef {
  *
  * ### Example
  *
- * The `MaterialsIridescence` class provides a single {@link ExtensionProperty} type, `Iridescence`,
+ * The `KHRMaterialsIridescence` class provides a single {@link ExtensionProperty} type, `Iridescence`,
  * which may be attached to any {@link Material} instance. For example:
  *
  * ```typescript
- * import { MaterialsIridescence, Iridescence } from '@gltf-transform/extensions';
+ * import { KHRMaterialsIridescence, Iridescence } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const iridescenceExtension = document.createExtension(MaterialsIridescence);
+ * const iridescenceExtension = document.createExtension(KHRMaterialsIridescence);
  *
  * // Create an Iridescence property.
  * const iridescence = iridescenceExtension.createIridescence()
@@ -50,7 +50,7 @@ interface IridescenceDef {
  * material.setExtension('KHR_materials_iridescence', iridescence);
  * ```
  */
-export class MaterialsIridescence extends Extension {
+export class KHRMaterialsIridescence extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

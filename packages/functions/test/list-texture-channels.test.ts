@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import { Document, TextureChannel } from '@gltf-transform/core';
 import { listTextureChannels, getTextureChannelMask } from '@gltf-transform/functions';
-import { MaterialsSheen } from '@gltf-transform/extensions';
+import { KHRMaterialsSheen } from '@gltf-transform/extensions';
 
 const { R, G, B, A } = TextureChannel;
 
@@ -11,7 +11,7 @@ test('@gltf-transform/functions::listTextureChannels', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();
-	const sheenExtension = document.createExtension(MaterialsSheen);
+	const sheenExtension = document.createExtension(KHRMaterialsSheen);
 	const sheen = sheenExtension.createSheen().setSheenRoughnessTexture(textureB);
 	const material = document
 		.createMaterial()
@@ -34,7 +34,7 @@ test('@gltf-transform/functions::getTextureChannelMask', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();
-	const sheenExtension = document.createExtension(MaterialsSheen);
+	const sheenExtension = document.createExtension(KHRMaterialsSheen);
 	const sheen = sheenExtension.createSheen().setSheenRoughnessTexture(textureB);
 	const material = document
 		.createMaterial()

@@ -5,7 +5,7 @@ import { KHR_MATERIALS_UNLIT } from '../constants';
 /**
  * # Unlit
  *
- * Converts a PBR {@link Material} to an unlit shading model. See {@link MaterialsUnlit}.
+ * Converts a PBR {@link Material} to an unlit shading model. See {@link KHRMaterialsUnlit}.
  */
 export class Unlit extends ExtensionProperty {
 	public static EXTENSION_NAME = KHR_MATERIALS_UNLIT;

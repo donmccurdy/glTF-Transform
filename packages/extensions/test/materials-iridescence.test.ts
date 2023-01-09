@@ -2,14 +2,14 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { MaterialsIridescence, Iridescence } from '../';
+import { KHRMaterialsIridescence, Iridescence } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const iridescenceExtension = doc.createExtension(MaterialsIridescence);
+	const iridescenceExtension = doc.createExtension(KHRMaterialsIridescence);
 	const iridescence = iridescenceExtension
 		.createIridescence()
 		.setIridescenceFactor(0.9)
@@ -26,7 +26,7 @@ test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_iridescence'), iridescence, 'iridescence is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([MaterialsIridescence]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsIridescence]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -44,12 +44,12 @@ test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 		},
 		'writes iridescence extension'
 	);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsIridescence.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsIridescence.EXTENSION_NAME], 'writes extensionsUsed');
 
 	iridescenceExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_iridescence'), null, 'iridescence is detached');
 
-	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsIridescence]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsIridescence]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Iridescence>('KHR_materials_iridescence');
 
@@ -64,7 +64,7 @@ test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 
 test('@gltf-transform/extensions::materials-iridescence | copy', (t) => {
 	const doc = new Document();
-	const iridescenceExtension = doc.createExtension(MaterialsIridescence);
+	const iridescenceExtension = doc.createExtension(KHRMaterialsIridescence);
 	const iridescence = iridescenceExtension
 		.createIridescence()
 		.setIridescenceFactor(0.9)
@@ -77,7 +77,7 @@ test('@gltf-transform/extensions::materials-iridescence | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const iridescence2 = doc2.getRoot().listMaterials()[0].getExtension<Iridescence>('KHR_materials_iridescence');
-	t.equal(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsIridescence');
+	t.equal(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsIridescence');
 	t.ok(iridescence2, 'copy Iridescence');
 	t.equal(iridescence2.getIridescenceFactor(), 0.9, 'copy iridescenceFactor');
 	t.equal(iridescence2.getIridescenceIOR(), 1.5, 'copy iridescenceIOR');

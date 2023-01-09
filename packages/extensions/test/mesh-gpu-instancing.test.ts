@@ -2,11 +2,11 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Accessor, Document, NodeIO } from '@gltf-transform/core';
-import { InstancedMesh, MeshGPUInstancing } from '../';
+import { InstancedMesh, EXTMeshGPUInstancing } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-const io = new NodeIO().registerExtensions([MeshGPUInstancing]);
+const io = new NodeIO().registerExtensions([EXTMeshGPUInstancing]);
 
 test('@gltf-transform/extensions::mesh-gpu-instancing', async (t) => {
 	const doc = new Document();
@@ -21,7 +21,7 @@ test('@gltf-transform/extensions::mesh-gpu-instancing', async (t) => {
 	const prim = doc.createPrimitive().setAttribute('POSITION', data.clone().setName('prim_pos'));
 	const mesh = doc.createMesh().addPrimitive(prim);
 
-	const batchExtension = doc.createExtension(MeshGPUInstancing);
+	const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 	const batch = batchExtension
 		.createInstancedMesh()
 		.setAttribute('TRANSLATION', data.clone().setName('inst_pos'))
@@ -67,14 +67,14 @@ test('@gltf-transform/extensions::mesh-gpu-instancing | copy', (t) => {
 		.setArray(new Float32Array(12))
 		.setType(Accessor.Type.VEC3)
 		.setBuffer(doc.createBuffer());
-	const batchExtension = doc.createExtension(MeshGPUInstancing);
+	const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 	const batch = batchExtension.createInstancedMesh().setAttribute('TRANSLATION', data).setAttribute('_ID', data);
 
 	doc.createNode().setExtension('EXT_mesh_gpu_instancing', batch);
 
 	const doc2 = doc.clone();
 	const batch2 = doc2.getRoot().listNodes()[0].getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MeshGPUInstancing');
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy EXTMeshGPUInstancing');
 	t.ok(batch2, 'copy batch');
 	t.deepEqual(batch.listSemantics(), batch2.listSemantics(), 'matching semantics');
 	t.deepEqual(batch.getAttribute('_ID').getArray(), new Float32Array(12), 'matching data');

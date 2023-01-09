@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { TextureBasisu } from '../';
+import { KHRTextureBasisu } from '../';
 
 const IS_NODEJS = typeof window === 'undefined';
 
@@ -14,12 +14,12 @@ if (IS_NODEJS) {
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-const io = new NodeIO().registerExtensions([TextureBasisu]);
+const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
 
 test('@gltf-transform/extensions::texture-basisu', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const basisuExtension = doc.createExtension(TextureBasisu);
+	const basisuExtension = doc.createExtension(KHRTextureBasisu);
 	const tex1 = doc.createTexture('BasisTexture').setMimeType('image/ktx2').setImage(new Uint8Array(10));
 	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new Uint8Array(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);
@@ -29,7 +29,7 @@ test('@gltf-transform/extensions::texture-basisu', async (t) => {
 	jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
 
 	// Writing to file.
-	t.deepEqual(jsonDoc.json.extensionsUsed, [TextureBasisu.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRTextureBasisu.EXTENSION_NAME], 'writes extensionsUsed');
 	t.equal(jsonDoc.json.textures[0].source, undefined, 'omits .source on KTX2 texture');
 	t.equal(jsonDoc.json.textures[1].source, 1, 'includes .source on PNG texture');
 	t.equal(

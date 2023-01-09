@@ -60,7 +60,7 @@ class WEBPImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # TextureWebP
+ * # EXTTextureWebP
  *
  * [`EXT_texture_webp`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_webp/)
  * enables WebP images for any material texture.
@@ -85,10 +85,10 @@ class WEBPImageUtils implements ImageUtilsFormat {
  * ### Example
  *
  * ```typescript
- * import { TextureWebP } from '@gltf-transform/extensions';
+ * import { EXTTextureWebP } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const webpExtension = document.createExtension(TextureWebP)
+ * const webpExtension = document.createExtension(EXTTextureWebP)
  * 	.setRequired(true);
  * document.createTexture('MyWebPTexture')
  * 	.setMimeType('image/webp')
@@ -102,7 +102,7 @@ class WEBPImageUtils implements ImageUtilsFormat {
  * always be required. This tool does not support writing assets that "fall back" to optional PNG or
  * JPEG image data.
  */
-export class TextureWebP extends Extension {
+export class EXTTextureWebP extends Extension {
 	public readonly extensionName = NAME;
 	/** @hidden */
 	public readonly prereadTypes = [PropertyType.TEXTURE];

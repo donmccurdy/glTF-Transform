@@ -1,5 +1,5 @@
 import { Document, NodeIO, Logger, FileUtils, Transform, Format, ILogger } from '@gltf-transform/core';
-import type { Packet, XMP } from '@gltf-transform/extensions';
+import type { Packet, KHRXMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { formatBytes, XMPContext } from './util';
 
@@ -57,7 +57,9 @@ export class Session {
 
 function updateMetadata(document: Document): void {
 	const root = document.getRoot();
-	const xmpExtension = root.listExtensionsUsed().find((ext) => ext.extensionName === 'KHR_xmp_json_ld') as XMP | null;
+	const xmpExtension = root
+		.listExtensionsUsed()
+		.find((ext) => ext.extensionName === 'KHR_xmp_json_ld') as KHRXMP | null;
 
 	// Do not add KHR_xmp_json_ld to assets that don't already use it.
 	if (!xmpExtension) return;

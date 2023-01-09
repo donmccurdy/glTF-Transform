@@ -2,16 +2,16 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { TextureTransform, Transform } from '../';
+import { KHRTextureTransform, Transform } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-const io = new NodeIO().registerExtensions([TextureTransform]);
+const io = new NodeIO().registerExtensions([KHRTextureTransform]);
 
 test('@gltf-transform/extensions::texture-transform', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const transformExtension = doc.createExtension(TextureTransform);
+	const transformExtension = doc.createExtension(KHRTextureTransform);
 	const tex1 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(10));
 	const tex2 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(15));
 	const tex3 = doc.createTexture().setMimeType('image/png').setImage(new Uint8Array(20));
@@ -64,7 +64,7 @@ test('@gltf-transform/extensions::texture-transform', async (t) => {
 
 test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	const srcDoc = new Document();
-	const transformExtension = srcDoc.createExtension(TextureTransform);
+	const transformExtension = srcDoc.createExtension(KHRTextureTransform);
 	const tex1 = srcDoc.createTexture();
 	const tex2 = srcDoc.createTexture();
 	const tex3 = srcDoc.createTexture();
@@ -125,7 +125,7 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 test('@gltf-transform/extensions::texture-transform | i/o', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const transformExtension = doc.createExtension(TextureTransform);
+	const transformExtension = doc.createExtension(KHRTextureTransform);
 	const tex1 = doc.createTexture();
 
 	const mat = doc.createMaterial();

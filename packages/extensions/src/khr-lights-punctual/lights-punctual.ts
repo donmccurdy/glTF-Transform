@@ -25,7 +25,7 @@ interface LightDef {
 }
 
 /**
- * # LightsPunctual
+ * # KHRLightsPunctual
  *
  * [`KHR_lights_punctual`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_lights_punctual/) defines three "punctual" light types: directional, point and
  * spot.
@@ -40,10 +40,10 @@ interface LightDef {
  * ### Example
  *
  * ```typescript
- * import { LightsPunctual, Light, LightType } from '@gltf-transform/extensions';
+ * import { KHRLightsPunctual, Light, LightType } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const lightsExtension = document.createExtension(LightsPunctual);
+ * const lightsExtension = document.createExtension(KHRLightsPunctual);
  *
  * // Create a Light property.
  * const light = lightsExtension.createLight()
@@ -55,7 +55,7 @@ interface LightDef {
  * node.setExtension('KHR_lights_punctual', light);
  * ```
  */
-export class LightsPunctual extends Extension {
+export class KHRLightsPunctual extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

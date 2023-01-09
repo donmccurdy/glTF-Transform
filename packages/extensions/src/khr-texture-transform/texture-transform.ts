@@ -12,7 +12,7 @@ interface TransformDef {
 }
 
 /**
- * # TextureTransform
+ * # KHRTextureTransform
  *
  * [`KHR_texture_transform`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_texture_transform/)
  * adds offset, rotation, and scale to {@link TextureInfo} properties.
@@ -26,14 +26,14 @@ interface TransformDef {
  *
  * ### Example
  *
- * The `TextureTransform` class provides a single {@link ExtensionProperty} type, `Transform`, which
+ * The `KHRTextureTransform` class provides a single {@link ExtensionProperty} type, `Transform`, which
  * may be attached to any {@link TextureInfo} instance. For example:
  *
  * ```typescript
- * import { TextureTransform } from '@gltf-transform/extensions';
+ * import { KHRTextureTransform } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const transformExtension = document.createExtension(TextureTransform)
+ * const transformExtension = document.createExtension(KHRTextureTransform)
  * 	.setRequired(true);
  *
  * // Create a reusable Transform.
@@ -47,7 +47,7 @@ interface TransformDef {
  * 	.setExtension('KHR_texture_transform', transform);
  * ```
  */
-export class TextureTransform extends Extension {
+export class KHRTextureTransform extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

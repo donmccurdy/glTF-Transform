@@ -1,5 +1,5 @@
 import type { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
-import { MeshQuantization } from '@gltf-transform/extensions';
+import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import { createTransform } from './utils';
 
 const NAME = 'dequantize';
@@ -18,7 +18,7 @@ const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
 };
 
 /**
- * Dequantize {@link Primitive Primitives}, removing {@link MeshQuantization `KHR_mesh_quantization`}
+ * Dequantize {@link Primitive Primitives}, removing {@link KHRMeshQuantization `KHR_mesh_quantization`}
  * if present. Dequantization will increase the size of the mesh on disk and in memory, but may be
  * necessary for compatibility with applications that don't support quantization.
  */
@@ -32,7 +32,7 @@ export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): T
 				dequantizePrimitive(prim, options);
 			}
 		}
-		doc.createExtension(MeshQuantization).dispose();
+		doc.createExtension(KHRMeshQuantization).dispose();
 		logger.debug(`${NAME}: Complete.`);
 	});
 }

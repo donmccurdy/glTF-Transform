@@ -2,14 +2,14 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { MaterialsVolume, Volume } from '../';
+import { KHRMaterialsVolume, Volume } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::materials-volume', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const volumeExtension = doc.createExtension(MaterialsVolume);
+	const volumeExtension = doc.createExtension(KHRMaterialsVolume);
 	const volume = volumeExtension
 		.createVolume()
 		.setThicknessFactor(0.9)
@@ -24,7 +24,7 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 
 	t.equal(mat.getExtension('KHR_materials_volume'), volume, 'volume is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([MaterialsVolume]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsVolume]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -40,12 +40,12 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 		},
 		'writes volume extension'
 	);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsVolume.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsVolume.EXTENSION_NAME], 'writes extensionsUsed');
 
 	volumeExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_volume'), null, 'volume is detached');
 
-	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsVolume]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsVolume]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Volume>('KHR_materials_volume');
 
@@ -61,7 +61,7 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 
 test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
 	const doc = new Document();
-	const volumeExtension = doc.createExtension(MaterialsVolume);
+	const volumeExtension = doc.createExtension(KHRMaterialsVolume);
 	const volume = volumeExtension
 		.createVolume()
 		.setThicknessFactor(0.9)
@@ -72,7 +72,7 @@ test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const volume2 = doc2.getRoot().listMaterials()[0].getExtension<Volume>('KHR_materials_volume');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsVolume');
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsVolume');
 	t.ok(volume2, 'copy Volume');
 	t.equals(volume2.getThicknessFactor(), 0.9, 'copy thicknessFactor');
 	t.equals(volume2.getThicknessTexture().getName(), 'trns', 'copy thicknessTexture');

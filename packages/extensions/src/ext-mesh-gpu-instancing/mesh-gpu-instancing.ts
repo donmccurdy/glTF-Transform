@@ -11,7 +11,7 @@ interface InstancedMeshDef {
 }
 
 /**
- * # MeshGPUInstancing
+ * # EXTMeshGPUInstancing
  *
  * [`EXT_mesh_gpu_instancing`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing/)
  * prepares mesh data for efficient GPU instancing.
@@ -36,11 +36,11 @@ interface InstancedMeshDef {
  *
  * ### Example
  *
- * The `MeshGPUInstancing` class provides a single {@link ExtensionProperty} type, `InstancedMesh`,
+ * The `EXTMeshGPUInstancing` class provides a single {@link ExtensionProperty} type, `InstancedMesh`,
  * which may be attached to any {@link Node} instance. For example:
  *
  * ```typescript
- * import { MeshGPUInstancing } from '@gltf-transform/extensions';
+ * import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
  *
  * // Create standard mesh, node, and scene hierarchy.
  * // ...
@@ -62,7 +62,7 @@ interface InstancedMeshDef {
  * 	.setBuffer(buffer);
  *
  * // Create an Extension attached to the Document.
- * const batchExtension = document.createExtension(MeshGPUInstancing)
+ * const batchExtension = document.createExtension(EXTMeshGPUInstancing)
  * 	.setRequired(true);
  * const batch = batchExtension.createInstancedMesh()
  * 	.setAttribute('TRANSLATION', batchPositions)
@@ -77,7 +77,7 @@ interface InstancedMeshDef {
  * types allowed by the extension specification. Custom instance attributes are allowed, and should
  * be prefixed with an underscore (`_*`).
  */
-export class MeshGPUInstancing extends Extension {
+export class EXTMeshGPUInstancing extends Extension {
 	public readonly extensionName = NAME;
 	/** @hidden */
 	public readonly provideTypes = [PropertyType.NODE];

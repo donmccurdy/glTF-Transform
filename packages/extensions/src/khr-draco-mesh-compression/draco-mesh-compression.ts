@@ -38,7 +38,7 @@ interface DracoWriterContext {
 }
 
 /**
- * # DracoMeshCompression
+ * # KHRDracoMeshCompression
  *
  * [`KHR_draco_mesh_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/)
  * provides advanced compression for mesh geometry.
@@ -80,14 +80,14 @@ interface DracoWriterContext {
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
- * import { DracoMeshCompression } from '@gltf-transform/extensions';
+ * import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
  *
  * import draco3d from 'draco3dgltf';
  *
  * // ...
  *
  * const io = new NodeIO()
- *	.registerExtensions([DracoMeshCompression])
+ *	.registerExtensions([KHRDracoMeshCompression])
  *	.registerDependencies({
  *		'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
  *		'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
@@ -97,17 +97,17 @@ interface DracoWriterContext {
  * const document = await io.read('compressed.glb');
  *
  * // Write and encode.
- * document.createExtension(DracoMeshCompression)
+ * document.createExtension(KHRDracoMeshCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({
- * 		method: DracoMeshCompression.EncoderMethod.EDGEBREAKER,
+ * 		method: KHRDracoMeshCompression.EncoderMethod.EDGEBREAKER,
  * 		encodeSpeed: 5,
  * 		decodeSpeed: 5,
  * 	});
  * await io.write('compressed.glb', document);
  * ```
  */
-export class DracoMeshCompression extends Extension {
+export class KHRDracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
 	/** @hidden */
 	public readonly prereadTypes = [PropertyType.PRIMITIVE];

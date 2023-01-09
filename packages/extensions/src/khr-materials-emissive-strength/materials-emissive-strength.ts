@@ -9,7 +9,7 @@ interface EmissiveStrengthDef {
 }
 
 /**
- * # MaterialsEmissiveStrength
+ * # KHRMaterialsEmissiveStrength
  *
  * [KHR_materials_emissive_strength](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_emissive_strength/)
  * defines emissive strength and enables high-dynamic-range (HDR) emissive materials.
@@ -34,10 +34,10 @@ interface EmissiveStrengthDef {
  * ### Example
  *
  * ```typescript
- * import { MaterialsEmissiveStrength, EmissiveStrength } from '@gltf-transform/extensions';
+ * import { KHRMaterialsEmissiveStrength, EmissiveStrength } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const emissiveStrengthExtension = document.createExtension(MaterialsEmissiveStrength);
+ * const emissiveStrengthExtension = document.createExtension(KHRMaterialsEmissiveStrength);
  *
  * // Create EmissiveStrength property.
  * const emissiveStrength = emissiveStrengthExtension
@@ -47,7 +47,7 @@ interface EmissiveStrengthDef {
  * material.setExtension('KHR_materials_emissive_strength', emissiveStrength);
  * ```
  */
-export class MaterialsEmissiveStrength extends Extension {
+export class KHRMaterialsEmissiveStrength extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

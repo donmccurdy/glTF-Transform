@@ -25,7 +25,7 @@ const { R, G, B, A } = TextureChannel;
 /**
  * # Specular
  *
- * Defines specular reflectivity on a PBR {@link Material}. See {@link MaterialsSpecular}.
+ * Defines specular reflectivity on a PBR {@link Material}. See {@link KHRMaterialsSpecular}.
  */
 export class Specular extends ExtensionProperty<ISpecular> {
 	public static EXTENSION_NAME = KHR_MATERIALS_SPECULAR;

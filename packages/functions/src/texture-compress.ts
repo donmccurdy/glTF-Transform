@@ -1,5 +1,5 @@
 import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
-import { TextureWebP } from '@gltf-transform/extensions';
+import { EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
 import type sharp from 'sharp';
@@ -165,7 +165,7 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 
 		// Attach EXT_texture_web if needed.
 		if (textures.some((texture) => texture.getMimeType() === 'image/webp')) {
-			document.createExtension(TextureWebP).setRequired(true);
+			document.createExtension(EXTTextureWebP).setRequired(true);
 		}
 
 		logger.debug(`${NAME}: Complete.`);

@@ -29,7 +29,7 @@ type MeshoptBufferView = { extensions: { [NAME]: MeshoptBufferViewExtension } };
 type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
 
 /**
- * # MeshoptCompression
+ * # EXTMeshoptCompression
  *
  * [`EXT_meshopt_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/)
  * provides compression and fast decoding for geometry, morph targets, and animations.
@@ -65,14 +65,14 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { reorder, quantize } from '@gltf-transform/functions';
- * import { MeshoptCompression } from '@gltf-transform/extensions';
+ * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
  * import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
  *
  * await MeshoptDecoder.ready;
  * await MeshoptEncoder.ready;
  *
  * const io = new NodeIO()
- *	.registerExtensions([MeshoptCompression])
+ *	.registerExtensions([EXTMeshoptCompression])
  *	.registerDependencies({
  *		'meshopt.decoder': MeshoptDecoder,
  *		'meshopt.encoder': MeshoptEncoder,
@@ -86,9 +86,9 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * 	reorder({encoder: MeshoptEncoder}),
  * 	quantize()
  * );
- * document.createExtension(MeshoptCompression)
+ * document.createExtension(EXTMeshoptCompression)
  * 	.setRequired(true)
- * 	.setEncoderOptions({ method: MeshoptCompression.EncoderMethod.QUANTIZE });
+ * 	.setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
  * await io.write('compressed-medium.glb', document);
  *
  * // Write and encode. (High, -cc)
@@ -96,13 +96,13 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * 	reorder({encoder: MeshoptEncoder}),
  * 	quantize({pattern: /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/}),
  * );
- * document.createExtension(MeshoptCompression)
+ * document.createExtension(EXTMeshoptCompression)
  * 	.setRequired(true)
- * 	.setEncoderOptions({ method: MeshoptCompression.EncoderMethod.FILTER });
+ * 	.setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
  * await io.write('compressed-high.glb', document);
  * ```
  */
-export class MeshoptCompression extends Extension {
+export class EXTMeshoptCompression extends Extension {
 	public readonly extensionName = NAME;
 	/** @hidden */
 	public readonly prereadTypes = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
@@ -156,12 +156,12 @@ export class MeshoptCompression extends Extension {
 	 * Example:
 	 *
 	 * ```ts
-	 * import { MeshoptCompression } from '@gltf-transform/extensions';
+	 * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 	 *
-	 * doc.createExtension(MeshoptCompression)
+	 * doc.createExtension(EXTMeshoptCompression)
 	 * 	.setRequired(true)
 	 * 	.setEncoderOptions({
-	 * 		method: MeshoptCompression.EncoderMethod.QUANTIZE
+	 * 		method: EXTMeshoptCompression.EncoderMethod.QUANTIZE
 	 * 	});
 	 * ```
 	 */

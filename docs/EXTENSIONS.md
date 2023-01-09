@@ -21,29 +21,29 @@ as prescribed by the extension itself.
 
 > _**NOTICE:** Khronos extensions are widely supported and recommended for general use._
 
-- {@link DracoMeshCompression KHR_draco_mesh_compression}
-- {@link LightsPunctual KHR_lights_punctual}
-- {@link MaterialsClearcoat KHR_materials_clearcoat}
-- {@link MaterialsEmissiveStrength KHR_materials_emissive_strength}
-- {@link MaterialsIOR KHR_materials_ior}
-- {@link MaterialsIridescence KHR_materials_iridescence}
-- {@link MaterialsPBRSpecularGlossiness KHR_materials_pbrSpecularGlossiness}
-- {@link MaterialsSheen KHR_materials_sheen}
-- {@link MaterialsSpecular KHR_materials_specular}
-- {@link MaterialsTransmission KHR_materials_transmission}
-- {@link MaterialsUnlit KHR_materials_unlit}
-- {@link MaterialsVariants KHR_materials_variants}
-- {@link MaterialsVolume KHR_materials_volume}
-- {@link MeshQuantization KHR_mesh_quantization}
-- {@link TextureBasisu KHR_texture_basisu}
-- {@link TextureTransform KHR_texture_transform}
-- {@link XMP KHR_xmp_json_ld}
+- {@link KHRDracoMeshCompression KHR_draco_mesh_compression}
+- {@link KHRLightsPunctual KHR_lights_punctual}
+- {@link KHRMaterialsClearcoat KHR_materials_clearcoat}
+- {@link KHRMaterialsEmissiveStrength KHR_materials_emissive_strength}
+- {@link KHRMaterialsIOR KHR_materials_ior}
+- {@link KHRMaterialsIridescence KHR_materials_iridescence}
+- {@link KHRMaterialsPBRSpecularGlossiness KHR_materials_pbrSpecularGlossiness}
+- {@link KHRMaterialsSheen KHR_materials_sheen}
+- {@link KHRMaterialsSpecular KHR_materials_specular}
+- {@link KHRMaterialsTransmission KHR_materials_transmission}
+- {@link KHRMaterialsUnlit KHR_materials_unlit}
+- {@link KHRMaterialsVariants KHR_materials_variants}
+- {@link KHRMaterialsVolume KHR_materials_volume}
+- {@link KHRMeshQuantization KHR_mesh_quantization}
+- {@link KHRTextureBasisu KHR_texture_basisu}
+- {@link KHRTextureTransform KHR_texture_transform}
+- {@link KHRXMP KHR_xmp_json_ld}
 
 ## Vendor Extensions
 
-- {@link TextureWebP EXT_texture_webp}
-- {@link MeshGPUInstancing EXT_mesh_gpu_instancing}
-- {@link MeshoptCompression EXT_meshopt_compression}
+- {@link EXTTextureWebP EXT_texture_webp}
+- {@link EXTMeshGPUInstancing EXT_mesh_gpu_instancing}
+- {@link EXTMeshoptCompression EXT_meshopt_compression}
 
 ## Installation
 
@@ -64,8 +64,8 @@ const io = new WebIO().registerExtensions(KHRONOS_EXTENSIONS);
 
 // Register an individual extension.
 import { WebIO } from '@gltf-transform/core';
-import { MaterialsUnlit } from '@gltf-transform/extensions';
-const io = new WebIO().registerExtensions([MaterialsUnlit]);
+import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
+const io = new WebIO().registerExtensions([KHRMaterialsUnlit]);
 
 // Read a file that requires the KHR_materials_unlit extension.
 const document = await io.readGLB('unlit.glb');

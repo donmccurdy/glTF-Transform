@@ -71,7 +71,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # TextureBasisu
+ * # KHRTextureBasisu
  *
  * [`KHR_texture_basisu`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_texture_basisu)
  * enables KTX2 GPU textures with Basis Universal supercompression for any material texture.
@@ -95,10 +95,10 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  * ### Example
  *
  * ```typescript
- * import { TextureBasisu } from '@gltf-transform/extensions';
+ * import { KHRTextureBasisu } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const basisuExtension = document.createExtension(TextureBasisu)
+ * const basisuExtension = document.createExtension(KHRTextureBasisu)
  * 	.setRequired(true);
  * document.createTexture('MyCompressedTexture')
  * 	.setMimeType('image/ktx2')
@@ -123,7 +123,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  * > [texture dilation](https://docs.substance3d.com/spdoc/padding-134643719.html) and minimize
  * > prominent UV seams._
  */
-export class TextureBasisu extends Extension {
+export class KHRTextureBasisu extends Extension {
 	public readonly extensionName = NAME;
 	/** @hidden */
 	public readonly prereadTypes = [PropertyType.TEXTURE];

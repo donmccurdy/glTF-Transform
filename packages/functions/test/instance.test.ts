@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, Logger } from '@gltf-transform/core';
-import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
+import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { instance } from '../';
 
 test('@gltf-transform/functions::instance | translation', async (t) => {
@@ -140,7 +140,7 @@ test('@gltf-transform/functions::instance | idempotence', async (t) => {
 
 	t.equals(doc.getRoot().listExtensionsUsed().length, 0, 'does not add EXT_mesh_gpu_instancing');
 
-	const batchExtension = doc.createExtension(MeshGPUInstancing);
+	const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 	const batch = batchExtension.createInstancedMesh();
 	const node = doc.createNode();
 	node.setExtension('EXT_mesh_gpu_instancing', batch);

@@ -1,5 +1,5 @@
 import { Document, ILogger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
-import { InstancedMesh, MeshGPUInstancing } from '@gltf-transform/extensions';
+import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { createTransform } from './utils';
 
 const NAME = 'instance';
@@ -20,7 +20,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
-		const batchExtension = doc.createExtension(MeshGPUInstancing);
+		const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 
 		if (root.listAnimations().length) {
 			logger.warn(`${NAME}: Instancing is not currently supported for animated models.`);
@@ -126,7 +126,7 @@ function pruneUnusedNodes(nodes: Node[], logger: ILogger): void {
 	logger.debug(`${NAME}: Removed ${unusedNodes} unused nodes.`);
 }
 
-function createBatch(doc: Document, batchExtension: MeshGPUInstancing, mesh: Mesh, count: number): InstancedMesh {
+function createBatch(doc: Document, batchExtension: EXTMeshGPUInstancing, mesh: Mesh, count: number): InstancedMesh {
 	const buffer = mesh.listPrimitives()[0].getAttribute('POSITION')!.getBuffer();
 
 	const batchTranslation = doc

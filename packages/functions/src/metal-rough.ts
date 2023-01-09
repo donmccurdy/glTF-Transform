@@ -1,8 +1,8 @@
 import type { Document, Texture, Transform } from '@gltf-transform/core';
 import {
-	MaterialsIOR,
-	MaterialsPBRSpecularGlossiness,
-	MaterialsSpecular,
+	KHRMaterialsIOR,
+	KHRMaterialsPBRSpecularGlossiness,
+	KHRMaterialsSpecular,
 	PBRSpecularGlossiness,
 } from '@gltf-transform/extensions';
 import { createTransform, rewriteTexture } from './utils';
@@ -38,9 +38,9 @@ export function metalRough(_options: MetalRoughOptions = METALROUGH_DEFAULTS): T
 			return;
 		}
 
-		const iorExtension = doc.createExtension(MaterialsIOR);
-		const specExtension = doc.createExtension(MaterialsSpecular);
-		const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+		const iorExtension = doc.createExtension(KHRMaterialsIOR);
+		const specExtension = doc.createExtension(KHRMaterialsSpecular);
+		const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 
 		const inputTextures = new Set<Texture | null>();
 

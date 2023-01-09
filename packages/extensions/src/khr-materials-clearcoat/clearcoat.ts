@@ -28,7 +28,7 @@ const { R, G, B } = TextureChannel;
 /**
  * # Clearcoat
  *
- * Defines clear coat for a PBR material. See {@link MaterialsClearcoat}.
+ * Defines clear coat for a PBR material. See {@link KHRMaterialsClearcoat}.
  */
 export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	public static EXTENSION_NAME = KHR_MATERIALS_CLEARCOAT;

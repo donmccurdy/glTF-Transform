@@ -4,7 +4,7 @@ import { KHR_MESH_QUANTIZATION } from '../constants';
 const NAME = KHR_MESH_QUANTIZATION;
 
 /**
- * # MeshQuantization
+ * # KHRMeshQuantization
  *
  * [`KHR_mesh_quantization`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_mesh_quantization/)
  * expands allowed component types for vertex attributes to include 16- and 8-bit storage.
@@ -27,11 +27,11 @@ const NAME = KHR_MESH_QUANTIZATION;
  * ### Example
  *
  * ```typescript
- * import { MeshQuantization } from '@gltf-transform/extensions';
+ * import { KHRMeshQuantization } from '@gltf-transform/extensions';
  * import { quantize } from '@gltf-transform/functions';
  *
  * // Create an Extension attached to the Document.
- * const quantizationExtension = document.createExtension(MeshQuantization).setRequired(true);
+ * const quantizationExtension = document.createExtension(KHRMeshQuantization).setRequired(true);
  *
  * // Use Uint16Array, Uint8Array, Int16Array, and Int8Array in vertex accessors manually,
  * // or apply the provided quantize() function to compute quantized accessors automatically:
@@ -44,7 +44,7 @@ const NAME = KHR_MESH_QUANTIZATION;
  *
  * For more documentation about automatic quantization, see the {@link quantize} function.
  */
-export class MeshQuantization extends Extension {
+export class KHRMeshQuantization extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 
