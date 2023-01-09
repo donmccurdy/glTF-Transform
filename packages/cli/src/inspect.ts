@@ -1,5 +1,3 @@
-import CLITable from 'cli-table3';
-import { stringify } from 'csv-stringify';
 import type { JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
 import {
 	InspectAnimationReport,
@@ -10,14 +8,8 @@ import {
 	InspectTextureReport,
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
-import { formatBytes, formatHeader, formatLong, formatParagraph, formatXMP } from './util';
+import { formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP, TableFormat } from './util';
 import type { Packet } from '@gltf-transform/extensions';
-
-export enum InspectFormat {
-	PRETTY = 'pretty',
-	CSV = 'csv',
-	MD = 'md',
-}
 
 type AnyPropertyReport =
 	| InspectSceneReport
@@ -26,29 +18,11 @@ type AnyPropertyReport =
 	| InspectTextureReport
 	| InspectAnimationReport;
 
-const CLI_TABLE_MARKDOWN_CHARS = {
-	top: '',
-	'top-mid': '',
-	'top-left': '',
-	'top-right': '',
-	bottom: '',
-	'bottom-mid': '',
-	'bottom-left': '',
-	'bottom-right': '',
-	left: '|',
-	'left-mid': '',
-	mid: '',
-	'mid-mid': '',
-	right: '|',
-	'right-mid': '',
-	middle: '|',
-};
-
 export async function inspect(
 	jsonDoc: JSONDocument,
 	io: NodeIO | WebIO,
 	logger: ILogger,
-	format: InspectFormat
+	format: TableFormat
 ): Promise<void> {
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
@@ -100,7 +74,7 @@ export async function inspect(
 
 async function reportSection(
 	type: string,
-	format: InspectFormat,
+	format: TableFormat,
 	logger: ILogger,
 	section: InspectPropertyReport<AnyPropertyReport>
 ) {
@@ -117,7 +91,7 @@ async function reportSection(
 	});
 	const header = Object.keys(formattedRecords[0]);
 	const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
-	const footnotes = format !== InspectFormat.CSV ? getFootnotes(type, rows, header) : [];
+	const footnotes = format !== TableFormat.CSV ? getFootnotes(type, rows, header) : [];
 	console.log(await formatTable(format, header, rows));
 	if (footnotes.length) console.log('\n' + footnotes.join('\n'));
 	if (section.warnings) {
@@ -126,42 +100,16 @@ async function reportSection(
 	console.log('\n');
 }
 
-async function formatTable(format: InspectFormat, head: string[], rows: string[][]): Promise<string> {
-	switch (format) {
-		case InspectFormat.PRETTY: {
-			const table = new CLITable({ head });
-			table.push(...rows);
-			return table.toString();
-		}
-		case InspectFormat.CSV:
-			return new Promise((resolve, reject) => {
-				stringify([head, ...rows], (err, output) => {
-					err ? reject(err) : resolve(output);
-				});
-			});
-		case InspectFormat.MD: {
-			const table = new CLITable({ head, chars: CLI_TABLE_MARKDOWN_CHARS });
-			table.push(new Array(rows[0].length).fill('---'));
-			table.push(...rows);
-			return table.toString();
-		}
-	}
-}
-
-function formatPropertyReport(
-	property: AnyPropertyReport,
-	index: number,
-	format: InspectFormat
-): Record<string, string> {
+function formatPropertyReport(property: AnyPropertyReport, index: number, format: TableFormat): Record<string, string> {
 	const row: Record<string, string | number> = { '#': index };
 	for (const key in property) {
 		const value = (property as unknown as Record<string, string | number>)[key];
 		if (Array.isArray(value)) {
 			row[key] = value.join(', ');
-		} else if (key.match(/size/i) && format !== InspectFormat.CSV) {
+		} else if (key.match(/size/i) && format !== TableFormat.CSV) {
 			row[key] = value > 0 ? formatBytes(value as number) : '';
 		} else if (typeof value === 'number') {
-			row[key] = format !== InspectFormat.CSV ? formatLong(value) : value;
+			row[key] = format !== TableFormat.CSV ? formatLong(value) : value;
 		} else if (typeof value === 'boolean') {
 			row[key] = value ? '✓' : '';
 		} else {

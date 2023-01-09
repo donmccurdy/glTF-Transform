@@ -7,9 +7,9 @@ import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress } from '@gltf-transform/functions';
-import { InspectFormat, inspect } from './inspect';
+import { inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
-import { formatBytes, MICROMATCH_OPTIONS, underline } from './util';
+import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 
@@ -64,8 +64,8 @@ Use --format=csv or --format=md for alternative display formats.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.option('--format <format>', 'Table output format', {
-		validator: [InspectFormat.PRETTY, InspectFormat.CSV, InspectFormat.MD],
-		default: InspectFormat.PRETTY
+		validator: [TableFormat.PRETTY, TableFormat.CSV, TableFormat.MD],
+		default: TableFormat.PRETTY
 	})
 	.action(async ({args, options, logger}) => {
 		io.setLogger(logger as unknown as Logger);
@@ -73,7 +73,7 @@ Use --format=csv or --format=md for alternative display formats.
 			await io.readAsJSON(args.input as string),
 			io,
 			logger as unknown as Logger,
-			options.format as InspectFormat
+			options.format as TableFormat
 		);
 	});
 
@@ -104,6 +104,10 @@ Example:
 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
 		validator: program.ARRAY,
 		default: [],
+	})
+	.option('--format <format>', 'Table output format', {
+		validator: [TableFormat.PRETTY, TableFormat.CSV, TableFormat.MD],
+		default: TableFormat.PRETTY
 	})
 	.action(({args, options, logger}) => {
 		validate(

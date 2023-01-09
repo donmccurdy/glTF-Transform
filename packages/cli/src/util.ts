@@ -3,6 +3,8 @@ const { spawn: _spawn } = require('child_process');
 
 import _commandExists from 'command-exists';
 import type { ChildProcess } from 'child_process';
+import CLITable from 'cli-table3';
+import { stringify } from 'csv-stringify';
 
 // Constants.
 
@@ -84,6 +86,52 @@ export function formatParagraph(str: string): string {
 
 export function formatHeader(title: string): string {
 	return '' + '\n ' + title.toUpperCase() + '\n ────────────────────────────────────────────';
+}
+
+export enum TableFormat {
+	PRETTY = 'pretty',
+	CSV = 'csv',
+	MD = 'md',
+}
+
+const CLI_TABLE_MARKDOWN_CHARS = {
+	top: '',
+	'top-mid': '',
+	'top-left': '',
+	'top-right': '',
+	bottom: '',
+	'bottom-mid': '',
+	'bottom-left': '',
+	'bottom-right': '',
+	left: '|',
+	'left-mid': '',
+	mid: '',
+	'mid-mid': '',
+	right: '|',
+	'right-mid': '',
+	middle: '|',
+};
+
+export async function formatTable(format: TableFormat, head: string[], rows: string[][]): Promise<string> {
+	switch (format) {
+		case TableFormat.PRETTY: {
+			const table = new CLITable({ head });
+			table.push(...rows);
+			return table.toString();
+		}
+		case TableFormat.CSV:
+			return new Promise((resolve, reject) => {
+				stringify([head, ...rows], (err, output) => {
+					err ? reject(err) : resolve(output);
+				});
+			});
+		case TableFormat.MD: {
+			const table = new CLITable({ head, chars: CLI_TABLE_MARKDOWN_CHARS });
+			table.push(new Array(rows[0].length).fill('---'));
+			table.push(...rows);
+			return table.toString();
+		}
+	}
 }
 
 export function formatXMP(value: string | number | boolean | Record<string, unknown> | null): string {
