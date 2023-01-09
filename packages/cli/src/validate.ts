@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import CLITable from 'cli-table3';
 import type Validator from 'gltf-validator';
 import type { ILogger } from '@gltf-transform/core';
 import { formatHeader, formatTable, TableFormat } from './util';
