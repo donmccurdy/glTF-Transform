@@ -8,7 +8,7 @@ interface IIOR extends IProperty {
 /**
  * # IOR
  *
- * Defines index of refraction for a PBR {@link Material}. See {@link MaterialsIOR}.
+ * Defines index of refraction for a PBR {@link Material}. See {@link KHRMaterialsIOR}.
  */
 export class IOR extends ExtensionProperty<IIOR> {
 	public static EXTENSION_NAME = KHR_MATERIALS_IOR;

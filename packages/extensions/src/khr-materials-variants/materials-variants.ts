@@ -24,7 +24,7 @@ interface VariantMappingDef {
 }
 
 /**
- * # MaterialsVariants
+ * # KHRMaterialsVariants
  *
  * [`KHR_materials_variants`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants/)
  * defines alternate {@link Material} states for any {@link Primitive} in the scene.
@@ -34,7 +34,7 @@ interface VariantMappingDef {
  * > _**Figure:** A sneaker, in three material variants. Source: Khronos Group._
  *
  * Uses include product configurators, night/day states, healthy/damaged states, etc. The
- * `MaterialsVariants` class provides three {@link ExtensionProperty} types: `Variant`, `Mapping`,
+ * `KHRMaterialsVariants` class provides three {@link ExtensionProperty} types: `Variant`, `Mapping`,
  * and `MappingList`. When attached to {@link Primitive} properties, these offer flexible ways of
  * defining the variants available to an application. Triggering a variant is out of scope of this
  * extension, but could be handled in the application with a UI dropdown, particular game states,
@@ -51,10 +51,10 @@ interface VariantMappingDef {
  * ### Example
  *
  * ```typescript
- * import { MaterialsVariants } from '@gltf-transform/extensions';
+ * import { KHRMaterialsVariants } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const variantExtension = document.createExtension(MaterialsVariants);
+ * const variantExtension = document.createExtension(KHRMaterialsVariants);
  *
  * // Create some Variant states.
  * const healthyVariant = variantExtension.createVariant('Healthy');
@@ -89,7 +89,7 @@ interface VariantMappingDef {
  * 	 the option of downloading only textures associated with the default state, and lazy-loading
  * 	 any textures for inactive Variants only when they are needed.
  */
-export class MaterialsVariants extends Extension {
+export class KHRMaterialsVariants extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

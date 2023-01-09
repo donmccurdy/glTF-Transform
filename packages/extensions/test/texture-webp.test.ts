@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { BufferUtils, Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { TextureWebP } from '../';
+import { EXTTextureWebP } from '../';
 
 const IS_NODEJS = typeof window === 'undefined';
 
@@ -14,12 +14,12 @@ if (IS_NODEJS) {
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-const io = new NodeIO().registerExtensions([TextureWebP]);
+const io = new NodeIO().registerExtensions([EXTTextureWebP]);
 
 test('@gltf-transform/extensions::texture-webp', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const webpExtension = doc.createExtension(TextureWebP);
+	const webpExtension = doc.createExtension(EXTTextureWebP);
 	const tex1 = doc.createTexture('WebPTexture').setMimeType('image/webp').setImage(new Uint8Array(10));
 	const tex2 = doc.createTexture('PNGTexture').setMimeType('image/png').setImage(new Uint8Array(15));
 	doc.createMaterial().setBaseColorTexture(tex1).setEmissiveTexture(tex2);

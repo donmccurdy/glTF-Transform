@@ -4,7 +4,7 @@ import { KHR_MATERIALS_VARIANTS } from '../constants';
 /**
  * # Variant
  *
- * Defines a variant of a {@link Material}. See {@link MaterialsVariants}.
+ * Defines a variant of a {@link Material}. See {@link KHRMaterialsVariants}.
  */
 export class Variant extends ExtensionProperty {
 	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;

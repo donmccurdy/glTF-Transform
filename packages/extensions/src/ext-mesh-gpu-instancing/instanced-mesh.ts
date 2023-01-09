@@ -11,7 +11,7 @@ export const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
 /**
  * # InstancedMesh
  *
- * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link MeshGPUInstancing}.
+ * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link EXTMeshGPUInstancing}.
  */
 export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;

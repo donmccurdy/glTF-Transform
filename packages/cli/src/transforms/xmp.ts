@@ -1,5 +1,5 @@
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
-import { Packet, XMP } from '@gltf-transform/extensions';
+import { Packet, KHRXMP } from '@gltf-transform/extensions';
 import inquirer from 'inquirer';
 import { check as validateLanguage } from 'language-tags';
 import validateSPDX from 'spdx-correct';
@@ -254,7 +254,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 	return async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 		const root = document.getRoot();
-		const xmpExtension = document.createExtension(XMP);
+		const xmpExtension = document.createExtension(KHRXMP);
 
 		if (options.reset) {
 			xmpExtension.dispose();

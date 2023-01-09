@@ -1,47 +1,47 @@
 /** @module extensions */
 
-import { MeshGPUInstancing } from './ext-mesh-gpu-instancing';
-import { MeshoptCompression } from './ext-meshopt-compression';
-import { TextureWebP } from './ext-texture-webp';
-import { DracoMeshCompression } from './khr-draco-mesh-compression';
-import { LightsPunctual } from './khr-lights-punctual';
-import { MaterialsClearcoat } from './khr-materials-clearcoat';
-import { MaterialsEmissiveStrength } from './khr-materials-emissive-strength';
-import { MaterialsIOR } from './khr-materials-ior';
-import { MaterialsIridescence } from './khr-materials-iridescence';
-import { MaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';
-import { MaterialsSheen } from './khr-materials-sheen';
-import { MaterialsSpecular } from './khr-materials-specular';
-import { MaterialsTransmission } from './khr-materials-transmission';
-import { MaterialsUnlit } from './khr-materials-unlit';
-import { MaterialsVariants } from './khr-materials-variants';
-import { MaterialsVolume } from './khr-materials-volume';
-import { MeshQuantization } from './khr-mesh-quantization';
-import { TextureBasisu } from './khr-texture-basisu';
-import { TextureTransform } from './khr-texture-transform';
-import { XMP } from './khr-xmp-json-ld';
+import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing';
+import { EXTMeshoptCompression } from './ext-meshopt-compression';
+import { EXTTextureWebP } from './ext-texture-webp';
+import { KHRDracoMeshCompression } from './khr-draco-mesh-compression';
+import { KHRLightsPunctual } from './khr-lights-punctual';
+import { KHRMaterialsClearcoat } from './khr-materials-clearcoat';
+import { KHRMaterialsEmissiveStrength } from './khr-materials-emissive-strength';
+import { KHRMaterialsIOR } from './khr-materials-ior';
+import { KHRMaterialsIridescence } from './khr-materials-iridescence';
+import { KHRMaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';
+import { KHRMaterialsSheen } from './khr-materials-sheen';
+import { KHRMaterialsSpecular } from './khr-materials-specular';
+import { KHRMaterialsTransmission } from './khr-materials-transmission';
+import { KHRMaterialsUnlit } from './khr-materials-unlit';
+import { KHRMaterialsVariants } from './khr-materials-variants';
+import { KHRMaterialsVolume } from './khr-materials-volume';
+import { KHRMeshQuantization } from './khr-mesh-quantization';
+import { KHRTextureBasisu } from './khr-texture-basisu';
+import { KHRTextureTransform } from './khr-texture-transform';
+import { KHRXMP } from './khr-xmp-json-ld';
 
 export const KHRONOS_EXTENSIONS = [
-	DracoMeshCompression,
-	LightsPunctual,
-	MaterialsClearcoat,
-	MaterialsEmissiveStrength,
-	MaterialsIOR,
-	MaterialsIridescence,
-	MaterialsPBRSpecularGlossiness,
-	MaterialsSpecular,
-	MaterialsSheen,
-	MaterialsTransmission,
-	MaterialsUnlit,
-	MaterialsVariants,
-	MaterialsVolume,
-	MeshQuantization,
-	TextureBasisu,
-	TextureTransform,
-	XMP,
+	KHRDracoMeshCompression,
+	KHRLightsPunctual,
+	KHRMaterialsClearcoat,
+	KHRMaterialsEmissiveStrength,
+	KHRMaterialsIOR,
+	KHRMaterialsIridescence,
+	KHRMaterialsPBRSpecularGlossiness,
+	KHRMaterialsSpecular,
+	KHRMaterialsSheen,
+	KHRMaterialsTransmission,
+	KHRMaterialsUnlit,
+	KHRMaterialsVariants,
+	KHRMaterialsVolume,
+	KHRMeshQuantization,
+	KHRTextureBasisu,
+	KHRTextureTransform,
+	KHRXMP,
 ];
 
-export const ALL_EXTENSIONS = [MeshGPUInstancing, MeshoptCompression, TextureWebP, ...KHRONOS_EXTENSIONS];
+export const ALL_EXTENSIONS = [EXTMeshGPUInstancing, EXTMeshoptCompression, EXTTextureWebP, ...KHRONOS_EXTENSIONS];
 
 export * from './ext-mesh-gpu-instancing';
 export * from './ext-meshopt-compression';

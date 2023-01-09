@@ -6,9 +6,9 @@ import test from 'tape';
 import { Document } from '@gltf-transform/core';
 import {
 	IOR,
-	MaterialsIOR,
-	MaterialsPBRSpecularGlossiness,
-	MaterialsSpecular,
+	KHRMaterialsIOR,
+	KHRMaterialsPBRSpecularGlossiness,
+	KHRMaterialsSpecular,
 	Specular,
 } from '@gltf-transform/extensions';
 import { metalRough } from '../';
@@ -42,7 +42,7 @@ test('@gltf-transform/functions::metalRough | textures', async (t) => {
 		.createTexture()
 		.setImage(await savePixels(SPEC_GLOSS, 'image/png'))
 		.setMimeType('image/png');
-	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension
 		.createPBRSpecularGlossiness()
 		.setDiffuseTexture(diffuseTex)
@@ -65,7 +65,7 @@ test('@gltf-transform/functions::metalRough | textures', async (t) => {
 
 	t.deepEqual(
 		extensionsUsed,
-		[MaterialsIOR.EXTENSION_NAME, MaterialsSpecular.EXTENSION_NAME],
+		[KHRMaterialsIOR.EXTENSION_NAME, KHRMaterialsSpecular.EXTENSION_NAME],
 		'uses KHR_materials_ior and KHR_materials_specular'
 	);
 	t.ok(specGloss.isDisposed(), 'disposes PBRSpecularGlossiness');
@@ -97,7 +97,7 @@ test('@gltf-transform/functions::metalRough | textures', async (t) => {
 
 test('@gltf-transform/functions::metalRough | factors', async (t) => {
 	const doc = new Document();
-	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension
 		.createPBRSpecularGlossiness()
 		.setDiffuseFactor([0, 1, 0, 0.5])
@@ -120,7 +120,7 @@ test('@gltf-transform/functions::metalRough | factors', async (t) => {
 
 	t.deepEqual(
 		extensionsUsed,
-		[MaterialsIOR.EXTENSION_NAME, MaterialsSpecular.EXTENSION_NAME],
+		[KHRMaterialsIOR.EXTENSION_NAME, KHRMaterialsSpecular.EXTENSION_NAME],
 		'uses KHR_materials_ior and KHR_materials_specular'
 	);
 	t.deepEqual(mat.getBaseColorFactor(), [0, 1, 0, 0.5], 'baseColorFactor = diffuseFactor');

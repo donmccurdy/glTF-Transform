@@ -2,17 +2,17 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { MeshQuantization } from '../';
+import { KHRMeshQuantization } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::mesh-quantization', async (t) => {
 	const doc = new Document();
-	const quantizationExtension = doc.createExtension(MeshQuantization);
+	const quantizationExtension = doc.createExtension(KHRMeshQuantization);
 	let jsonDoc: JSONDocument;
 
-	jsonDoc = await new NodeIO().registerExtensions([MeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
+	jsonDoc = await new NodeIO().registerExtensions([KHRMeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
+	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
 
 	quantizationExtension.dispose();
 
@@ -23,8 +23,8 @@ test('@gltf-transform/extensions::mesh-quantization', async (t) => {
 
 test('@gltf-transform/extensions::mesh-quantization | copy', (t) => {
 	const doc = new Document();
-	doc.createExtension(MeshQuantization);
+	doc.createExtension(KHRMeshQuantization);
 
-	t.equals(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy MeshQuantization');
+	t.equals(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
 	t.end();
 });

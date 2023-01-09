@@ -15,7 +15,7 @@ import {
 	Scene,
 	vec3,
 } from '@gltf-transform/core';
-import { MaterialsVolume, Volume } from '@gltf-transform/extensions';
+import { KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '../';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -364,7 +364,7 @@ test('@gltf-transform/functions::quantize | volumetric materials', async (t) => 
 	const primB = doc.getRoot().listNodes()[1].getMesh().listPrimitives()[0];
 
 	// Add volumetric material (thickness is in local units).
-	const volumeExtension = doc.createExtension(MaterialsVolume);
+	const volumeExtension = doc.createExtension(KHRMaterialsVolume);
 	const volume = volumeExtension.createVolume().setThicknessFactor(1.0);
 	const material = doc.createMaterial().setExtension('KHR_materials_volume', volume);
 	primA.setMaterial(material);

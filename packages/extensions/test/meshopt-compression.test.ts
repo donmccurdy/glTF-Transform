@@ -3,7 +3,7 @@ require('source-map-support').install();
 import path from 'path';
 import test from 'tape';
 import { NodeIO, getBounds } from '@gltf-transform/core';
-import { MeshoptCompression, MeshQuantization } from '../';
+import { EXTMeshoptCompression, KHRMeshQuantization } from '../';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
 const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
@@ -12,7 +12,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) 
 	await MeshoptDecoder.ready;
 
 	const io = new NodeIO()
-		.registerExtensions([MeshoptCompression, MeshQuantization])
+		.registerExtensions([EXTMeshoptCompression, KHRMeshQuantization])
 		.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 
 	for (const input of INPUTS) {
@@ -36,7 +36,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) 
 test('@gltf-transform/extensions::draco-mesh-compression | encoding', async (t) => {
 	await Promise.all([MeshoptDecoder.ready, MeshoptEncoder.ready]);
 
-	const io = new NodeIO().registerExtensions([MeshoptCompression, MeshQuantization]).registerDependencies({
+	const io = new NodeIO().registerExtensions([EXTMeshoptCompression, KHRMeshQuantization]).registerDependencies({
 		'meshopt.decoder': MeshoptDecoder,
 		'meshopt.encoder': MeshoptEncoder,
 	});

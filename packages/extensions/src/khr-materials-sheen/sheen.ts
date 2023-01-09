@@ -25,7 +25,7 @@ const { R, G, B, A } = TextureChannel;
 /**
  * # Sheen
  *
- * Defines sheen on a PBR {@link Material}. See {@link MaterialsSheen}.
+ * Defines sheen on a PBR {@link Material}. See {@link KHRMaterialsSheen}.
  */
 export class Sheen extends ExtensionProperty<ISheen> {
 	public static EXTENSION_NAME = KHR_MATERIALS_SHEEN;

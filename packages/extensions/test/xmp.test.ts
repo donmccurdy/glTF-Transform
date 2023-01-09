@@ -2,7 +2,7 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Packet, XMP } from '../';
+import { Packet, KHRXMP } from '../';
 
 const MOCK_CONTEXT_URL = 'https://test.example/1.0/';
 
@@ -24,7 +24,7 @@ const MOCK_JSONLD_PACKET = {
 
 test('@gltf-transform/extensions::xmp', async (t) => {
 	const document = new Document();
-	const xmpExtension = document.createExtension(XMP);
+	const xmpExtension = document.createExtension(KHRXMP);
 	const packet = xmpExtension.createPacket();
 
 	// Context.
@@ -115,7 +115,7 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 
 test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 	const document = new Document();
-	const xmpExtension = document.createExtension(XMP);
+	const xmpExtension = document.createExtension(KHRXMP);
 	const packet = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
 	const packet2 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
 
@@ -134,7 +134,7 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 
 	document.createBuffer();
 
-	const io = new NodeIO().registerExtensions([XMP]);
+	const io = new NodeIO().registerExtensions([KHRXMP]);
 	const jsonDocument = await io.writeJSON(document);
 
 	// Serialize.
@@ -215,7 +215,7 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 
 test('@gltf-transform/extensions::xmp | clone', async (t) => {
 	const document1 = new Document();
-	const xmpExtension = document1.createExtension(XMP);
+	const xmpExtension = document1.createExtension(KHRXMP);
 	const packet1 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
 	document1.getRoot().setExtension('KHR_xmp_json_ld', packet1);
 	t.equals(document1.getRoot().getExtension('KHR_xmp_json_ld'), packet1, 'sets packet');

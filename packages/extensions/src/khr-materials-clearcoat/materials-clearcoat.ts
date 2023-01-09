@@ -13,7 +13,7 @@ interface ClearcoatDef {
 }
 
 /**
- * # MaterialsClearcoat
+ * # KHRMaterialsClearcoat
  *
  * [KHR_materials_clearcoat](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_clearcoat/)
  * defines a clear coating on a glTF PBR material.
@@ -33,10 +33,10 @@ interface ClearcoatDef {
  * ### Example
  *
  * ```typescript
- * import { MaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
+ * import { KHRMaterialsClearcoat, Clearcoat } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const clearcoatExtension = document.createExtension(MaterialsClearcoat);
+ * const clearcoatExtension = document.createExtension(KHRMaterialsClearcoat);
  *
  * // Create Clearcoat property.
  * const clearcoat = clearcoatExtension.createClearcoat()
@@ -46,7 +46,7 @@ interface ClearcoatDef {
  * material.setExtension('KHR_materials_clearcoat', clearcoat);
  * ```
  */
-export class MaterialsClearcoat extends Extension {
+export class KHRMaterialsClearcoat extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

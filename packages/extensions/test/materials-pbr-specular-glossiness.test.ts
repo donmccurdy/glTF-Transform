@@ -2,14 +2,14 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { MaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '../';
+import { KHRMaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension
 		.createPBRSpecularGlossiness()
 		.setDiffuseFactor([0.5, 0.5, 0.5, 0.9])
@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) 
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), specGloss, 'specGloss is attached');
 
 	const jsonDoc = await new NodeIO()
-		.registerExtensions([MaterialsPBRSpecularGlossiness])
+		.registerExtensions([KHRMaterialsPBRSpecularGlossiness])
 		.writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
@@ -38,12 +38,16 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) 
 		},
 		'writes specGloss extension'
 	);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsPBRSpecularGlossiness.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(
+		jsonDoc.json.extensionsUsed,
+		[KHRMaterialsPBRSpecularGlossiness.EXTENSION_NAME],
+		'writes extensionsUsed'
+	);
 
 	specGlossExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_pbrSpecularGlossiness'), null, 'specGloss is detached');
 
-	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsPBRSpecularGlossiness]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsPBRSpecularGlossiness]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
 
@@ -56,7 +60,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) 
 
 test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', (t) => {
 	const doc = new Document();
-	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension
 		.createPBRSpecularGlossiness()
 		.setDiffuseFactor([0.5, 0.5, 0.5, 0.9])
@@ -70,7 +74,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', (t)
 		.getRoot()
 		.listMaterials()[0]
 		.getExtension<PBRSpecularGlossiness>('KHR_materials_pbrSpecularGlossiness');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsPBRSpecularGlossiness');
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsPBRSpecularGlossiness');
 	t.ok(specGloss2, 'copy PBRSpecularGlossiness');
 	t.deepEqual(specGloss2.getDiffuseFactor(), [0.5, 0.5, 0.5, 0.9], 'copy diffuseFactor');
 	t.deepEqual(specGloss2.getSpecularFactor(), [0.9, 0.5, 0.8], 'copy specularFactor');
@@ -81,7 +85,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', (t)
 
 test('@gltf-transform/extensions::materials-pbr-specular-glossiness | hex', (t) => {
 	const doc = new Document();
-	const specGlossExtension = doc.createExtension(MaterialsPBRSpecularGlossiness);
+	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension.createPBRSpecularGlossiness().setDiffuseHex(0x0000ff);
 	t.equals(specGloss.getDiffuseHex(), 254, 'diffuseHex');
 	t.end();

@@ -5,7 +5,7 @@ import { Unlit } from './unlit';
 const NAME = KHR_MATERIALS_UNLIT;
 
 /**
- * # MaterialsUnlit
+ * # KHRMaterialsUnlit
  *
  * [`KHR_materials_unlit`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_unlit/)
  * defines an unlit shading model for use in glTF 2.0 materials.
@@ -26,14 +26,14 @@ const NAME = KHR_MATERIALS_UNLIT;
  *
  * ### Example
  *
- * The `MaterialsUnlit` class provides a single {@link ExtensionProperty} type, `Unlit`, which may
+ * The `KHRMaterialsUnlit` class provides a single {@link ExtensionProperty} type, `Unlit`, which may
  * be attached to any {@link Material} instance. For example:
  *
  * ```typescript
- * import { MaterialsUnlit, Unlit } from '@gltf-transform/extensions';
+ * import { KHRMaterialsUnlit, Unlit } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const unlitExtension = document.createExtension(MaterialsUnlit);
+ * const unlitExtension = document.createExtension(KHRMaterialsUnlit);
  *
  * // Create an Unlit property.
  * const unlit = unlitExtension.createUnlit();
@@ -42,7 +42,7 @@ const NAME = KHR_MATERIALS_UNLIT;
  * material.setExtension('KHR_materials_unlit', unlit);
  * ```
  */
-export class MaterialsUnlit extends Extension {
+export class KHRMaterialsUnlit extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

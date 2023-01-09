@@ -25,7 +25,7 @@ const { R, G } = TextureChannel;
 /**
  * # Iridescence
  *
- * Defines iridescence (thin film interference) on a PBR {@link Material}. See {@link MaterialsIridescence}.
+ * Defines iridescence (thin film interference) on a PBR {@link Material}. See {@link KHRMaterialsIridescence}.
  */
 export class Iridescence extends ExtensionProperty<IIridescence> {
 	public static EXTENSION_NAME = KHR_MATERIALS_IRIDESCENCE;

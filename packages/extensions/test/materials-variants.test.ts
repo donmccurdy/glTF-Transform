@@ -2,11 +2,11 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { MappingList, MaterialsVariants } from '../';
+import { MappingList, KHRMaterialsVariants } from '../';
 
 test('@gltf-transform/extensions::materials-variants', async (t) => {
 	const doc = new Document();
-	const variantsExtension = doc.createExtension(MaterialsVariants);
+	const variantsExtension = doc.createExtension(KHRMaterialsVariants);
 	const var2 = variantsExtension.createVariant('Damaged1');
 	const var3 = variantsExtension.createVariant('Damaged2');
 
@@ -26,7 +26,7 @@ test('@gltf-transform/extensions::materials-variants', async (t) => {
 
 	//
 
-	const io = new NodeIO().registerExtensions([MaterialsVariants]);
+	const io = new NodeIO().registerExtensions([KHRMaterialsVariants]);
 	const rtDoc = await io.readJSON(await io.writeJSON(doc, {}));
 	const rtPrim1 = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
 	const rtPrim2 = rtDoc.getRoot().listMeshes()[1].listPrimitives()[0];
@@ -68,7 +68,7 @@ test('@gltf-transform/extensions::materials-variants', async (t) => {
 
 test('@gltf-transform/extensions::materials-variants | copy', (t) => {
 	const doc = new Document();
-	const variantsExtension = doc.createExtension(MaterialsVariants);
+	const variantsExtension = doc.createExtension(KHRMaterialsVariants);
 	const var1 = variantsExtension.createVariant('Dry');
 	const var2 = variantsExtension.createVariant('Wet');
 

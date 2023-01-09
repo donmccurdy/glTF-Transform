@@ -10,7 +10,7 @@ interface TransmissionDef {
 }
 
 /**
- * # MaterialsTransmission
+ * # KHRMaterialsTransmission
  *
  * [`KHR_materials_transmission`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_transmission/)
  * provides a common type of optical transparency: infinitely-thin materials with no refraction,
@@ -18,7 +18,7 @@ interface TransmissionDef {
  *
  * While default PBR materials using alpha blending become invisible as their opacity approaches
  * zero, a transmissive material continues to reflect light in a glass-like manner, even at low
- * transmission values. When combined with {@link MaterialsVolume}, transmission may be used for
+ * transmission values. When combined with {@link KHRMaterialsVolume}, transmission may be used for
  * thicker materials and refractive effects.
  *
  * Properties:
@@ -26,14 +26,14 @@ interface TransmissionDef {
  *
  * ### Example
  *
- * The `MaterialsTransmission` class provides a single {@link ExtensionProperty} type,
+ * The `KHRMaterialsTransmission` class provides a single {@link ExtensionProperty} type,
  * `Transmission`, which may be attached to any {@link Material} instance. For example:
  *
  * ```typescript
- * import { MaterialsTransmission, Transmission } from '@gltf-transform/extensions';
+ * import { KHRMaterialsTransmission, Transmission } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const transmissionExtension = document.createExtension(MaterialsTransmission);
+ * const transmissionExtension = document.createExtension(KHRMaterialsTransmission);
  *
  * // Create a Transmission property.
  * const transmission = transmissionExtension.createTransmission()
@@ -43,7 +43,7 @@ interface TransmissionDef {
  * material.setExtension('KHR_materials_transmission', transmission);
  * ```
  */
-export class MaterialsTransmission extends Extension {
+export class KHRMaterialsTransmission extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

@@ -27,7 +27,7 @@ const { R, G, B, A } = TextureChannel;
 /**
  * # PBRSpecularGlossiness
  *
- * Converts a {@link Material} to a spec/gloss workflow. See {@link MaterialsPBRSpecularGlossiness}.
+ * Converts a {@link Material} to a spec/gloss workflow. See {@link KHRMaterialsPBRSpecularGlossiness}.
  */
 export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossiness> {
 	public static EXTENSION_NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;

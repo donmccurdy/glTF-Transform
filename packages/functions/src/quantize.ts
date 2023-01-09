@@ -19,7 +19,7 @@ import {
 import { dedup } from './dedup';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
-import { MeshQuantization } from '@gltf-transform/extensions';
+import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune';
 import { createTransform } from './utils';
@@ -90,7 +90,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 
-		doc.createExtension(MeshQuantization).setRequired(true);
+		doc.createExtension(KHRMeshQuantization).setRequired(true);
 
 		// Compute vertex position quantization volume.
 		let nodeTransform: VectorTransform<vec3> | undefined = undefined;

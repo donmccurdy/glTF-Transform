@@ -9,7 +9,7 @@ interface IORDef {
 }
 
 /**
- * # MaterialsIOR
+ * # KHRMaterialsIOR
  *
  * [KHR_materials_ior](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_ior/)
  * defines index of refraction on a glTF PBR material.
@@ -25,10 +25,10 @@ interface IORDef {
  * ### Example
  *
  * ```typescript
- * import { MaterialsIOR, IOR } from '@gltf-transform/extensions';
+ * import { KHRMaterialsIOR, IOR } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const iorExtension = document.createExtension(MaterialsIOR);
+ * const iorExtension = document.createExtension(KHRMaterialsIOR);
  *
  * // Create IOR property.
  * const ior = iorExtension.createIOR().setIOR(1.0);
@@ -37,7 +37,7 @@ interface IORDef {
  * material.setExtension('KHR_materials_ior', ior);
  * ```
  */
-export class MaterialsIOR extends Extension {
+export class KHRMaterialsIOR extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

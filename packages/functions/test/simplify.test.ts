@@ -3,7 +3,7 @@ require('source-map-support').install();
 import test from 'tape';
 import path from 'path';
 import { bbox, getBounds, Document, Logger, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
-import { DracoMeshCompression, MeshQuantization } from '@gltf-transform/extensions';
+import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { weld, unweld, simplify } from '../';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
@@ -11,7 +11,7 @@ import draco3d from 'draco3dgltf';
 async function createIO(): Promise<NodeIO> {
 	const io = new NodeIO()
 		.setLogger(new Logger(Logger.Verbosity.SILENT))
-		.registerExtensions([DracoMeshCompression, MeshQuantization])
+		.registerExtensions([KHRDracoMeshCompression, KHRMeshQuantization])
 		.registerDependencies({
 			'draco3d.decoder': await draco3d.createDecoderModule(),
 		});

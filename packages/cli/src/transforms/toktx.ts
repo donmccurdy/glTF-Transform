@@ -9,7 +9,7 @@ const tmp = require('tmp');
 const pLimit = require('p-limit');
 
 import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
-import { TextureBasisu } from '@gltf-transform/extensions';
+import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
 
@@ -124,7 +124,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		const batchDir = join(tmp.tmpdir, 'gltf-transform');
 		if (!existsSync(batchDir)) mkdirSync(batchDir);
 
-		const basisuExtension = doc.createExtension(TextureBasisu).setRequired(true);
+		const basisuExtension = doc.createExtension(KHRTextureBasisu).setRequired(true);
 
 		let numCompressed = 0;
 

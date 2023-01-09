@@ -2,20 +2,20 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Clearcoat, MaterialsClearcoat } from '../';
+import { Clearcoat, KHRMaterialsClearcoat } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::materials-clearcoat | factors', async (t) => {
 	const doc = new Document();
-	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat().setClearcoatFactor(0.9).setClearcoatRoughnessFactor(0.1);
 
 	doc.createMaterial('MyClearcoatMaterial')
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_clearcoat', clearcoat);
 
-	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
+	const io = new NodeIO().registerExtensions([KHRMaterialsClearcoat]);
 	const roundtripDoc = await io.readJSON(await io.writeJSON(doc));
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
@@ -28,7 +28,7 @@ test('@gltf-transform/extensions::materials-clearcoat | factors', async (t) => {
 test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
-	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension
 		.createClearcoat()
 		.setClearcoatFactor(0.9)
@@ -45,7 +45,7 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 
 	t.equal(mat.getExtension('KHR_materials_clearcoat'), clearcoat, 'clearcoat is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([MaterialsClearcoat]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsClearcoat]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
 
 	t.deepEqual(materialDef.pbrMetallicRoughness.baseColorFactor, [1.0, 0.5, 0.5, 1.0], 'writes base color');
@@ -62,12 +62,12 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 		},
 		'writes clearcoat extension'
 	);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [MaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
+	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
 
 	clearcoatExtension.dispose();
 	t.equal(mat.getExtension('KHR_materials_clearcoat'), null, 'clearcoat is detached');
 
-	const roundtripDoc = await new NodeIO().registerExtensions([MaterialsClearcoat]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsClearcoat]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
 
@@ -82,10 +82,10 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 
 test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => {
 	const doc = new Document();
-	doc.createExtension(MaterialsClearcoat);
+	doc.createExtension(KHRMaterialsClearcoat);
 	doc.createMaterial();
 
-	const io = new NodeIO().registerExtensions([MaterialsClearcoat]);
+	const io = new NodeIO().registerExtensions([KHRMaterialsClearcoat]);
 	const roundtripDoc = await io.readJSON(await io.writeJSON(doc));
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	t.equals(roundtripMat.getExtension('KHR_materials_clearcoat'), null, 'no effect when not attached');
@@ -94,7 +94,7 @@ test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => 
 
 test('@gltf-transform/extensions::materials-clearcoat | copy', (t) => {
 	const doc = new Document();
-	const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension
 		.createClearcoat()
 		.setClearcoatFactor(0.9)
@@ -107,7 +107,7 @@ test('@gltf-transform/extensions::materials-clearcoat | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension<Clearcoat>('KHR_materials_clearcoat');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy MaterialsClearcoat');
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsClearcoat');
 	t.ok(clearcoat2, 'copy Clearcoat');
 	t.equals(clearcoat2.getClearcoatFactor(), 0.9, 'copy clearcoatFactor');
 	t.equals(clearcoat2.getClearcoatRoughnessFactor(), 0.1, 'copy clearcoatFactor');

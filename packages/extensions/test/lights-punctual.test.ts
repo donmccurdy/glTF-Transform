@@ -2,13 +2,13 @@ require('source-map-support').install();
 
 import test from 'tape';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Light, LightsPunctual } from '../';
+import { Light, KHRLightsPunctual } from '../';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::lights-punctual', async (t) => {
 	const doc = new Document();
-	const lightsExtension = doc.createExtension(LightsPunctual);
+	const lightsExtension = doc.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
 		.createLight()
 		.setType(Light.Type.SPOT)
@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
@@ -46,7 +46,7 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 	lightsExtension.dispose();
 	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
-	const roundtripDoc = await new NodeIO().registerExtensions([LightsPunctual]).readJSON(jsonDoc);
+	const roundtripDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension<Light>('KHR_lights_punctual');
 
@@ -61,7 +61,7 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 
 test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 	const doc = new Document();
-	const lightsExtension = doc.createExtension(LightsPunctual);
+	const lightsExtension = doc.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
 		.createLight()
 		.setType(Light.Type.SPOT)
@@ -74,7 +74,7 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const light2 = doc2.getRoot().listNodes()[0].getExtension<Light>('KHR_lights_punctual');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy LightsPunctual');
+	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRLightsPunctual');
 	t.ok(light2, 'copy light');
 	t.equal(light2.getType(), Light.Type.SPOT, 'copy type');
 	t.equal(light2.getIntensity(), 2, 'copy intensity');
@@ -87,7 +87,7 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 
 test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
 	const doc = new Document();
-	const lightsExtension = doc.createExtension(LightsPunctual);
+	const lightsExtension = doc.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setColorHex(0x111111);
 	t.equals(light.getColorHex(), 0x111111, 'colorHex');
 	t.end();
@@ -95,14 +95,14 @@ test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
 
 test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
 	const doc = new Document();
-	const lightsExtension = doc.createExtension(LightsPunctual);
+	const lightsExtension = doc.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setType(Light.Type.POINT).setIntensity(2.0);
 
 	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
 	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([LightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');

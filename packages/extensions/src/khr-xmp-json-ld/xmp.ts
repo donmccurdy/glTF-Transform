@@ -36,7 +36,7 @@ interface XMPRootDef {
 }
 
 /**
- * # XMP
+ * # KHRXMP
  *
  * [KHR_xmp_json_ld](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_xmp_json_ld/)
  * defines XMP metadata associated with a glTF asset.
@@ -71,7 +71,7 @@ interface XMPRootDef {
  * | `xmpRights` | http://ns.adobe.com/xap/1.0/rights/         | XMP Rights Management          |
  *
  * Only the XMP contexts required for a packet should be assigned, and different packets
- * in the same asset may use different contexts. For greater detail on available XMP 
+ * in the same asset may use different contexts. For greater detail on available XMP
  * contexts and how to use them in glTF assets, see the
  * [3DC Metadata Recommendations](https://github.com/KhronosGroup/3DC-Metadata-Recommendations/blob/main/model3d.md).
  *
@@ -81,10 +81,10 @@ interface XMPRootDef {
  * ### Example
  *
  * ```typescript
- * import { XMP, Packet } from '@gltf-transform/extensions';
+ * import { KHRXMP, Packet } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const xmpExtension = document.createExtension(XMP);
+ * const xmpExtension = document.createExtension(KHRXMP);
  *
  * // Create Packet property.
  * const packet = xmpExtension.createPacket()
@@ -100,7 +100,7 @@ interface XMPRootDef {
  * texture.setExtension('KHR_xmp_json_ld', packet);
  * ```
  */
-export class XMP extends Extension {
+export class KHRXMP extends Extension {
 	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
 

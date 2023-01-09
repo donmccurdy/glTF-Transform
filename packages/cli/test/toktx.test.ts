@@ -3,7 +3,7 @@ require('source-map-support').install();
 import fs from 'fs/promises';
 import test from 'tape';
 import { Document, Logger, TextureChannel, vec2 } from '@gltf-transform/core';
-import { MaterialsClearcoat } from '@gltf-transform/extensions';
+import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '../';
 import type { ChildProcess } from 'child_process';
 
@@ -54,7 +54,7 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 	if (channels === R) {
 		doc.createMaterial().setOcclusionTexture(tex);
 	} else if (channels === G) {
-		const clearcoatExtension = doc.createExtension(MaterialsClearcoat);
+		const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 		const clearcoat = clearcoatExtension.createClearcoat().setClearcoatRoughnessTexture(tex);
 		doc.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
 	} else if (channels !== 0x0000) {
