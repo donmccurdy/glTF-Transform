@@ -21,6 +21,10 @@ Packages:
 - `@gltf-transform/functions`: [Functions](https://gltf-transform.donmccurdy.com/functions.html) for common glTF modifications, written using the core API.
 - `@gltf-transform/cli`: [Command-line interface (CLI)](https://gltf-transform.donmccurdy.com/cli.html) to apply functions to glTF files quickly or in batch.
 
+<p align="center">
+<img src="https://gltf-transform.donmccurdy.com/media/kicker.jpg" alt="Function symbol, f(📦) → 📦, where the argument and output are a box labeled 'glTF'." width="40%">
+</p>
+
 ## Scripting API
 
 Install the scripting packages:
