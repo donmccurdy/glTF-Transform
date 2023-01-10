@@ -54,7 +54,7 @@ To perform changes to an existing glTF [Document](https://gltf-transform.donmccu
 ```typescript
 // Import default functions.
 import { prune, dedup } from '@gltf-transform/functions';
-import * as sharp from 'sharp'; // Node.js-only.
+import * as sharp from 'sharp'; // Node.js only.
 
 await document.transform(
     // Losslessly resample animation frames.
@@ -65,7 +65,7 @@ await document.transform(
     dedup(),
     // Compress mesh geometry with Draco.
     draco(),
-    // Convert textures to WebP (Node.js only).
+    // Convert textures to WebP (Requires glTF Transform v3 and Node.js).
     textureCompress({
         encoder: sharp,
         targetFormat: 'webp',
