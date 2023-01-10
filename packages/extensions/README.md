@@ -18,7 +18,7 @@ Install the scripting packages:
 npm install --save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions
 ```
 
-Read and write glTF scenes with platform I/O utilities {@link WebIO}, {@link NodeIO}, or {@link DenoIO}:
+Read and write glTF scenes with platform I/O utilities [WebIO](https://gltf-transform.donmccurdy.com/classes/core.webio.html), [NodeIO](https://gltf-transform.donmccurdy.com/classes/core.nodeio.html), or [DenoIO](https://gltf-transform.donmccurdy.com/classes/core.denoio.html):
 
 ```typescript
 import { Document, NodeIO } from '@gltf-transform/core';
@@ -40,7 +40,7 @@ const document = await io.read('path/to/model.glb');
 const glb = await io.writeBinary(document);
 ```
 
-To perform changes to an existing glTF {@link Document}, import off-the-shelf scripts from the [Functions](https://gltf-transform.donmccurdy.com/functions.html) package, or write your own using API classes like {@link Material}, {@link Primitive}, and {@link Texture}.
+To perform changes to an existing glTF [Document](https://gltf-transform.donmccurdy.com/classes/core.document.html), import off-the-shelf scripts from the [Functions](https://gltf-transform.donmccurdy.com/functions.html) package, or write your own using API classes like [Material](https://gltf-transform.donmccurdy.com/classes/core.material.html), [Primitive](https://gltf-transform.donmccurdy.com/classes/core.primitive.html), and [Texture](https://gltf-transform.donmccurdy.com/classes/core.texture.html).
 
 ```typescript
 // Import default functions.
