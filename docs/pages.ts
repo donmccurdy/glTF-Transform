@@ -27,13 +27,13 @@ export namespace Credits {}
  *
  * Installation:
  *
- * ```shell
+ * ```bash
  * npm install --global @gltf-transform/cli
  * ```
  *
  * Help output:
  *
- * ```shell
+ * ```text
  * [[include:CLI_HELP.md]]
  * ```
  */

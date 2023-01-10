@@ -34,7 +34,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * [`EXT_meshopt_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/)
  * provides compression and fast decoding for geometry, morph targets, and animations.
  *
- * [[include:VENDOR_EXTENSIONS_NOTE.md]]
+ * [[include:_VENDOR_EXTENSIONS.md]]
  *
  * Meshopt compression (based on the [meshoptimizer](https://github.com/zeux/meshoptimizer)
  * library) offers a lightweight decoder with very fast runtime decompression, and is

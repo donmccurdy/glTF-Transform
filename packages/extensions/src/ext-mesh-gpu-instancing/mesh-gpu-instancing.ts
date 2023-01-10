@@ -16,7 +16,7 @@ interface InstancedMeshDef {
  * [`EXT_mesh_gpu_instancing`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing/)
  * prepares mesh data for efficient GPU instancing.
  *
- * [[include:VENDOR_EXTENSIONS_NOTE.md]]
+ * [[include:_VENDOR_EXTENSIONS.md]]
  *
  * GPU instancing allows engines to render many copies of a single mesh at once using a small number
  * of draw calls. Instancing is particularly useful for things like trees, grass, road signs, etc.

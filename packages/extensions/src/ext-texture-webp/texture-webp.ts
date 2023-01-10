@@ -65,7 +65,7 @@ class WEBPImageUtils implements ImageUtilsFormat {
  * [`EXT_texture_webp`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_webp/)
  * enables WebP images for any material texture.
  *
- * [[include:VENDOR_EXTENSIONS_NOTE.md]]
+ * [[include:_VENDOR_EXTENSIONS.md]]
  *
  * WebP typically provides the minimal transmission
  * size, but [requires browser support](https://caniuse.com/webp). Like PNG and JPEG, a WebP image is
