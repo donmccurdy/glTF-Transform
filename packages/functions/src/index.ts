@@ -5,7 +5,7 @@
  *
  * Most of these functions are _Transforms_, applying a modification to the {@link Document}, used
  * with {@link Document.transform}. This project includes many common transforms already, and
- * others can be quickly implemented using the same APIs. Other functions, like {@link bounds},
+ * others can be quickly implemented using the same APIs. Other functions, like {@link getBounds},
  * provide non-mutating functionality on top of the existing glTF-Transform property types.
  *
  * ## Installation
@@ -20,16 +20,29 @@
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
- * import { dedup, quantize, weld } from '@gltf-transform/functions';
+ * import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
+ * import { weld, quantize, dedup } from '@gltf-transform/functions';
  *
- * const io = new NodeIO();
+ * const io = new NodeIO().registerExtensions(KHRONOS_EXTENSIONS);
  * const document = await io.read('input.glb');
  *
  * await document.transform(
  * 	weld(),
  * 	quantize(),
- * 	dedup()
+ * 	dedup(),
+ *
+ * 	// Custom transform.
+ * 	backfaceCulling({cull: true}),
  * );
+ *
+ * // Custom transform: enable/disable backface culling.
+ * function backfaceCulling(options) {
+ *   return (document) => {
+ *     for (const material of document.getRoot().listMaterials()) {
+ *       material.setDoubleSided(!options.cull);
+ *     }
+ *   };
+ * }
  *
  * await io.write('output.glb', document);
  * ```
