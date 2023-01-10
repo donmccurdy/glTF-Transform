@@ -65,9 +65,7 @@ await document.transform(
     backfaceCulling({cull: true}),
 );
 
-/**
- * Custom transform: enable/disable backface culling.
- */
+// Custom transform: enable/disable backface culling.
 function backfaceCulling(options) {
     return (document) => {
         for (const material of document.getRoot().listMaterials()) {
