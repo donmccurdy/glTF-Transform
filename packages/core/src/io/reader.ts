@@ -18,7 +18,7 @@ const ComponentTypeToTypedArray = {
 
 export interface ReaderOptions {
 	logger?: ILogger;
-	extensions: typeof Extension[];
+	extensions: (typeof Extension)[];
 	dependencies: { [key: string]: unknown };
 }
 

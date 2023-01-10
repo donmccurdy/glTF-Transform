@@ -1,6 +1,4 @@
-# Credits
-
-<!-- NOTICE: This section is duplicated in _CREDITS.md. Please keep them in sync. -->
+<!-- NOTICE: This section is duplicated in CREDITS.md. Please keep them in sync. -->
 
 The glTF-Transform project is developed and maintained by [Don McCurdy](https://github.com/donmccurdy). Thanks to the individuals and companies who have supported the project through [GitHub Sponsors](https://github.com/sponsors/donmccurdy/) or by [contributing to the codebase](https://github.com/donmccurdy/glTF-Transform/graphs/contributors). Additional thanks to the following supporters:
 

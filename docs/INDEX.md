@@ -4,7 +4,7 @@
 [![Minzipped size](https://badgen.net/bundlephobia/minzip/@gltf-transform/core)](https://bundlephobia.com/result?p=@gltf-transform/core)
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE)
 
-*glTF 2.0 SDK for JavaScript, TypeScript, and Node.js.*
+*glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.*
 
 ## Introduction
 
@@ -12,41 +12,112 @@
 
 glTF-Transform supports reading, editing, and writing 3D models in glTF 2.0 format. Unlike 3D modeling tools — which are ideal for artistic changes to geometry, materials, and animation — glTF-Transform provides fast, reproducible, and lossless control of the low-level details in a 3D model. The API automatically manages array indices and byte offsets, which would otherwise require careful management when editing files. These traits make it a good choice for bundling, splitting, or optimizing an existing model. It can also be used to apply quick fixes for common issues, to build a model procedurally, or to easily develop custom extensions on top of the glTF format. Because the core SDK is compatible with both Node.js and Web, glTF-Transform may be used to develop offline workflows and web applications alike.
 
-glTF-Transform is modular:
+Packages:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
 - `@gltf-transform/extensions`: [Extensions](/extensions.html) (optional glTF features) for the Core SDK.
 - `@gltf-transform/functions`: [Functions](/functions.html) for common glTF modifications, written using the core API.
 - `@gltf-transform/cli`: [CLI](/cli.html) to apply functions to glTF files quickly or in batch.
 
-## Getting started
+## Scripting API
 
-To learn how glTF-Transform works, see [Concepts](/concepts.html). To get started developing with the SDK, see [SDK Installation](#sdk-installation) below. Find [Functions](/functions.html) for example scripts created with the SDK already. To use the commandline interface, see [Commandline (CLI)](/cli.html). If you're interested in contributing to or customizing the project, see [contributing](/contributing.html).
+Install the scripting packages:
 
-### SDK Installation
-
-Install the core SDK for programmatic use:
-
-```shell
-npm install --save @gltf-transform/core
+```bash
+npm install --save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions
 ```
 
-Then, import some modules:
+Read and write glTF scenes with platform I/O utilities {@link WebIO}, {@link NodeIO}, or {@link DenoIO}:
 
 ```typescript
-// ES Modules.
-import { Document, Scene, WebIO } from '@gltf-transform/core';
+import { Document, NodeIO } from '@gltf-transform/core';
+import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
+import draco3d from 'draco3dgltf';
 
-// CommonJS.
-const { Document, Scene, WebIO } = require('@gltf-transform/core');
+// Configure I/O.
+const io = new NodeIO()
+    .registerExtensions(KHRONOS_EXTENSIONS)
+    .registerDependencies({
+        'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
+        'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
+    });
+
+// Read from URL.
+const document = await io.read('path/to/model.glb');
+
+// Write to byte array (Uint8Array).
+const glb = await io.writeBinary(document);
 ```
 
-All classes described by this documentation are imported from the core package, as shown above. Most projects should start with the {@link Document} or {@link PlatformIO} classes.
+To perform changes to an existing glTF {@link Document}, import off-the-shelf scripts from the [Functions](/functions.html) package, or write your own using API classes like {@link Material}, {@link Primitive}, and {@link Texture}.
 
-## License
+```typescript
+// Import default functions.
+import { prune, dedup } from '@gltf-transform/functions';
+import * as sharp from 'sharp'; // Node.js-only.
 
-Copyright 2021, MIT License.
+await document.transform(
+    // Losslessly resample animation frames.
+    resample(),
+    // Remove unused nodes, textures, or other data.
+    prune(),
+    // Remove duplicate vertex or texture data, if any.
+    dedup(),
+    // Compress mesh geometry with Draco.
+    draco(),
+    // Convert textures to WebP (Node.js only).
+    textureCompress({
+        encoder: sharp,
+        targetFormat: 'webp',
+        resize: [1024, 2024],
+    }),
+    // Custom transform.
+    backfaceCulling({cull: true}),
+);
+
+/**
+ * Custom transform: enable/disable backface culling.
+ */
+function backfaceCulling(options) {
+    return (document) => {
+        for (const material of document.getRoot().listMaterials()) {
+            material.setDoubleSided(!options.cull);
+        }
+    };
+}
+```
+
+To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](/concepts.html).
+
+## Commandline API
+
+Install the CLI, supported in Node.js v14+.
+
+```bash
+npm install --global @gltf-transform/cli
+```
+
+List available CLI commands:
+
+```bash
+gltf-transform --help
+```
+
+Compress mesh geometry with [Draco](https://github.com/google/draco):
+
+```bash
+gltf-transform draco input.glb output.glb --method edgebreaker
+```
+
+Resize and compress textures with [Sharp](https://sharp.pixelplumbing.com/):
+
+```bash
+gltf-transform resize input.glb output.glb --width 1024 --height 1024
+gltf-transform webp input.glb output.glb --slots "baseColor"
+```
+
+... [and much more](/cli.html).
 
 ## Credits
 
-See [*Credits*](/credits.html).
+[[include:_CREDITS.md]]
