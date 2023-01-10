@@ -87,7 +87,7 @@ function backfaceCulling(options) {
 }
 ```
 
-To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](/concepts.html). To try out the scripting API on a scene without installing anything, visit [gltf.report/](https://gltf.report/), load a glTF model, and open the *Script* tab.
+To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](/concepts.html). To try out the scripting API without installing anything, visit [gltf.report/](https://gltf.report/), load a glTF model, and open the *Script* tab.
 
 ## Command-line API
 
