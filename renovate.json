@@ -1,30 +1,50 @@
 {
-	"extends": ["github>donmccurdy/renovate-config"],
-	"packageRules": [
-		{
-			"description": "https://github.com/donmccurdy/glTF-Transform/pull/631",
-			"matchPackageNames": ["microbundle"],
-			"enabled": false
-		},
-		{
-			"description": "https://github.com/TypeStrong/typedoc/issues/1633",
-			"matchPackageNames": ["typedoc"],
-			"enabled": false
-		},
-		{
-			"description": "ESM: https://github.com/node-fetch/node-fetch/issues/1279",
-			"matchPackageNames": ["node-fetch"],
-			"enabled": false
-		},
-		{
-			"description": "ESM: https://github.com/sindresorhus/p-limit/issues/57",
-			"matchPackageNames": ["p-limit"],
-			"enabled": false
-		},
-		{
-			"description": "ESM: https://github.com/SBoudrias/Inquirer.js/issues/999",
-			"matchPackageNames": ["inquirer", "@types/inquirer"],
-			"enabled": false
-		}
-	]
+    "extends": [
+        "github>donmccurdy/renovate-config"
+    ],
+    "packageRules": [
+        {
+            "description": "https://github.com/donmccurdy/glTF-Transform/pull/631",
+            "matchPackageNames": [
+                "microbundle"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "https://github.com/TypeStrong/typedoc/issues/1633",
+            "matchPackageNames": [
+                "typedoc"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "https://github.com/lerna/lerna/issues/3491",
+            "matchPackageNames": [
+                "lerna"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "ESM: https://github.com/node-fetch/node-fetch/issues/1279",
+            "matchPackageNames": [
+                "node-fetch"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "ESM: https://github.com/sindresorhus/p-limit/issues/57",
+            "matchPackageNames": [
+                "p-limit"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "ESM: https://github.com/SBoudrias/Inquirer.js/issues/999",
+            "matchPackageNames": [
+                "inquirer",
+                "@types/inquirer"
+            ],
+            "enabled": false
+        }
+    ]
 }
