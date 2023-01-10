@@ -37,3 +37,11 @@ gltf-transform webp input.glb output.glb --slots "baseColor"
 ```
 
 ... [and much more](https://gltf-transform.donmccurdy.com/cli.html).
+
+## Credits
+
+See [*Credits*](https://gltf-transform.donmccurdy.com/credits.html).
+
+## License
+
+Copyright 2023, MIT License.
