@@ -166,7 +166,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				}
 
 				// PREPARE: Create temporary in/out paths for the 'toktx' CLI tool, and determine
-				// necessary commandline flags.
+				// necessary command-line flags.
 
 				const extension = texture.getURI()
 					? FileUtils.extension(texture.getURI())

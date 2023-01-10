@@ -46,7 +46,7 @@ const OUTPUT_DESC = 'Path to write output';
 
 program
 	.version(require('../package.json').version)
-	.description('Commandline interface for the glTF-Transform SDK.');
+	.description('Command-line interface (CLI) for the glTF-Transform SDK.');
 
 program.command('', '\n\n🔎 INSPECT ──────────────────────────────────────────');
 

@@ -17,7 +17,7 @@ Packages:
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
 - `@gltf-transform/extensions`: [Extensions](/extensions.html) (optional glTF features) for the Core SDK.
 - `@gltf-transform/functions`: [Functions](/functions.html) for common glTF modifications, written using the core API.
-- `@gltf-transform/cli`: [CLI](/cli.html) to apply functions to glTF files quickly or in batch.
+- `@gltf-transform/cli`: [Command-line interface (CLI)](/cli.html) to apply functions to glTF files quickly or in batch.
 
 ## Scripting API
 
@@ -89,7 +89,7 @@ function backfaceCulling(options) {
 
 To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](/concepts.html).
 
-## Commandline API
+## Command-line API
 
 Install the CLI, supported in Node.js v14+.
 
