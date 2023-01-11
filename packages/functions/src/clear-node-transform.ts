@@ -20,8 +20,7 @@ export function clearNodeTransform(node: Node): Node {
 	const matrix = node.getMatrix();
 
 	if (mesh && !MathUtils.eq(matrix, IDENTITY)) {
-		const overwrite = mesh.listParents().some((parent) => parent instanceof Node && parent !== node);
-		transformMesh(mesh, matrix, overwrite);
+		transformMesh(mesh, matrix);
 	}
 
 	return node;
