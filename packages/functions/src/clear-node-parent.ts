@@ -20,12 +20,14 @@ export function clearNodeParent(node: Node): Node {
 		return node;
 	}
 
-	// TODO(impl): Refactor to share code with quantize(), handling
-	// skinning and animation where appropriate. Possibly as a new
-	// transformNode(node) function?
-	const matrix = node.getMatrix();
-	multiplyMat4(matrix, matrix, parent.getMatrix());
-	node.setMatrix(matrix);
+	// Apply inherited transforms to local matrix. Skinned meshes are not affected
+	// by the node parent's trasnform, and can be ignored. Updates to IBMs and TRS
+	// animations are out of scope in this context.
+	node.setMatrix(node.getWorldMatrix());
+
+	// Set scene as parent.
+	parent.removeChild(node);
+	scene.addChild(node);
 
 	return node;
 }
