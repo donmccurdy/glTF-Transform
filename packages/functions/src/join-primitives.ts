@@ -24,6 +24,10 @@ import type { Accessor, Document, Material, Primitive } from '@gltf-transform/co
 export function joinPrimitives(document: Document, prims: Primitive[]): Primitive[] {
 	const result = [];
 
+	// TODO(🚩): Do I actually want this method identifying the groups? Or should that be
+	// configurable and passed in, bailing out if they're incompatible? Do we need to be
+	// able to return information about which primitive went where?
+
 	// Allocate groups.
 	const groups = new Map<Material | null, Map<string, Primitive[]>>();
 	for (const prim of prims) {
