@@ -51,10 +51,13 @@
  */
 
 export * from './center';
+export * from './clear-node-parent';
+export * from './clear-node-transform';
 export * from './colorspace';
 export * from './dedup';
 export * from './dequantize';
 export * from './draco';
+export * from './get-node-scene';
 export * from './inspect';
 export * from './instance';
 export * from './meshopt';
@@ -72,6 +75,7 @@ export * from './texture-compress';
 export * from './tangents';
 export * from './texture-resize';
 export * from './transform-mesh';
+export * from './transform-primitive';
 export * from './unlit';
 export * from './unpartition';
 export * from './unweld';
