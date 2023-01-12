@@ -10,7 +10,9 @@ import { Node, Scene } from '@gltf-transform/core';
  *
  * const node = document.getRoot().listNodes()
  *  .find((node) => node.getName() === 'MyNode');
+ *
  * const scene = getNodeScene(node);
+ * ```
  */
 export function getNodeScene(node: Node): Scene | null {
 	const visited = new Set<Node>();

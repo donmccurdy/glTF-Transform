@@ -11,11 +11,28 @@ const IDENTITY: mat4 = [
 ];
 
 /**
- * Clears local transform of the {@link Node}.
+ * Clears local transform of the {@link Node}, applying the transform to children and meshes.
  *
  * - Applies transform to {@link Node.listChildren() children}
  * - Applies transform to {@link Mesh mesh}
  * - Resets {@link Light lights}, {@link Camera cameras}, and other attachments to the origin
+ *
+ * Example:
+ *
+ * ```typescript
+ * import { clearNodeTransform } from '@gltf-transform/functions';
+ *
+ * node.getTranslation(); // → [ 5, 0, 0 ]
+ * node.getMesh(); // → vertex data centered at origin
+ *
+ * clearNodeTransform(node);
+ *
+ * node.getTranslation(); // → [ 0, 0, 0 ]
+ * node.getMesh(); // → vertex data centered at [ 5, 0, 0 ]
+ * ```
+ *
+ * To clear _all_ transforms of a Node, first clear its inherited transforms with
+ * {@link clearNodeParent}, then clear the local transform with {@link clearNodeTransform}.
  */
 export function clearNodeTransform(node: Node): Node {
 	const mesh = node.getMesh();
