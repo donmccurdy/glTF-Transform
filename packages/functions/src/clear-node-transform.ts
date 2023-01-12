@@ -1,4 +1,5 @@
 import { mat4, MathUtils, Node } from '@gltf-transform/core';
+import { multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { transformMesh } from './transform-mesh';
 
 // prettier-ignore
@@ -10,18 +11,25 @@ const IDENTITY: mat4 = [
 ];
 
 /**
- * Clears the local transform of the {@link Node}. If a {@link Mesh}
- * is attached to the Node, the transform will be applied to the Mesh. If
- * {@link Light Lights}, {@link Camera Cameras}, or other objects
- * are attached to the Node, their local transforms will be cleared.
+ * Clears local transform of the {@link Node}.
+ *
+ * - Applies transform to {@link Node.listChildren() children}
+ * - Applies transform to {@link Mesh mesh}
+ * - Resets {@link Light lights}, {@link Camera cameras}, and other attachments to the origin
  */
 export function clearNodeTransform(node: Node): Node {
 	const mesh = node.getMesh();
-	const matrix = node.getMatrix();
+	const localMatrix = node.getMatrix();
 
-	if (mesh && !MathUtils.eq(matrix, IDENTITY)) {
-		transformMesh(mesh, matrix);
+	if (mesh && !MathUtils.eq(localMatrix, IDENTITY)) {
+		transformMesh(mesh, localMatrix);
 	}
 
-	return node;
+	for (const child of node.listChildren()) {
+		const matrix = child.getMatrix();
+		multiplyMat4(matrix, matrix, localMatrix);
+		child.setMatrix(matrix);
+	}
+
+	return node.setMatrix(IDENTITY);
 }

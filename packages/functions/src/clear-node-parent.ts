@@ -1,5 +1,4 @@
 import { Node, Scene } from '@gltf-transform/core';
-import { multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { getNodeScene } from './get-node-scene';
 
 /**
