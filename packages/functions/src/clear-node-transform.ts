@@ -13,7 +13,7 @@ const IDENTITY: mat4 = [
 /**
  * Clears local transform of the {@link Node}, applying the transform to children and meshes.
  *
- * - Applies transform to {@link Node.listChildren() children}
+ * - Applies transform to children
  * - Applies transform to {@link Mesh mesh}
  * - Resets {@link Light lights}, {@link Camera cameras}, and other attachments to the origin
  *
