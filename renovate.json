@@ -18,13 +18,6 @@
             "enabled": false
         },
         {
-            "description": "https://github.com/lerna/lerna/issues/3491",
-            "matchPackageNames": [
-                "lerna"
-            ],
-            "enabled": false
-        },
-        {
             "description": "ESM: https://github.com/node-fetch/node-fetch/issues/1279",
             "matchPackageNames": [
                 "node-fetch"
