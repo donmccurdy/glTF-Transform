@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions } from '@gltf-transform/functions';
 import { inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
@@ -369,6 +369,24 @@ https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(instance({...options} as InstanceOptions))
+	);
+
+// FLATTEN
+program
+	.command('flatten', 'Flatten scene graph')
+	.help(`
+Flattens the scene graph, leaving Nodes with Meshes, Cameras, and other
+attachments as direct children of the Scene. Skeletons and their
+descendants are left in their original Node structure.
+
+Animation targeting a Node or its parents will prevent that Node from being
+moved.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(flatten({...options} as FlattenOptions))
 	);
 
 program.command('', '\n\n🕋 GEOMETRY ─────────────────────────────────────────');
