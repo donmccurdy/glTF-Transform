@@ -91,7 +91,7 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 	const componentType = templateAttribute.getComponentType();
 	const normalized = templateAttribute.getNormalized();
 	const normalizedComponentType = normalized ? componentType : undefined;
-	const delta = normalized ? MathUtils.denormalize(1, componentType) : Number.EPSILON;
+	const delta = normalized ? MathUtils.decodeNormalizedInt(1, componentType) : Number.EPSILON;
 	const joints = new Uint32Array(setCount * 4).fill(0);
 	const weights = templateArray.slice(0, setCount * 4).fill(0);
 
@@ -106,8 +106,8 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		if (Math.abs(1 - weightsSum) > delta) {
 			for (let j = 0; j < weights.length; j++) {
 				if (normalized) {
-					const intValue = MathUtils.normalize(weights[j] / weightsSum, componentType);
-					weights[j] = MathUtils.denormalize(intValue, componentType);
+					const intValue = MathUtils.encodeNormalizedInt(weights[j] / weightsSum, componentType);
+					weights[j] = MathUtils.decodeNormalizedInt(intValue, componentType);
 				} else {
 					weights[j] /= weightsSum;
 				}
@@ -121,7 +121,7 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		if (normalized && weightsSum !== 1) {
 			for (let j = weights.length - 1; j >= 0; j--) {
 				if (weights[j] > 0) {
-					weights[j] += MathUtils.normalize(1 - weightsSum, componentType);
+					weights[j] += MathUtils.encodeNormalizedInt(1 - weightsSum, componentType);
 					break;
 				}
 			}
@@ -153,7 +153,7 @@ function getVertexArray(
 		weights.getElement(vertexIndex, el);
 		for (let j = 0; j < 4; j++) {
 			if (normalizedComponentType) {
-				target[i * 4 + j] = MathUtils.normalize(el[j], normalizedComponentType);
+				target[i * 4 + j] = MathUtils.encodeNormalizedInt(el[j], normalizedComponentType);
 			} else {
 				target[i * 4 + j] = el[j];
 			}
@@ -175,7 +175,7 @@ function setVertexArray(
 	for (let i = 0; (weights = prim.getAttribute(`${prefix}_${i}`)); i++) {
 		for (let j = 0; j < 4; j++) {
 			if (normalizedComponentType) {
-				el[j] = MathUtils.denormalize(values[i * 4 + j], normalizedComponentType);
+				el[j] = MathUtils.decodeNormalizedInt(values[i * 4 + j], normalizedComponentType);
 			} else {
 				el[j] = values[i * 4 + j];
 			}
@@ -189,7 +189,7 @@ function sum(values: TypedArray, normalizedComponentType?: GLTF.AccessorComponen
 	let sum = 0;
 	for (let i = 0; i < values.length; i++) {
 		if (normalizedComponentType) {
-			sum += MathUtils.denormalize(values[i], normalizedComponentType);
+			sum += MathUtils.decodeNormalizedInt(values[i], normalizedComponentType);
 		} else {
 			sum += values[i];
 		}
