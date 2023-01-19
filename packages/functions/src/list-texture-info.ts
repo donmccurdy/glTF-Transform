@@ -1,4 +1,4 @@
-import { Document, Texture, TextureInfo } from '@gltf-transform/core';
+import { Texture, TextureInfo } from '@gltf-transform/core';
 
 /**
  * Lists all {@link TextureInfo} definitions associated with a given {@link Texture}.
@@ -7,15 +7,15 @@ import { Document, Texture, TextureInfo } from '@gltf-transform/core';
  *
  * ```js
  * // Find TextureInfo instances associated with the texture.
- * const results = listTextureInfo(document, texture);
+ * const results = listTextureInfo(texture);
  *
  * // Find which UV sets (TEXCOORD_0, TEXCOORD_1, ...) are required.
  * const texCoords = results.map((info) => info.getTexCoord());
  * // → [0, 0, 1]
  * ```
  */
-export function listTextureInfo(document: Document, texture: Texture): TextureInfo[] {
-	const graph = document.getGraph();
+export function listTextureInfo(texture: Texture): TextureInfo[] {
+	const graph = texture.getGraph();
 	const results: TextureInfo[] = [];
 
 	for (const textureEdge of graph.listParentEdges(texture)) {

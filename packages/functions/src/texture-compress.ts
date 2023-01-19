@@ -8,7 +8,7 @@ import { TextureResizeFilter } from './texture-resize';
 
 const NAME = 'textureCompress';
 
-type Format = typeof FORMATS[number];
+type Format = (typeof FORMATS)[number];
 const FORMATS = ['jpeg', 'png', 'webp'] as const;
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -92,8 +92,8 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 
 		await Promise.all(
 			textures.map(async (texture, textureIndex) => {
-				const slots = listTextureSlots(document, texture);
-				const channels = getTextureChannelMask(document, texture);
+				const slots = listTextureSlots(texture);
+				const channels = getTextureChannelMask(texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||

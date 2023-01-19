@@ -76,6 +76,15 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	protected abstract init(): void;
 
 	/**
+	 * Returns the Graph associated with this Property. For internal use.
+	 * @hidden
+	 * @experimental
+	 */
+	public getGraph(): Graph<Property> {
+		return this.graph;
+	}
+
+	/**
 	 * Returns default attributes for the property. Empty lists and maps should be initialized
 	 * to empty arrays and objects. Always invoke `super.getDefaults()` and extend the result.
 	 */
