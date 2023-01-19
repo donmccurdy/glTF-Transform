@@ -6,13 +6,13 @@ on:
     branches: [main]
 jobs:
   build:
-    runs-on: macos-latest # Better `headless-gl` support on macOS.
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x, 16.x] # Latest prebuilt binaries for `headless-gl`.
+        node-version: [14.x, 18.x]
     env:
       CI: true
-      COVERAGE: ${{ matrix.node-version == '16.x' && true || false }}
+      COVERAGE: ${{ matrix.node-version == '18.x' && true || false }}
     steps:
     # Setup.
     - uses: actions/checkout@v3

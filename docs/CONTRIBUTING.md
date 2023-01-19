@@ -41,10 +41,9 @@ extensions and functions can be defined and used externally. Changes including t
 strongly preferred.
 
 New features should be compatible with both Node.js and Web, though exceptions may be possible in
-certain situations. To accomplish that, any platform-specific resources (like instances of
-[HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) or
-[headless-gl](https://github.com/stackgl/headless-gl)) are passed into API functions by the user,
-rather than being created by the API directly.
+certain situations. To accomplish that, some platform-specific resources (like instances of
+[HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)) are passed into
+API functions by the user, rather than being created by the API directly.
 
 ### Dependencies
 
