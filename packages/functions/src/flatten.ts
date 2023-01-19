@@ -9,7 +9,7 @@ const NAME = 'flatten';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FlattenOptions {}
 
-const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
+export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
 
 /**
  * Flattens the scene graph, leaving {@link Node Nodes} with
@@ -28,7 +28,7 @@ const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
  * await document.transform(flatten());
  * ```
  */
-export function flatten(_options: FlattenOptions): Transform {
+export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...FLATTEN_DEFAULTS, ..._options } as Required<FlattenOptions>;
 
@@ -82,8 +82,10 @@ export function flatten(_options: FlattenOptions): Transform {
 			});
 		}
 
-		// TODO(feat): For nodes with animation in their world transform, transform channels.
-		// TODO(feat): (Optional) Merge meshes of sibling nodes.
+		// TODO(feat): Transform animation channels, accounting for previously inherited transforms.
+		if (animated.size) {
+			logger.debug(`${NAME}: Flattening node hierarchies with TRS animation not yet supported.`);
+		}
 
 		// (5) Clean up leaf nodes.
 		await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false }));

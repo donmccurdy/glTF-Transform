@@ -25,7 +25,7 @@ test('@gltf-transform/functions::clearNodeParent', async (t) => {
 
 	t.deepEquals(nodeA.getTranslation(), [8, 0, 0], 'A.translation');
 	t.deepEquals(nodeA.getScale(), [4, 4, 4], 'A.scale');
-	t.deepEquals(nodeA.getScale(), [4, 4, 4], 'B.scale');
+	t.deepEquals(nodeB.getScale(), [4, 4, 4], 'B.scale');
 
 	t.end();
 });
