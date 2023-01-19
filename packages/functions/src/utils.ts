@@ -1,6 +1,6 @@
 import type { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import { Accessor, Primitive, Texture, Transform, TransformContext } from '@gltf-transform/core';
+import { Accessor, Node, Primitive, Scene, Texture, Transform, TransformContext } from '@gltf-transform/core';
 
 /**
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
@@ -162,4 +162,15 @@ export function createIndices(count: number, maxIndex = count): Uint16Array | Ui
 	const array = maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
+}
+
+export function traverseNodeParents(node: Node, fn: (parent: Scene | Node) => void): void {
+	let child = node;
+	let parent: Scene | Node | null;
+	while ((parent = child.getParent() as Scene | Node | null)) {
+		fn(parent);
+		if (parent instanceof Node) {
+			child = parent;
+		}
+	}
 }

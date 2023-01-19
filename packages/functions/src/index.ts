@@ -57,6 +57,7 @@ export * from './colorspace';
 export * from './dedup';
 export * from './dequantize';
 export * from './draco';
+export * from './flatten';
 export * from './get-node-scene';
 export * from './inspect';
 export * from './instance';
