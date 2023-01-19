@@ -4,38 +4,36 @@ import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
 import caporal from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
-import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions, sparse, SparseOptions, join, JoinOptions, JOIN_DEFAULTS } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, FlattenOptions, flatten, JOIN_DEFAULTS, join, JoinOptions, sparse, SparseOptions } from '@gltf-transform/functions';
 import { inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
 import fetch from 'node-fetch';
-import draco3d from 'draco3dgltf';
 import mikktspace from 'mikktspace';
 import sharp from 'sharp';
-import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import { getConfig, loadConfig } from './config';
 
 const program = caporal.program;
 
 let io: NodeIO;
 
 const programReady = new Promise<void>((resolve) => {
-	Promise.all([
-		draco3d.createDecoderModule(),
-		draco3d.createEncoderModule(),
-		MeshoptDecoder.ready,
-		MeshoptEncoder.ready,
-	]).then(([decoder, encoder, _]) => {
+	// Manually detect and handle --config, before program actually runs.
+	if (process.argv.includes('--config')) {
+		loadConfig(process.argv[process.argv.indexOf('--config') + 1]);
+	}
+	return getConfig().then(async (config) => {
 		io = new NodeIO(fetch)
-			.registerExtensions(ALL_EXTENSIONS)
-			.registerDependencies({
-				'draco3d.decoder': decoder,
-				'draco3d.encoder': encoder,
-				'meshopt.decoder': MeshoptDecoder,
-				'meshopt.encoder': MeshoptEncoder,
-			});
+			.registerExtensions(config.extensions)
+			.registerDependencies(config.dependencies);
+		if (config.onProgramReady) {
+			// TODO(🚩): This shouldn't run without a config.
+			program.command('', '\n\n👤 PROJECT ──────────────────────────────────────────');
+			await config.onProgramReady({program, io, Session});
+		}
 		resolve();
 	});
 });
@@ -1344,6 +1342,10 @@ program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
 	action: ({options}) => {
 		io.setVertexLayout(options.vertexLayout as VertexLayout);
 	},
+});
+program.option('--config <path>', 'Configuration for new commands and extensions', {
+	global: true,
+	validator: program.STRING
 });
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
