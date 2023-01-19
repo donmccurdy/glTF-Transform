@@ -6,7 +6,7 @@ import { Document, Texture } from '@gltf-transform/core';
  * Example:
  *
  * ```js
- * const slots = listTextureSlots(document, texture);
+ * const slots = listTextureSlots(texture);
  * // → ['occlusionTexture', 'metallicRoughnesTexture']
  * ```
  */

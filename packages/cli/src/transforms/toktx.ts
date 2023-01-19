@@ -133,8 +133,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		const numTextures = textures.length;
 		const promises = textures.map((texture, textureIndex) =>
 			limit(async () => {
-				const slots = listTextureSlots(doc, texture);
-				const channels = getTextureChannelMask(doc, texture);
+				const slots = listTextureSlots(texture);
+				const channels = getTextureChannelMask(texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||
