@@ -1,4 +1,4 @@
-import type { Document, Texture } from '@gltf-transform/core';
+import { Document, Texture } from '@gltf-transform/core';
 
 /**
  * Returns names of all texture slots using the given texture.
@@ -6,13 +6,14 @@ import type { Document, Texture } from '@gltf-transform/core';
  * Example:
  *
  * ```js
- * const slots = listTextureSlots(document, texture);
+ * const slots = listTextureSlots(texture);
  * // → ['occlusionTexture', 'metallicRoughnesTexture']
  * ```
  */
-export function listTextureSlots(doc: Document, texture: Texture): string[] {
-	const root = doc.getRoot();
-	const slots = doc
+export function listTextureSlots(texture: Texture): string[] {
+	const document = Document.fromGraph(texture.getGraph())!;
+	const root = document.getRoot();
+	const slots = texture
 		.getGraph()
 		.listParentEdges(texture)
 		.filter((edge) => edge.getParent() !== root)

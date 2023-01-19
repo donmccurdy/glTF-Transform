@@ -19,14 +19,14 @@ test('@gltf-transform/functions::listTextureChannels', (t) => {
 		.setBaseColorTexture(textureA)
 		.setExtension('KHR_materials_sheen', sheen);
 
-	t.deepEquals(listTextureChannels(document, textureA), [R, G, B, A], 'baseColorTexture RGBA');
-	t.deepEquals(listTextureChannels(document, textureB), [A], 'sheenColorTexture A');
+	t.deepEquals(listTextureChannels(textureA), [R, G, B, A], 'baseColorTexture RGBA');
+	t.deepEquals(listTextureChannels(textureB), [A], 'sheenColorTexture A');
 
 	material.setAlphaMode('OPAQUE');
-	t.deepEquals(listTextureChannels(document, textureA), [R, G, B], 'baseColorTexture RGB');
+	t.deepEquals(listTextureChannels(textureA), [R, G, B], 'baseColorTexture RGB');
 
 	sheen.setSheenColorTexture(textureB);
-	t.deepEquals(listTextureChannels(document, textureB), [R, G, B, A], 'sheenColorTexture RGBA');
+	t.deepEquals(listTextureChannels(textureB), [R, G, B, A], 'sheenColorTexture RGBA');
 	t.end();
 });
 
@@ -42,13 +42,13 @@ test('@gltf-transform/functions::getTextureChannelMask', (t) => {
 		.setBaseColorTexture(textureA)
 		.setExtension('KHR_materials_sheen', sheen);
 
-	t.equals(getTextureChannelMask(document, textureA), R | G | B | A, 'baseColorTexture RGBA');
-	t.equals(getTextureChannelMask(document, textureB), A, 'sheenColorTexture A');
+	t.equals(getTextureChannelMask(textureA), R | G | B | A, 'baseColorTexture RGBA');
+	t.equals(getTextureChannelMask(textureB), A, 'sheenColorTexture A');
 
 	material.setAlphaMode('OPAQUE');
-	t.equals(getTextureChannelMask(document, textureA), R | G | B, 'baseColorTexture RGB');
+	t.equals(getTextureChannelMask(textureA), R | G | B, 'baseColorTexture RGB');
 
 	sheen.setSheenColorTexture(textureB);
-	t.equals(getTextureChannelMask(document, textureB), R | G | B | A, 'sheenColorTexture RGBA');
+	t.equals(getTextureChannelMask(textureB), R | G | B | A, 'sheenColorTexture RGBA');
 	t.end();
 });

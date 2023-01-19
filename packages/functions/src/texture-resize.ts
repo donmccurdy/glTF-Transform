@@ -65,7 +65,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 				continue;
 			}
 
-			const slots = listTextureSlots(doc, texture);
+			const slots = listTextureSlots(texture);
 			if (options.slots && !slots.some((slot) => options.slots?.test(slot))) {
 				logger.debug(`${NAME}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
 				continue;

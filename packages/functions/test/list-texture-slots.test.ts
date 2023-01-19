@@ -12,7 +12,7 @@ test('@gltf-transform/functions::listTextureSlots', (t) => {
 	const sheenExtension = document.createExtension(KHRMaterialsSheen);
 	const sheen = sheenExtension.createSheen().setSheenColorTexture(textureB);
 	document.createMaterial().setBaseColorTexture(textureA).setExtension('KHR_materials_sheen', sheen);
-	t.deepEquals(listTextureSlots(document, textureA), ['baseColorTexture'], 'baseColorTexture');
-	t.deepEquals(listTextureSlots(document, textureB), ['sheenColorTexture'], 'sheenColorTexture');
+	t.deepEquals(listTextureSlots(textureA), ['baseColorTexture'], 'baseColorTexture');
+	t.deepEquals(listTextureSlots(textureB), ['sheenColorTexture'], 'sheenColorTexture');
 	t.end();
 });

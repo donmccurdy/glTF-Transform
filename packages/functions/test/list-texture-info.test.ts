@@ -17,14 +17,14 @@ test('@gltf-transform/functions::listTextureInfo', (t) => {
 	document.createMaterial().setOcclusionTexture(textureB).setMetallicRoughnessTexture(textureB);
 
 	t.deepEquals(
-		listTextureInfo(document, textureA)
+		listTextureInfo(textureA)
 			.map((info) => info.getName())
 			.sort(),
 		['baseColorTextureInfo', 'sheenRoughnessTextureInfo'],
 		'texture A'
 	);
 	t.deepEquals(
-		listTextureInfo(document, textureB)
+		listTextureInfo(textureB)
 			.map((info) => info.getName())
 			.sort(),
 		['metallicRoughnessTextureInfo', 'occlusionTextureInfo'],

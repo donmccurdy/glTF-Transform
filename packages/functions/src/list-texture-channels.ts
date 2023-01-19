@@ -1,4 +1,4 @@
-import type { Document, Texture } from '@gltf-transform/core';
+import { Document, Texture } from '@gltf-transform/core';
 import { Material, TextureChannel, PropertyType } from '@gltf-transform/core';
 
 /**
@@ -10,13 +10,13 @@ import { Material, TextureChannel, PropertyType } from '@gltf-transform/core';
  * Example:
  *
  * ```js
- * const channels = listTextureChannels(document, texture);
+ * const channels = listTextureChannels(texture);
  * if (channels.includes(TextureChannel.R)) {
  *   console.log('texture red channel used');
  * }
  */
-export function listTextureChannels(document: Document, texture: Texture): TextureChannel[] {
-	const mask = getTextureChannelMask(document, texture);
+export function listTextureChannels(texture: Texture): TextureChannel[] {
+	const mask = getTextureChannelMask(texture);
 	const channels = [];
 	if (mask & TextureChannel.R) channels.push(TextureChannel.R);
 	if (mask & TextureChannel.G) channels.push(TextureChannel.G);
@@ -34,13 +34,14 @@ export function listTextureChannels(document: Document, texture: Texture): Textu
  * Example:
  *
  * ```js
- * const mask = getTextureChannelMask(document, texture);
+ * const mask = getTextureChannelMask(texture);
  * if (mask & TextureChannel.R) {
  *   console.log('texture red channel used');
  * }
  * ```
  */
-export function getTextureChannelMask(document: Document, texture: Texture): number {
+export function getTextureChannelMask(texture: Texture): number {
+	const document = Document.fromGraph(texture.getGraph())!;
 	let mask = 0x0000;
 	for (const edge of document.getGraph().listParentEdges(texture)) {
 		const parent = edge.getParent();

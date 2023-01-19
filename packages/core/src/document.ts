@@ -80,6 +80,27 @@ export class Document {
 	private _root: Root = new Root(this._graph);
 	private _logger: ILogger = Logger.DEFAULT_INSTANCE;
 
+	/**
+	 * Enables lookup of a Document from its Graph. For internal use, only.
+	 * @internal
+	 * @experimental
+	 */
+	private static _GRAPH_DOCUMENTS = new WeakMap<Graph<Property>, Document>();
+
+	/**
+	 * Returns the Document associated with a given Graph, if any.
+	 * @hidden
+	 * @experimental
+	 */
+	public static fromGraph(graph: Graph<Property>): Document | null {
+		return Document._GRAPH_DOCUMENTS.get(graph) || null;
+	}
+
+	/** Creates a new Document, representing an empty glTF asset. */
+	public constructor() {
+		Document._GRAPH_DOCUMENTS.set(this._graph, this);
+	}
+
 	/** Returns the glTF {@link Root} property. */
 	public getRoot(): Root {
 		return this._root;
@@ -87,7 +108,6 @@ export class Document {
 
 	/**
 	 * Returns the {@link Graph} representing connectivity of resources within this document.
-	 *
 	 * @hidden
 	 */
 	public getGraph(): Graph<Property> {

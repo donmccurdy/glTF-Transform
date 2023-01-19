@@ -21,7 +21,7 @@ export function ktxfix(): Transform {
 
 			const ktx = read(image);
 			const dfd = ktx.dataFormatDescriptor[0];
-			const slots = listTextureSlots(doc, texture);
+			const slots = listTextureSlots(texture);
 
 			// Don't make changes if we have no information.
 			if (slots.length === 0) continue;
