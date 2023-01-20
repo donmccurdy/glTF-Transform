@@ -1,4 +1,12 @@
-import { Format, GLB_BUFFER, PropertyType, VERSION, VertexLayout } from '../constants';
+import {
+	ComponentTypeToTypedArray,
+	Format,
+	GLB_BUFFER,
+	PropertyType,
+	TypedArray,
+	VERSION,
+	VertexLayout,
+} from '../constants';
 import type { Document } from '../document';
 import type { Extension } from '../extension';
 import type { GraphEdge } from 'property-graph';
@@ -9,6 +17,7 @@ import { BufferUtils, Logger, MathUtils } from '../utils';
 import { WriterContext } from './writer-context';
 
 const { BufferViewUsage } = WriterContext;
+const { UNSIGNED_INT, UNSIGNED_SHORT, UNSIGNED_BYTE } = Accessor.ComponentType;
 
 export interface WriterOptions {
 	format: Format;
@@ -16,7 +25,7 @@ export interface WriterOptions {
 	basename?: string;
 	vertexLayout?: VertexLayout;
 	dependencies?: { [key: string]: unknown };
-	extensions?: typeof Extension[];
+	extensions?: (typeof Extension)[];
 }
 
 /** @internal */
@@ -200,6 +209,130 @@ export class GLTFWriter {
 			return { byteLength, buffers: [new Uint8Array(buffer)] };
 		}
 
+		/**
+		 * Pack a group of sparse accessors. Appends accessor and buffer view
+		 * definitions to the root JSON lists.
+		 *
+		 * @param accessors Accessors to be included.
+		 * @param bufferIndex Buffer to write to.
+		 * @param bufferByteOffset Current offset into the buffer, accounting for other buffer views.
+		 */
+		function concatSparseAccessors(
+			accessors: Accessor[],
+			bufferIndex: number,
+			bufferByteOffset: number
+		): BufferViewResult {
+			const buffers: Uint8Array[] = [];
+			let byteLength = 0;
+
+			const sparseIndices = new Map<Accessor, number[]>();
+			const sparseValues = new Map<Accessor, TypedArray>();
+			const sparseIndicesByteOffsets = new Map<Accessor, number>();
+			const sparseValuesByteOffsets = new Map<Accessor, number>();
+			let maxIndex = -Infinity;
+
+			// (1) For each accessor, gather indices and values.
+
+			for (const accessor of accessors) {
+				const elementSize = accessor.getElementSize();
+
+				const indices = [];
+				const values = [];
+
+				const el = [] as number[];
+				const base = new Array(elementSize).fill(0);
+
+				for (let i = 0, il = accessor.getCount(); i < il; i++) {
+					accessor.getElement(i, el);
+					if (MathUtils.eq(el, base)) continue;
+
+					maxIndex = Math.max(i, maxIndex);
+					indices.push(i);
+					for (let j = 0; j < el.length; j++) values.push(el[j]);
+				}
+
+				if (indices.length > accessor.getCount() / 3) {
+					// Too late to write non-sparse values in the proper buffer views here.
+					const pct = ((100 * indices.length) / accessor.getCount()).toFixed(1);
+					logger.warn(`Sparse accessor with many non-zero elements (${pct}%) may increase file size.`);
+				} else if (indices.length === 0) {
+					// TODO(test): How does the input asset pass validation?
+					logger.error(`Sparse accessor containing only zero-filled elements is invalid.`);
+				}
+
+				const ValueArray = ComponentTypeToTypedArray[accessor.getComponentType()];
+				sparseIndices.set(accessor, indices);
+				sparseValues.set(accessor, new ValueArray(values));
+			}
+
+			// (2) Write index buffer view.
+
+			const IndexArray = maxIndex < 255 ? Uint8Array : maxIndex < 65535 ? Uint16Array : Uint32Array;
+			const IndexComponentType =
+				maxIndex < 255 ? UNSIGNED_BYTE : maxIndex < 65535 ? UNSIGNED_SHORT : UNSIGNED_INT;
+
+			const indicesBufferViewDef: GLTF.IBufferView = {
+				buffer: bufferIndex,
+				byteOffset: bufferByteOffset + byteLength,
+				byteLength: 0,
+			};
+			for (const accessor of accessors) {
+				sparseIndicesByteOffsets.set(accessor, indicesBufferViewDef.byteLength);
+
+				const indices = sparseIndices.get(accessor)!;
+				const buffer = BufferUtils.pad(BufferUtils.toView(new IndexArray(indices)));
+				buffers.push(buffer);
+				byteLength += buffer.byteLength;
+				indicesBufferViewDef.byteLength += buffer.byteLength;
+			}
+			json.bufferViews!.push(indicesBufferViewDef);
+			const indicesBufferViewIndex = json.bufferViews!.length - 1;
+
+			// (3) Write value buffer view.
+
+			const valuesBufferViewDef: GLTF.IBufferView = {
+				buffer: bufferIndex,
+				byteOffset: bufferByteOffset + byteLength,
+				byteLength: 0,
+			};
+			for (const accessor of accessors) {
+				sparseValuesByteOffsets.set(accessor, valuesBufferViewDef.byteLength);
+
+				const values = sparseValues.get(accessor)!;
+				const buffer = BufferUtils.pad(BufferUtils.toView(values));
+				buffers.push(buffer);
+				byteLength += buffer.byteLength;
+				valuesBufferViewDef.byteLength += buffer.byteLength;
+			}
+			json.bufferViews!.push(valuesBufferViewDef);
+			const valuesBufferViewIndex = json.bufferViews!.length - 1;
+
+			// (4) Write accessors.
+
+			for (const accessor of accessors) {
+				const accessorDef = context.createAccessorDef(accessor);
+				const indices = sparseIndices.get(accessor)!;
+				const indicesByteOffset = sparseIndicesByteOffsets.get(accessor)!;
+				const valuesByteOffset = sparseValuesByteOffsets.get(accessor)!;
+				accessorDef.sparse = {
+					count: indices.length,
+					indices: {
+						bufferView: indicesBufferViewIndex,
+						byteOffset: indicesByteOffset,
+						componentType: IndexComponentType,
+					},
+					values: {
+						bufferView: valuesBufferViewIndex,
+						byteOffset: valuesByteOffset,
+					},
+				};
+				json.accessors!.push(accessorDef);
+				context.accessorIndexMap.set(accessor, json.accessors!.length - 1);
+			}
+
+			return { buffers, byteLength };
+		}
+
 		/* Data use pre-processing. */
 
 		const accessorRefs = new Map<Accessor, GraphEdge<Property, Accessor>[]>();
@@ -310,8 +443,7 @@ export class GLTFWriter {
 
 			for (const usage in usageGroups) {
 				if (groupByParent.has(usage)) {
-					// Accessors grouped by (first) parent, including vertex and instance
-					// attributes.
+					// Accessors grouped by (first) parent, including vertex and instance attributes.
 					for (const parentAccessors of Array.from(accessorParents.values())) {
 						const accessors = Array.from(parentAccessors)
 							.filter((a) => bufferAccessorsSet.has(a))
@@ -353,7 +485,10 @@ export class GLTFWriter {
 						usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
 							? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
 							: undefined;
-					const result = concatAccessors(accessors, bufferIndex, bufferByteLength, target);
+					const result =
+						usage === BufferViewUsage.SPARSE
+							? concatSparseAccessors(accessors, bufferIndex, bufferByteLength)
+							: concatAccessors(accessors, bufferIndex, bufferByteLength, target);
 					bufferByteLength += result.byteLength;
 					buffers.push(...result.buffers);
 				}

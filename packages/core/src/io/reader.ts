@@ -1,4 +1,4 @@
-import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
+import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4, ComponentTypeToTypedArray } from '../constants';
 import { Document } from '../document';
 import type { Extension } from '../extension';
 import type { JSONDocument } from '../json-document';
@@ -6,15 +6,6 @@ import { Accessor, AnimationSampler, Camera } from '../properties';
 import type { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils, ILogger, ImageUtils, Logger, MathUtils } from '../utils';
 import { ReaderContext } from './reader-context';
-
-const ComponentTypeToTypedArray = {
-	'5120': Int8Array,
-	'5121': Uint8Array,
-	'5122': Int16Array,
-	'5123': Uint16Array,
-	'5125': Uint32Array,
-	'5126': Float32Array,
-};
 
 export interface ReaderOptions {
 	logger?: ILogger;
@@ -123,6 +114,7 @@ export class GLTFReader {
 
 			if (accessorDef.sparse !== undefined) {
 				array = getSparseArray(accessorDef, context);
+				accessor.setSparse(true);
 			} else {
 				array = getAccessorArray(accessorDef, context);
 			}
