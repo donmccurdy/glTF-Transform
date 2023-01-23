@@ -188,7 +188,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', asy
 		.createAccessor()
 		.setArray(new Uint32Array([0, 0, 0, 0, 25, 0]))
 		.setSparse(true);
-	const prim = createMeshPrimitive(doc, buffer).setAttribute('_MARKER', sparseAccessor);
+	const prim = createMeshPrimitive(doc, buffer).setAttribute('_SPARSE', sparseAccessor);
 	const mesh = doc.createMesh().addPrimitive(prim);
 
 	const io = await createEncoderIO();
@@ -202,7 +202,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', asy
 		{
 			mode: Primitive.Mode.TRIANGLES,
 			indices: 0,
-			attributes: { POSITION: 1, _MARKER: 2 },
+			attributes: { POSITION: 1, _SPARSE: 2 },
 			extensions: {
 				KHR_draco_mesh_compression: {
 					bufferView: 2,
@@ -213,9 +213,9 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', asy
 		'primitiveDef'
 	);
 	t.equals(accessorDefs[1].count, 6, 'POSITION count');
-	t.equals(accessorDefs[2].count, 6, '_MARKER count');
+	t.equals(accessorDefs[2].count, 6, '_SPARSE count');
 	t.equals(accessorDefs[1].sparse, undefined, 'POSITION not sparse');
-	t.equals(accessorDefs[2].sparse.count, 1, '_MARKER sparse');
+	t.equals(accessorDefs[2].sparse.count, 1, '_SPARSE sparse');
 	t.end();
 });
 
