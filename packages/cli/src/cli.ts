@@ -6,7 +6,7 @@ import { gzip } from 'node-gzip';
 import { program } from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions, sparse, SparseOptions } from '@gltf-transform/functions';
 import { inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
@@ -1173,6 +1173,23 @@ so this workflow is not a replacement for video playback.
 		return Session.create(io, logger, args.input, args.output)
 			.transform(sequence({...options, pattern} as SequenceOptions));
 	});
+
+// SPARSE
+program
+	.command('sparse', 'Reduces storage for zero-filled arrays')
+	.help(`
+Scans all Accessors in the Document, detecting whether each Accessor would
+benefit from sparse data storage. Currently, sparse data storage is used only
+when many values (≥ 1/3) are zeroes. Particularly for assets using morph
+target ("shape key") animation, sparse data storage may significantly reduce
+file sizes.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(sparse(options as unknown as SparseOptions))
+	);
 
 program.option('--allow-http', 'Allows reads from HTTP requests.', {
 	global: true,
