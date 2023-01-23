@@ -1,5 +1,5 @@
 
-  gltf-transform 3.0.0-alpha.3 — Command-line interface (CLI) for the glTF-Transform SDK.
+  gltf-transform 3.0.0-alpha.4 — Command-line interface (CLI) for the glTF-Transform SDK.
 
   USAGE 
   
@@ -28,6 +28,7 @@
                                          🌍 SCENE ────────────────────────────────────────────  
     center                               Center the scene at the origin, or above/below it      
     instance                             Create GPU instances from shared Mesh references       
+    flatten                              Flatten scene graph                                    
                                                                                                 
                                                                                                 
                                          🕋 GEOMETRY ─────────────────────────────────────────  
@@ -60,6 +61,7 @@
                                          ⏯  ANIMATION ────────────────────────────────────────  
     resample                             Resample animations, losslessly deduplicating keyframes
     sequence                             Animate node visibilities as a flipboard sequence      
+    sparse                               Reduces storage for zero-filled arrays                 
 
   GLOBAL OPTIONS
 
