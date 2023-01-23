@@ -56,7 +56,7 @@ test('@gltf-transform/extensions::meshopt-compression | encoding', async (t) => 
 	t.end();
 });
 
-test.only('@gltf-transform/extensions::meshopt-compression | encoding sparse', async (t) => {
+test('@gltf-transform/extensions::meshopt-compression | encoding sparse', async (t) => {
 	const io = await createEncoderIO();
 
 	const doc = new Document();

@@ -298,7 +298,8 @@ function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bit
 		}
 	}
 
-	attribute.setArray(dstArray).setNormalized(true);
+	// TODO(feat): Support sparse accessors, https://github.com/donmccurdy/glTF-Transform/issues/795
+	attribute.setArray(dstArray).setNormalized(true).setSparse(false);
 }
 
 function getQuantizationSettings(

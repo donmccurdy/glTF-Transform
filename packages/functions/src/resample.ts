@@ -79,8 +79,8 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 };
 
 function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPath, options: ResampleOptions): void {
-	const input = sampler.getInput()!.clone();
-	const output = sampler.getOutput()!.clone();
+	const input = sampler.getInput()!.clone().setSparse(false);
+	const output = sampler.getOutput()!.clone().setSparse(false);
 
 	const tolerance = options.tolerance as number;
 	const interpolation = sampler.getInterpolation();
