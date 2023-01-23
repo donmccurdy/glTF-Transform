@@ -2,7 +2,7 @@ import test from 'tape';
 import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
 import { createPlatformIO } from '../../../test-utils';
 
-const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT, INT } = Accessor.ComponentType;
+const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT } = Accessor.ComponentType;
 
 test('@gltf-transform/core::accessor | getScalar/setScalar', (t) => {
 	const accessor = new Document()

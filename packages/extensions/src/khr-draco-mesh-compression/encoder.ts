@@ -67,8 +67,17 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const attributeIDs: { [key: string]: number } = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
 
+	const hasMorphTargets = prim.listTargets().length > 0;
+	let hasSparseAttributes = false;
+
 	for (const semantic of prim.listSemantics()) {
 		const attribute = prim.getAttribute(semantic)!;
+
+		if (attribute.getSparse()) {
+			hasSparseAttributes = true;
+			continue;
+		}
+
 		const attributeEnum = getAttributeEnum(semantic);
 		const attributeID: number = addAttribute(
 			builder,
@@ -113,7 +122,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	encoder.SetTrackEncodedProperties(true);
 
 	// Preserve vertex order for primitives with morph targets.
-	if (options.method === EncoderMethod.SEQUENTIAL || prim.listTargets().length > 0) {
+	if (options.method === EncoderMethod.SEQUENTIAL || hasMorphTargets || hasSparseAttributes) {
 		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
 	} else {
 		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
@@ -131,10 +140,11 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const numVertices = encoder.GetNumberOfEncodedPoints();
 	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
 
-	if (prim.listTargets().length > 0 && numVertices !== prevNumVertices) {
+	if ((hasMorphTargets || hasSparseAttributes) && numVertices !== prevNumVertices) {
 		throw new EncodingError(
-			'Compression reduced vertex count unexpectedly, corrupting morph targets.' +
-				' Applying the "weld" function before compression may resolve the issue.'
+			'Compression reduced vertex count unexpectedly, corrupting mesh data.' +
+				' Applying the "weld" function before compression may resolve the issue.' +
+				' See: https://github.com/google/draco/issues/929'
 		);
 	}
 
