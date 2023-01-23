@@ -251,7 +251,7 @@ export class GLTFWriter {
 
 				for (let i = 0, il = accessor.getCount(); i < il; i++) {
 					accessor.getElement(i, el);
-					if (MathUtils.eq(el, base)) continue;
+					if (MathUtils.eq(el, base, 0)) continue;
 
 					maxIndex = Math.max(i, maxIndex);
 					indices.push(i);

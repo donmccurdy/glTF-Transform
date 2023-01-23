@@ -72,6 +72,7 @@ export * from './reorder';
 export * from './sequence';
 export * from './simplify';
 export * from './sort-primitive-weights';
+export * from './sparse';
 export * from './texture-compress';
 export * from './tangents';
 export * from './texture-resize';
