@@ -296,6 +296,9 @@ export class EXTMeshoptCompression extends Extension {
 			// Example: https://skfb.ly/6qAD8
 			if (getTargetPath(accessor) === 'weights') continue;
 
+			// See: https://github.com/donmccurdy/glTF-Transform/issues/289
+			if (accessor.getSparse()) continue;
+
 			const usage = context.getAccessorUsage(accessor);
 			const mode = getMeshoptMode(accessor, usage);
 			const filter =

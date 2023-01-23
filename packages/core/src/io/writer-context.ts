@@ -198,18 +198,20 @@ export class WriterContext {
 		const cachedUsage = this._accessorUsageMap.get(accessor);
 		if (cachedUsage) return cachedUsage;
 
+		if (accessor.getSparse()) return BufferViewUsage.SPARSE;
+
 		for (const edge of this._doc.getGraph().listParentEdges(accessor)) {
 			const { usage } = edge.getAttributes() as { usage: BufferViewUsage | undefined };
 
 			if (usage) return usage;
 
 			if (edge.getParent().propertyType !== PropertyType.ROOT) {
-				this._doc.getLogger().warn(`Missing attribute ".usage" on edge, "${edge.getName()}".`);
+				this.logger.warn(`Missing attribute ".usage" on edge, "${edge.getName()}".`);
 			}
 		}
 
 		// Group accessors with no specified usage into a miscellaneous buffer view.
-		return WriterContext.BufferViewUsage.OTHER;
+		return BufferViewUsage.OTHER;
 	}
 
 	/**

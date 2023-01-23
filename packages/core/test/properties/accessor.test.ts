@@ -2,6 +2,8 @@ import test from 'tape';
 import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
 import { createPlatformIO } from '../../../test-utils';
 
+const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT } = Accessor.ComponentType;
+
 test('@gltf-transform/core::accessor | getScalar/setScalar', (t) => {
 	const accessor = new Document()
 		.createAccessor()
@@ -43,12 +45,12 @@ test('@gltf-transform/core::accessor | normalized', (t) => {
 test('@gltf-transform/core::accessor | getComponentType', (t) => {
 	const accessor = new Document().createAccessor();
 
-	t.equal(accessor.setArray(new Float32Array()).getComponentType(), Accessor.ComponentType.FLOAT, 'float');
-	t.equal(accessor.setArray(new Uint32Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_INT, 'uint32');
-	t.equal(accessor.setArray(new Uint16Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_SHORT, 'uint16');
-	t.equal(accessor.setArray(new Uint8Array()).getComponentType(), Accessor.ComponentType.UNSIGNED_BYTE, 'uint8');
-	t.equal(accessor.setArray(new Int16Array()).getComponentType(), Accessor.ComponentType.SHORT, 'int16');
-	t.equal(accessor.setArray(new Int8Array()).getComponentType(), Accessor.ComponentType.BYTE, 'int8');
+	t.equal(accessor.setArray(new Float32Array()).getComponentType(), FLOAT, 'float');
+	t.equal(accessor.setArray(new Uint32Array()).getComponentType(), UNSIGNED_INT, 'uint32');
+	t.equal(accessor.setArray(new Uint16Array()).getComponentType(), UNSIGNED_SHORT, 'uint16');
+	t.equal(accessor.setArray(new Uint8Array()).getComponentType(), UNSIGNED_BYTE, 'uint8');
+	t.equal(accessor.setArray(new Int16Array()).getComponentType(), SHORT, 'int16');
+	t.equal(accessor.setArray(new Int8Array()).getComponentType(), BYTE, 'int8');
 	t.throws(() => accessor.setArray(new Int32Array() as unknown as TypedArray).getComponentType(), 'int32 (throws)');
 	t.end();
 });
@@ -116,21 +118,21 @@ test('@gltf-transform/core::accessor | interleaved', async (t) => {
 				bufferView: 0,
 				byteOffset: 0,
 				type: Accessor.Type.VEC3,
-				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
+				componentType: UNSIGNED_SHORT,
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 6,
 				type: Accessor.Type.VEC2,
-				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
+				componentType: UNSIGNED_SHORT,
 			},
 			{
 				count: 2,
 				bufferView: 0,
 				byteOffset: 10,
 				type: Accessor.Type.VEC2,
-				componentType: Accessor.ComponentType.UNSIGNED_SHORT,
+				componentType: UNSIGNED_SHORT,
 			},
 		],
 		bufferViews: [
@@ -162,7 +164,7 @@ test('@gltf-transform/core::accessor | interleaved', async (t) => {
 	t.end();
 });
 
-test('@gltf-transform/core::accessor | sparse', async (t) => {
+test('@gltf-transform/core::accessor | read sparse', async (t) => {
 	const resources = {
 		'indices.bin': new Uint8Array(new Uint16Array([10, 50, 51]).buffer),
 		'values.bin': new Uint8Array(new Float32Array([1, 2, 3, 10, 12, 14, 25, 50, 75]).buffer),
@@ -174,12 +176,12 @@ test('@gltf-transform/core::accessor | sparse', async (t) => {
 			{
 				count: 100,
 				type: Accessor.Type.VEC3,
-				componentType: Accessor.ComponentType.FLOAT,
+				componentType: FLOAT,
 				sparse: {
 					count: 3,
 					indices: {
 						bufferView: 0,
-						componentType: Accessor.ComponentType.UNSIGNED_SHORT,
+						componentType: UNSIGNED_SHORT,
 					},
 					values: {
 						bufferView: 1,
@@ -220,6 +222,53 @@ test('@gltf-transform/core::accessor | sparse', async (t) => {
 	t.deepEquals(accessors[0].getElement(50, actual) && actual, [10, 12, 14], 'sparse index 2');
 	t.deepEquals(accessors[0].getElement(51, actual) && actual, [25, 50, 75], 'sparse index 3');
 	t.deepEquals(accessors[0].getElement(52, actual) && actual, [0, 0, 0], 'empty index 2');
+
+	t.end();
+});
+
+test('@gltf-transform/core::accessor | write sparse', async (t) => {
+	const document = new Document();
+	const buffer = document.createBuffer();
+	const emptyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	const sparseArray = [0, 0, 0, 0, 0, 25, 0, 0, 15, 0, 0, 0, 0, 0];
+	document.createAccessor('Empty').setArray(new Uint8Array(emptyArray)).setSparse(true).setBuffer(buffer);
+	document.createAccessor('Sparse').setArray(new Uint8Array(sparseArray)).setSparse(true).setBuffer(buffer);
+
+	const io = await createPlatformIO();
+	const { json, resources } = await io.writeJSON(document);
+
+	const emptyDef = json.accessors[0]!;
+	const sparseDef = json.accessors[1]!;
+
+	t.equals(emptyDef.count, 14, 'emptyAccessor.count');
+	t.equals(sparseDef.count, 14, 'sparseAccessor.count');
+	t.notOk(emptyDef.sparse, 'emptyAccessor json');
+	t.deepEquals(
+		sparseDef.sparse,
+		{
+			count: 2,
+			indices: {
+				bufferView: 0,
+				byteOffset: 0,
+				componentType: UNSIGNED_BYTE,
+			},
+			values: {
+				bufferView: 1,
+				byteOffset: 0,
+			},
+		},
+		'sparseAccessor json'
+	);
+
+	const rtDocument = await io.readJSON({ json, resources });
+	const rtEmptyAccessor = rtDocument.getRoot().listAccessors()[0];
+	const rtSparseAccessor = rtDocument.getRoot().listAccessors()[1];
+
+	t.equals(rtEmptyAccessor.getSparse(), true, 'emptyAccessor.sparse (round trip)');
+	t.equals(rtSparseAccessor.getSparse(), true, 'sparseAccessor.sparse (round trip)');
+
+	t.deepEquals(Array.from(rtEmptyAccessor.getArray()), emptyArray, 'emptyAccessor.array (round trip)');
+	t.deepEquals(Array.from(rtSparseAccessor.getArray()), sparseArray, 'emptyAccessor.array (round trip)');
 
 	t.end();
 });

@@ -1,4 +1,4 @@
-import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4 } from '../constants';
+import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4, ComponentTypeToTypedArray } from '../constants';
 import { Document } from '../document';
 import type { Extension } from '../extension';
 import type { JSONDocument } from '../json-document';
@@ -6,15 +6,6 @@ import { Accessor, AnimationSampler, Camera } from '../properties';
 import type { GLTF } from '../types/gltf';
 import { BufferUtils, FileUtils, ILogger, ImageUtils, Logger, MathUtils } from '../utils';
 import { ReaderContext } from './reader-context';
-
-const ComponentTypeToTypedArray = {
-	'5120': Int8Array,
-	'5121': Uint8Array,
-	'5122': Int16Array,
-	'5123': Uint16Array,
-	'5125': Uint32Array,
-	'5126': Float32Array,
-};
 
 export interface ReaderOptions {
 	logger?: ILogger;
@@ -116,18 +107,14 @@ export class GLTFReader {
 				accessor.setNormalized(accessorDef.normalized);
 			}
 
-			// KHR_draco_mesh_compression and EXT_meshopt_compression.
-			if (accessorDef.bufferView === undefined && !accessorDef.sparse) return accessor;
+			// Sparse accessors, KHR_draco_mesh_compression, and EXT_meshopt_compression.
+			if (accessorDef.bufferView === undefined) return accessor;
 
-			let array: TypedArray;
+			// NOTICE: We mark sparse accessors at the end of the I/O reading process. Consider an
+			// accessor to be 'sparse' if it (A) includes sparse value overrides, or (B) does not
+			// define .bufferView _and_ no extension provides that data.
 
-			if (accessorDef.sparse !== undefined) {
-				array = getSparseArray(accessorDef, context);
-			} else {
-				array = getAccessorArray(accessorDef, context);
-			}
-
-			accessor.setArray(array);
+			accessor.setArray(getAccessorArray(accessorDef, context));
 			return accessor;
 		});
 
@@ -497,6 +484,20 @@ export class GLTFReader {
 			.listExtensionsUsed()
 			.forEach((extension) => extension.read(context));
 
+		/** Post-processing. */
+
+		// Consider an accessor to be 'sparse' if it (A) includes sparse value overrides,
+		// or (B) does not define .bufferView _and_ no extension provides that data. Case
+		// (B) represents a zero-filled accessor.
+		accessorDefs.forEach((accessorDef, index) => {
+			const accessor = context.accessors[index];
+			const hasSparseValues = !!accessorDef.sparse;
+			const isZeroFilled = !accessorDef.bufferView && !accessor.getArray();
+			if (hasSparseValues || isZeroFilled) {
+				accessor.setSparse(true).setArray(getSparseArray(accessorDef, context));
+			}
+		});
+
 		return doc;
 	}
 
@@ -618,7 +619,9 @@ function getSparseArray(accessorDef: GLTF.IAccessor, context: ReaderContext): Ty
 		array = new TypedArray(accessorDef.count * elementSize);
 	}
 
-	const sparseDef = accessorDef.sparse!;
+	const sparseDef = accessorDef.sparse;
+	if (!sparseDef) return array; // Zero-filled accessor.
+
 	const count = sparseDef.count;
 	const indicesDef = { ...accessorDef, ...sparseDef.indices, count, type: 'SCALAR' };
 	const valuesDef = { ...accessorDef, ...sparseDef.values, count };

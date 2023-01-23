@@ -284,6 +284,8 @@ export class KHRDracoMeshCompression extends Extension {
 			// Create attribute definitions, update count.
 			for (const semantic of prim.listSemantics()) {
 				const attribute = prim.getAttribute(semantic)!;
+				if (encodedPrim.attributeIDs[semantic] === undefined) continue; // sparse
+
 				const attributeDef = context.createAccessorDef(attribute);
 				attributeDef.count = encodedPrim.numVertices;
 				context.accessorIndexMap.set(attribute, accessorDefs.length);

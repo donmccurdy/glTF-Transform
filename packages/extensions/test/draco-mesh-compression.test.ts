@@ -179,6 +179,46 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	t.end();
 });
 
+test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', async (t) => {
+	const doc = new Document();
+	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
+
+	const buffer = doc.createBuffer();
+	const sparseAccessor = doc
+		.createAccessor()
+		.setArray(new Uint32Array([0, 0, 0, 0, 25, 0]))
+		.setSparse(true);
+	const prim = createMeshPrimitive(doc, buffer).setAttribute('_SPARSE', sparseAccessor);
+	const mesh = doc.createMesh().addPrimitive(prim);
+
+	const io = await createEncoderIO();
+	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
+	const primitiveDefs = jsonDoc.json.meshes[0].primitives;
+	const accessorDefs = jsonDoc.json.accessors;
+
+	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
+	t.deepEquals(
+		primitiveDefs[0],
+		{
+			mode: Primitive.Mode.TRIANGLES,
+			indices: 0,
+			attributes: { POSITION: 1, _SPARSE: 2 },
+			extensions: {
+				KHR_draco_mesh_compression: {
+					bufferView: 2,
+					attributes: { POSITION: 0 },
+				},
+			},
+		},
+		'primitiveDef'
+	);
+	t.equals(accessorDefs[1].count, 6, 'POSITION count');
+	t.equals(accessorDefs[2].count, 6, '_SPARSE count');
+	t.equals(accessorDefs[1].sparse, undefined, 'POSITION not sparse');
+	t.equals(accessorDefs[2].sparse.count, 1, '_SPARSE sparse');
+	t.end();
+});
+
 test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async (t) => {
 	const doc = new Document();
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);

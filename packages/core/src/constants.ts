@@ -136,6 +136,7 @@ export enum BufferViewUsage {
 	ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
 	INVERSE_BIND_MATRICES = 'INVERSE_BIND_MATRICES',
 	OTHER = 'OTHER',
+	SPARSE = 'SPARSE',
 }
 
 /** Texture channels. */
@@ -150,3 +151,12 @@ export enum Format {
 	GLTF = 'GLTF',
 	GLB = 'GLB',
 }
+
+export const ComponentTypeToTypedArray = {
+	'5120': Int8Array,
+	'5121': Uint8Array,
+	'5122': Int16Array,
+	'5123': Uint16Array,
+	'5125': Uint32Array,
+	'5126': Float32Array,
+};

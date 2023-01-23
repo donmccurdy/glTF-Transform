@@ -10,6 +10,7 @@ interface IAccessor extends IExtensibleProperty {
 	type: GLTF.AccessorType;
 	componentType: GLTF.AccessorComponentType;
 	normalized: boolean;
+	sparse: boolean;
 	buffer: Buffer;
 }
 
@@ -142,6 +143,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 			type: Accessor.Type.SCALAR,
 			componentType: Accessor.ComponentType.FLOAT,
 			normalized: false,
+			sparse: false,
 			buffer: null,
 		});
 	}
@@ -421,6 +423,28 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	/**********************************************************************************************
 	 * Raw data storage.
 	 */
+
+	/**
+	 * Specifies whether the accessor should be stored sparsely. When written to a glTF file, sparse
+	 * accessors store only values that differ from base values. When loaded in glTF Transform (or most
+	 * runtimes) a sparse accessor can be treated like any other accessor. Currently, glTF Transform always
+	 * uses zeroes for the base values when writing files.
+	 * @experimental
+	 */
+	public getSparse(): boolean {
+		return this.get('sparse');
+	}
+
+	/**
+	 * Specifies whether the accessor should be stored sparsely. When written to a glTF file, sparse
+	 * accessors store only values that differ from base values. When loaded in glTF Transform (or most
+	 * runtimes) a sparse accessor can be treated like any other accessor. Currently, glTF Transform always
+	 * uses zeroes for the base values when writing files.
+	 * @experimental
+	 */
+	public setSparse(sparse: boolean): this {
+		return this.set('sparse', sparse);
+	}
 
 	/** Returns the {@link Buffer} into which this accessor will be organized. */
 	public getBuffer(): Buffer | null {
