@@ -429,6 +429,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * accessors store only values that differ from base values. When loaded in glTF Transform (or most
 	 * runtimes) a sparse accessor can be treated like any other accessor. Currently, glTF Transform always
 	 * uses zeroes for the base values when writing files.
+	 * @experimental
 	 */
 	public getSparse(): boolean {
 		return this.get('sparse');
@@ -439,6 +440,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * accessors store only values that differ from base values. When loaded in glTF Transform (or most
 	 * runtimes) a sparse accessor can be treated like any other accessor. Currently, glTF Transform always
 	 * uses zeroes for the base values when writing files.
+	 * @experimental
 	 */
 	public setSparse(sparse: boolean): this {
 		return this.set('sparse', sparse);
