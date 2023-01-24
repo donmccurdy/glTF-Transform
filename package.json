@@ -55,6 +55,7 @@
     "typescript": "4.9.4"
   },
   "ava": {
+    "require": ["./require-sharp.cjs"],
     "extensions": {
       "ts": "module"
     },
