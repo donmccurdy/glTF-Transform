@@ -3,7 +3,7 @@
 // Uncomment for better stack traces during local development.
 // require('source-map-support').install();
 
-const { program, programReady } = require('../');
+import { program, programReady } from '../dist/cli.esm.js';
 
 program.disableGlobalOption('--silent');
 programReady.then(() => program.run());

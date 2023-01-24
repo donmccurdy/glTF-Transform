@@ -1,7 +1,7 @@
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '@gltf-transform/extensions';
 import inquirer from 'inquirer';
-import { check as validateLanguage } from 'language-tags';
+import languageTags from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
 import path from 'path';
@@ -64,7 +64,8 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			name: 'dc:language',
 			message: 'Language?',
 			suffix: ' (dc:language)',
-			validate: (input: string) => (validateLanguage(input) ? true : 'Invalid language; refer to IETF RFC 3066.'),
+			validate: (input: string) =>
+				languageTags.check(input) ? true : 'Invalid language; refer to IETF RFC 3066.',
 			default: DEFAULT_LANG,
 		};
 
@@ -274,14 +275,13 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 			return;
 		}
 
-		const inquirer = require('inquirer');
-
 		const packet = root.getExtension<Packet>('KHR_xmp_json_ld') || xmpExtension.createPacket();
 		const results = packet.toJSONLD();
 
 		try {
 			for await (const question of generateQuestions(results)) {
-				Object.assign(results, await inquirer.prompt(question));
+				// TODO(test): What's going on here?
+				Object.assign(results, await inquirer.prompt(question as any));
 			}
 		} catch (e) {
 			checkTTY(e, logger);

@@ -1,9 +1,8 @@
-const micromatch = require('micromatch');
-
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read, write } from 'ktx-parse';
 import type { Document, Transform } from '@gltf-transform/core';
 import { MICROMATCH_OPTIONS } from '../util';
 import { listTextureSlots } from '@gltf-transform/functions';
+import micromatch from 'micromatch';
 
 const NAME = 'ktxfix';
 

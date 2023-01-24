@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
-import {promises as fs} from 'fs';
+import { URL } from 'url';
+import {promises as fs, readFileSync} from 'fs';
 import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
-import { program } from '@caporal/core';
+import caporal from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions, sparse, SparseOptions } from '@gltf-transform/functions';
@@ -12,15 +11,15 @@ import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMP
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
+import fetch from 'node-fetch';
+import draco3d from 'draco3dgltf';
+import mikktspace from 'mikktspace';
+import sharp from 'sharp';
+import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+
+const program = caporal.program;
 
 let io: NodeIO;
-
-// Use require() so microbundle doesn't compile these.
-const fetch = require('node-fetch');
-const draco3d = require('draco3dgltf');
-const mikktspace = require('mikktspace');
-const sharp = require('sharp');
-const { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } = require('meshoptimizer');
 
 const programReady = new Promise<void>((resolve) => {
 	Promise.all([
@@ -44,8 +43,12 @@ const programReady = new Promise<void>((resolve) => {
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
 const OUTPUT_DESC = 'Path to write output';
 
+const PACKAGE = JSON.parse(
+	readFileSync(new URL('../package.json', import.meta.url), 'utf-8')
+);
+
 program
-	.version(require('../package.json').version)
+	.version(PACKAGE.version)
 	.description('Command-line interface (CLI) for the glTF-Transform SDK.');
 
 program.command('', '\n\n🔎 INSPECT ──────────────────────────────────────────');

@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { spawn: _spawn } = require('child_process');
-
-import _commandExists from 'command-exists';
+import { spawn as _spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
+import _commandExists from 'command-exists';
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
 
@@ -28,7 +26,7 @@ export let commandExists = (cmd: string) => _commandExists(cmd).catch(() => fals
 export let waitExit = _waitExit;
 
 export function mockSpawn(_spawn: unknown): void {
-	spawn = _spawn;
+	spawn = _spawn as typeof spawn;
 }
 
 export function mockCommandExists(_commandExists: (n: string) => Promise<boolean>): void {

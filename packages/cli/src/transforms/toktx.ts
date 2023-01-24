@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs/promises');
-const { existsSync, mkdirSync } = require('fs');
-const { join } = require('path');
-const micromatch = require('micromatch');
-const os = require('os');
-const semver = require('semver');
-const tmp = require('tmp');
-const pLimit = require('p-limit');
+import fs from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import micromatch from 'micromatch';
+import os from 'os';
+import { clean, gte, lt, valid } from 'semver';
+import tmp from 'tmp';
+import pLimit from 'p-limit';
 
 import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
@@ -152,7 +151,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				} else if (
 					options.slots !== '*' &&
-					!slots.find((slot) => micromatch.isMatch(slot, options.slots, MICROMATCH_OPTIONS))
+					!slots.find((slot) => micromatch.isMatch(slot, options.slots!, MICROMATCH_OPTIONS))
 				) {
 					logger.debug(`${prefix}: Skipping, excluded by pattern "${options.slots}".`);
 					return;
@@ -187,7 +186,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				// COMPRESS: Run `toktx` CLI tool.
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const [status, stdout, stderr] = await waitExit(spawn('toktx', params));
+				const [status, stdout, stderr] = await waitExit(spawn('toktx', params as string[]));
 
 				if (status !== 0) {
 					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
@@ -287,7 +286,7 @@ function createParams(
 
 	if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
 		// See: https://github.com/KhronosGroup/KTX-Software/issues/600
-		if (semver.gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
+		if (gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
 			params.push('--normal_mode', '--input_swizzle', 'rgb1');
 		} else if (options.mode === Mode.ETC1S) {
 			params.push('--normal_map');
@@ -358,15 +357,15 @@ async function checkKTXSoftware(logger: ILogger): Promise<string> {
 		.replace(/~\d+/, '')
 		.trim();
 
-	if (status !== 0 || !semver.valid(semver.clean(version))) {
+	if (status !== 0 || !valid(clean(version))) {
 		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
-	} else if (semver.lt(semver.clean(version), KTX_SOFTWARE_VERSION_MIN)) {
+	} else if (lt(clean(version)!, KTX_SOFTWARE_VERSION_MIN)) {
 		logger.warn(`toktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
 		logger.debug(`toktx: Found KTX-Software ${version}.`);
 	}
 
-	return semver.clean(version);
+	return clean(version)!;
 }
 
 function isPowerOfTwo(value: number): boolean {
