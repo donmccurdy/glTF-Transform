@@ -22,5 +22,4 @@ packages/**/.rts2*
 docs/dist/**
 
 # coverage
-.nyc_output
 coverage
