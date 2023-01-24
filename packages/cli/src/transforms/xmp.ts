@@ -280,8 +280,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 
 		try {
 			for await (const question of generateQuestions(results)) {
-				// TODO(test): What's going on here?
-				Object.assign(results, await inquirer.prompt(question as any));
+				Object.assign(results, await inquirer.prompt(question as inquirer.QuestionCollection));
 			}
 		} catch (e) {
 			checkTTY(e, logger);
