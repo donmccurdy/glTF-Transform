@@ -21,12 +21,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     # Cache.
-    - id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - id: yarn-cache-dir
+      run: echo "{yarn_cache_dir}=$(yarn cache dir)" >> $GITHUB_ENV
     - uses: actions/cache@v3
       id: yarn-cache
       with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        path: ${{ env.yarn_cache_dir }}
         key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('./yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.node-version }}-yarn-
