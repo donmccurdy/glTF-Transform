@@ -1,4 +1,4 @@
-name: build
+name: coverage
 on:
   push:
     branches: [main]
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x, 18.x]
+        node-version: [18.x]
     env:
       CI: true
     steps:
@@ -31,8 +31,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
-    # Test.
+    # Build.
     - run: yarn install
     - run: yarn dist
-    - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
-    - run: yarn lint
+
+    # Coverage.
+    - name: Run coverage
+      # No worker threads on CI: https://github.com/avajs/ava/discussions/3158
+      run: |
+        yarn coverage --no-worker-threads
+        yarn coverage:report
+    - name: Report coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: coverage/coverage.lcov
