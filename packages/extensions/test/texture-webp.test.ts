@@ -73,6 +73,6 @@ test('@gltf-transform/core::image-utils | webp', { skip: !IS_NODEJS }, (t) => {
 	t.deepEquals(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');
 	t.equals(ImageUtils.getChannels(webpLossy, 'image/webp'), 4, 'channels');
 	t.equals(ImageUtils.getChannels(webpLossless, 'image/fake'), null, 'channels (other)');
-	t.equals(ImageUtils.getMemSize(webpLossy, 'image/webp'), 349524, 'gpuSize');
+	t.equals(ImageUtils.getGPUByteLength(webpLossy, 'image/webp'), 349524, 'gpuSize');
 	t.end();
 });

@@ -170,7 +170,7 @@ function listTextures(doc: Document): InspectPropertyReport<InspectTextureReport
 				compression,
 				resolution: resolution ? resolution.join('x') : '',
 				size: texture.getImage()!.byteLength,
-				gpuSize: ImageUtils.getMemSize(texture.getImage()!, texture.getMimeType()),
+				gpuSize: ImageUtils.getGPUByteLength(texture.getImage()!, texture.getMimeType()),
 			};
 		});
 

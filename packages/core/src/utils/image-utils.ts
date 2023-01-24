@@ -131,7 +131,7 @@ export class ImageUtils {
 	}
 
 	/** Returns a conservative estimate of the GPU memory required by this image. */
-	public static getMemSize(buffer: Uint8Array, mimeType: string): number | null {
+	public static getGPUByteLength(buffer: Uint8Array, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 
 		if (this.impls[mimeType].getGPUByteLength) {
