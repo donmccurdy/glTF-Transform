@@ -22,13 +22,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: yarn
-        cache-dependency-path: |
-          yarn.lock
-          packages/*/yarn.lock
 
-    # Test.
+    # Build.
     - run: yarn install
     - run: yarn dist
+
+    # Test.
     - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
     - run: yarn lint
 
@@ -47,9 +46,6 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: yarn
-        cache-dependency-path: |
-          yarn.lock
-          packages/*/yarn.lock
 
     # Build.
     - run: yarn install
