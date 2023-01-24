@@ -10112,6 +10112,11 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+suppress-experimental-warnings@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/suppress-experimental-warnings/-/suppress-experimental-warnings-1.1.3.tgz#a01f516956c0690be22cc65411194d8ce0622964"
+  integrity sha512-09W6f9deRni8oXQufDz0tEzGJ8PD9xl5WfOwlxzDGfj/0fiN/qRjRnUfnuXl5hjNBHUYa1SKZTXnLOQhThtSXA==
+
 svgo@^1.0.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/svgo/-/svgo-1.3.2.tgz#b6dc511c063346c9e415b81e43401145b96d4167"
