@@ -1,5 +1,15 @@
 import type { Nullable } from '../constants';
-import { $attributes, $immutableKeys, Graph, GraphNode, GraphEdge, isRef, isRefList, isRefMap } from 'property-graph';
+import {
+	$attributes,
+	$immutableKeys,
+	Graph,
+	GraphNode,
+	GraphEdge,
+	isRef,
+	isRefList,
+	isRefMap,
+	LiteralKeys,
+} from 'property-graph';
 import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils';
 import type { Ref, RefMap, UnknownRef } from '../utils';
 
@@ -90,6 +100,12 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 */
 	protected getDefaults(): Nullable<T> {
 		return Object.assign(super.getDefaults(), { name: '', extras: {} });
+	}
+
+	/** @hidden */
+	protected set<K extends LiteralKeys<T>>(attribute: K, value: T[K]): this {
+		if (Array.isArray(value)) value = value.slice() as T[K]; // copy vector, quat, color …
+		return super.set(attribute, value);
 	}
 
 	/**********************************************************************************************
