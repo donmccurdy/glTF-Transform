@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsSpecular, Specular } from '../';
 
@@ -22,7 +20,7 @@ test('@gltf-transform/extensions::materials-specular', async (t) => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_specular', specular);
 
-	t.equal(mat.getExtension('KHR_materials_specular'), specular, 'specular is attached');
+	t.is(mat.getExtension('KHR_materials_specular'), specular, 'specular is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsSpecular]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -43,16 +41,15 @@ test('@gltf-transform/extensions::materials-specular', async (t) => {
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsSpecular.EXTENSION_NAME], 'writes extensionsUsed');
 
 	specularExtension.dispose();
-	t.equal(mat.getExtension('KHR_materials_specular'), null, 'specular is detached');
+	t.is(mat.getExtension('KHR_materials_specular'), null, 'specular is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsSpecular]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Specular>('KHR_materials_specular');
 
-	t.equal(roundtripExt.getSpecularFactor(), 0.9, 'reads specularFactor');
+	t.is(roundtripExt.getSpecularFactor(), 0.9, 'reads specularFactor');
 	t.deepEqual(roundtripExt.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'reads specularColorFactor');
-	t.ok(roundtripExt.getSpecularTexture(), 'reads specularTexture');
-	t.end();
+	t.truthy(roundtripExt.getSpecularTexture(), 'reads specularTexture');
 });
 
 test('@gltf-transform/extensions::materials-specular | copy', (t) => {
@@ -68,19 +65,17 @@ test('@gltf-transform/extensions::materials-specular | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const specular2 = doc2.getRoot().listMaterials()[0].getExtension<Specular>('KHR_materials_specular');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsSpecular');
-	t.ok(specular2, 'copy Specular');
-	t.equals(specular2.getSpecularFactor(), 0.9, 'copy specularFactor');
-	t.deepEquals(specular2.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'copy specularColorFactor');
-	t.equals(specular2.getSpecularTexture().getName(), 'spec', 'copy specularTexture');
-	t.equals(specular2.getSpecularColorTexture().getName(), 'specColor', 'copy specularColorTexture');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsSpecular');
+	t.truthy(specular2, 'copy Specular');
+	t.is(specular2.getSpecularFactor(), 0.9, 'copy specularFactor');
+	t.deepEqual(specular2.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'copy specularColorFactor');
+	t.is(specular2.getSpecularTexture().getName(), 'spec', 'copy specularTexture');
+	t.is(specular2.getSpecularColorTexture().getName(), 'specColor', 'copy specularColorTexture');
 });
 
 test('@gltf-transform/extensions::materials-specular | hex', (t) => {
 	const doc = new Document();
 	const specularExtension = doc.createExtension(KHRMaterialsSpecular);
 	const specular = specularExtension.createSpecular().setSpecularColorHex(0x252525);
-	t.equals(specular.getSpecularColorHex(), 0x252525, 'specularColorHex');
-	t.end();
+	t.is(specular.getSpecularColorHex(), 0x252525, 'specularColorHex');
 });

@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsUnlit } from '../';
 
@@ -18,7 +16,7 @@ test('@gltf-transform/extensions::materials-unlit', async (t) => {
 		.setMetallicFactor(0.0)
 		.setExtension('KHR_materials_unlit', unlit);
 
-	t.equal(mat.getExtension('KHR_materials_unlit'), unlit, 'unlit is attached');
+	t.is(mat.getExtension('KHR_materials_unlit'), unlit, 'unlit is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsUnlit]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -29,12 +27,11 @@ test('@gltf-transform/extensions::materials-unlit', async (t) => {
 
 	const rtDoc = await new NodeIO().registerExtensions([KHRMaterialsUnlit]).readJSON(jsonDoc);
 	const rtMat = rtDoc.getRoot().listMaterials()[0];
-	t.ok(rtMat.getExtension('KHR_materials_unlit'), 'unlit is round tripped');
+	t.truthy(rtMat.getExtension('KHR_materials_unlit'), 'unlit is round tripped');
 
 	unlitExtension.dispose();
 
-	t.equal(mat.getExtension('KHR_materials_unlit'), null, 'unlit is detached');
-	t.end();
+	t.is(mat.getExtension('KHR_materials_unlit'), null, 'unlit is detached');
 });
 
 test('@gltf-transform/extensions::materials-unlit | copy', (t) => {
@@ -43,7 +40,6 @@ test('@gltf-transform/extensions::materials-unlit | copy', (t) => {
 	doc.createMaterial().setExtension('KHR_materials_unlit', unlitExtension.createUnlit());
 
 	const doc2 = doc.clone();
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsUnlit');
-	t.ok(doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_unlit'), 'copy Unlit');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsUnlit');
+	t.truthy(doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_unlit'), 'copy Unlit');
 });

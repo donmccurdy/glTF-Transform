@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { unpartition } from '../';
 
@@ -18,12 +16,11 @@ test('@gltf-transform/functions::unpartition', async (t) => {
 
 	await document.transform(unpartition());
 
-	t.equal(root.listBuffers().length, 1, 'buffers.length === 1');
-	t.notOk(bufferA.isDisposed(), 'buffersA live');
-	t.ok(bufferB.isDisposed(), 'buffersB disposed');
-	t.ok(bufferC.isDisposed(), 'buffersC disposed');
-	t.equals(accessorA.getBuffer(), bufferA, 'accessorA → bufferA');
-	t.equals(accessorB.getBuffer(), bufferA, 'accessorA → bufferA');
-	t.equals(accessorC.getBuffer(), bufferA, 'accessorA → bufferA');
-	t.end();
+	t.is(root.listBuffers().length, 1, 'buffers.length === 1');
+	t.falsy(bufferA.isDisposed(), 'buffersA live');
+	t.truthy(bufferB.isDisposed(), 'buffersB disposed');
+	t.truthy(bufferC.isDisposed(), 'buffersC disposed');
+	t.is(accessorA.getBuffer(), bufferA, 'accessorA → bufferA');
+	t.is(accessorB.getBuffer(), bufferA, 'accessorA → bufferA');
+	t.is(accessorC.getBuffer(), bufferA, 'accessorA → bufferA');
 });

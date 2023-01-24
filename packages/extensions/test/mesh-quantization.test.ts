@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '../';
 
@@ -17,14 +15,12 @@ test('@gltf-transform/extensions::mesh-quantization', async (t) => {
 	quantizationExtension.dispose();
 
 	jsonDoc = await new NodeIO().writeJSON(doc, WRITER_OPTIONS);
-	t.equal(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
-	t.end();
+	t.is(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 });
 
 test('@gltf-transform/extensions::mesh-quantization | copy', (t) => {
 	const doc = new Document();
 	doc.createExtension(KHRMeshQuantization);
 
-	t.equals(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
-	t.end();
+	t.is(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
 });

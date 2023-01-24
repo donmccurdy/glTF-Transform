@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { listTextureInfo } from '@gltf-transform/functions';
 import { KHRMaterialsSheen } from '@gltf-transform/extensions';
@@ -16,19 +14,18 @@ test('@gltf-transform/functions::listTextureInfo', (t) => {
 	document.createMaterial().setBaseColorTexture(textureA).setExtension('KHR_materials_sheen', sheen);
 	document.createMaterial().setOcclusionTexture(textureB).setMetallicRoughnessTexture(textureB);
 
-	t.deepEquals(
+	t.deepEqual(
 		listTextureInfo(textureA)
 			.map((info) => info.getName())
 			.sort(),
 		['baseColorTextureInfo', 'sheenRoughnessTextureInfo'],
 		'texture A'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		listTextureInfo(textureB)
 			.map((info) => info.getName())
 			.sort(),
 		['metallicRoughnessTextureInfo', 'occlusionTextureInfo'],
 		'texture B'
 	);
-	t.end();
 });

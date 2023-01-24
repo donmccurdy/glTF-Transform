@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { unlit } from '../';
 
@@ -7,6 +7,5 @@ test('@gltf-transform/functions::unlit', async (t) => {
 	document.createMaterial();
 	await document.transform(unlit());
 	const unlitExtension = document.getRoot().listExtensionsUsed()[0];
-	t.equals(unlitExtension.extensionName, 'KHR_materials_unlit', 'adds extension');
-	t.end();
+	t.is(unlitExtension.extensionName, 'KHR_materials_unlit', 'adds extension');
 });

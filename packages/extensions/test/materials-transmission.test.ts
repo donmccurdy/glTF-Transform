@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsTransmission, Transmission } from '../';
 
@@ -20,7 +18,7 @@ test('@gltf-transform/extensions::materials-transmission', async (t) => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_transmission', transmission);
 
-	t.equal(mat.getExtension('KHR_materials_transmission'), transmission, 'transmission is attached');
+	t.is(mat.getExtension('KHR_materials_transmission'), transmission, 'transmission is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsTransmission]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -39,15 +37,14 @@ test('@gltf-transform/extensions::materials-transmission', async (t) => {
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsTransmission.EXTENSION_NAME], 'writes extensionsUsed');
 
 	transmissionExtension.dispose();
-	t.equal(mat.getExtension('KHR_materials_transmission'), null, 'transmission is detached');
+	t.is(mat.getExtension('KHR_materials_transmission'), null, 'transmission is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsTransmission]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Transmission>('KHR_materials_transmission');
 
-	t.equal(roundtripExt.getTransmissionFactor(), 0.9, 'reads transmissionFactor');
-	t.ok(roundtripExt.getTransmissionTexture(), 'reads transmissionTexture');
-	t.end();
+	t.is(roundtripExt.getTransmissionFactor(), 0.9, 'reads transmissionFactor');
+	t.truthy(roundtripExt.getTransmissionTexture(), 'reads transmissionTexture');
 });
 
 test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
@@ -61,9 +58,8 @@ test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const transmission2 = doc2.getRoot().listMaterials()[0].getExtension<Transmission>('KHR_materials_transmission');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsTransmission');
-	t.ok(transmission2, 'copy Transmission');
-	t.equals(transmission2.getTransmissionFactor(), 0.9, 'copy transmissionFactor');
-	t.equals(transmission2.getTransmissionTexture().getName(), 'trns', 'copy transmissionTexture');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsTransmission');
+	t.truthy(transmission2, 'copy Transmission');
+	t.is(transmission2.getTransmissionFactor(), 0.9, 'copy transmissionFactor');
+	t.is(transmission2.getTransmissionTexture().getName(), 'trns', 'copy transmissionTexture');
 });

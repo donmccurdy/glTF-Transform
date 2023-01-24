@@ -1,22 +1,20 @@
-import test from 'tape';
+import test from 'ava';
 import fs from 'fs';
 import path from 'path';
 import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
-import { throwsAsync, createPlatformIO } from '../../../test-utils';
+import { createPlatformIO } from '../../../test-utils';
 
 test('@gltf-transform/core::io | common', async (t) => {
 	const io = await createPlatformIO();
-	await throwsAsync(
-		t,
+	await t.throwsAsync(
 		() =>
 			io.readJSON({
 				json: { asset: { version: '1.0' } },
 				resources: {},
 			}),
-		/Unsupported/,
+		{ message: /Unsupported/i },
 		'1.0'
 	);
-	t.end();
 });
 
 test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
@@ -27,12 +25,12 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 	const json = await io.writeJSON(doc, { format: Format.GLB });
 	const binary = await io.writeBinary(doc);
 
-	t.ok(json, 'writes json');
-	t.ok(binary, 'writes binary');
-	t.equals(Object.values(json.resources).length, 0, 'no buffers');
-	t.ok(await io.readJSON(json), 'reads json');
-	t.ok(await io.readBinary(binary), 'reads binary');
-	t.deepEquals(
+	t.truthy(json, 'writes json');
+	t.truthy(binary, 'writes binary');
+	t.is(Object.values(json.resources).length, 0, 'no buffers');
+	t.truthy(await io.readJSON(json), 'reads json');
+	t.truthy(await io.readBinary(binary), 'reads binary');
+	t.deepEqual(
 		(await io.readBinary(binary))
 			.getRoot()
 			.listNodes()
@@ -40,7 +38,6 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 		['MyNode'],
 		'same nodes'
 	);
-	t.end();
 });
 
 test('@gltf-transform/core::io | glb without required buffer', async (t) => {
@@ -50,26 +47,33 @@ test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 
-	await throwsAsync(t, () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	await throwsAsync(t, () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	await t.throwsAsync(
+		() => io.writeJSON(doc, { format: Format.GLB }),
+		{ message: /buffer required/i },
+		'writeJSON throws'
+	);
+	await t.throwsAsync(() => io.writeBinary(doc), { message: /buffer required/i }, 'writeBinary throws');
 
 	doc.createBuffer();
 
-	t.ok(io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
-	t.ok(io.writeBinary(doc), 'writeBinary succeeds');
+	t.truthy(io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(io.writeBinary(doc), 'writeBinary succeeds');
 
 	doc = new Document();
 	doc.createAccessor().setArray(new Float32Array(10));
 	doc.createAccessor().setArray(new Float32Array(20));
 
-	await throwsAsync(t, () => io.writeJSON(doc, { format: Format.GLB }), /buffer required/i, 'writeJSON throws');
-	await throwsAsync(t, () => io.writeBinary(doc), /buffer required/i, 'writeBinary throws');
+	await t.throwsAsync(
+		() => io.writeJSON(doc, { format: Format.GLB }),
+		{ message: /buffer required/i },
+		'writeJSON throws'
+	);
+	await t.throwsAsync(() => io.writeBinary(doc), { message: /buffer required/i }, 'writeBinary throws');
 
 	doc.createBuffer();
 
-	t.ok(await io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
-	t.ok(await io.writeBinary(doc), 'writeBinary succeeds');
-	t.end();
+	t.truthy(await io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(await io.writeBinary(doc), 'writeBinary succeeds');
 });
 
 test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
@@ -82,17 +86,16 @@ test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
 	const json = await io.writeJSON(doc, { format: Format.GLB });
 	const binary = await io.writeBinary(doc);
 
-	t.ok(json, 'writes json');
-	t.ok(binary, 'writes binary');
-	t.equals(Object.values(json.resources).length, 1, 'writes 1 buffer');
+	t.truthy(json, 'writes json');
+	t.truthy(binary, 'writes binary');
+	t.is(Object.values(json.resources).length, 1, 'writes 1 buffer');
 
 	const rtTextures = (await io.readBinary(binary)).getRoot().listTextures();
 
-	t.equals(rtTextures[0].getName(), 'TexA', 'reads texture 1');
-	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');
-	t.deepEquals(rtTextures[0].getImage(), new Uint8Array(1), 'reads texture 1 data');
-	t.deepEquals(rtTextures[1].getImage(), new Uint8Array(2), 'reads texture 2 data');
-	t.end();
+	t.is(rtTextures[0].getName(), 'TexA', 'reads texture 1');
+	t.is(rtTextures[1].getName(), 'TexB', 'reads texture 1');
+	t.deepEqual(rtTextures[0].getImage(), new Uint8Array(1), 'reads texture 1 data');
+	t.deepEqual(rtTextures[1].getImage(), new Uint8Array(2), 'reads texture 2 data');
 });
 
 test('@gltf-transform/core::io | glb with data uri', async (t) => {
@@ -112,9 +115,9 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 		delete resources[uri];
 	}
 
-	t.ok(json, 'writes json');
-	t.ok(json.buffers[0].uri.startsWith('data:'), 'buffer contains data uri');
-	t.equals(Object.values(resources).length, 0, 'no external resources');
+	t.truthy(json, 'writes json');
+	t.truthy(json.buffers[0].uri.startsWith('data:'), 'buffer contains data uri');
+	t.is(Object.values(resources).length, 0, 'no external resources');
 
 	// (2) Convert the JSONDocument to a GLB without a BIN chunk.
 
@@ -128,17 +131,16 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 
 	const binary = BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
 
-	t.ok(binary, 'writes binary');
+	t.truthy(binary, 'writes binary');
 
 	// (3) Test that we can read GLBs with Data URIs.
 
 	const rtTextures = (await io.readBinary(binary)).getRoot().listTextures();
 
-	t.equals(rtTextures[0].getName(), 'TexA', 'reads texture 1');
-	t.equals(rtTextures[1].getName(), 'TexB', 'reads texture 1');
-	t.deepEquals(Array.from(rtTextures[0].getImage()), Array.from(new Uint8Array(1)), 'reads texture 1 data');
-	t.deepEquals(Array.from(rtTextures[1].getImage()), Array.from(new Uint8Array(2)), 'reads texture 2 data');
-	t.end();
+	t.is(rtTextures[0].getName(), 'TexA', 'reads texture 1');
+	t.is(rtTextures[1].getName(), 'TexB', 'reads texture 1');
+	t.deepEqual(Array.from(rtTextures[0].getImage()), Array.from(new Uint8Array(1)), 'reads texture 1 data');
+	t.deepEqual(Array.from(rtTextures[1].getImage()), Array.from(new Uint8Array(2)), 'reads texture 2 data');
 });
 
 test('@gltf-transform/core::io | gltf embedded', async (t) => {
@@ -149,7 +151,6 @@ test('@gltf-transform/core::io | gltf embedded', async (t) => {
 	const jsonDoc = { json, resources: {} } as JSONDocument;
 	const jsonDocCopy = JSON.parse(JSON.stringify(jsonDoc));
 
-	t.ok(await io.readJSON(jsonDoc), 'reads document');
-	t.deepEquals(jsonDoc, jsonDocCopy, 'original unchanged');
-	t.end();
+	t.truthy(await io.readJSON(jsonDoc), 'reads document');
+	t.deepEqual(jsonDoc, jsonDocCopy, 'original unchanged');
 });

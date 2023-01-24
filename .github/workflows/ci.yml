@@ -5,6 +5,8 @@ on:
   pull_request:
     branches: [main]
 jobs:
+  #############################################################################
+  # BUILD
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -12,7 +14,6 @@ jobs:
         node-version: [14.x, 18.x]
     env:
       CI: true
-      COVERAGE: ${{ matrix.node-version == '18.x' && true || false }}
     steps:
     # Setup.
     - uses: actions/checkout@v3
@@ -20,32 +21,39 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: yarn
 
-    # Cache.
-    - id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - uses: actions/cache@v3
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('./yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+    # Build.
+    - run: yarn install --frozen-lockfile
+    - run: yarn dist
 
     # Test.
-    - run: yarn install
-    - run: yarn dist
-    - run: yarn test
+    - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
     - run: yarn lint
 
-    # Coverage.
-    - name: Run coverage
-      if: ${{ env.COVERAGE == 'true' }}
-      run: |
-        yarn coverage
-        yarn coverage:report
-    - name: Report coverage
-      if: ${{ env.COVERAGE == 'true' }}
-      uses: codecov/codecov-action@v3
+  #############################################################################
+  # COVERAGE
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_VERSION: 18.x
+    steps:
+    # Setup.
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v3
       with:
-        files: .nyc_output/coverage.lcov
+        node-version: ${{ env.NODE_VERSION }}
+        cache: yarn
+
+    # Build.
+    - run: yarn install --frozen-lockfile
+    - run: yarn dist
+
+    # Coverage.
+    - run: yarn coverage --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn coverage:report
+    - uses: codecov/codecov-action@v3
+      with:
+        files: coverage/coverage.lcov

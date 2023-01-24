@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document } from '@gltf-transform/core';
 
@@ -48,8 +48,6 @@ test('@gltf-transform/core::camera', async (t) => {
 		},
 		'orthographic camera'
 	);
-
-	t.end();
 });
 
 test('@gltf-transform/core::camera | copy', (t) => {
@@ -71,20 +69,19 @@ test('@gltf-transform/core::camera | copy', (t) => {
 		.setYMag(25);
 	const c = doc.createCamera().copy(a);
 
-	t.equal(c.getName(), a.getName(), 'copy name');
-	t.equal(c.getType(), a.getType(), 'copy type');
-	t.equal(c.getZNear(), a.getZNear(), 'copy znear');
-	t.equal(c.getZFar(), a.getZFar(), 'copy zfar');
-	t.equal(c.getYFov(), a.getYFov(), 'copy yfov');
-	t.equal(c.getAspectRatio(), a.getAspectRatio(), 'copy aspectRatio');
+	t.is(c.getName(), a.getName(), 'copy name');
+	t.is(c.getType(), a.getType(), 'copy type');
+	t.is(c.getZNear(), a.getZNear(), 'copy znear');
+	t.is(c.getZFar(), a.getZFar(), 'copy zfar');
+	t.is(c.getYFov(), a.getYFov(), 'copy yfov');
+	t.is(c.getAspectRatio(), a.getAspectRatio(), 'copy aspectRatio');
 
 	c.copy(b);
 
-	t.equal(c.getName(), b.getName(), 'copy name');
-	t.equal(c.getType(), b.getType(), 'copy type');
-	t.equal(c.getZNear(), b.getZNear(), 'copy znear');
-	t.equal(c.getZFar(), b.getZFar(), 'copy zfar');
-	t.equal(c.getXMag(), b.getXMag(), 'copy xmag');
-	t.equal(c.getYMag(), b.getYMag(), 'copy ymag');
-	t.end();
+	t.is(c.getName(), b.getName(), 'copy name');
+	t.is(c.getType(), b.getType(), 'copy type');
+	t.is(c.getZNear(), b.getZNear(), 'copy znear');
+	t.is(c.getZFar(), b.getZFar(), 'copy zfar');
+	t.is(c.getXMag(), b.getXMag(), 'copy xmag');
+	t.is(c.getYMag(), b.getYMag(), 'copy ymag');
 });

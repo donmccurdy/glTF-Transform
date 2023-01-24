@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { bbox, Document, Logger, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
 import { fromScaling, fromTranslation, fromRotation, identity } from 'gl-matrix/mat4';
 import { transformMesh, transformPrimitive } from '../';
@@ -14,31 +12,29 @@ test('@gltf-transform/functions::transformPrimitive', async (t) => {
 	const tangent = prim.getAttribute('TANGENT')!;
 
 	transformPrimitive(prim, identity([]));
-	t.deepEquals(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'identity - position');
-	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'identity - normal');
-	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'identity - tangent');
+	t.deepEqual(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'identity - position');
+	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'identity - normal');
+	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'identity - tangent');
 
 	transformPrimitive(prim, fromScaling([], [100, 100, 100]), new Set([0, 1, 2, 3]));
-	t.deepEquals(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'mask - position');
-	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'mask - normal');
-	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'mask - tangent');
+	t.deepEqual(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'mask - position');
+	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'mask - normal');
+	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'mask - tangent');
 
 	transformPrimitive(prim, fromScaling([], [2, 1, 2]));
-	t.deepEquals(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale - position');
-	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'scale - normal');
-	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'scale - tangent');
+	t.deepEqual(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale - position');
+	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'scale - normal');
+	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'scale - tangent');
 
 	transformPrimitive(prim, fromTranslation([], [0, -10, 0]));
-	t.deepEquals(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - positino');
-	t.deepEquals(normal.getElement(0, []), [0, 1, 0], 'translate - normal');
-	t.deepEquals(tangent.getElement(0, []), [1, 0, 0, 1], 'translate - tangent');
+	t.deepEqual(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - positino');
+	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'translate - normal');
+	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'translate - tangent');
 
 	transformPrimitive(prim, fromRotation([], Math.PI / 2, [1, 0, 0]));
-	t.deepEquals(roundBbox(primBounds(prim)), { min: [-1, -1, 0], max: [1, 1, 0] }, 'rotate - position');
-	t.deepEquals(normal.getElement(0, []).map(round()), [0, 0, 1], 'rotate - normal');
-	t.deepEquals(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
-
-	t.end();
+	t.deepEqual(roundBbox(primBounds(prim)), { min: [-1, -1, 0], max: [1, 1, 0] }, 'rotate - position');
+	t.deepEqual(normal.getElement(0, []).map(round()), [0, 0, 1], 'rotate - normal');
+	t.deepEqual(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
 });
 
 test('@gltf-transform/functions::transformMesh | detach shared prims', async (t) => {
@@ -47,12 +43,11 @@ test('@gltf-transform/functions::transformMesh | detach shared prims', async (t)
 	const meshA = document.createMesh('A').addPrimitive(prim);
 	const meshB = document.createMesh('B').addPrimitive(prim);
 
-	t.equals(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA = meshB, before');
+	t.is(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA = meshB, before');
 
 	transformMesh(meshA, fromScaling([], [2, 2, 2]), true);
 
-	t.notEquals(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA ≠ meshB, after');
-	t.end();
+	t.not(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA ≠ meshB, after');
 });
 
 test('@gltf-transform/functions::transformMesh | detach shared vertex streams', async (t) => {
@@ -63,20 +58,15 @@ test('@gltf-transform/functions::transformMesh | detach shared vertex streams', 
 	const meshA = document.createMesh('A').addPrimitive(primA);
 	document.createMesh('B').addPrimitive(primB);
 
-	t.equals(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, before');
+	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, before');
 
 	transformMesh(meshA, fromScaling([], [2, 2, 2]), true);
 
-	t.equals(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, after (overwrite=true)');
+	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, after (overwrite=true)');
 
 	transformMesh(meshA, fromScaling([], [2, 2, 2]), false);
 
-	t.notEquals(
-		primA.getAttribute('POSITION'),
-		primB.getAttribute('POSITION'),
-		'primA ≠ primB, after (overwrite=false)'
-	);
-	t.end();
+	t.not(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA ≠ primB, after (overwrite=false)');
 });
 
 test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
@@ -87,7 +77,7 @@ test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
 	transformMesh(mesh, fromScaling([], [2, 2, 2]), false, new Set([0, 1]));
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(mesh.listPrimitives()[0]!.getAttribute('POSITION')!.getArray()!),
 		[
 			0.5, 10, 0.5,
@@ -97,7 +87,6 @@ test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
 		],
 		'transform skips excluded indices'
 	);
-	t.end();
 });
 
 test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
@@ -124,10 +113,10 @@ test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
 	const primA = meshA.listPrimitives()[0];
 	const primB = meshB.listPrimitives()[0];
 
-	t.notOk(primA === primB, 'primA ≠ primB');
-	t.notOk(primA.listTargets()[0] === primB.listTargets()[0], 'primA.targets ≠ primB.targets');
+	t.falsy(primA === primB, 'primA ≠ primB');
+	t.falsy(primA.listTargets()[0] === primB.listTargets()[0], 'primA.targets ≠ primB.targets');
 
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(meshA.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
 		// prettier-ignore
 		[
@@ -139,7 +128,7 @@ test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
 		'scales target position'
 	);
 
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(meshB.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
 		// prettier-ignore
 		[
@@ -150,8 +139,6 @@ test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
 		],
 		'skips shared target position'
 	);
-
-	t.end();
 });
 
 /* UTILITIES */

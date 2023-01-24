@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { draco } from '../';
 
@@ -7,6 +7,5 @@ test('@gltf-transform/functions::draco', async (t) => {
 	await document.transform(draco({ method: 'edgebreaker' }));
 	await document.transform(draco({ method: 'sequential' }));
 	const dracoExtension = document.getRoot().listExtensionsUsed()[0];
-	t.equals(dracoExtension.extensionName, 'KHR_draco_mesh_compression', 'adds extension');
-	t.end();
+	t.is(dracoExtension.extensionName, 'KHR_draco_mesh_compression', 'adds extension');
 });

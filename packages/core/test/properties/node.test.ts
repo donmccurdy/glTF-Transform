@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
 
@@ -11,10 +11,8 @@ test('@gltf-transform/core::node | parent', (t) => {
 	a.addChild(c);
 	b.addChild(c);
 
-	t.deepEquals(a.listChildren(), [], 'removes child from 1st parent');
-	t.deepEquals(b.listChildren(), [c], 'adds child to 2nd parent');
-
-	t.end();
+	t.deepEqual(a.listChildren(), [], 'removes child from 1st parent');
+	t.deepEqual(b.listChildren(), [c], 'adds child to 2nd parent');
 });
 
 test('@gltf-transform/core::node | copy', (t) => {
@@ -31,8 +29,7 @@ test('@gltf-transform/core::node | copy', (t) => {
 		.addChild(doc.createNode('OtherNode'));
 
 	// See {@link Node.copy}.
-	t.throws(() => doc.createNode().copy(node), /Node cannot be copied/, 'cannot copy node');
-	t.end();
+	t.throws(() => doc.createNode().copy(node), { message: /Node cannot be copied/i }, 'cannot copy node');
 });
 
 test('@gltf-transform/core::node | traverse', (t) => {
@@ -45,9 +42,7 @@ test('@gltf-transform/core::node | traverse', (t) => {
 
 	let count = 0;
 	node.traverse((_) => count++);
-	t.equal(count, 3, 'traverses all nodes');
-
-	t.end();
+	t.is(count, 3, 'traverses all nodes');
 });
 
 test('@gltf-transform/core::node | getWorldMatrix', (t) => {
@@ -56,20 +51,18 @@ test('@gltf-transform/core::node | getWorldMatrix', (t) => {
 	const b = doc.createNode('B').setTranslation([0, 5, 0]);
 	a.addChild(b);
 
-	t.deepEquals(b.getWorldTranslation(), [10, 5, 0], 'inherit translated position');
-	t.deepEquals(b.getWorldRotation(), [0, 0, 0, 1], 'default rotation');
-	t.deepEquals(b.getWorldScale(), [1, 1, 1], 'default scale');
-	t.deepEquals(b.getWorldMatrix(), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 5, 0, 1], 'getWorldMatrix');
+	t.deepEqual(b.getWorldTranslation(), [10, 5, 0], 'inherit translated position');
+	t.deepEqual(b.getWorldRotation(), [0, 0, 0, 1], 'default rotation');
+	t.deepEqual(b.getWorldScale(), [1, 1, 1], 'default scale');
+	t.deepEqual(b.getWorldMatrix(), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 5, 0, 1], 'getWorldMatrix');
 
 	b.setTranslation([0, 0, 1]);
 	a.setTranslation([0, 0, 0]).setRotation([0.7071, 0, 0.7071, 0]);
 
 	const pos = b.getWorldTranslation();
-	t.deepEquals(pos[0].toFixed(3), '1.000', 'inherit rotated position.x');
-	t.deepEquals(pos[1].toFixed(3), '0.000', 'inherit rotated position.y');
-	t.deepEquals(pos[2].toFixed(3), '0.000', 'inherit rotated position.z');
-
-	t.end();
+	t.deepEqual(pos[0].toFixed(3), '1.000', 'inherit rotated position.x');
+	t.deepEqual(pos[1].toFixed(3), '0.000', 'inherit rotated position.y');
+	t.deepEqual(pos[2].toFixed(3), '0.000', 'inherit rotated position.z');
 });
 
 test('@gltf-transform/core::node | setMatrix', (t) => {
@@ -87,10 +80,9 @@ test('@gltf-transform/core::node | setMatrix', (t) => {
 	const rotOut = node.getRotation().map((v) => v.toFixed(1));
 	const sclOut = node.getScale().map((v) => v.toFixed(1));
 
-	t.deepEquals(posOut, ['1.0', '2.0', '3.0'], 'translation');
-	t.deepEquals(rotOut, ['0.0', '0.0', '0.0', '1.0'], 'rotation');
-	t.deepEquals(sclOut, ['10.0', '10.0', '10.0'], 'scale');
-	t.end();
+	t.deepEqual(posOut, ['1.0', '2.0', '3.0'], 'translation');
+	t.deepEqual(rotOut, ['0.0', '0.0', '0.0', '1.0'], 'rotation');
+	t.deepEqual(sclOut, ['10.0', '10.0', '10.0'], 'scale');
 });
 
 test('@gltf-transform/core::node | extras', async (t) => {
@@ -102,8 +94,6 @@ test('@gltf-transform/core::node | extras', async (t) => {
 
 	t.deepEqual(doc.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
-
-	t.end();
 });
 
 test('@gltf-transform/core::node | identity transforms', async (t) => {
@@ -119,8 +109,6 @@ test('@gltf-transform/core::node | identity transforms', async (t) => {
 	const a = nodes.find((n) => n.name === 'A');
 	const b = nodes.find((n) => n.name === 'B');
 	const c = nodes.find((n) => n.name === 'C');
-
-	console.warn(b);
 
 	t.deepEqual(
 		a,
@@ -149,6 +137,4 @@ test('@gltf-transform/core::node | identity transforms', async (t) => {
 		},
 		'has transform info'
 	);
-
-	t.end();
 });

@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { uuid } from '@gltf-transform/core';
 
 test('@gltf-transform/core::uuid', (t) => {
@@ -6,8 +6,7 @@ test('@gltf-transform/core::uuid', (t) => {
 	for (let i = 0; i < 1000; i++) {
 		set.add(uuid());
 	}
-	t.equals(set.size, 1000, 'generates 1000 unique IDs');
-	t.end();
+	t.is(set.size, 1000, 'generates 1000 unique IDs');
 });
 
 test('@gltf-transform/core::uuid | conflict', (t) => {
@@ -24,8 +23,7 @@ test('@gltf-transform/core::uuid | conflict', (t) => {
 	for (let i = 0; i < 3; i++) {
 		set.add(uuid());
 	}
-	t.equals(set.size, 3, 'generates 3 unique IDs');
+	t.is(set.size, 3, 'generates 3 unique IDs');
 
 	Math.random = random;
-	t.end();
 });

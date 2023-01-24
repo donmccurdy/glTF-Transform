@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { textureCompress } from '../';
 
@@ -19,10 +17,9 @@ test('@gltf-transform/functions::textureCompress | unknown format', async (t) =>
 	const document = new Document().setLogger(LOGGER);
 	const texture = document.createTexture('Other').setImage(ORIGINAL_OTHER).setMimeType('image/other');
 	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(calls, [], '0 conversions');
-	t.equals(texture.getMimeType(), 'image/other', 'unknown mime type unchanged');
-	t.equals(texture.getImage(), ORIGINAL_OTHER, 'unknown image unchanged');
-	t.end();
+	t.deepEqual(calls, [], '0 conversions');
+	t.is(texture.getMimeType(), 'image/other', 'unknown mime type unchanged');
+	t.is(texture.getImage(), ORIGINAL_OTHER, 'unknown image unchanged');
 });
 
 test('@gltf-transform/functions::textureCompress | incompatible format', async (t) => {
@@ -32,15 +29,14 @@ test('@gltf-transform/functions::textureCompress | incompatible format', async (
 	document.createMaterial().setBaseColorTexture(texture).setAlphaMode('BLEND');
 
 	await document.transform(textureCompress({ encoder, targetFormat: 'jpeg', formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(calls, [], '0 conversions');
-	t.equals(texture.getMimeType(), 'image/png', 'texture with alpha unchanged');
-	t.equals(texture.getImage(), ORIGINAL_PNG, 'texture with alpha unchanged');
+	t.deepEqual(calls, [], '0 conversions');
+	t.is(texture.getMimeType(), 'image/png', 'texture with alpha unchanged');
+	t.is(texture.getImage(), ORIGINAL_PNG, 'texture with alpha unchanged');
 
 	await document.transform(textureCompress({ encoder, targetFormat: 'png', formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(calls, [], '0 conversions');
-	t.equals(texture.getMimeType(), 'image/png', 'texture with alpha optimized');
-	t.deepEquals(texture.getImage(), EXPECTED_PNG, 'texture with alpha optimized');
-	t.end();
+	t.deepEqual(calls, [], '0 conversions');
+	t.is(texture.getMimeType(), 'image/png', 'texture with alpha optimized');
+	t.deepEqual(texture.getImage(), EXPECTED_PNG, 'texture with alpha optimized');
 });
 
 test('@gltf-transform/functions::textureCompress | original formats', async (t) => {
@@ -50,12 +46,11 @@ test('@gltf-transform/functions::textureCompress | original formats', async (t) 
 	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png');
 
 	await document.transform(textureCompress({ encoder }));
-	t.deepEquals(calls, [], '0 conversions');
-	t.equals(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
-	t.equals(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
-	t.deepEquals(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
-	t.end();
+	t.deepEqual(calls, [], '0 conversions');
+	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
+	t.is(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
+	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
 test('@gltf-transform/functions::textureCompress | excluded slots', async (t) => {
@@ -66,17 +61,16 @@ test('@gltf-transform/functions::textureCompress | excluded slots', async (t) =>
 	document.createMaterial().setBaseColorTexture(textureJPEG).setNormalTexture(texturePNG);
 
 	await document.transform(textureCompress({ encoder, slots: /^baseColor.*/, formats: /.*/i }));
-	t.equals(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
-	t.equals(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
-	t.deepEquals(texturePNG.getImage(), ORIGINAL_PNG, 'png unchanged');
+	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
+	t.is(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
+	t.deepEqual(texturePNG.getImage(), ORIGINAL_PNG, 'png unchanged');
 
 	await document.transform(textureCompress({ encoder, slots: /^normal.*/, formats: /.*/i }));
-	t.equals(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
-	t.equals(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg unchanged');
-	t.deepEquals(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
-	t.end();
+	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
+	t.is(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg unchanged');
+	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
 test('@gltf-transform/functions::textureCompress | jpeg', async (t) => {
@@ -93,14 +87,13 @@ test('@gltf-transform/functions::textureCompress | jpeg', async (t) => {
 		.setMimeType('image/png')
 		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'jpeg', formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(calls, [['toFormat', ['jpeg']]], '1 conversion');
-	t.equals(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg → image/jpeg');
-	t.equals(texturePNG.getMimeType(), 'image/jpeg', 'png → image/jpeg');
-	t.equals(textureJPEG.getURI(), 'baseColor.jpg', '.jpg → .jpg');
-	t.equals(texturePNG.getURI(), 'normal.jpg', '.png → .jpg');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
-	t.deepEquals(texturePNG.getImage(), EXPECTED_JPEG, 'png optimized');
-	t.end();
+	t.deepEqual(calls, [['toFormat', ['jpeg']]], '1 conversion');
+	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg → image/jpeg');
+	t.is(texturePNG.getMimeType(), 'image/jpeg', 'png → image/jpeg');
+	t.is(textureJPEG.getURI(), 'baseColor.jpg', '.jpg → .jpg');
+	t.is(texturePNG.getURI(), 'normal.jpg', '.png → .jpg');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_JPEG, 'jpeg optimized');
+	t.deepEqual(texturePNG.getImage(), EXPECTED_JPEG, 'png optimized');
 });
 
 test('@gltf-transform/functions::textureCompress | png', async (t) => {
@@ -117,14 +110,13 @@ test('@gltf-transform/functions::textureCompress | png', async (t) => {
 		.setMimeType('image/png')
 		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'png', formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(calls, [['toFormat', ['png']]], '1 conversion');
-	t.equals(textureJPEG.getMimeType(), 'image/png', 'jpeg → image/png');
-	t.equals(texturePNG.getMimeType(), 'image/png', 'png → image/png');
-	t.equals(textureJPEG.getURI(), 'baseColor.png', '.jpg → .png');
-	t.equals(texturePNG.getURI(), 'normal.png', '.png → .png');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_PNG, 'jpeg optimized');
-	t.deepEquals(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
-	t.end();
+	t.deepEqual(calls, [['toFormat', ['png']]], '1 conversion');
+	t.is(textureJPEG.getMimeType(), 'image/png', 'jpeg → image/png');
+	t.is(texturePNG.getMimeType(), 'image/png', 'png → image/png');
+	t.is(textureJPEG.getURI(), 'baseColor.png', '.jpg → .png');
+	t.is(texturePNG.getURI(), 'normal.png', '.png → .png');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_PNG, 'jpeg optimized');
+	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
 test('@gltf-transform/functions::textureCompress | webp', async (t) => {
@@ -141,7 +133,7 @@ test('@gltf-transform/functions::textureCompress | webp', async (t) => {
 		.setMimeType('image/png')
 		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'webp', formats: /.*/i, slots: /.*/i }));
-	t.deepEquals(
+	t.deepEqual(
 		calls,
 		[
 			['toFormat', ['webp']],
@@ -149,13 +141,12 @@ test('@gltf-transform/functions::textureCompress | webp', async (t) => {
 		],
 		'2 conversions'
 	);
-	t.equals(textureJPEG.getMimeType(), 'image/webp', 'jpeg → image/webp');
-	t.equals(texturePNG.getMimeType(), 'image/webp', 'png → image/webp');
-	t.equals(textureJPEG.getURI(), 'baseColor.webp', '.jpg → .webp');
-	t.equals(texturePNG.getURI(), 'normal.webp', '.png → .webp');
-	t.deepEquals(textureJPEG.getImage(), EXPECTED_WEBP, 'jpeg optimized');
-	t.deepEquals(texturePNG.getImage(), EXPECTED_WEBP, 'png optimized');
-	t.end();
+	t.is(textureJPEG.getMimeType(), 'image/webp', 'jpeg → image/webp');
+	t.is(texturePNG.getMimeType(), 'image/webp', 'png → image/webp');
+	t.is(textureJPEG.getURI(), 'baseColor.webp', '.jpg → .webp');
+	t.is(texturePNG.getURI(), 'normal.webp', '.png → .webp');
+	t.deepEqual(textureJPEG.getImage(), EXPECTED_WEBP, 'jpeg optimized');
+	t.deepEqual(texturePNG.getImage(), EXPECTED_WEBP, 'png optimized');
 });
 
 function createMockEncoder() {

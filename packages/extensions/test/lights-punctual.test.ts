@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Light, KHRLightsPunctual } from '../';
 
@@ -20,7 +18,7 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 
 	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
-	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
+	t.is(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
@@ -44,19 +42,18 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 	});
 
 	lightsExtension.dispose();
-	t.equal(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
+	t.is(node.getExtension('KHR_lights_punctual'), null, 'light is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).readJSON(jsonDoc);
 	const roundtripNode = roundtripDoc.getRoot().listNodes().pop();
 	const light2 = roundtripNode.getExtension<Light>('KHR_lights_punctual');
 
-	t.equal(light2.getType(), Light.Type.SPOT, 'reads type');
-	t.equal(light2.getIntensity(), 2, 'reads intensity');
+	t.is(light2.getType(), Light.Type.SPOT, 'reads type');
+	t.is(light2.getIntensity(), 2, 'reads intensity');
 	t.deepEqual(light2.getColor(), [1, 2, 0], 'reads color');
-	t.equal(light2.getRange(), 50, 'reads range');
-	t.equal(light2.getInnerConeAngle(), 0.5, 'reads innerConeAngle');
-	t.equal(light2.getOuterConeAngle(), 0.75, 'reads outerConeAngle');
-	t.end();
+	t.is(light2.getRange(), 50, 'reads range');
+	t.is(light2.getInnerConeAngle(), 0.5, 'reads innerConeAngle');
+	t.is(light2.getOuterConeAngle(), 0.75, 'reads outerConeAngle');
 });
 
 test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
@@ -74,23 +71,21 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const light2 = doc2.getRoot().listNodes()[0].getExtension<Light>('KHR_lights_punctual');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRLightsPunctual');
-	t.ok(light2, 'copy light');
-	t.equal(light2.getType(), Light.Type.SPOT, 'copy type');
-	t.equal(light2.getIntensity(), 2, 'copy intensity');
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRLightsPunctual');
+	t.truthy(light2, 'copy light');
+	t.is(light2.getType(), Light.Type.SPOT, 'copy type');
+	t.is(light2.getIntensity(), 2, 'copy intensity');
 	t.deepEqual(light2.getColor(), [1, 2, 0], 'copy color');
-	t.equal(light2.getRange(), 50, 'copy range');
-	t.equal(light2.getInnerConeAngle(), 0.5, 'copy innerConeAngle');
-	t.equal(light2.getOuterConeAngle(), 0.75, 'copy outerConeAngle');
-	t.end();
+	t.is(light2.getRange(), 50, 'copy range');
+	t.is(light2.getInnerConeAngle(), 0.5, 'copy innerConeAngle');
+	t.is(light2.getOuterConeAngle(), 0.75, 'copy outerConeAngle');
 });
 
 test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
 	const doc = new Document();
 	const lightsExtension = doc.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setColorHex(0x111111);
-	t.equals(light.getColorHex(), 0x111111, 'colorHex');
-	t.end();
+	t.is(light.getColorHex(), 0x111111, 'colorHex');
 });
 
 test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
@@ -100,7 +95,7 @@ test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
 
 	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
 
-	t.equal(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
+	t.is(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
@@ -111,5 +106,4 @@ test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
 			lights: [{ type: 'point', intensity: 2 }], // omit range!
 		},
 	});
-	t.end();
 });

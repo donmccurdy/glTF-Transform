@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger, PropertyType } from '@gltf-transform/core';
 import { prune } from '../';
 
@@ -26,20 +24,18 @@ test('@gltf-transform/functions::prune', async (t) => {
 
 	await doc.transform(prune());
 
-	t.notOk(scene.isDisposed(), 'referenced scene');
-	t.notOk(mesh.isDisposed(), 'referenced mesh');
-	t.notOk(node.isDisposed(), 'referenced node');
-	t.notOk(anim.isDisposed(), 'referenced animation');
-	t.notOk(samp.isDisposed(), 'referenced sampler');
-	t.notOk(chan.isDisposed(), 'referenced channel');
+	t.falsy(scene.isDisposed(), 'referenced scene');
+	t.falsy(mesh.isDisposed(), 'referenced mesh');
+	t.falsy(node.isDisposed(), 'referenced node');
+	t.falsy(anim.isDisposed(), 'referenced animation');
+	t.falsy(samp.isDisposed(), 'referenced sampler');
+	t.falsy(chan.isDisposed(), 'referenced channel');
 
-	t.ok(mesh2.isDisposed(), 'unreferenced mesh');
-	t.ok(node2.isDisposed(), 'unreferenced node');
-	t.ok(anim2.isDisposed(), 'unreferenced animation');
-	t.ok(samp2.isDisposed(), 'unreferenced sampler');
-	t.ok(chan2.isDisposed(), 'unreferenced channel');
-
-	t.end();
+	t.truthy(mesh2.isDisposed(), 'unreferenced mesh');
+	t.truthy(node2.isDisposed(), 'unreferenced node');
+	t.truthy(anim2.isDisposed(), 'unreferenced animation');
+	t.truthy(samp2.isDisposed(), 'unreferenced sampler');
+	t.truthy(chan2.isDisposed(), 'unreferenced channel');
 });
 
 test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
@@ -54,33 +50,31 @@ test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 
 	await document.transform(prune({ keepLeaves: true }));
 
-	t.notOk(scene.isDisposed(), 'scene in tree');
-	t.notOk(nodeA.isDisposed(), 'nodeA in tree');
-	t.notOk(nodeB.isDisposed(), 'nodeB in tree');
-	t.notOk(nodeC.isDisposed(), 'nodeC in tree');
-	t.notOk(mesh.isDisposed(), 'mesh in tree');
-	t.notOk(skin.isDisposed(), 'skin in tree');
+	t.falsy(scene.isDisposed(), 'scene in tree');
+	t.falsy(nodeA.isDisposed(), 'nodeA in tree');
+	t.falsy(nodeB.isDisposed(), 'nodeB in tree');
+	t.falsy(nodeC.isDisposed(), 'nodeC in tree');
+	t.falsy(mesh.isDisposed(), 'mesh in tree');
+	t.falsy(skin.isDisposed(), 'skin in tree');
 
 	mesh.dispose();
 	await document.transform(prune());
 
-	t.notOk(scene.isDisposed(), 'scene in tree');
-	t.notOk(nodeA.isDisposed(), 'nodeA in tree');
-	t.ok(nodeB.isDisposed(), 'nodeB disposed');
-	t.ok(nodeC.isDisposed(), 'nodeC disposed');
+	t.falsy(scene.isDisposed(), 'scene in tree');
+	t.falsy(nodeA.isDisposed(), 'nodeA in tree');
+	t.truthy(nodeB.isDisposed(), 'nodeB disposed');
+	t.truthy(nodeC.isDisposed(), 'nodeC disposed');
 
 	skin.dispose();
 	await document.transform(prune({ keepLeaves: false, propertyTypes: [] }));
 
-	t.notOk(scene.isDisposed(), 'scene in tree');
-	t.notOk(nodeA.isDisposed(), 'nodeA disposed');
+	t.falsy(scene.isDisposed(), 'scene in tree');
+	t.falsy(nodeA.isDisposed(), 'nodeA disposed');
 
 	await document.transform(prune({ keepLeaves: false, propertyTypes: [PropertyType.NODE] }));
 
-	t.notOk(scene.isDisposed(), 'scene in tree');
-	t.ok(nodeA.isDisposed(), 'nodeA disposed');
-
-	t.end();
+	t.falsy(scene.isDisposed(), 'scene in tree');
+	t.truthy(nodeA.isDisposed(), 'nodeA disposed');
 });
 
 test('@gltf-transform/functions::prune | attributes', async (t) => {
@@ -118,7 +112,7 @@ test('@gltf-transform/functions::prune | attributes', async (t) => {
 		})
 	);
 
-	t.deepEquals(
+	t.deepEqual(
 		[position, tangent, texcoord0, texcoord1, color0, color1].map((a) => a.isDisposed()),
 		new Array(6).fill(false),
 		'keeps required attributes (1/3)'
@@ -131,12 +125,12 @@ test('@gltf-transform/functions::prune | attributes', async (t) => {
 		})
 	);
 
-	t.deepEquals(
+	t.deepEqual(
 		[position, tangent, texcoord0, texcoord1, color0].map((a) => a.isDisposed()),
 		new Array(5).fill(false),
 		'keeps required attributes (2/3)'
 	);
-	t.equals(color1.isDisposed(), true, 'discards COLOR_1');
+	t.is(color1.isDisposed(), true, 'discards COLOR_1');
 
 	material.setNormalTexture(null);
 
@@ -147,16 +141,14 @@ test('@gltf-transform/functions::prune | attributes', async (t) => {
 		})
 	);
 
-	t.deepEquals(
+	t.deepEqual(
 		[position, texcoord0, color0].map((a) => a.isDisposed()),
 		[false, false, false],
 		'keeps required attributes (3/3)'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		[tangent, texcoord1].map((a) => a.isDisposed()),
 		[true, true],
 		'discards TANGENT, TEXCOORD_1'
 	);
-
-	t.end();
 });

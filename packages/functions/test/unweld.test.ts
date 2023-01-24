@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { unweld } from '../';
 
@@ -25,21 +23,20 @@ test('@gltf-transform/functions::unweld', async (t) => {
 
 	await doc.transform(unweld());
 
-	t.equals(prim1.getIndices(), null, 'no index on prim1');
-	t.equals(prim2.getIndices(), null, 'no index on prim2');
-	t.equals(prim3.getIndices(), null, 'no index on prim3');
+	t.is(prim1.getIndices(), null, 'no index on prim1');
+	t.is(prim2.getIndices(), null, 'no index on prim2');
+	t.is(prim3.getIndices(), null, 'no index on prim3');
 
-	t.deepEquals(
+	t.deepEqual(
 		prim1.getAttribute('POSITION').getArray(),
 		new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0]),
 		'subset of vertices in prim1'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		prim2.getAttribute('POSITION').getArray(),
 		new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 0]),
 		'subset of vertices in prim2'
 	);
-	t.deepEquals(prim3.getAttribute('POSITION').getArray(), positionArray, 'original vertices in prim3');
-	t.equals(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
-	t.end();
+	t.deepEqual(prim3.getAttribute('POSITION').getArray(), positionArray, 'original vertices in prim3');
+	t.is(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');
 });

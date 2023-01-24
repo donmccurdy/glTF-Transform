@@ -1,48 +1,40 @@
-require('source-map-support').install();
-
 import fs from 'fs/promises';
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger, TextureChannel, vec2 } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
-import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '../';
+import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '@gltf-transform/cli';
 import type { ChildProcess } from 'child_process';
 
 const { R, G } = TextureChannel;
 
 test('@gltf-transform/cli::toktx | resize', async (t) => {
-	t.equals(await getParams({ mode: Mode.ETC1S }, [508, 508]), '--genmipmap --bcmp', '508x508 → no change');
+	t.is(await getParams({ mode: Mode.ETC1S }, [508, 508]), '--genmipmap --bcmp', '508x508 → no change');
 
-	t.equals(
-		await getParams({ mode: Mode.ETC1S }, [507, 509]),
-		'--genmipmap --bcmp --resize 508x512',
-		'507x509 → 508x512'
-	);
+	t.is(await getParams({ mode: Mode.ETC1S }, [507, 509]), '--genmipmap --bcmp --resize 508x512', '507x509 → 508x512');
 
-	t.equals(
+	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [508, 508]),
 		'--genmipmap --bcmp --resize 512x512',
 		'508x508+powerOfTwo → 512x512'
 	);
 
-	t.equals(
+	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [5, 3]),
 		'--genmipmap --bcmp --resize 4x4',
 		'5x3+powerOfTwo → 4x4'
 	);
 
-	t.equals(
+	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], R),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type R',
 		'channels → R'
 	);
 
-	t.equals(
+	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], G),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type RG',
 		'channels → RG'
 	);
-
-	t.end();
 });
 
 async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {

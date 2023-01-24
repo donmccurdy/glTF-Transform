@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document, Logger } from '@gltf-transform/core';
 import { fromEuler } from 'gl-matrix/quat';
 import { resample } from '../';
@@ -27,20 +25,19 @@ test('@gltf-transform/functions::resample', async (t) => {
 
 	await doc.transform(resample());
 
-	t.equals(doc.getRoot().listAccessors().length, 6, 'splits shared accessors');
+	t.is(doc.getRoot().listAccessors().length, 6, 'splits shared accessors');
 
 	// Merge duplicate keyframes.
-	t.deepEquals(toArray(samplerA.getInput()), [0, 2, 3, 4, 5, 6], 'STEP input');
-	t.deepEquals(toArray(samplerA.getOutput()), [1, 1, 1, 1, 1, 2, 1, 3, 1, 4, 1, 5], 'STEP output');
+	t.deepEqual(toArray(samplerA.getInput()), [0, 2, 3, 4, 5, 6], 'STEP input');
+	t.deepEqual(toArray(samplerA.getOutput()), [1, 1, 1, 1, 1, 2, 1, 3, 1, 4, 1, 5], 'STEP output');
 
 	// Merge colinear keyframes.
-	t.deepEquals(toArray(samplerB.getInput()), [0, 2, 6], 'LINEAR input');
-	t.deepEquals(toArray(samplerB.getOutput()), [1, 1, 1, 1, 1, 5], 'LINEAR output');
+	t.deepEqual(toArray(samplerB.getInput()), [0, 2, 6], 'LINEAR input');
+	t.deepEqual(toArray(samplerB.getOutput()), [1, 1, 1, 1, 1, 5], 'LINEAR output');
 
 	// No change.
-	t.deepEquals(toArray(samplerC.getInput()), Array.from(inArray), 'CUBICSPLINE input (unchanged)');
-	t.deepEquals(toArray(samplerC.getOutput()), Array.from(outSplineArray), 'CUBICSPLINE output (unchanged)');
-	t.end();
+	t.deepEqual(toArray(samplerC.getInput()), Array.from(inArray), 'CUBICSPLINE input (unchanged)');
+	t.deepEqual(toArray(samplerC.getOutput()), Array.from(outSplineArray), 'CUBICSPLINE output (unchanged)');
 });
 
 test('@gltf-transform/functions::resample | rotation', async (t) => {
@@ -65,8 +62,8 @@ test('@gltf-transform/functions::resample | rotation', async (t) => {
 
 	await doc.transform(resample());
 
-	t.deepEquals(toArray(sampler.getInput()), [0, 3, 6], 'input');
-	t.deepEquals(
+	t.deepEqual(toArray(sampler.getInput()), [0, 3, 6], 'input');
+	t.deepEqual(
 		toArray(sampler.getOutput()),
 		// prettier-ignore
 		[
@@ -76,8 +73,6 @@ test('@gltf-transform/functions::resample | rotation', async (t) => {
 		],
 		'output'
 	);
-
-	t.end();
 });
 
 function toArray(accessor: Accessor): number[] {

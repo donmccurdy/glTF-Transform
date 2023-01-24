@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
 import { getGLPrimitiveCount, createTransform, isTransformPending } from '../src/utils';
 
@@ -12,33 +10,31 @@ test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 	const prim = doc.createPrimitive().setMode(Primitive.Mode.TRIANGLES).setAttribute('POSITION', position);
 	const indexedPrim = prim.clone().setIndices(indices);
 
-	t.equals(getGLPrimitiveCount(prim), 11, 'triangles');
-	t.equals(getGLPrimitiveCount(indexedPrim), 2, 'triangles (indexed)');
+	t.is(getGLPrimitiveCount(prim), 11, 'triangles');
+	t.is(getGLPrimitiveCount(indexedPrim), 2, 'triangles (indexed)');
 
 	prim.setMode(Primitive.Mode.POINTS);
-	t.equals(getGLPrimitiveCount(prim), 33, 'points');
+	t.is(getGLPrimitiveCount(prim), 33, 'points');
 
 	prim.setMode(Primitive.Mode.LINES);
 	indexedPrim.setMode(Primitive.Mode.LINES);
-	t.equals(getGLPrimitiveCount(prim), 33 / 2, 'lines');
-	t.equals(getGLPrimitiveCount(indexedPrim), 3, 'lines (indexed)');
+	t.is(getGLPrimitiveCount(prim), 33 / 2, 'lines');
+	t.is(getGLPrimitiveCount(indexedPrim), 3, 'lines (indexed)');
 
 	prim.setMode(Primitive.Mode.LINE_STRIP);
-	t.equals(getGLPrimitiveCount(prim), 32, 'line strip');
+	t.is(getGLPrimitiveCount(prim), 32, 'line strip');
 
 	prim.setMode(Primitive.Mode.LINE_LOOP);
-	t.equals(getGLPrimitiveCount(prim), 33, 'line loop');
+	t.is(getGLPrimitiveCount(prim), 33, 'line loop');
 
 	prim.setMode(Primitive.Mode.TRIANGLE_FAN);
-	t.equals(getGLPrimitiveCount(prim), 31, 'triangle strip');
+	t.is(getGLPrimitiveCount(prim), 31, 'triangle strip');
 
 	prim.setMode(Primitive.Mode.TRIANGLE_STRIP);
-	t.equals(getGLPrimitiveCount(prim), 31, 'triangle fan');
+	t.is(getGLPrimitiveCount(prim), 31, 'triangle fan');
 
 	prim.setMode('TEST' as unknown as GLTF.MeshPrimitiveMode);
-	t.throws(() => getGLPrimitiveCount(prim), 'invalid');
-
-	t.end();
+	t.throws(() => getGLPrimitiveCount(prim), { message: /mode/i }, 'invalid');
 });
 
 test('@gltf-transform/functions::utils | transform pipeline', async (t) => {
@@ -50,14 +46,12 @@ test('@gltf-transform/functions::utils | transform pipeline', async (t) => {
 	});
 	const second: Transform = (_: Document) => undefined;
 
-	t.ok(doc.transform(first, second), '[a, b] OK');
+	t.truthy(doc.transform(first, second), '[a, b] OK');
 
 	try {
 		await doc.transform(second, first);
 		t.fail('[b, a] NOT OK');
 	} catch (e) {
-		t.match((e as Error).message, /out of order/i, '[b, a] NOT OK');
+		t.truthy(/out of order/i.test((e as Error).message), '[b, a] NOT OK');
 	}
-
-	t.end();
 });

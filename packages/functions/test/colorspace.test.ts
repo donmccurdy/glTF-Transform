@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document } from '@gltf-transform/core';
 import { colorspace } from '../';
 
@@ -29,20 +27,18 @@ test('@gltf-transform/functions::colorspace', (t) => {
 	let actual;
 
 	actual = primitive1.getAttribute('COLOR_0').getArray();
-	t.equals(actual[0].toFixed(3), expected[0].toFixed(3), 'prim1.color1[0].r');
-	t.equals(actual[1].toFixed(3), expected[1].toFixed(3), 'prim1.color1[0].g');
-	t.equals(actual[2].toFixed(3), expected[2].toFixed(3), 'prim1.color1[0].b');
-	t.equals(actual[3].toFixed(3), expected[0].toFixed(3), 'prim1.color1[1].r');
-	t.equals(actual[4].toFixed(3), expected[1].toFixed(3), 'prim1.color1[1].g');
-	t.equals(actual[5].toFixed(3), expected[2].toFixed(3), 'prim1.color1[1].b');
+	t.is(actual[0].toFixed(3), expected[0].toFixed(3), 'prim1.color1[0].r');
+	t.is(actual[1].toFixed(3), expected[1].toFixed(3), 'prim1.color1[0].g');
+	t.is(actual[2].toFixed(3), expected[2].toFixed(3), 'prim1.color1[0].b');
+	t.is(actual[3].toFixed(3), expected[0].toFixed(3), 'prim1.color1[1].r');
+	t.is(actual[4].toFixed(3), expected[1].toFixed(3), 'prim1.color1[1].g');
+	t.is(actual[5].toFixed(3), expected[2].toFixed(3), 'prim1.color1[1].b');
 
 	actual = primitive1.getAttribute('COLOR_1').getArray();
-	t.equals(actual[0].toFixed(3), expected[0].toFixed(3), 'prim1.color2[0].r');
-	t.equals(actual[1].toFixed(3), expected[1].toFixed(3), 'prim1.color2[0].g');
-	t.equals(actual[2].toFixed(3), expected[2].toFixed(3), 'prim1.color2[0].b');
-	t.equals(actual[3].toFixed(3), '0.500', 'prim1.color2[0].a');
+	t.is(actual[0].toFixed(3), expected[0].toFixed(3), 'prim1.color2[0].r');
+	t.is(actual[1].toFixed(3), expected[1].toFixed(3), 'prim1.color2[0].g');
+	t.is(actual[2].toFixed(3), expected[2].toFixed(3), 'prim1.color2[0].b');
+	t.is(actual[3].toFixed(3), '0.500', 'prim1.color2[0].a');
 
-	t.deepEquals(primitive1.getAttribute('COLOR_0'), primitive2.getAttribute('COLOR_0'), 'shared COLOR_0 accessor');
-
-	t.end();
+	t.deepEqual(primitive1.getAttribute('COLOR_0'), primitive2.getAttribute('COLOR_0'), 'shared COLOR_0 accessor');
 });

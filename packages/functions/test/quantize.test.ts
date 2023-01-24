@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import {
 	Accessor,
 	AnimationChannel,
@@ -26,15 +24,14 @@ test('@gltf-transform/functions::quantize | exclusions', async (t) => {
 
 	await doc.transform(quantize({ pattern: /^(?!TEXCOORD_0$|NORMAL$)/ }));
 
-	t.ok(prim.getAttribute('POSITION').getArray() instanceof Int16Array, 'position → Int16Array');
-	t.ok(prim.getAttribute('TEXCOORD_0').getArray() instanceof Float32Array, 'uv → unchanged');
-	t.ok(prim.getAttribute('NORMAL').getArray() instanceof Float32Array, 'normal → unchanged');
+	t.truthy(prim.getAttribute('POSITION').getArray() instanceof Int16Array, 'position → Int16Array');
+	t.truthy(prim.getAttribute('TEXCOORD_0').getArray() instanceof Float32Array, 'uv → unchanged');
+	t.truthy(prim.getAttribute('NORMAL').getArray() instanceof Float32Array, 'normal → unchanged');
 
 	await doc.transform(quantize());
 
-	t.ok(prim.getAttribute('TEXCOORD_0').getArray() instanceof Uint16Array, 'uv → Uint16Array');
-	t.ok(prim.getAttribute('NORMAL').getArray() instanceof Int16Array, 'normal → Int16Array');
-	t.end();
+	t.truthy(prim.getAttribute('TEXCOORD_0').getArray() instanceof Uint16Array, 'uv → Uint16Array');
+	t.truthy(prim.getAttribute('NORMAL').getArray() instanceof Int16Array, 'normal → Int16Array');
 });
 
 test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
@@ -51,11 +48,11 @@ test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
-	t.deepEquals(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
-	t.deepEquals(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
-	t.deepEquals(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
-	t.deepEquals(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
-	t.deepEquals(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
+	t.deepEqual(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
+	t.deepEqual(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
+	t.deepEqual(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
+	t.deepEqual(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
+	t.deepEqual(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
 
 	await doc.transform(quantize({ quantizePosition: 14 }));
 
@@ -65,15 +62,14 @@ test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
 	const bboxMeshA = primBounds(primA);
 	const bboxMeshB = primBounds(primB);
 
-	t.deepEquals(bboxScene, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - scene');
-	t.deepEquals(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
-	t.deepEquals(bboxNodeB, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - nodeB');
-	t.deepEquals(bboxMeshA, { min: [-1, -1, 0], max: [1, 1, 0] }, 'bbox - meshA');
-	t.deepEquals(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
-	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
-	t.equals(doc.getRoot().listAccessors().length, 2, 'total accessors');
-	t.equals(doc.getRoot().listSkins().length, 0, 'total skins');
-	t.end();
+	t.deepEqual(bboxScene, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - scene');
+	t.deepEqual(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
+	t.deepEqual(bboxNodeB, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - nodeB');
+	t.deepEqual(bboxMeshA, { min: [-1, -1, 0], max: [1, 1, 0] }, 'bbox - meshA');
+	t.deepEqual(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
+	t.is(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.is(doc.getRoot().listAccessors().length, 2, 'total accessors');
+	t.is(doc.getRoot().listSkins().length, 0, 'total skins');
 });
 
 test('@gltf-transform/functions::quantize | scene volume', async (t) => {
@@ -90,11 +86,11 @@ test('@gltf-transform/functions::quantize | scene volume', async (t) => {
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
-	t.deepEquals(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
-	t.deepEquals(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
-	t.deepEquals(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
-	t.deepEquals(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
-	t.deepEquals(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
+	t.deepEqual(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
+	t.deepEqual(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
+	t.deepEqual(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
+	t.deepEqual(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
+	t.deepEqual(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
 
 	await doc.transform(
 		quantize({
@@ -109,15 +105,14 @@ test('@gltf-transform/functions::quantize | scene volume', async (t) => {
 	const bboxMeshA = roundBbox(primBounds(primA), 3);
 	const bboxMeshB = roundBbox(primBounds(primB), 3);
 
-	t.deepEquals(bboxScene, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - scene');
-	t.deepEquals(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
-	t.deepEquals(bboxNodeB, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - nodeB');
-	t.deepEquals(bboxMeshA, { min: [-0.8, -0.8, -1], max: [-0.7, -0.7, -1] }, 'bbox - meshA');
-	t.deepEquals(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
-	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
-	t.equals(doc.getRoot().listAccessors().length, 2, 'total accessors');
-	t.equals(doc.getRoot().listSkins().length, 0, 'total skins');
-	t.end();
+	t.deepEqual(bboxScene, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - scene');
+	t.deepEqual(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
+	t.deepEqual(bboxNodeB, { min: [0, 0, 0], max: [50, 50, 50] }, 'bbox - nodeB');
+	t.deepEqual(bboxMeshA, { min: [-0.8, -0.8, -1], max: [-0.7, -0.7, -1] }, 'bbox - meshA');
+	t.deepEqual(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
+	t.is(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.is(doc.getRoot().listAccessors().length, 2, 'total accessors');
+	t.is(doc.getRoot().listSkins().length, 0, 'total skins');
 });
 
 test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
@@ -134,11 +129,11 @@ test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
 	const bboxMeshACopy = primBounds(primA);
 	const bboxMeshBCopy = primBounds(primB);
 
-	t.deepEquals(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
-	t.deepEquals(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
-	t.deepEquals(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
-	t.deepEquals(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
-	t.deepEquals(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
+	t.deepEqual(bboxSceneCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
+	t.deepEqual(bboxNodeACopy, { min: [20, 10, 0], max: [25, 15, 0] }, 'original bbox - nodeA');
+	t.deepEqual(bboxNodeBCopy, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - nodeB');
+	t.deepEqual(bboxMeshACopy, { min: [10, 10, 0], max: [15, 15, 0] }, 'original bbox - meshA');
+	t.deepEqual(bboxMeshBCopy, { min: [0, 0, 0], max: [100, 100, 100] }, 'original bbox - meshB');
 
 	const ibm = doc
 		.createAccessor()
@@ -159,20 +154,19 @@ test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
 	const bboxMeshB = primBounds(primB);
 
 	// NodeA now affects scene bounds, because getBounds() does not check IBMs.
-	t.deepEquals(bboxScene, { min: [-0.5, -0.5, -0.5], max: [25, 15, 0.5] }, 'bbox - scene');
-	t.deepEquals(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
-	t.deepEquals(bboxNodeB, { min: [-0.5, -0.5, -0.5], max: [0.5, 0.5, 0.5] }, 'bbox - nodeB');
-	t.deepEquals(bboxMeshA, { min: [-1, -1, 0], max: [1, 1, 0] }, 'bbox - meshA');
-	t.deepEquals(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
-	t.deepEquals(
+	t.deepEqual(bboxScene, { min: [-0.5, -0.5, -0.5], max: [25, 15, 0.5] }, 'bbox - scene');
+	t.deepEqual(bboxNodeA, { min: [20, 10, 0], max: [25, 15, 0] }, 'bbox - nodeA');
+	t.deepEqual(bboxNodeB, { min: [-0.5, -0.5, -0.5], max: [0.5, 0.5, 0.5] }, 'bbox - nodeB');
+	t.deepEqual(bboxMeshA, { min: [-1, -1, 0], max: [1, 1, 0] }, 'bbox - meshA');
+	t.deepEqual(bboxMeshB, { min: [-1, -1, -1], max: [1, 1, 1] }, 'bbox - meshB');
+	t.deepEqual(
 		Array.from(nodeB.getSkin().getInverseBindMatrices().getArray()),
 		[50, 0, 0, 0, 0, 50, 0, 0, 0, 0, 50, 0, 50, 50, 50, 1, 50, 0, 0, 0, 0, 50, 0, 0, 0, 0, 50, 0, 50, 50, 50, 1],
 		'ibm - meshB'
 	);
-	t.equals(doc.getRoot().listNodes().length, 2, 'total nodes');
-	t.equals(doc.getRoot().listAccessors().length, 3, 'total accessors');
-	t.equals(doc.getRoot().listSkins().length, 1, 'total skins');
-	t.end();
+	t.is(doc.getRoot().listNodes().length, 2, 'total nodes');
+	t.is(doc.getRoot().listAccessors().length, 3, 'total accessors');
+	t.is(doc.getRoot().listSkins().length, 1, 'total skins');
 });
 
 test('@gltf-transform/functions::quantize | morph targets', async (t) => {
@@ -196,9 +190,9 @@ test('@gltf-transform/functions::quantize | morph targets', async (t) => {
 	const bboxMeshCopy = primBounds(prim);
 	const bboxTargetCopy = primBounds(target);
 
-	t.deepEquals(bboxSceneCopy, { min: [10, 10, 5], max: [15, 15, 5] }, 'original bbox - scene');
-	t.deepEquals(bboxMeshCopy, { min: [10, 10, 5], max: [15, 15, 5] }, 'original bbox - mesh');
-	t.deepEquals(bboxTargetCopy, { min: [5, 5, 5], max: [40, 40, 40] }, 'original bbox - target');
+	t.deepEqual(bboxSceneCopy, { min: [10, 10, 5], max: [15, 15, 5] }, 'original bbox - scene');
+	t.deepEqual(bboxMeshCopy, { min: [10, 10, 5], max: [15, 15, 5] }, 'original bbox - mesh');
+	t.deepEqual(bboxTargetCopy, { min: [5, 5, 5], max: [40, 40, 40] }, 'original bbox - target');
 
 	await doc.transform(quantize({ quantizePosition: 14 }));
 
@@ -206,10 +200,9 @@ test('@gltf-transform/functions::quantize | morph targets', async (t) => {
 	const bboxMesh = roundBbox(primBounds(prim), 3);
 	const bboxTarget = roundBbox(primBounds(target), 3);
 
-	t.deepEquals(bboxScene, { min: [10, 10, 5], max: [15, 15, 5] }, 'bbox - scene');
-	t.deepEquals(bboxMesh, { min: [-0.75, -0.75, -0.875], max: [-0.625, -0.625, -0.875] }, 'bbox - mesh');
-	t.deepEquals(bboxTarget, { min: [0.125, 0.125, 0.125], max: [1, 1, 1] }, 'bbox - target');
-	t.end();
+	t.deepEqual(bboxScene, { min: [10, 10, 5], max: [15, 15, 5] }, 'bbox - scene');
+	t.deepEqual(bboxMesh, { min: [-0.75, -0.75, -0.875], max: [-0.625, -0.625, -0.875] }, 'bbox - mesh');
+	t.deepEqual(bboxTarget, { min: [0.125, 0.125, 0.125], max: [1, 1, 1] }, 'bbox - target');
 });
 
 test('@gltf-transform/functions::quantize | attributes', async (t) => {
@@ -263,34 +256,32 @@ test('@gltf-transform/functions::quantize | attributes', async (t) => {
 		t.fail('Backup copy of custom attribute was modified');
 	}
 
-	t.ok(normal.getNormalized(), 'normal → normalized');
-	t.ok(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
-	elementPairs(normal, normalCopy, round(2)).forEach(([a, b], i) => t.deepEquals(a, b, `normal value #${i + 1}`));
+	t.truthy(normal.getNormalized(), 'normal → normalized');
+	t.truthy(normal.getArray() instanceof Int16Array, 'normal → Int16Array');
+	elementPairs(normal, normalCopy, round(2)).forEach(([a, b], i) => t.deepEqual(a, b, `normal value #${i + 1}`));
 
-	t.ok(tangent.getNormalized(), 'tangent → normalized');
-	t.ok(tangent.getArray() instanceof Int16Array, 'tangent → Int16Array');
-	elementPairs(tangent, tangentCopy, round(2)).forEach(([a, b], i) => t.deepEquals(a, b, `tangent value #${i + 1}`));
+	t.truthy(tangent.getNormalized(), 'tangent → normalized');
+	t.truthy(tangent.getArray() instanceof Int16Array, 'tangent → Int16Array');
+	elementPairs(tangent, tangentCopy, round(2)).forEach(([a, b], i) => t.deepEqual(a, b, `tangent value #${i + 1}`));
 
-	t.ok(uv.getNormalized(), 'uv → normalized');
-	t.ok(uv.getArray() instanceof Uint16Array, 'uv → Uint16Array');
-	elementPairs(uv, uvCopy, round(3)).forEach(([a, b], i) => t.deepEquals(a, b, `uv value #${i + 1}`));
+	t.truthy(uv.getNormalized(), 'uv → normalized');
+	t.truthy(uv.getArray() instanceof Uint16Array, 'uv → Uint16Array');
+	elementPairs(uv, uvCopy, round(3)).forEach(([a, b], i) => t.deepEqual(a, b, `uv value #${i + 1}`));
 
-	t.ok(color.getNormalized(), 'color → normalized');
-	t.ok(color.getArray() instanceof Uint8Array, 'color → Uint8Array');
-	elementPairs(color, colorCopy, round(1)).forEach(([a, b], i) => t.deepEquals(a, b, `color value #${i + 1}`));
+	t.truthy(color.getNormalized(), 'color → normalized');
+	t.truthy(color.getArray() instanceof Uint8Array, 'color → Uint8Array');
+	elementPairs(color, colorCopy, round(1)).forEach(([a, b], i) => t.deepEqual(a, b, `color value #${i + 1}`));
 
-	t.notOk(joints.getNormalized(), 'joints → normalized');
-	t.ok(joints.getArray() instanceof Uint8Array, 'joints → Uint8Array');
-	elementPairs(joints, jointsCopy, round(6)).forEach(([a, b], i) => t.deepEquals(a, b, `joints value #${i + 1}`));
-	t.ok(weights.getNormalized(), 'weights → normalized');
-	t.ok(weights.getArray() instanceof Uint16Array, 'weights → Uint16Array');
-	elementPairs(weights, weightsCopy, round(6)).forEach(([a, b], i) => t.deepEquals(a, b, `weights value #${i + 1}`));
+	t.falsy(joints.getNormalized(), 'joints → normalized');
+	t.truthy(joints.getArray() instanceof Uint8Array, 'joints → Uint8Array');
+	elementPairs(joints, jointsCopy, round(6)).forEach(([a, b], i) => t.deepEqual(a, b, `joints value #${i + 1}`));
+	t.truthy(weights.getNormalized(), 'weights → normalized');
+	t.truthy(weights.getArray() instanceof Uint16Array, 'weights → Uint16Array');
+	elementPairs(weights, weightsCopy, round(6)).forEach(([a, b], i) => t.deepEqual(a, b, `weights value #${i + 1}`));
 
-	t.ok(temp.getNormalized(), 'custom → normalized');
-	t.ok(temp.getArray() instanceof Uint16Array, 'custom → Uint16Array');
-	elementPairs(temp, tempCopy, round(3)).forEach(([a, b], i) => t.deepEquals(a, b, `custom value #${i + 1}`));
-
-	t.end();
+	t.truthy(temp.getNormalized(), 'custom → normalized');
+	t.truthy(temp.getArray() instanceof Uint16Array, 'custom → Uint16Array');
+	elementPairs(temp, tempCopy, round(3)).forEach(([a, b], i) => t.deepEqual(a, b, `custom value #${i + 1}`));
 });
 
 test('@gltf-transform/functions::quantize | indices', async (t) => {
@@ -312,10 +303,9 @@ test('@gltf-transform/functions::quantize | indices', async (t) => {
 		t.fail('Backup copy of indices was modified');
 	}
 
-	t.notOk(indices.getNormalized(), 'indices → not normalized');
-	t.ok(indices.getArray() instanceof Uint16Array, 'indices → Uint16Array');
-	elementPairs(indices, indicesCopy, round(8)).forEach(([a, b], i) => t.deepEquals(a, b, `indices value #${i + 1}`));
-	t.end();
+	t.falsy(indices.getNormalized(), 'indices → not normalized');
+	t.truthy(indices.getArray() instanceof Uint16Array, 'indices → Uint16Array');
+	elementPairs(indices, indicesCopy, round(8)).forEach(([a, b], i) => t.deepEqual(a, b, `indices value #${i + 1}`));
 });
 
 test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) => {
@@ -334,8 +324,8 @@ test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) =
 
 	await doc.transform(quantize());
 
-	t.equals(node.getMesh(), mesh, "don't reparent mesh");
-	t.equals(weightsChannel.getTargetNode(), node, "don't retarget non-TRS animation");
+	t.is(node.getMesh(), mesh, "don't reparent mesh");
+	t.is(weightsChannel.getTargetNode(), node, "don't retarget non-TRS animation");
 
 	// (2) Reparent meshes and retarget non-TRS animation when parent is affected by TRS animation.
 
@@ -350,11 +340,9 @@ test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) =
 
 	await doc.transform(quantize());
 
-	t.equals(node.getMesh(), null, 'reparent mesh');
-	t.equals(weightsChannel.getTargetNode(), node.listChildren()[0], 'retarget non-TRS animation');
-	t.equals(scaleChannel.getTargetNode(), node, "don't retarget TRS animation");
-
-	t.end();
+	t.is(node.getMesh(), null, 'reparent mesh');
+	t.is(weightsChannel.getTargetNode(), node.listChildren()[0], 'retarget non-TRS animation');
+	t.is(scaleChannel.getTargetNode(), node, "don't retarget TRS animation");
 });
 
 test('@gltf-transform/functions::quantize | volumetric materials', async (t) => {
@@ -372,17 +360,15 @@ test('@gltf-transform/functions::quantize | volumetric materials', async (t) => 
 
 	await doc.transform(quantize());
 
-	t.ok(primA.getMaterial() !== material, 'new material for prim A');
-	t.ok(primB.getMaterial() !== material, 'new material for prim B');
-	t.ok(material.isDisposed(), 'dispose old material');
-	t.equals(doc.getRoot().listMaterials().length, 2, 'material count = 2');
+	t.truthy(primA.getMaterial() !== material, 'new material for prim A');
+	t.truthy(primB.getMaterial() !== material, 'new material for prim B');
+	t.truthy(material.isDisposed(), 'dispose old material');
+	t.is(doc.getRoot().listMaterials().length, 2, 'material count = 2');
 
 	const volumeA = primA.getMaterial().getExtension<Volume>('KHR_materials_volume');
 	const volumeB = primB.getMaterial().getExtension<Volume>('KHR_materials_volume');
-	t.equals(volumeA.getThicknessFactor(), 1 / 2.5, 'volumeA.thickness');
-	t.equals(volumeB.getThicknessFactor(), 1 / 50, 'volumeB.thickness');
-
-	t.end();
+	t.is(volumeA.getThicknessFactor(), 1 / 2.5, 'volumeA.thickness');
+	t.is(volumeB.getThicknessFactor(), 1 / 50, 'volumeB.thickness');
 });
 
 /* UTILITIES */

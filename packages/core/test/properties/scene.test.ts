@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document } from '@gltf-transform/core';
 
@@ -6,8 +6,7 @@ test('@gltf-transform/core::scene | copy', (t) => {
 	const doc = new Document();
 	const scene = doc.createScene('MyScene').addChild(doc.createNode('Node1')).addChild(doc.createNode('Node2'));
 	// See {@link Scene.copy}.
-	t.throws(() => doc.createScene().copy(scene), /Scene cannot be copied/, 'cannot copy scene');
-	t.end();
+	t.throws(() => doc.createScene().copy(scene), { message: /Scene cannot be copied/i }, 'cannot copy scene');
 });
 
 test('@gltf-transform/core::scene | traverse', (t) => {
@@ -16,8 +15,7 @@ test('@gltf-transform/core::scene | traverse', (t) => {
 
 	let count = 0;
 	scene.traverse((_) => count++);
-	t.equals(count, 2, 'traverses all nodes');
-	t.end();
+	t.is(count, 2, 'traverses all nodes');
 });
 
 test('@gltf-transform/core::scene | extras', async (t) => {
@@ -29,6 +27,4 @@ test('@gltf-transform/core::scene | extras', async (t) => {
 
 	t.deepEqual(doc.getRoot().listScenes()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listScenes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
-
-	t.end();
 });

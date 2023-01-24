@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { normals } from '../';
 
@@ -22,10 +20,9 @@ test('@gltf-transform/functions::normals', async (t) => {
 
 	await doc.transform(normals({ overwrite: false }));
 
-	t.deepEquals(prim.getAttribute('NORMAL').getArray(), normalArray, 'skips normals');
+	t.deepEqual(prim.getAttribute('NORMAL').getArray(), normalArray, 'skips normals');
 
 	await doc.transform(normals({ overwrite: true }));
 
-	t.deepEquals(prim.getAttribute('NORMAL').getArray(), resultArray, 'overwrites normals');
-	t.end();
+	t.deepEqual(prim.getAttribute('NORMAL').getArray(), resultArray, 'overwrites normals');
 });

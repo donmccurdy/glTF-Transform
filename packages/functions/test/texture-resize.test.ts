@@ -1,8 +1,6 @@
-require('source-map-support').install();
-
 import path from 'path';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { textureResize } from '../';
 import ndarray from 'ndarray';
@@ -20,11 +18,11 @@ test('@gltf-transform/functions::textureResize', async (t) => {
 
 	await document.transform(textureResize({ size: [100, 100], pattern: /other/ }));
 
-	t.equal(texture.getImage(), gradientImage, 'no match - pattern');
+	t.is(texture.getImage(), gradientImage, 'no match - pattern');
 
 	await document.transform(textureResize({ size: [100, 100], slots: /NotAMatch/ }));
 
-	t.equal(texture.getImage(), gradientImage, 'no match - slots');
+	t.is(texture.getImage(), gradientImage, 'no match - slots');
 
 	await document.transform(textureResize({ size: [4, 4], pattern: /target/ }));
 
@@ -37,8 +35,6 @@ test('@gltf-transform/functions::textureResize', async (t) => {
 		[2, 2, 4],
 		'all - resize down with aspect ratio'
 	);
-
-	t.end();
 });
 
 test('@gltf-transform/functions::textureResize | aspect ratio', async (t) => {
@@ -49,5 +45,4 @@ test('@gltf-transform/functions::textureResize | aspect ratio', async (t) => {
 	await document.transform(textureResize({ size: [16, 16] }));
 
 	t.deepEqual((await getPixels(texture.getImage(), 'image/png')).shape, [8, 16, 4], 'maintain aspect ratio');
-	t.end();
 });

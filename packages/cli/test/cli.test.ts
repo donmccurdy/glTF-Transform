@@ -1,12 +1,10 @@
-require('source-map-support').install();
-
 import fs from 'fs';
 import path from 'path';
-import test from 'tape';
+import test from 'ava';
 import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { program, programReady } from '../';
+import { program, programReady } from '@gltf-transform/cli';
 
 const draco3d = require('draco3dgltf');
 const { MeshoptDecoder } = require('meshoptimizer');
@@ -27,8 +25,8 @@ test('@gltf-transform/cli::copy', async (t) => {
 
 	return program.exec(['copy', input, output]).then(async () => {
 		const doc2 = await io.read(output);
-		t.ok(doc2, 'roundtrip document');
-		t.equal(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
+		t.truthy(doc2, 'roundtrip document');
+		t.is(doc2.getRoot().listMaterials()[0].getName(), 'MyMaterial', 'roundtrip material');
 	});
 });
 
@@ -43,7 +41,7 @@ test('@gltf-transform/cli::meshopt', async (t) => {
 
 	return program.exec(['meshopt', input, output], { silent: true }).then(async () => {
 		const doc2 = await io.read(output);
-		t.ok(doc2, 'meshopt succeeds');
+		t.truthy(doc2, 'meshopt succeeds');
 	});
 });
 
@@ -58,11 +56,11 @@ test('@gltf-transform/cli::draco', async (t) => {
 
 	return program.exec(['draco', input, output], { silent: true }).then(async () => {
 		const doc2 = await io.read(output);
-		t.ok(doc2, 'draco succeeds');
+		t.truthy(doc2, 'draco succeeds');
 	});
 });
 
-test('@gltf-transform/cli::validate', async (_t) => {
+test('@gltf-transform/cli::validate', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -73,10 +71,11 @@ test('@gltf-transform/cli::validate', async (_t) => {
 	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
 	await io.write(input, doc);
 
-	return program.exec(['validate', input], { silent: true });
+	await program.exec(['validate', input], { silent: true });
+	t.pass();
 });
 
-test('@gltf-transform/cli::inspect', async (_t) => {
+test('@gltf-transform/cli::inspect', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -90,7 +89,8 @@ test('@gltf-transform/cli::inspect', async (_t) => {
 	doc.createAnimation();
 	await io.write(input, doc);
 
-	return program.exec(['inspect', input], { silent: true });
+	await program.exec(['inspect', input], { silent: true });
+	t.pass();
 });
 
 test('@gltf-transform/cli::merge', async (t) => {
@@ -127,7 +127,6 @@ test('@gltf-transform/cli::merge', async (t) => {
 	const root = doc.getRoot();
 	const sceneNames = root.listScenes().map((s) => s.getName());
 	const texName = root.listTextures()[0].getName();
-	t.deepEquals(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');
-	t.equals(texName, FileUtils.basename(inputC), 'merge textures');
-	t.end();
+	t.deepEqual(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');
+	t.is(texName, FileUtils.basename(inputC), 'merge textures');
 });

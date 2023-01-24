@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { clearNodeTransform } from '@gltf-transform/functions';
 
@@ -30,16 +28,14 @@ test('@gltf-transform/functions::clearNodeTransform', async (t) => {
 
 	clearNodeTransform(parentNode);
 
-	t.deepEquals(parentNode.getTranslation(), [0, 0, 0], 'parent.translation');
-	t.deepEquals(parentNode.getRotation(), [0, 0, 0, 1], 'parent.rotation');
-	t.deepEquals(parentNode.getScale(), [1, 1, 1], 'parent.scale');
+	t.deepEqual(parentNode.getTranslation(), [0, 0, 0], 'parent.translation');
+	t.deepEqual(parentNode.getRotation(), [0, 0, 0, 1], 'parent.rotation');
+	t.deepEqual(parentNode.getScale(), [1, 1, 1], 'parent.scale');
 
-	t.deepEquals(childNode.getTranslation(), [2, 0, 0], 'child.children[0].translation');
-	t.deepEquals(childNode.getRotation(), [0, 0, 0, 1], 'child.children[0].rotation');
-	t.deepEquals(childNode.getScale(), [4, 4, 4], 'child.children[0].scale');
+	t.deepEqual(childNode.getTranslation(), [2, 0, 0], 'child.children[0].translation');
+	t.deepEqual(childNode.getRotation(), [0, 0, 0, 1], 'child.children[0].rotation');
+	t.deepEqual(childNode.getScale(), [4, 4, 4], 'child.children[0].scale');
 
-	t.ok(parentNode.getCamera(), 'parent.camera');
-	t.deepEquals(position.getElement(0, []), [6, 0, 4], 'parent.mesh');
-
-	t.end();
+	t.truthy(parentNode.getCamera(), 'parent.camera');
+	t.deepEqual(position.getElement(0, []), [6, 0, 4], 'parent.mesh');
 });

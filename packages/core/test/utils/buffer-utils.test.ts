@@ -1,30 +1,30 @@
-import test from 'tape';
+import test from 'ava';
 import { BufferUtils } from '@gltf-transform/core';
 
 const IS_NODEJS = typeof window === 'undefined';
 
 const HELLO_WORLD = 'data:application/octet-stream;base64,aGVsbG8gd29ybGQ=';
 
-test('@gltf-transform/core::buffer-utils | web', { skip: IS_NODEJS }, (t) => {
-	t.equals(
+test('@gltf-transform/core::buffer-utils | web', (t) => {
+	if (IS_NODEJS) return t.pass();
+	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',
 		'createBufferFromDataURI'
 	);
-	t.equals(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
-	t.end();
+	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 });
 
-test('@gltf-transform/core::buffer-utils | node.js', { skip: !IS_NODEJS }, (t) => {
-	t.equals(
+test('@gltf-transform/core::buffer-utils | node.js', (t) => {
+	if (!IS_NODEJS) return t.pass();
+	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',
 		'createBufferFromDataURI'
 	);
-	t.equals(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
+	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 
 	const buffer = Buffer.from([1, 2]);
-	t.equals(BufferUtils.equals(buffer, buffer), true, 'equals strict');
-	t.equals(BufferUtils.equals(buffer, Buffer.from([1])), false, 'equals by length');
-	t.end();
+	t.is(BufferUtils.equals(buffer, buffer), true, 'equals strict');
+	t.is(BufferUtils.equals(buffer, Buffer.from([1])), false, 'equals by length');
 });

@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import path from 'path';
-import test from 'tape';
+import test from 'ava';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { inspect } from '../';
 
@@ -15,11 +13,10 @@ test('@gltf-transform/functions::inspect', async (t) => {
 
 	const report = inspect(doc);
 
-	t.ok(report, 'report');
-	t.equal(report.scenes.properties.length, 1, 'report.scenes');
-	t.equal(report.meshes.properties.length, 2, 'report.meshes');
-	t.equal(report.materials.properties.length, 2, 'report.materials');
-	t.equal(report.animations.properties.length, 1, 'report.animations');
-	t.equal(report.textures.properties.length, 1, 'report.textures');
-	t.end();
+	t.truthy(report, 'report');
+	t.is(report.scenes.properties.length, 1, 'report.scenes');
+	t.is(report.meshes.properties.length, 2, 'report.meshes');
+	t.is(report.materials.properties.length, 2, 'report.materials');
+	t.is(report.animations.properties.length, 1, 'report.animations');
+	t.is(report.textures.properties.length, 1, 'report.textures');
 });

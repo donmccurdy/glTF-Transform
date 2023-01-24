@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { getNodeScene } from '@gltf-transform/functions';
 
@@ -13,15 +11,13 @@ test('@gltf-transform/functions::getNodeScene', async (t) => {
 	const nodeC = document.createNode('C').addChild(nodeB);
 	const scene = document.createScene().addChild(nodeC);
 
-	t.equals(getNodeScene(nodeA), scene, 'A → Scene');
-	t.equals(getNodeScene(nodeB), scene, 'B → Scene');
-	t.equals(getNodeScene(nodeC), scene, 'C → Scene');
+	t.is(getNodeScene(nodeA), scene, 'A → Scene');
+	t.is(getNodeScene(nodeB), scene, 'B → Scene');
+	t.is(getNodeScene(nodeC), scene, 'C → Scene');
 
 	scene.removeChild(nodeC);
 
-	t.equals(getNodeScene(nodeA), null, 'A → null');
-	t.equals(getNodeScene(nodeB), null, 'B → null');
-	t.equals(getNodeScene(nodeC), null, 'C → null');
-
-	t.end();
+	t.is(getNodeScene(nodeA), null, 'A → null');
+	t.is(getNodeScene(nodeB), null, 'B → null');
+	t.is(getNodeScene(nodeC), null, 'C → null');
 });
