@@ -24,7 +24,7 @@ jobs:
         cache: yarn
 
     # Build.
-    - run: yarn install
+    - run: yarn install --frozen-lockfile
     - run: yarn dist
 
     # Test.
@@ -48,7 +48,7 @@ jobs:
         cache: yarn
 
     # Build.
-    - run: yarn install
+    - run: yarn install --frozen-lockfile
     - run: yarn dist
 
     # Coverage.
