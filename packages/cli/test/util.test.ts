@@ -1,5 +1,5 @@
-import test from 'tape';
-import { formatBytes, formatHeader, formatParagraph } from '../';
+import test from 'ava';
+import { formatBytes, formatHeader, formatParagraph } from '@gltf-transform/cli';
 
 const HEADER = `
  HELLO
@@ -15,8 +15,7 @@ chocolate cake. Liquorice jelly-o pie jujubes fruitcake chocolate bar jelly-o
 tart. Marshmallow icing tart tootsie roll brownie dragée.`.trim();
 
 test('@gltf-transform/cli::util', (t) => {
-	t.equals(formatBytes(1000), '1 KB', 'formatBytes');
-	t.equals(formatHeader('Hello'), HEADER, 'formatHeader');
-	t.equals(formatParagraph(TEXT), PARAGRAPH, 'formatParagraph');
-	t.end();
+	t.is(formatBytes(1000), '1 KB', 'formatBytes');
+	t.is(formatHeader('Hello'), HEADER, 'formatHeader');
+	t.is(formatParagraph(TEXT), PARAGRAPH, 'formatParagraph');
 });

@@ -4,9 +4,14 @@
     "src/**/*",
     "../global.d.ts"
   ],
+  "paths": {
+    "@gltf-transform/cli": ["./"]
+  },
   "compilerOptions": {
     "outDir": "dist",
     "strict": true,
     "importsNotUsedAsValues": "error",
+    "module": "ES2020",
+    "target": "ES2020"
   }
 }

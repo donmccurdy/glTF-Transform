@@ -13,7 +13,8 @@
     "watch:debug": "lerna run watch:debug --parallel --stream",
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
-    "test": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
+    "test": "ava packages/cli/test/*.ts",
+    "testBAK": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
     "coverage:report": "nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
@@ -35,6 +36,8 @@
     "@types/tape": "4.13.2",
     "@typescript-eslint/eslint-plugin": "5.48.2",
     "@typescript-eslint/parser": "5.48.2",
+    "ava": "^5.1.1",
+    "c8": "^7.12.0",
     "canvas": "2.11.0",
     "concurrently": "7.6.0",
     "draco3dgltf": "1.5.5",
@@ -53,5 +56,13 @@
     "ts-node": "10.9.1",
     "typedoc": "0.21.2",
     "typescript": "4.9.4"
+  },
+  "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm"
+    ]
   }
 }
