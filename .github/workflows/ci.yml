@@ -35,14 +35,16 @@ jobs:
     # Test.
     - run: yarn install
     - run: yarn dist
-    - run: yarn test
+    # No worker threads: https://github.com/avajs/ava/discussions/3158
+    - run: yarn test --no-worker-threads
     - run: yarn lint
 
     # Coverage.
     - name: Run coverage
       if: ${{ env.COVERAGE == 'true' }}
+      # No worker threads: https://github.com/avajs/ava/discussions/3158
       run: |
-        yarn coverage
+        yarn coverage --no-worker-threads
         yarn coverage:report
     - name: Report coverage
       if: ${{ env.COVERAGE == 'true' }}
