@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { Logger } from '@gltf-transform/core';
 
 test('@gltf-transform/core::logger', (t) => {
@@ -17,21 +17,20 @@ test('@gltf-transform/core::logger', (t) => {
 	logger.info('info');
 	logger.warn('warn');
 	logger.error('error');
-	t.equals(calls.debug, 0, 'no debug when silenced');
-	t.equals(calls.info, 0, 'no info when silenced');
-	t.equals(calls.warn, 0, 'no warn when silenced');
-	t.equals(calls.error, 0, 'no error when silenced');
+	t.is(calls.debug, 0, 'no debug when silenced');
+	t.is(calls.info, 0, 'no info when silenced');
+	t.is(calls.warn, 0, 'no warn when silenced');
+	t.is(calls.error, 0, 'no error when silenced');
 
 	logger = new Logger(Logger.Verbosity.DEBUG);
 	logger.debug('debug');
 	logger.info('info');
 	logger.warn('warn');
 	logger.error('error');
-	t.equals(calls.debug, 1, 'debug when not silenced');
-	t.equals(calls.info, 1, 'info when not silenced');
-	t.equals(calls.warn, 1, 'warn when not silenced');
-	t.equals(calls.error, 1, 'error when not silenced');
+	t.is(calls.debug, 1, 'debug when not silenced');
+	t.is(calls.info, 1, 'info when not silenced');
+	t.is(calls.warn, 1, 'warn when not silenced');
+	t.is(calls.error, 1, 'error when not silenced');
 
 	Object.assign(console, { debug, info, warn, error });
-	t.end();
 });

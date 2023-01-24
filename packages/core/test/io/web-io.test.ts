@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { BufferUtils, WebIO } from '@gltf-transform/core';
 
 const SAMPLE_GLB = // eslint-disable-next-line max-len
@@ -17,7 +17,7 @@ function mockFetch(response: unknown): string[] {
 	return paths;
 }
 
-test('@gltf-transform/core::io | web read glb', (t) => {
+test.serial('@gltf-transform/core::io | web read glb', async (t) => {
 	mockWindow('https://www.example.com/test');
 	mockFetch({
 		arrayBuffer: () => BufferUtils.createBufferFromDataURI(SAMPLE_GLB),
@@ -30,17 +30,13 @@ test('@gltf-transform/core::io | web read glb', (t) => {
 	});
 
 	const io = new WebIO();
-	t.equals(!!io, true, 'creates WebIO');
+	t.truthy(io, 'creates WebIO');
 
-	io.read('mock.glb')
-		.then((doc) => {
-			t.equals(doc.getRoot().listBuffers().length, 1, 'reads a GLB with Fetch API');
-		})
-		.catch((e) => t.fail(e))
-		.finally(() => t.end());
+	const document = await io.read('mock.glb');
+	t.is(document.getRoot().listBuffers().length, 1, 'reads a GLB with Fetch API');
 });
 
-test('@gltf-transform/core::io | web read glb + resources', (t) => {
+test.serial('@gltf-transform/core::io | web read glb + resources', async (t) => {
 	const json = {
 		asset: { version: '2.0' },
 		scenes: [{ name: 'Default Scene' }],
@@ -85,28 +81,24 @@ test('@gltf-transform/core::io | web read glb + resources', (t) => {
 	});
 
 	const io = new WebIO();
-	t.equals(!!io, true, 'creates WebIO');
+	t.truthy(io, 'creates WebIO');
 
-	io.read('model/dir/mock.glb')
-		.then((doc) => {
-			t.deepEquals(
-				fetchedPaths,
-				[
-					'model/dir/mock.glb',
-					'model/dir/image1.png',
-					'/abs/path/image2.png',
-					'model/dir/rel/path/image3.png',
-					'model/dir/rel/path/image3.png',
-				],
-				'reads all linked resources'
-			);
-			t.equals(doc.getRoot().listScenes().length, 1, 'reads GLB + resources with Fetch API');
-		})
-		.catch((e) => t.fail(e))
-		.finally(() => t.end());
+	const document = await io.read('model/dir/mock.glb');
+	t.deepEqual(
+		fetchedPaths,
+		[
+			'model/dir/mock.glb',
+			'model/dir/image1.png',
+			'/abs/path/image2.png',
+			'model/dir/rel/path/image3.png',
+			'model/dir/rel/path/image3.png',
+		],
+		'reads all linked resources'
+	);
+	t.is(document.getRoot().listScenes().length, 1, 'reads GLB + resources with Fetch API');
 });
 
-test('@gltf-transform/core::io | web read gltf', (t) => {
+test.serial('@gltf-transform/core::io | web read gltf', async (t) => {
 	const images = [new Uint8Array(4), new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 
 	mockWindow('https://www.example.com/test');
@@ -126,28 +118,24 @@ test('@gltf-transform/core::io | web read gltf', (t) => {
 	});
 
 	const io = new WebIO();
-	t.equals(!!io, true, 'creates WebIO');
+	t.truthy(io, 'creates WebIO');
 
-	io.read('model/dir/mock.gltf')
-		.then((doc) => {
-			t.deepEquals(
-				fetchedPaths,
-				[
-					'model/dir/mock.gltf',
-					'model/dir/image1.png',
-					'/abs/path/image2.png',
-					'model/dir/rel/path/image3.png',
-					'model/dir/rel/path/image3.png',
-				],
-				'reads all linked resources'
-			);
-			t.equals(doc.getRoot().listScenes().length, 1, 'reads a glTF with Fetch API');
-		})
-		.catch((e) => t.fail(e))
-		.finally(() => t.end());
+	const document = await io.read('model/dir/mock.gltf');
+	t.deepEqual(
+		fetchedPaths,
+		[
+			'model/dir/mock.gltf',
+			'model/dir/image1.png',
+			'/abs/path/image2.png',
+			'model/dir/rel/path/image3.png',
+			'model/dir/rel/path/image3.png',
+		],
+		'reads all linked resources'
+	);
+	t.is(document.getRoot().listScenes().length, 1, 'reads a glTF with Fetch API');
 });
 
-test('@gltf-transform/core::io | web read + data URIs', async (t) => {
+test.serial('@gltf-transform/core::io | web read + data URIs', async (t) => {
 	const images = [new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
@@ -170,15 +158,14 @@ test('@gltf-transform/core::io | web read + data URIs', async (t) => {
 	const doc = await io.read('test.gltf');
 	const textures = doc.getRoot().listTextures();
 
-	t.deepEquals(fetchedPaths, ['test.gltf'], 'one network request');
-	t.equals(textures.length, 3, 'reads a textures from Data URIs');
-	t.deepEquals(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
-	t.deepEquals(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
-	t.deepEquals(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
-	t.end();
+	t.deepEqual(fetchedPaths, ['test.gltf'], 'one network request');
+	t.is(textures.length, 3, 'reads a textures from Data URIs');
+	t.deepEqual(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
+	t.deepEqual(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
+	t.deepEqual(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
 });
 
-test('@gltf-transform/core::io | web readJSON + data URIs', async (t) => {
+test.serial('@gltf-transform/core::io | web readJSON + data URIs', async (t) => {
 	const images = [new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
 	const uris = images.map((image) => {
 		return 'data:image/png;base64,' + Buffer.from(image).toString('base64');
@@ -208,10 +195,9 @@ test('@gltf-transform/core::io | web readJSON + data URIs', async (t) => {
 	});
 	const textures = doc.getRoot().listTextures();
 
-	t.deepEquals(fetchedPaths, [], 'no network requests');
-	t.equals(textures.length, 3, 'reads a textures from Data URIs');
-	t.deepEquals(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
-	t.deepEquals(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
-	t.deepEquals(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
-	t.end();
+	t.deepEqual(fetchedPaths, [], 'no network requests');
+	t.is(textures.length, 3, 'reads a textures from Data URIs');
+	t.deepEqual(Array.from(textures[0].getImage()), Array.from(images[0]), 'reads texture 0');
+	t.deepEqual(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
+	t.deepEqual(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
 });

@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document, JSONDocument } from '@gltf-transform/core';
 
@@ -38,9 +38,8 @@ test('@gltf-transform/core::root', (t) => {
 	t.deepEqual(root2.listSkins().length, 1, 'listSkins()');
 	t.deepEqual(root2.listTextures().length, 1, 'listTextures()');
 
-	t.throws(() => root2.clone(), 'no cloning');
-	t.throws(() => root2.copy(doc.getRoot()), 'no direct copy');
-	t.end();
+	t.throws(() => root2.clone(), undefined, 'no cloning');
+	t.throws(() => root2.copy(doc.getRoot()), undefined, 'no direct copy');
 });
 
 test('@gltf-transform/core::root | default scene', async (t) => {
@@ -50,26 +49,24 @@ test('@gltf-transform/core::root | default scene', async (t) => {
 	const sceneB = doc.createScene('B');
 	const io = await createPlatformIO();
 
-	t.equals(root.getDefaultScene(), null, 'default scene initially null');
+	t.is(root.getDefaultScene(), null, 'default scene initially null');
 
 	root.setDefaultScene(sceneA);
-	t.equals(root.getDefaultScene(), sceneA, 'default scene = A');
+	t.is(root.getDefaultScene(), sceneA, 'default scene = A');
 
 	sceneA.dispose();
-	t.equals(root.getDefaultScene(), null, 'default scene disposed');
+	t.is(root.getDefaultScene(), null, 'default scene disposed');
 
 	root.setDefaultScene(sceneB);
-	t.equals(root.getDefaultScene(), sceneB, 'default scene = B');
+	t.is(root.getDefaultScene(), sceneB, 'default scene = B');
 
-	t.equals(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
+	t.is(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
 
-	t.equals(
+	t.is(
 		(await io.readJSON(await io.writeJSON(doc, {}))).getRoot().getDefaultScene().getName(),
 		'B',
 		'read / write persistence'
 	);
-
-	t.end();
 });
 
 test('@gltf-transform/core::root | clone child of root', (t) => {
@@ -79,7 +76,6 @@ test('@gltf-transform/core::root | clone child of root', (t) => {
 	const c = b.clone();
 
 	t.deepEqual(doc.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
-	t.end();
 });
 
 test('@gltf-transform/core::root | extras', async (t) => {
@@ -93,11 +89,10 @@ test('@gltf-transform/core::root | extras', async (t) => {
 	const rtDocNoExtras = await io.readJSON(jsonDocNoExtras);
 	const rtDocExtras = await io.readJSON(jsonDocExtras);
 
-	t.equals(jsonDocNoExtras.json.extras, undefined, 'no empty extras');
-	t.deepEquals(jsonDocExtras.json.extras, { custom: 'value' }, 'write extras');
-	t.deepEquals(rtDocNoExtras.getRoot().getExtras(), {}, 'round trip no extras');
-	t.deepEquals(rtDocExtras.getRoot().getExtras(), { custom: 'value' }, 'round trip extras');
-	t.end();
+	t.is(jsonDocNoExtras.json.extras, undefined, 'no empty extras');
+	t.deepEqual(jsonDocExtras.json.extras, { custom: 'value' }, 'write extras');
+	t.deepEqual(rtDocNoExtras.getRoot().getExtras(), {}, 'round trip no extras');
+	t.deepEqual(rtDocExtras.getRoot().getExtras(), { custom: 'value' }, 'round trip extras');
 });
 
 test('@gltf-transform/core::root | asset', async (t) => {
@@ -110,14 +105,13 @@ test('@gltf-transform/core::root | asset', async (t) => {
 
 	jsonDoc = await io.writeJSON(doc);
 	generator = jsonDoc.json.asset.generator;
-	t.match(generator, /^glTF-Transform.*/i, 'write default generator');
+	t.true(/^glTF-Transform.*/i.test(generator), 'write default generator');
 
 	root.getAsset().generator = 'Custom Tool v123';
 	jsonDoc = await io.writeJSON(doc);
 	generator = jsonDoc.json.asset.generator;
-	t.match(generator, /^Custom Tool.*/i, 'write custom generator');
+	t.true(/^Custom Tool.*/i.test(generator), 'write custom generator');
 
 	generator = (await io.readJSON(jsonDoc)).getRoot().getAsset().generator;
-	t.match(generator, /^glTF-Transform.*/i, 'read default generator');
-	t.end();
+	t.true(/^glTF-Transform.*/i.test(generator), 'read default generator');
 });

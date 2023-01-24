@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document } from '@gltf-transform/core';
 
@@ -27,7 +27,6 @@ test('@gltf-transform/core::buffer', async (t) => {
 	t.true('basename_1.bin' in jsonDoc.resources, 'implicitly named buffer #1');
 	t.true('basename_2.bin' in jsonDoc.resources, 'implicitly named buffer #2');
 	t.false('empty.bin' in jsonDoc.resources, 'empty buffer skipped');
-	t.end();
 });
 
 test('@gltf-transform/core::buffer | copy', (t) => {
@@ -35,9 +34,8 @@ test('@gltf-transform/core::buffer | copy', (t) => {
 	const buffer1 = doc.createBuffer('MyBuffer').setURI('mybuffer.bin');
 	const buffer2 = doc.createBuffer().copy(buffer1);
 
-	t.equal(buffer1.getName(), buffer2.getName(), 'copy name');
-	t.equal(buffer1.getURI(), buffer2.getURI(), 'copy URI');
-	t.end();
+	t.is(buffer1.getName(), buffer2.getName(), 'copy name');
+	t.is(buffer1.getURI(), buffer2.getURI(), 'copy URI');
 });
 
 test('@gltf-transform/core::buffer | extras', async (t) => {
@@ -52,6 +50,4 @@ test('@gltf-transform/core::buffer | extras', async (t) => {
 
 	t.deepEqual(doc.getRoot().listBuffers()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listBuffers()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
-
-	t.end();
 });

@@ -1,8 +1,10 @@
 import path from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import test from 'ava';
-import { Accessor, Buffer, Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
+import { Accessor, Buffer, Document, Format, NodeIO, Primitive, getBounds, Logger } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '../';
+
+const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	const io = await createDecoderIO();
@@ -25,7 +27,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	// (1) Entire primitive reused (share compressed buffer views).
 	// (2) All primitive accessors reused (share compressed buffer views).
 
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const buffer = doc.createBuffer();
@@ -128,7 +130,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	// (1) Non-indexed.
 	// (2) Non-TRIANGLES.
 
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const buffer = doc.createBuffer();
@@ -166,7 +168,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 });
 
 test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const buffer = doc.createBuffer();
@@ -205,7 +207,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', asy
 });
 
 test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const buffer = doc.createBuffer();
@@ -260,7 +262,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 });
 
 test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const buffer = doc.createBuffer();
@@ -322,7 +324,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 });
 
 test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(LOGGER);
 	doc.createExtension(KHRDracoMeshCompression).setRequired(true);
 
 	const prim = createMeshPrimitive(doc, doc.createBuffer());
@@ -363,6 +365,7 @@ async function createDecoderIO(): Promise<NodeIO> {
 
 	decoderIO = createDecoderModule().then((decoder) => {
 		return new NodeIO()
+			.setLogger(LOGGER)
 			.registerExtensions([KHRDracoMeshCompression])
 			.registerDependencies({ 'draco3d.decoder': decoder });
 	});
@@ -375,6 +378,7 @@ async function createEncoderIO(): Promise<NodeIO> {
 
 	encoderIO = createEncoderModule().then((encoder) => {
 		return new NodeIO()
+			.setLogger(LOGGER)
 			.registerExtensions([KHRDracoMeshCompression])
 			.registerDependencies({ 'draco3d.encoder': encoder });
 	});

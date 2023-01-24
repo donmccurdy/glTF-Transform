@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 
@@ -69,12 +69,10 @@ test('@gltf-transform/core::skin', async (t) => {
 
 	const ibmAccessor = jsonDoc.json.accessors[jsonDoc.json.skins[0].inverseBindMatrices];
 	const inputAccessor = jsonDoc.json.accessors[jsonDoc.json.animations[0].samplers[0].input];
-	t.notEqual(ibmAccessor.bufferView, inputAccessor.bufferView, 'stores IBMs and animation in different buffer views');
+	t.not(ibmAccessor.bufferView, inputAccessor.bufferView, 'stores IBMs and animation in different buffer views');
 
 	const actualIBM = new Float32Array(jsonDoc.resources['skinTest.bin'].slice(0, 192).buffer);
 	t.deepEqual(Array.from(actualIBM), Array.from(ibm.getArray()), 'stores skin IBMs');
-
-	t.end();
 });
 
 test('@gltf-transform/core::skin | copy', (t) => {
@@ -87,17 +85,15 @@ test('@gltf-transform/core::skin | copy', (t) => {
 		.setInverseBindMatrices(doc.createAccessor());
 	const b = doc.createSkin().copy(a);
 
-	t.equal(b.getName(), a.getName(), 'copy name');
+	t.is(b.getName(), a.getName(), 'copy name');
 	t.deepEqual(b.listJoints(), a.listJoints(), 'copy joints');
-	t.equal(b.getSkeleton(), a.getSkeleton(), 'copy skeleton');
-	t.equal(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
+	t.is(b.getSkeleton(), a.getSkeleton(), 'copy skeleton');
+	t.is(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
 
 	a.copy(doc.createSkin());
 
-	t.equal(a.getSkeleton(), null, 'unset skeleton');
-	t.equal(a.getInverseBindMatrices(), null, 'unset inverseBindMatrices');
-
-	t.end();
+	t.is(a.getSkeleton(), null, 'unset skeleton');
+	t.is(a.getInverseBindMatrices(), null, 'unset inverseBindMatrices');
 });
 
 test('@gltf-transform/core::skin | extras', async (t) => {
@@ -109,6 +105,4 @@ test('@gltf-transform/core::skin | extras', async (t) => {
 
 	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
-
-	t.end();
 });

@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { Document, Extension, ExtensionProperty, PropertyType, WriterContext } from '@gltf-transform/core';
 import { createPlatformIO } from '../../test-utils';
 
@@ -57,8 +57,6 @@ test('@gltf-transform/core::extension | list', (t) => {
 	extension.dispose();
 	t.deepEqual(doc.getRoot().listExtensionsUsed(), [], 'listExtensionsUsed()');
 	t.deepEqual(doc.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
-
-	t.end();
 });
 
 test('@gltf-transform/core::extension | property', (t) => {
@@ -67,32 +65,30 @@ test('@gltf-transform/core::extension | property', (t) => {
 	const gizmo = extension.createGizmo();
 	const node = doc.createNode('MyNode');
 
-	t.equal(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (1)');
+	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (1)');
 
 	// Add ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, gizmo);
-	t.equal(node.getExtension(EXTENSION_NAME), gizmo, 'getExtension() → gizmo');
+	t.is(node.getExtension(EXTENSION_NAME), gizmo, 'getExtension() → gizmo');
 	t.deepEqual(node.listExtensions(), [gizmo], 'listExtensions() → [gizmo x1]');
 
 	// Remove ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, null);
-	t.equal(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (2)');
+	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (2)');
 
 	// Dispose ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, gizmo);
 	gizmo.dispose();
-	t.equal(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (3)');
+	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (3)');
 
 	// Dispose Extension.
 
 	node.setExtension(EXTENSION_NAME, extension.createGizmo());
 	extension.dispose();
-	t.equal(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (4)');
-
-	t.end();
+	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (4)');
 });
 
 test('@gltf-transform/core::extension | i/o', async (t) => {
@@ -115,8 +111,8 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 
 	jsonDoc = await io.writeJSON(doc, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)');
-	t.equal(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
-	t.equal(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
+	t.is(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
+	t.is(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
 
 	// Read.
 
@@ -130,7 +126,7 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 		'roundtrip extensionsUsed'
 	);
 	t.deepEqual(resultDoc.getRoot().listExtensionsRequired(), [], 'roundtrip omit extensionsRequired');
-	t.equal(
+	t.is(
 		resultDoc.getRoot().listNodes()[0].getExtension(EXTENSION_NAME).extensionName,
 		'TEST_node_gizmo',
 		'roundtrip extend node'
@@ -150,8 +146,6 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 		['TEST_node_gizmo'],
 		'roundtrip extensionsRequired'
 	);
-
-	t.end();
 });
 
 test('@gltf-transform/core::extension | clone', (t) => {
@@ -161,8 +155,7 @@ test('@gltf-transform/core::extension | clone', (t) => {
 	doc.createNode().setExtension(EXTENSION_NAME, gizmo);
 
 	let docClone: Document;
-	t.ok(gizmo.clone(), 'clones gizmo');
-	t.ok((docClone = doc.clone()), 'clones document');
-	t.ok(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
-	t.end();
+	t.truthy(gizmo.clone(), 'clones gizmo');
+	t.truthy((docClone = doc.clone()), 'clones document');
+	t.truthy(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
 });

@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { environment, Environment } from '../../../test-utils';
 import { Document, NodeIO } from '@gltf-transform/core';
 
@@ -31,11 +31,10 @@ test('@gltf-transform/core::io | node.js read glb', { skip: environment !== Envi
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
-		t.ok(doc, `Read "${basepath}".`);
+		t.truthy(doc, `Read "${basepath}".`);
 		count++;
 	});
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test('@gltf-transform/core::io | node.js read gltf', { skip: environment !== Environment.NODE }, async (t) => {
@@ -46,11 +45,10 @@ test('@gltf-transform/core::io | node.js read gltf', { skip: environment !== Env
 		const io = new NodeIO();
 		const doc = io.read(inputURI);
 
-		t.ok(doc, `Read "${basepath}".`);
+		t.truthy(doc, `Read "${basepath}".`);
 		count++;
 	});
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test('@gltf-transform/core::io | node.js read glb http', { skip: environment !== Environment.NODE }, async (t) => {
@@ -62,12 +60,11 @@ test('@gltf-transform/core::io | node.js read glb http', { skip: environment !==
 			const io = new NodeIO(fetch).setAllowHTTP(true);
 			const doc = await io.read(basepath);
 
-			t.ok(doc, `Read "${basepath}".`);
+			t.truthy(doc, `Read "${basepath}".`);
 			count++;
 		})
 	);
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test('@gltf-transform/core::io | node.js read gltf http', { skip: environment !== Environment.NODE }, async (t) => {
@@ -79,12 +76,11 @@ test('@gltf-transform/core::io | node.js read gltf http', { skip: environment !=
 			const io = new NodeIO(fetch).setAllowHTTP(true);
 			const doc = await io.read(basepath);
 
-			t.ok(doc, `Read "${basepath}".`);
+			t.truthy(doc, `Read "${basepath}".`);
 			count++;
 		})
 	);
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test('@gltf-transform/core::io | node.js write glb', { skip: environment !== Environment.NODE }, async (t) => {
@@ -100,12 +96,11 @@ test('@gltf-transform/core::io | node.js write glb', { skip: environment !== Env
 
 			ensureDir(path.dirname(outputURI));
 			await io.write(outputURI.replace('.gltf', '.glb'), doc);
-			t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
+			t.truthy(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
 		})
 	);
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== Environment.NODE }, async (t) => {
@@ -121,12 +116,11 @@ test('@gltf-transform/core::io | node.js write gltf', { skip: environment !== En
 
 			ensureDir(path.dirname(outputURI));
 			await io.write(outputURI.replace('.glb', '.gltf'), doc);
-			t.ok(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
+			t.truthy(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
 		})
 	);
-	t.ok(count > 0, 'tests completed');
-	t.end();
+	t.truthy(count > 0, 'tests completed');
 });
 
 test(
@@ -149,9 +143,8 @@ test(
 		const outputURI = path.join(__dirname, '../out', 'node-io-external-test');
 		ensureDir(outputURI);
 		await io.write(path.join(outputURI, 'scene.gltf'), document);
-		t.ok(fs.existsSync(path.join(outputURI, 'internal.png')), 'writes internal image');
-		t.notOk(fs.existsSync(path.join(outputURI, 'external.png')), 'skips external image');
-		t.ok(io.lastWriteBytes < 2048, 'writes < 2048 bytes');
-		t.end();
+		t.truthy(fs.existsSync(path.join(outputURI, 'internal.png')), 'writes internal image');
+		t.falsy(fs.existsSync(path.join(outputURI, 'external.png')), 'skips external image');
+		t.truthy(io.lastWriteBytes < 2048, 'writes < 2048 bytes');
 	}
 );

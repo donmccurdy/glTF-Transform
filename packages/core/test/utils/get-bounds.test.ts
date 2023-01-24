@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document } from '@gltf-transform/core';
 import { getBounds } from '@gltf-transform/core';
 
@@ -13,7 +13,7 @@ test('@gltf-transform/functions::getBounds', (t) => {
 	const node = doc.createNode().setMesh(mesh).setTranslation([100, 100, 100]).setScale([5, 5, 5]);
 	const scene = doc.createScene().addChild(node);
 
-	t.deepEquals(
+	t.deepEqual(
 		getBounds(scene),
 		{
 			min: [100, 100, 100],
@@ -21,6 +21,4 @@ test('@gltf-transform/functions::getBounds', (t) => {
 		},
 		'computes world bounds'
 	);
-
-	t.end();
 });

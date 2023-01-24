@@ -1,5 +1,4 @@
-import { DenoIO, PlatformIO, WebIO, NodeIO } from '@gltf-transform/core';
-import test from 'tape';
+import { DenoIO, PlatformIO, WebIO, NodeIO, Logger } from '@gltf-transform/core';
 
 export enum Environment {
 	WEB,
@@ -9,24 +8,17 @@ export enum Environment {
 
 export const environment = (typeof window !== 'undefined' ? Environment.WEB : Environment.NODE) as Environment;
 
+const logger = new Logger(Logger.Verbosity.SILENT);
+
 export const createPlatformIO = async (): Promise<PlatformIO> => {
 	switch (environment) {
 		case Environment.WEB:
-			return new WebIO();
+			return new WebIO().setLogger(logger);
 		case Environment.DENO:
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			return new DenoIO(await import('https://deno.land/std/path/mod.ts'));
+			return new DenoIO(await import('https://deno.land/std/path/mod.ts')).setLogger(logger);
 		case Environment.NODE:
-			return new NodeIO();
-	}
-};
-
-export const throwsAsync = async (t: test.Test, fn: () => Promise<unknown>, re: RegExp, msg: string): Promise<void> => {
-	try {
-		await fn();
-		t.fail(msg);
-	} catch (e) {
-		t.match((e as Error).message, re, msg);
+			return new NodeIO().setLogger(logger);
 	}
 };

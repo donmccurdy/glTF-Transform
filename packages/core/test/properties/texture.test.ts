@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Document, Format, JSONDocument, TextureInfo } from '@gltf-transform/core';
 
@@ -26,15 +26,14 @@ test('@gltf-transform/core::texture | read', async (t) => {
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
 
-	t.equals(root.listTextures().length, 2, 'reads two textures');
-	t.equals(mat1.getNormalTexture().getURI(), 'tex1.png', 'assigns texture');
-	t.equals(mat1.getOcclusionTexture().getURI(), 'tex1.png', 'reuses texture');
-	t.equals(mat1.getNormalTextureInfo().getWrapS(), 33071, 'assigns sampler properties');
-	t.equals(mat1.getOcclusionTextureInfo().getWrapS(), 10497, 'keeps default sampler properties');
-	t.equals(mat2.getNormalTexture().getURI(), 'tex2.jpeg', 'assigns 2nd texture');
-	t.equals(root.listTextures()[0].getMimeType(), 'image/png', 'assigns "image/png" MIME type');
-	t.equals(root.listTextures()[1].getMimeType(), 'image/jpeg', 'assigns "image/jpeg" MIME type');
-	t.end();
+	t.is(root.listTextures().length, 2, 'reads two textures');
+	t.is(mat1.getNormalTexture().getURI(), 'tex1.png', 'assigns texture');
+	t.is(mat1.getOcclusionTexture().getURI(), 'tex1.png', 'reuses texture');
+	t.is(mat1.getNormalTextureInfo().getWrapS(), 33071, 'assigns sampler properties');
+	t.is(mat1.getOcclusionTextureInfo().getWrapS(), 10497, 'keeps default sampler properties');
+	t.is(mat2.getNormalTexture().getURI(), 'tex2.jpeg', 'assigns 2nd texture');
+	t.is(root.listTextures()[0].getMimeType(), 'image/png', 'assigns "image/png" MIME type');
+	t.is(root.listTextures()[1].getMimeType(), 'image/jpeg', 'assigns "image/jpeg" MIME type');
 });
 
 test('@gltf-transform/core::texture | write', async (t) => {
@@ -59,10 +58,9 @@ test('@gltf-transform/core::texture | write', async (t) => {
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
 	t.true('normal_1.jpg' in jsonDoc.resources, 'writes default-named normal map');
 	t.true('occlusion_1.jpg' in jsonDoc.resources, 'writes default-named occlusion map');
-	t.equals(jsonDoc.json.images.length, 3, 'reuses images');
-	t.equals(jsonDoc.json.textures.length, 4, 'writes textures');
-	t.equals(jsonDoc.json.samplers.length, 2, 'reuses samplers');
-	t.end();
+	t.is(jsonDoc.json.images.length, 3, 'reuses images');
+	t.is(jsonDoc.json.textures.length, 4, 'writes textures');
+	t.is(jsonDoc.json.samplers.length, 2, 'reuses samplers');
 });
 
 test('@gltf-transform/core::texture | copy', (t) => {
@@ -74,12 +72,10 @@ test('@gltf-transform/core::texture | copy', (t) => {
 		.setURI('path/to/image.gif');
 
 	const tex2 = doc.createTexture().copy(tex);
-	t.equals(tex2.getName(), 'MyTexture', 'copy name');
+	t.is(tex2.getName(), 'MyTexture', 'copy name');
 	t.deepEqual(tex2.getImage(), tex.getImage(), 'copy image');
-	t.equals(tex2.getMimeType(), 'image/gif', 'copy mimeType');
-	t.equals(tex2.getURI(), 'path/to/image.gif', 'copy URI');
-
-	t.end();
+	t.is(tex2.getMimeType(), 'image/gif', 'copy mimeType');
+	t.is(tex2.getURI(), 'path/to/image.gif', 'copy URI');
 });
 
 test('@gltf-transform/core::texture | extras', async (t) => {
@@ -92,8 +88,6 @@ test('@gltf-transform/core::texture | extras', async (t) => {
 
 	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
-
-	t.end();
 });
 
 test('@gltf-transform/core::textureInfo | extras', async (t) => {
@@ -112,8 +106,6 @@ test('@gltf-transform/core::textureInfo | extras', async (t) => {
 
 	t.deepEqual(material.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'storage');
 	t.deepEqual(rtMaterial.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'roundtrip');
-
-	t.end();
 });
 
 test('@gltf-transform/core::texture | padding', async (t) => {
@@ -148,5 +140,4 @@ test('@gltf-transform/core::texture | padding', async (t) => {
 		'bufferViews'
 	);
 	t.deepEqual(jsonDoc.json.buffers, [{ byteLength: 72 }], 'buffers');
-	t.end();
 });

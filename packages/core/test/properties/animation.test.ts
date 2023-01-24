@@ -1,4 +1,4 @@
-import test from 'tape';
+import test from 'ava';
 import { createPlatformIO } from '../../../test-utils';
 import { Accessor, Document } from '@gltf-transform/core';
 
@@ -60,8 +60,6 @@ test('@gltf-transform/core::animation', async (t) => {
 
 	t.deepEqual(finalDoc.getRoot().listAccessors()[0].getArray(), input.getArray(), 'sampler times');
 	t.deepEqual(finalDoc.getRoot().listAccessors()[1].getArray(), output.getArray(), 'sampler values');
-
-	t.end();
 });
 
 test('@gltf-transform/core::animation | copy', (t) => {
@@ -72,10 +70,9 @@ test('@gltf-transform/core::animation | copy', (t) => {
 		.addSampler(doc.createAnimationSampler());
 	const b = doc.createAnimation().copy(a);
 
-	t.equal(b.getName(), a.getName(), 'copy name');
+	t.is(b.getName(), a.getName(), 'copy name');
 	t.deepEqual(b.listChannels(), a.listChannels(), 'copy channels');
 	t.deepEqual(b.listSamplers(), a.listSamplers(), 'copy samplers');
-	t.end();
 });
 
 test('@gltf-transform/core::animationChannel | copy', (t) => {
@@ -86,10 +83,9 @@ test('@gltf-transform/core::animationChannel | copy', (t) => {
 		.setSampler(doc.createAnimationSampler());
 	const b = doc.createAnimationChannel().copy(a);
 
-	t.equal(b.getName(), a.getName(), 'copy name');
-	t.equal(b.getTargetNode(), a.getTargetNode(), 'copy targetNode');
-	t.equal(b.getSampler(), a.getSampler(), 'copy sampler');
-	t.end();
+	t.is(b.getName(), a.getName(), 'copy name');
+	t.is(b.getTargetNode(), a.getTargetNode(), 'copy targetNode');
+	t.is(b.getSampler(), a.getSampler(), 'copy sampler');
 });
 
 test('@gltf-transform/core::animationSampler | copy', (t) => {
@@ -101,11 +97,10 @@ test('@gltf-transform/core::animationSampler | copy', (t) => {
 		.setOutput(doc.createAccessor());
 	const b = doc.createAnimationSampler().copy(a);
 
-	t.equal(b.getName(), a.getName(), 'copy name');
-	t.equal(b.getInterpolation(), a.getInterpolation(), 'copy interpolation');
-	t.equal(b.getInput(), a.getInput(), 'copy input');
-	t.equal(b.getOutput(), a.getOutput(), 'copy output');
-	t.end();
+	t.is(b.getName(), a.getName(), 'copy name');
+	t.is(b.getInterpolation(), a.getInterpolation(), 'copy interpolation');
+	t.is(b.getInput(), a.getInput(), 'copy input');
+	t.is(b.getOutput(), a.getOutput(), 'copy output');
 });
 
 test('@gltf-transform/core::animation | extras', async (t) => {
@@ -127,6 +122,4 @@ test('@gltf-transform/core::animation | extras', async (t) => {
 	t.deepEqual(anim2.listChannels()[0].getExtras(), { channel: true }, 'roundtrips channel extras');
 	t.deepEqual(anim.listSamplers()[0].getExtras(), { sampler: true }, 'stores channel extras');
 	t.deepEqual(anim2.listSamplers()[0].getExtras(), { sampler: true }, 'roundtrips channel extras');
-
-	t.end();
 });
