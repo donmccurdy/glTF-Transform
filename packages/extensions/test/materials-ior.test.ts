@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { IOR, KHRMaterialsIOR } from '../';
 
@@ -16,7 +14,7 @@ test('@gltf-transform/extensions::materials-ior', async (t) => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_ior', ior);
 
-	t.equal(mat.getExtension('KHR_materials_ior'), ior, 'ior is attached');
+	t.is(mat.getExtension('KHR_materials_ior'), ior, 'ior is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsIOR]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -26,13 +24,12 @@ test('@gltf-transform/extensions::materials-ior', async (t) => {
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsIOR.EXTENSION_NAME], 'writes extensionsUsed');
 
 	iorExtension.dispose();
-	t.equal(mat.getExtension('KHR_materials_ior'), null, 'ior is detached');
+	t.is(mat.getExtension('KHR_materials_ior'), null, 'ior is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsIOR]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 
-	t.equal(roundtripMat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1.2, 'reads ior');
-	t.end();
+	t.is(roundtripMat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1.2, 'reads ior');
 });
 
 test('@gltf-transform/extensions::materials-ior | copy', (t) => {
@@ -43,8 +40,7 @@ test('@gltf-transform/extensions::materials-ior | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const ior2 = doc2.getRoot().listMaterials()[0].getExtension<IOR>('KHR_materials_ior');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsIOR');
-	t.ok(ior2, 'copy IOR');
-	t.equals(ior2.getIOR(), 1.2, 'copy ior');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsIOR');
+	t.truthy(ior2, 'copy IOR');
+	t.is(ior2.getIOR(), 1.2, 'copy ior');
 });

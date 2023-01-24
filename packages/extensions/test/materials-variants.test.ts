@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MappingList, KHRMaterialsVariants } from '../';
 
@@ -42,10 +40,10 @@ test('@gltf-transform/extensions::materials-variants', async (t) => {
 		['KHR_materials_variants'],
 		'has extension'
 	);
-	t.ok(rtPrim1.getExtension('KHR_materials_variants'));
-	t.notOk(rtPrim2.getExtension('KHR_materials_variants'));
-	t.equal(rtPrim1.getMaterial().getRoughnessFactor(), 0.0, 'default material (1)');
-	t.equal(rtPrim2.getMaterial().getRoughnessFactor(), 0.0, 'default material (2)');
+	t.truthy(rtPrim1.getExtension('KHR_materials_variants'));
+	t.falsy(rtPrim2.getExtension('KHR_materials_variants'));
+	t.is(rtPrim1.getMaterial().getRoughnessFactor(), 0.0, 'default material (1)');
+	t.is(rtPrim2.getMaterial().getRoughnessFactor(), 0.0, 'default material (2)');
 	t.deepEqual(
 		rtMappingList.listMappings().map((mapping) => mapping.getMaterial().getName()),
 		['Damaged1', 'Damaged2'],
@@ -62,8 +60,7 @@ test('@gltf-transform/extensions::materials-variants', async (t) => {
 	variantsExtension.dispose();
 
 	t.deepEqual(doc.getRoot().listExtensionsUsed(), [], 'all extensions detached');
-	t.equal(mat1.getExtension('KHR_materials_variants'), null, 'unlit is detached');
-	t.end();
+	t.is(mat1.getExtension('KHR_materials_variants'), null, 'unlit is detached');
 });
 
 test('@gltf-transform/extensions::materials-variants | copy', (t) => {
@@ -84,9 +81,8 @@ test('@gltf-transform/extensions::materials-variants | copy', (t) => {
 	const cpMapping = variantsExtension.createMapping().copy(mappingList.listMappings()[0]);
 	const cpMappingList = variantsExtension.createMappingList().copy(mappingList);
 
-	t.equal(cpVariant.getName(), 'Dry', 'copy variant');
-	t.equal(cpMapping.getMaterial(), mat1, 'copy mapping - material');
+	t.is(cpVariant.getName(), 'Dry', 'copy variant');
+	t.is(cpMapping.getMaterial(), mat1, 'copy mapping - material');
 	t.deepEqual(cpMapping.listVariants(), [var1], 'copy mapping - variant');
 	t.deepEqual(cpMappingList.listMappings(), [map1, map2]);
-	t.end();
 });

@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '../';
 
@@ -28,28 +26,28 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 	const packet = xmpExtension.createPacket();
 
 	// Context.
-	t.throws(() => packet.setProperty('test:Foo', true), /context/i, 'throws on unknown context');
+	t.throws(() => packet.setProperty('test:Foo', true), { message: /context/i }, 'throws on unknown context');
 	packet.setContext({ test: MOCK_CONTEXT_URL });
-	t.deepEquals(packet.getContext(), { test: MOCK_CONTEXT_URL }, 'sets context');
+	t.deepEqual(packet.getContext(), { test: MOCK_CONTEXT_URL }, 'sets context');
 	packet.setContext({});
-	t.deepEquals(packet.getContext(), {}, 'removes context');
+	t.deepEqual(packet.getContext(), {}, 'removes context');
 	packet.setContext({
 		test: MOCK_CONTEXT_URL,
 		dc: 'http://purl.org/dc/elements/1.1/',
 	});
-	t.doesNotThrow(() => packet.setProperty('test:Foo', true), 'accepts known context');
+	t.notThrows(() => packet.setProperty('test:Foo', true), 'accepts known context');
 
 	// Properties.
-	t.equals(packet.getProperty('test:Foo'), true, 'sets literal property');
+	t.is(packet.getProperty('test:Foo'), true, 'sets literal property');
 	packet.setProperty('dc:Creator', { '@list': ['Acme, Inc.'] });
-	t.deepEquals(packet.getProperty('dc:Creator'), { '@list': ['Acme, Inc.'] }, 'sets RDF property');
-	t.deepEquals(packet.listProperties(), ['test:Foo', 'dc:Creator'], 'lists properties');
+	t.deepEqual(packet.getProperty('dc:Creator'), { '@list': ['Acme, Inc.'] }, 'sets RDF property');
+	t.deepEqual(packet.listProperties(), ['test:Foo', 'dc:Creator'], 'lists properties');
 	packet.setProperty('dc:Creator', null);
-	t.equals(packet.getProperty('dc:Creator'), null, 'removes property');
+	t.is(packet.getProperty('dc:Creator'), null, 'removes property');
 	packet.setProperty('dc:Creator', { '@list': ['Acme, Inc.'] });
 
 	// Serialize.
-	t.deepEquals(
+	t.deepEqual(
 		packet.toJSONLD(),
 		{
 			'@context': {
@@ -64,20 +62,20 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 
 	// Deserialize.
 	packet.fromJSONLD(MOCK_JSONLD_PACKET);
-	t.equals(packet.getProperty('xmpRights:Marked'), true, 'parse JSON LD (1/2)');
-	t.deepEquals(packet.getProperty('dc:title'), MOCK_JSONLD_PACKET['dc:title'], 'parse JSON LD (2/2)');
+	t.is(packet.getProperty('xmpRights:Marked'), true, 'parse JSON LD (1/2)');
+	t.deepEqual(packet.getProperty('dc:title'), MOCK_JSONLD_PACKET['dc:title'], 'parse JSON LD (2/2)');
 
 	// Equals and Copy.
 	const packet2 = xmpExtension.createPacket();
-	t.notOk(packet.equals(packet2), 'not equal');
+	t.falsy(packet.equals(packet2), 'not equal');
 	packet2.copy(packet);
-	t.ok(packet.equals(packet2), 'not equal');
+	t.truthy(packet.equals(packet2), 'not equal');
 	packet2.setContext({
 		...packet2.getContext(),
 		xmp: 'http://ns.adobe.com/xap/1.0/',
 	});
 	packet2.setProperty('xmp:CreateDate', '2022-01-05');
-	t.notOk(packet.equals(packet2), 'not equal');
+	t.falsy(packet.equals(packet2), 'not equal');
 
 	// Assignment.
 	const root = document.getRoot();
@@ -88,29 +86,27 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 	const texture = document.createTexture();
 	const animation = document.createAnimation();
 	const sampler = document.createAnimationSampler(); // invalid
-	t.doesNotThrow(() => root.setExtension('KHR_xmp_json_ld', packet), 'attach to root');
-	t.doesNotThrow(() => node.setExtension('KHR_xmp_json_ld', packet), 'attach to node');
-	t.doesNotThrow(() => scene.setExtension('KHR_xmp_json_ld', packet), 'attach to scene');
-	t.doesNotThrow(() => mesh.setExtension('KHR_xmp_json_ld', packet), 'attach to mesh');
-	t.doesNotThrow(() => material.setExtension('KHR_xmp_json_ld', packet), 'attach to material');
-	t.doesNotThrow(() => texture.setExtension('KHR_xmp_json_ld', packet), 'attach to texture');
-	t.doesNotThrow(() => animation.setExtension('KHR_xmp_json_ld', packet), 'attach to animation');
-	t.throws(() => sampler.setExtension('KHR_xmp_json_ld', packet), 'attach to sampler (throws)');
-	t.ok(root.getExtension('KHR_xmp_json_ld'), 'read from root');
-	t.ok(node.getExtension('KHR_xmp_json_ld'), 'read from node');
-	t.ok(scene.getExtension('KHR_xmp_json_ld'), 'read from scene');
-	t.ok(mesh.getExtension('KHR_xmp_json_ld'), 'read from mesh');
-	t.ok(material.getExtension('KHR_xmp_json_ld'), 'read from material');
-	t.ok(texture.getExtension('KHR_xmp_json_ld'), 'read from texture');
-	t.ok(animation.getExtension('KHR_xmp_json_ld'), 'read from animation');
-	t.notOk(sampler.getExtension('KHR_xmp_json_ld'), 'read from sampler (null)');
+	t.notThrows(() => root.setExtension('KHR_xmp_json_ld', packet), 'attach to root');
+	t.notThrows(() => node.setExtension('KHR_xmp_json_ld', packet), 'attach to node');
+	t.notThrows(() => scene.setExtension('KHR_xmp_json_ld', packet), 'attach to scene');
+	t.notThrows(() => mesh.setExtension('KHR_xmp_json_ld', packet), 'attach to mesh');
+	t.notThrows(() => material.setExtension('KHR_xmp_json_ld', packet), 'attach to material');
+	t.notThrows(() => texture.setExtension('KHR_xmp_json_ld', packet), 'attach to texture');
+	t.notThrows(() => animation.setExtension('KHR_xmp_json_ld', packet), 'attach to animation');
+	t.throws(() => sampler.setExtension('KHR_xmp_json_ld', packet), undefined, 'attach to sampler (throws)');
+	t.truthy(root.getExtension('KHR_xmp_json_ld'), 'read from root');
+	t.truthy(node.getExtension('KHR_xmp_json_ld'), 'read from node');
+	t.truthy(scene.getExtension('KHR_xmp_json_ld'), 'read from scene');
+	t.truthy(mesh.getExtension('KHR_xmp_json_ld'), 'read from mesh');
+	t.truthy(material.getExtension('KHR_xmp_json_ld'), 'read from material');
+	t.truthy(texture.getExtension('KHR_xmp_json_ld'), 'read from texture');
+	t.truthy(animation.getExtension('KHR_xmp_json_ld'), 'read from animation');
+	t.falsy(sampler.getExtension('KHR_xmp_json_ld'), 'read from sampler (null)');
 
 	// (5) dispose
 	packet.dispose();
-	t.notOk(root.getExtension('KHR_xmp_json_ld'), 'dispose from root');
-	t.notOk(node.getExtension('KHR_xmp_json_ld'), 'dispose from node');
-
-	t.end();
+	t.falsy(root.getExtension('KHR_xmp_json_ld'), 'dispose from root');
+	t.falsy(node.getExtension('KHR_xmp_json_ld'), 'dispose from node');
 });
 
 test('@gltf-transform/extensions::xmp | i/o', async (t) => {
@@ -139,56 +135,56 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 
 	// Serialize.
 
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.extensions,
 		{
 			KHR_xmp_json_ld: { packets: [MOCK_JSONLD_PACKET, MOCK_JSONLD_PACKET] },
 		},
 		'writes packets'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.asset.extensions,
 		{
 			KHR_xmp_json_ld: { packet: 0 },
 		},
 		'writes to asset'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.nodes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
 		'writes to node'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.scenes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
 		'writes to scene'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.meshes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
 		'writes to mesh'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.materials[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
 		'writes to material'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.images[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
 		'writes to image'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		jsonDocument.json.animations[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
@@ -201,16 +197,15 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 	const rtDocument = await io.readJSON(jsonDocument);
 	const rtRoot = rtDocument.getRoot();
 	const rtPacket = rtDocument.getRoot().getExtension<Packet>('KHR_xmp_json_ld');
-	t.ok(rtPacket, 'reads packet assignment');
-	t.deepEquals(rtPacket.toJSONLD(), packet.toJSONLD(), 'reads packet data');
-	t.ok(rtRoot.getExtension('KHR_xmp_json_ld'), 'reads packet from asset');
-	t.ok(rtRoot.listNodes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from node');
-	t.ok(rtRoot.listScenes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from scene');
-	t.ok(rtRoot.listMeshes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from mesh');
-	t.ok(rtRoot.listMaterials()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from material');
-	t.ok(rtRoot.listTextures()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from image');
-	t.ok(rtRoot.listAnimations()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from animation');
-	t.end();
+	t.truthy(rtPacket, 'reads packet assignment');
+	t.deepEqual(rtPacket.toJSONLD(), packet.toJSONLD(), 'reads packet data');
+	t.truthy(rtRoot.getExtension('KHR_xmp_json_ld'), 'reads packet from asset');
+	t.truthy(rtRoot.listNodes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from node');
+	t.truthy(rtRoot.listScenes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from scene');
+	t.truthy(rtRoot.listMeshes()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from mesh');
+	t.truthy(rtRoot.listMaterials()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from material');
+	t.truthy(rtRoot.listTextures()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from image');
+	t.truthy(rtRoot.listAnimations()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from animation');
 });
 
 test('@gltf-transform/extensions::xmp | clone', async (t) => {
@@ -218,9 +213,9 @@ test('@gltf-transform/extensions::xmp | clone', async (t) => {
 	const xmpExtension = document1.createExtension(KHRXMP);
 	const packet1 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
 	document1.getRoot().setExtension('KHR_xmp_json_ld', packet1);
-	t.equals(document1.getRoot().getExtension('KHR_xmp_json_ld'), packet1, 'sets packet');
+	t.is(document1.getRoot().getExtension('KHR_xmp_json_ld'), packet1, 'sets packet');
 	const document2 = document1.clone();
 	const packet2 = document2.getRoot().getExtension('KHR_xmp_json_ld') as Packet;
-	t.ok(packet2, 'clones packet');
-	t.deepEquals(packet1.toJSONLD(), packet2.toJSONLD(), 'equal packet');
+	t.truthy(packet2, 'clones packet');
+	t.deepEqual(packet1.toJSONLD(), packet2.toJSONLD(), 'equal packet');
 });

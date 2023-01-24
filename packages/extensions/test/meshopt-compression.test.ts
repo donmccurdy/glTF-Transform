@@ -1,7 +1,5 @@
-require('source-map-support').install();
-
 import path from 'path';
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO, getBounds, Format, Primitive } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '../';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
@@ -14,19 +12,17 @@ test('@gltf-transform/extensions::meshopt-compression | decoding', async (t) => 
 	for (const input of INPUTS) {
 		const doc = await io.read(path.join(__dirname, 'in', input));
 		const bbox = getBounds(doc.getRoot().listScenes()[0]);
-		t.deepEquals(
+		t.deepEqual(
 			bbox.min.map((v) => +v.toFixed(3)),
 			[-0.5, -0.5, -0.5],
 			`decompress (min) - "${input}"`
 		);
-		t.deepEquals(
+		t.deepEqual(
 			bbox.max.map((v) => +v.toFixed(3)),
 			[0.5, 0.5, 0.5],
 			`decompress (max) - "${input}"`
 		);
 	}
-
-	t.end();
 });
 
 test('@gltf-transform/extensions::meshopt-compression | encoding', async (t) => {
@@ -42,18 +38,17 @@ test('@gltf-transform/extensions::meshopt-compression | encoding', async (t) => 
 		.map((ext) => ext.extensionName);
 	const bbox = getBounds(doc.getRoot().listScenes()[0]);
 
-	t.ok(extensionsRequired.includes('EXT_meshopt_compression'), 'retains EXT_meshopt_compression');
-	t.deepEquals(
+	t.truthy(extensionsRequired.includes('EXT_meshopt_compression'), 'retains EXT_meshopt_compression');
+	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
 		'round trip (min)'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		bbox.max.map((v) => +v.toFixed(3)),
 		[0.5, 0.5, 0.5],
 		'round trip (max)'
 	);
-	t.end();
 });
 
 test('@gltf-transform/extensions::meshopt-compression | encoding sparse', async (t) => {
@@ -83,8 +78,8 @@ test('@gltf-transform/extensions::meshopt-compression | encoding sparse', async 
 	const primitiveDefs = json.meshes[0].primitives;
 	const accessorDefs = json.accessors;
 
-	t.equals(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
-	t.deepEquals(
+	t.is(primitiveDefs.length, mesh.listPrimitives().length, 'writes all primitives');
+	t.deepEqual(
 		primitiveDefs[0],
 		{
 			mode: Primitive.Mode.TRIANGLES,
@@ -92,21 +87,19 @@ test('@gltf-transform/extensions::meshopt-compression | encoding sparse', async 
 		},
 		'primitiveDef'
 	);
-	t.equals(accessorDefs[0].count, 6, 'POSITION count');
-	t.equals(accessorDefs[1].count, 6, '_SPARSE count');
-	t.equals(accessorDefs[0].sparse, undefined, 'POSITION not sparse');
-	t.equals(accessorDefs[1].sparse.count, 1, '_SPARSE sparse');
+	t.is(accessorDefs[0].count, 6, 'POSITION count');
+	t.is(accessorDefs[1].count, 6, '_SPARSE count');
+	t.is(accessorDefs[0].sparse, undefined, 'POSITION not sparse');
+	t.is(accessorDefs[1].sparse.count, 1, '_SPARSE sparse');
 
 	const rtDocument = await io.readJSON({ json, resources });
 	const rtPosition = rtDocument.getRoot().listAccessors()[0];
 	const rtMarker = rtDocument.getRoot().listAccessors()[1];
 
-	t.equals(rtPosition.getSparse(), false, 'POSITION not sparse (round trip)');
-	t.equals(rtMarker.getSparse(), true, '_SPARSE sparse (round trip)');
-	t.deepEquals(Array.from(rtPosition.getArray()), positionArray, 'POSITION array');
-	t.deepEquals(Array.from(rtMarker.getArray()), sparseArray, '_SPARSE array');
-
-	t.end();
+	t.is(rtPosition.getSparse(), false, 'POSITION not sparse (round trip)');
+	t.is(rtMarker.getSparse(), true, '_SPARSE sparse (round trip)');
+	t.deepEqual(Array.from(rtPosition.getArray()), positionArray, 'POSITION array');
+	t.deepEqual(Array.from(rtMarker.getArray()), sparseArray, '_SPARSE array');
 });
 
 async function createEncoderIO(): Promise<NodeIO> {

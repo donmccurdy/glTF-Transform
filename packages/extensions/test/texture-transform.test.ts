@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRTextureTransform, Transform } from '../';
 
@@ -37,29 +35,27 @@ test('@gltf-transform/extensions::texture-transform', async (t) => {
 	const rtTransform2 = rtMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
 	const rtTransform3 = rtMat.getOcclusionTextureInfo().getExtension<Transform>('KHR_texture_transform');
 
-	t.ok(rtTransform1, 'baseColorTexture transform');
-	t.ok(rtTransform2, 'emissiveColorTexture transform');
-	t.notOk(rtTransform3, 'occlusionColorTexture transform');
+	t.truthy(rtTransform1, 'baseColorTexture transform');
+	t.truthy(rtTransform2, 'emissiveColorTexture transform');
+	t.falsy(rtTransform3, 'occlusionColorTexture transform');
 
-	t.equal(rtTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
+	t.is(rtTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
 	t.deepEqual(rtTransform1.getScale(), [100, 100], 'baseColorTexture.scale');
 	t.deepEqual(rtTransform1.getOffset(), [0, 0], 'baseColorTexture.offset');
 	t.deepEqual(rtTransform1.getRotation(), 0, 'baseColorTexture.rotation');
 
-	t.equal(rtTransform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
+	t.is(rtTransform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
 	t.deepEqual(rtTransform2.getScale(), [1, 1], 'emissiveColorTexture.scale');
 	t.deepEqual(rtTransform2.getOffset(), [0.5, 0.5], 'emissiveColorTexture.offset');
 	t.deepEqual(rtTransform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
 
 	// Clean up extension data, revert to core glTF.
 	transformExtension.dispose();
-	t.notOk(mat.getBaseColorTextureInfo().getExtension('KHR_texture_transform'), 'clears baseColorTexture transform');
-	t.notOk(
+	t.falsy(mat.getBaseColorTextureInfo().getExtension('KHR_texture_transform'), 'clears baseColorTexture transform');
+	t.falsy(
 		mat.getEmissiveTextureInfo().getExtension('KHR_texture_transform'),
 		'clears emissiveColorTexture transform'
 	);
-
-	t.end();
 });
 
 test('@gltf-transform/extensions::texture-transform | clone', (t) => {
@@ -94,8 +90,8 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	const srcTransform1 = srcMat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
 	const srcTransform2 = srcMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
 
-	t.ok(srcTransform1, 'original baseColorTexture transform unchanged');
-	t.ok(srcTransform2, 'original emissiveColorTexture transform unchanged');
+	t.truthy(srcTransform1, 'original baseColorTexture transform unchanged');
+	t.truthy(srcTransform2, 'original emissiveColorTexture transform unchanged');
 
 	// Ensure target Document matches.
 
@@ -103,23 +99,21 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	const dstTransform1 = dstMat.getBaseColorTextureInfo().getExtension<Transform>('KHR_texture_transform');
 	const dstTransform2 = dstMat.getEmissiveTextureInfo().getExtension<Transform>('KHR_texture_transform');
 
-	t.ok(dstTransform1, 'cloned baseColorTexture transform added');
-	t.ok(dstTransform2, 'cloned emissiveColorTexture transform added');
+	t.truthy(dstTransform1, 'cloned baseColorTexture transform added');
+	t.truthy(dstTransform2, 'cloned emissiveColorTexture transform added');
 
-	t.notEqual(srcTransform1, dstTransform1, 'baseColorTexture transform cloned');
-	t.notEqual(srcTransform2, dstTransform2, 'emissiveColorTexture transform cloned');
+	t.not(srcTransform1, dstTransform1, 'baseColorTexture transform cloned');
+	t.not(srcTransform2, dstTransform2, 'emissiveColorTexture transform cloned');
 
-	t.equal(dstTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
+	t.is(dstTransform1.getTexCoord(), 2, 'baseColorTexture.texCoord');
 	t.deepEqual(dstTransform1.getScale(), [100, 100], 'baseColorTexture.scale');
 	t.deepEqual(dstTransform1.getOffset(), [0, 0], 'baseColorTexture.offset');
 	t.deepEqual(dstTransform1.getRotation(), 0, 'baseColorTexture.rotation');
 
-	t.equal(dstTransform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
+	t.is(dstTransform2.getTexCoord(), 1, 'emissiveColorTexture.texCoord');
 	t.deepEqual(dstTransform2.getScale(), [1, 1], 'emissiveColorTexture.scale');
 	t.deepEqual(dstTransform2.getOffset(), [0.5, 0.5], 'emissiveColorTexture.offset');
 	t.deepEqual(dstTransform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
-
-	t.end();
 });
 
 test('@gltf-transform/extensions::texture-transform | i/o', async (t) => {
@@ -154,5 +148,4 @@ test('@gltf-transform/extensions::texture-transform | i/o', async (t) => {
 		{ KHR_texture_transform: { texCoord: 0, offset: [0.5, 0.5], rotation: Math.PI } },
 		'emissive texture info'
 	);
-	t.end();
 });

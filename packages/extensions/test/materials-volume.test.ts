@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsVolume, Volume } from '../';
 
@@ -22,7 +20,7 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_volume', volume);
 
-	t.equal(mat.getExtension('KHR_materials_volume'), volume, 'volume is attached');
+	t.is(mat.getExtension('KHR_materials_volume'), volume, 'volume is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsVolume]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -43,20 +41,19 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsVolume.EXTENSION_NAME], 'writes extensionsUsed');
 
 	volumeExtension.dispose();
-	t.equal(mat.getExtension('KHR_materials_volume'), null, 'volume is detached');
+	t.is(mat.getExtension('KHR_materials_volume'), null, 'volume is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsVolume]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Volume>('KHR_materials_volume');
 
-	t.equal(roundtripExt.getThicknessFactor(), 0.9, 'reads thicknessFactor');
-	t.ok(roundtripExt.getThicknessTexture(), 'reads thicknessTexture');
-	t.equal(roundtripExt.getAttenuationDistance(), 2, 'reads attenuationDistance');
+	t.is(roundtripExt.getThicknessFactor(), 0.9, 'reads thicknessFactor');
+	t.truthy(roundtripExt.getThicknessTexture(), 'reads thicknessTexture');
+	t.is(roundtripExt.getAttenuationDistance(), 2, 'reads attenuationDistance');
 	t.deepEqual(roundtripExt.getAttenuationColor(), [0.1, 0.2, 0.3], 'reads attenuationColor');
 
 	volume.setAttenuationColorHex(0x4285f4);
-	t.equal(volume.getAttenuationColorHex(), 0x4285f4, 'reads/writes hexadecimal sRGB');
-	t.end();
+	t.is(volume.getAttenuationColorHex(), 0x4285f4, 'reads/writes hexadecimal sRGB');
 });
 
 test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
@@ -72,11 +69,10 @@ test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const volume2 = doc2.getRoot().listMaterials()[0].getExtension<Volume>('KHR_materials_volume');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsVolume');
-	t.ok(volume2, 'copy Volume');
-	t.equals(volume2.getThicknessFactor(), 0.9, 'copy thicknessFactor');
-	t.equals(volume2.getThicknessTexture().getName(), 'trns', 'copy thicknessTexture');
-	t.equals(volume2.getAttenuationDistance(), 10, 'copy attenuationDistance');
-	t.deepEquals(volume2.getAttenuationColor(), [1, 0, 0], 'copy attenuationColor');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsVolume');
+	t.truthy(volume2, 'copy Volume');
+	t.is(volume2.getThicknessFactor(), 0.9, 'copy thicknessFactor');
+	t.is(volume2.getThicknessTexture().getName(), 'trns', 'copy thicknessTexture');
+	t.is(volume2.getAttenuationDistance(), 10, 'copy attenuationDistance');
+	t.deepEqual(volume2.getAttenuationColor(), [1, 0, 0], 'copy attenuationColor');
 });

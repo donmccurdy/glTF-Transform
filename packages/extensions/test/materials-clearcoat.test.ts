@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Clearcoat, KHRMaterialsClearcoat } from '../';
 
@@ -20,9 +18,8 @@ test('@gltf-transform/extensions::materials-clearcoat | factors', async (t) => {
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
 
-	t.equal(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
-	t.equal(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
-	t.end();
+	t.is(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
+	t.is(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
 });
 
 test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => {
@@ -43,7 +40,7 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 		.setBaseColorFactor([1.0, 0.5, 0.5, 1.0])
 		.setExtension('KHR_materials_clearcoat', clearcoat);
 
-	t.equal(mat.getExtension('KHR_materials_clearcoat'), clearcoat, 'clearcoat is attached');
+	t.is(mat.getExtension('KHR_materials_clearcoat'), clearcoat, 'clearcoat is attached');
 
 	const jsonDoc = await new NodeIO().registerExtensions([KHRMaterialsClearcoat]).writeJSON(doc, WRITER_OPTIONS);
 	const materialDef = jsonDoc.json.materials[0];
@@ -65,19 +62,18 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
 
 	clearcoatExtension.dispose();
-	t.equal(mat.getExtension('KHR_materials_clearcoat'), null, 'clearcoat is detached');
+	t.is(mat.getExtension('KHR_materials_clearcoat'), null, 'clearcoat is detached');
 
 	const roundtripDoc = await new NodeIO().registerExtensions([KHRMaterialsClearcoat]).readJSON(jsonDoc);
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
 	const roundtripExt = roundtripMat.getExtension<Clearcoat>('KHR_materials_clearcoat');
 
-	t.equal(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
-	t.equal(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
-	t.ok(roundtripExt.getClearcoatTexture(), 'reads clearcoatTexture');
-	t.ok(roundtripExt.getClearcoatRoughnessTexture(), 'reads clearcoatRoughnessTexture');
-	t.ok(roundtripExt.getClearcoatNormalTexture(), 'reads clearcoatNormalTexture');
-	t.equal(roundtripExt.getClearcoatNormalScale(), 2, 'reads clearcoatNormalScale');
-	t.end();
+	t.is(roundtripExt.getClearcoatFactor(), 0.9, 'reads clearcoatFactor');
+	t.is(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
+	t.truthy(roundtripExt.getClearcoatTexture(), 'reads clearcoatTexture');
+	t.truthy(roundtripExt.getClearcoatRoughnessTexture(), 'reads clearcoatRoughnessTexture');
+	t.truthy(roundtripExt.getClearcoatNormalTexture(), 'reads clearcoatNormalTexture');
+	t.is(roundtripExt.getClearcoatNormalScale(), 2, 'reads clearcoatNormalScale');
 });
 
 test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => {
@@ -88,8 +84,7 @@ test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => 
 	const io = new NodeIO().registerExtensions([KHRMaterialsClearcoat]);
 	const roundtripDoc = await io.readJSON(await io.writeJSON(doc));
 	const roundtripMat = roundtripDoc.getRoot().listMaterials().pop();
-	t.equals(roundtripMat.getExtension('KHR_materials_clearcoat'), null, 'no effect when not attached');
-	t.end();
+	t.is(roundtripMat.getExtension('KHR_materials_clearcoat'), null, 'no effect when not attached');
 });
 
 test('@gltf-transform/extensions::materials-clearcoat | copy', (t) => {
@@ -107,13 +102,12 @@ test('@gltf-transform/extensions::materials-clearcoat | copy', (t) => {
 
 	const doc2 = doc.clone();
 	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension<Clearcoat>('KHR_materials_clearcoat');
-	t.equals(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsClearcoat');
-	t.ok(clearcoat2, 'copy Clearcoat');
-	t.equals(clearcoat2.getClearcoatFactor(), 0.9, 'copy clearcoatFactor');
-	t.equals(clearcoat2.getClearcoatRoughnessFactor(), 0.1, 'copy clearcoatFactor');
-	t.equals(clearcoat2.getClearcoatNormalScale(), 0.5, 'copy clearcoatFactor');
-	t.equals(clearcoat2.getClearcoatTexture().getName(), 'cc', 'copy clearcoatTexture');
-	t.equals(clearcoat2.getClearcoatRoughnessTexture().getName(), 'ccrough', 'copy clearcoatRoughnessTexture');
-	t.equals(clearcoat2.getClearcoatNormalTexture().getName(), 'ccnormal', 'copy clearcoatNormalTexture');
-	t.end();
+	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsClearcoat');
+	t.truthy(clearcoat2, 'copy Clearcoat');
+	t.is(clearcoat2.getClearcoatFactor(), 0.9, 'copy clearcoatFactor');
+	t.is(clearcoat2.getClearcoatRoughnessFactor(), 0.1, 'copy clearcoatFactor');
+	t.is(clearcoat2.getClearcoatNormalScale(), 0.5, 'copy clearcoatFactor');
+	t.is(clearcoat2.getClearcoatTexture().getName(), 'cc', 'copy clearcoatTexture');
+	t.is(clearcoat2.getClearcoatRoughnessTexture().getName(), 'ccrough', 'copy clearcoatRoughnessTexture');
+	t.is(clearcoat2.getClearcoatNormalTexture().getName(), 'ccnormal', 'copy clearcoatNormalTexture');
 });
