@@ -19,7 +19,7 @@ test('@gltf-transform/core::property | equals', async (t) => {
 	t.end();
 });
 
-test.only('@gltf-transform/core::property | internal arrays', async (t) => {
+test('@gltf-transform/core::property | internal arrays', async (t) => {
 	const doc = new Document();
 	const translation = [0, 0, 0] as vec3;
 	const node = doc.createNode('A').setTranslation(translation);
