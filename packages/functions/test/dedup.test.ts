@@ -1,8 +1,6 @@
-require('source-map-support').install();
-
 import path from 'path';
 import { createCanvas } from 'canvas';
-import test from 'tape';
+import test from 'ava';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '../';
 import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
@@ -10,16 +8,15 @@ import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 test('@gltf-transform/functions::dedup | accessors', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
-	t.equal(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
+	t.is(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
 	dedup({ propertyTypes: [PropertyType.TEXTURE] })(doc);
 
-	t.equal(doc.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
+	t.is(doc.getRoot().listAccessors().length, 1503, 'has no effect when disabled');
 
 	dedup()(doc);
 
-	t.equal(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
-	t.end();
+	t.is(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
 });
 
 test('@gltf-transform/functions::dedup | animation accessors', (t) => {
@@ -33,25 +30,24 @@ test('@gltf-transform/functions::dedup | animation accessors', (t) => {
 	doc.createMesh().addPrimitive(prim);
 	doc.createAnimation().addSampler(sampler1).addSampler(sampler2).addSampler(sampler3);
 
-	t.equal(doc.getRoot().listAccessors().length, 7, 'begins with duplicate accessors');
+	t.is(doc.getRoot().listAccessors().length, 7, 'begins with duplicate accessors');
 
 	dedup({ propertyTypes: [PropertyType.TEXTURE] })(doc);
 
-	t.equal(doc.getRoot().listAccessors().length, 7, 'has no effect when disabled');
+	t.is(doc.getRoot().listAccessors().length, 7, 'has no effect when disabled');
 
 	dedup()(doc);
 
-	t.equal(doc.getRoot().listAccessors().length, 4, 'prunes duplicate accessors');
-	t.ok(sampler1.getInput() === a, 'sampler 1 input');
-	t.ok(sampler1.getOutput() === b, 'sampler 1 output');
-	t.ok(sampler2.getInput() === a, 'sampler 2 input');
-	t.ok(sampler2.getOutput() === b, 'sampler 2 output');
-	t.ok(sampler3.getInput() === a, 'sampler 3 input');
-	t.ok(sampler3.getOutput() !== b, 'no mixing input/output');
-	t.ok(sampler3.getOutput() !== b, 'no mixing input/output');
-	t.ok(prim.getAttribute('POSITION') !== a, 'no mixing sampler/attribute');
-	t.ok(prim.getAttribute('POSITION') !== b, 'no mixing sampler/attribute');
-	t.end();
+	t.is(doc.getRoot().listAccessors().length, 4, 'prunes duplicate accessors');
+	t.truthy(sampler1.getInput() === a, 'sampler 1 input');
+	t.truthy(sampler1.getOutput() === b, 'sampler 1 output');
+	t.truthy(sampler2.getInput() === a, 'sampler 2 input');
+	t.truthy(sampler2.getOutput() === b, 'sampler 2 output');
+	t.truthy(sampler3.getInput() === a, 'sampler 3 input');
+	t.truthy(sampler3.getOutput() !== b, 'no mixing input/output');
+	t.truthy(sampler3.getOutput() !== b, 'no mixing input/output');
+	t.truthy(prim.getAttribute('POSITION') !== a, 'no mixing sampler/attribute');
+	t.truthy(prim.getAttribute('POSITION') !== b, 'no mixing sampler/attribute');
 });
 
 test('@gltf-transform/functions::dedup | materials', (t) => {
@@ -63,31 +59,30 @@ test('@gltf-transform/functions::dedup | materials', (t) => {
 	const matRenamed = mat.clone().setName('MatC');
 	const matUnequal = mat.clone().setName('MatD').setAlphaMode('MASK');
 
-	t.ok(mat.equals(matCloned), 'material.equals(material.clone())');
+	t.truthy(mat.equals(matCloned), 'material.equals(material.clone())');
 
 	dedup({ propertyTypes: [] })(doc);
 
-	t.equals(root.listMaterials().length, 4, 'no-op when disabled');
+	t.is(root.listMaterials().length, 4, 'no-op when disabled');
 
 	dedup()(doc);
 
-	t.equal(root.listMaterials().length, 2, 'removes all duplicate materials');
-	t.notOk(mat.isDisposed(), 'base = ✓');
-	t.ok(matCloned.isDisposed(), 'cloned = ⨉');
-	t.ok(matRenamed.isDisposed(), 'renamed = ⨉');
-	t.notOk(matUnequal.isDisposed(), 'unequal = ✓');
-	t.end();
+	t.is(root.listMaterials().length, 2, 'removes all duplicate materials');
+	t.falsy(mat.isDisposed(), 'base = ✓');
+	t.truthy(matCloned.isDisposed(), 'cloned = ⨉');
+	t.truthy(matRenamed.isDisposed(), 'renamed = ⨉');
+	t.falsy(matUnequal.isDisposed(), 'unequal = ✓');
 });
 
 test('@gltf-transform/functions::dedup | meshes', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	const root = doc.getRoot();
-	t.equal(root.listMeshes().length, 501, 'begins with duplicate meshes');
+	t.is(root.listMeshes().length, 501, 'begins with duplicate meshes');
 
 	dedup({ propertyTypes: [PropertyType.ACCESSOR] })(doc);
 
-	t.equal(root.listMeshes().length, 501, 'has no effect when disabled');
+	t.is(root.listMeshes().length, 501, 'has no effect when disabled');
 
 	// Put unique materials on two meshes to prevent merging.
 	root.listMeshes()[0].listPrimitives()[0].setMaterial(doc.createMaterial('A'));
@@ -96,8 +91,7 @@ test('@gltf-transform/functions::dedup | meshes', async (t) => {
 
 	dedup()(doc);
 
-	t.equal(root.listMeshes().length, 3, 'prunes duplicate meshes');
-	t.end();
+	t.is(root.listMeshes().length, 3, 'prunes duplicate meshes');
 });
 
 test('@gltf-transform/functions::dedup | textures', (t) => {
@@ -115,16 +109,15 @@ test('@gltf-transform/functions::dedup | textures', (t) => {
 	const transmission = transmissionExt.createTransmission().setTransmissionTexture(tex2);
 	const mat = doc.createMaterial().setBaseColorTexture(tex1).setExtension('KHR_materials_transmission', transmission);
 
-	t.equal(doc.getRoot().listTextures().length, 2, 'begins with duplicate textures');
+	t.is(doc.getRoot().listTextures().length, 2, 'begins with duplicate textures');
 
 	dedup({ propertyTypes: [PropertyType.ACCESSOR] })(doc);
 
-	t.equal(doc.getRoot().listTextures().length, 2, 'has no effect when disabled');
+	t.is(doc.getRoot().listTextures().length, 2, 'has no effect when disabled');
 
 	dedup()(doc);
 
-	t.equal(doc.getRoot().listTextures().length, 1, 'prunes duplicate textures');
-	t.equal(mat.getBaseColorTexture(), tex1, 'retains baseColorTexture');
-	t.equal(transmission.getTransmissionTexture(), tex1, 'retains transmissionTexture');
-	t.end();
+	t.is(doc.getRoot().listTextures().length, 1, 'prunes duplicate textures');
+	t.is(mat.getBaseColorTexture(), tex1, 'retains baseColorTexture');
+	t.is(transmission.getTransmissionTexture(), tex1, 'retains transmissionTexture');
 });

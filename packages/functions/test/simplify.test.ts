@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import path from 'path';
 import { bbox, getBounds, Document, Logger, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
@@ -32,10 +30,9 @@ test('@gltf-transform/functions::simplify | welded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
-	t.ok(srcCount > dstCount, 'src.count > dst.count');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
-	t.end();
 });
 
 test('@gltf-transform/functions::simplify | unwelded', async (t) => {
@@ -51,10 +48,9 @@ test('@gltf-transform/functions::simplify | unwelded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
-	t.ok(srcCount > dstCount, 'src.count > dst.count');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
-	t.end();
 });
 
 test('@gltf-transform/functions::simplify | shared accessors', async (t) => {
@@ -87,10 +83,9 @@ test('@gltf-transform/functions::simplify | shared accessors', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.ok((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
-	t.ok(srcCount > dstCount, 'src.count > dst.count');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
-	t.end();
 });
 
 /* UTILITIES */

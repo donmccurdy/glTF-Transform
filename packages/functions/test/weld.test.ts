@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import fs from 'fs/promises';
 import path from 'path';
 import { Document, Logger, Primitive } from '@gltf-transform/core';
@@ -23,11 +21,10 @@ test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 
 	await doc.transform(weld({ tolerance: 0 }));
 
-	t.deepEquals(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 3, 4, 5]), 'indices on prim1');
-	t.deepEquals(prim2.getIndices().getArray(), new Uint32Array([3, 4, 5, 0, 1, 2]), 'indices on prim2');
-	t.deepEquals(prim1.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim1');
-	t.deepEquals(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
-	t.end();
+	t.deepEqual(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 3, 4, 5]), 'indices on prim1');
+	t.deepEqual(prim2.getIndices().getArray(), new Uint32Array([3, 4, 5, 0, 1, 2]), 'indices on prim2');
+	t.deepEqual(prim1.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim1');
+	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
 });
 
 test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
@@ -70,12 +67,11 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 
 	await doc.transform(weld());
 
-	t.deepEquals(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim1');
-	t.deepEquals(prim2.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');
-	t.deepEquals(prim1.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim1');
-	t.deepEquals(prim2.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim2');
-	t.equals(doc.getRoot().listAccessors().length, 3, 'accessor count');
-	t.end();
+	t.deepEqual(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim1');
+	t.deepEqual(prim2.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');
+	t.deepEqual(prim1.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim1');
+	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim2');
+	t.is(doc.getRoot().listAccessors().length, 3, 'accessor count');
 });
 
 test('@gltf-transform/functions::weld | attributes', async (t) => {
@@ -130,7 +126,7 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 	await doc.transform(weld({ tolerance: 0.0001 }));
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(prim.getIndices()!.getArray()!),
 		[
 			0, 0, 0,
@@ -140,7 +136,7 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 		'indices'
 	);
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(prim.getAttribute('POSITION')!.getArray()!),
 		[
 			0, 0, 0,
@@ -152,7 +148,7 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 		'position'
 	);
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(prim.getAttribute('NORMAL')!.getArray()!),
 		[
 			63, 63, 0,
@@ -164,7 +160,7 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 		'normal'
 	);
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(prim.getAttribute('COLOR_0')!.getArray()!),
 		[
 			255, 0, 0, 1,
@@ -175,7 +171,6 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 		],
 		'color'
 	);
-	t.end();
 });
 
 test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
@@ -191,9 +186,8 @@ test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
 	await doc.transform(weld({ tolerance: 0 }));
 
 	// 65535 is primitive restart; use 65534 as limit.
-	t.equals(smPrim.getIndices().getArray().constructor, Uint16Array, 'u16 <= 65534');
-	t.equals(lgPrim.getIndices().getArray().constructor, Uint32Array, 'u32 > 65534');
-	t.end();
+	t.is(smPrim.getIndices().getArray().constructor, Uint16Array, 'u16 <= 65534');
+	t.is(lgPrim.getIndices().getArray().constructor, Uint32Array, 'u32 > 65534');
 });
 
 test('@gltf-transform/functions::weld | modes', async (t) => {
@@ -214,13 +208,12 @@ test('@gltf-transform/functions::weld | modes', async (t) => {
 
 		await document.transform(weld({ tolerance: 0 }));
 
-		t.deepEquals(
+		t.deepEqual(
 			Array.from(primDef.indices),
 			Array.from(prim.getIndices().getArray()),
 			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`
 		);
 	}
-	t.end();
 });
 
 test('@gltf-transform/functions::weld | targets', async (t) => {
@@ -263,13 +256,12 @@ test('@gltf-transform/functions::weld | targets', async (t) => {
 
 	await document.transform(weld());
 
-	t.deepEquals(prim.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2, 3, 4, 5]), 'indices');
-	t.deepEquals(prim.getAttribute('POSITION').getArray(), positionArray.slice(9, 27), 'prim positions');
-	t.deepEquals(
+	t.deepEqual(prim.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2, 3, 4, 5]), 'indices');
+	t.deepEqual(prim.getAttribute('POSITION').getArray(), positionArray.slice(9, 27), 'prim positions');
+	t.deepEqual(
 		prim.listTargets()[0].getAttribute('POSITION').getArray(),
 		positionTargetArray.slice(9, 27),
 		'target positions'
 	);
-	t.equals(document.getRoot().listAccessors().length, 3, 'accessor count');
-	t.end();
+	t.is(document.getRoot().listAccessors().length, 3, 'accessor count');
 });

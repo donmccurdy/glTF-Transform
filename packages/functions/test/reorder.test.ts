@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Accessor, Document, GLTF, Logger, Primitive } from '@gltf-transform/core';
 import { reorder } from '../';
 import { MeshoptEncoder } from 'meshoptimizer';
@@ -32,10 +30,9 @@ test('@gltf-transform/functions::reorder | no indices', async (t) => {
 
 	await doc.transform(reorder({ encoder: MeshoptEncoder }));
 
-	t.ok(prim1.getIndices() === null && prim1.getAttribute('POSITION') === position1, 'primitive unchanged');
-	t.ok(!position1.isDisposed(), 'positions not disposed');
-	t.deepEquals(position1.getArray(), CUBE_POSITIONS, 'positions unchanged');
-	t.end();
+	t.truthy(prim1.getIndices() === null && prim1.getAttribute('POSITION') === position1, 'primitive unchanged');
+	t.truthy(!position1.isDisposed(), 'positions not disposed');
+	t.deepEqual(position1.getArray(), CUBE_POSITIONS, 'positions unchanged');
 });
 
 test('@gltf-transform/functions::reorder | shared indices', async (t) => {
@@ -50,25 +47,24 @@ test('@gltf-transform/functions::reorder | shared indices', async (t) => {
 
 	await doc.transform(reorder({ encoder: MeshoptEncoder }));
 
-	t.ok(indices !== prim1.getIndices(), 'indices #1 cloned');
-	t.ok(indices !== prim2.getIndices(), 'indices #2 cloned');
-	t.ok(prim1.getIndices() === prim2.getIndices(), 'indices shared');
-	t.ok(prim1.getAttribute('POSITION') !== prim2.getAttribute('POSITION'), 'positions remain unshared');
-	t.ok(indices.isDisposed(), 'original indices disposed');
-	t.ok(position1.isDisposed(), 'original positions #1 disposed');
-	t.ok(position2.isDisposed(), 'original positions #2 disposed');
-	t.deepEquals(Array.from(prim1.getIndices().getArray()), Array.from(CUBE_INDICES_EXPECTED), 'indices reordered');
-	t.deepEquals(
+	t.truthy(indices !== prim1.getIndices(), 'indices #1 cloned');
+	t.truthy(indices !== prim2.getIndices(), 'indices #2 cloned');
+	t.truthy(prim1.getIndices() === prim2.getIndices(), 'indices shared');
+	t.truthy(prim1.getAttribute('POSITION') !== prim2.getAttribute('POSITION'), 'positions remain unshared');
+	t.truthy(indices.isDisposed(), 'original indices disposed');
+	t.truthy(position1.isDisposed(), 'original positions #1 disposed');
+	t.truthy(position2.isDisposed(), 'original positions #2 disposed');
+	t.deepEqual(Array.from(prim1.getIndices().getArray()), Array.from(CUBE_INDICES_EXPECTED), 'indices reordered');
+	t.deepEqual(
 		Array.from(prim1.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
 		'positions #1 reordered'
 	);
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(prim2.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
 		'positions #2 reordered'
 	);
-	t.end();
 });
 
 test('@gltf-transform/functions::reorder | shared attributes', async (t) => {
@@ -87,15 +83,14 @@ test('@gltf-transform/functions::reorder | shared attributes', async (t) => {
 
 	await doc.transform(reorder({ encoder: MeshoptEncoder }));
 
-	t.ok(indices1.isDisposed() && indices2.isDisposed() && indices3.isDisposed(), 'indices disposed');
-	t.ok(position.isDisposed(), 'positions disposed');
-	t.deepEquals(prim1.getIndices().getCount(), 6, 'indices #1 reordered');
-	t.deepEquals(prim2.getIndices().getCount(), 3, 'indices #2 reordered');
-	t.deepEquals(prim3.getIndices().getCount(), 3, 'indices #3 reordered');
-	t.deepEquals(prim1.getAttribute('POSITION').getCount(), 5, 'positions #1 truncated');
-	t.deepEquals(prim2.getAttribute('POSITION').getCount(), 3, 'positions #2 truncated');
-	t.deepEquals(prim3.getAttribute('POSITION').getCount(), 3, 'positions #3 truncated');
-	t.end();
+	t.truthy(indices1.isDisposed() && indices2.isDisposed() && indices3.isDisposed(), 'indices disposed');
+	t.truthy(position.isDisposed(), 'positions disposed');
+	t.deepEqual(prim1.getIndices().getCount(), 6, 'indices #1 reordered');
+	t.deepEqual(prim2.getIndices().getCount(), 3, 'indices #2 reordered');
+	t.deepEqual(prim3.getIndices().getCount(), 3, 'indices #3 reordered');
+	t.deepEqual(prim1.getAttribute('POSITION').getCount(), 5, 'positions #1 truncated');
+	t.deepEqual(prim2.getAttribute('POSITION').getCount(), 3, 'positions #2 truncated');
+	t.deepEqual(prim3.getAttribute('POSITION').getCount(), 3, 'positions #3 truncated');
 });
 
 test('@gltf-transform/functions::reorder | morph targets', async (t) => {
@@ -116,23 +111,22 @@ test('@gltf-transform/functions::reorder | morph targets', async (t) => {
 
 	await doc.transform(reorder({ encoder: MeshoptEncoder }));
 
-	t.ok(indices !== prim.getIndices(), 'indices #1 cloned');
-	t.ok(indices.isDisposed(), 'original indices disposed');
-	t.ok(position1.isDisposed(), 'original positions disposed');
-	t.ok(position2.isDisposed(), 'original morph positions disposed');
-	t.deepEquals(Array.from(prim.getIndices().getArray()), Array.from(CUBE_INDICES_EXPECTED), 'indices reordered');
-	t.deepEquals(
+	t.truthy(indices !== prim.getIndices(), 'indices #1 cloned');
+	t.truthy(indices.isDisposed(), 'original indices disposed');
+	t.truthy(position1.isDisposed(), 'original positions disposed');
+	t.truthy(position2.isDisposed(), 'original morph positions disposed');
+	t.deepEqual(Array.from(prim.getIndices().getArray()), Array.from(CUBE_INDICES_EXPECTED), 'indices reordered');
+	t.deepEqual(
 		Array.from(prim.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
 		'positions reordered'
 	);
 
-	t.deepEquals(
+	t.deepEqual(
 		Array.from(target.getAttribute('POSITION').getArray()),
 		[0, 0, 5.0, 0, 0, 3.0, 0, 0, 6.0, 0, 0, 2.0, 0, 0, 4.0, 0, 0, 1.0],
 		'morph positions reordered'
 	);
-	t.end();
 });
 
 /* UTILITIES */

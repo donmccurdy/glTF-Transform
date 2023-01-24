@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document, TextureChannel } from '@gltf-transform/core';
 import { listTextureChannels, getTextureChannelMask } from '@gltf-transform/functions';
 import { KHRMaterialsSheen } from '@gltf-transform/extensions';
@@ -19,15 +17,14 @@ test('@gltf-transform/functions::listTextureChannels', (t) => {
 		.setBaseColorTexture(textureA)
 		.setExtension('KHR_materials_sheen', sheen);
 
-	t.deepEquals(listTextureChannels(textureA), [R, G, B, A], 'baseColorTexture RGBA');
-	t.deepEquals(listTextureChannels(textureB), [A], 'sheenColorTexture A');
+	t.deepEqual(listTextureChannels(textureA), [R, G, B, A], 'baseColorTexture RGBA');
+	t.deepEqual(listTextureChannels(textureB), [A], 'sheenColorTexture A');
 
 	material.setAlphaMode('OPAQUE');
-	t.deepEquals(listTextureChannels(textureA), [R, G, B], 'baseColorTexture RGB');
+	t.deepEqual(listTextureChannels(textureA), [R, G, B], 'baseColorTexture RGB');
 
 	sheen.setSheenColorTexture(textureB);
-	t.deepEquals(listTextureChannels(textureB), [R, G, B, A], 'sheenColorTexture RGBA');
-	t.end();
+	t.deepEqual(listTextureChannels(textureB), [R, G, B, A], 'sheenColorTexture RGBA');
 });
 
 test('@gltf-transform/functions::getTextureChannelMask', (t) => {
@@ -42,13 +39,12 @@ test('@gltf-transform/functions::getTextureChannelMask', (t) => {
 		.setBaseColorTexture(textureA)
 		.setExtension('KHR_materials_sheen', sheen);
 
-	t.equals(getTextureChannelMask(textureA), R | G | B | A, 'baseColorTexture RGBA');
-	t.equals(getTextureChannelMask(textureB), A, 'sheenColorTexture A');
+	t.is(getTextureChannelMask(textureA), R | G | B | A, 'baseColorTexture RGBA');
+	t.is(getTextureChannelMask(textureB), A, 'sheenColorTexture A');
 
 	material.setAlphaMode('OPAQUE');
-	t.equals(getTextureChannelMask(textureA), R | G | B, 'baseColorTexture RGB');
+	t.is(getTextureChannelMask(textureA), R | G | B, 'baseColorTexture RGB');
 
 	sheen.setSheenColorTexture(textureB);
-	t.equals(getTextureChannelMask(textureB), R | G | B | A, 'sheenColorTexture RGBA');
-	t.end();
+	t.is(getTextureChannelMask(textureB), R | G | B | A, 'sheenColorTexture RGBA');
 });

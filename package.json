@@ -13,7 +13,7 @@
     "watch:debug": "lerna run watch:debug --parallel --stream",
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
-    "test": "ava packages/cli/test/*.ts",
+    "test": "ava packages/{cli,functions}/test/*.ts",
     "testBAK": "ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts | tap-spec",
     "coverage": "nyc --reporter=lcov --reporter=text ts-node node_modules/tape/bin/tape packages/*/test/{*/,}*.test.ts",
     "coverage:report": "nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",

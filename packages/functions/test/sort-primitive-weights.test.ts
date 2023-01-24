@@ -1,6 +1,4 @@
-require('source-map-support').install();
-
-import test from 'tape';
+import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '../';
 
@@ -10,7 +8,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	sortPrimitiveWeights(prim);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		[
 			...prim.getAttribute('WEIGHTS_0')!.getElement(0, []),
 			...prim.getAttribute('WEIGHTS_1')!.getElement(0, []),
@@ -20,7 +18,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		[
 			...prim.getAttribute('JOINTS_0')!.getElement(0, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(0, []),
@@ -30,7 +28,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		[
 			...prim.getAttribute('WEIGHTS_0')!.getElement(1, []),
 			...prim.getAttribute('WEIGHTS_1')!.getElement(1, []),
@@ -40,7 +38,7 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		[
 			...prim.getAttribute('JOINTS_0')!.getElement(1, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(1, []),
@@ -49,44 +47,42 @@ test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 		'joints, vertex #2'
 	);
 
-	t.throws(() => sortPrimitiveWeights(prim, 0), /limit/i, 'limit = 0');
-	t.throws(() => sortPrimitiveWeights(prim, -1), /limit/i, 'limit < 0');
-	t.throws(() => sortPrimitiveWeights(prim, 3), /limit/i, 'limit % 4 > 0');
+	t.throws(() => sortPrimitiveWeights(prim, 0), { message: /limit/i }, 'limit = 0');
+	t.throws(() => sortPrimitiveWeights(prim, -1), { message: /limit/i }, 'limit < 0');
+	t.throws(() => sortPrimitiveWeights(prim, 3), { message: /limit/i }, 'limit % 4 > 0');
 
 	sortPrimitiveWeights(prim, 4);
 
-	t.notOk(prim.getAttribute('WEIGHTS_1'), 'limit weights');
-	t.notOk(prim.getAttribute('JOINTS_1'), 'limit joints');
+	t.falsy(prim.getAttribute('WEIGHTS_1'), 'limit weights');
+	t.falsy(prim.getAttribute('JOINTS_1'), 'limit joints');
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		prim.getAttribute('WEIGHTS_0')!.getElement(0, []).map(round(2)),
 		[0.44, 0.23, 0.17, 0.15],
 		'weights, vertex #1 (truncated)'
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		prim.getAttribute('JOINTS_0')!.getElement(0, []),
 		[1, 6, 3, 5],
 		'joints, vertex #1 (truncated)'
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		prim.getAttribute('WEIGHTS_0')!.getElement(1, []).map(round(2)),
 		[0.75, 0.12, 0.11, 0.02],
 		'weights, vertex #2 (truncated)'
 	);
 
 	// prettier-ignore
-	t.deepEquals(
+	t.deepEqual(
 		prim.getAttribute('JOINTS_0')!.getElement(1, []),
 		[13, 12, 8, 10],
 		'joints, vertex #2 (truncated)'
 	);
-
-	t.end();
 });
 
 function createSkinnedPrimitive() {
