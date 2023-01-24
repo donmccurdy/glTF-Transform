@@ -22,7 +22,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: yarn
-        cache-dependency-path: 'packages/*/yarn.lock'
+        cache-dependency-path: |
+          yarn.lock
+          packages/*/yarn.lock
 
     # Test.
     - run: yarn install
@@ -45,7 +47,9 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: yarn
-        cache-dependency-path: 'packages/*/yarn.lock'
+        cache-dependency-path: |
+          yarn.lock
+          packages/*/yarn.lock
 
     # Build.
     - run: yarn install
