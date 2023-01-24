@@ -46,8 +46,8 @@ test('@gltf-transform/core::image-utils | png', { skip: !IS_NODEJS }, (t) => {
 	t.deepEquals(ImageUtils.getSize(fried, 'image/png'), [12, 12], 'png (fried)');
 	t.equals(ImageUtils.getChannels(png, 'image/png'), 4, 'png channels');
 	t.equals(ImageUtils.getChannels(fried, 'image/png'), 4, 'png channels');
-	t.equals(ImageUtils.getMemSize(png, 'image/png'), 349524, 'png gpu size');
-	t.equals(ImageUtils.getMemSize(fried, 'image/png'), 760, 'png gpu size');
+	t.equals(ImageUtils.getGPUByteLength(png, 'image/png'), 349524, 'png gpu size');
+	t.equals(ImageUtils.getGPUByteLength(fried, 'image/png'), 760, 'png gpu size');
 	t.end();
 });
 
@@ -60,7 +60,7 @@ test('@gltf-transform/core::image-utils | jpeg', { skip: !IS_NODEJS }, (t) => {
 	t.deepEquals(ImageUtils.getSize(jpg, 'image/jpeg'), [256, 256], 'jpg size');
 	t.equals(ImageUtils.getChannels(jpg, 'image/jpeg'), 3, 'jpg channels');
 	// See https://github.com/donmccurdy/glTF-Transform/issues/151.
-	t.equals(ImageUtils.getMemSize(jpg, 'image/jpeg'), 349524, 'jpg gpu size');
+	t.equals(ImageUtils.getGPUByteLength(jpg, 'image/jpeg'), 349524, 'jpg gpu size');
 
 	view.setUint16(4, 1000, false);
 	t.throws(() => ImageUtils.getSize(array, 'image/jpeg'), 'oob');
