@@ -5,6 +5,8 @@ on:
   pull_request:
     branches: [main]
 jobs:
+  #############################################################################
+  # BUILD
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -19,20 +21,39 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-
-    # Cache.
-    - id: yarn-cache-dir
-      run: echo "{yarn_cache_dir}=$(yarn cache dir)" >> $GITHUB_ENV
-    - uses: actions/cache@v3
-      id: yarn-cache
-      with:
-        path: ${{ env.yarn_cache_dir }}
-        key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('./yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.node-version }}-yarn-
+        cache: yarn
+        cache-dependency-path: 'packages/*/yarn.lock'
 
     # Test.
     - run: yarn install
     - run: yarn dist
     - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
     - run: yarn lint
+
+  #############################################################################
+  # COVERAGE
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_VERSION: 18.x
+    steps:
+    # Setup.
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: yarn
+        cache-dependency-path: 'packages/*/yarn.lock'
+
+    # Build.
+    - run: yarn install
+    - run: yarn dist
+
+    # Coverage.
+    - run: yarn coverage --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn coverage:report
+    - uses: codecov/codecov-action@v3
+      with:
+        files: coverage/coverage.lcov
