@@ -1,9 +1,5 @@
 {
     "extends": "../tsconfig.json",
     "include": [ "./**/*" ],
-    "compilerOptions": {
-        "paths": { "@gltf-transform/cli": ["../"] },
-        "module": "ESNext",
-        "strict": false,
-    }
+    "compilerOptions": { "strict": false }
 }
