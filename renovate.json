@@ -16,28 +16,6 @@
                 "typedoc"
             ],
             "enabled": false
-        },
-        {
-            "description": "ESM: https://github.com/node-fetch/node-fetch/issues/1279",
-            "matchPackageNames": [
-                "node-fetch"
-            ],
-            "enabled": false
-        },
-        {
-            "description": "ESM: https://github.com/sindresorhus/p-limit/issues/57",
-            "matchPackageNames": [
-                "p-limit"
-            ],
-            "enabled": false
-        },
-        {
-            "description": "ESM: https://github.com/SBoudrias/Inquirer.js/issues/999",
-            "matchPackageNames": [
-                "inquirer",
-                "@types/inquirer"
-            ],
-            "enabled": false
         }
     ]
 }
