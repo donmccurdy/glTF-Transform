@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { IOR, KHRMaterialsIOR } from '../';
+import { IOR, KHRMaterialsIOR } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

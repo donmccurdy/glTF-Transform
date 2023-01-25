@@ -1,18 +1,13 @@
 import test from 'ava';
 import { Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { KHRTextureBasisu } from '../';
-
-const IS_NODEJS = typeof window === 'undefined';
-
-let fs, path;
-if (IS_NODEJS) {
-	fs = require('fs');
-	path = require('path');
-}
+import { KHRTextureBasisu } from '@gltf-transform/extensions';
+import fs from 'fs';
+import path from 'path';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/extensions::texture-basisu', async (t) => {
 	const doc = new Document();

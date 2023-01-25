@@ -10,6 +10,8 @@ import { MeshoptDecoder } from 'meshoptimizer';
 
 tmp.setGracefulCleanup();
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 test('@gltf-transform/cli::copy', async (t) => {
 	await programReady;
 	const io = new NodeIO();

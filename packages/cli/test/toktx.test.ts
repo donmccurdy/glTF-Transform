@@ -65,13 +65,13 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 		await fs.writeFile(params[params.length - 2], new Uint8Array(8));
 		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
 	});
-	mockWaitExit(async (process) => {
+	mockWaitExit(async (process: any) => {
 		const { status, stdout, stderr } = await process;
 		return [status, stdout, stderr];
 	});
 	mockCommandExists(() => Promise.resolve(true));
 
-	await doc.transform(toktx(options));
+	await doc.transform(toktx(options as any));
 
 	return actualParams.slice(0, -2).join(' ');
 }

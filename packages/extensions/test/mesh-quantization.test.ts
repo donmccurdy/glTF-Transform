@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { KHRMeshQuantization } from '../';
+import { KHRMeshQuantization } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

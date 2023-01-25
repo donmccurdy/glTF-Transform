@@ -1,18 +1,13 @@
 import test from 'ava';
 import { BufferUtils, Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { EXTTextureWebP } from '../';
-
-const IS_NODEJS = typeof window === 'undefined';
-
-let fs, path;
-if (IS_NODEJS) {
-	fs = require('fs');
-	path = require('path');
-}
+import { EXTTextureWebP } from '@gltf-transform/extensions';
+import path from 'path';
+import fs from 'fs';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([EXTTextureWebP]);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/extensions::texture-webp', async (t) => {
 	const doc = new Document();

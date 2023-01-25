@@ -7,12 +7,12 @@
     "author": "Don McCurdy <dm@donmccurdy.com>",
     "license": "MIT",
     "type": "module",
+    "sideEffects": false,
     "main": "./dist/core.cjs",
     "module": "./dist/core.modern.js",
     "exports": "./dist/core.modern.js",
     "source": "./src/core.ts",
     "types": "./dist/core.d.ts",
-    "sideEffects": false,
     "browserslist": [
         "defaults",
         "not IE 11",

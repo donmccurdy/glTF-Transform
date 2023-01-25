@@ -5,6 +5,8 @@ import test from 'ava';
 import { Document, Logger, Texture } from '@gltf-transform/core';
 import { ktxfix } from '@gltf-transform/cli';
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 test('@gltf-transform/cli::ktxfix', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const material = doc.createMaterial();

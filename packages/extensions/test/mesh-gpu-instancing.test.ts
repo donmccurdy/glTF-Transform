@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Accessor, Document, NodeIO } from '@gltf-transform/core';
-import { InstancedMesh, EXTMeshGPUInstancing } from '../';
+import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

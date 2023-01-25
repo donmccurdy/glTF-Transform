@@ -1,10 +1,12 @@
 import path from 'path';
 import test from 'ava';
 import { Document, NodeIO, getBounds, Format, Primitive } from '@gltf-transform/core';
-import { EXTMeshoptCompression, KHRMeshQuantization } from '../';
+import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
 const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/extensions::meshopt-compression | decoding', async (t) => {
 	const io = await createEncoderIO();
