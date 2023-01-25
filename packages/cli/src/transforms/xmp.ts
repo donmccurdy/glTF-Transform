@@ -1,6 +1,6 @@
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '@gltf-transform/extensions';
-import inquirer from 'inquirer';
+import inquirer, { Question, QuestionCollection } from 'inquirer';
 import languageTags from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
@@ -30,7 +30,7 @@ enum Prompt {
 	RIGHTS,
 }
 
-async function* generateQuestions(results: Record<string, unknown>): AsyncGenerator<inquirer.Question> {
+async function* generateQuestions(results: Record<string, unknown>): AsyncGenerator<Question> {
 	let lang = (results['dc:language'] as string) || DEFAULT_LANG;
 
 	yield {
@@ -53,7 +53,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			new inquirer.Separator(),
 			{ value: Prompt.PREFERRED_SURFACE, name: 'Preferred surfaces (AR)' },
 		],
-	} as inquirer.Question;
+	} as Question;
 
 	const prompts = new Set<Prompt>(results._prompts as Prompt[]);
 
@@ -80,7 +80,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			suffix: ' (dc:creator)',
 			filter: (input: string) => createList([input]),
 			transformer: formatXMP,
-		} as inquirer.Question;
+		} as Question;
 	}
 
 	if (prompts.has(Prompt.TITLE)) {
@@ -91,7 +91,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			suffix: ' (dc:title)',
 			filter: (input: string) => createLanguageAlternative(input, lang),
 			transformer: formatXMP,
-		} as inquirer.Question;
+		} as Question;
 	}
 
 	if (prompts.has(Prompt.DESCRIPTION)) {
@@ -102,7 +102,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			suffix: ' (dc:description)',
 			filter: (input: string) => createLanguageAlternative(input, lang),
 			transformer: formatXMP,
-		} as inquirer.Question;
+		} as Question;
 	}
 
 	if (prompts.has(Prompt.RELATED)) {
@@ -113,7 +113,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			suffix: ' Comma-separated URLs. (dc:relation)',
 			filter: (input: string) => createList(input.split(/[,\n]/).map((url) => url.trim())),
 			transformer: formatXMP,
-		} as inquirer.Question;
+		} as Question;
 	}
 
 	if (prompts.has(Prompt.RIGHTS)) {
@@ -143,7 +143,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 				},
 				{ value: 'OTHER', name: 'Other license' },
 			],
-		} as inquirer.Question;
+		} as Question;
 
 		if (results._rights === 'UNLICENSED') {
 			results['xmpRights:Marked'] = true;
@@ -155,7 +155,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 				suffix: ' (xmpRights:Owner)',
 				filter: (input: string) => createList([input]),
 				transformer: formatXMP,
-			} as inquirer.Question;
+			} as Question;
 
 			yield {
 				type: 'input',
@@ -197,7 +197,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 					suffix: ' (dc:rights)',
 					filter: (input: string) => createLanguageAlternative(input, lang),
 					transformer: formatXMP,
-				} as inquirer.Question;
+				} as Question;
 			}
 		}
 	}
@@ -245,7 +245,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			],
 			filter: (input: string[]) => createList(input),
 			transformer: formatXMP,
-		} as inquirer.Question;
+		} as Question;
 	}
 }
 
@@ -280,7 +280,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 
 		try {
 			for await (const question of generateQuestions(results)) {
-				Object.assign(results, await inquirer.prompt(question as inquirer.QuestionCollection));
+				Object.assign(results, await inquirer.prompt(question as QuestionCollection));
 			}
 		} catch (e) {
 			checkTTY(e, logger);
