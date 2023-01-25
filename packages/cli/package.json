@@ -8,8 +8,8 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": "./dist/cli.esm.js",
-	"source": "src/cli.ts",
-	"types": "dist/cli.d.ts",
+	"source": "./src/cli.ts",
+	"types": "./dist/cli.d.ts",
 	"browserslist": [
 		"node >= 14"
 	],
@@ -22,7 +22,7 @@
 		"watch:debug": "microbundle watch --no-compress --format esm --target node"
 	},
 	"bin": {
-		"gltf-transform": "bin/cli.js"
+		"gltf-transform": "./bin/cli.js"
 	},
 	"dependencies": {
 		"@caporal/core": "^2.0.2",

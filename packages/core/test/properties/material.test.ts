@@ -1,6 +1,6 @@
 import test from 'ava';
-import { createPlatformIO } from '../../../test-utils';
 import { Document, Format, Property, PropertyType, Texture, TextureChannel, TextureInfo } from '@gltf-transform/core';
+import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const { R, G, B, A } = TextureChannel;
 

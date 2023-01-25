@@ -6,10 +6,12 @@
     "description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
     "author": "Don McCurdy <dm@donmccurdy.com>",
     "license": "MIT",
-    "main": "dist/core.js",
-    "module": "dist/core.modern.js",
-    "source": "src/core.ts",
-    "types": "dist/core.d.ts",
+    "type": "module",
+    "main": "./dist/core.cjs",
+    "module": "./dist/core.modern.js",
+    "exports": "./dist/core.modern.js",
+    "source": "./src/core.ts",
+    "types": "./dist/core.d.ts",
     "sideEffects": false,
     "browserslist": [
         "defaults",
@@ -40,7 +42,6 @@
         "path": false
     },
     "dependencies": {
-        "gl-matrix": "~3.4.3",
         "property-graph": "^1.0.0"
     },
     "mangle": {

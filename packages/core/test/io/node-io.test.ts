@@ -1,6 +1,6 @@
 import test from 'ava';
-import { environment, Environment } from '../../../test-utils';
 import { Document, NodeIO } from '@gltf-transform/core';
+import { environment, Environment } from '@gltf-transform/test-utils';
 
 const MOCK_DOMAIN = 'https://mock.site';
 

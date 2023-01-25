@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, Extension, ExtensionProperty, PropertyType, WriterContext } from '@gltf-transform/core';
-import { createPlatformIO } from '../../test-utils';
+import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const EXTENSION_NAME = 'TEST_node_gizmo';
 

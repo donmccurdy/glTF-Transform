@@ -1,6 +1,6 @@
 import test from 'ava';
-import { createPlatformIO } from '../../../test-utils';
 import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
+import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::node | parent', (t) => {
 	const doc = new Document();

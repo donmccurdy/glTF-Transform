@@ -6,8 +6,8 @@ import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 
 let fs, path;
 if (IS_NODEJS) {
-	fs = require('fs');
-	path = require('path');
+	fs = await import('fs');
+	path = await import('path');
 }
 
 test('@gltf-transform/core::image-utils | basic', (t) => {

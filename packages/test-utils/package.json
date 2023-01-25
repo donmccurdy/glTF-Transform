@@ -1,0 +1,19 @@
+{
+	"private": true,
+	"name": "@gltf-transform/test-utils",
+	"version": "3.0.0-alpha.4",
+	"type": "module",
+	"exports": "./dist/test-utils.modern.js",
+	"source": "./src/index.ts",
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
+	"scripts": {
+		"dist": "microbundle --format modern --no-compress",
+		"watch": "microbundle watch --format modern --no-compress"
+	},
+	"dependencies": {
+		"@gltf-transform/core": "^3.0.0-alpha.4",
+		"@gltf-transform/extensions": "^3.0.0-alpha.4",
+		"@gltf-transform/functions": "^3.0.0-alpha.4"
+	}
+}

@@ -46,11 +46,12 @@ import { HTTPUtils } from '../utils';
  * @category I/O
  */
 export class NodeIO extends PlatformIO {
-	private readonly _fs;
-	private readonly _path;
+	private declare _fs;
+	private declare _path;
 	private readonly _fetch: typeof fetch | null;
 	private readonly _fetchConfig: RequestInit;
 
+	private _init: Promise<void>;
 	private _fetchEnabled = false;
 
 	/**
@@ -63,11 +64,17 @@ export class NodeIO extends PlatformIO {
 	 */
 	constructor(_fetch: unknown = null, _fetchConfig = HTTPUtils.DEFAULT_INIT) {
 		super();
-		// Excluded from browser builds with 'package.browser' field.
-		this._fs = require('fs').promises;
-		this._path = require('path');
 		this._fetch = _fetch as typeof fetch | null;
 		this._fetchConfig = _fetchConfig;
+		this._init = this.init();
+	}
+
+	public async init(): Promise<void> {
+		if (this._init) return this._init;
+		return Promise.all([import('fs'), import('path')]).then(([fs, path]) => {
+			this._fs = fs.promises;
+			this._path = path;
+		});
 	}
 
 	public setAllowHTTP(allow: boolean): this {
@@ -81,6 +88,7 @@ export class NodeIO extends PlatformIO {
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+		await this.init();
 		if (HTTPUtils.isAbsoluteURL(uri)) {
 			if (!this._fetchEnabled || !this._fetch) {
 				throw new Error('Network request blocked. Allow HTTP requests explicitly, if needed.');
@@ -123,6 +131,7 @@ export class NodeIO extends PlatformIO {
 
 	/** Writes a {@link Document} instance to a local path. */
 	public async write(uri: string, doc: Document): Promise<void> {
+		await this.init();
 		const isGLB = !!uri.match(/\.glb$/);
 		await (isGLB ? this._writeGLB(uri, doc) : this._writeGLTF(uri, doc));
 	}

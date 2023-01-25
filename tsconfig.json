@@ -2,12 +2,17 @@
   "compilerOptions": {
     "baseUrl": "./packages",
     "paths": {
-      "@gltf-transform/*": ["*/src"]
+      "@gltf-transform/core": ["./packages/core/"],
+      "@gltf-transform/extensions": ["./packages/extensions/"],
+      "@gltf-transform/functions": ["./packages/functions/"],
+      "@gltf-transform/cli": ["./packages/cli/"],
+      "@gltf-transform/test-utils": ["./packages/test-utils/"]
     },
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "lib": ["es6", "dom"],
-    "target": "es6",
+    "lib": ["es2020", "dom"],
+    "target": "es2020",
+    "module": "es2020",
     "declaration": true,
     "stripInternal": true,
     "typeRoots": ["node_modules/@types"],

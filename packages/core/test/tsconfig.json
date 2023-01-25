@@ -1,5 +1,9 @@
 {
     "extends": "../tsconfig.json",
-    "include": [ "./**/*" ],
-    "compilerOptions": { "strict": false }
+    "include": ["./**/*"],
+    "compilerOptions": {
+        "paths": { "@gltf-transform/core": ["../"] },
+        "module": "ESNext",
+        "strict": false,
+    }
 }

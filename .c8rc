@@ -2,7 +2,7 @@
 	"exclude": [
 		"packages/*/vendor",
 		"packages/*/test",
-		"packages/test-utils.ts",
+		"packages/test-utils/**/*",
 		"packages/core/src/constants.ts",
 		"packages/cli/src/cli.ts",
 		"packages/cli/src/transforms/toktx.ts",
