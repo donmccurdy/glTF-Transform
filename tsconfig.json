@@ -12,7 +12,7 @@
     "moduleResolution": "node",
     "lib": ["es2020", "dom"],
     "target": "es2020",
-    "module": "es2020",
+    "module": "ESNext",
     "declaration": true,
     "stripInternal": true,
     "typeRoots": ["node_modules/@types"],

@@ -4,6 +4,6 @@
     "compilerOptions": {
         "paths": { "@gltf-transform/core": ["../"] },
         "module": "ESNext",
-        "strict": false,
+        "strict": false
     }
 }
