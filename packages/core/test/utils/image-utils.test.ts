@@ -4,9 +4,10 @@ import { createCanvas } from 'canvas';
 import test from 'ava';
 import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 import fs from 'fs';
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/core::image-utils | basic', (t) => {
 	if (!IS_NODEJS) return t.pass();

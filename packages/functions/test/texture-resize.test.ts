@@ -1,11 +1,12 @@
-import path from 'path';
+import path, { dirname } from 'path';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { textureResize } from '@gltf-transform/functions';
 import ndarray from 'ndarray';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const GRADIENT = getPixels(path.resolve(__dirname, './in/pattern.png'));
 const GRADIENT_HALF = getPixels(path.resolve(__dirname, './in/pattern-half.png'));

@@ -1,9 +1,10 @@
-import path from 'path';
+import path, { dirname } from 'path';
 import test from 'ava';
 import { Logger, NodeIO } from '@gltf-transform/core';
 import { inspect } from '@gltf-transform/functions';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/functions::inspect', async (t) => {
 	const io = new NodeIO();

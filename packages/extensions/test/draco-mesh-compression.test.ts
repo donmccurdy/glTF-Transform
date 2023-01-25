@@ -1,12 +1,13 @@
-import path from 'path';
+import path, { dirname } from 'path';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
 import test from 'ava';
 import { Accessor, Buffer, Document, Format, NodeIO, Primitive, getBounds, Logger } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+import { fileURLToPath } from 'url';
 
 const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
 	const io = await createDecoderIO();

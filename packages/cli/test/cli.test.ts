@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path from 'path';
+import path, { dirname } from 'path';
 import test from 'ava';
 import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
@@ -7,10 +7,11 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { program, programReady } from '@gltf-transform/cli';
 import draco3d from 'draco3dgltf';
 import { MeshoptDecoder } from 'meshoptimizer';
+import { fileURLToPath } from 'url';
 
 tmp.setGracefulCleanup();
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/cli::copy', async (t) => {
 	await programReady;

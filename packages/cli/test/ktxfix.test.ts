@@ -1,11 +1,12 @@
 import fs from 'fs';
-import path from 'path';
+import path, { dirname } from 'path';
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';
 import test from 'ava';
 import { Document, Logger, Texture } from '@gltf-transform/core';
 import { ktxfix } from '@gltf-transform/cli';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/cli::ktxfix', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));

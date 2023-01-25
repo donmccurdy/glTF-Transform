@@ -1,11 +1,12 @@
-import path from 'path';
+import path, { dirname } from 'path';
 import { createCanvas } from 'canvas';
 import test from 'ava';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '@gltf-transform/functions';
 import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('@gltf-transform/functions::dedup | accessors', async (t) => {
 	const io = new NodeIO();
