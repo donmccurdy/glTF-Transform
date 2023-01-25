@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { instance } from '../';
+import { instance } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::instance | translation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));

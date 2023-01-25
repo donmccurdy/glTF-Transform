@@ -1,18 +1,14 @@
 import test from 'ava';
-import { environment, Environment } from '../../../test-utils';
 import { Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO, environment, Environment, logger, resolve } from '@gltf-transform/test-utils';
+import fs from 'fs';
+import { dirname, join } from 'path';
+import glob from 'glob';
 
 const MOCK_DOMAIN = 'https://mock.site';
 
-let fs, glob, path;
-if (environment === Environment.NODE) {
-	fs = require('fs');
-	glob = require('glob');
-	path = require('path');
-}
-
 const fetch = async (input: RequestInfo, _init?: RequestInit) => {
-	const relPath = input.toString().replace(MOCK_DOMAIN, path.join(__dirname, '../in'));
+	const relPath = input.toString().replace(MOCK_DOMAIN, resolve('../in', import.meta.url));
 	return {
 		arrayBuffer: () => fs.readFileSync(relPath),
 		text: () => fs.readFileSync(relPath, 'utf8'),
@@ -23,13 +19,15 @@ function ensureDir(uri) {
 	if (!fs.existsSync(uri)) fs.mkdirSync(uri);
 }
 
+// TODO(cleanup): These tests are passing a Promise into t.truthy(), probably missed
+// that while refactoring NodeIO to async methods. Should await them instead.
+
 test('@gltf-transform/core::io | node.js read glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = await createPlatformIO();
 	let count = 0;
-	glob.sync(path.join(__dirname, '../in/**/*.glb')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
-
-		const io = new NodeIO();
+	glob.sync(resolve('../in/**/*.glb', import.meta.url)).forEach((inputURI) => {
+		const basepath = inputURI.replace(resolve('../in', import.meta.url), '.');
 		const doc = io.read(inputURI);
 
 		t.truthy(doc, `Read "${basepath}".`);
@@ -40,11 +38,10 @@ test('@gltf-transform/core::io | node.js read glb', async (t) => {
 
 test('@gltf-transform/core::io | node.js read gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = await createPlatformIO();
 	let count = 0;
-	glob.sync(path.join(__dirname, '../in/**/*.gltf')).forEach((inputURI) => {
-		const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
-
-		const io = new NodeIO();
+	glob.sync(resolve('../in/**/*.gltf', import.meta.url)).forEach((inputURI) => {
+		const basepath = inputURI.replace(resolve('../in', import.meta.url), '.');
 		const doc = io.read(inputURI);
 
 		t.truthy(doc, `Read "${basepath}".`);
@@ -55,12 +52,11 @@ test('@gltf-transform/core::io | node.js read gltf', async (t) => {
 
 test('@gltf-transform/core::io | node.js read glb http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
 	let count = 0;
 	await Promise.all(
-		glob.sync(path.join(__dirname, '../in/**/*.glb')).map(async (inputURI) => {
-			const basepath = inputURI.replace(path.join(__dirname, '../in'), MOCK_DOMAIN);
-
-			const io = new NodeIO(fetch).setAllowHTTP(true);
+		glob.sync(resolve('../in/**/*.glb', import.meta.url)).map(async (inputURI) => {
+			const basepath = inputURI.replace(resolve('../in', import.meta.url), MOCK_DOMAIN);
 			const doc = await io.read(basepath);
 
 			t.truthy(doc, `Read "${basepath}".`);
@@ -72,12 +68,11 @@ test('@gltf-transform/core::io | node.js read glb http', async (t) => {
 
 test('@gltf-transform/core::io | node.js read gltf http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
 	let count = 0;
 	await Promise.all(
-		glob.sync(path.join(__dirname, '../in/**/*.gltf')).map(async (inputURI) => {
-			const basepath = inputURI.replace(path.join(__dirname, '../in'), MOCK_DOMAIN);
-
-			const io = new NodeIO(fetch).setAllowHTTP(true);
+		glob.sync(resolve('../in/**/*.gltf', import.meta.url)).map(async (inputURI) => {
+			const basepath = inputURI.replace(resolve('../in', import.meta.url), MOCK_DOMAIN);
 			const doc = await io.read(basepath);
 
 			t.truthy(doc, `Read "${basepath}".`);
@@ -89,17 +84,16 @@ test('@gltf-transform/core::io | node.js read gltf http', async (t) => {
 
 test('@gltf-transform/core::io | node.js write glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	const uris = glob.sync(path.join(__dirname, '../in/**/*.gltf'));
+	const uris = glob.sync(resolve('../in/**/*.gltf', import.meta.url));
 	await Promise.all(
 		uris.map(async (inputURI) => {
-			const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
-			const outputURI = path.join(__dirname, '../out', basepath);
-
-			const io = new NodeIO();
+			const basepath = inputURI.replace(resolve('../in', import.meta.url), '.');
+			const outputURI = resolve(`../out/${basepath}`, import.meta.url);
 			const doc = await io.read(inputURI);
 
-			ensureDir(path.dirname(outputURI));
+			ensureDir(dirname(outputURI));
 			await io.write(outputURI.replace('.gltf', '.glb'), doc);
 			t.truthy(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
@@ -110,17 +104,16 @@ test('@gltf-transform/core::io | node.js write glb', async (t) => {
 
 test('@gltf-transform/core::io | node.js write gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
+	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	const uris = glob.sync(path.join(__dirname, '../in/**/*.glb'));
+	const uris = glob.sync(resolve('../in/**/*.glb', import.meta.url));
 	await Promise.all(
 		uris.map(async (inputURI) => {
-			const basepath = inputURI.replace(path.join(__dirname, '../in'), '.');
-			const outputURI = path.join(__dirname, '../out', basepath);
-
-			const io = new NodeIO();
+			const basepath = inputURI.replace(resolve('../in', import.meta.url), '.');
+			const outputURI = resolve(`../out/${basepath}`, import.meta.url);
 			const doc = await io.read(inputURI);
 
-			ensureDir(path.dirname(outputURI));
+			ensureDir(dirname(outputURI));
 			await io.write(outputURI.replace('.glb', '.gltf'), doc);
 			t.truthy(true, `Wrote "${basepath}".`); // TODO(cleanup): Test the output somehow.
 			count++;
@@ -143,11 +136,11 @@ test('@gltf-transform/core::io | node.js write gltf with HTTP', async (t) => {
 		.setURI('https://test.example/external.png')
 		.setMimeType('image/png')
 		.setImage(new Uint8Array(1024));
-	const io = new NodeIO();
-	const outputURI = path.join(__dirname, '../out', 'node-io-external-test');
+	const io = (await createPlatformIO()) as NodeIO;
+	const outputURI = resolve('../out/node-io-external-test', import.meta.url);
 	ensureDir(outputURI);
-	await io.write(path.join(outputURI, 'scene.gltf'), document);
-	t.truthy(fs.existsSync(path.join(outputURI, 'internal.png')), 'writes internal image');
-	t.falsy(fs.existsSync(path.join(outputURI, 'external.png')), 'skips external image');
+	await io.write(join(outputURI, 'scene.gltf'), document);
+	t.truthy(fs.existsSync(join(outputURI, 'internal.png')), 'writes internal image');
+	t.falsy(fs.existsSync(join(outputURI, 'external.png')), 'skips external image');
 	t.truthy(io.lastWriteBytes < 2048, 'writes < 2048 bytes');
 });

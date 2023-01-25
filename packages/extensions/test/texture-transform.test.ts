@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRTextureTransform, Transform } from '../';
+import { KHRTextureTransform, Transform } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

@@ -2,9 +2,11 @@ import test from 'ava';
 import fs from 'fs/promises';
 import path from 'path';
 import { Document, Logger, Primitive } from '@gltf-transform/core';
-import { weld } from '../';
+import { weld } from '@gltf-transform/functions';
 
 const LOGGER = new Logger(Logger.Verbosity.SILENT);
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 	const doc = new Document().setLogger(LOGGER);

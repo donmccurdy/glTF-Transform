@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Accessor, Document, GLTF, Logger, Primitive } from '@gltf-transform/core';
-import { reorder } from '../';
+import { reorder } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 
 const CUBE_INDICES = new Uint32Array([4, 2, 5, 3, 1, 4, 0, 1, 3, 1, 2, 4]);

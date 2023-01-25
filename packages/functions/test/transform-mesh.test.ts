@@ -1,7 +1,7 @@
 import test from 'ava';
 import { bbox, Document, Logger, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
-import { fromScaling, fromTranslation, fromRotation, identity } from 'gl-matrix/mat4';
-import { transformMesh, transformPrimitive } from '../';
+import { mat4 } from '@gltf-transform/test-utils';
+import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
@@ -11,27 +11,27 @@ test('@gltf-transform/functions::transformPrimitive', async (t) => {
 	const normal = prim.getAttribute('NORMAL')!;
 	const tangent = prim.getAttribute('TANGENT')!;
 
-	transformPrimitive(prim, identity([]));
+	transformPrimitive(prim, mat4.identity([]));
 	t.deepEqual(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'identity - position');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'identity - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'identity - tangent');
 
-	transformPrimitive(prim, fromScaling([], [100, 100, 100]), new Set([0, 1, 2, 3]));
+	transformPrimitive(prim, mat4.fromScaling([], [100, 100, 100]), new Set([0, 1, 2, 3]));
 	t.deepEqual(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'mask - position');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'mask - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'mask - tangent');
 
-	transformPrimitive(prim, fromScaling([], [2, 1, 2]));
+	transformPrimitive(prim, mat4.fromScaling([], [2, 1, 2]));
 	t.deepEqual(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale - position');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'scale - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'scale - tangent');
 
-	transformPrimitive(prim, fromTranslation([], [0, -10, 0]));
+	transformPrimitive(prim, mat4.fromTranslation([], [0, -10, 0]));
 	t.deepEqual(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - positino');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'translate - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'translate - tangent');
 
-	transformPrimitive(prim, fromRotation([], Math.PI / 2, [1, 0, 0]));
+	transformPrimitive(prim, mat4.fromRotation([], Math.PI / 2, [1, 0, 0]));
 	t.deepEqual(roundBbox(primBounds(prim)), { min: [-1, -1, 0], max: [1, 1, 0] }, 'rotate - position');
 	t.deepEqual(normal.getElement(0, []).map(round()), [0, 0, 1], 'rotate - normal');
 	t.deepEqual(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
@@ -45,7 +45,7 @@ test('@gltf-transform/functions::transformMesh | detach shared prims', async (t)
 
 	t.is(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA = meshB, before');
 
-	transformMesh(meshA, fromScaling([], [2, 2, 2]), true);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), true);
 
 	t.not(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA ≠ meshB, after');
 });
@@ -60,11 +60,11 @@ test('@gltf-transform/functions::transformMesh | detach shared vertex streams', 
 
 	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, before');
 
-	transformMesh(meshA, fromScaling([], [2, 2, 2]), true);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), true);
 
 	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, after (overwrite=true)');
 
-	transformMesh(meshA, fromScaling([], [2, 2, 2]), false);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), false);
 
 	t.not(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA ≠ primB, after (overwrite=false)');
 });
@@ -74,7 +74,7 @@ test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
 	const prim = createPrimitive(document);
 	const mesh = document.createMesh().addPrimitive(prim);
 
-	transformMesh(mesh, fromScaling([], [2, 2, 2]), false, new Set([0, 1]));
+	transformMesh(mesh, mat4.fromScaling([], [2, 2, 2]), false, new Set([0, 1]));
 
 	// prettier-ignore
 	t.deepEqual(
@@ -108,7 +108,7 @@ test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
 	const meshA = document.createMesh().addPrimitive(prim);
 	const meshB = document.createMesh().addPrimitive(prim);
 
-	transformMesh(meshA, fromScaling([], [2, 2, 2]), false);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), false);
 
 	const primA = meshA.listPrimitives()[0];
 	const primB = meshB.listPrimitives()[0];

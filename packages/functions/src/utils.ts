@@ -6,12 +6,14 @@ import { Accessor, Node, Primitive, Scene, Texture, Transform, TransformContext 
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
  * optional, and plain functions may be used in transform pipelines just as well. The wrapper is
  * used internally so earlier pipeline stages can detect and optimize based on later stages.
+ * @hidden
  */
 export function createTransform(name: string, fn: Transform): Transform {
 	Object.defineProperty(fn, 'name', { value: name });
 	return fn;
 }
 
+/** @hidden */
 export function isTransformPending(context: TransformContext | undefined, initial: string, pending: string): boolean {
 	if (!context) return false;
 	const initialIndex = context.stack.lastIndexOf(initial);
@@ -19,7 +21,10 @@ export function isTransformPending(context: TransformContext | undefined, initia
 	return initialIndex < pendingIndex;
 }
 
-/** Maps pixels from source to target textures, with a per-pixel callback. */
+/**
+ * Maps pixels from source to target textures, with a per-pixel callback.
+ * @hidden
+ */
 export async function rewriteTexture(
 	source: Texture,
 	target: Texture,
@@ -42,6 +47,7 @@ export async function rewriteTexture(
 	return target.setImage(dstImage).setMimeType('image/png');
 }
 
+/** @hidden */
 export function getGLPrimitiveCount(prim: Primitive): number {
 	const indices = prim.getIndices();
 	const position = prim.getAttribute('POSITION')!;
@@ -66,6 +72,7 @@ export function getGLPrimitiveCount(prim: Primitive): number {
 	}
 }
 
+/** @hidden */
 export class SetMap<K, V> {
 	private _map = new Map<K, Set<V>>();
 	public get size(): number {
@@ -91,6 +98,7 @@ export class SetMap<K, V> {
 	}
 }
 
+/** @hidden */
 export function formatBytes(bytes: number, decimals = 2): string {
 	if (bytes === 0) return '0 Bytes';
 
@@ -103,16 +111,19 @@ export function formatBytes(bytes: number, decimals = 2): string {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+/** @hidden */
 export function formatLong(x: number): string {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+/** @hidden */
 export function formatDelta(a: number, b: number, decimals = 2): string {
 	const prefix = a > b ? '–' : '+';
 	const suffix = '%';
 	return prefix + ((Math.abs(a - b) / a) * 100).toFixed(decimals) + suffix;
 }
 
+/** @hidden */
 export function formatDeltaOp(a: number, b: number) {
 	return `${formatLong(a)} → ${formatLong(b)} (${formatDelta(a, b)})`;
 }
@@ -120,6 +131,7 @@ export function formatDeltaOp(a: number, b: number) {
 /**
  * Returns a list of all unique vertex attributes on the given primitive and
  * its morph targets.
+ * @hidden
  */
 export function deepListAttributes(prim: Primitive): Accessor[] {
 	const accessors: Accessor[] = [];
@@ -136,6 +148,7 @@ export function deepListAttributes(prim: Primitive): Accessor[] {
 	return Array.from(new Set(accessors));
 }
 
+/** @hidden */
 export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor): void {
 	prim.swap(src, dst);
 	for (const target of prim.listTargets()) {
@@ -143,6 +156,7 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 	}
 }
 
+/** @hidden */
 export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {
 	const elementSize = attribute.getElementSize();
 	const srcCount = attribute.getCount();
@@ -158,12 +172,14 @@ export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount
 	attribute.setArray(dstArray);
 }
 
+/** @hidden */
 export function createIndices(count: number, maxIndex = count): Uint16Array | Uint32Array {
 	const array = maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
 }
 
+/** @hidden */
 export function traverseNodeParents(node: Node, fn: (parent: Scene | Node) => void): void {
 	let child = node;
 	let parent: Scene | Node | null;

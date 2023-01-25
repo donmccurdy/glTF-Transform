@@ -7,6 +7,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "dist": "lerna run dist",
     "watch": "lerna run watch --parallel --stream",
@@ -42,6 +43,7 @@
     "draco3dgltf": "1.5.5",
     "eslint": "8.32.0",
     "eslint-config-prettier": "8.6.0",
+    "gl-matrix": "^3.4.3",
     "gltf-validator": "2.0.0-dev.3.9",
     "lerna": "6.4.1",
     "meshoptimizer": "0.18.1",

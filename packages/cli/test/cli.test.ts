@@ -5,11 +5,12 @@ import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { program, programReady } from '@gltf-transform/cli';
-
-const draco3d = require('draco3dgltf');
-const { MeshoptDecoder } = require('meshoptimizer');
+import draco3d from 'draco3dgltf';
+import { MeshoptDecoder } from 'meshoptimizer';
 
 tmp.setGracefulCleanup();
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/cli::copy', async (t) => {
 	await programReady;

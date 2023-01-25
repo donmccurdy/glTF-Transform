@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { sequence } from '../';
+import { sequence } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::sequence', async (t) => {
 	const doc = new Document();

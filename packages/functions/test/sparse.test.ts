@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
-import { sparse } from '../';
+import { sparse } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::sparse', async (t) => {
 	const document = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));

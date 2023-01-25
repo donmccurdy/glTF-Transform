@@ -6,9 +6,10 @@
 	"description": "CLI interface to glTF Transform",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
-	"main": "dist/cli.js",
-	"source": "src/cli.ts",
-	"types": "dist/cli.d.ts",
+	"type": "module",
+	"exports": "./dist/cli.esm.js",
+	"source": "./src/cli.ts",
+	"types": "./dist/cli.d.ts",
 	"browserslist": [
 		"node >= 14"
 	],
@@ -16,12 +17,12 @@
 		"node": ">=14"
 	},
 	"scripts": {
-		"dist": "microbundle --format cjs --target node",
-		"watch": "microbundle watch --format cjs --target node",
-		"watch:debug": "microbundle watch --no-compress --format cjs --target node"
+		"dist": "microbundle --format esm --target node",
+		"watch": "microbundle watch --format esm --target node",
+		"watch:debug": "microbundle watch --no-compress --format esm --target node"
 	},
 	"bin": {
-		"gltf-transform": "bin/cli.js"
+		"gltf-transform": "./bin/cli.js"
 	},
 	"dependencies": {
 		"@caporal/core": "^2.0.2",
@@ -31,7 +32,9 @@
 		"@types/inquirer": "^8.2.1",
 		"@types/language-tags": "^1.0.1",
 		"@types/micromatch": "^4.0.2",
+		"@types/node-fetch": "^2.6.2",
 		"@types/spdx-correct": "^3.0.0",
+		"@types/tmp": "^0.2.3",
 		"cli-table3": "^0.6.3",
 		"command-exists": "^1.2.9",
 		"csv-stringify": "^6.2.3",

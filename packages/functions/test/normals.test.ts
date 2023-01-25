@@ -1,9 +1,10 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { normals } from '../';
+import { normals } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/functions::normals', async (t) => {
-	const doc = new Document();
+	const doc = new Document().setLogger(logger);
 	const indicesArray = new Uint16Array([0, 1, 2]);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 1, 0, 0]);
 	const normalArray = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]);

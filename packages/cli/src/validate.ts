@@ -1,22 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import type Validator from 'gltf-validator';
+import validator from 'gltf-validator';
 import type { ILogger } from '@gltf-transform/core';
 import { formatHeader, formatTable, TableFormat } from './util';
-
-const validator = createValidator();
-
-/** Creates and returns a 'gltf-validator' instance. */
-function createValidator(): typeof Validator {
-	// Workaround for https://github.com/GoogleChromeLabs/squoosh/pull/1176.
-	const navigator = global.navigator;
-	delete (global as unknown as Record<string, unknown>).navigator;
-	try {
-		return require('gltf-validator');
-	} finally {
-		global.navigator = navigator;
-	}
-}
 
 export interface ValidateOptions {
 	limit: number;

@@ -1,8 +1,7 @@
 import test from 'ava';
 import fs from 'fs';
-import path from 'path';
 import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
-import { createPlatformIO } from '../../../test-utils';
+import { createPlatformIO, resolve } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::io | common', async (t) => {
 	const io = await createPlatformIO();
@@ -145,7 +144,7 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 
 test('@gltf-transform/core::io | gltf embedded', async (t) => {
 	const io = await createPlatformIO();
-	const jsonPath = path.resolve(__dirname, '../in/Box_glTF-Embedded/Box.gltf');
+	const jsonPath = resolve('../in/Box_glTF-Embedded/Box.gltf', import.meta.url);
 	const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
 	const json = JSON.parse(jsonContent);
 	const jsonDoc = { json, resources: {} } as JSONDocument;

@@ -1,7 +1,9 @@
 import path from 'path';
 import test from 'ava';
 import { Logger, NodeIO } from '@gltf-transform/core';
-import { partition } from '../';
+import { partition } from '@gltf-transform/functions';
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('@gltf-transform/functions::partition', async (t) => {
 	const io = new NodeIO();
