@@ -47,7 +47,7 @@
     "gltf-validator": "2.0.0-dev.3.9",
     "lerna": "6.4.1",
     "meshoptimizer": "0.18.1",
-    "microbundle": "0.14.2",
+    "microbundle": "0.15.1",
     "mikktspace": "1.1.1",
     "prettier": "2.8.3",
     "source-map-support": "0.5.21",

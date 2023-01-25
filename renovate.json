@@ -4,13 +4,6 @@
     ],
     "packageRules": [
         {
-            "description": "https://github.com/donmccurdy/glTF-Transform/pull/631",
-            "matchPackageNames": [
-                "microbundle"
-            ],
-            "enabled": false
-        },
-        {
             "description": "https://github.com/TypeStrong/typedoc/issues/1633",
             "matchPackageNames": [
                 "typedoc"
