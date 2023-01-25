@@ -3,10 +3,10 @@
 	"name": "@gltf-transform/test-utils",
 	"version": "3.0.0-alpha.4",
 	"type": "module",
+	"sideEffects": false,
 	"exports": "./dist/test-utils.modern.js",
 	"source": "./src/index.ts",
 	"types": "./dist/index.d.ts",
-	"sideEffects": false,
 	"scripts": {
 		"dist": "microbundle --format modern --no-compress",
 		"watch": "microbundle watch --format modern --no-compress"

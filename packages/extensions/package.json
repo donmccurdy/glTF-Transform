@@ -8,7 +8,6 @@
 	"license": "MIT",
 	"type": "module",
 	"sideEffects": false,
-	"main": "./dist/extensions.cjs",
 	"module": "./dist/extensions.modern.js",
 	"exports": "./dist/extensions.modern.js",
 	"source": "./src/extensions.ts",
@@ -19,9 +18,9 @@
 		"node >= 14"
 	],
 	"scripts": {
-		"dist": "microbundle --format modern,cjs",
-		"watch": "microbundle watch --format modern,cjs",
-		"watch:debug": "microbundle watch --no-compress --format modern,cjs"
+		"dist": "microbundle --format modern",
+		"watch": "microbundle watch --format modern",
+		"watch:debug": "microbundle watch --format modern --no-compress"
 	},
 	"keywords": [
 		"gltf",
