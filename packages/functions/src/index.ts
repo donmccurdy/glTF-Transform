@@ -80,6 +80,7 @@ export * from './transform-mesh';
 export * from './transform-primitive';
 export * from './unlit';
 export * from './unpartition';
+export { getGLPrimitiveCount, isTransformPending, createTransform } from './utils';
 export * from './unweld';
 export * from './weld';
 export * from './list-texture-channels';

@@ -9,7 +9,7 @@ import {
 	KHRMaterialsSpecular,
 	Specular,
 } from '@gltf-transform/extensions';
-import { metalRough } from '../';
+import { metalRough } from '@gltf-transform/functions';
 
 const ZEROS = ndarray(new Uint8Array([0, 0, 0, 0]), [1, 1, 4]);
 

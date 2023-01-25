@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
-import { textureCompress } from '../';
+import { textureCompress } from '@gltf-transform/functions';
 
 const ORIGINAL_JPEG = new Uint8Array([101]);
 const ORIGINAL_PNG = new Uint8Array([102]);

@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Accessor, Document, Logger } from '@gltf-transform/core';
-import { fromEuler } from 'gl-matrix/quat';
-import { resample } from '../';
+import { quat } from '@gltf-transform/test-utils';
+import { resample } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::resample', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
@@ -45,13 +45,13 @@ test('@gltf-transform/functions::resample | rotation', async (t) => {
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
 	const outArray = new Float32Array([
-		...fromEuler([], 0, 0, 0),
-		...fromEuler([], 45, 0, 0),
-		...fromEuler([], 90, 0, 0),
-		...fromEuler([], 135, 0, 0),
-		...fromEuler([], 180, 0, 0), // resampling can't create ≥180º steps!
-		...fromEuler([], 225, 0, 0),
-		...fromEuler([], 270, 0, 0),
+		...quat.fromEuler([], 0, 0, 0),
+		...quat.fromEuler([], 45, 0, 0),
+		...quat.fromEuler([], 90, 0, 0),
+		...quat.fromEuler([], 135, 0, 0),
+		...quat.fromEuler([], 180, 0, 0), // resampling can't create ≥180º steps!
+		...quat.fromEuler([], 225, 0, 0),
+		...quat.fromEuler([], 270, 0, 0),
 	]);
 
 	const input = doc.createAccessor('input').setType(Accessor.Type.SCALAR).setArray(inArray);

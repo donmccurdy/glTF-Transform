@@ -14,7 +14,7 @@
     "watch:debug": "lerna run watch:debug --parallel --stream",
     "clean:dist": "rm -rf packages/*/dist/**",
     "clean:deps": "rm -rf packages/*/node_modules/**",
-    "test": "ava packages/{core,extensions,cli}/test/**/*.test.ts",
+    "test": "ava packages/{core,extensions,functions,cli}/test/**/*.test.ts",
     "coverage": "c8 --reporter=lcov --reporter=text yarn test --tap",
     "coverage:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\"",

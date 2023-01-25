@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { unlit } from '../';
+import { unlit } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::unlit', async (t) => {
 	const document = new Document();

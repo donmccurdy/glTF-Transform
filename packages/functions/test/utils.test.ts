@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
-import { getGLPrimitiveCount, createTransform, isTransformPending } from '../src/utils';
+import { getGLPrimitiveCount, createTransform, isTransformPending } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 	const doc = new Document();

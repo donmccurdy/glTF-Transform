@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { sortPrimitiveWeights } from '../';
+import { sortPrimitiveWeights } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::sortPrimitiveWeights', async (t) => {
 	const prim = createSkinnedPrimitive();

@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { tangents } from '../';
+import { tangents } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::tangents', async (t) => {
 	const doc = new Document();

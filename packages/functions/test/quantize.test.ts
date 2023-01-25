@@ -14,7 +14,7 @@ import {
 	vec3,
 } from '@gltf-transform/core';
 import { KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
-import { quantize } from '../';
+import { quantize } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 

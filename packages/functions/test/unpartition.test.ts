@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
-import { unpartition } from '../';
+import { unpartition } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::unpartition', async (t) => {
 	const document = new Document();

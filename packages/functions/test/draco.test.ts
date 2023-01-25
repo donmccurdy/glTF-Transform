@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { draco } from '../';
+import { draco } from '@gltf-transform/functions';
 
 test('@gltf-transform/functions::draco', async (t) => {
 	const document = new Document();

@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, Logger, PropertyType } from '@gltf-transform/core';
-import { prune } from '../';
+import { prune } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
