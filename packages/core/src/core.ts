@@ -45,6 +45,7 @@ export {
 export {
 	TypedArray,
 	TypedArrayConstructor,
+	ComponentTypeToTypedArray,
 	PropertyType,
 	Format,
 	Nullable,

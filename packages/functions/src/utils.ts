@@ -1,6 +1,17 @@
 import type { NdArray } from 'ndarray';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import { Accessor, Node, Primitive, Scene, Texture, Transform, TransformContext } from '@gltf-transform/core';
+import {
+	Accessor,
+	Document,
+	Node,
+	Primitive,
+	Property,
+	PropertyType,
+	Scene,
+	Texture,
+	Transform,
+	TransformContext,
+} from '@gltf-transform/core';
 
 /**
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
@@ -189,4 +200,52 @@ export function traverseNodeParents(node: Node, fn: (parent: Scene | Node) => vo
 			child = parent;
 		}
 	}
+}
+
+/** @hidden */
+export function isUsed(prop: Property): boolean {
+	return prop.listParents().some((parent) => parent.propertyType !== PropertyType.ROOT);
+}
+
+/**
+ * Creates a unique key associated with the structure and draw call characteristics of
+ * a {@link Primitive}, independent of its vertex content. Helper method, used to
+ * identify candidate Primitives for joining.
+ * @hidden
+ */
+export function createPrimGroupKey(prim: Primitive): string {
+	const document = Document.fromGraph(prim.getGraph())!;
+	const material = prim.getMaterial();
+	const materialIndex = document.getRoot().listMaterials().indexOf(material!);
+	const mode = prim.getMode();
+	const indices = !!prim.getIndices();
+
+	const attributes = prim
+		.listSemantics()
+		.sort()
+		.map((semantic) => {
+			const attribute = prim.getAttribute(semantic)!;
+			const elementSize = attribute.getElementSize();
+			const componentType = attribute.getComponentType();
+			return `semantic:${elementSize}:${componentType}`;
+		})
+		.join('+');
+
+	const targets = prim
+		.listTargets()
+		.map((target) => {
+			return target
+				.listSemantics()
+				.sort()
+				.map((semantic) => {
+					const attribute = prim.getAttribute(semantic)!;
+					const elementSize = attribute.getElementSize();
+					const componentType = attribute.getComponentType();
+					return `semantic:${elementSize}:${componentType}`;
+				})
+				.join('+');
+		})
+		.join('~');
+
+	return `${materialIndex}|${mode}|${indices}|${attributes}|${targets}`;
 }
