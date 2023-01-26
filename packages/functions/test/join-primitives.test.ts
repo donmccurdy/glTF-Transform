@@ -49,6 +49,8 @@ test('@gltf-transform/functions::joinPrimitives', async (t) => {
 		0, 0, 0, 127,
 		0, 0, 0, 0,
 	], 'position data');
+
+	t.is(primAB.getIndices(), null, 'indices data');
 });
 
 test('@gltf-transform/functions::joinPrimitives | indexed', async (t) => {
