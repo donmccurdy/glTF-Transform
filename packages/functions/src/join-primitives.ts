@@ -1,5 +1,13 @@
-import { Accessor, Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, isUsed } from './utils';
+import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
+import { createIndices, createPrimGroupKey } from './utils';
+
+interface JoinPrimitiveOptions {
+	skipValidation?: boolean;
+}
+
+const JOIN_PRIMITIVE_DEFAULTS: Required<JoinPrimitiveOptions> = {
+	skipValidation: false,
+};
 
 /**
  * Given a list of compatible Mesh {@link Primitive Primitives}, returns new Primitive
@@ -22,15 +30,13 @@ import { createIndices, createPrimGroupKey, isUsed } from './utils';
  * mesh.addPrimitive(result);
  * ```
  */
-export function joinPrimitives(
-	prims: Primitive[],
-	{ skipValidation = false, skipCleanup = false }: { skipValidation: boolean; skipCleanup: boolean }
-): Primitive {
+export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions = {}): Primitive {
+	options = { ...JOIN_PRIMITIVE_DEFAULTS, ...options };
 	const templatePrim = prims[0]!;
 	const document = Document.fromGraph(templatePrim.getGraph())!;
 
 	// (1) Validation.
-	if (!skipValidation && new Set(prims.map(createPrimGroupKey)).size > 1) {
+	if (!options.skipValidation && new Set(prims.map(createPrimGroupKey)).size > 1) {
 		throw new Error(
 			'' +
 				'Requires ≥2 Primitives, sharing the same Material ' +
@@ -42,7 +48,8 @@ export function joinPrimitives(
 	const countList = [] as number[]; // vertex count, by prim
 	const indicesList = [] as (Uint32Array | Uint16Array)[]; // indices, by prim
 
-	let totalCount = 0;
+	let dstVertexCount = 0;
+	let dstIndicesCount = 0;
 
 	// (2) Build remap lists.
 	for (const srcPrim of prims) {
@@ -52,62 +59,58 @@ export function joinPrimitives(
 		for (let i = 0; i < indices.length; i++) {
 			const index = indices[i];
 			if (remap[index] === undefined) {
-				remap[index] = totalCount++;
+				remap[index] = dstVertexCount++;
 				count++;
 			}
+			dstIndicesCount++;
 		}
 		remapList.push(new Uint32Array(remap));
 		countList.push(count);
 		indicesList.push(indices);
 	}
 
-	// (3) Allocate joined Primitive.
+	// (3) Allocate joined attributes.
 	const dstPrim = document.createPrimitive().setMode(templatePrim.getMode()).setMaterial(templatePrim.getMaterial());
 	for (const semantic of templatePrim.listSemantics()) {
 		const tplAttribute = templatePrim.getAttribute(semantic)!;
-		const TemplateArray = ComponentTypeToTypedArray[tplAttribute.getComponentType()];
+		const AttributeArray = ComponentTypeToTypedArray[tplAttribute.getComponentType()];
 		const dstAttribute = document
 			.createAccessor()
+			.setType(tplAttribute.getType())
 			.setBuffer(tplAttribute.getBuffer())
 			.setNormalized(tplAttribute.getNormalized())
-			.setArray(new TemplateArray(totalCount));
+			.setArray(new AttributeArray(dstVertexCount * tplAttribute.getElementSize()));
 		dstPrim.setAttribute(semantic, dstAttribute);
 	}
 
-	// (4) Remap attributes into joined Primitive.
+	// (4) Allocate joined indices.
+	const dstIndicesArray = templatePrim.getIndices() ? createIndices(dstVertexCount) : null;
+	const dstIndices =
+		dstIndicesArray &&
+		document
+			.createAccessor()
+			.setBuffer(templatePrim.getIndices()!.getBuffer())
+			.setArray(createIndices(dstIndicesCount, dstVertexCount));
+	dstPrim.setIndices(dstIndices);
+
+	// (5) Remap attributes into joined Primitive.
+	let nextIndex = 0;
 	for (let primIndex = 0; primIndex < remapList.length; primIndex++) {
 		const srcPrim = prims[primIndex];
 		const remap = remapList[primIndex];
-		const indices = indicesList[primIndex];
+		const indicesArray = indicesList[primIndex];
 
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
 			const el = [] as number[];
-			for (let i = 0; i < indices.length; i++) {
-				const index = indices[i];
+			for (let i = 0; i < indicesArray.length; i++) {
+				const index = indicesArray[i];
 				srcAttribute.getElement(index, el);
 				dstAttribute.setElement(remap[index], el);
-			}
-		}
-	}
-
-	// (5) Clean up.
-	if (!skipCleanup) {
-		const srcAccessors = new Set<Accessor>();
-		for (const srcPrim of prims) {
-			const indices = srcPrim.getIndices();
-			if (indices) {
-				srcAccessors.add(indices);
-			}
-			for (const attribute of srcPrim.listAttributes()) {
-				srcAccessors.add(attribute);
-			}
-			srcPrim.dispose();
-		}
-		for (const srcAccessor of srcAccessors) {
-			if (!srcAccessor.listParents().some(isUsed)) {
-				srcAccessor.dispose();
+				if (dstIndices) {
+					dstIndices.setScalar(nextIndex++, remap[index]);
+				}
 			}
 		}
 	}
