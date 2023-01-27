@@ -103,7 +103,10 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 	const groups = {} as Record<string, IJoinGroup>;
 
 	// Scan for compatible Primitives.
-	for (const node of parent.listChildren()) {
+	const children = parent.listChildren();
+	for (let nodeIndex = 0; nodeIndex < children.length; nodeIndex++) {
+		const node = children[nodeIndex];
+
 		// Skip nodes without meshes.
 		const mesh = node.getMesh();
 		if (!mesh) continue;
@@ -114,7 +117,6 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		// TODO(🚩): Skip Nodes with animation (direct? inherited?).
 		// TODO(🚩): Handle reused Mesh, Primitive, or Accessor.
 
-		const meshIndex = document.getRoot().listMeshes().indexOf(mesh);
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
 			if (prim.listTargets().length > 0) continue;
@@ -125,8 +127,9 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 			let key = createPrimGroupKey(prim);
 
-			if (options.keepMeshes || (options.keepNamed && mesh.getName())) {
-				key += `|${meshIndex}`;
+			const isNamed = mesh.getName() || node.getName();
+			if (options.keepMeshes || (options.keepNamed && isNamed)) {
+				key += `|${nodeIndex}`;
 			}
 
 			if (!(key in groups)) {
