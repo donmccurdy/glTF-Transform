@@ -1,4 +1,14 @@
-import { Document, mat4, Mesh, Node, Primitive, PropertyType, Scene, Transform } from '@gltf-transform/core';
+import {
+	AnimationChannel,
+	Document,
+	mat4,
+	Mesh,
+	Node,
+	Primitive,
+	PropertyType,
+	Scene,
+	Transform,
+} from '@gltf-transform/core';
 import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives';
 import { prune } from './prune';
@@ -107,6 +117,10 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 	for (let nodeIndex = 0; nodeIndex < children.length; nodeIndex++) {
 		const node = children[nodeIndex];
 
+		// Skip animated nodes.
+		const isAnimated = node.listParents().some((p) => p instanceof AnimationChannel);
+		if (isAnimated) continue;
+
 		// Skip nodes without meshes.
 		const mesh = node.getMesh();
 		if (!mesh) continue;
@@ -114,7 +128,6 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
 
-		// TODO(🚩): Skip Nodes with animation (direct? inherited?).
 		// TODO(🚩): Handle reused Mesh, Primitive, or Accessor.
 
 		for (const prim of mesh.listPrimitives()) {
