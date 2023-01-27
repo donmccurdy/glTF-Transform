@@ -227,7 +227,7 @@ export function createPrimGroupKey(prim: Primitive): string {
 			const attribute = prim.getAttribute(semantic)!;
 			const elementSize = attribute.getElementSize();
 			const componentType = attribute.getComponentType();
-			return `semantic:${elementSize}:${componentType}`;
+			return `${semantic}:${elementSize}:${componentType}`;
 		})
 		.join('+');
 
@@ -241,7 +241,7 @@ export function createPrimGroupKey(prim: Primitive): string {
 					const attribute = prim.getAttribute(semantic)!;
 					const elementSize = attribute.getElementSize();
 					const componentType = attribute.getComponentType();
-					return `semantic:${elementSize}:${componentType}`;
+					return `${semantic}:${elementSize}:${componentType}`;
 				})
 				.join('+');
 		})

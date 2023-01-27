@@ -65,12 +65,14 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 		await fs.writeFile(params[params.length - 2], new Uint8Array(8));
 		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
 	});
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	mockWaitExit(async (process: any) => {
 		const { status, stdout, stderr } = await process;
 		return [status, stdout, stderr];
 	});
 	mockCommandExists(() => Promise.resolve(true));
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	await doc.transform(toktx(options as any));
 
 	return actualParams.slice(0, -2).join(' ');

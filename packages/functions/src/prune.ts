@@ -77,6 +77,15 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 		// Prune top-down, so that low-level properties like accessors can be removed if the
 		// properties referencing them are removed.
 
+		// Prune empty Meshes.
+		if (propertyTypes.has(PropertyType.MESH)) {
+			for (const mesh of root.listMeshes()) {
+				if (mesh.listPrimitives().length > 0) continue;
+				mesh.dispose();
+				markDisposed(mesh);
+			}
+		}
+
 		if (propertyTypes.has(PropertyType.NODE) && !options.keepLeaves) root.listScenes().forEach(nodeTreeShake);
 		if (propertyTypes.has(PropertyType.NODE)) root.listNodes().forEach(treeShake);
 		if (propertyTypes.has(PropertyType.SKIN)) root.listSkins().forEach(treeShake);

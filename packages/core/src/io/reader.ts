@@ -24,7 +24,7 @@ export class GLTFReader {
 	public static read(jsonDoc: JSONDocument, _options: ReaderOptions = DEFAULT_OPTIONS): Document {
 		const options = { ...DEFAULT_OPTIONS, ..._options } as Required<ReaderOptions>;
 		const { json } = jsonDoc;
-		const doc = new Document();
+		const doc = new Document().setLogger(options.logger);
 
 		this.validate(jsonDoc, options);
 

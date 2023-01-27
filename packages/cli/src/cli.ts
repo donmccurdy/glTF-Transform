@@ -5,7 +5,7 @@ import { gzip } from 'node-gzip';
 import caporal from '@caporal/core';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions, sparse, SparseOptions } from '@gltf-transform/functions';
+import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, flatten, FlattenOptions, sparse, SparseOptions, join, JoinOptions, JOIN_DEFAULTS } from '@gltf-transform/functions';
 import { inspect } from './inspect';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
@@ -350,7 +350,7 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 
 // INSTANCE
 program
-	.command('instance', 'Create GPU instances from shared Mesh references')
+	.command('instance', 'Create GPU instances from shared mesh references')
 	.help(`
 For meshes reused by more than one node in a scene, this command creates an
 EXT_mesh_gpu_instancing extension to aid with GPU instancing. In engines that
@@ -390,6 +390,38 @@ moved.
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(flatten({...options} as FlattenOptions))
+	);
+
+// JOIN
+program
+	.command('join', 'Join meshes and reduce draw calls')
+	.help(`
+Joins compatible Primitives and reduces draw calls. Primitives are eligible for
+joining if they are members of the same Mesh or, optionally, attached to sibling
+Nodes in the scene hierarchy. Implicitly runs \`dedup\` and \`flatten\` commands
+first, to maximize the number of Primitives that can be joined.
+
+NOTE: In a Scene that heavily reuses the same Mesh data, joining may increase
+vertex count. Consider alternatives, like \`instance\` with
+EXT_mesh_gpu_instancing.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+		validator: program.BOOLEAN,
+		default: JOIN_DEFAULTS.keepMeshes,
+	})
+	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+		validator: program.BOOLEAN,
+		default: JOIN_DEFAULTS.keepNamed,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(
+				dedup({propertyTypes: [PropertyType.MATERIAL]}),
+				flatten(),
+				join({...options} as unknown as JoinOptions)
+			)
 	);
 
 program.command('', '\n\n🕋 GEOMETRY ─────────────────────────────────────────');

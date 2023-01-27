@@ -8,7 +8,8 @@ test('@gltf-transform/functions::prune', async (t) => {
 	const doc = new Document().setLogger(logger);
 
 	// Create used resources.
-	const mesh = doc.createMesh();
+	const prim = doc.createPrimitive();
+	const mesh = doc.createMesh().addPrimitive(prim);
 	const node = doc.createNode().setMesh(mesh);
 	const scene = doc.createScene().addChild(node);
 	const chan = doc.createAnimationChannel().setTargetNode(node);
@@ -16,32 +17,39 @@ test('@gltf-transform/functions::prune', async (t) => {
 	const anim = doc.createAnimation().addChannel(chan).addSampler(samp);
 
 	// Create unused resources.
-	const mesh2 = doc.createMesh();
+	const mesh2 = doc.createMesh().addPrimitive(prim);
 	const node2 = doc.createNode().setMesh(mesh2);
 	const chan2 = doc.createAnimationChannel().setTargetNode(node2);
 	const samp2 = doc.createAnimationSampler();
 	const anim2 = doc.createAnimation().addChannel(chan2).addSampler(samp2);
 
+	const mesh3 = doc.createMesh();
+	const node3 = doc.createNode().setMesh(mesh3);
+	scene.addChild(node3);
+
 	await doc.transform(prune());
 
-	t.falsy(scene.isDisposed(), 'referenced scene');
-	t.falsy(mesh.isDisposed(), 'referenced mesh');
-	t.falsy(node.isDisposed(), 'referenced node');
-	t.falsy(anim.isDisposed(), 'referenced animation');
-	t.falsy(samp.isDisposed(), 'referenced sampler');
-	t.falsy(chan.isDisposed(), 'referenced channel');
+	t.false(scene.isDisposed(), 'referenced scene');
+	t.false(mesh.isDisposed(), 'referenced mesh');
+	t.false(node.isDisposed(), 'referenced node');
+	t.false(anim.isDisposed(), 'referenced animation');
+	t.false(samp.isDisposed(), 'referenced sampler');
+	t.false(chan.isDisposed(), 'referenced channel');
 
-	t.truthy(mesh2.isDisposed(), 'unreferenced mesh');
-	t.truthy(node2.isDisposed(), 'unreferenced node');
-	t.truthy(anim2.isDisposed(), 'unreferenced animation');
-	t.truthy(samp2.isDisposed(), 'unreferenced sampler');
-	t.truthy(chan2.isDisposed(), 'unreferenced channel');
+	t.true(mesh2.isDisposed(), 'unreferenced mesh');
+	t.true(node2.isDisposed(), 'unreferenced node');
+	t.true(anim2.isDisposed(), 'unreferenced animation');
+	t.true(samp2.isDisposed(), 'unreferenced sampler');
+	t.true(chan2.isDisposed(), 'unreferenced channel');
+
+	t.true(mesh3.isDisposed(), 'empty mesh');
 });
 
 test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 	const document = new Document().setLogger(logger);
 
-	const mesh = document.createMesh();
+	const prim = document.createPrimitive();
+	const mesh = document.createMesh().addPrimitive(prim);
 	const skin = document.createSkin();
 	const nodeC = document.createNode('C').setMesh(mesh);
 	const nodeB = document.createNode('B').addChild(nodeC);
