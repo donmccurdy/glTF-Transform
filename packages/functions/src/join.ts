@@ -113,8 +113,8 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 		// TODO(🚩): Skip Nodes with animation (direct? inherited?).
 		// TODO(🚩): Handle reused Mesh, Primitive, or Accessor.
-		// TODO(🚩): Handle keepNames, keepMeshes.
 
+		const meshIndex = document.getRoot().listMeshes().indexOf(mesh);
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
 			if (prim.listTargets().length > 0) continue;
@@ -123,7 +123,12 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			const material = prim.getMaterial();
 			if (material && material.getExtension('KHR_materials_volume')) continue;
 
-			const key = createPrimGroupKey(prim);
+			let key = createPrimGroupKey(prim);
+
+			if (options.keepMeshes || (options.keepNamed && mesh.getName())) {
+				key += `|${meshIndex}`;
+			}
+
 			if (!(key in groups)) {
 				groups[key] = {
 					prims: [] as Primitive[],
@@ -163,7 +168,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		dstMesh.addPrimitive(dstPrim);
 
 		logger.debug(
-			`join: Joined ${prims.length} Primitives and ` +
+			`${NAME}: Joined ${prims.length} Primitives and ` +
 				`${formatLong(dstVertexCount)} vertices at Node "${dstNode.getName()}".`
 		);
 	}
