@@ -31,18 +31,16 @@ const _matrix = [
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JoinOptions {
 	/**
-	 * Prevents {@link Node Nodes} and {@link Mesh Meshes} from being
-	 * joined into fewer Meshes with multiple {@link Primitive Primitives}.
+	 * Prevents joining distinct {@link Mesh Meshes} and {@link Node Nodes}.
 	 * Joins only Primitives found within the same parent Mesh. To preserve
-	 * only _named_ Nodes and Meshes, use {@link JoinOptions.keepNamed}
-	 * instead. Default: false.
+	 * only _named_ Nodes and Meshes, use
+	 * {@link JoinOptions.keepNamed keepNamed} instead. Default: false.
 	 */
 	keepMeshes: boolean;
 	/**
-	 * Prevents _named_ {@link Node Nodes} and {@link Mesh Meshes} from being
-	 * joined into fewer Meshes with multiple {@link Primitive Primitives}.
-	 * If {@link JoinOptions.keepMeshes} is enabled, keepNamed will have
-	 * no effect. Default: false.
+	 * Prevents joining _named_ {@link Mesh Meshes} and {@link Node Nodes}.
+	 * If {@link JoinOptions.keepMeshes keepMeshes} is enabled, keepNamed will
+	 * have no effect. Default: false.
 	 */
 	keepNamed: boolean;
 }
@@ -57,8 +55,8 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
  * Primitives are eligible for joining if they are members of the same
  * {@link Mesh} or, optionally, attached to sibling {@link Node Nodes}
  * in the scene hierarchy. For best results, apply {@link dedup} and
- * {@link flatten} before joining, to maximize the number of Primitives
- * that can be joined.
+ * {@link flatten} first to maximize the number of Primitives that
+ * can be joined.
  *
  * NOTE: In a Scene that heavily reuses the same Mesh data, joining may
  * increase vertex count. Consider alternatives, like

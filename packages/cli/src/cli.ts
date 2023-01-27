@@ -396,15 +396,22 @@ moved.
 program
 	.command('join', 'Join meshes and reduce draw calls')
 	.help(`
-TODO
+Joins compatible Primitives and reduces draw calls. Primitives are eligible for
+joining if they are members of the same Mesh or, optionally, attached to sibling
+Nodes in the scene hierarchy. Implicitly runs \`dedup\` and \`flatten\` commands
+first, to maximize the number of Primitives that can be joined.
+
+NOTE: In a Scene that heavily reuses the same Mesh data, joining may increase
+vertex count. Consider alternatives, like \`instance\` with
+EXT_mesh_gpu_instancing.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--keepMeshes <bool>', 'TODO.', {
+	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
 		validator: program.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--keepNamed <bool>', 'TODO.', {
+	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
 		validator: program.BOOLEAN,
 		default: JOIN_DEFAULTS.keepNamed,
 	})
