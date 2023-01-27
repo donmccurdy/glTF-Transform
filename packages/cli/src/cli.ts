@@ -350,7 +350,7 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 
 // INSTANCE
 program
-	.command('instance', 'Create GPU instances from shared Mesh references')
+	.command('instance', 'Create GPU instances from shared mesh references')
 	.help(`
 For meshes reused by more than one node in a scene, this command creates an
 EXT_mesh_gpu_instancing extension to aid with GPU instancing. In engines that

@@ -94,25 +94,32 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 	dstPrim.setIndices(dstIndices);
 
 	// (5) Remap attributes into joined Primitive.
-	let nextIndex = 0;
+	let dstNextIndex = 0;
 	for (let primIndex = 0; primIndex < remapList.length; primIndex++) {
 		const srcPrim = prims[primIndex];
 		const remap = remapList[primIndex];
 		const indicesArray = indicesList[primIndex];
 
+		const primStartIndex = dstNextIndex;
+		let primNextIndex = primStartIndex;
+
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
 			const el = [] as number[];
+
+			primNextIndex = primStartIndex;
 			for (let i = 0; i < indicesArray.length; i++) {
 				const index = indicesArray[i];
 				srcAttribute.getElement(index, el);
 				dstAttribute.setElement(remap[index], el);
 				if (dstIndices) {
-					dstIndices.setScalar(nextIndex++, remap[index]);
+					dstIndices.setScalar(primNextIndex++, remap[index]);
 				}
 			}
 		}
+
+		dstNextIndex = primNextIndex;
 	}
 
 	return dstPrim;

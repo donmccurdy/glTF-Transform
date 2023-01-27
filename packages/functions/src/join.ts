@@ -3,7 +3,7 @@ import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives';
 import { prune } from './prune';
 import { transformPrimitive } from './transform-primitive';
-import { createPrimGroupKey, createTransform, isTransformPending } from './utils';
+import { createPrimGroupKey, createTransform, formatLong, isTransformPending } from './utils';
 
 const NAME = 'join';
 
@@ -46,30 +46,30 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
  * Example:
  *
  * ```ts
- * import { flatten, join } from '@gltf-transform/functions';
+ * import { PropertyType } from '@gltf-transform/core';
+ * import { join, flatten, dedup } from '@gltf-transform/functions';
  *
  * await document.transform(
- * 	dedup(),
+ * 	dedup({ propertyTypes: [PropertyType.MATERIAL] }),
  * 	flatten(),
- * 	join(),
+ * 	join({ keepNamed: false }),
  * );
  * ```
  */
 export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...JOIN_DEFAULTS, ..._options } as Required<JoinOptions>;
 
 	return createTransform(NAME, async (document: Document, context): Promise<void> => {
 		const root = document.getRoot();
 		const logger = document.getLogger();
 
-		// (1) Scan for compatible primitives in sibling nodes.
+		// Join.
 		for (const scene of root.listScenes()) {
-			_joinLevel(scene);
-			scene.traverse(_joinLevel);
+			_joinLevel(document, scene, options);
+			scene.traverse((node) => _joinLevel(document, node, options));
 		}
 
-		// (6) Clean up.
+		// Clean up.
 		if (!isTransformPending(context, NAME, 'prune')) {
 			await document.transform(
 				prune({
@@ -98,7 +98,8 @@ interface IJoinGroup {
 	dstMesh: Mesh;
 }
 
-function _joinLevel(parent: Node | Scene) {
+function _joinLevel(document: Document, parent: Node | Scene, options: Required<JoinOptions>) {
+	const logger = document.getLogger();
 	const groups = {} as Record<string, IJoinGroup>;
 
 	// Scan for compatible Primitives.
@@ -110,8 +111,9 @@ function _joinLevel(parent: Node | Scene) {
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
 
-		// TODO(impl): Skip if node animated. Inherited animation?
-		// TODO(design): What happens when a Mesh is reused throughout a Scene?
+		// TODO(🚩): Skip Nodes with animation (direct? inherited?).
+		// TODO(🚩): Handle reused Mesh, Primitive, or Accessor.
+		// TODO(🚩): Handle keepNames, keepMeshes.
 
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
@@ -144,20 +146,29 @@ function _joinLevel(parent: Node | Scene) {
 
 	// Bring prims into the local coordinate space of the target node, then join.
 	for (const group of joinGroups) {
-		const { prims, primNodes, dstNode } = group;
+		const { prims, primNodes, dstNode, dstMesh } = group;
 		const dstMatrix = dstNode.getMatrix();
 
 		for (let i = 0; i < prims.length; i++) {
-			const prim = prims[i];
-			const primMatrix = primNodes[i].getMatrix();
-			multiply(_matrix, invert(_matrix, primMatrix), dstMatrix); // TODO(test): 🚩
-			transformPrimitive(prim, primMatrix);
+			const prim = prims[i].clone();
+			const primNode = primNodes[i];
+			if (primNode === dstNode) continue;
+
+			multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
+			transformPrimitive(prim, _matrix);
 		}
 
-		group.dstMesh.addPrimitive(joinPrimitives(prims));
+		const dstPrim = joinPrimitives(prims);
+		const dstVertexCount = dstPrim.listAttributes()[0].getCount();
+		dstMesh.addPrimitive(dstPrim);
+
+		logger.debug(
+			`join: Joined ${prims.length} Primitives and ` +
+				`${formatLong(dstVertexCount)} vertices at Node "${dstNode.getName()}".`
+		);
 	}
 
-	// Clean up.
+	// Partial cleanup, defer the rest to join().
 	for (const group of joinGroups) {
 		const { prims, primMeshes } = group;
 		for (let i = 0; i < prims.length; i++) {
