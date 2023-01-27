@@ -16,7 +16,7 @@ import { HTTPUtils } from '../utils';
  * Usage:
  *
  * ```typescript
- * const { NodeIO } = require('@gltf-transform/core');
+ * import { NodeIO } from '@gltf-transform/core';
  *
  * const io = new NodeIO();
  *
