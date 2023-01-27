@@ -13,7 +13,7 @@ import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives';
 import { prune } from './prune';
 import { transformPrimitive } from './transform-primitive';
-import { createPrimGroupKey, createTransform, formatLong, isTransformPending } from './utils';
+import { createPrimGroupKey, createTransform, formatLong, isTransformPending, isUsed } from './utils';
 
 const NAME = 'join';
 
@@ -111,7 +111,7 @@ interface IJoinGroup {
 	primMeshes: Mesh[];
 	primNodes: Node[];
 	dstNode: Node;
-	dstMesh: Mesh;
+	dstMesh?: Mesh | undefined;
 }
 
 function _joinLevel(document: Document, parent: Node | Scene, options: Required<JoinOptions>) {
@@ -155,13 +155,12 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 					primMeshes: [] as Mesh[],
 					primNodes: [] as Node[],
 					dstNode: node,
-					dstMesh: mesh,
+					dstMesh: undefined,
 				} as IJoinGroup;
 			}
 
 			const group = groups[key];
 			group.prims.push(prim);
-			group.primMeshes.push(mesh);
 			group.primNodes.push(node);
 		}
 	}
@@ -169,43 +168,43 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 	// Discard single-Primitive groups.
 	const joinGroups = Object.values(groups).filter(({ prims }) => prims.length > 1);
 
-	// Unlink reused Meshes before modifying.
-	for (const group of joinGroups) {
-		const { primNodes, primMeshes } = group;
-		const groupMeshes = new Set<Mesh>();
-		for (let i = 0; i < primNodes.length; i++) {
-			const node = primNodes[i];
-			const mesh = primMeshes[i];
-			const isSharedMesh = mesh.listParents().some((parent) => {
-				if (parent.propertyType === NODE) return parent !== node;
-				return parent.propertyType !== ROOT;
-			});
-			if (isSharedMesh && !groupMeshes.has(mesh)) {
-				primMeshes[i] = mesh.clone();
-				node.setMesh(primMeshes[i]);
-				groupMeshes.add(mesh);
-			}
+	// Unlink all affected Meshes at current level, before modifying Primitives.
+	const srcNodes = new Set<Node>(joinGroups.flatMap((group) => group.primNodes));
+	for (const node of srcNodes) {
+		const mesh = node.getMesh()!;
+		const isSharedMesh = mesh.listParents().some((parent) => {
+			return parent.propertyType !== ROOT && node !== parent;
+		});
+		if (isSharedMesh) {
+			node.setMesh(mesh.clone());
 		}
 	}
 
-	// Bring prims into the local coordinate space of the target node, then join.
+	// Update Meshes in groups.
 	for (const group of joinGroups) {
-		const { prims, primNodes, primMeshes, dstNode, dstMesh } = group;
+		const { dstNode, primNodes } = group;
+		group.dstMesh = dstNode.getMesh()!;
+		group.primMeshes = primNodes.map((node) => node.getMesh()!);
+	}
+
+	// Join Primitives.
+	for (const group of joinGroups) {
+		const { prims, primNodes, primMeshes, dstNode, dstMesh } = group as Required<IJoinGroup>;
 		const dstMatrix = dstNode.getMatrix();
 
 		for (let i = 0; i < prims.length; i++) {
 			const primNode = primNodes[i];
 			const primMesh = primMeshes[i];
-			if (primNode === dstNode) continue;
 
-			// Unlink reused Primitives before transforming.
 			let prim = prims[i];
-			if (_isSharedPrimitive(prim, primMesh)) {
-				prim = prims[i] = _deepClonePrimitive(prims[i]);
-			}
+			primMesh.removePrimitive(prim);
 
-			multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
-			transformPrimitive(prim, _matrix);
+			// Transform Primitive into new local coordinate space.
+			if (primNode !== dstNode) {
+				if (isUsed(prim)) prim = prims[i] = _deepClonePrimitive(prims[i]);
+				multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
+				transformPrimitive(prim, _matrix);
+			}
 		}
 
 		const dstPrim = joinPrimitives(prims);
@@ -217,27 +216,6 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 				`${formatLong(dstVertexCount)} vertices under Node "${dstNode.getName()}".`
 		);
 	}
-
-	// Partial cleanup, defer the rest to join().
-	for (const group of joinGroups) {
-		const { prims, primMeshes } = group;
-		for (let i = 0; i < prims.length; i++) {
-			primMeshes[i].removePrimitive(prims[i]);
-		}
-	}
-	for (const group of joinGroups) {
-		const { primMeshes } = group;
-		for (let i = 0; i < primMeshes.length; i++) {
-			const mesh = primMeshes[i];
-			if (mesh.listPrimitives().length === 0) {
-				mesh.dispose();
-			}
-		}
-	}
-}
-
-function _isSharedPrimitive(prim: Primitive, mesh: Mesh): boolean {
-	return prim.listParents().some((parent) => parent !== mesh);
 }
 
 function _deepClonePrimitive(src: Primitive): Primitive {
