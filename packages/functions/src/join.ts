@@ -17,6 +17,8 @@ import { createPrimGroupKey, createTransform, formatLong, isTransformPending } f
 
 const NAME = 'join';
 
+const { ROOT, NODE, MESH, PRIMITIVE, ACCESSOR } = PropertyType;
+
 // prettier-ignore
 const _matrix = [
 	0, 0, 0, 0,
@@ -51,7 +53,16 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
 };
 
 /**
- * TODO
+ * Joins compatible {@link Primitive Primitives} and reduces draw calls.
+ * Primitives are eligible for joining if they are members of the same
+ * {@link Mesh} or, optionally, attached to sibling {@link Node Nodes}
+ * in the scene hierarchy. For best results, apply {@link dedup} and
+ * {@link flatten} before joining, to maximize the number of Primitives
+ * that can be joined.
+ *
+ * NOTE: In a Scene that heavily reuses the same Mesh data, joining may
+ * increase vertex count. Consider alternatives, like
+ * {@link instance instancing} with {@link EXTMeshGPUInstancing}.
  *
  * Example:
  *
@@ -83,12 +94,7 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 		if (!isTransformPending(context, NAME, 'prune')) {
 			await document.transform(
 				prune({
-					propertyTypes: [
-						PropertyType.NODE,
-						PropertyType.MESH,
-						PropertyType.PRIMITIVE,
-						PropertyType.ACCESSOR,
-					],
+					propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
 					keepLeaves: false,
 					keepAttributes: true,
 				})
@@ -128,8 +134,6 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
 
-		// TODO(🚩): Handle reused Mesh, Primitive, or Accessor.
-
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
 			if (prim.listTargets().length > 0) continue;
@@ -165,15 +169,40 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 	// Discard single-Primitive groups.
 	const joinGroups = Object.values(groups).filter(({ prims }) => prims.length > 1);
 
+	// Unlink reused Meshes before modifying.
+	for (const group of joinGroups) {
+		const { primNodes, primMeshes } = group;
+		const groupMeshes = new Set<Mesh>();
+		for (let i = 0; i < primNodes.length; i++) {
+			const node = primNodes[i];
+			const mesh = primMeshes[i];
+			const isSharedMesh = mesh.listParents().some((parent) => {
+				if (parent.propertyType === NODE) return parent !== node;
+				return parent.propertyType !== ROOT;
+			});
+			if (isSharedMesh && !groupMeshes.has(mesh)) {
+				primMeshes[i] = mesh.clone();
+				node.setMesh(primMeshes[i]);
+				groupMeshes.add(mesh);
+			}
+		}
+	}
+
 	// Bring prims into the local coordinate space of the target node, then join.
 	for (const group of joinGroups) {
-		const { prims, primNodes, dstNode, dstMesh } = group;
+		const { prims, primNodes, primMeshes, dstNode, dstMesh } = group;
 		const dstMatrix = dstNode.getMatrix();
 
 		for (let i = 0; i < prims.length; i++) {
-			const prim = prims[i].clone();
 			const primNode = primNodes[i];
+			const primMesh = primMeshes[i];
 			if (primNode === dstNode) continue;
+
+			// Unlink reused Primitives before transforming.
+			let prim = prims[i];
+			if (_isSharedPrimitive(prim, primMesh)) {
+				prim = prims[i] = _deepClonePrimitive(prims[i]);
+			}
 
 			multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
 			transformPrimitive(prim, _matrix);
@@ -184,8 +213,8 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		dstMesh.addPrimitive(dstPrim);
 
 		logger.debug(
-			`${NAME}: Joined ${prims.length} Primitives and ` +
-				`${formatLong(dstVertexCount)} vertices at Node "${dstNode.getName()}".`
+			`${NAME}: Joined Primitives (${prims.length}) containing ` +
+				`${formatLong(dstVertexCount)} vertices under Node "${dstNode.getName()}".`
 		);
 	}
 
@@ -205,4 +234,18 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			}
 		}
 	}
+}
+
+function _isSharedPrimitive(prim: Primitive, mesh: Mesh): boolean {
+	return prim.listParents().some((parent) => parent !== mesh);
+}
+
+function _deepClonePrimitive(src: Primitive): Primitive {
+	const dst = src.clone();
+	for (const semantic of dst.listSemantics()) {
+		dst.setAttribute(semantic, dst.getAttribute(semantic)!.clone());
+	}
+	const indices = dst.getIndices();
+	if (indices) dst.setIndices(indices.clone());
+	return dst;
 }
