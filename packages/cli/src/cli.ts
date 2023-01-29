@@ -739,6 +739,10 @@ is indexed in place, without merging.
 		validator: program.NUMBER,
 		default: WELD_DEFAULTS.tolerance,
 	})
+	.option('--exhaustive', 'TODO', {
+		validator: program.BOOLEAN,
+		default: WELD_DEFAULTS.exhaustive,
+	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
 			.transform(weld(options as unknown as WeldOptions))
