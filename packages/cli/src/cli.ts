@@ -1,8 +1,12 @@
+import caporal from '@caporal/core';
 import { URL } from 'url';
 import {promises as fs, readFileSync} from 'fs';
 import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
-import caporal from '@caporal/core';
+import fetch from 'node-fetch';
+import mikktspace from 'mikktspace';
+import sharp from 'sharp';
+import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, FlattenOptions, flatten, JOIN_DEFAULTS, join, JoinOptions, sparse, SparseOptions } from '@gltf-transform/functions';
 import { inspect } from './inspect';
@@ -10,10 +14,6 @@ import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMP
 import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
 import { Session } from './session';
 import { ValidateOptions, validate } from './validate';
-import fetch from 'node-fetch';
-import mikktspace from 'mikktspace';
-import sharp from 'sharp';
-import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { getConfig, loadConfig } from './config';
 
 const program = caporal.program;
