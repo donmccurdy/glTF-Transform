@@ -1,8 +1,6 @@
-// TODO(🚩): Support ESM.
-const { ALL_EXTENSIONS } = require('@gltf-transform/extensions');
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 
-// TODO(🚩): Support ESM.
-module.exports = {
+export default {
 	extensions: ALL_EXTENSIONS,
 	onProgramReady: ({ program, io, Session }) => {
 		program

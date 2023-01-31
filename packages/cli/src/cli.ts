@@ -30,7 +30,6 @@ const programReady = new Promise<void>((resolve) => {
 			.registerExtensions(config.extensions)
 			.registerDependencies(config.dependencies);
 		if (config.onProgramReady) {
-			// TODO(🚩): This shouldn't run without a config.
 			program.command('', '\n\n👤 PROJECT ──────────────────────────────────────────');
 			await config.onProgramReady({program, io, Session});
 		}

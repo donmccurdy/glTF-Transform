@@ -1,32 +1,34 @@
-import { resolve } from 'path';
+import type { program } from '@caporal/core';
 import type { Extension, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import type { program } from '@caporal/core';
+import { resolve } from 'path';
+import draco3d from 'draco3dgltf';
+import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import type { Session } from './session';
 
-// Use require() so microbundle doesn't compile these.
-const draco3d = require('draco3dgltf');
-const { MeshoptDecoder, MeshoptEncoder } = require('meshoptimizer');
-
-export interface GLTFTransformCLIConfig {
+interface Config {
 	// extends?: 'default';
-	extensions?: (typeof Extension)[];
-	dependencies?: Record<string, unknown>;
+	extensions: (typeof Extension)[];
+	dependencies: Record<string, unknown>;
 	onProgramReady?: (params: { program: typeof program; io: NodeIO; Session: typeof Session }) => Promise<void>;
 }
 
-let customConfig: GLTFTransformCLIConfig | null = null;
+export type CustomConfig = Partial<Config>;
+
+type ConfigModule = { default: CustomConfig };
+
+let customConfigPromise: Promise<ConfigModule> | null = null;
 
 export async function defineConfig(
-	configProvider: GLTFTransformCLIConfig | (() => Promise<GLTFTransformCLIConfig>)
-): Promise<GLTFTransformCLIConfig> {
+	configProvider: CustomConfig | (() => Promise<CustomConfig>)
+): Promise<CustomConfig> {
 	if (typeof configProvider === 'function') {
 		configProvider = await configProvider();
 	}
 	return configProvider;
 }
 
-export function createDefaultConfig(): Promise<Required<GLTFTransformCLIConfig>> {
+export function createDefaultConfig(): Promise<Config> {
 	return Promise.all([
 		draco3d.createDecoderModule(),
 		draco3d.createEncoderModule(),
@@ -41,18 +43,16 @@ export function createDefaultConfig(): Promise<Required<GLTFTransformCLIConfig>>
 				'meshopt.decoder': MeshoptDecoder,
 				'meshopt.encoder': MeshoptEncoder,
 			},
-			onProgramReady: async (_params) => {
-				// no-op
-			},
+			onProgramReady: undefined,
 		};
 	});
 }
 
 export function loadConfig(path: string) {
-	customConfig = validateConfig(require(resolve(process.cwd(), path)));
+	customConfigPromise = import(resolve(process.cwd(), path)).then(validateConfig) as Promise<ConfigModule>;
 }
 
-export function validateConfig(config: GLTFTransformCLIConfig): GLTFTransformCLIConfig {
+export function validateConfig(config: CustomConfig): CustomConfig {
 	for (const extension of config.extensions || []) {
 		if (!extension.EXTENSION_NAME) {
 			throw new Error('Invalid extension in config.extensions.');
@@ -61,9 +61,10 @@ export function validateConfig(config: GLTFTransformCLIConfig): GLTFTransformCLI
 	return config;
 }
 
-export async function getConfig(): Promise<Required<GLTFTransformCLIConfig>> {
+export async function getConfig(): Promise<Config> {
 	const config = await createDefaultConfig();
-	if (customConfig) {
+	if (customConfigPromise) {
+		const { default: customConfig } = await customConfigPromise;
 		Object.assign(config, customConfig);
 	}
 	return config;
