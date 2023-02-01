@@ -35,16 +35,17 @@ export function texturePack(_options: TexturePackOptions = TEXTURE_PACK_DEFAULTS
 		for (const material of doc.getRoot().listMaterials()) {
 			const textureSet = new Set<Texture>();
 
-			// TODO(feat): What other cases should be packed?
+			// TODO(feat): Beyond clearcoat, other cases should be packed?
 			const clearcoat = material.getExtension<Clearcoat>('KHR_materials_clearcoat');
 			if (!clearcoat) continue;
 
 			const texture = clearcoat.getClearcoatTexture()!;
-			const normalTexture = clearcoat.getClearcoatNormalTexture()!;
-			const roughnessTexture = clearcoat.getClearcoatRoughnessTexture()!;
 			if (texture) textureSet.add(texture);
-			if (normalTexture) textureSet.add(normalTexture);
+
+			const roughnessTexture = clearcoat.getClearcoatRoughnessTexture()!;
 			if (roughnessTexture) textureSet.add(roughnessTexture);
+
+			// TODO(feat): Handle varying resolution and MIME type, or exit?
 
 			// Remove textures from the packing set if they already contain
 			// data in channels we want to overwrite.
@@ -61,9 +62,7 @@ export function texturePack(_options: TexturePackOptions = TEXTURE_PACK_DEFAULTS
 			// Exit if we don't have at least 2 textures to pack.
 			if (textureSet.size <= 1) continue;
 
-			// TODO(feat): Handle varying resolution and MIME type, or exit?
-			const dstTexture = texture || normalTexture || roughnessTexture;
-
+			const dstTexture = texture;
 			for (const srcTexture of textureSet) {
 				const srcPixels = await getPixels(srcTexture.getImage()!);
 				const srcMask = getTextureChannelMask(srcTexture);
