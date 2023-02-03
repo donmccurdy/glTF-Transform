@@ -16,10 +16,38 @@ class AVIFImageUtils implements ImageUtilsFormat {
 	match(array: Uint8Array): boolean {
 		return array.length >= 12 && BufferUtils.decodeText(array.slice(4, 12)) === 'ftypavif';
 	}
+	/**
+	 * Probes size of AVIF or HEIC image. Assumes a single static image, without
+	 * orientation or other metadata that would affect dimensions.
+	 */
 	getSize(array: Uint8Array): vec2 | null {
 		if (!this.match(array)) return null;
-		// Reference: https://stackoverflow.com/questions/66222773/how-to-get-image-dimensions-from-an-avif-file
-		return null; // TODO
+
+		// References:
+		// - https://stackoverflow.com/questions/66222773/how-to-get-image-dimensions-from-an-avif-file
+		// - https://github.com/nodeca/probe-image-size/blob/master/lib/parse_sync/avif.js
+
+		const view = new DataView(array.buffer, array.byteOffset, array.byteLength);
+
+		let box = unbox(view, 0);
+		if (!box) return null;
+
+		let offset = box.end;
+		while ((box = unbox(view, offset))) {
+			if (box.type === 'meta') {
+				offset = box.start + 4; // version + flags
+			} else if (box.type === 'iprp' || box.type === 'ipco') {
+				offset = box.start;
+			} else if (box.type === 'ispe') {
+				return [view.getUint32(box.start + 4), view.getUint32(box.start + 8)];
+			} else if (box.type === 'mdat') {
+				break; // mdat should be last, unlikely to find metadata past here.
+			} else {
+				offset = box.end;
+			}
+		}
+
+		return null;
 	}
 	getChannels(_buffer: Uint8Array): number {
 		return 4;
@@ -120,4 +148,24 @@ export class EXTTextureAVIF extends Extension {
 
 		return this;
 	}
+}
+
+interface IBox {
+	type: string;
+	start: number;
+	end: number;
+}
+
+function unbox(data: DataView, offset: number): IBox | null {
+	if (data.byteLength < 4 + offset) return null;
+
+	// size includes first 4 bytes (length)
+	const size = data.getUint32(offset);
+	if (data.byteLength < size + offset || size < 8) return null;
+
+	return {
+		type: BufferUtils.decodeText(new Uint8Array(data.buffer, data.byteOffset + offset + 4, 4)),
+		start: offset + 8,
+		end: offset + size,
+	};
 }

@@ -49,14 +49,13 @@ test('@gltf-transform/extensions::texture-avif', async (t) => {
 	t.is(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 });
 
-test.skip('@gltf-transform/core::image-utils | avif', (t) => {
-	// const avif = fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.avif'));
+test('@gltf-transform/core::image-utils | avif', (t) => {
+	const avif = fs.readFileSync(path.join(__dirname, 'in', 'test.avif'));
 	const buffer = new Uint8Array([0, 1, 2, 3]);
 
 	t.is(ImageUtils.getSize(new Uint8Array(8), 'image/avif'), null, 'invalid');
 	t.is(ImageUtils.getSize(buffer, 'image/avif'), null, 'no size');
-	// TODO
-	// t.deepEqual(ImageUtils.getSize(avif, 'image/avif'), [256, 256], 'size (lossy)');
-	// t.is(ImageUtils.getChannels(avif, 'image/avif'), 4, 'channels');
-	// t.is(ImageUtils.getMemSize(avif, 'image/avif'), 349524, 'gpuSize');
+	t.deepEqual(ImageUtils.getSize(avif, 'image/avif'), [256, 256], 'size');
+	t.is(ImageUtils.getChannels(avif, 'image/avif'), 4, 'channels');
+	t.is(ImageUtils.getGPUByteLength(avif, 'image/avif'), 349524, 'gpuSize');
 });
