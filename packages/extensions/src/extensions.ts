@@ -2,6 +2,7 @@
 
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing';
 import { EXTMeshoptCompression } from './ext-meshopt-compression';
+import { EXTTextureAVIF } from './ext-texture-avif';
 import { EXTTextureWebP } from './ext-texture-webp';
 import { KHRDracoMeshCompression } from './khr-draco-mesh-compression';
 import { KHRLightsPunctual } from './khr-lights-punctual';
@@ -41,10 +42,17 @@ export const KHRONOS_EXTENSIONS = [
 	KHRXMP,
 ];
 
-export const ALL_EXTENSIONS = [EXTMeshGPUInstancing, EXTMeshoptCompression, EXTTextureWebP, ...KHRONOS_EXTENSIONS];
+export const ALL_EXTENSIONS = [
+	EXTMeshGPUInstancing,
+	EXTMeshoptCompression,
+	EXTTextureAVIF,
+	EXTTextureWebP,
+	...KHRONOS_EXTENSIONS,
+];
 
 export * from './ext-mesh-gpu-instancing';
 export * from './ext-meshopt-compression';
+export * from './ext-texture-avif';
 export * from './ext-texture-webp';
 export * from './khr-draco-mesh-compression';
 export * from './khr-lights-punctual';

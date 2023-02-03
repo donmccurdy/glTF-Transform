@@ -1076,6 +1076,29 @@ compression methods are typically more forgiving than GPU texture compression,
 and require less tuning to achieve good visual and filesize results.
 `.trim();
 
+// AVIF
+program
+	.command('avif', 'AVIF texture compression')
+	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'AVIF'))
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--formats <formats>',
+		'Texture formats to include (glob)',
+		{validator: ['image/png', 'image/jpeg', '*'], default: '*'}
+	)
+	.option(
+		'--slots <slots>',
+		'Texture slots to include (glob)',
+		{validator: program.STRING, default: '*'}
+	)
+	.action(({args, options, logger}) => {
+		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		return Session.create(io, logger, args.input, args.output)
+			.transform(textureCompress({targetFormat: 'avif', encoder: sharp, formats, slots}));
+	});
+
 // WEBP
 program
 	.command('webp', 'WebP texture compression')

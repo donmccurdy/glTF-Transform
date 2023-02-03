@@ -67,8 +67,8 @@ class WEBPImageUtils implements ImageUtilsFormat {
  *
  * [[include:_VENDOR_EXTENSIONS.md]]
  *
- * WebP typically provides the minimal transmission
- * size, but [requires browser support](https://caniuse.com/webp). Like PNG and JPEG, a WebP image is
+ * WebP offers greatly reduced transmission size, but
+ * [requires browser support](https://caniuse.com/webp). Like PNG and JPEG, a WebP image is
  * *fully decompressed* when uploaded to the GPU, which increases upload time and GPU memory cost.
  * For seamless uploads and minimal GPU memory cost, it is necessary to use a GPU texture format
  * like Basis Universal, with the `KHR_texture_basisu` extension.
