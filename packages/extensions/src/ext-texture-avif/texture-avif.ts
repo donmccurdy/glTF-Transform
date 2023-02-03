@@ -62,8 +62,8 @@ class AVIFImageUtils implements ImageUtilsFormat {
  *
  * [[include:VENDOR_EXTENSIONS_NOTE.md]]
  *
- * AVIF typically provides the minimal transmission
- * size, but [requires browser support](https://caniuse.com/avif). Like PNG and JPEG, a AVIF image is
+ * AVIF offers greatly reduced transmission size, but
+ * [requires browser support](https://caniuse.com/avif). Like PNG and JPEG, an AVIF image is
  * *fully decompressed* when uploaded to the GPU, which increases upload time and GPU memory cost.
  * For seamless uploads and minimal GPU memory cost, it is necessary to use a GPU texture format
  * like Basis Universal, with the `KHR_texture_basisu` extension.
