@@ -9,7 +9,7 @@ import { TextureResizeFilter } from './texture-resize';
 const NAME = 'textureCompress';
 
 type Format = (typeof FORMATS)[number];
-const FORMATS = ['jpeg', 'png', 'webp'] as const;
+const FORMATS = ['jpeg', 'png', 'webp', 'avif'] as const;
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export interface TextureCompressOptions {
