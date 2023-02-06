@@ -90,8 +90,7 @@ test('@gltf-transform/cli::inspect', async (t) => {
 	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
 	doc.createAnimation();
 	await io.write(input, doc);
-
-	await program.exec(['inspect', input], { silent: true });
+	await runSilent(async () => program.exec(['inspect', input], { silent: true }));
 	t.pass();
 });
 
@@ -132,3 +131,13 @@ test('@gltf-transform/cli::merge', async (t) => {
 	t.deepEqual(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');
 	t.is(texName, FileUtils.basename(inputC), 'merge textures');
 });
+
+async function runSilent(fn: () => Promise<unknown>): Promise<void> {
+	const _log = console.log;
+	console.log = () => void {};
+	try {
+		await fn();
+	} finally {
+		console.log = _log;
+	}
+}
