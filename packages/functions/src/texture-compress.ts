@@ -1,5 +1,5 @@
 import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
-import { EXTTextureWebP } from '@gltf-transform/extensions';
+import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
 import type sharp from 'sharp';
@@ -10,7 +10,7 @@ const NAME = 'textureCompress';
 
 type Format = (typeof FORMATS)[number];
 const FORMATS = ['jpeg', 'png', 'webp', 'avif'] as const;
-const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
 export interface TextureCompressOptions {
 	/** Instance of the Sharp encoder, which must be installed from the
@@ -47,7 +47,7 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
 	};
 
 /**
- * Optimizes images, optionally resizing or converting to JPEG, PNG, or WebP formats.
+ * Optimizes images, optionally resizing or converting to JPEG, PNG, WebP, or AVIF formats.
  *
  * Requires `sharp`, and is available only in Node.js environments.
  *
@@ -163,9 +163,14 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 			})
 		);
 
-		// Attach EXT_texture_web if needed.
+		// Attach EXT_texture_webp if needed.
 		if (textures.some((texture) => texture.getMimeType() === 'image/webp')) {
 			document.createExtension(EXTTextureWebP).setRequired(true);
+		}
+
+		// Attach EXT_texture_avif if needed.
+		if (textures.some((texture) => texture.getMimeType() === 'image/avif')) {
+			document.createExtension(EXTTextureAVIF).setRequired(true);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
