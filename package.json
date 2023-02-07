@@ -33,7 +33,6 @@
     "@types/node": "18.11.19",
     "@types/node-gzip": "1.1.0",
     "@types/sharp": "^0.31.1",
-    "@types/tape": "4.13.2",
     "@typescript-eslint/eslint-plugin": "5.50.0",
     "@typescript-eslint/parser": "5.50.0",
     "ava": "^5.1.1",
