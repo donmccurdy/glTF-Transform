@@ -57,5 +57,5 @@ test('@gltf-transform/core::image-utils | avif', (t) => {
 	t.is(ImageUtils.getSize(buffer, 'image/avif'), null, 'no size');
 	t.deepEqual(ImageUtils.getSize(avif, 'image/avif'), [256, 256], 'size');
 	t.is(ImageUtils.getChannels(avif, 'image/avif'), 4, 'channels');
-	t.is(ImageUtils.getGPUByteLength(avif, 'image/avif'), 349524, 'gpuSize');
+	t.is(ImageUtils.getVRAMByteLength(avif, 'image/avif'), 349524, 'vramSize');
 });

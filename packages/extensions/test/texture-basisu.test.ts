@@ -54,6 +54,6 @@ test('@gltf-transform/extensions::texture-basisu | image-utils', (t) => {
 	t.throws(() => ImageUtils.getSize(new Uint8Array(10), 'image/ktx2'), undefined, 'corrupt file');
 	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
 	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
-	t.is(ImageUtils.getGPUByteLength(ktx2, 'image/ktx2'), 65536, 'gpuSize');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 65536, 'gpuSize');
 	t.is(ImageUtils.extensionToMimeType('ktx2'), 'image/ktx2', 'extensionToMimeType, inferred');
 });
