@@ -34,7 +34,7 @@
 		"@gltf-transform/extensions": "^3.0.0-alpha.4",
 		"ktx-parse": "^0.4.5",
 		"ndarray": "^1.0.19",
-		"ndarray-lanczos": "^0.1.2",
+		"ndarray-lanczos": "^0.2.0",
 		"ndarray-pixels": "^1.0.0"
 	},
 	"files": [
