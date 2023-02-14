@@ -8,6 +8,7 @@
     "license": "MIT",
     "type": "module",
     "sideEffects": false,
+    "main": "./dist/core.cjs",
     "module": "./dist/core.modern.js",
     "exports": "./dist/core.modern.js",
     "source": "./src/core.ts",
@@ -18,9 +19,9 @@
         "node >= 14"
     ],
     "scripts": {
-        "dist": "microbundle --format modern --define PACKAGE_VERSION=$npm_package_version",
-        "watch": "microbundle watch --format modern --define PACKAGE_VERSION=$npm_package_version",
-        "watch:debug": "microbundle watch --format modern --define PACKAGE_VERSION=$npm_package_version --no-compress"
+        "dist": "microbundle --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+        "watch": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version",
+        "watch:debug": "microbundle watch --format modern,cjs --define PACKAGE_VERSION=$npm_package_version --no-compress"
     },
     "keywords": [
         "gltf",
