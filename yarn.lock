@@ -7001,10 +7001,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-ndarray-lanczos@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/ndarray-lanczos/-/ndarray-lanczos-0.1.2.tgz#7fc9d8d6f47bfff66610068393289b4762b0d043"
-  integrity sha512-o3dCYwaN0q4rDrhFx+1eMnyn3FIVL66xbpbKpuWb4UtGAwdgRWFc1iWyeCs8aW7fAklkJxLvqAnxDtiRB+Yf4g==
+ndarray-lanczos@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ndarray-lanczos/-/ndarray-lanczos-0.2.0.tgz#b582420b13e3ea50ce0e04422f471c60a8aeac33"
+  integrity sha512-KkE+NPPBZ4DPXh9rAQpmI/FyEqc3y0GsznYbDWRzxR/XBtuUmWcdVLYuGh9MNjuzp/BOTyS883OsEPKtesQghA==
   dependencies:
     "@types/ndarray" "^1.0.10"
     ndarray "^1.0.19"
