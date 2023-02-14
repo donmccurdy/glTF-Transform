@@ -36,6 +36,15 @@ export interface TextureCompressOptions {
 	formats?: RegExp | null;
 	/** Pattern matching the material texture slot(s) to be compressed or converted. */
 	slots?: RegExp | null;
+
+	/** Quality, 1-100. Default: auto. */
+	quality?: number | null;
+	/** Level of CPU effort to reduce file size, 0-100. PNG, WebP, and AVIF only. Default: auto. */
+	effort?: number | null;
+	/** Use lossless compression mode. WebP and AVIF only. Default: false. */
+	lossless?: boolean;
+	/** Use near lossless compression mode. WebP only. Default: false. */
+	nearLossless?: boolean;
 }
 
 export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'>> =
@@ -44,6 +53,10 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
 		pattern: null,
 		formats: null,
 		slots: null,
+		quality: null,
+		effort: null,
+		lossless: false,
+		nearLossless: false,
 	};
 
 /**
@@ -129,13 +142,37 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 
 				// COMPRESS: Run compression library.
 
-				const srcImage = texture.getImage()!;
-				const instance = encoder(srcImage);
+				let encoderOptions: sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions | sharp.AvifOptions = {};
 
-				// Convert if target and source formats differ.
-				if (srcMimeType !== dstMimeType) {
-					instance.toFormat(dstFormat);
+				switch (dstFormat) {
+					case 'jpeg':
+						encoderOptions = { quality: options.quality } as sharp.JpegOptions;
+						break;
+					case 'png':
+						encoderOptions = {
+							quality: options.quality,
+							effort: remap(options.effort, 100, 10),
+						} as sharp.PngOptions;
+						break;
+					case 'webp':
+						encoderOptions = {
+							quality: options.quality,
+							effort: remap(options.effort, 100, 6),
+							lossless: options.lossless,
+							nearLossless: options.nearLossless,
+						} as sharp.WebpOptions;
+						break;
+					case 'avif':
+						encoderOptions = {
+							quality: options.quality,
+							effort: remap(options.effort, 100, 9),
+							lossless: options.lossless,
+						} as sharp.AvifOptions;
+						break;
 				}
+
+				const srcImage = texture.getImage()!;
+				const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
 
 				// Resize.
 				if (resize) {
@@ -184,4 +221,9 @@ function getFormat(texture: Texture): Format {
 		throw new Error(`Unknown MIME type "${mimeType}".`);
 	}
 	return format;
+}
+
+function remap(value: number | null | undefined, srcMax: number, dstMax: number): number | null {
+	if (value == null) return null;
+	return Math.round((value / srcMax) * dstMax);
 }

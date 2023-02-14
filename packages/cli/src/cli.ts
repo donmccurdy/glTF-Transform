@@ -1092,11 +1092,34 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
+	.option(
+		'--quality <quality>',
+		'Quality, 1-100. Default: 50.',
+		{validator: program.NUMBER, default: 50},
+	)
+	.option(
+		'--effort <effort>',
+		'Level of CPU effort to reduce file size, 0-100. Default: 44.',
+		{validator: program.NUMBER, default: 44},
+	)
+	.option(
+		'--lossless <lossless>',
+		'Use lossless compression mode.',
+		{validator: program.BOOLEAN, default: false},
+	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({targetFormat: 'avif', encoder: sharp, formats, slots}));
+			.transform(textureCompress({
+				targetFormat: 'avif',
+				encoder: sharp,
+				formats,
+				slots,
+				quality: options.qualify as number,
+				effort: options.effort as number,
+				lossless: options.lossless as boolean,
+			}));
 	});
 
 // WEBP
@@ -1115,11 +1138,40 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
+	.option(
+		'--quality <quality>',
+		'Quality, 1-100. Default: 80.',
+		{validator: program.NUMBER, default: 80},
+	)
+	.option(
+		'--effort <effort>',
+		'Level of CPU effort to reduce file size, 0-100. Default: 67.',
+		{validator: program.NUMBER, default: 67},
+	)
+	.option(
+		'--lossless <lossless>',
+		'Use lossless compression mode.',
+		{validator: program.BOOLEAN, default: false},
+	)
+	.option(
+		'--near-lossless <nearLossless>',
+		'Use near lossless compression mode.',
+		{validator: program.BOOLEAN, default: false},
+	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({targetFormat: 'webp', encoder: sharp, formats, slots}));
+			.transform(textureCompress({
+				targetFormat: 'webp',
+				encoder: sharp,
+				formats,
+				slots,
+				quality: options.qualify as number,
+				effort: options.effort as number,
+				lossless: options.lossless as boolean,
+				nearLossless: options.nearLossless as boolean,
+			}));
 	});
 
 // PNG
@@ -1138,11 +1190,28 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
+	.option(
+		'--quality <quality>',
+		'Quality, 1-100. Default: 100.',
+		{validator: program.NUMBER, default: 100},
+	)
+	.option(
+		'--effort <effort>',
+		'Level of CPU effort to reduce file size, 0-100. Default: 70.',
+		{validator: program.NUMBER, default: 70},
+	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({targetFormat: 'png', encoder: sharp, formats, slots}));
+			.transform(textureCompress({
+				targetFormat: 'png',
+				encoder: sharp,
+				formats,
+				slots,
+				quality: options.qualify as number,
+				effort: options.effort as number,
+			}));
 	});
 
 // JPEG
@@ -1161,11 +1230,22 @@ program
 		'Texture slots to include (glob)',
 		{validator: program.STRING, default: '*'}
 	)
+	.option(
+		'--quality <quality>',
+		'Quality, 1-100. Default: 80.',
+		{validator: program.NUMBER, default: 80},
+	)
 	.action(({args, options, logger}) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output)
-			.transform(textureCompress({targetFormat: 'jpeg', encoder: sharp, formats, slots}));
+			.transform(textureCompress({
+				targetFormat: 'jpeg',
+				encoder: sharp,
+				formats,
+				slots,
+				quality: options.qualify as number,
+			}));
 	});
 
 program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
