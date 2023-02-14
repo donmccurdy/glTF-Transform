@@ -7,7 +7,6 @@ import { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import type { Session } from './session';
 
 interface Config {
-	// extends?: 'default';
 	extensions: (typeof Extension)[];
 	dependencies: Record<string, unknown>;
 	onProgramReady?: (params: { program: typeof program; io: NodeIO; Session: typeof Session }) => Promise<void>;
@@ -49,7 +48,9 @@ export function createDefaultConfig(): Promise<Config> {
 }
 
 export function loadConfig(path: string) {
-	customConfigPromise = import(resolve(process.cwd(), path)).then(validateConfig) as Promise<ConfigModule>;
+	path = resolve(process.cwd(), path);
+	path = `file:${path}`; // Required on Windows.
+	customConfigPromise = import(path).then(validateConfig) as Promise<ConfigModule>;
 }
 
 export function validateConfig(config: CustomConfig): CustomConfig {

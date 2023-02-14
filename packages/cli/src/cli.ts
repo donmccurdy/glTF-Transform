@@ -30,7 +30,7 @@ const programReady = new Promise<void>((resolve) => {
 			.registerExtensions(config.extensions)
 			.registerDependencies(config.dependencies);
 		if (config.onProgramReady) {
-			program.command('', '\n\n👤 PROJECT ──────────────────────────────────────────');
+			program.command('', '\n\n👤 USER ─────────────────────────────────────────────');
 			await config.onProgramReady({program, io, Session});
 		}
 		resolve();
@@ -1342,9 +1342,9 @@ program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
 		io.setVertexLayout(options.vertexLayout as VertexLayout);
 	},
 });
-program.option('--config <path>', 'Configuration for new commands and extensions', {
+program.option('--config <path>', 'Installs custom commands or extensions. (EXPERIMENTAL)', {
 	global: true,
-	validator: program.STRING
+	validator: program.STRING,
 });
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
