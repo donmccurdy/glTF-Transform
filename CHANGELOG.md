@@ -11,18 +11,19 @@
   - Add quality, effort, and other compression settings [#816](https://github.com/donmccurdy/glTF-Transform/pull/816)
   - Improved texture resizing performance and stability on Node.js
 - Add `flatten()` function, reduce scene graph nesting [#790](https://github.com/donmccurdy/glTF-Transform/pull/790)
-- Add `join()` and `joinPrimitives()` functions [#707](https://github.com/donmccurdy/glTF-Transform/pull/707), [#658](https://github.com/donmccurdy/glTF-Transform/pull/658)
+- Add `join()` and `joinPrimitives()` functions, reduce draw calls [#707](https://github.com/donmccurdy/glTF-Transform/pull/707), [#658](https://github.com/donmccurdy/glTF-Transform/pull/658)
 - Add support for sparse accessors [#793](https://github.com/donmccurdy/glTF-Transform/pull/793)
 - Add `--format` option to CLI `validate` command [#778](https://github.com/donmccurdy/glTF-Transform/pull/778)
 - NodeIO creates missing directories when writing .gltf resources [#779](https://github.com/donmccurdy/glTF-Transform/pull/779)
 - Add `clearNodeParent()`, `clearNodeTransform()`, `getNodeScene()` [#784](https://github.com/donmccurdy/glTF-Transform/pull/784)
+- (EXPERIMENTAL) Add `--config` flag to CLI, support userland extensions and commands [#791](https://github.com/donmccurdy/glTF-Transform/pull/791)
 
 **Breaking changes:**
 
 - Rename extension classes, include vendor prefixes [#776](https://github.com/donmccurdy/glTF-Transform/pull/776)
-- Rename bounds() → getBounds() [#774](https://github.com/donmccurdy/glTF-Transform/pull/774)
-- Rename MathUtils normalize/denormalize methods [#777](https://github.com/donmccurdy/glTF-Transform/pull/777)
-- Rename ImageUtils.getMemSize → getVRAMByteLength [#812](https://github.com/donmccurdy/glTF-Transform/pull/812)
+- Rename `bounds()` → `getBounds()` [#774](https://github.com/donmccurdy/glTF-Transform/pull/774)
+- Rename MathUtils `normalize()` / `denormalize()` → `encodeNormalizedInt()` / `decodeNormalizedInt()` [#777](https://github.com/donmccurdy/glTF-Transform/pull/777)
+- Rename ImageUtils `getMemSize()` → `getVRAMByteLength()` [#812](https://github.com/donmccurdy/glTF-Transform/pull/812)
 - Replace Squoosh with Sharp, new `textureCompress()` API [#752](https://github.com/donmccurdy/glTF-Transform/pull/752)
 - Update signatures of `listTextureChannels`, `listTextureInfo`, `listTextureSlots`, and `getTextureChannelMask` to not require `document` parameter [#787](https://github.com/donmccurdy/glTF-Transform/pull/787)
 - Store array literals (color, vector, ...) as copies [#796](https://github.com/donmccurdy/glTF-Transform/pull/796)
