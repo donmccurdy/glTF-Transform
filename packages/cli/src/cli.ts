@@ -1154,7 +1154,7 @@ program
 		{validator: program.BOOLEAN, default: false},
 	)
 	.option(
-		'--nearLossless <nearLossless>',
+		'--near-lossless <nearLossless>',
 		'Use near lossless compression mode.',
 		{validator: program.BOOLEAN, default: false},
 	)
