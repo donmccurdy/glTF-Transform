@@ -4,17 +4,33 @@ import { createTransform } from './utils';
 
 const NAME = 'instance';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface InstanceOptions {}
+export interface InstanceOptions {
+	/** Minimum number of meshes considered eligible for instancing. Default: 5. */
+	limit?: number;
+}
 
-const INSTANCE_DEFAULTS: Required<InstanceOptions> = {};
+const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
+	limit: 5,
+};
 
 /**
- * Creates GPU instances (with `EXT_mesh_gpu_instancing`) for shared {@link Mesh} references. No
- * options are currently implemented for this function.
+ * Creates GPU instances (with `EXT_mesh_gpu_instancing`) for shared {@link Mesh} references. In
+ * engines supporting the extension, reused Meshes will be drawn with GPU instancing, greatly
+ * reducing draw calls and improving performance in many cases. If you're not sure that identical
+ * Meshes share vertex data and materials ("linked duplicates"), run {@link dedup} first to link them.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { dedup, instance } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	dedup(),
+ * 	instance({limit: 5}),
+ * );
+ * ```
  */
 export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...INSTANCE_DEFAULTS, ..._options } as Required<InstanceOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
@@ -44,7 +60,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 			const modifiedNodes = [];
 			for (const mesh of Array.from(meshInstances.keys())) {
 				const nodes = Array.from(meshInstances.get(mesh)!);
-				if (nodes.length < 2) continue;
+				if (nodes.length < options.limit) continue;
 				if (nodes.some((node) => node.getSkin())) continue;
 
 				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
@@ -91,7 +107,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 		if (numBatches > 0) {
 			logger.info(`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`);
 		} else {
-			logger.info(`${NAME}: No meshes with multiple parent nodes were found.`);
+			logger.info(`${NAME}: No meshes with ≥${options.limit} parent nodes were found.`);
 		}
 
 		if (batchExtension.listProperties().length === 0) {
