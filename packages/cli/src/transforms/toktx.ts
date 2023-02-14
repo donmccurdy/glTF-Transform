@@ -3,7 +3,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import micromatch from 'micromatch';
 import os from 'os';
-import { clean, gte, lt, valid } from 'semver';
+import semver from 'semver';
 import tmp from 'tmp';
 import pLimit from 'p-limit';
 
@@ -286,7 +286,7 @@ function createParams(
 
 	if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
 		// See: https://github.com/KhronosGroup/KTX-Software/issues/600
-		if (gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
+		if (semver.gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
 			params.push('--normal_mode', '--input_swizzle', 'rgb1');
 		} else if (options.mode === Mode.ETC1S) {
 			params.push('--normal_map');
@@ -357,15 +357,15 @@ async function checkKTXSoftware(logger: ILogger): Promise<string> {
 		.replace(/~\d+/, '')
 		.trim();
 
-	if (status !== 0 || !valid(clean(version))) {
+	if (status !== 0 || !semver.valid(semver.clean(version))) {
 		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
-	} else if (lt(clean(version)!, KTX_SOFTWARE_VERSION_MIN)) {
+	} else if (semver.lt(semver.clean(version)!, KTX_SOFTWARE_VERSION_MIN)) {
 		logger.warn(`toktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
 		logger.debug(`toktx: Found KTX-Software ${version}.`);
 	}
 
-	return clean(version)!;
+	return semver.clean(version)!;
 }
 
 function isPowerOfTwo(value: number): boolean {
