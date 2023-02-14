@@ -31,7 +31,7 @@ export const DRACO_DEFAULTS: DracoOptions = {
  *
  * This function is a thin wrapper around the {@link KHRDracoMeshCompression} extension itself.
  */
-export const draco = (_options: DracoOptions): Transform => {
+export const draco = (_options: DracoOptions = DRACO_DEFAULTS): Transform => {
 	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
 	return (doc: Document): void => {
 		doc.createExtension(KHRDracoMeshCompression)
