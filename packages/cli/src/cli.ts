@@ -145,6 +145,84 @@ certain aspects of data layout may change slightly with this process:
 	.argument('<output>', OUTPUT_DESC)
 	.action(({args, logger}) => Session.create(io, logger, args.input, args.output).transform());
 
+// OPTIMIZE
+program
+	.command('optimize', 'TODO')
+	.help(`
+TODO
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--instance <limit>', 'TODO', {
+		validator: program.NUMBER,
+		default: 5,
+		required: false
+	})
+	.option('--compress <method>', 'TODO', {
+		validator: ['draco', 'meshopt', 'quantize'],
+		required: false,
+	})
+	.option('--texture-format <format>', 'TODO', {
+		validator: ['ktx2', 'webp', 'avif'],
+		required: false,
+	})
+	.option('--texture-size <size>', 'Maximum texture dimensions, in pixels.', {
+		validator: program.NUMBER,
+		default: 2048,
+		required: false
+	})
+	.action(({args, options, logger}) => {
+		const opts = options as {
+			instance: number,
+			compression: 'none' | 'draco' | 'meshopt' | 'quantize',
+			textureFormat: 'ktx2' | 'webp' | 'webp' | undefined,
+			textureSize: number,
+		};
+
+		// TODO: really could use a progress spinner or checkboxes
+		const transforms = [
+			dedup(),
+			instance(), // TODO: apply limit
+			flatten(),
+			join(),
+			prune(), // TODO: why here?
+			weld({ tolerance: 0.0001 }),
+			simplify({ simplifier: MeshoptSimplifier, ratio: 0.001, error: 0.0001 }),
+			prune(), // TODO: why here?
+		];
+
+		if (opts.compression === 'draco') {
+			transforms.push(draco());
+		} else if (opts.compression === 'meshopt') {
+			transforms.push(meshopt({encoder: MeshoptEncoder}));
+		}
+
+		transforms.push(
+			resample(),
+			prune({ keepAttributes: false, keepLeaves: false }),
+			sparse(),
+		);
+
+		if (opts.textureFormat === 'ktx2') {
+			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
+			transforms.push(
+				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
+				toktx({ mode: Mode.ETC1S, quality: 255 }),
+			);
+		} else {
+			transforms.push(
+				textureCompress({
+					encoder: sharp,
+					targetFormat: opts.textureFormat,
+					resize: [opts.textureSize, opts.textureSize]
+				}),
+			);
+		}
+
+		return Session.create(io, logger, args.input, args.output)
+			.transform(...transforms);
+	});
+
 // MERGE
 program
 	.command('merge', 'Merge two or more models into one')
