@@ -47,7 +47,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 		}
 		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 	}
-	getGPUByteLength(array: Uint8Array): number {
+	getVRAMByteLength(array: Uint8Array): number {
 		const container = readKTX(array);
 		const hasAlpha = this.getChannels(array) > 3;
 

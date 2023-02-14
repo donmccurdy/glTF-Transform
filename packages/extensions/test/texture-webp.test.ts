@@ -66,5 +66,5 @@ test('@gltf-transform/core::image-utils | webp', (t) => {
 	t.deepEqual(ImageUtils.getSize(webpLossless, 'image/webp'), [256, 256], 'size (lossless)');
 	t.is(ImageUtils.getChannels(webpLossy, 'image/webp'), 4, 'channels');
 	t.is(ImageUtils.getChannels(webpLossless, 'image/fake'), null, 'channels (other)');
-	t.is(ImageUtils.getGPUByteLength(webpLossy, 'image/webp'), 349524, 'gpuSize');
+	t.is(ImageUtils.getVRAMByteLength(webpLossy, 'image/webp'), 349524, 'vramSize');
 });

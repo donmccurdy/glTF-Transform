@@ -6,7 +6,7 @@ export interface ImageUtilsFormat {
 	match(buffer: Uint8Array): boolean;
 	getSize(buffer: Uint8Array): vec2 | null;
 	getChannels(buffer: Uint8Array): number | null;
-	getGPUByteLength?(buffer: Uint8Array): number | null;
+	getVRAMByteLength?(buffer: Uint8Array): number | null;
 }
 
 /** JPEG image support. */
@@ -131,11 +131,11 @@ export class ImageUtils {
 	}
 
 	/** Returns a conservative estimate of the GPU memory required by this image. */
-	public static getGPUByteLength(buffer: Uint8Array, mimeType: string): number | null {
+	public static getVRAMByteLength(buffer: Uint8Array, mimeType: string): number | null {
 		if (!this.impls[mimeType]) return null;
 
-		if (this.impls[mimeType].getGPUByteLength) {
-			return this.impls[mimeType].getGPUByteLength!(buffer);
+		if (this.impls[mimeType].getVRAMByteLength) {
+			return this.impls[mimeType].getVRAMByteLength!(buffer);
 		}
 
 		let uncompressedBytes = 0;

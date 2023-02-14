@@ -136,7 +136,7 @@ function getFootnotes(type: string, rows: string[][], header: string[]): string[
 			if (header[i] === 'gpuSize') header[i] += '¹';
 		}
 		footnotes.push(
-			'¹ gpuSize estimates minimum GPU memory allocation. Older devices may require\n' +
+			'¹ gpuSize estimates minimum VRAM memory allocation. Older devices may require\n' +
 				'  additional memory for GPU compression formats.'
 		);
 	}
