@@ -1,11 +1,14 @@
 import { Document, NodeIO, Logger, FileUtils, Transform, Format, ILogger } from '@gltf-transform/core';
 import type { Packet, KHRXMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
-import { formatBytes, XMPContext } from './util';
+import { Listr, ListrTask } from 'listr2';
+import { dim, formatBytes, formatLong, XMPContext } from './util';
+import type caporal from '@caporal/core';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
 	private _outputFormat: Format;
+	private _display = false;
 
 	constructor(private _io: NodeIO, private _logger: ILogger, private _input: string, private _output: string) {
 		_io.setLogger(_logger);
@@ -16,14 +19,20 @@ export class Session {
 		return new Session(io, logger as Logger, input as string, output as string);
 	}
 
+	public setDisplay(display: boolean): this {
+		this._display = display;
+		return this;
+	}
+
 	public async transform(...transforms: Transform[]): Promise<void> {
-		const doc = this._input
+		const logger = this._logger as caporal.Logger;
+		const document = this._input
 			? (await this._io.read(this._input)).setLogger(this._logger)
 			: new Document().setLogger(this._logger);
 
 		// Warn and remove lossy compression, to avoid increasing loss on round trip.
 		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-			const extension = doc
+			const extension = document
 				.getRoot()
 				.listExtensionsUsed()
 				.find((extension) => extension.extensionName === extensionName);
@@ -33,13 +42,39 @@ export class Session {
 			}
 		}
 
-		await doc.transform(...transforms, updateMetadata);
+		if (this._display) {
+			const tasks = [] as ListrTask[];
+			for (const transform of transforms) {
+				tasks.push({
+					title: transform.name,
+					task: async (ctx, task) => {
+						let time = performance.now();
+						await document.transform(transform);
+						time = Math.round(performance.now() - time);
+						task.title = task.title.padEnd(20) + dim(` ${formatLong(time)}ms`);
+					},
+				});
+			}
 
-		if (this._outputFormat === Format.GLB) {
-			await doc.transform(unpartition());
+			const prevLevel = logger.level;
+			if (prevLevel === 'info') {
+				logger.level = 'warning';
+			}
+
+			await new Listr(tasks, { renderer: 'simple' }).run();
+
+			logger.level = prevLevel;
+		} else {
+			await document.transform(...transforms);
 		}
 
-		await this._io.write(this._output, doc);
+		await document.transform(updateMetadata);
+
+		if (this._outputFormat === Format.GLB) {
+			await document.transform(unpartition());
+		}
+
+		await this._io.write(this._output, document);
 
 		const { lastReadBytes, lastWriteBytes } = this._io;
 		if (!this._input) {

@@ -171,7 +171,7 @@ TODO
 		default: 2048,
 		required: false
 	})
-	.action(({args, options, logger}) => {
+	.action(async ({args, options, logger}) => {
 		const opts = options as {
 			instance: number,
 			compression: 'none' | 'draco' | 'meshopt' | 'quantize',
@@ -179,10 +179,9 @@ TODO
 			textureSize: number,
 		};
 
-		// TODO: really could use a progress spinner or checkboxes
 		const transforms = [
 			dedup(),
-			instance(), // TODO: apply limit
+			instance({limit: options.limit as number}),
 			flatten(),
 			join(),
 			prune(), // TODO: why here?
@@ -220,6 +219,7 @@ TODO
 		}
 
 		return Session.create(io, logger, args.input, args.output)
+			.setDisplay(true)
 			.transform(...transforms);
 	});
 
