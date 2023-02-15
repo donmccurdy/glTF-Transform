@@ -61,6 +61,7 @@ export class Session {
 
 			// Simple renderer shows warnings and errors. Disable signal listeners so Ctrl+C works.
 			await new Listr(tasks, { renderer: 'simple', registerSignalListeners: false }).run();
+			console.log('');
 
 			logger.level = prevLevel;
 		} else {
