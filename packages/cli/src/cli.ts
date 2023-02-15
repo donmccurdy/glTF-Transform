@@ -162,6 +162,14 @@ commands or using the scripting API.
 		required: false
 	})
 	.option(
+		'--simplify <error>',
+		'Simplification error limit, as a fraction of mesh radius.' +
+		'Disable with --limit 0.', {
+		validator: program.NUMBER,
+		required: false,
+		default: SIMPLIFY_DEFAULTS.error,
+	})
+	.option(
 		'--compress <method>',
 		'Floating point compression method. Draco compresses geometry; Meshopt ' +
 		'and quantization compress geometry and animation.', {
@@ -185,6 +193,7 @@ commands or using the scripting API.
 	.action(async ({args, options, logger}) => {
 		const opts = options as {
 			instance: number,
+			simplify: number,
 			compress: 'draco' | 'meshopt' | 'quantize' | false,
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
 			textureSize: number,
@@ -196,12 +205,23 @@ commands or using the scripting API.
 			instance({min: options.instance as number}),
 			flatten(),
 			join(),
-			weld({ tolerance: 0.0001 }),
-			simplify({ simplifier: MeshoptSimplifier, ratio: 0.001, error: 0.0001 }),
+		];
+
+		// Simplification and welding.
+		if (opts.simplify > 0) {
+			transforms.push(
+				weld({ tolerance: opts.simplify }),
+				simplify({ simplifier: MeshoptSimplifier, ratio: 0.001, error: opts.simplify }),
+			);
+		} else {
+			transforms.push(weld({ tolerance: 0.0001 }));
+		}
+
+		transforms.push(
 			resample(),
 			prune({ keepAttributes: false, keepLeaves: false }),
 			sparse(),
-		];
+		);
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
