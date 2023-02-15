@@ -46,13 +46,13 @@ const PACKAGE = JSON.parse(
 
 program
 	.version(PACKAGE.version)
-	.description('Command-line interface (CLI) for the glTF-Transform SDK.');
+	.description('Command-line interface (CLI) for the glTF Transform SDK.');
 
 program.command('', '\n\n🔎 INSPECT ──────────────────────────────────────────');
 
 // INSPECT
 program
-	.command('inspect', 'Inspect the contents of the model')
+	.command('inspect', 'Inspect contents of the model')
 	.help(`
 Inspect the contents of the model, printing a table with properties and
 statistics for scenes, meshes, materials, textures, and animations contained
@@ -79,7 +79,7 @@ Use --format=csv or --format=md for alternative display formats.
 
 // VALIDATE
 program
-	.command('validate', 'Validate the model against the glTF spec')
+	.command('validate', 'Validate model against the glTF spec')
 	.help(`
 Validate the model with official glTF validator. The validator detects whether
 a file conforms correctly to the glTF specification, and is useful for
@@ -121,14 +121,14 @@ program.command('', '\n\n📦 PACKAGE ──────────────
 
 // COPY
 program
-	.command('copy', 'Copy the model with minimal changes')
+	.command('copy', 'Copy model with minimal changes')
 	.alias('cp')
 	.help(`
 Copy the model from <input> to <output> with minimal changes. Unlike filesystem
-\`cp\`, this command does parse the file into glTF-Transform's internal
+\`cp\`, this command does parse the file into glTF Transform's internal
 representation before serializing it to disk again. No other intentional
 changes are made, so copying a model can be a useful first step to confirm that
-glTF-Transform is reading and writing the model correctly when debugging issues
+glTF Transform is reading and writing the model correctly when debugging issues
 in a larger script doing more complex processing of the file. Copying may also
 be used to ensure consistent data layout across glTF files from different
 exporters, e.g. if your engine always requires interleaved vertex attributes.
@@ -147,24 +147,35 @@ certain aspects of data layout may change slightly with this process:
 
 // OPTIMIZE
 program
-	.command('optimize', 'TODO')
+	.command('optimize', '✨ Optimize model by all available methods')
 	.help(`
-TODO
+Optimize the model by all available methods. Combines many features of the
+glTF Transform CLI into a single command for convenience and faster results.
+For more control over the optimization process, consider running individual
+commands or using the scripting API.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--instance <limit>', 'TODO', {
+	.option('--instance <min>', 'Create GPU instances from shared mesh references', {
 		validator: program.NUMBER,
 		default: 5,
 		required: false
 	})
-	.option('--compress <method>', 'TODO', {
-		validator: ['draco', 'meshopt', 'quantize'],
+	.option(
+		'--compress <method>',
+		'Floating point compression method. Draco compresses geometry; Meshopt ' +
+		'and quantization compress geometry and animation.', {
+		validator: ['draco', 'meshopt', 'quantize', false],
 		required: false,
+		default: 'draco',
 	})
-	.option('--texture-format <format>', 'TODO', {
-		validator: ['ktx2', 'webp', 'avif'],
+	.option(
+		'--texture-format <format>',
+		'Texture compression format. KTX2 optimizes VRAM usage and performance; ' +
+		'AVIF and WebP optimize transmission size. Auto recompresses in original format.', {
+		validator: ['ktx2', 'webp', 'avif', 'auto', false],
 		required: false,
+		default: 'auto',
 	})
 	.option('--texture-size <size>', 'Maximum texture dimensions, in pixels.', {
 		validator: program.NUMBER,
@@ -174,48 +185,49 @@ TODO
 	.action(async ({args, options, logger}) => {
 		const opts = options as {
 			instance: number,
-			compression: 'none' | 'draco' | 'meshopt' | 'quantize',
-			textureFormat: 'ktx2' | 'webp' | 'webp' | undefined,
+			compress: 'draco' | 'meshopt' | 'quantize' | false,
+			textureFormat: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
 			textureSize: number,
 		};
 
+		// Baseline transforms.
 		const transforms = [
 			dedup(),
-			instance({limit: options.limit as number}),
+			instance({min: options.instance as number}),
 			flatten(),
 			join(),
-			prune(), // TODO: why here?
 			weld({ tolerance: 0.0001 }),
 			simplify({ simplifier: MeshoptSimplifier, ratio: 0.001, error: 0.0001 }),
-			prune(), // TODO: why here?
-		];
-
-		if (opts.compression === 'draco') {
-			transforms.push(draco());
-		} else if (opts.compression === 'meshopt') {
-			transforms.push(meshopt({encoder: MeshoptEncoder}));
-		}
-
-		transforms.push(
 			resample(),
 			prune({ keepAttributes: false, keepLeaves: false }),
 			sparse(),
-		);
+		];
 
+		// Texture compression.
 		if (opts.textureFormat === 'ktx2') {
 			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
 			transforms.push(
 				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
 			);
-		} else {
+		} else if (opts.textureFormat !== false) {
 			transforms.push(
 				textureCompress({
 					encoder: sharp,
-					targetFormat: opts.textureFormat,
+					targetFormat: opts.textureFormat === 'auto' ? undefined : opts.textureFormat,
 					resize: [opts.textureSize, opts.textureSize]
 				}),
 			);
+		}
+
+		// Mesh compression last. Doesn't matter here, but in one-off CLI
+		// commands we want to avoid recompressing mesh data.
+		if (opts.compress === 'draco') {
+			transforms.push(draco());
+		} else if (opts.compress === 'meshopt') {
+			transforms.push(meshopt({encoder: MeshoptEncoder}));
+		} else if (opts.compress === 'quantize') {
+			transforms.push(quantize());
 		}
 
 		return Session.create(io, logger, args.input, args.output)
@@ -346,7 +358,7 @@ that are children of a scene.
 
 // GZIP
 program
-	.command('gzip', 'Compress the model with lossless gzip')
+	.command('gzip', 'Compress model with lossless gzip')
 	.help(`
 Compress the model with gzip. Gzip is a general-purpose file compression
 technique, not specific to glTF models. On the web, decompression is
@@ -451,7 +463,7 @@ https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_
 
 // FLATTEN
 program
-	.command('flatten', 'Flatten scene graph')
+	.command('flatten', '✨ Flatten scene graph')
 	.help(`
 Flattens the scene graph, leaving Nodes with Meshes, Cameras, and other
 attachments as direct children of the Scene. Skeletons and their
@@ -469,7 +481,7 @@ moved.
 
 // JOIN
 program
-	.command('join', 'Join meshes and reduce draw calls')
+	.command('join', '✨ Join meshes and reduce draw calls')
 	.help(`
 Joins compatible Primitives and reduces draw calls. Primitives are eligible for
 joining if they are members of the same Mesh or, optionally, attached to sibling
@@ -811,7 +823,7 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 		.transform(simplify({simplifier: MeshoptSimplifier, ...options}))
 );
 
-program.command('', '\n\n✨ MATERIAL ─────────────────────────────────────────');
+program.command('', '\n\n🎨 MATERIAL ─────────────────────────────────────────');
 
 // METALROUGH
 program
@@ -1153,7 +1165,7 @@ and require less tuning to achieve good visual and filesize results.
 
 // AVIF
 program
-	.command('avif', 'AVIF texture compression')
+	.command('avif', '✨ AVIF texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'AVIF'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1389,7 +1401,7 @@ so this workflow is not a replacement for video playback.
 
 // SPARSE
 program
-	.command('sparse', 'Reduces storage for zero-filled arrays')
+	.command('sparse', '✨ Reduces storage for zero-filled arrays')
 	.help(`
 Scans all Accessors in the Document, detecting whether each Accessor would
 benefit from sparse data storage. Currently, sparse data storage is used only

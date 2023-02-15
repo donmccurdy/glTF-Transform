@@ -9,7 +9,7 @@ import pLimit from 'p-limit';
 
 import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
-import { getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
+import { createTransform, getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
 
 tmp.setGracefulCleanup();
@@ -112,7 +112,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		...options,
 	};
 
-	return async (doc: Document): Promise<void> => {
+	return createTransform(options.mode, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		// Confirm recent version of KTX-Software is installed.
@@ -221,7 +221,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		if (!usesKTX2) {
 			basisuExtension.dispose();
 		}
-	};
+	});
 };
 
 /**********************************************************************************************

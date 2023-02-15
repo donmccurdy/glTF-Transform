@@ -6,11 +6,11 @@ const NAME = 'instance';
 
 export interface InstanceOptions {
 	/** Minimum number of meshes considered eligible for instancing. Default: 5. */
-	limit?: number;
+	min?: number;
 }
 
 const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
-	limit: 5,
+	min: 5,
 };
 
 /**
@@ -26,7 +26,7 @@ const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
  *
  * await document.transform(
  * 	dedup(),
- * 	instance({limit: 5}),
+ * 	instance({min: 5}),
  * );
  * ```
  */
@@ -60,7 +60,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 			const modifiedNodes = [];
 			for (const mesh of Array.from(meshInstances.keys())) {
 				const nodes = Array.from(meshInstances.get(mesh)!);
-				if (nodes.length < options.limit) continue;
+				if (nodes.length < options.min) continue;
 				if (nodes.some((node) => node.getSkin())) continue;
 
 				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
@@ -107,7 +107,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 		if (numBatches > 0) {
 			logger.info(`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`);
 		} else {
-			logger.info(`${NAME}: No meshes with ≥${options.limit} parent nodes were found.`);
+			logger.info(`${NAME}: No meshes with ≥${options.min} parent nodes were found.`);
 		}
 
 		if (batchExtension.listProperties().length === 0) {

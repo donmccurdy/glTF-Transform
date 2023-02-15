@@ -3,6 +3,7 @@ import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { reorder } from './reorder';
 import { quantize } from './quantize';
+import { createTransform } from './utils';
 
 export interface MeshoptOptions {
 	encoder: unknown;
@@ -44,7 +45,7 @@ export const meshopt = (_options: MeshoptOptions): Transform => {
 		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
 	}
 
-	return async (document: Document): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		await document.transform(
 			reorder({
 				encoder: encoder,
@@ -70,5 +71,5 @@ export const meshopt = (_options: MeshoptOptions): Transform => {
 						? EXTMeshoptCompression.EncoderMethod.QUANTIZE
 						: EXTMeshoptCompression.EncoderMethod.FILTER,
 			});
-	};
+	});
 };

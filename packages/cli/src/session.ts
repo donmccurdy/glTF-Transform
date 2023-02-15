@@ -57,11 +57,10 @@ export class Session {
 			}
 
 			const prevLevel = logger.level;
-			if (prevLevel === 'info') {
-				logger.level = 'warning';
-			}
+			if (prevLevel === 'info') logger.level = 'warn';
 
-			await new Listr(tasks, { renderer: 'simple' }).run();
+			// Simple renderer shows warnings and errors. Disable signal listeners so Ctrl+C works.
+			await new Listr(tasks, { renderer: 'simple', registerSignalListeners: false }).run();
 
 			logger.level = prevLevel;
 		} else {
