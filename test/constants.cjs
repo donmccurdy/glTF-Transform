@@ -11,8 +11,7 @@ const SOURCE = path.resolve(__dirname, '../../glTF-Sample-Models/2.0/');
 /** Output directory for generated roundtrip assets. */
 const TARGET = path.resolve(__dirname, './out');
 
-/** Supported variants. */
-const VARIANTS = new Set(['glTF-Binary']);
+const VARIANT = 'glTF-Binary';
 
 /**
  * Assets to skip.
@@ -24,4 +23,4 @@ const VARIANTS = new Set(['glTF-Binary']);
  */
 const SKIPLIST = new Set(['AnimatedTriangle', 'SimpleMorph', 'SpecGlossVsMetalRough']);
 
-module.exports = { SOURCE, TARGET, VARIANTS, SKIPLIST };
+module.exports = { SOURCE, TARGET, VARIANT, SKIPLIST };

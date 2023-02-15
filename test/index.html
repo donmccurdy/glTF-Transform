@@ -46,18 +46,19 @@
 				Object.entries(asset.variants).forEach(([variant, filename]) => {
 					const el = document.createElement('model-viewer');
 
-					el.setAttribute('src', `./out/${asset.name}/${variant}/${filename}`);
+					el.setAttribute('src', `./out/${suffix(filename, '_')}`);
 					el.setAttribute('autoplay', '');
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
 					containerEl.appendChild(el.cloneNode());
 
-					el.setAttribute(
-						'src',
-						`./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.opt.glb')}`
-					);
-					el.alt = el.title = `${asset.name} / ${variant} / ${filename} (COPY)`;
+					el.setAttribute('src', `./out/${suffix(filename, 'copy')}`);
+					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
 					containerEl.appendChild(el);
 				});
 			});
 		});
+
+	function suffix(path, suffix) {
+		return path.replace('.glb', `.${suffix}.glb`);
+	}
 </script>
