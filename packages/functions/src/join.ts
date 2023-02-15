@@ -197,9 +197,14 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			let prim = prims[i];
 			primMesh.removePrimitive(prim);
 
+			// Primitives may be reused directly, or their attributes may be
+			// used in another Primitive with a different Material.
+			if (isUsed(prim) || hasSharedAttributes(prim)) {
+				prim = prims[i] = _deepClonePrimitive(prims[i]);
+			}
+
 			// Transform Primitive into new local coordinate space.
 			if (primNode !== dstNode) {
-				if (isUsed(prim)) prim = prims[i] = _deepClonePrimitive(prims[i]);
 				multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
 				transformPrimitive(prim, _matrix);
 			}
@@ -224,4 +229,15 @@ function _deepClonePrimitive(src: Primitive): Primitive {
 	const indices = dst.getIndices();
 	if (indices) dst.setIndices(indices.clone());
 	return dst;
+}
+
+function hasSharedAttributes(prim: Primitive): boolean {
+	for (const attribute of prim.listAttributes()) {
+		for (const parent of attribute.listParents()) {
+			if (parent !== prim && parent.propertyType !== ROOT) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
