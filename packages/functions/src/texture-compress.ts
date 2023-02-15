@@ -3,7 +3,7 @@ import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels';
 import { listTextureSlots } from './list-texture-slots';
 import type sharp from 'sharp';
-import { formatBytes } from './utils';
+import { createTransform, formatBytes } from './utils';
 import { TextureResizeFilter } from './texture-resize';
 
 const NAME = 'textureCompress';
@@ -99,7 +99,7 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 		throw new Error(`${targetFormat}: encoder dependency required — install "sharp".`);
 	}
 
-	return async (document: Document): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 		const textures = document.getRoot().listTextures();
 
@@ -211,7 +211,7 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-	};
+	});
 };
 
 function getFormat(texture: Texture): Format {

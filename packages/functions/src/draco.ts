@@ -1,5 +1,8 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+import { createTransform } from './utils';
+
+const NAME = 'draco';
 
 export interface DracoOptions {
 	method?: 'edgebreaker' | 'sequential';
@@ -31,9 +34,9 @@ export const DRACO_DEFAULTS: DracoOptions = {
  *
  * This function is a thin wrapper around the {@link KHRDracoMeshCompression} extension itself.
  */
-export const draco = (_options: DracoOptions): Transform => {
+export const draco = (_options: DracoOptions = DRACO_DEFAULTS): Transform => {
 	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
-	return (doc: Document): void => {
+	return createTransform(NAME, (doc: Document): void => {
 		doc.createExtension(KHRDracoMeshCompression)
 			.setRequired(true)
 			.setEncoderOptions({
@@ -52,5 +55,5 @@ export const draco = (_options: DracoOptions): Transform => {
 				},
 				quantizationVolume: options.quantizationVolume,
 			});
-	};
+	});
 };

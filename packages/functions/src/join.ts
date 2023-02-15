@@ -13,7 +13,7 @@ import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives';
 import { prune } from './prune';
 import { transformPrimitive } from './transform-primitive';
-import { createPrimGroupKey, createTransform, formatLong, isTransformPending, isUsed } from './utils';
+import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils';
 
 const NAME = 'join';
 
@@ -78,7 +78,7 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
 export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 	const options = { ...JOIN_DEFAULTS, ..._options } as Required<JoinOptions>;
 
-	return createTransform(NAME, async (document: Document, context): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const root = document.getRoot();
 		const logger = document.getLogger();
 
@@ -89,15 +89,13 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 		}
 
 		// Clean up.
-		if (!isTransformPending(context, NAME, 'prune')) {
-			await document.transform(
-				prune({
-					propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
-					keepLeaves: false,
-					keepAttributes: true,
-				})
-			);
-		}
+		await document.transform(
+			prune({
+				propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
+				keepLeaves: false,
+				keepAttributes: true,
+			})
+		);
 
 		logger.debug(`${NAME}: Complete.`);
 	});
@@ -131,6 +129,9 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
+
+		// Skip nodes with skinning; unsupported.
+		if (node.getSkin()) continue;
 
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
