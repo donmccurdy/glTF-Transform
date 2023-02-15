@@ -53,7 +53,7 @@
 
 					el.setAttribute(
 						'src',
-						`./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.copy.glb')}`
+						`./out/${asset.name}/${variant}/${filename.replace(/\.(gltf|glb)$/, '.opt.glb')}`
 					);
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename} (COPY)`;
 					containerEl.appendChild(el);

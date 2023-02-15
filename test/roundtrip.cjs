@@ -1,11 +1,11 @@
 const path = require('path');
 const { execSync } = require('child_process');
-const { SOURCE, TARGET, VARIANTS } = require('./constants.js');
+const { SOURCE, TARGET, VARIANTS } = require('./constants.cjs');
 
 /**
- * Generates a copy of each sample model using `gltf-transform copy`. Does
- * not apply any meaningful edits to the files: this is intended to be a
- * lossless round trip test.
+ * Generates a copy of each sample model using `copy` and `optimize`. Copy
+ * not apply any meaningful edits to the files, and is intended to be a
+ * lossless round trip test. Optimize runs a number of other commands.
  */
 
 const INDEX = require(path.join(TARGET, 'model-index.json'));
@@ -21,12 +21,7 @@ INDEX.forEach((asset, assetIndex) => {
 
 		try {
 			execSync(`gltf-transform copy ${src} ${dst.replace('{v}', 'copy')}`);
-			execSync(
-				`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-lo')}` +
-					' --quantizePosition 14 --quantizeTexcoord 12 --quantizeColor 8 --quantizeNormal 8'
-			);
-			execSync(`gltf-transform quantize ${src} ${dst.replace('{v}', 'quantize-hi')}`);
-			execSync(`gltf-transform draco ${src} ${dst.replace('{v}', 'draco')}`);
+			execSync(`gltf-transform optimize ${src} ${dst.replace('{v}', 'opt')} --texture-format webp`);
 			console.info(`    - ✅ ${variant}/${filename}`);
 		} catch (e) {
 			console.error(`    - ⛔️ ${variant}/${filename}: ${e.message}`);

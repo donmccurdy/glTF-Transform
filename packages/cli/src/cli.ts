@@ -170,7 +170,7 @@ commands or using the scripting API.
 		default: 'draco',
 	})
 	.option(
-		'--texture-format <format>',
+		'--texture-compress <format>',
 		'Texture compression format. KTX2 optimizes VRAM usage and performance; ' +
 		'AVIF and WebP optimize transmission size. Auto recompresses in original format.', {
 		validator: ['ktx2', 'webp', 'avif', 'auto', false],
@@ -186,7 +186,7 @@ commands or using the scripting API.
 		const opts = options as {
 			instance: number,
 			compress: 'draco' | 'meshopt' | 'quantize' | false,
-			textureFormat: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
+			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
 			textureSize: number,
 		};
 
@@ -204,17 +204,17 @@ commands or using the scripting API.
 		];
 
 		// Texture compression.
-		if (opts.textureFormat === 'ktx2') {
+		if (opts.textureCompress === 'ktx2') {
 			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
 			transforms.push(
 				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
 			);
-		} else if (opts.textureFormat !== false) {
+		} else if (opts.textureCompress !== false) {
 			transforms.push(
 				textureCompress({
 					encoder: sharp,
-					targetFormat: opts.textureFormat === 'auto' ? undefined : opts.textureFormat,
+					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					resize: [opts.textureSize, opts.textureSize]
 				}),
 			);

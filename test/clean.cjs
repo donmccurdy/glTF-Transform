@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { SOURCE, TARGET, VARIANTS, SKIPLIST } = require('./constants.js');
+const { SOURCE, TARGET, VARIANTS, SKIPLIST } = require('./constants.cjs');
 
 /**
  * Cleans the `out/` directory, then makes fresh copies of all supported sample
