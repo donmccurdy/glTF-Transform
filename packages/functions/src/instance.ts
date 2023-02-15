@@ -5,12 +5,12 @@ import { createTransform } from './utils';
 const NAME = 'instance';
 
 export interface InstanceOptions {
-	/** Minimum number of meshes considered eligible for instancing. Default: 5. */
+	/** Minimum number of meshes considered eligible for instancing. Default: 2. */
 	min?: number;
 }
 
 const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
-	min: 5,
+	min: 2,
 };
 
 /**
@@ -26,7 +26,7 @@ const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
  *
  * await document.transform(
  * 	dedup(),
- * 	instance({min: 5}),
+ * 	instance({min: 2}),
  * );
  * ```
  */
