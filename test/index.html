@@ -17,15 +17,26 @@
 	.container {
 		width: 630px;
 		margin: 30px auto;
-		display: grid;
-		grid-template-columns: 300px 300px;
-		grid-auto-rows: 300px;
-		grid-gap: 30px;
 	}
 	model-viewer {
 		width: 300px;
 		height: 300px;
 		border: 1px dashed #ccc;
+	}
+	figure {
+		position: relative;
+		display: grid;
+		grid-template-columns: 300px 300px;
+		grid-auto-rows: 300px;
+		grid-gap: 30px;
+		width: 630px;
+	}
+	figcaption {
+		position: absolute;
+		top: calc(50% - 0.5em);
+		left: calc(100% + 30px);
+		font-style: italic;
+		font-family: monospace;
 	}
 </style>
 <header>
@@ -44,16 +55,23 @@
 		.then((index) => {
 			index.forEach((asset) => {
 				Object.entries(asset.variants).forEach(([variant, filename]) => {
+					const rowEl = document.createElement('figure');
+					containerEl.appendChild(rowEl);
+
 					const el = document.createElement('model-viewer');
 
 					el.setAttribute('src', `./out/${suffix(filename, '_')}`);
 					el.setAttribute('autoplay', '');
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
-					containerEl.appendChild(el.cloneNode());
+					rowEl.appendChild(el.cloneNode());
 
 					el.setAttribute('src', `./out/${suffix(filename, 'copy')}`);
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
-					containerEl.appendChild(el);
+					rowEl.appendChild(el);
+
+					const labelEl = document.createElement('figcaption');
+					labelEl.textContent = asset.name;
+					rowEl.appendChild(labelEl);
 				});
 			});
 		});
