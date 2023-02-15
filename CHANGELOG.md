@@ -6,6 +6,7 @@
 
 **Features:**
 
+- Add `optimize` multi-command to CLI, "optimize all the things" [#819](https://github.com/donmccurdy/glTF-Transform/pull/819)
 - Replace Squoosh with Sharp, new `textureCompress()` API [#752](https://github.com/donmccurdy/glTF-Transform/pull/752)
   - Add AVIF compression [#771](https://github.com/donmccurdy/glTF-Transform/pull/771)
   - Add quality, effort, and other compression settings [#816](https://github.com/donmccurdy/glTF-Transform/pull/816)
