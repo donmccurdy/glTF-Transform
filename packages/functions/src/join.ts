@@ -130,6 +130,9 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
 
+		// Skip nodes with skinning; unsupported.
+		if (node.getSkin()) continue;
+
 		for (const prim of mesh.listPrimitives()) {
 			// Skip prims with morph targets; unsupported.
 			if (prim.listTargets().length > 0) continue;

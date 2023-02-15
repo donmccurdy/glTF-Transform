@@ -65,7 +65,7 @@
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
 					rowEl.appendChild(el.cloneNode());
 
-					el.setAttribute('src', `./out/${suffix(filename, 'copy')}`);
+					el.setAttribute('src', `./out/${suffix(filename, 'optimized')}`);
 					el.alt = el.title = `${asset.name} / ${variant} / ${filename}`;
 					rowEl.appendChild(el);
 
