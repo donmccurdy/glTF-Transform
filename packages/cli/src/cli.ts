@@ -164,7 +164,7 @@ commands or using the scripting API.
 	.option(
 		'--simplify <error>',
 		'Simplification error limit, as a fraction of mesh radius.' +
-		'Disable with --limit 0.', {
+		'Disable with --simplify 0.', {
 		validator: program.NUMBER,
 		required: false,
 		default: SIMPLIFY_DEFAULTS.error,
