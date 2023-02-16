@@ -107,17 +107,38 @@ List available CLI commands:
 gltf-transform --help
 ```
 
-Compress mesh geometry with [Draco](https://github.com/google/draco):
+Optimize everything all at once:
 
 ```bash
-gltf-transform draco input.glb output.glb --method edgebreaker
+gltf-transform optimize input.glb output.glb --texture-compress webp
 ```
 
-Resize and compress textures with [Sharp](https://sharp.pixelplumbing.com/):
+Or pick and choose your optimizations, building a custom pipeline.
+
+Compress mesh geometry with [Draco](https://github.com/google/draco) or [Meshoptimizer](https://meshoptimizer.org/):
 
 ```bash
+# Draco (compresses geometry).
+gltf-transform draco input.glb output.glb --method edgebreaker
+
+# Meshopt (compresses geometry, morph targets, and keyframe animation).
+gltf-transform meshopt input.glb output.glb --level medium
+```
+
+Resize and compress textures with [Sharp](https://sharp.pixelplumbing.com/), or improve VRAM usage and performance with KTX2 and [Basis Universal](https://github.com/BinomialLLC/basis_universal):
+
+```bash
+# Resize textures.
 gltf-transform resize input.glb output.glb --width 1024 --height 1024
+
+# Compress textures with WebP.
 gltf-transform webp input.glb output.glb --slots "baseColor"
+
+# Compress textures with KTX2 + Basis Universal codecs, UASTC and ETC1S.
+gltf-transform uastc input.glb output1.glb \
+    --slots "{normalTexture,occlusionTexture,metallicRoughnessTexture}" \
+    --level 4 --rdo 4 --zstd 18 --verbose
+gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 ```
 
 ... [and much more](https://gltf-transform.donmccurdy.com/cli.html).
