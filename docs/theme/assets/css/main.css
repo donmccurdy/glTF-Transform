@@ -1763,6 +1763,8 @@ body {
 
 .tsd-navigation.secondary ul li a {
     padding-left: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tsd-navigation.secondary ul li a.active {
