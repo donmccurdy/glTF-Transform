@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/core",
-	"version": "3.0.0",
+	"version": "3.0.1-alpha.0",
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.donmccurdy.com/",
 	"description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
@@ -42,8 +42,8 @@
 		"package-lock.json"
 	],
 	"browser": {
-			"fs": false,
-			"path": false
+		"fs": false,
+		"path": false
 	},
 	"dependencies": {
 		"property-graph": "^1.0.0"
