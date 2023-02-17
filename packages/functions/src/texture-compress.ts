@@ -201,13 +201,19 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 		);
 
 		// Attach EXT_texture_webp if needed.
+		const webpExtension = document.createExtension(EXTTextureWebP);
 		if (textures.some((texture) => texture.getMimeType() === 'image/webp')) {
-			document.createExtension(EXTTextureWebP).setRequired(true);
+			webpExtension.setRequired(true);
+		} else {
+			webpExtension.dispose();
 		}
 
 		// Attach EXT_texture_avif if needed.
+		const avifExtension = document.createExtension(EXTTextureAVIF);
 		if (textures.some((texture) => texture.getMimeType() === 'image/avif')) {
-			document.createExtension(EXTTextureAVIF).setRequired(true);
+			avifExtension.setRequired(true);
+		} else {
+			avifExtension.dispose();
 		}
 
 		logger.debug(`${NAME}: Complete.`);
