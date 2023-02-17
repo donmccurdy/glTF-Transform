@@ -8,11 +8,15 @@
 	"license": "MIT",
 	"type": "module",
 	"sideEffects": false,
+	"exports": {
+		"types": "./dist/extensions.d.ts",
+		"require": "./dist/extensions.cjs",
+		"default": "./dist/extensions.modern.js"
+	},
+	"types": "./dist/extensions.d.ts",
 	"main": "./dist/extensions.cjs",
 	"module": "./dist/extensions.modern.js",
-	"exports": "./dist/extensions.modern.js",
 	"source": "./src/extensions.ts",
-	"types": "./dist/extensions.d.ts",
 	"browserslist": [
 		"defaults",
 		"not IE 11",

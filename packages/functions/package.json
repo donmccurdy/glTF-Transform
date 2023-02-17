@@ -8,11 +8,15 @@
 	"license": "MIT",
 	"type": "module",
 	"sideEffects": false,
+	"exports": {
+		"types": "./dist/functions.d.ts",
+		"require": "./dist/functions.cjs",
+		"default": "./dist/functions.modern.js"
+	},
+	"types": "./dist/index.d.ts",
 	"main": "./dist/functions.cjs",
 	"module": "./dist/functions.modern.js",
-	"exports": "./dist/functions.modern.js",
 	"source": "./src/index.ts",
-	"types": "./dist/index.d.ts",
 	"browserslist": [
 		"defaults",
 		"not IE 11",
