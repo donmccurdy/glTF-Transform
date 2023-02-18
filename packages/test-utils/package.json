@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "@gltf-transform/test-utils",
-	"version": "3.0.1-alpha.0",
+	"version": "3.0.1",
 	"type": "module",
 	"sideEffects": false,
 	"exports": "./dist/test-utils.modern.js",
@@ -12,8 +12,8 @@
 		"watch": "microbundle watch --format modern --no-compress"
 	},
 	"dependencies": {
-		"@gltf-transform/core": "^3.0.1-alpha.0",
-		"@gltf-transform/extensions": "^3.0.1-alpha.0",
-		"@gltf-transform/functions": "^3.0.1-alpha.0"
+		"@gltf-transform/core": "^3.0.1",
+		"@gltf-transform/extensions": "^3.0.1",
+		"@gltf-transform/functions": "^3.0.1"
 	}
 }
