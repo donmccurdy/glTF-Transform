@@ -1,6 +1,6 @@
 
 import type { Accessor, Document, ILogger, Transform, TypedArray } from '@gltf-transform/core';
-import { createTransform, formatDeltaOp } from './utils';
+import { createTransform, formatDeltaOp } from './utils.js';
 
 const NAME = 'unweld';
 

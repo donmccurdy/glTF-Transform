@@ -1,7 +1,7 @@
-import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import type { GLTF } from '../types/gltf';
-import type { Accessor } from './accessor';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
+import type { GLTF } from '../types/gltf.js';
+import type { Accessor } from './accessor.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 
 interface IAnimationSampler extends IExtensibleProperty {
 	interpolation: GLTF.AnimationSamplerInterpolation;

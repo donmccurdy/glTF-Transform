@@ -8,7 +8,7 @@ import {
 	WriterContext,
 	vec2,
 } from '@gltf-transform/core';
-import { EXT_TEXTURE_WEBP } from '../constants';
+import { EXT_TEXTURE_WEBP } from '../constants.js';
 
 const NAME = EXT_TEXTURE_WEBP;
 

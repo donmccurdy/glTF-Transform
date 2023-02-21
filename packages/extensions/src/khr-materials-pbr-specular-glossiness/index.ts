@@ -1,2 +1,2 @@
-export * from './materials-pbr-specular-glossiness';
-export * from './pbr-specular-glossiness';
+export * from './materials-pbr-specular-glossiness.js';
+export * from './pbr-specular-glossiness.js';

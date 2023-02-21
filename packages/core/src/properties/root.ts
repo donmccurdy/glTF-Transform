@@ -1,19 +1,19 @@
-import { Nullable, PropertyType, VERSION } from '../constants';
-import type { Extension } from '../extension';
+import { Nullable, PropertyType, VERSION } from '../constants.js';
+import type { Extension } from '../extension.js';
 import type { Graph } from 'property-graph';
-import { Accessor } from './accessor';
-import { Animation } from './animation';
-import { Buffer } from './buffer';
-import { Camera } from './camera';
-import { Material } from './material';
-import { Mesh } from './mesh';
-import { Node } from './node';
-import { COPY_IDENTITY, Property } from './property';
-import { Scene } from './scene';
-import { Skin } from './skin';
-import { Texture } from './texture';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { ExtensionProperty } from './extension-property';
+import { Accessor } from './accessor.js';
+import { Animation } from './animation.js';
+import { Buffer } from './buffer.js';
+import { Camera } from './camera.js';
+import { Material } from './material.js';
+import { Mesh } from './mesh.js';
+import { Node } from './node.js';
+import { COPY_IDENTITY, Property } from './property.js';
+import { Scene } from './scene.js';
+import { Skin } from './skin.js';
+import { Texture } from './texture.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { ExtensionProperty } from './extension-property.js';
 
 interface IAsset {
 	version: string;

@@ -1,6 +1,6 @@
 import { mat4, Accessor, Primitive, Mesh, PropertyType, PrimitiveTarget } from '@gltf-transform/core';
-import { transformPrimitive } from './transform-primitive';
-import { deepListAttributes } from './utils';
+import { transformPrimitive } from './transform-primitive.js';
+import { deepListAttributes } from './utils.js';
 
 /**
  * Applies a transform matrix to every {@link Primitive} in the given {@link Mesh}.

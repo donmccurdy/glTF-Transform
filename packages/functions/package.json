@@ -9,7 +9,7 @@
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
-		"types": "./dist/functions.d.ts",
+		"types": "./dist/index.d.ts",
 		"require": "./dist/functions.cjs",
 		"default": "./dist/functions.modern.js"
 	},

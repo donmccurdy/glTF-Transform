@@ -2,7 +2,7 @@ import { Document, NodeIO, Logger, FileUtils, Transform, Format, ILogger } from 
 import type { Packet, KHRXMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, ListrTask } from 'listr2';
-import { dim, formatBytes, formatLong, XMPContext } from './util';
+import { dim, formatBytes, formatLong, XMPContext } from './util.js';
 import type caporal from '@caporal/core';
 
 /** Helper class for managing a CLI command session. */

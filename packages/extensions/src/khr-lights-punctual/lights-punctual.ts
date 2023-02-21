@@ -1,6 +1,6 @@
 import { Extension, MathUtils, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
-import { KHR_LIGHTS_PUNCTUAL } from '../constants';
-import { Light } from './light';
+import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
+import { Light } from './light.js';
 
 const NAME = KHR_LIGHTS_PUNCTUAL;
 

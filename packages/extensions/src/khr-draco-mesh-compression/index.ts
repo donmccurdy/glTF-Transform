@@ -1,1 +1,1 @@
-export * from './draco-mesh-compression';
+export * from './draco-mesh-compression.js';

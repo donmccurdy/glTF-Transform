@@ -1,7 +1,7 @@
-import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import type { Accessor } from './accessor';
-import type { IExtensibleProperty } from './extensible-property';
-import { Property } from './property';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
+import type { Accessor } from './accessor.js';
+import type { IExtensibleProperty } from './extensible-property.js';
+import { Property } from './property.js';
 
 interface IPrimitiveTarget extends IExtensibleProperty {
 	attributes: { [key: string]: Accessor };

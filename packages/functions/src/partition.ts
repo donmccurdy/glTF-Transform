@@ -1,6 +1,6 @@
 import { Document, ILogger, PropertyType, Transform } from '@gltf-transform/core';
-import { prune } from './prune';
-import { createTransform } from './utils';
+import { prune } from './prune.js';
+import { createTransform } from './utils.js';
 
 const NAME = 'partition';
 

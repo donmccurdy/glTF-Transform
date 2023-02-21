@@ -1,1 +1,1 @@
-export * from './texture-basisu';
+export * from './texture-basisu.js';

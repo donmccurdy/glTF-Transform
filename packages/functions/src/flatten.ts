@@ -1,7 +1,7 @@
 import { Document, Node, PropertyType, Transform } from '@gltf-transform/core';
-import { clearNodeParent } from './clear-node-parent';
-import { prune } from './prune';
-import { createTransform } from './utils';
+import { clearNodeParent } from './clear-node-parent.js';
+import { prune } from './prune.js';
+import { createTransform } from './utils.js';
 
 const NAME = 'flatten';
 

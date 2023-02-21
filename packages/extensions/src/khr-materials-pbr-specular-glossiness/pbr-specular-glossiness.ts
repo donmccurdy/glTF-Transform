@@ -10,7 +10,7 @@ import {
 	vec3,
 	vec4,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
+import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
 
 interface IPBRSpecularGlossiness extends IProperty {
 	diffuseFactor: vec4;

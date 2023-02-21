@@ -1,26 +1,26 @@
 /** @module extensions */
 
-import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing';
-import { EXTMeshoptCompression } from './ext-meshopt-compression';
-import { EXTTextureAVIF } from './ext-texture-avif';
-import { EXTTextureWebP } from './ext-texture-webp';
-import { KHRDracoMeshCompression } from './khr-draco-mesh-compression';
-import { KHRLightsPunctual } from './khr-lights-punctual';
-import { KHRMaterialsClearcoat } from './khr-materials-clearcoat';
-import { KHRMaterialsEmissiveStrength } from './khr-materials-emissive-strength';
-import { KHRMaterialsIOR } from './khr-materials-ior';
-import { KHRMaterialsIridescence } from './khr-materials-iridescence';
-import { KHRMaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness';
-import { KHRMaterialsSheen } from './khr-materials-sheen';
-import { KHRMaterialsSpecular } from './khr-materials-specular';
-import { KHRMaterialsTransmission } from './khr-materials-transmission';
-import { KHRMaterialsUnlit } from './khr-materials-unlit';
-import { KHRMaterialsVariants } from './khr-materials-variants';
-import { KHRMaterialsVolume } from './khr-materials-volume';
-import { KHRMeshQuantization } from './khr-mesh-quantization';
-import { KHRTextureBasisu } from './khr-texture-basisu';
-import { KHRTextureTransform } from './khr-texture-transform';
-import { KHRXMP } from './khr-xmp-json-ld';
+import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
+import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
+import { EXTTextureAVIF } from './ext-texture-avif/index.js';
+import { EXTTextureWebP } from './ext-texture-webp/index.js';
+import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
+import { KHRLightsPunctual } from './khr-lights-punctual/index.js';
+import { KHRMaterialsClearcoat } from './khr-materials-clearcoat/index.js';
+import { KHRMaterialsEmissiveStrength } from './khr-materials-emissive-strength/index.js';
+import { KHRMaterialsIOR } from './khr-materials-ior/index.js';
+import { KHRMaterialsIridescence } from './khr-materials-iridescence/index.js';
+import { KHRMaterialsPBRSpecularGlossiness } from './khr-materials-pbr-specular-glossiness/index.js';
+import { KHRMaterialsSheen } from './khr-materials-sheen/index.js';
+import { KHRMaterialsSpecular } from './khr-materials-specular/index.js';
+import { KHRMaterialsTransmission } from './khr-materials-transmission/index.js';
+import { KHRMaterialsUnlit } from './khr-materials-unlit/index.js';
+import { KHRMaterialsVariants } from './khr-materials-variants/index.js';
+import { KHRMaterialsVolume } from './khr-materials-volume/index.js';
+import { KHRMeshQuantization } from './khr-mesh-quantization/index.js';
+import { KHRTextureBasisu } from './khr-texture-basisu/index.js';
+import { KHRTextureTransform } from './khr-texture-transform/index.js';
+import { KHRXMP } from './khr-xmp-json-ld/index.js';
 
 export const KHRONOS_EXTENSIONS = [
 	KHRDracoMeshCompression,
@@ -50,24 +50,24 @@ export const ALL_EXTENSIONS = [
 	...KHRONOS_EXTENSIONS,
 ];
 
-export * from './ext-mesh-gpu-instancing';
-export * from './ext-meshopt-compression';
-export * from './ext-texture-avif';
-export * from './ext-texture-webp';
-export * from './khr-draco-mesh-compression';
-export * from './khr-lights-punctual';
-export * from './khr-materials-clearcoat';
-export * from './khr-materials-emissive-strength';
-export * from './khr-materials-ior';
-export * from './khr-materials-iridescence';
-export * from './khr-materials-sheen';
-export * from './khr-materials-specular';
-export * from './khr-materials-pbr-specular-glossiness';
-export * from './khr-materials-transmission';
-export * from './khr-materials-unlit';
-export * from './khr-materials-variants';
-export * from './khr-materials-volume';
-export * from './khr-mesh-quantization';
-export * from './khr-texture-basisu';
-export * from './khr-texture-transform';
-export * from './khr-xmp-json-ld';
+export * from './ext-mesh-gpu-instancing/index.js';
+export * from './ext-meshopt-compression/index.js';
+export * from './ext-texture-avif/index.js';
+export * from './ext-texture-webp/index.js';
+export * from './khr-draco-mesh-compression/index.js';
+export * from './khr-lights-punctual/index.js';
+export * from './khr-materials-clearcoat/index.js';
+export * from './khr-materials-emissive-strength/index.js';
+export * from './khr-materials-ior/index.js';
+export * from './khr-materials-iridescence/index.js';
+export * from './khr-materials-sheen/index.js';
+export * from './khr-materials-specular/index.js';
+export * from './khr-materials-pbr-specular-glossiness/index.js';
+export * from './khr-materials-transmission/index.js';
+export * from './khr-materials-unlit/index.js';
+export * from './khr-materials-variants/index.js';
+export * from './khr-materials-volume/index.js';
+export * from './khr-mesh-quantization/index.js';
+export * from './khr-texture-basisu/index.js';
+export * from './khr-texture-transform/index.js';
+export * from './khr-xmp-json-ld/index.js';

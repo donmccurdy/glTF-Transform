@@ -1,5 +1,5 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey } from './utils';
+import { createIndices, createPrimGroupKey } from './utils.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;

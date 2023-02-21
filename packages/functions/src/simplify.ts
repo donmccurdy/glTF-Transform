@@ -6,10 +6,10 @@ import {
 	remapAttribute,
 	deepSwapAttribute,
 	isTransformPending,
-} from './utils';
-import { weld } from './weld';
+} from './utils.js';
+import { weld } from './weld.js';
 import type { MeshoptSimplifier } from 'meshoptimizer';
-import { dedup } from './dedup';
+import { dedup } from './dedup.js';
 
 const NAME = 'simplify';
 

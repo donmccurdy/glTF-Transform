@@ -1,5 +1,5 @@
 import { Accessor, GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
-import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
 import type { Attribute, DataType, Decoder, DecoderModule, Mesh } from 'draco3dgltf';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;

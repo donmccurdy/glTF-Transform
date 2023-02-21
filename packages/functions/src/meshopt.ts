@@ -1,9 +1,9 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
-import { reorder } from './reorder';
-import { quantize } from './quantize';
-import { createTransform } from './utils';
+import { reorder } from './reorder.js';
+import { quantize } from './quantize.js';
+import { createTransform } from './utils.js';
 
 export interface MeshoptOptions {
 	encoder: unknown;

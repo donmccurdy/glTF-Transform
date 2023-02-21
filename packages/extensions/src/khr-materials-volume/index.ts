@@ -1,2 +1,2 @@
-export * from './materials-volume';
-export * from './volume';
+export * from './materials-volume.js';
+export * from './volume.js';

@@ -10,7 +10,7 @@ import pLimit from 'p-limit';
 import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform, getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
-import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util';
+import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util.js';
 
 tmp.setGracefulCleanup();
 

@@ -1,6 +1,6 @@
 import { transformMat4 } from 'gl-matrix/vec3';
-import { PropertyType, bbox, mat4, vec3 } from '../constants';
-import type { Mesh, Node, Scene } from '../properties';
+import { PropertyType, bbox, mat4, vec3 } from '../constants.js';
+import type { Mesh, Node, Scene } from '../properties/index.js';
 
 /**
  * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.

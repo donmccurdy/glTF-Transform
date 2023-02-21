@@ -8,7 +8,7 @@ import {
 	InspectTextureReport,
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
-import { formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP, TableFormat } from './util';
+import { formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP, TableFormat } from './util.js';
 import type { Packet } from '@gltf-transform/extensions';
 
 type AnyPropertyReport =

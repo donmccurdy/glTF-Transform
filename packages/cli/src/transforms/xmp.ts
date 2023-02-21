@@ -5,7 +5,7 @@ import languageTags from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
 import path from 'path';
-import { formatXMP, XMPContext } from '../util';
+import { formatXMP, XMPContext } from '../util.js';
 
 const DEFAULT_LANG = 'en-US';
 

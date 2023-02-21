@@ -10,8 +10,8 @@ import {
 	TransformContext,
 } from '@gltf-transform/core';
 import quat, { getAngle, slerp } from 'gl-matrix/quat';
-import { dedup } from './dedup';
-import { createTransform, isTransformPending } from './utils';
+import { dedup } from './dedup.js';
+import { createTransform, isTransformPending } from './utils.js';
 
 const NAME = 'resample';
 

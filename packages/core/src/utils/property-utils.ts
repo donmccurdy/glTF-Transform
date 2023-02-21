@@ -1,7 +1,7 @@
 import type { GraphEdge } from 'property-graph';
-import { isPlainObject } from './is-plain-object';
-import type { BufferViewUsage } from '../constants';
-import type { Property } from '../properties';
+import { isPlainObject } from './is-plain-object.js';
+import type { BufferViewUsage } from '../constants.js';
+import type { Property } from '../properties/index.js';
 
 export type Ref = GraphEdge<Property, Property>;
 export type RefMap = { [key: string]: Ref };

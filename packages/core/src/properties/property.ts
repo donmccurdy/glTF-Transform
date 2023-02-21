@@ -1,4 +1,4 @@
-import type { Nullable } from '../constants';
+import type { Nullable } from '../constants.js';
 import {
 	$attributes,
 	$immutableKeys,
@@ -10,8 +10,8 @@ import {
 	isRefMap,
 	LiteralKeys,
 } from 'property-graph';
-import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils';
-import type { Ref, RefMap, UnknownRef } from '../utils';
+import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils/index.js';
+import type { Ref, RefMap, UnknownRef } from '../utils/index.js';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;

@@ -1,5 +1,5 @@
 import { Accessor, ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
-import { EXT_MESH_GPU_INSTANCING } from '../constants';
+import { EXT_MESH_GPU_INSTANCING } from '../constants.js';
 
 interface IInstancedMesh extends IProperty {
 	attributes: { [key: string]: Accessor };

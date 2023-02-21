@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_IRIDESCENCE } from '../constants';
-import { Iridescence } from './iridescence';
+import { KHR_MATERIALS_IRIDESCENCE } from '../constants.js';
+import { Iridescence } from './iridescence.js';
 
 const NAME = KHR_MATERIALS_IRIDESCENCE;
 

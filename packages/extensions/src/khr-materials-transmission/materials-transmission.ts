@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_TRANSMISSION } from '../constants';
-import { Transmission } from './transmission';
+import { KHR_MATERIALS_TRANSMISSION } from '../constants.js';
+import { Transmission } from './transmission.js';
 
 const NAME = KHR_MATERIALS_TRANSMISSION;
 

@@ -1,2 +1,2 @@
-export * from './packet';
-export * from './xmp';
+export * from './packet.js';
+export * from './xmp.js';

@@ -1,6 +1,6 @@
-import { Nullable, PropertyType, vec2 } from '../constants';
-import { BufferUtils, FileUtils, ImageUtils } from '../utils';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+import { Nullable, PropertyType, vec2 } from '../constants.js';
+import { BufferUtils, FileUtils, ImageUtils } from '../utils/index.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 
 interface ITexture extends IExtensibleProperty {
 	image: Uint8Array | null;

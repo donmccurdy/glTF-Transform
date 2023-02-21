@@ -1,12 +1,12 @@
 import { multiply } from 'gl-matrix/mat4';
-import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants';
+import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants.js';
 import { $attributes } from 'property-graph';
-import { MathUtils } from '../utils';
-import type { Camera } from './camera';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { Mesh } from './mesh';
-import { COPY_IDENTITY } from './property';
-import type { Skin } from './skin';
+import { MathUtils } from '../utils/index.js';
+import type { Camera } from './camera.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { Mesh } from './mesh.js';
+import { COPY_IDENTITY } from './property.js';
+import type { Skin } from './skin.js';
 
 interface INode extends IExtensibleProperty {
 	translation: vec3;

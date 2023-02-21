@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_CLEARCOAT } from '../constants';
-import { Clearcoat } from './clearcoat';
+import { KHR_MATERIALS_CLEARCOAT } from '../constants.js';
+import { Clearcoat } from './clearcoat.js';
 
 const NAME = KHR_MATERIALS_CLEARCOAT;
 

@@ -1,8 +1,8 @@
-import { Nullable, PropertyType } from '../constants';
-import type { GLTF } from '../types/gltf';
-import type { AnimationSampler } from './animation-sampler';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { Node } from './node';
+import { Nullable, PropertyType } from '../constants.js';
+import type { GLTF } from '../types/gltf.js';
+import type { AnimationSampler } from './animation-sampler.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { Node } from './node.js';
 
 interface IAnimationChannel extends IExtensibleProperty {
 	targetPath: GLTF.AnimationChannelTargetPath | null;

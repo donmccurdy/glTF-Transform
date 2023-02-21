@@ -1,2 +1,2 @@
-export * from './materials-ior';
-export * from './ior';
+export * from './materials-ior.js';
+export * from './ior.js';

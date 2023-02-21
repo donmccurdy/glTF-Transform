@@ -1,6 +1,6 @@
-import { Nullable, PropertyType } from '../constants';
-import type { GLTF } from '../types/gltf';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+import { Nullable, PropertyType } from '../constants.js';
+import type { GLTF } from '../types/gltf.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 
 interface ITextureInfo extends IExtensibleProperty {
 	texCoord: number;

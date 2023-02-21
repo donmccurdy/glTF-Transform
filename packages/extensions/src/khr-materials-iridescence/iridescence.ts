@@ -7,7 +7,7 @@ import {
 	TextureChannel,
 	TextureInfo,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_IRIDESCENCE } from '../constants';
+import { KHR_MATERIALS_IRIDESCENCE } from '../constants.js';
 
 interface IIridescence extends IProperty {
 	iridescenceFactor: number;

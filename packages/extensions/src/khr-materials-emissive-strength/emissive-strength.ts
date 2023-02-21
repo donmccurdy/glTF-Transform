@@ -1,5 +1,5 @@
 import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
-import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
+import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants.js';
 
 interface IEmissiveStrength extends IProperty {
 	emissiveStrength: number;

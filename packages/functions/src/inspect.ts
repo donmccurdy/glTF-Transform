@@ -8,7 +8,7 @@ import {
 	getBounds,
 	PropertyType,
 } from '@gltf-transform/core';
-import { getGLPrimitiveCount } from './utils';
+import { getGLPrimitiveCount } from './utils.js';
 import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 
 /** Inspects the contents of a glTF file and returns a JSON report. */

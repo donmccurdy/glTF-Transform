@@ -1,1 +1,1 @@
-export * from './texture-avif';
+export * from './texture-avif.js';

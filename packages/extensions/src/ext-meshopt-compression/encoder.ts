@@ -1,4 +1,4 @@
-import { PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants';
+import { PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants.js';
 import {
 	Accessor,
 	AnimationChannel,

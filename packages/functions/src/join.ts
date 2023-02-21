@@ -10,10 +10,10 @@ import {
 	Transform,
 } from '@gltf-transform/core';
 import { invert, multiply } from 'gl-matrix/mat4';
-import { joinPrimitives } from './join-primitives';
-import { prune } from './prune';
-import { transformPrimitive } from './transform-primitive';
-import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils';
+import { joinPrimitives } from './join-primitives.js';
+import { prune } from './prune.js';
+import { transformPrimitive } from './transform-primitive.js';
+import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
 
 const NAME = 'join';
 

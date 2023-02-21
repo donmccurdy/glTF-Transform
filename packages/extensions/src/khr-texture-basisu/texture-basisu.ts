@@ -8,7 +8,7 @@ import {
 	WriterContext,
 	vec2,
 } from '@gltf-transform/core';
-import { KHR_TEXTURE_BASISU } from '../constants';
+import { KHR_TEXTURE_BASISU } from '../constants.js';
 
 const NAME = KHR_TEXTURE_BASISU;
 

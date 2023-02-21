@@ -9,10 +9,10 @@ import {
 	ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
-import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants';
-import { EXT_MESHOPT_COMPRESSION } from '../constants';
-import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder';
-import { isFallbackBuffer } from './decoder';
+import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants.js';
+import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
+import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder.js';
+import { isFallbackBuffer } from './decoder.js';
 import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 
 const NAME = EXT_MESHOPT_COMPRESSION;

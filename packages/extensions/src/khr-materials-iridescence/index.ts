@@ -1,2 +1,2 @@
-export * from './materials-iridescence';
-export * from './iridescence';
+export * from './materials-iridescence.js';
+export * from './iridescence.js';

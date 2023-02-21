@@ -1,2 +1,2 @@
-export * from './materials-transmission';
-export * from './transmission';
+export * from './materials-transmission.js';
+export * from './transmission.js';

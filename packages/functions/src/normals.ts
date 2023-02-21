@@ -1,6 +1,6 @@
 import type { Document, Transform, vec3 } from '@gltf-transform/core';
-import { unweld } from './unweld';
-import { createTransform } from './utils';
+import { unweld } from './unweld.js';
+import { createTransform } from './utils.js';
 import { normalize } from 'gl-matrix/vec3';
 
 const NAME = 'normals';

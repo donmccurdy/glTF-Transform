@@ -2,8 +2,8 @@ import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import type { Document, Transform, vec2 } from '@gltf-transform/core';
-import { listTextureSlots } from './list-texture-slots';
-import { createTransform } from './utils';
+import { listTextureSlots } from './list-texture-slots.js';
+import { createTransform } from './utils.js';
 
 const NAME = 'textureResize';
 

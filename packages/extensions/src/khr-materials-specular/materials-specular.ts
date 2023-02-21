@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
-import { KHR_MATERIALS_SPECULAR } from '../constants';
-import { Specular } from './specular';
+import { KHR_MATERIALS_SPECULAR } from '../constants.js';
+import { Specular } from './specular.js';
 
 const NAME = KHR_MATERIALS_SPECULAR;
 

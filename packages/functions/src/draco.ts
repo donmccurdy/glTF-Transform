@@ -1,6 +1,6 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
-import { createTransform } from './utils';
+import { createTransform } from './utils.js';
 
 const NAME = 'draco';
 

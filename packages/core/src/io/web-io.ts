@@ -1,6 +1,6 @@
-import { PlatformIO } from './platform-io';
-import { HTTPUtils } from '../utils';
-import { Format } from '../constants';
+import { PlatformIO } from './platform-io.js';
+import { HTTPUtils } from '../utils/index.js';
+import { Format } from '../constants.js';
 
 /**
  * # WebIO

@@ -11,7 +11,7 @@ import {
 	ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
-import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder';
+import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder.js';
 import {
 	EncodedPrimitive,
 	encodeGeometry,
@@ -19,8 +19,8 @@ import {
 	EncoderOptions,
 	EncodingError,
 	initEncoderModule,
-} from './encoder';
-import { KHR_DRACO_MESH_COMPRESSION } from '../constants';
+} from './encoder.js';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
 import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
 
 const NAME = KHR_DRACO_MESH_COMPRESSION;

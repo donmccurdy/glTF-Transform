@@ -6,15 +6,15 @@ import {
 	TypedArray,
 	VERSION,
 	VertexLayout,
-} from '../constants';
-import type { Document } from '../document';
-import type { Extension } from '../extension';
+} from '../constants.js';
+import type { Document } from '../document.js';
+import type { Extension } from '../extension.js';
 import type { GraphEdge } from 'property-graph';
-import type { JSONDocument } from '../json-document';
-import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties';
-import type { GLTF } from '../types/gltf';
-import { BufferUtils, Logger, MathUtils } from '../utils';
-import { WriterContext } from './writer-context';
+import type { JSONDocument } from '../json-document.js';
+import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties/index.js';
+import type { GLTF } from '../types/gltf.js';
+import { BufferUtils, Logger, MathUtils } from '../utils/index.js';
+import { WriterContext } from './writer-context.js';
 
 const { BufferViewUsage } = WriterContext;
 const { UNSIGNED_INT, UNSIGNED_SHORT, UNSIGNED_BYTE } = Accessor.ComponentType;

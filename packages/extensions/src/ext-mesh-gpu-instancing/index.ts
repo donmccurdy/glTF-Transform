@@ -1,2 +1,2 @@
-export * from './mesh-gpu-instancing';
-export * from './instanced-mesh';
+export * from './mesh-gpu-instancing.js';
+export * from './instanced-mesh.js';
