@@ -1,5 +1,5 @@
 import { Node, Scene } from '@gltf-transform/core';
-import { getNodeScene } from './get-node-scene';
+import { getNodeScene } from './get-node-scene.js';
 
 /**
  * Clears the parent of the given {@link Node}, leaving it attached

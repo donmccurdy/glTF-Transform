@@ -1,5 +1,5 @@
 import { GraphEdge } from 'property-graph';
-import { isPlainObject } from './is-plain-object';
+import { isPlainObject } from './is-plain-object.js';
 
 export function isRefList(value: unknown): boolean {
 	return Array.isArray(value) && value[0] instanceof GraphEdge;

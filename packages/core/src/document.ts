@@ -1,5 +1,5 @@
-import { PropertyType } from './constants';
-import type { Extension } from './extension';
+import { PropertyType } from './constants.js';
+import type { Extension } from './extension.js';
 import { Graph } from 'property-graph';
 import {
 	Accessor,
@@ -18,8 +18,8 @@ import {
 	Scene,
 	Skin,
 	Texture,
-} from './properties';
-import { ILogger, Logger } from './utils';
+} from './properties/index.js';
+import { ILogger, Logger } from './utils/index.js';
 
 export interface TransformContext {
 	stack: string[];

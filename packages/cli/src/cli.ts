@@ -9,12 +9,12 @@ import sharp from 'sharp';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, FlattenOptions, flatten, JOIN_DEFAULTS, join, JoinOptions, sparse, SparseOptions } from '@gltf-transform/functions';
-import { inspect } from './inspect';
-import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms';
-import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util';
-import { Session } from './session';
-import { ValidateOptions, validate } from './validate';
-import { getConfig, loadConfig } from './config';
+import { inspect } from './inspect.js';
+import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms/index.js';
+import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util.js';
+import { Session } from './session.js';
+import { ValidateOptions, validate } from './validate.js';
+import { getConfig, loadConfig } from './config.js';
 
 const program = caporal.program;
 
@@ -1460,5 +1460,5 @@ program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
 export { program, programReady };
-export * from './util';
-export * from './transforms';
+export * from './util.js';
+export * from './transforms/index.js';

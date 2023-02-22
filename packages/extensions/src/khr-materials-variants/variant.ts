@@ -1,5 +1,5 @@
 import { ExtensionProperty } from '@gltf-transform/core';
-import { KHR_MATERIALS_VARIANTS } from '../constants';
+import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 
 /**
  * # Variant

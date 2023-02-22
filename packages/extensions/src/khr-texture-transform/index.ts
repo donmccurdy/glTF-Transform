@@ -1,2 +1,2 @@
-export * from './texture-transform';
-export * from './transform';
+export * from './texture-transform.js';
+export * from './transform.js';

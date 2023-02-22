@@ -1,8 +1,8 @@
 import type { GraphEdgeEvent, GraphEvent, GraphNodeEvent } from 'property-graph';
-import type { PropertyType } from './constants';
-import type { Document } from './document';
-import type { ReaderContext, WriterContext } from './io';
-import { ExtensionProperty } from './properties';
+import type { PropertyType } from './constants.js';
+import type { Document } from './document.js';
+import type { ReaderContext, WriterContext } from './io/index.js';
+import { ExtensionProperty } from './properties/index.js';
 
 /**
  * # Extension

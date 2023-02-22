@@ -1,8 +1,8 @@
-export { NodeIO } from './node-io';
-export { DenoIO } from './deno-io';
-export { PlatformIO } from './platform-io';
-export { WebIO } from './web-io';
-export { ReaderOptions } from './reader';
-export { WriterOptions } from './writer';
-export { ReaderContext } from './reader-context';
-export { WriterContext } from './writer-context';
+export { NodeIO } from './node-io.js';
+export { DenoIO } from './deno-io.js';
+export { PlatformIO } from './platform-io.js';
+export { WebIO } from './web-io.js';
+export { ReaderOptions } from './reader.js';
+export { WriterOptions } from './writer.js';
+export { ReaderContext } from './reader-context.js';
+export { WriterContext } from './writer-context.js';

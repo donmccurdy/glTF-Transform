@@ -7,7 +7,7 @@ import {
 	TextureChannel,
 	TextureInfo,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_CLEARCOAT } from '../constants';
+import { KHR_MATERIALS_CLEARCOAT } from '../constants.js';
 
 interface IClearcoat extends IProperty {
 	clearcoatFactor: number;

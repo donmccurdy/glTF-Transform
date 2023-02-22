@@ -16,14 +16,14 @@ import {
 	vec3,
 	vec4,
 } from '@gltf-transform/core';
-import { dedup } from './dedup';
+import { dedup } from './dedup.js';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
-import { prune } from './prune';
-import { createTransform } from './utils';
-import { sortPrimitiveWeights } from './sort-primitive-weights';
+import { prune } from './prune.js';
+import { createTransform } from './utils.js';
+import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 
 const NAME = 'quantize';
 

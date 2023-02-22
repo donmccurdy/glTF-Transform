@@ -1,2 +1,2 @@
-export * from './materials-sheen';
-export * from './sheen';
+export * from './materials-sheen.js';
+export * from './sheen.js';

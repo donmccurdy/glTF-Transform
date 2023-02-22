@@ -1,8 +1,8 @@
-import { Nullable, PropertyType } from '../constants';
+import { Nullable, PropertyType } from '../constants.js';
 import { $attributes } from 'property-graph';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { Node } from './node';
-import { COPY_IDENTITY } from './property';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { Node } from './node.js';
+import { COPY_IDENTITY } from './property.js';
 
 interface IScene extends IExtensibleProperty {
 	children: Node[];

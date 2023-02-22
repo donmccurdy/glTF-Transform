@@ -1,7 +1,7 @@
-import { Nullable, PropertyType } from '../constants';
-import type { AnimationChannel } from './animation-channel';
-import type { AnimationSampler } from './animation-sampler';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
+import { Nullable, PropertyType } from '../constants.js';
+import type { AnimationChannel } from './animation-channel.js';
+import type { AnimationSampler } from './animation-sampler.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 
 interface IAnimation extends IExtensibleProperty {
 	channels: AnimationChannel[];

@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
-import { KHR_MATERIALS_SHEEN } from '../constants';
-import { Sheen } from './sheen';
+import { KHR_MATERIALS_SHEEN } from '../constants.js';
+import { Sheen } from './sheen.js';
 
 const NAME = KHR_MATERIALS_SHEEN;
 

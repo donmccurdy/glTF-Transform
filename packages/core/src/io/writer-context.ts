@@ -1,6 +1,6 @@
-import { BufferViewUsage, Format, PropertyType } from '../constants';
-import type { Document } from '../document';
-import type { JSONDocument } from '../json-document';
+import { BufferViewUsage, Format, PropertyType } from '../constants.js';
+import type { Document } from '../document.js';
+import type { JSONDocument } from '../json-document.js';
 import type {
 	Accessor,
 	Animation,
@@ -14,10 +14,10 @@ import type {
 	Skin,
 	Texture,
 	TextureInfo,
-} from '../properties';
-import type { GLTF } from '../types/gltf';
-import { ILogger, ImageUtils } from '../utils';
-import type { WriterOptions } from './writer';
+} from '../properties/index.js';
+import type { GLTF } from '../types/gltf.js';
+import { ILogger, ImageUtils } from '../utils/index.js';
+import type { WriterOptions } from './writer.js';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
 

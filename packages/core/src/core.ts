@@ -1,8 +1,8 @@
 /** @module core */
 
-export { Document, Transform, TransformContext } from './document';
-export { JSONDocument } from './json-document';
-export { Extension } from './extension';
+export { Document, Transform, TransformContext } from './document.js';
+export { JSONDocument } from './json-document.js';
+export { Extension } from './extension.js';
 export {
 	Accessor,
 	Animation,
@@ -25,9 +25,9 @@ export {
 	Texture,
 	TextureInfo,
 	COPY_IDENTITY,
-} from './properties';
+} from './properties/index.js';
 export { Graph, GraphEdge } from 'property-graph';
-export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io';
+export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io/index.js';
 export {
 	BufferUtils,
 	ColorUtils,
@@ -41,7 +41,7 @@ export {
 	getBounds,
 	bounds,
 	uuid,
-} from './utils';
+} from './utils/index.js';
 export {
 	TypedArray,
 	TypedArrayConstructor,
@@ -59,5 +59,5 @@ export {
 	bbox,
 	GLB_BUFFER,
 	VERSION,
-} from './constants';
-export { GLTF } from './types/gltf';
+} from './constants.js';
+export { GLTF } from './types/gltf.js';

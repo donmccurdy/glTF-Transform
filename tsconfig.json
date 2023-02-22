@@ -9,7 +9,7 @@
       "@gltf-transform/test-utils": ["./packages/test-utils/"]
     },
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "lib": ["es2020", "dom"],
     "target": "es2020",
     "module": "ESNext",

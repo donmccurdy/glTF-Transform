@@ -1,9 +1,9 @@
-import { BufferViewUsage, Nullable, PropertyType } from '../constants';
-import type { GLTF } from '../types/gltf';
-import type { Accessor } from './accessor';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { Material } from './material';
-import type { PrimitiveTarget } from './primitive-target';
+import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
+import type { GLTF } from '../types/gltf.js';
+import type { Accessor } from './accessor.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { Material } from './material.js';
+import type { PrimitiveTarget } from './primitive-target.js';
 
 interface IPrimitive extends IExtensibleProperty {
 	mode: GLTF.MeshPrimitiveMode;

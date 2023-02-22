@@ -1,4 +1,4 @@
-import type { GLTF } from './types/gltf';
+import type { GLTF } from './types/gltf.js';
 
 /**
  * # JSONDocument

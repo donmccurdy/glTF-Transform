@@ -1,6 +1,6 @@
 import { ExtensionProperty, IProperty, Material, Nullable } from '@gltf-transform/core';
-import { KHR_MATERIALS_VARIANTS } from '../constants';
-import type { Variant } from './variant';
+import { KHR_MATERIALS_VARIANTS } from '../constants.js';
+import type { Variant } from './variant.js';
 
 interface IMapping extends IProperty {
 	material: Material;

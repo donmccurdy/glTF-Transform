@@ -7,7 +7,7 @@ import {
 	TextureChannel,
 	TextureInfo,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_TRANSMISSION } from '../constants';
+import { KHR_MATERIALS_TRANSMISSION } from '../constants.js';
 
 interface ITransmission extends IProperty {
 	transmissionFactor: number;

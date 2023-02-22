@@ -1,4 +1,4 @@
-import type { JSONDocument } from '../json-document';
+import type { JSONDocument } from '../json-document.js';
 import type {
 	Accessor,
 	Animation,
@@ -11,8 +11,8 @@ import type {
 	Skin,
 	Texture,
 	TextureInfo,
-} from '../properties';
-import type { GLTF } from '../types/gltf';
+} from '../properties/index.js';
+import type { GLTF } from '../types/gltf.js';
 
 /**
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used

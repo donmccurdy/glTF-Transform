@@ -1,2 +1,2 @@
-export * from './materials-unlit';
-export * from './unlit';
+export * from './materials-unlit.js';
+export * from './unlit.js';

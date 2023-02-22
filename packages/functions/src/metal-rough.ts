@@ -5,7 +5,7 @@ import {
 	KHRMaterialsSpecular,
 	PBRSpecularGlossiness,
 } from '@gltf-transform/extensions';
-import { createTransform, rewriteTexture } from './utils';
+import { createTransform, rewriteTexture } from './utils.js';
 
 const NAME = 'metalRough';
 

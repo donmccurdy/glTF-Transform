@@ -1,6 +1,6 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_UNLIT } from '../constants';
-import { Unlit } from './unlit';
+import { KHR_MATERIALS_UNLIT } from '../constants.js';
+import { Unlit } from './unlit.js';
 
 const NAME = KHR_MATERIALS_UNLIT;
 

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import validator from 'gltf-validator';
 import type { ILogger } from '@gltf-transform/core';
-import { formatHeader, formatTable, TableFormat } from './util';
+import { formatHeader, formatTable, TableFormat } from './util.js';
 
 export interface ValidateOptions {
 	limit: number;

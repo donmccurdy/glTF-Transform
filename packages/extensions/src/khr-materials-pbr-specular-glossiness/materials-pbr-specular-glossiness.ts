@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext, vec3, vec4 } from '@gltf-transform/core';
-import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants';
-import { PBRSpecularGlossiness } from './pbr-specular-glossiness';
+import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
+import { PBRSpecularGlossiness } from './pbr-specular-glossiness.js';
 
 const NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 

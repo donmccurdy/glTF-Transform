@@ -1,6 +1,6 @@
 import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { EXT_MESH_GPU_INSTANCING } from '../constants';
-import { InstancedMesh, INSTANCE_ATTRIBUTE } from './instanced-mesh';
+import { EXT_MESH_GPU_INSTANCING } from '../constants.js';
+import { InstancedMesh, INSTANCE_ATTRIBUTE } from './instanced-mesh.js';
 
 const NAME = EXT_MESH_GPU_INSTANCING;
 

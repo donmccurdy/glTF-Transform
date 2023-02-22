@@ -1,2 +1,2 @@
-export * from './materials-emissive-strength';
-export * from './emissive-strength';
+export * from './materials-emissive-strength.js';
+export * from './emissive-strength.js';

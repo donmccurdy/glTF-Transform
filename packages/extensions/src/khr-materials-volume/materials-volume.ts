@@ -1,6 +1,6 @@
 import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
-import { KHR_MATERIALS_VOLUME } from '../constants';
-import { Volume } from './volume';
+import { KHR_MATERIALS_VOLUME } from '../constants.js';
+import { Volume } from './volume.js';
 
 const NAME = KHR_MATERIALS_VOLUME;
 

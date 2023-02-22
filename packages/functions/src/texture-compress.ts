@@ -1,10 +1,10 @@
 import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
 import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
-import { getTextureChannelMask } from './list-texture-channels';
-import { listTextureSlots } from './list-texture-slots';
+import { getTextureChannelMask } from './list-texture-channels.js';
+import { listTextureSlots } from './list-texture-slots.js';
 import type sharp from 'sharp';
-import { createTransform, formatBytes } from './utils';
-import { TextureResizeFilter } from './texture-resize';
+import { createTransform, formatBytes } from './utils.js';
+import { TextureResizeFilter } from './texture-resize.js';
 
 const NAME = 'textureCompress';
 

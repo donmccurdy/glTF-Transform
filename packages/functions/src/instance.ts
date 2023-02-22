@@ -1,6 +1,6 @@
 import { Document, ILogger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { createTransform } from './utils';
+import { createTransform } from './utils.js';
 
 const NAME = 'instance';
 

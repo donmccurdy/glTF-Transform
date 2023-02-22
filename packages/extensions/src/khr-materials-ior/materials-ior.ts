@@ -1,6 +1,6 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_IOR } from '../constants';
-import { IOR } from './ior';
+import { KHR_MATERIALS_IOR } from '../constants.js';
+import { IOR } from './ior.js';
 
 const NAME = KHR_MATERIALS_IOR;
 

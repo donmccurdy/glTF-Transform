@@ -1,6 +1,6 @@
 import type { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
-import { createTransform } from './utils';
+import { createTransform } from './utils.js';
 
 const NAME = 'dequantize';
 

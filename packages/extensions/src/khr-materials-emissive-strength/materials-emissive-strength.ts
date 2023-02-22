@@ -1,6 +1,6 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants';
-import { EmissiveStrength } from './emissive-strength';
+import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants.js';
+import { EmissiveStrength } from './emissive-strength.js';
 
 const NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
 

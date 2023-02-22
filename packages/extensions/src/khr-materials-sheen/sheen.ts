@@ -9,7 +9,7 @@ import {
 	TextureInfo,
 	vec3,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_SHEEN } from '../constants';
+import { KHR_MATERIALS_SHEEN } from '../constants.js';
 
 interface ISheen extends IProperty {
 	sheenColorFactor: vec3;

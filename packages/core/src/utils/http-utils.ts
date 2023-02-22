@@ -1,4 +1,4 @@
-import { FileUtils } from './file-utils';
+import { FileUtils } from './file-utils.js';
 
 // Need a placeholder domain to construct a URL from a relative path. We only
 // access `url.pathname`, so the domain doesn't matter.

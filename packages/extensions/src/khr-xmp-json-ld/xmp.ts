@@ -11,8 +11,8 @@ import {
 	Texture,
 	WriterContext,
 } from '@gltf-transform/core';
-import { KHR_XMP_JSON_LD } from '../constants';
-import { Packet } from './packet';
+import { KHR_XMP_JSON_LD } from '../constants.js';
+import { Packet } from './packet.js';
 
 const NAME = KHR_XMP_JSON_LD;
 

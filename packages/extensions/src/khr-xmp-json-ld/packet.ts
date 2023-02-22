@@ -1,5 +1,5 @@
 import { Nullable, PropertyType, ExtensionProperty, IProperty } from '@gltf-transform/core';
-import { KHR_XMP_JSON_LD } from '../constants';
+import { KHR_XMP_JSON_LD } from '../constants.js';
 
 type Term = string;
 type TermDefinition = string | Record<string, string>;

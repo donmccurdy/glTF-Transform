@@ -9,8 +9,8 @@ import {
 	TypedArray,
 	vec3,
 } from '@gltf-transform/core';
-import { dedup } from './dedup';
-import { createIndices, createTransform, formatDeltaOp, isTransformPending } from './utils';
+import { dedup } from './dedup.js';
+import { createIndices, createTransform, formatDeltaOp, isTransformPending } from './utils.js';
 
 const NAME = 'weld';
 

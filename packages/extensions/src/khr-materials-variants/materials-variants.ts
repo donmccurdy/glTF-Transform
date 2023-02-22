@@ -1,8 +1,8 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MATERIALS_VARIANTS } from '../constants';
-import { Mapping } from './mapping';
-import { MappingList } from './mapping-list';
-import { Variant } from './variant';
+import { KHR_MATERIALS_VARIANTS } from '../constants.js';
+import { Mapping } from './mapping.js';
+import { MappingList } from './mapping-list.js';
+import { Variant } from './variant.js';
 
 const NAME = KHR_MATERIALS_VARIANTS;
 

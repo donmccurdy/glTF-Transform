@@ -8,7 +8,7 @@ import {
 	vec2,
 	BufferUtils,
 } from '@gltf-transform/core';
-import { EXT_TEXTURE_AVIF } from '../constants';
+import { EXT_TEXTURE_AVIF } from '../constants.js';
 
 const NAME = EXT_TEXTURE_AVIF;
 

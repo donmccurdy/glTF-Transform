@@ -1,6 +1,6 @@
 import { ExtensionProperty } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
-import { KHR_MATERIALS_UNLIT } from '../constants';
+import { KHR_MATERIALS_UNLIT } from '../constants.js';
 
 /**
  * # Unlit

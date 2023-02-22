@@ -1,1 +1,1 @@
-export * from './texture-webp';
+export * from './texture-webp.js';

@@ -9,7 +9,7 @@ import {
 	TextureInfo,
 	vec3,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_SPECULAR } from '../constants';
+import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 
 interface ISpecular extends IProperty {
 	specularFactor: number;

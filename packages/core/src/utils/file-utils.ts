@@ -1,4 +1,4 @@
-import { ImageUtils } from './image-utils';
+import { ImageUtils } from './image-utils.js';
 
 /**
  * # FileUtils

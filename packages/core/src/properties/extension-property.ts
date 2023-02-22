@@ -1,5 +1,5 @@
-import type { ExtensibleProperty } from './extensible-property';
-import { Property, IProperty } from './property';
+import type { ExtensibleProperty } from './extensible-property.js';
+import { Property, IProperty } from './property.js';
 
 /**
  * # ExtensionProperty

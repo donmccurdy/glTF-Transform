@@ -2,7 +2,7 @@ import type { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
-import { createIndices } from './utils';
+import { createIndices } from './utils.js';
 
 /**
  * Applies a transform matrix to a {@link Primitive}.

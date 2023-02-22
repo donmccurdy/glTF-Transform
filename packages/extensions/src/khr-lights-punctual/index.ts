@@ -1,2 +1,2 @@
-export * from './lights-punctual';
-export * from './light';
+export * from './lights-punctual.js';
+export * from './light.js';

@@ -15,7 +15,7 @@ import {
 	Texture,
 	TextureInfo,
 } from '@gltf-transform/core';
-import { createTransform } from './utils';
+import { createTransform } from './utils.js';
 
 const NAME = 'prune';
 

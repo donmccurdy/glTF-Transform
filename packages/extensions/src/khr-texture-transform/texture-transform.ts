@@ -1,6 +1,6 @@
 import { Extension, MathUtils, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
-import { KHR_TEXTURE_TRANSFORM } from '../constants';
-import { Transform } from './transform';
+import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
+import { Transform } from './transform.js';
 
 const NAME = KHR_TEXTURE_TRANSFORM;
 

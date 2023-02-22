@@ -1,2 +1,2 @@
-export * from './materials-specular';
-export * from './specular';
+export * from './materials-specular.js';
+export * from './specular.js';

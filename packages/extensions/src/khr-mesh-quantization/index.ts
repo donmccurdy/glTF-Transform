@@ -1,1 +1,1 @@
-export * from './mesh-quantization';
+export * from './mesh-quantization.js';

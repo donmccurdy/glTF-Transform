@@ -1,5 +1,5 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
-import { KHR_MESH_QUANTIZATION } from '../constants';
+import { KHR_MESH_QUANTIZATION } from '../constants.js';
 
 const NAME = KHR_MESH_QUANTIZATION;
 

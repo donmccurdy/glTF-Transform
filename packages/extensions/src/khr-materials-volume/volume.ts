@@ -9,7 +9,7 @@ import {
 	TextureInfo,
 	vec3,
 } from '@gltf-transform/core';
-import { KHR_MATERIALS_VOLUME } from '../constants';
+import { KHR_MATERIALS_VOLUME } from '../constants.js';
 
 interface IVolume extends IProperty {
 	thicknessFactor: number;

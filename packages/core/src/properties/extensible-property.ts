@@ -1,6 +1,6 @@
-import type { Nullable } from '../constants';
-import type { ExtensionProperty } from './extension-property';
-import { Property, IProperty } from './property';
+import type { Nullable } from '../constants.js';
+import type { ExtensionProperty } from './extension-property.js';
+import { Property, IProperty } from './property.js';
 
 export interface IExtensibleProperty extends IProperty {
 	extensions: { [key: string]: ExtensionProperty };

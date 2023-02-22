@@ -1,9 +1,9 @@
-import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants';
-import type { GLTF } from '../types/gltf';
-import { ColorUtils } from '../utils';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property';
-import type { Texture } from './texture';
-import { TextureInfo } from './texture-info';
+import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants.js';
+import type { GLTF } from '../types/gltf.js';
+import { ColorUtils } from '../utils/index.js';
+import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import type { Texture } from './texture.js';
+import { TextureInfo } from './texture-info.js';
 
 const { R, G, B, A } = TextureChannel;
 

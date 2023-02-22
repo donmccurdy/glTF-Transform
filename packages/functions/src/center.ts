@@ -1,6 +1,6 @@
 import type { Document, Transform, vec3 } from '@gltf-transform/core';
 import { getBounds } from '@gltf-transform/core';
-import { createTransform } from './utils';
+import { createTransform } from './utils.js';
 
 const NAME = 'center';
 

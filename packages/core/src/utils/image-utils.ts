@@ -1,5 +1,5 @@
-import type { vec2 } from '../constants';
-import { BufferUtils } from './buffer-utils';
+import type { vec2 } from '../constants.js';
+import { BufferUtils } from './buffer-utils.js';
 
 /** Implements support for an image format in the {@link ImageUtils} class. */
 export interface ImageUtilsFormat {
