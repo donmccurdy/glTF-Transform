@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  // typedoc 0.21.2 does not build with 'nodenext' resolution.
+  "compilerOptions": { "moduleResolution": "node" }
+}
