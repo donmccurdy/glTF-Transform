@@ -51,13 +51,13 @@ export namespace Credits {}
  * Usage:
  *
  * ```text
- * gltf-transform --help --config path/to/gltf-transform.config.js
+ * gltf-transform --help --config path/to/gltf-transform.config.mjs
  * ```
  *
  * Example configuration:
  *
  * ```javascript
- * // gltf-transform.config.js
+ * // gltf-transform.config.mjs
  * import { Extension } from '@gltf-transform/core';
  * import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
  *
@@ -96,7 +96,7 @@ export namespace Credits {}
  * }
  * ```
  *
- * Writing extensions in TypeScript is strongly encouraged. However, `gltf-transform.config.js` must be
+ * Writing extensions in TypeScript is strongly encouraged. However, `gltf-transform.config.mjs` must be
  * written in, or compiled to, plain JavaScript.
  */
 export namespace CLI {}
