@@ -1223,7 +1223,7 @@ program
 				encoder: sharp,
 				formats,
 				slots,
-				quality: options.qualify as number,
+				quality: options.quality as number,
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
 			}));
@@ -1274,7 +1274,7 @@ program
 				encoder: sharp,
 				formats,
 				slots,
-				quality: options.qualify as number,
+				quality: options.quality as number,
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
 				nearLossless: options.nearLossless as boolean,
@@ -1316,7 +1316,7 @@ program
 				encoder: sharp,
 				formats,
 				slots,
-				quality: options.qualify as number,
+				quality: options.quality as number,
 				effort: options.effort as number,
 			}));
 	});
@@ -1351,7 +1351,7 @@ program
 				encoder: sharp,
 				formats,
 				slots,
-				quality: options.qualify as number,
+				quality: options.quality as number,
 			}));
 	});
 
