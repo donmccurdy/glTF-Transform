@@ -9,13 +9,20 @@ test('@gltf-transform/functions::listNodeScenes', async (t) => {
 	const nodeA = document.createNode('A').setTranslation([2, 0, 0]);
 	const nodeB = document.createNode('B').setScale([4, 4, 4]).addChild(nodeA);
 	const nodeC = document.createNode('C').addChild(nodeB);
-	const scene = document.createScene().addChild(nodeC);
+	const sceneA = document.createScene().addChild(nodeC);
+	const sceneB = document.createScene().addChild(nodeC);
 
-	t.deepEqual(listNodeScenes(nodeA), [scene], 'A → Scene');
-	t.deepEqual(listNodeScenes(nodeB), [scene], 'B → Scene');
-	t.deepEqual(listNodeScenes(nodeC), [scene], 'C → Scene');
+	t.deepEqual(listNodeScenes(nodeA), [sceneA, sceneB], 'A → Scene');
+	t.deepEqual(listNodeScenes(nodeB), [sceneA, sceneB], 'B → Scene');
+	t.deepEqual(listNodeScenes(nodeC), [sceneA, sceneB], 'C → Scene');
 
-	scene.removeChild(nodeC);
+	sceneA.removeChild(nodeC);
+
+	t.deepEqual(listNodeScenes(nodeA), [sceneB], 'A → null');
+	t.deepEqual(listNodeScenes(nodeB), [sceneB], 'B → null');
+	t.deepEqual(listNodeScenes(nodeC), [sceneB], 'C → null');
+
+	sceneB.removeChild(nodeC);
 
 	t.deepEqual(listNodeScenes(nodeA), [], 'A → null');
 	t.deepEqual(listNodeScenes(nodeB), [], 'B → null');
