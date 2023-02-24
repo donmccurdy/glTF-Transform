@@ -131,10 +131,8 @@ function pruneUnusedNodes(nodes: Node[], logger: ILogger): void {
 		) {
 			continue;
 		}
-		const nodeParent = node.getParent();
-		if (nodeParent instanceof Node) {
-			nodes.push(nodeParent);
-		}
+		const nodeParent = node.getParentNode();
+		if (nodeParent) nodes.push(nodeParent);
 		node.dispose();
 		unusedNodes++;
 	}

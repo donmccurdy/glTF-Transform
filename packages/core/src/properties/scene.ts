@@ -1,5 +1,4 @@
 import { Nullable, PropertyType } from '../constants.js';
-import { $attributes } from 'property-graph';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Node } from './node.js';
 import { COPY_IDENTITY } from './property.js';
@@ -44,19 +43,7 @@ export class Scene extends ExtensibleProperty<IScene> {
 
 	/** Adds a {@link Node} to the Scene. */
 	public addChild(node: Node): this {
-		// Remove existing parent.
-		if (node._parent) node._parent.removeChild(node);
-
-		// Edge in graph.
-		this.addRef('children', node);
-
-		// Set new parent.
-		// TODO(cleanup): Avoid using $attributes here?
-		node._parent = this;
-		const childrenRefs = this[$attributes]['children'];
-		const ref = childrenRefs[childrenRefs.length - 1];
-		ref.addEventListener('dispose', () => (node._parent = null));
-		return this;
+		return this.addRef('children', node);
 	}
 
 	/** Removes a {@link Node} from the Scene. */

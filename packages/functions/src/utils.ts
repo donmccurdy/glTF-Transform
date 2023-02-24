@@ -191,18 +191,6 @@ export function createIndices(count: number, maxIndex = count): Uint16Array | Ui
 }
 
 /** @hidden */
-export function traverseNodeParents(node: Node, fn: (parent: Scene | Node) => void): void {
-	let child = node;
-	let parent: Scene | Node | null;
-	while ((parent = child.getParent() as Scene | Node | null)) {
-		fn(parent);
-		if (parent instanceof Node) {
-			child = parent;
-		}
-	}
-}
-
-/** @hidden */
 export function isUsed(prop: Property): boolean {
 	return prop.listParents().some((parent) => parent.propertyType !== PropertyType.ROOT);
 }

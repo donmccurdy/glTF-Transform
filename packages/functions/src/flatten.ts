@@ -60,8 +60,8 @@ export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform 
 		const hasAnimatedParent = new Set<Node>();
 		for (const scene of root.listScenes()) {
 			scene.traverse((node) => {
-				const parent = node.getParent();
-				if (!(parent instanceof Node)) return;
+				const parent = node.getParentNode();
+				if (!parent) return;
 				if (joints.has(parent) || hasJointParent.has(parent)) {
 					hasJointParent.add(node);
 				}

@@ -51,7 +51,7 @@ export class Node extends ExtensibleProperty<INode> {
 	public declare propertyType: PropertyType.NODE;
 
 	/** @internal Internal reference to node's parent, omitted from {@link Graph}. */
-	public _parent: SceneNode | null = null;
+	public _parentNode: Node | null = null;
 
 	protected init(): void {
 		this.propertyType = PropertyType.NODE;
@@ -160,7 +160,7 @@ export class Node extends ExtensibleProperty<INode> {
 		// Build ancestor chain.
 		const ancestors: Node[] = [];
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		for (let node: SceneNode | null = this; node instanceof Node; node = node._parent) {
+		for (let node: Node | null = this; node != null; node = node._parentNode) {
 			ancestors.push(node);
 		}
 
@@ -181,17 +181,17 @@ export class Node extends ExtensibleProperty<INode> {
 	/** Adds another node as a child of this one. Nodes cannot have multiple parents. */
 	public addChild(child: Node): this {
 		// Remove existing parent.
-		if (child._parent) child._parent.removeChild(child);
+		if (child._parentNode) child._parentNode.removeChild(child);
 
 		// Edge in graph.
 		this.addRef('children', child);
 
 		// Set new parent.
 		// TODO(cleanup): Avoid using $attributes here?
-		child._parent = this;
+		child._parentNode = this;
 		const childrenRefs = this[$attributes]['children'];
 		const ref = childrenRefs[childrenRefs.length - 1];
-		ref.addEventListener('dispose', () => (child._parent = null));
+		ref.addEventListener('dispose', () => (child._parentNode = null));
 		return this;
 	}
 
@@ -205,12 +205,23 @@ export class Node extends ExtensibleProperty<INode> {
 		return this.listRefs('children');
 	}
 
-	/**
-	 * Returns the unique parent ({@link Scene}, {@link Node}, or null) of this node in the scene
-	 * hierarchy. Unrelated to {@link Property.listParents}, which lists all resource references.
-	 */
+	/** @deprecated Use {@link Node.getParentNode} and {@link listNodeScenes} instead. */
 	public getParent(): SceneNode | null {
-		return this._parent;
+		if (this._parentNode) return this._parentNode;
+		const scene = this.listParents().find((parent) => parent.propertyType === PropertyType.SCENE);
+		return (scene as unknown as SceneNode) || null;
+	}
+
+	/**
+	 * Returns the Node's unique parent Node within the scene graph. If the
+	 * Node has no parents, or is a direct child of the {@link Scene}
+	 * ("root node"), this method returns null.
+	 *
+	 * Unrelated to {@link Property.listParents}, which lists all resource
+	 * references from properties of any type ({@link Skin}, {@link Root}, ...).
+	 */
+	public getParentNode(): Node | null {
+		return this._parentNode;
 	}
 
 	/**********************************************************************************************
