@@ -2,13 +2,15 @@ import test from 'ava';
 import { Document, Logger } from '@gltf-transform/core';
 import { textureCompress } from '@gltf-transform/functions';
 
-const ORIGINAL_JPEG = new Uint8Array([101]);
-const ORIGINAL_PNG = new Uint8Array([102]);
-const ORIGINAL_OTHER = new Uint8Array([103]);
+const ORIGINAL_JPEG = new Uint8Array([1, 2, 3, 4]);
+const ORIGINAL_PNG = new Uint8Array([5, 6, 7, 8]);
+const ORIGINAL_OTHER = new Uint8Array([9, 10, 11, 12]);
+const ORIGINAL_AVIF = new Uint8Array([5, 6]);
 
-const EXPECTED_JPEG = new Uint8Array([201]);
-const EXPECTED_PNG = new Uint8Array([202]);
-const EXPECTED_WEBP = new Uint8Array([203]);
+const EXPECTED_JPEG = new Uint8Array([101, 102]);
+const EXPECTED_PNG = new Uint8Array([103, 104]);
+const EXPECTED_WEBP = new Uint8Array([105]);
+const EXPECTED_AVIF = new Uint8Array([106, 107, 108]); // larger than original; skipped.
 
 const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
@@ -37,6 +39,15 @@ test('@gltf-transform/functions::textureCompress | incompatible format', async (
 	t.deepEqual(calls, [['toFormat', ['png', { quality: null, effort: null }]]], '1 call');
 	t.is(texture.getMimeType(), 'image/png', 'texture with alpha optimized');
 	t.deepEqual(texture.getImage(), EXPECTED_PNG, 'texture with alpha optimized');
+});
+
+test('@gltf-transform/functions::textureCompress | size increase', async (t) => {
+	const { encoder, calls } = createMockEncoder();
+	const document = new Document().setLogger(LOGGER);
+	const texture = document.createTexture('AVIF').setImage(ORIGINAL_AVIF).setMimeType('image/avif');
+	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i, targetFormat: 'avif' }));
+	t.deepEqual(calls, [['toFormat', ['avif', { quality: null, effort: null, lossless: false }]]], '1 call');
+	t.is(texture.getImage(), ORIGINAL_AVIF, 'file size not increased');
 });
 
 test('@gltf-transform/functions::textureCompress | original formats', async (t) => {
@@ -196,6 +207,8 @@ function createMockEncoder() {
 						return EXPECTED_PNG;
 					case ORIGINAL_JPEG:
 						return EXPECTED_JPEG;
+					case ORIGINAL_AVIF:
+						return EXPECTED_AVIF;
 					default:
 						throw new Error('Unexpected input image');
 				}
@@ -210,6 +223,8 @@ function createMockEncoder() {
 					return EXPECTED_JPEG;
 				case 'webp':
 					return EXPECTED_WEBP;
+				case 'avif':
+					return EXPECTED_AVIF;
 				default:
 					throw new Error(`Unexpected format ${format}`);
 			}
