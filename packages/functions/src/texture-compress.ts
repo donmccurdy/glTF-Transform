@@ -184,19 +184,27 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				}
 
 				const dstImage = BufferUtils.toView(await instance.toBuffer());
-				texture.setImage(dstImage);
-
-				// Update path and MIME type if target and source formats differ.
-				if (srcMimeType !== dstMimeType) {
-					const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
-					const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
-					const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
-					texture.setMimeType(dstMimeType).setURI(dstURI);
-				}
 
 				const srcByteLength = srcImage.byteLength;
 				const dstByteLength = dstImage.byteLength;
-				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}`);
+
+				let flag = '';
+
+				if (srcMimeType === dstMimeType && dstByteLength >= srcByteLength) {
+					// Skip if src/dst formats match and dst is larger than the original.
+					flag = ' (SKIPPED)';
+				} else if (srcMimeType === dstMimeType) {
+					// Overwrite if src/dst formats match and dst is smaller than the original.
+					texture.setImage(dstImage);
+				} else {
+					// Overwrite, then update path and MIME type if src/dst formats differ.
+					const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
+					const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
+					const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
+					texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
+				}
+
+				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
 			})
 		);
 
