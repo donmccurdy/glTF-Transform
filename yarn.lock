@@ -1677,7 +1677,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
-"@types/ndarray@1.0.11":
+"@types/ndarray@1.0.11", "@types/ndarray@^1.0.11":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@types/ndarray/-/ndarray-1.0.11.tgz#a78730ac1fd10ea01cda6954dba7b3bf4fa126f4"
   integrity sha512-hOZVTN24zDHwCHaW7mF9n1vHJt83fZhNZ0YYRBwQGhA96yBWWDPTDDlqJatagHIOJB0a4xoNkNc+t/Cxd+6qUA==
@@ -6428,12 +6428,12 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-ndarray-lanczos@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/ndarray-lanczos/-/ndarray-lanczos-0.2.0.tgz#b582420b13e3ea50ce0e04422f471c60a8aeac33"
-  integrity sha512-KkE+NPPBZ4DPXh9rAQpmI/FyEqc3y0GsznYbDWRzxR/XBtuUmWcdVLYuGh9MNjuzp/BOTyS883OsEPKtesQghA==
+ndarray-lanczos@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ndarray-lanczos/-/ndarray-lanczos-0.3.0.tgz#590f3d22af281e4efd3f579ad4ea329dfe64afcc"
+  integrity sha512-5kBmmG3Zvyj77qxIAC4QFLKuYdDIBJwCG+DukT6jQHNa1Ft74/hPH1z5mbQXeHBt8yvGPBGVrr3wEOdJPYYZYg==
   dependencies:
-    "@types/ndarray" "^1.0.10"
+    "@types/ndarray" "^1.0.11"
     ndarray "^1.0.19"
 
 ndarray-ops@^1.2.2:
@@ -6451,10 +6451,10 @@ ndarray-pack@^1.1.1:
     cwise-compiler "^1.1.2"
     ndarray "^1.0.13"
 
-ndarray-pixels@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-1.0.0.tgz#ad949a19f7675dcb49b01a7d4b98ce726a085948"
-  integrity sha512-vJlxc6yM5uCyQbmGacanhEleG5Ha5NoLZojQh14VitIjf2W0EVwKc06BUayoyKkn8ISVXWDBfL3UQc708/MpgQ==
+ndarray-pixels@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-2.0.0.tgz#a9bec929574a1eee17b7936cce2905ae1e1ef286"
+  integrity sha512-8yPyUmjlozNTRtQzGfQeLtpi5TUva1Y+cKOVLotbvdUrYu/Vp9E4HS8whed5HuS5pj2JvVsE+4AlPW5URKM7zg==
   dependencies:
     "@types/ndarray" "^1.0.10"
     get-pixels "^3.3.3"
