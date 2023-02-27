@@ -190,6 +190,16 @@ commands or using the scripting API.
 		default: 2048,
 		required: false
 	})
+	.option('--flatten <bool>', 'Flatten scene graph.', {
+		validator: program.BOOLEAN,
+		default: true,
+		required: false
+	})
+	.option('--join <bool>', 'Join meshes and reduce draw calls.', {
+		validator: program.BOOLEAN,
+		default: true,
+		required: false
+	})
 	.action(async ({args, options, logger}) => {
 		const opts = options as {
 			instance: number,
@@ -197,15 +207,18 @@ commands or using the scripting API.
 			compress: 'draco' | 'meshopt' | 'quantize' | false,
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
 			textureSize: number,
+			flatten: boolean,
+			join: boolean,
 		};
 
 		// Baseline transforms.
 		const transforms = [
 			dedup(),
 			instance({min: options.instance as number}),
-			flatten(),
-			join(),
 		];
+
+		if (opts.flatten) transforms.push(flatten());
+		if (opts.join) transforms.push(join());
 
 		// Simplification and welding.
 		if (opts.simplify > 0) {
