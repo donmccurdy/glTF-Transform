@@ -52,7 +52,6 @@ const glb = await io.writeBinary(document);
 To perform changes to an existing glTF [Document](https://gltf-transform.donmccurdy.com/classes/core.document.html), import off-the-shelf scripts from the [Functions](https://gltf-transform.donmccurdy.com/functions.html) package, or write your own using API classes like [Material](https://gltf-transform.donmccurdy.com/classes/core.material.html), [Primitive](https://gltf-transform.donmccurdy.com/classes/core.primitive.html), and [Texture](https://gltf-transform.donmccurdy.com/classes/core.texture.html).
 
 ```typescript
-// Import default functions.
 import { resample, prune, dedup, draco, textureCompress } from '@gltf-transform/functions';
 import * as sharp from 'sharp'; // Node.js only.
 
