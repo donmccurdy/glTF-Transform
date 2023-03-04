@@ -44,7 +44,7 @@ To perform changes to an existing glTF [Document](https://gltf-transform.donmccu
 
 ```typescript
 // Import default functions.
-import { prune, dedup } from '@gltf-transform/functions';
+import { resample, prune, dedup, draco, textureCompress } from '@gltf-transform/functions';
 import * as sharp from 'sharp'; // Node.js only.
 
 await document.transform(
