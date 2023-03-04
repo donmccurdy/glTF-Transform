@@ -41,6 +41,7 @@ as prescribed by the extension itself.
 
 ## Vendor Extensions
 
+- {@link EXTTextureAVIF EXT_texture_avif}
 - {@link EXTTextureWebP EXT_texture_webp}
 - {@link EXTMeshGPUInstancing EXT_mesh_gpu_instancing}
 - {@link EXTMeshoptCompression EXT_meshopt_compression}
