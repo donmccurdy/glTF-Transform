@@ -12,15 +12,16 @@ test('@gltf-transform/functions::flatten', async (t) => {
 	const nodeC = document.createNode('C').addChild(nodeB).setMesh(mesh);
 	const scene = document.createScene().addChild(nodeC);
 
-	t.truthy(nodeA.getParent() === nodeB, 'B → A (before)');
-	t.truthy(nodeB.getParent() === nodeC, 'C → B (before)');
-	t.truthy(nodeC.getParent() === scene, 'Scene → C (before)');
+	t.truthy(nodeA.getParentNode() === nodeB, 'B → A (before)');
+	t.truthy(nodeB.getParentNode() === nodeC, 'C → B (before)');
+	t.truthy(nodeC.getParentNode() === null, 'Scene → C (before)');
 
 	await document.transform(flatten());
 
-	t.truthy(nodeA.getParent() === scene, 'Scene → A (after)');
-	t.truthy(nodeB.getParent() === scene, 'Scene → B (after)');
-	t.truthy(nodeC.getParent() === scene, 'Scene → C (after)');
+	t.truthy(nodeA.getParentNode() === null, 'Scene → A (after)');
+	t.truthy(nodeB.getParentNode() === null, 'Scene → B (after)');
+	t.truthy(nodeC.getParentNode() === null, 'Scene → C (after)');
+	t.deepEqual(scene.listChildren(), [nodeC, nodeB, nodeA], 'Scene → [C, B, A] (after)');
 
 	t.deepEqual(nodeA.getTranslation(), [8, 0, 0], 'A.translation');
 	t.deepEqual(nodeA.getScale(), [4, 4, 4], 'A.scale');
@@ -39,18 +40,20 @@ test('@gltf-transform/functions::flatten | skins', async (t) => {
 
 	skin.addJoint(nodeA).addJoint(nodeB).addJoint(nodeC).setSkeleton(nodeC);
 
-	t.truthy(nodeA.getParent() === nodeB, 'JointMid → JointLeaf (before)');
-	t.truthy(nodeB.getParent() === nodeC, 'JointRoot → JointMid (before)');
-	t.truthy(nodeC.getParent() === nodeD, 'Group → JointRoot (before)');
-	t.truthy(nodeD.getParent() === scene, 'Scene → Group (before)');
+	t.truthy(nodeA.getParentNode() === nodeB, 'JointMid → JointLeaf (before)');
+	t.truthy(nodeB.getParentNode() === nodeC, 'JointRoot → JointMid (before)');
+	t.truthy(nodeC.getParentNode() === nodeD, 'Group → JointRoot (before)');
+	t.truthy(nodeD.getParentNode() === null, 'Scene → Group (before)');
+	t.deepEqual(scene.listChildren(), [nodeD], 'Scene → Group (before)');
 
 	await document.transform(flatten());
 
 	t.truthy(nodeA.getMesh(), 'JointLeaf → mesh');
-	t.truthy(nodeA.getParent() === nodeB, 'JointMid → JointLeaf (after)');
-	t.truthy(nodeB.getParent() === nodeC, 'JointRoot → JointMid (after)');
-	t.truthy(nodeC.getParent() === scene, 'Scene → JointRoot (after)');
+	t.truthy(nodeA.getParentNode() === nodeB, 'JointMid → JointLeaf (after)');
+	t.truthy(nodeB.getParentNode() === nodeC, 'JointRoot → JointMid (after)');
+	t.truthy(nodeC.getParentNode() === null, 'Scene → JointRoot (after)');
 	t.truthy(nodeD.isDisposed(), 'Group disposed');
+	t.deepEqual(scene.listChildren(), [nodeC], 'Scene → JointRoot (after)');
 });
 
 test('@gltf-transform/functions::flatten | trs animation', async (t) => {
@@ -67,7 +70,7 @@ test('@gltf-transform/functions::flatten | trs animation', async (t) => {
 
 	t.truthy(nodeA.getMesh(), 'A → mesh');
 	t.truthy(nodeB.getMesh(), 'B → mesh');
-	t.truthy(nodeA.getParent() === nodeC, 'Group → A');
-	t.truthy(nodeB.getParent() === scene, 'Scene → B');
+	t.truthy(nodeA.getParentNode() === nodeC, 'Group → A');
+	t.truthy(nodeB.getParentNode() === null, 'Scene → B');
 	t.deepEqual(scene.listChildren(), [nodeC, nodeB], 'Scene → [Group, B]');
 });

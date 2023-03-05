@@ -3,11 +3,9 @@ import { getPixels, savePixels } from 'ndarray-pixels';
 import {
 	Accessor,
 	Document,
-	Node,
 	Primitive,
 	Property,
 	PropertyType,
-	Scene,
 	Texture,
 	Transform,
 	TransformContext,
@@ -188,18 +186,6 @@ export function createIndices(count: number, maxIndex = count): Uint16Array | Ui
 	const array = maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
-}
-
-/** @hidden */
-export function traverseNodeParents(node: Node, fn: (parent: Scene | Node) => void): void {
-	let child = node;
-	let parent: Scene | Node | null;
-	while ((parent = child.getParent() as Scene | Node | null)) {
-		fn(parent);
-		if (parent instanceof Node) {
-			child = parent;
-		}
-	}
 }
 
 /** @hidden */

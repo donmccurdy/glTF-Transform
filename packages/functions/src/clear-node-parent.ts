@@ -1,5 +1,5 @@
-import { Node, Scene } from '@gltf-transform/core';
-import { getNodeScene } from './get-node-scene.js';
+import type { Node } from '@gltf-transform/core';
+import { listNodeScenes } from './list-node-scenes.js';
 
 /**
  * Clears the parent of the given {@link Node}, leaving it attached
@@ -23,25 +23,19 @@ import { getNodeScene } from './get-node-scene.js';
  * {@link clearNodeParent}, then clear the local transform with {@link clearNodeTransform}.
  */
 export function clearNodeParent(node: Node): Node {
-	const scene = getNodeScene(node);
-	const parent = node.getParent() as Scene | Node | null;
+	const scenes = listNodeScenes(node);
+	const parent = node.getParentNode();
 
-	if (!scene || !parent) {
-		throw new Error('Node must be a descendant of a Scene.');
-	}
-
-	if (parent instanceof Scene) {
-		return node;
-	}
+	if (!parent) return node;
 
 	// Apply inherited transforms to local matrix. Skinned meshes are not affected
 	// by the node parent's trasnform, and can be ignored. Updates to IBMs and TRS
 	// animations are out of scope in this context.
 	node.setMatrix(node.getWorldMatrix());
 
-	// Set scene as parent.
+	// Add to Scene roots.
 	parent.removeChild(node);
-	scene.addChild(node);
+	for (const scene of scenes) scene.addChild(node);
 
 	return node;
 }

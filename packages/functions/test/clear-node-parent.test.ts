@@ -11,15 +11,17 @@ test('@gltf-transform/functions::clearNodeParent', async (t) => {
 	const nodeC = document.createNode('C').addChild(nodeB);
 	const scene = document.createScene().addChild(nodeC);
 
-	t.truthy(nodeA.getParent() === nodeB, 'B → A (before)');
-	t.truthy(nodeB.getParent() === nodeC, 'C → B (before)');
-	t.truthy(nodeC.getParent() === scene, 'Scene → C (before)');
+	t.truthy(nodeA.getParentNode() === nodeB, 'B → A (before)');
+	t.truthy(nodeB.getParentNode() === nodeC, 'C → B (before)');
+	t.truthy(nodeC.getParentNode() === null, 'Scene → C (before)');
+	t.deepEqual(scene.listChildren(), [nodeC], 'Scene → C (before)');
 
 	clearNodeParent(nodeA);
 
-	t.truthy(nodeA.getParent() === scene, 'Scene → A (after)');
-	t.truthy(nodeB.getParent() === nodeC, 'C → B (after)');
-	t.truthy(nodeC.getParent() === scene, 'Scene → C (after)');
+	t.truthy(nodeA.getParentNode() === null, 'Scene → A (after)');
+	t.truthy(nodeB.getParentNode() === nodeC, 'C → B (after)');
+	t.truthy(nodeC.getParentNode() === null, 'Scene → C (after)');
+	t.deepEqual(scene.listChildren(), [nodeC, nodeA], 'Scene → [C, A] (after)');
 
 	t.deepEqual(nodeA.getTranslation(), [8, 0, 0], 'A.translation');
 	t.deepEqual(nodeA.getScale(), [4, 4, 4], 'A.scale');
