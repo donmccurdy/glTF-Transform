@@ -3,11 +3,9 @@ import { getPixels, savePixels } from 'ndarray-pixels';
 import {
 	Accessor,
 	Document,
-	Node,
 	Primitive,
 	Property,
 	PropertyType,
-	Scene,
 	Texture,
 	Transform,
 	TransformContext,
