@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "@gltf-transform/core": "../packages/core/dist/core.modern.js",
+    "@gltf-transform/extensions": "../packages/extensions/dist/extensions.modern.js",
+    "@gltf-transform/functions": "../packages/functions/dist/functions.modern.js",
+    "property-graph": "npm:property-graph",
+    "ktx-parse": "npm:ktx-parse"
+  }
+}
