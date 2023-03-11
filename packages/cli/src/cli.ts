@@ -218,7 +218,7 @@ commands or using the scripting API.
 		];
 
 		if (opts.flatten) transforms.push(flatten());
-		if (opts.join) transforms.push(join());
+		if (opts.join) transforms.push(dequantize(), join());
 
 		// Simplification and welding.
 		if (opts.simplify > 0) {
