@@ -2,7 +2,16 @@
 
 ## v3.x
 
-<!-- ### v3.1 — 🚧 Unreleased -->
+<!-- ### v3.2 — 🚧 Unreleased -->
+
+### v3.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/24))
+
+**Features:**
+
+- Add `--join <bool>` and `--flatten <bool>` flags to `optimize' CLI command [#838](https://github.com/donmccurdy/glTF-Transform/pull/838) by [@xlsfs](https://github.com/xlsfs)
+- Allow root Nodes to be shared by multiple Scenes
+  - Deprecate `Node#getParent()`, prefer `Node#getParentNode()`
+  - Deprecate `getNodeScene()`, prefer `listNodeScenes()`
 
 ### v3.0 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/19))
 
