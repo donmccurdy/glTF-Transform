@@ -137,7 +137,15 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				logger.debug(`${prefix}: Format = ${srcFormat} → ${dstFormat}`);
 				logger.debug(`${prefix}: Slots = [${slots.join(', ')}]`);
 
-				return compressTexture(texture, textureIndex, options);
+				const srcImage = texture.getImage()!;
+				const srcByteLength = srcImage.byteLength;
+
+				const success = await compressTexture(texture, options);
+
+				let flag = '';
+				if (!success) flag = ' (SKIPPED)';
+				const dstByteLength = texture.getImage()!.byteLength;
+				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
 			})
 		);
 
@@ -161,11 +169,8 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 	});
 };
 
-export async function compressTexture(texture : Texture, textureIndex : number, _options: TextureCompressOptions) {
+export async function compressTexture(texture: Texture, _options: TextureCompressOptions) {
 
-	const document = Document.fromGraph(texture.getGraph())!;
-	const logger = document.getLogger();
-	
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 	const targetFormat = options.targetFormat as Format | undefined;
@@ -176,12 +181,6 @@ export async function compressTexture(texture : Texture, textureIndex : number, 
 
 	const resize = options.resize as vec2 | undefined;
 	const resizeFilter = options.resizeFilter as TextureResizeFilter;
-
-	const textureLabel =
-		texture.getURI() ||
-		texture.getName() ||
-		`${textureIndex + 1}/${document.getRoot().listTextures().length}`;
-	const prefix = `${NAME}(${textureLabel})`;
 
 	const srcFormat = getFormat(texture);
 	const dstFormat = targetFormat || srcFormat;
@@ -236,11 +235,9 @@ export async function compressTexture(texture : Texture, textureIndex : number, 
 	const srcByteLength = srcImage.byteLength;
 	const dstByteLength = dstImage.byteLength;
 
-	let flag = '';
-
 	if (srcMimeType === dstMimeType && dstByteLength >= srcByteLength) {
 		// Skip if src/dst formats match and dst is larger than the original.
-		flag = ' (SKIPPED)';
+		return false;
 	} else if (srcMimeType === dstMimeType) {
 		// Overwrite if src/dst formats match and dst is smaller than the original.
 		texture.setImage(dstImage);
@@ -251,8 +248,7 @@ export async function compressTexture(texture : Texture, textureIndex : number, 
 		const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
 		texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
 	}
-
-	logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
+	return true;
 }
 
 function getFormat(texture: Texture): Format {
