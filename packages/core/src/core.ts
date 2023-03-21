@@ -30,6 +30,7 @@ export { Graph, GraphEdge } from 'property-graph';
 export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io/index.js';
 export {
 	BufferUtils,
+	HTTPUtils,
 	ColorUtils,
 	FileUtils,
 	ImageUtils,

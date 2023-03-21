@@ -134,76 +134,17 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 
 				const srcFormat = getFormat(texture);
 				const dstFormat = targetFormat || srcFormat;
-				const srcMimeType = texture.getMimeType();
-				const dstMimeType = `image/${dstFormat}`;
-
 				logger.debug(`${prefix}: Format = ${srcFormat} → ${dstFormat}`);
 				logger.debug(`${prefix}: Slots = [${slots.join(', ')}]`);
 
-				// COMPRESS: Run compression library.
-
-				let encoderOptions: sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions | sharp.AvifOptions = {};
-
-				switch (dstFormat) {
-					case 'jpeg':
-						encoderOptions = { quality: options.quality } as sharp.JpegOptions;
-						break;
-					case 'png':
-						encoderOptions = {
-							quality: options.quality,
-							effort: remap(options.effort, 100, 10),
-						} as sharp.PngOptions;
-						break;
-					case 'webp':
-						encoderOptions = {
-							quality: options.quality,
-							effort: remap(options.effort, 100, 6),
-							lossless: options.lossless,
-							nearLossless: options.nearLossless,
-						} as sharp.WebpOptions;
-						break;
-					case 'avif':
-						encoderOptions = {
-							quality: options.quality,
-							effort: remap(options.effort, 100, 9),
-							lossless: options.lossless,
-						} as sharp.AvifOptions;
-						break;
-				}
-
 				const srcImage = texture.getImage()!;
-				const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
-
-				// Resize.
-				if (resize) {
-					instance.resize(resize[0], resize[1], {
-						fit: 'inside',
-						kernel: resizeFilter,
-						withoutEnlargement: true,
-					});
-				}
-
-				const dstImage = BufferUtils.toView(await instance.toBuffer());
-
 				const srcByteLength = srcImage.byteLength;
-				const dstByteLength = dstImage.byteLength;
+
+				const success = await compressTexture(texture, options);
 
 				let flag = '';
-
-				if (srcMimeType === dstMimeType && dstByteLength >= srcByteLength) {
-					// Skip if src/dst formats match and dst is larger than the original.
-					flag = ' (SKIPPED)';
-				} else if (srcMimeType === dstMimeType) {
-					// Overwrite if src/dst formats match and dst is smaller than the original.
-					texture.setImage(dstImage);
-				} else {
-					// Overwrite, then update path and MIME type if src/dst formats differ.
-					const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
-					const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
-					const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
-					texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
-				}
-
+				if (!success) flag = ' (SKIPPED)';
+				const dstByteLength = texture.getImage()!.byteLength;
 				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
 			})
 		);
@@ -227,6 +168,88 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 		logger.debug(`${NAME}: Complete.`);
 	});
 };
+
+export async function compressTexture(texture: Texture, _options: TextureCompressOptions) {
+
+	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
+	const encoder = options.encoder as typeof sharp | null;
+	const targetFormat = options.targetFormat as Format | undefined;
+
+	if (!encoder) {
+		throw new Error(`${targetFormat}: encoder dependency required — install "sharp".`);
+	}
+
+	const resize = options.resize as vec2 | undefined;
+	const resizeFilter = options.resizeFilter as TextureResizeFilter;
+
+	const srcFormat = getFormat(texture);
+	const dstFormat = targetFormat || srcFormat;
+	const srcMimeType = texture.getMimeType();
+	const dstMimeType = `image/${dstFormat}`;
+
+	// COMPRESS: Run compression library.
+
+	let encoderOptions: sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions | sharp.AvifOptions = {};
+
+	switch (dstFormat) {
+		case 'jpeg':
+			encoderOptions = { quality: options.quality } as sharp.JpegOptions;
+			break;
+		case 'png':
+			encoderOptions = {
+				quality: options.quality,
+				effort: remap(options.effort, 100, 10),
+			} as sharp.PngOptions;
+			break;
+		case 'webp':
+			encoderOptions = {
+				quality: options.quality,
+				effort: remap(options.effort, 100, 6),
+				lossless: options.lossless,
+				nearLossless: options.nearLossless,
+			} as sharp.WebpOptions;
+			break;
+		case 'avif':
+			encoderOptions = {
+				quality: options.quality,
+				effort: remap(options.effort, 100, 9),
+				lossless: options.lossless,
+			} as sharp.AvifOptions;
+			break;
+	}
+
+	const srcImage = texture.getImage()!;
+	const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
+
+	// Resize.
+	if (resize) {
+		instance.resize(resize[0], resize[1], {
+			fit: 'inside',
+			kernel: resizeFilter,
+			withoutEnlargement: true,
+		});
+	}
+
+	const dstImage = BufferUtils.toView(await instance.toBuffer());
+
+	const srcByteLength = srcImage.byteLength;
+	const dstByteLength = dstImage.byteLength;
+
+	if (srcMimeType === dstMimeType && dstByteLength >= srcByteLength) {
+		// Skip if src/dst formats match and dst is larger than the original.
+		return false;
+	} else if (srcMimeType === dstMimeType) {
+		// Overwrite if src/dst formats match and dst is smaller than the original.
+		texture.setImage(dstImage);
+	} else {
+		// Overwrite, then update path and MIME type if src/dst formats differ.
+		const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
+		const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
+		const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
+		texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
+	}
+	return true;
+}
 
 function getFormat(texture: Texture): Format {
 	const mimeType = texture.getMimeType();
