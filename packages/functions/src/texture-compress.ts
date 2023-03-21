@@ -47,6 +47,8 @@ export interface TextureCompressOptions {
 	nearLossless?: boolean;
 }
 
+export type CompressTextureOptions = Omit<TextureCompressOptions, 'pattern' | 'formats' | 'slots'>;
+
 export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'>> =
 	{
 		resizeFilter: TextureResizeFilter.LANCZOS3,
@@ -67,8 +69,8 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
  * Example:
  *
  * ```javascript
- * import sharp from 'sharp';
  * import { textureCompress } from '@gltf-transform/functions';
+ * import sharp from 'sharp';
  *
  * // (A) Optimize without conversion.
  * await document.transform(
@@ -79,8 +81,8 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
  * await document.transform(
  * 	textureCompress({
  * 		encoder: sharp,
- * 		codec: 'webp',
- * 		formats: /.*\/
+ * 		targetFormat: 'webp',
+ * 		slots: /^(?!normalTexture).*$/ // exclude normal maps
  * 	})
  * );
  * ```
@@ -89,8 +91,6 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 	const targetFormat = options.targetFormat as Format | undefined;
-	const resize = options.resize as vec2 | undefined;
-	const resizeFilter = options.resizeFilter as TextureResizeFilter;
 	const patternRe = options.pattern;
 	const formatsRe = options.formats;
 	const slotsRe = options.slots;
@@ -140,11 +140,13 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 				const srcImage = texture.getImage()!;
 				const srcByteLength = srcImage.byteLength;
 
-				const success = await compressTexture(texture, options);
+				await compressTexture(texture, options);
 
-				let flag = '';
-				if (!success) flag = ' (SKIPPED)';
-				const dstByteLength = texture.getImage()!.byteLength;
+				const dstImage = texture.getImage()!;
+				const dstByteLength = dstImage.byteLength;
+
+				const flag = srcImage === dstImage ? ' (SKIPPED' : '';
+
 				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
 			})
 		);
@@ -169,25 +171,39 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 	});
 };
 
-export async function compressTexture(texture: Texture, _options: TextureCompressOptions) {
-
-	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
+/**
+ * Optimizes a single {@link Texture}, optionally resizing or converting to JPEG, PNG, WebP, or AVIF formats.
+ *
+ * Requires `sharp`, and is available only in Node.js environments.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { compressTexture } from '@gltf-transform/functions';
+ * import sharp from 'sharp';
+ *
+ * const texture = document.getRoot().listTextures()
+ * 	.find((texture) => texture.getName() === 'MyTexture');
+ *
+ * await compressTexture(texture, {
+ * 	encoder: sharp,
+ * 	targetFormat: 'webp',
+ * 	resize: [1024, 1024]
+ * });
+ * ```
+ */
+export async function compressTexture(texture: Texture, _options: CompressTextureOptions) {
+	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<CompressTextureOptions>;
 	const encoder = options.encoder as typeof sharp | null;
-	const targetFormat = options.targetFormat as Format | undefined;
 
 	if (!encoder) {
-		throw new Error(`${targetFormat}: encoder dependency required — install "sharp".`);
+		throw new Error(`${options.targetFormat}: encoder dependency required — install "sharp".`);
 	}
 
-	const resize = options.resize as vec2 | undefined;
-	const resizeFilter = options.resizeFilter as TextureResizeFilter;
-
 	const srcFormat = getFormat(texture);
-	const dstFormat = targetFormat || srcFormat;
+	const dstFormat = options.targetFormat || srcFormat;
 	const srcMimeType = texture.getMimeType();
 	const dstMimeType = `image/${dstFormat}`;
-
-	// COMPRESS: Run compression library.
 
 	let encoderOptions: sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions | sharp.AvifOptions = {};
 
@@ -222,10 +238,10 @@ export async function compressTexture(texture: Texture, _options: TextureCompres
 	const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
 
 	// Resize.
-	if (resize) {
-		instance.resize(resize[0], resize[1], {
+	if (options.resize) {
+		instance.resize(options.resize[0], options.resize[1], {
 			fit: 'inside',
-			kernel: resizeFilter,
+			kernel: options.resizeFilter,
 			withoutEnlargement: true,
 		});
 	}
@@ -237,7 +253,7 @@ export async function compressTexture(texture: Texture, _options: TextureCompres
 
 	if (srcMimeType === dstMimeType && dstByteLength >= srcByteLength) {
 		// Skip if src/dst formats match and dst is larger than the original.
-		return false;
+		return;
 	} else if (srcMimeType === dstMimeType) {
 		// Overwrite if src/dst formats match and dst is smaller than the original.
 		texture.setImage(dstImage);
@@ -248,7 +264,6 @@ export async function compressTexture(texture: Texture, _options: TextureCompres
 		const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
 		texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
 	}
-	return true;
 }
 
 function getFormat(texture: Texture): Format {
