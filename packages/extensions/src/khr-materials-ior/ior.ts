@@ -23,7 +23,7 @@ export class IOR extends ExtensionProperty<IIOR> {
 	}
 
 	protected getDefaults(): Nullable<IIOR> {
-		return Object.assign(super.getDefaults() as IProperty, { ior: 0 });
+		return Object.assign(super.getDefaults() as IProperty, { ior: 1.5 });
 	}
 
 	/**********************************************************************************************
