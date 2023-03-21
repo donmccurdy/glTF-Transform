@@ -4,6 +4,7 @@ import { unpartition } from '@gltf-transform/functions';
 import { Listr, ListrTask } from 'listr2';
 import { dim, formatBytes, formatLong, XMPContext } from './util.js';
 import type caporal from '@caporal/core';
+import { performance } from 'perf_hooks'; // global in Node.js v16+
 
 /** Helper class for managing a CLI command session. */
 export class Session {

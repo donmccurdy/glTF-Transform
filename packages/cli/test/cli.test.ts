@@ -62,6 +62,21 @@ test('@gltf-transform/cli::draco', async (t) => {
 	});
 });
 
+test('@gltf-transform/cli::optimize', async (t) => {
+	await programReady;
+	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
+		'draco3d.decoder': await draco3d.createDecoderModule(),
+		'draco3d.encoder': await draco3d.createEncoderModule(),
+	});
+	const input = path.join(__dirname, 'in', 'chr_knight.glb');
+	const output = tmp.tmpNameSync({ postfix: '.glb' });
+
+	return program.exec(['optimize', input, output], { silent: true }).then(async () => {
+		const doc2 = await io.read(output);
+		t.truthy(doc2, 'optimize succeeds');
+	});
+});
+
 test('@gltf-transform/cli::validate', async (t) => {
 	await programReady;
 	const io = new NodeIO();

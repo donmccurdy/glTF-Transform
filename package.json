@@ -63,5 +63,6 @@
       "--loader=ts-node/esm",
       "--require=suppress-experimental-warnings"
     ]
-  }
+  },
+  "dependencies": {}
 }
