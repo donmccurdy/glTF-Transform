@@ -69,9 +69,7 @@ export function vertexPaint(_options: VertexPaintOptions = VERTEX_PAINT_DEFAULTS
 		}
 
 		// Clean up unused textures and texture coordinates.
-		for (const [texture] of texturePixels) {
-			texture.dispose();
-		}
+		for (const [texture] of texturePixels) texture.dispose();
 		await document.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
 
 		logger.debug(`${NAME}: Complete.`);
@@ -120,11 +118,14 @@ function _vertexPaintPrimitive(
 
 	prim.setAttribute('COLOR_0', color);
 
+	// TODO(bug): We haven't yet removed (and can't yet remove) the texture from
+	// the material, so this step is going to fail.
 	if (!_isTexCoordRequired(material, texCoord)) {
 		prim.setAttribute(`TEXCOORD_${texCoord}`, null);
 	}
 }
 
+/** Queries whether the given material requires the texture coordinates at the given index. */
 function _isTexCoordRequired(material: Material, texCoord: number): boolean {
 	const graph = material.getGraph();
 	const edges = graph.listChildEdges(material);
