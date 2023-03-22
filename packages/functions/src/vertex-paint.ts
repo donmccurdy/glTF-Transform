@@ -50,26 +50,33 @@ export function vertexPaint(_options: VertexPaintOptions = VERTEX_PAINT_DEFAULTS
 		const root = document.getRoot();
 		const logger = document.getLogger();
 
-		const texturePixels = new Map<Texture, NdArray<Uint8Array>>();
+		const pixelsLookup = new Map<Material, { pixels: NdArray<Uint8Array>; texCoord: number }>();
 
 		// Pre-process; load pixel data into memory.
 		for (const material of root.listMaterials()) {
 			const texture = material.getBaseColorTexture();
-			if (!texture) continue;
+			const textureInfo = material.getBaseColorTextureInfo();
+			if (!texture || !textureInfo) continue;
 
-			const pixels = await getPixels(texture.getImage()!, texture.getMimeType());
-			texturePixels.set(texture, pixels as NdArray<Uint8Array>);
+			const pixels = (await getPixels(texture.getImage()!, texture.getMimeType())) as NdArray<Uint8Array>;
+			const texCoord = textureInfo.getTexCoord();
+			pixelsLookup.set(material, { pixels, texCoord });
+			material.setBaseColorTexture(null);
 		}
 
 		// For each mesh primitive, paint vertex colors.
 		for (const mesh of root.listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				_vertexPaintPrimitive(document, prim, texturePixels);
+				const material = prim.getMaterial();
+				if (!material || !pixelsLookup.has(material)) continue;
+
+				const { pixels, texCoord } = pixelsLookup.get(material)!;
+				_vertexPaintPrimitive(document, prim, pixels, texCoord);
 			}
 		}
 
 		// Clean up unused textures and texture coordinates.
-		for (const [texture] of texturePixels) texture.dispose();
+		for (const [texture] of pixelsLookup) texture.dispose();
 		await document.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
 
 		logger.debug(`${NAME}: Complete.`);
@@ -79,24 +86,15 @@ export function vertexPaint(_options: VertexPaintOptions = VERTEX_PAINT_DEFAULTS
 function _vertexPaintPrimitive(
 	document: Document,
 	prim: Primitive,
-	texturePixels: Map<Texture, NdArray<Uint8Array>>
+	pixels: NdArray<Uint8Array>,
+	texCoord: number
 ): void {
-	const material = prim.getMaterial();
-	if (!material) return;
-
-	const texture = material.getBaseColorTexture();
-	const textureInfo = material.getBaseColorTextureInfo();
-	if (!texture || !textureInfo) return;
-
-	const texCoord = textureInfo.getTexCoord();
 	const uv = prim.getAttribute(`TEXCOORD_${texCoord}`)!;
 	const color = document
 		.createAccessor()
 		.setArray(new Float32Array(uv.getCount() * 3))
 		.setBuffer(uv.getBuffer())
 		.setType('VEC3');
-
-	const pixels = texturePixels.get(texture)!;
 
 	const _uv = [0, 0] as vec2;
 	const _color = [0, 0, 0] as vec3;
@@ -118,9 +116,8 @@ function _vertexPaintPrimitive(
 
 	prim.setAttribute('COLOR_0', color);
 
-	// TODO(bug): We haven't yet removed (and can't yet remove) the texture from
-	// the material, so this step is going to fail.
-	if (!_isTexCoordRequired(material, texCoord)) {
+	// Note: baseColorTexture has already been detached from the material.
+	if (!_isTexCoordRequired(prim.getMaterial()!, texCoord)) {
 		prim.setAttribute(`TEXCOORD_${texCoord}`, null);
 	}
 }
