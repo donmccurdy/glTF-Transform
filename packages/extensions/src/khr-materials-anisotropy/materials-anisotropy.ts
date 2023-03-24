@@ -16,6 +16,8 @@ interface AnisotropyDef {
  * [`KHR_materials_anisotropy`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_anisotropy/)
  * defines anisotropy (directionally-dependent reflections) on a PBR material.
  *
+ * [[include:_UNRATIFIED_EXTENSIONS.md]]
+ *
  * This extension defines the anisotropic property of a material as observable with brushed metals
  * for instance. An asymmetric specular lobe model is introduced to allow for such phenomena. The
  * visually distinct feature of that lobe is the elongated appearance of the specular reflection.

@@ -23,6 +23,8 @@ const { R, G } = TextureChannel;
  *
  * Defines anisotropy (directionally-dependent reflections) on a PBR {@link Material}. See
  * {@link KHRMaterialsAnisotropy}.
+ *
+ * [[include:_UNRATIFIED_EXTENSIONS.md]]
  */
 export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 	public static EXTENSION_NAME = KHR_MATERIALS_ANISOTROPY;
