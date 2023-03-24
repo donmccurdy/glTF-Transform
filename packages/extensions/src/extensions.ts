@@ -6,6 +6,7 @@ import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
 import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
 import { KHRLightsPunctual } from './khr-lights-punctual/index.js';
+import { KHRMaterialsAnisotropy } from './khr-materials-anisotropy/index.js';
 import { KHRMaterialsClearcoat } from './khr-materials-clearcoat/index.js';
 import { KHRMaterialsEmissiveStrength } from './khr-materials-emissive-strength/index.js';
 import { KHRMaterialsIOR } from './khr-materials-ior/index.js';
@@ -25,6 +26,7 @@ import { KHRXMP } from './khr-xmp-json-ld/index.js';
 export const KHRONOS_EXTENSIONS = [
 	KHRDracoMeshCompression,
 	KHRLightsPunctual,
+	KHRMaterialsAnisotropy,
 	KHRMaterialsClearcoat,
 	KHRMaterialsEmissiveStrength,
 	KHRMaterialsIOR,
@@ -56,6 +58,7 @@ export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';
 export * from './khr-draco-mesh-compression/index.js';
 export * from './khr-lights-punctual/index.js';
+export * from './khr-materials-anisotropy/index.js';
 export * from './khr-materials-clearcoat/index.js';
 export * from './khr-materials-emissive-strength/index.js';
 export * from './khr-materials-ior/index.js';

@@ -23,6 +23,7 @@ as prescribed by the extension itself.
 
 - {@link KHRDracoMeshCompression KHR_draco_mesh_compression}
 - {@link KHRLightsPunctual KHR_lights_punctual}
+- {@link KHRMaterialsAnisotropy KHR_materials_anisotropy} *(🧪 experimental)*
 - {@link KHRMaterialsClearcoat KHR_materials_clearcoat}
 - {@link KHRMaterialsEmissiveStrength KHR_materials_emissive_strength}
 - {@link KHRMaterialsIOR KHR_materials_ior}
