@@ -1,5 +1,8 @@
 {
     "extends": "../tsconfig.json",
     "include": [ "./**/*" ],
-    "compilerOptions": { "strict": false }
+    "compilerOptions": {
+      "rootDir": ".",
+      "strict": false
+    }
 }
