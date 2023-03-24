@@ -1,13 +1,13 @@
-import { Extension, GLTF, MathUtils, ReaderContext, vec2, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_ANISOTROPY } from '../constants.js';
 import { Anisotropy } from './anisotropy.js';
 
 const NAME = KHR_MATERIALS_ANISOTROPY;
 
 interface AnisotropyDef {
-	anisotropyFactor: number;
+	anisotropyStrength: number;
+	anisotropyRotation: number;
 	anisotropyTexture: GLTF.ITextureInfo;
-	anisotropyDirection: vec2;
 }
 
 /**
@@ -16,7 +16,12 @@ interface AnisotropyDef {
  * [`KHR_materials_anisotropy`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_anisotropy/)
  * defines anisotropy (directionally-dependent reflections) on a PBR material.
  *
- * Anisotropy describes ... TODO
+ * This extension defines the anisotropic property of a material as observable with brushed metals
+ * for instance. An asymmetric specular lobe model is introduced to allow for such phenomena. The
+ * visually distinct feature of that lobe is the elongated appearance of the specular reflection.
+ * For a single punctual light source, the specular reflection will eventually degenerate into a
+ * zero width line in the limit, that is where the material is fully anisotropic, as opposed to be
+ * fully isotropic in which case the specular reflection is radially symmetric.
  *
  * Properties:
  * - {@link Anisotropy}
@@ -34,8 +39,8 @@ interface AnisotropyDef {
  *
  * // Create an Anisotropy property.
  * const anisotropy = anisotropyExtension.createAnisotropy()
- * 	.setAnisotropyFactor(1.0)
- * 	.setAnisotropyDirection([1, 0]);
+ * 	.setAnisotropyStrength(1.0)
+ * 	.setAnisotropyRotation(Math.PI / 4);
  *
  * // Attach the property to a Material.
  * material.setExtension('KHR_materials_anisotropy', anisotropy);
@@ -64,11 +69,11 @@ export class KHRMaterialsAnisotropy extends Extension {
 
 				// Factors.
 
-				if (anisotropyDef.anisotropyFactor !== undefined) {
-					anisotropy.setAnisotropyFactor(anisotropyDef.anisotropyFactor);
+				if (anisotropyDef.anisotropyStrength !== undefined) {
+					anisotropy.setAnisotropyStrength(anisotropyDef.anisotropyStrength);
 				}
-				if (anisotropyDef.anisotropyDirection !== undefined) {
-					anisotropy.setAnisotropyDirection(anisotropyDef.anisotropyDirection);
+				if (anisotropyDef.anisotropyRotation !== undefined) {
+					anisotropy.setAnisotropyRotation(anisotropyDef.anisotropyRotation);
 				}
 
 				// Textures.
@@ -103,11 +108,11 @@ export class KHRMaterialsAnisotropy extends Extension {
 
 					const anisotropyDef = (materialDef.extensions[NAME] = {} as AnisotropyDef);
 
-					if (anisotropy.getAnisotropyFactor() > 0) {
-						anisotropyDef.anisotropyFactor = anisotropy.getAnisotropyFactor();
+					if (anisotropy.getAnisotropyStrength() > 0) {
+						anisotropyDef.anisotropyStrength = anisotropy.getAnisotropyStrength();
 					}
-					if (!MathUtils.eq(anisotropy.getAnisotropyDirection(), [1, 0])) {
-						anisotropyDef.anisotropyDirection = anisotropy.getAnisotropyDirection();
+					if (anisotropy.getAnisotropyRotation() !== 0) {
+						anisotropyDef.anisotropyRotation = anisotropy.getAnisotropyRotation();
 					}
 
 					// Textures.

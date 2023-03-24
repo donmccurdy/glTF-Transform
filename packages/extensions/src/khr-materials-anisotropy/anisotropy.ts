@@ -6,13 +6,12 @@ import {
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec2,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_ANISOTROPY } from '../constants.js';
 
 interface IAnisotropy extends IProperty {
-	anisotropyFactor: number;
-	anisotropyDirection: vec2;
+	anisotropyStrength: number;
+	anisotropyRotation: number;
 	anisotropyTexture: Texture;
 	anisotropyTextureInfo: TextureInfo;
 }
@@ -39,32 +38,49 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 
 	protected getDefaults(): Nullable<IAnisotropy> {
 		return Object.assign(super.getDefaults() as IProperty, {
-			anisotropyFactor: 0.0,
-			anisotropyDirection: [1, 0] as vec2,
+			anisotropyStrength: 0.0,
+			anisotropyRotation: 0.0,
 			anisotropyTexture: null,
 			anisotropyTextureInfo: new TextureInfo(this.graph, 'anisotropyTextureInfo'),
 		});
 	}
 
 	/**********************************************************************************************
-	 * Anisotropy.
+	 * Anisotropy strength.
 	 */
 
-	/** Anisotropy; linear multiplier. See {@link getAnisotropyTexture}. */
-	public getAnisotropyFactor(): number {
-		return this.get('anisotropyFactor');
+	/** Anisotropy strength. */
+	public getAnisotropyStrength(): number {
+		return this.get('anisotropyStrength');
 	}
 
-	/** Anisotropy; linear multiplier. See {@link getAnisotropyTexture}. */
-	public setAnisotropyFactor(factor: number): this {
-		return this.set('anisotropyFactor', factor);
+	/** Anisotropy strength. */
+	public setAnisotropyStrength(strength: number): this {
+		return this.set('anisotropyStrength', strength);
 	}
+
+	/**********************************************************************************************
+	 * Anisotropy rotation.
+	 */
+
+	/** Anisotropy rotation; linear multiplier. */
+	public getAnisotropyRotation(): number {
+		return this.get('anisotropyRotation');
+	}
+
+	/** Anisotropy rotation; linear multiplier. */
+	public setAnisotropyRotation(rotation: number): this {
+		return this.set('anisotropyRotation', rotation);
+	}
+
+	/**********************************************************************************************
+	 * Anisotropy texture.
+	 */
 
 	/**
-	 * Anisotropy texture. Red and green channels represent the anisotropy
-	 * direction in [-1, 1] tangent, bitangent space. The magnitude of this
-	 * vector is multiplied by anisotropyFactor to obtain the anisotropy
-	 * strength.
+	 * Anisotropy texture. Red and green channels represent the anisotropy direction in [-1, 1]
+	 * tangent, bitangent space. The vector is rotated by anisotropyRotation, and multiplied by
+	 * anisotropyStrength, to obtain the final anisotropy direction and strength.
 	 */
 	public getAnisotropyTexture(): Texture | null {
 		return this.getRef('anisotropyTexture');
@@ -81,19 +97,5 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 	/** Anisotropy texture. See {@link getAnisotropyTexture}. */
 	public setAnisotropyTexture(texture: Texture | null): this {
 		return this.setRef('anisotropyTexture', texture, { channels: R | G });
-	}
-
-	/**********************************************************************************************
-	 * Anisotropy direction.
-	 */
-
-	/** Anisotropy direction; linear multiplier. */
-	public getAnisotropyDirection(): vec2 {
-		return this.get('anisotropyDirection');
-	}
-
-	/** Anisotropy direction; linear multiplier. */
-	public setAnisotropyDirection(direction: vec2): this {
-		return this.set('anisotropyDirection', direction);
 	}
 }
