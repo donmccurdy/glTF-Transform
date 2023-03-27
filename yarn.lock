@@ -6470,9 +6470,9 @@ ndarray-pack@^1.1.1:
     ndarray "^1.0.13"
 
 ndarray-pixels@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-2.0.0.tgz#a9bec929574a1eee17b7936cce2905ae1e1ef286"
-  integrity sha512-8yPyUmjlozNTRtQzGfQeLtpi5TUva1Y+cKOVLotbvdUrYu/Vp9E4HS8whed5HuS5pj2JvVsE+4AlPW5URKM7zg==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-2.0.1.tgz#0b26b4f9b41f561fd19bfd1d7bf040f00eef3c90"
+  integrity sha512-xeXHL/V6HZ/wkJl5bJ42ReL+6gCd4GTyp0cIaU0gTnwzoxnJw8djljiqLAdbb1aYeIyXVnW5jreel/gS0Me5ow==
   dependencies:
     "@types/ndarray" "^1.0.10"
     get-pixels "^3.3.3"
