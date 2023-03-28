@@ -5,12 +5,42 @@ import {
 	PrimitiveTarget,
 	PropertyType,
 	Transform,
-	TransformContext,
 	TypedArray,
 	vec3,
 } from '@gltf-transform/core';
+import { cleanPrimitive } from './clean-primitive.js';
 import { dedup } from './dedup.js';
-import { createIndices, createTransform, formatDeltaOp, isTransformPending } from './utils.js';
+import { prune } from './prune.js';
+import { createIndices, createTransform, formatDeltaOp } from './utils.js';
+
+// DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
+// and tunable. The writeup below tracks my attempts to solve for these
+// constraints.
+//
+// (Approach #1) Follow the mergeVertices() implementation of three.js,
+// hashing vertices with a string concatenation of all vertex attributes.
+// The approach does not allow per-attribute tolerance in local units.
+//
+// (Approach #2) Sort points along the X axis, then make cheaper
+// searches up/down the sorted list for merge candidates. While this allows
+// simpler comparison based on specified tolerance, it's much slower, even
+// for cases where choice of the X vs. Y or Z axes is reasonable.
+//
+// (Approach #3) Attempted a Delaunay triangulation in three dimensions,
+// expecting it would be an n * log(n) algorithm, but the only implementation
+// I found (with delaunay-triangulate) appeared to be much slower than that,
+// and was notably slower than the sort-based approach, just building the
+// Delaunay triangulation alone.
+//
+// (Approach #4) Hybrid of (1) and (2), assigning vertices to a spatial
+// grid, then searching the local neighborhood (27 cells) for weld candidates.
+//
+// RESULTS: For the "Lovecraftian" sample model, after joining, a primitive
+// with 873,000 vertices can be welded down to 230,000 vertices. Results:
+// - (1) Not tested, but prior results suggest not robust enough.
+// - (2) 30 seconds
+// - (3) 660 seconds
+// - (4) 5 seconds exhaustive, 1.5s non-exhaustive
 
 const NAME = 'weld';
 
@@ -29,11 +59,13 @@ export interface WeldOptions {
 	tolerance?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
+	exhaustive?: boolean;
 }
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
 	tolerance: Tolerance.DEFAULT,
 	overwrite: true,
+	exhaustive: true,
 };
 
 /**
@@ -65,20 +97,21 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
 	}
 
-	return createTransform(NAME, async (doc: Document, context?: TransformContext): Promise<void> => {
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(doc, prim, options);
+
+				if (prim.getIndices()!.getCount() === 0) prim.dispose();
 			}
+
+			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-		// TODO(perf): Suppose we just invoked simplify(), and dedup is not explicitly
-		// in the transform stack .... now we are going to run it twice!
-		if (!isTransformPending(context, NAME, 'dedup')) {
-			await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
-		}
+		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }));
+		await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 
 		logger.debug(`${NAME}: Complete.`);
 	});
@@ -141,82 +174,90 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 
 	const srcPosition = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices() || doc.createAccessor().setArray(createIndices(srcPosition.getCount()));
-	const uniqueIndices = new Uint32Array(new Set(srcIndices.getArray()!));
+	const uniqueIndices = new Uint32Array(new Set(srcIndices.getArray()!)).sort();
 
-	// (1) Compute per-attribute tolerances, pre-sort vertices.
+	// (1) Compute per-attribute tolerance and spatial grid for vertices.
 
-	const tolerance = Math.max(options.tolerance, Number.EPSILON);
+	const baseTolerance = Math.max(options.tolerance, Number.EPSILON);
 	const attributeTolerance: Record<string, number> = {};
 	for (const semantic of prim.listSemantics()) {
 		const attribute = prim.getAttribute(semantic)!;
-		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, tolerance);
+		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, baseTolerance);
 	}
 
 	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
 
+	// (2) Compare and identify vertices to weld.
+
 	const posA: vec3 = [0, 0, 0];
 	const posB: vec3 = [0, 0, 0];
 
-	uniqueIndices.sort((a, b) => {
-		srcPosition.getElement(a, posA);
-		srcPosition.getElement(b, posB);
-		return posA[0] > posB[0] ? 1 : -1;
-	});
+	const grid = {} as Record<string, number[]>;
+	const cellSize = attributeTolerance.POSITION;
 
-	// (2) Compare and identify vertices to weld. Use sort to keep iterations below O(n²),
+	for (let i = 0; i < uniqueIndices.length; i++) {
+		srcPosition.getElement(uniqueIndices[i], posA);
+		const key = getGridKey(posA, cellSize);
+		grid[key] = grid[key] || [];
+		grid[key].push(uniqueIndices[i]);
+	}
+
+	// (2) Compare and identify vertices to weld.
 
 	const weldMap = createIndices(uniqueIndices.length); // oldIndex → oldCommonIndex
-	const writeMap = createIndices(uniqueIndices.length); // oldIndex → newIndex
+	const writeMap = new Array(uniqueIndices.length).fill(-1); // oldIndex → newIndex
 
 	const srcVertexCount = srcPosition.getCount();
 	let dstVertexCount = 0;
-	let backIters = 0;
 
 	for (let i = 0; i < uniqueIndices.length; i++) {
 		const a = uniqueIndices[i];
+		srcPosition.getElement(a, posA);
 
-		for (let j = i - 1; j >= 0; j--) {
-			const b = weldMap[uniqueIndices[j]];
+		const cellKeys = options.exhaustive ? getGridNeighborhoodKeys(posA, cellSize) : [getGridKey(posA, cellSize)];
 
-			srcPosition.getElement(a, posA);
-			srcPosition.getElement(b, posB);
+		cells: for (const cellKey of cellKeys) {
+			if (!grid[cellKey]) continue cells; // May occur in exhaustive search.
 
-			// Sort order allows early exit on X-axis distance.
-			if (Math.abs(posA[0] - posB[0]) > attributeTolerance['POSITION']) {
-				break;
-			}
+			neighbors: for (const j of grid[cellKey]) {
+				const b = weldMap[j];
 
-			backIters++;
+				// Only weld to lower indices, preventing two-way match.
+				if (a <= b) continue neighbors;
 
-			// Weld if base attributes and morph target attributes match.
-			const isBaseMatch = prim.listSemantics().every((semantic) => {
-				const attribute = prim.getAttribute(semantic)!;
-				const tolerance = attributeTolerance[semantic];
-				return compareAttributes(attribute, a, b, tolerance, semantic);
-			});
-			const isTargetMatch = prim.listTargets().every((target) => {
-				return target.listSemantics().every((semantic) => {
-					const attribute = target.getAttribute(semantic)!;
+				srcPosition.getElement(b, posB);
+
+				// Weld if base attributes and morph target attributes match.
+				const isBaseMatch = prim.listSemantics().every((semantic) => {
+					const attribute = prim.getAttribute(semantic)!;
 					const tolerance = attributeTolerance[semantic];
 					return compareAttributes(attribute, a, b, tolerance, semantic);
 				});
-			});
+				const isTargetMatch = prim.listTargets().every((target) => {
+					return target.listSemantics().every((semantic) => {
+						const attribute = target.getAttribute(semantic)!;
+						const tolerance = attributeTolerance[semantic];
+						return compareAttributes(attribute, a, b, tolerance, semantic);
+					});
+				});
 
-			if (isBaseMatch && isTargetMatch) {
-				weldMap[a] = b;
-				break;
+				if (isBaseMatch && isTargetMatch) {
+					weldMap[a] = b;
+					break cells;
+				}
 			}
 		}
 
-		// Output the vertex if we didn't find a match, else record the index of the match.
+		// Output the vertex if we didn't find a match, else record the index of the match. Because
+		// we iterate vertices in ascending order, and only match to lower indices, we're
+		// guaranteed the source vertex for a weld has already been marked for output.
 		if (weldMap[a] === a) {
-			writeMap[a] = dstVertexCount++; // note: reorders the primitive on x-axis sort.
+			writeMap[a] = dstVertexCount++;
 		} else {
 			writeMap[a] = writeMap[weldMap[a]];
 		}
 	}
 
-	logger.debug(`${NAME}: Iterations per vertex: ${Math.round(backIters / uniqueIndices.length)} (avg)`);
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
 	// (3) Update indices.
@@ -239,6 +280,10 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 			swapAttributes(target, srcAttr, writeMap, dstVertexCount);
 		}
 	}
+
+	// (5) Clean up degenerate triangles.
+
+	cleanPrimitive(prim);
 }
 
 /** Creates a new TypedArray of the same type as an original, with a new length. */
@@ -251,7 +296,7 @@ function createArrayOfType<T extends TypedArray>(array: T, length: number): T {
 function swapAttributes(
 	parent: Primitive | PrimitiveTarget,
 	srcAttr: Accessor,
-	reorder: Uint32Array | Uint16Array,
+	reorder: number[],
 	dstCount: number
 ): void {
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
@@ -307,4 +352,30 @@ function formatKV(kv: Record<string, unknown>): string {
 	return Object.entries(kv)
 		.map(([k, v]) => `${k}=${v}`)
 		.join(', ');
+}
+
+// Order to search nearer cells first.
+const OFFSETS = [0, -1, 1];
+
+function getGridNeighborhoodKeys(p: vec3, cellSize: number): string[] {
+	const keys = [] as string[];
+	const _p = [0, 0, 0] as vec3;
+	for (const i of OFFSETS) {
+		for (const j of OFFSETS) {
+			for (const k of OFFSETS) {
+				_p[0] = p[0] + i * cellSize;
+				_p[1] = p[1] + j * cellSize;
+				_p[2] = p[2] + k * cellSize;
+				keys.push(getGridKey(_p, cellSize));
+			}
+		}
+	}
+	return keys;
+}
+
+function getGridKey(p: vec3, cellSize: number): string {
+	const cellX = Math.round(p[0] / cellSize);
+	const cellY = Math.round(p[1] / cellSize);
+	const cellZ = Math.round(p[2] / cellSize);
+	return cellX + ':' + cellY + ':' + cellZ;
 }
