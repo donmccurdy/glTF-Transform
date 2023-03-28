@@ -5,6 +5,7 @@ import {
 	Document,
 	ILogger,
 	mat4,
+	MathUtils,
 	Mesh,
 	Node,
 	Primitive,
@@ -19,7 +20,7 @@ import {
 import { dedup } from './dedup.js';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
-import { KHRMeshQuantization } from '@gltf-transform/extensions';
+import { InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune.js';
 import { createTransform } from './utils.js';
@@ -213,8 +214,15 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTr
 		const isAnimated = animChannels.some((channel) => TRS_CHANNELS.includes(channel.getTargetPath()!));
 		const isParentNode = parent.listChildren().length > 0;
 
-		if (parent.getSkin()) {
-			parent.setSkin(transformSkin(parent.getSkin()!, nodeTransform));
+		const skin = parent.getSkin();
+		if (skin) {
+			parent.setSkin(transformSkin(skin, nodeTransform));
+			continue;
+		}
+
+		const batch = parent.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+		if (batch) {
+			parent.setExtension('EXT_mesh_gpu_instancing', transformBatch(batch, nodeTransform));
 			continue;
 		}
 
@@ -237,7 +245,7 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTr
 
 /** Applies corrective scale and offset to skin IBMs. */
 function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
-	skin = skin.clone();
+	skin = skin.clone(); // quantize() does cleanup.
 	const transformMatrix = fromTransform(nodeTransform);
 	const inverseBindMatrices = skin.getInverseBindMatrices()!.clone();
 	const ibm = [] as unknown as mat4;
@@ -249,6 +257,60 @@ function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
 	return skin.setInverseBindMatrices(inverseBindMatrices);
 }
 
+/** Applies corrective scale and offset to GPU instancing batches. */
+function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec3>): InstancedMesh {
+	if (!batch.getAttribute('TRANSLATION') && !batch.getAttribute('ROTATION') && !batch.getAttribute('SCALE')) {
+		return batch;
+	}
+
+	batch = batch.clone(); // quantize() does cleanup.
+	const instanceTranslation = batch.getAttribute('TRANSLATION')?.clone();
+	const instanceRotation = batch.getAttribute('ROTATION')?.clone();
+	const instanceScale = batch.getAttribute('SCALE')?.clone();
+	const tpl = (instanceTranslation || instanceRotation || instanceScale)!;
+
+	const T_IDENTITY = [0, 0, 0] as vec3;
+	const R_IDENTITY = [0, 0, 0, 1] as vec4;
+	const S_IDENTITY = [1, 1, 1] as vec3;
+
+	const t = [0, 0, 0] as vec3;
+	const r = [0, 0, 0, 1] as vec4;
+	const s = [1, 1, 1] as vec3;
+
+	// prettier-ignore
+	const instanceMatrix = [
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	] as mat4;
+
+	const transformMatrix = fromTransform(nodeTransform);
+
+	for (let i = 0, count = tpl.getCount(); i < count; i++) {
+		MathUtils.compose(
+			instanceTranslation ? (instanceTranslation.getElement(i, t) as vec3) : T_IDENTITY,
+			instanceRotation ? (instanceRotation.getElement(i, r) as vec4) : R_IDENTITY,
+			instanceScale ? (instanceScale.getElement(i, s) as vec3) : S_IDENTITY,
+			instanceMatrix
+		);
+
+		multiplyMat4(instanceMatrix, instanceMatrix, transformMatrix);
+
+		MathUtils.decompose(instanceMatrix, t, r, s);
+
+		if (instanceTranslation) instanceTranslation.setElement(i, t);
+		if (instanceRotation) instanceRotation.setElement(i, r);
+		if (instanceScale) instanceScale.setElement(i, s);
+	}
+
+	if (instanceTranslation) batch.setAttribute('TRANSLATION', instanceTranslation);
+	if (instanceRotation) batch.setAttribute('ROTATION', instanceRotation);
+	if (instanceScale) batch.setAttribute('SCALE', instanceScale);
+
+	return batch;
+}
+
 /** Applies corrective scale to volumetric materials, which give thickness in local units. */
 function transformMeshMaterials(mesh: Mesh, scale: number) {
 	for (const prim of mesh.listPrimitives()) {
@@ -258,7 +320,7 @@ function transformMeshMaterials(mesh: Mesh, scale: number) {
 		let volume = material.getExtension<Volume>('KHR_materials_volume');
 		if (!volume || volume.getThicknessFactor() <= 0) continue;
 
-		// prune()+dedup() will clean this up later.
+		// quantize() does cleanup.
 		volume = volume.clone().setThicknessFactor(volume.getThicknessFactor() * scale);
 		material = material.clone().setExtension('KHR_materials_volume', volume);
 		prim.setMaterial(material);
