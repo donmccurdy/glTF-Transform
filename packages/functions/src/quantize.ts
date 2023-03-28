@@ -264,10 +264,10 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 	}
 
 	batch = batch.clone(); // quantize() does cleanup.
-	const instancePosition = batch.getAttribute('TRANSLATION')?.clone();
+	const instanceTranslation = batch.getAttribute('TRANSLATION')?.clone();
 	const instanceRotation = batch.getAttribute('ROTATION')?.clone();
 	const instanceScale = batch.getAttribute('SCALE')?.clone();
-	const tpl = (instancePosition || instanceRotation || instanceScale)!;
+	const tpl = (instanceTranslation || instanceRotation || instanceScale)!;
 
 	const T_IDENTITY = [0, 0, 0] as vec3;
 	const R_IDENTITY = [0, 0, 0, 1] as vec4;
@@ -289,7 +289,7 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 
 	for (let i = 0, count = tpl.getCount(); i < count; i++) {
 		MathUtils.compose(
-			instancePosition ? (instancePosition.getElement(i, t) as vec3) : T_IDENTITY,
+			instanceTranslation ? (instanceTranslation.getElement(i, t) as vec3) : T_IDENTITY,
 			instanceRotation ? (instanceRotation.getElement(i, r) as vec4) : R_IDENTITY,
 			instanceScale ? (instanceScale.getElement(i, s) as vec3) : S_IDENTITY,
 			instanceMatrix
@@ -299,12 +299,12 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 
 		MathUtils.decompose(instanceMatrix, t, r, s);
 
-		if (instancePosition) instancePosition.setElement(i, t);
+		if (instanceTranslation) instanceTranslation.setElement(i, t);
 		if (instanceRotation) instanceRotation.setElement(i, r);
 		if (instanceScale) instanceScale.setElement(i, s);
 	}
 
-	if (instancePosition) batch.setAttribute('TRANSLATION', instancePosition);
+	if (instanceTranslation) batch.setAttribute('TRANSLATION', instanceTranslation);
 	if (instanceRotation) batch.setAttribute('ROTATION', instanceRotation);
 	if (instanceScale) batch.setAttribute('SCALE', instanceScale);
 

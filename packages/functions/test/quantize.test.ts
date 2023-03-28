@@ -13,7 +13,7 @@ import {
 	Scene,
 	vec3,
 } from '@gltf-transform/core';
-import { KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.WARN);
@@ -345,6 +345,34 @@ test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) =
 	t.is(scaleChannel.getTargetNode(), node, "don't retarget TRS animation");
 });
 
+test('@gltf-transform/functions::quantize | instancing', async (t) => {
+	const doc = new Document().setLogger(logger);
+	createScene(doc);
+	const node = doc.getRoot().listNodes()[0];
+	const mesh = node.getMesh();
+	const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
+	const batchTranslation = doc
+		.createAccessor()
+		.setType('VEC3')
+		.setArray(new Float32Array([0, 0, 0, 1, 1, 1]));
+	let batch = batchExtension.createInstancedMesh().setAttribute('TRANSLATION', batchTranslation);
+	node.setExtension('EXT_mesh_gpu_instancing', batch);
+
+	await doc.transform(quantize());
+
+	batch = node.getExtension('EXT_mesh_gpu_instancing');
+
+	t.is(node.getMesh(), mesh, 'node hash mesh');
+	t.deepEqual(node.getTranslation(), [10, 0, 0], 'node has original translation');
+	t.deepEqual(node.getScale(), [1, 1, 1], 'node has original scale');
+	t.truthy(batch, 'node has instancing extension');
+	t.deepEqual(
+		Array.from(batch.getAttribute('TRANSLATION').getArray()),
+		[12.5, 12.5, 0, 13.5, 13.5, 1],
+		'batch translation includes quantization transform'
+	);
+});
+
 test('@gltf-transform/functions::quantize | volumetric materials', async (t) => {
 	const doc = new Document().setLogger(logger);
 	createScene(doc);
@@ -409,7 +437,17 @@ function createScene(doc: Document): Scene {
 			doc
 				.createAccessor()
 				.setType('VEC3')
-				.setArray(new Float32Array([10, 10, 0, 10, 15, 0, 15, 10, 0, 15, 15, 0, 10, 10, 0]))
+
+				.setArray(
+					// prettier-ignore
+					new Float32Array([
+						10, 10, 0,
+						10, 15, 0,
+						15, 10, 0,
+						15, 15, 0,
+						10, 10, 0
+					])
+				)
 		)
 	);
 
@@ -419,7 +457,16 @@ function createScene(doc: Document): Scene {
 			doc
 				.createAccessor()
 				.setType('VEC3')
-				.setArray(new Float32Array([0, 0, 100, 0, 100, 0, 100, 0, 0, 100, 0, 100, 100, 100, 0]))
+				.setArray(
+					// prettier-ignore
+					new Float32Array([
+						0, 0, 100,
+						0, 100, 0,
+						100, 0, 0,
+						100, 0, 100,
+						100, 100, 0
+					])
+				)
 		)
 	);
 
