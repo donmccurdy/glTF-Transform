@@ -1,5 +1,5 @@
 import type { Primitive } from '@gltf-transform/core';
-import { createIndices } from './utils';
+import { createIndices } from './utils.js';
 
 /**
  * Removes degenerate triangles from the {@link Primitive}. Any triangle containing fewer than

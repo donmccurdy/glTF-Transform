@@ -8,10 +8,10 @@ import {
 	TypedArray,
 	vec3,
 } from '@gltf-transform/core';
-import { cleanPrimitive } from './clean-primitive';
-import { dedup } from './dedup';
-import { prune } from './prune';
-import { createIndices, createTransform, formatDeltaOp } from './utils';
+import { cleanPrimitive } from './clean-primitive.js';
+import { dedup } from './dedup.js';
+import { prune } from './prune.js';
+import { createIndices, createTransform, formatDeltaOp } from './utils.js';
 
 // DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
 // and tunable. The writeup below tracks my attempts to solve for these
