@@ -9,7 +9,8 @@
 **Features:**
 
 - Add `--join <bool>` and `--flatten <bool>` flags to `optimize' CLI command [#838](https://github.com/donmccurdy/glTF-Transform/pull/838) by [@xlsfs](https://github.com/xlsfs)
-- Allow root Nodes to be shared by multiple Scenes
+- Add `KHR_materials_anisotropy` extension [#748](https://github.com/donmccurdy/glTF-Transform/pull/748)
+- Allow root Nodes to be shared by multiple Scenes [#833](https://github.com/donmccurdy/glTF-Transform/pull/833)
   - Deprecate `Node#getParent()`, prefer `Node#getParentNode()`
   - Deprecate `getNodeScene()`, prefer `listNodeScenes()`
 
