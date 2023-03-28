@@ -355,14 +355,14 @@ function formatKV(kv: Record<string, unknown>): string {
 }
 
 // Order to search nearer cells first.
-const OFFSETS = [0, -1, 1];
+const CELL_OFFSETS = [0, -1, 1];
 
 function getGridNeighborhoodKeys(p: vec3, cellSize: number): string[] {
 	const keys = [] as string[];
 	const _p = [0, 0, 0] as vec3;
-	for (const i of OFFSETS) {
-		for (const j of OFFSETS) {
-			for (const k of OFFSETS) {
+	for (const i of CELL_OFFSETS) {
+		for (const j of CELL_OFFSETS) {
+			for (const k of CELL_OFFSETS) {
 				_p[0] = p[0] + i * cellSize;
 				_p[1] = p[1] + j * cellSize;
 				_p[2] = p[2] + k * cellSize;
