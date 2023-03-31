@@ -1,5 +1,5 @@
 
-  gltf-transform 3.1.6 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 3.1.7 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
