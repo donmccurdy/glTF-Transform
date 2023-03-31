@@ -22,7 +22,7 @@ function ensureDir(uri) {
 // TODO(cleanup): These tests are passing a Promise into t.truthy(), probably missed
 // that while refactoring NodeIO to async methods. Should await them instead.
 
-test('@gltf-transform/core::io | node.js read glb', async (t) => {
+test('read glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = await createPlatformIO();
 	let count = 0;
@@ -36,7 +36,7 @@ test('@gltf-transform/core::io | node.js read glb', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js read gltf', async (t) => {
+test('read gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = await createPlatformIO();
 	let count = 0;
@@ -50,7 +50,7 @@ test('@gltf-transform/core::io | node.js read gltf', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js read glb http', async (t) => {
+test('read glb http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
 	let count = 0;
@@ -66,7 +66,7 @@ test('@gltf-transform/core::io | node.js read glb http', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js read gltf http', async (t) => {
+test('read gltf http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
 	let count = 0;
@@ -82,7 +82,7 @@ test('@gltf-transform/core::io | node.js read gltf http', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js write glb', async (t) => {
+test('write glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
@@ -102,7 +102,7 @@ test('@gltf-transform/core::io | node.js write glb', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js write gltf', async (t) => {
+test('write gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
@@ -122,7 +122,7 @@ test('@gltf-transform/core::io | node.js write gltf', async (t) => {
 	t.truthy(count > 0, 'tests completed');
 });
 
-test('@gltf-transform/core::io | node.js write gltf with HTTP', async (t) => {
+test('write gltf with HTTP', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const document = new Document();
 	document.createBuffer();

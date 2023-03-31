@@ -1,7 +1,7 @@
 import test from 'ava';
 import { ColorUtils } from '@gltf-transform/core';
 
-test('@gltf-transform/core::color-utils', (t) => {
+test('basic', (t) => {
 	t.deepEqual(ColorUtils.hexToFactor(0xff0000, []), [1, 0, 0], 'hexToFactor');
 	t.deepEqual(ColorUtils.factorToHex([1, 0, 0]), 16646144, 'factorToHex');
 

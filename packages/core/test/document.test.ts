@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
 
-test('@gltf-transform/core::document | transform', async (t) => {
+test('transform', async (t) => {
 	const document = new Document();
 
 	await document.transform(
@@ -13,7 +13,7 @@ test('@gltf-transform/core::document | transform', async (t) => {
 	t.is(document.getRoot().listBuffers().length, 1, 'transform 2');
 });
 
-test('@gltf-transform/core::document | clone', (t) => {
+test('clone', (t) => {
 	const document1 = new Document();
 	document1.createMaterial('MyMaterial');
 	const rootNode = document1.createNode('A').addChild(document1.createNode('B').addChild(document1.createNode('C')));
@@ -36,7 +36,7 @@ test('@gltf-transform/core::document | clone', (t) => {
 	);
 });
 
-test('@gltf-transform/core::document | defaults', (t) => {
+test('defaults', (t) => {
 	// offering to the code coverage gods.
 	const document = new Document();
 

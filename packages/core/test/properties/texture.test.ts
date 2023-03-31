@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document, Format, JSONDocument, TextureInfo } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::texture | read', async (t) => {
+test('read', async (t) => {
 	const jsonDoc = {
 		json: {
 			asset: { version: '2.0' },
@@ -36,7 +36,7 @@ test('@gltf-transform/core::texture | read', async (t) => {
 	t.is(root.listTextures()[1].getMimeType(), 'image/jpeg', 'assigns "image/jpeg" MIME type');
 });
 
-test('@gltf-transform/core::texture | write', async (t) => {
+test('write', async (t) => {
 	const document = new Document();
 	document.createBuffer();
 	const image1 = new Uint8Array(1);
@@ -68,7 +68,7 @@ test('@gltf-transform/core::texture | write', async (t) => {
 	t.is(jsonDoc.json.samplers.length, 2, 'reuses samplers');
 });
 
-test('@gltf-transform/core::texture | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const tex = document
 		.createTexture('MyTexture')
@@ -83,7 +83,7 @@ test('@gltf-transform/core::texture | copy', (t) => {
 	t.is(tex2.getURI(), 'path/to/image.gif', 'copy URI');
 });
 
-test('@gltf-transform/core::texture | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document.createBuffer();
@@ -95,7 +95,7 @@ test('@gltf-transform/core::texture | extras', async (t) => {
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
 });
 
-test('@gltf-transform/core::textureInfo | extras', async (t) => {
+test('textureInfo extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document.createBuffer();
@@ -113,7 +113,7 @@ test('@gltf-transform/core::textureInfo | extras', async (t) => {
 	t.deepEqual(rtMaterial.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'roundtrip');
 });
 
-test('@gltf-transform/core::texture | padding', async (t) => {
+test('padding', async (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
 

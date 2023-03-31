@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document, JSONDocument } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::root', (t) => {
+test('basic', (t) => {
 	const document = new Document();
 	const accessor = document.createAccessor();
 	const animation = document.createAnimation();
@@ -42,7 +42,7 @@ test('@gltf-transform/core::root', (t) => {
 	t.throws(() => root2.copy(document.getRoot()), undefined, 'no direct copy');
 });
 
-test('@gltf-transform/core::root | default scene', async (t) => {
+test('default scene', async (t) => {
 	const document = new Document();
 	const root = document.getRoot();
 	const sceneA = document.createScene('A');
@@ -69,7 +69,7 @@ test('@gltf-transform/core::root | default scene', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::root | clone child of root', (t) => {
+test('clone child of root', (t) => {
 	const document = new Document();
 	const a = document.createAccessor();
 	const b = a.clone();
@@ -78,7 +78,7 @@ test('@gltf-transform/core::root | clone child of root', (t) => {
 	t.deepEqual(document.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
 });
 
-test('@gltf-transform/core::root | extras', async (t) => {
+test('extras', async (t) => {
 	const document = new Document();
 	const io = await createPlatformIO();
 
@@ -95,7 +95,7 @@ test('@gltf-transform/core::root | extras', async (t) => {
 	t.deepEqual(rtDocExtras.getRoot().getExtras(), { custom: 'value' }, 'round trip extras');
 });
 
-test('@gltf-transform/core::root | asset', async (t) => {
+test('asset', async (t) => {
 	const document = new Document();
 	const root = document.getRoot();
 	const io = await createPlatformIO();

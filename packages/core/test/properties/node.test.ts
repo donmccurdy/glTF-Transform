@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::node | parent', (t) => {
+test('parent', (t) => {
 	const document = new Document();
 	const a = document.createNode('A');
 	const b = document.createNode('B');
@@ -15,7 +15,7 @@ test('@gltf-transform/core::node | parent', (t) => {
 	t.deepEqual(b.listChildren(), [c], 'adds child to 2nd parent');
 });
 
-test('@gltf-transform/core::node | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const node = document
 		.createNode('MyNode')
@@ -32,7 +32,7 @@ test('@gltf-transform/core::node | copy', (t) => {
 	t.throws(() => document.createNode().copy(node), { message: /Node cannot be copied/i }, 'cannot copy node');
 });
 
-test('@gltf-transform/core::node | traverse', (t) => {
+test('traverse', (t) => {
 	const document = new Document();
 	const disposed = document.createNode('Four');
 	const node = document
@@ -45,7 +45,7 @@ test('@gltf-transform/core::node | traverse', (t) => {
 	t.is(count, 3, 'traverses all nodes');
 });
 
-test('@gltf-transform/core::node | getWorldMatrix', (t) => {
+test('getWorldMatrix', (t) => {
 	const document = new Document();
 	const a = document.createNode('A').setTranslation([10, 0, 0]);
 	const b = document.createNode('B').setTranslation([0, 5, 0]);
@@ -65,7 +65,7 @@ test('@gltf-transform/core::node | getWorldMatrix', (t) => {
 	t.deepEqual(pos[2].toFixed(3), '0.000', 'inherit rotated position.z');
 });
 
-test('@gltf-transform/core::node | setMatrix', (t) => {
+test('setMatrix', (t) => {
 	const document = new Document();
 	const node = document.createNode('A').setTranslation([99, 99, 99]);
 
@@ -85,7 +85,7 @@ test('@gltf-transform/core::node | setMatrix', (t) => {
 	t.deepEqual(sclOut, ['10.0', '10.0', '10.0'], 'scale');
 });
 
-test('@gltf-transform/core::node | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document.createNode('A').setExtras({ foo: 1, bar: 2 });
@@ -96,7 +96,7 @@ test('@gltf-transform/core::node | extras', async (t) => {
 	t.deepEqual(doc2.getRoot().listNodes()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
 });
 
-test('@gltf-transform/core::node | identity transforms', async (t) => {
+test('identity transforms', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 

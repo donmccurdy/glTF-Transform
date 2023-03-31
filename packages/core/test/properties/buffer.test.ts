@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::buffer', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const buffer1 = doc.createBuffer().setURI('mybuffer.bin');
 	const buffer2 = doc.createBuffer().setURI('');
@@ -29,7 +29,7 @@ test('@gltf-transform/core::buffer', async (t) => {
 	t.false('empty.bin' in jsonDoc.resources, 'empty buffer skipped');
 });
 
-test('@gltf-transform/core::buffer | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const buffer1 = document.createBuffer('MyBuffer').setURI('mybuffer.bin');
 	const buffer2 = document.createBuffer().copy(buffer1);
@@ -38,7 +38,7 @@ test('@gltf-transform/core::buffer | copy', (t) => {
 	t.is(buffer1.getURI(), buffer2.getURI(), 'copy URI');
 });
 
-test('@gltf-transform/core::buffer | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	const buffer = document.createBuffer('A').setExtras({ foo: 1, bar: 2 });

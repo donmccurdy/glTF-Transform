@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/core::image-utils | basic', (t) => {
+test('basic', (t) => {
 	if (!IS_NODEJS) return t.pass();
 	let canvas, ctx, buffer;
 
@@ -26,7 +26,7 @@ test('@gltf-transform/core::image-utils | basic', (t) => {
 	t.deepEqual(ImageUtils.getSize(buffer, 'image/jpeg'), [16, 32], 'gets JPEG size');
 });
 
-test('@gltf-transform/core::image-utils | png', (t) => {
+test('png', (t) => {
 	if (!IS_NODEJS) return t.pass();
 	const png = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png'));
 	const fried = BufferUtils.concat([
@@ -48,7 +48,7 @@ test('@gltf-transform/core::image-utils | png', (t) => {
 	t.is(ImageUtils.getVRAMByteLength(fried, 'image/png'), 760, 'png gpu size');
 });
 
-test('@gltf-transform/core::image-utils | jpeg', (t) => {
+test('jpeg', (t) => {
 	if (!IS_NODEJS) return t.pass();
 	const jpg = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg'));
 	const array = new Uint8Array(100);
@@ -71,7 +71,7 @@ test('@gltf-transform/core::image-utils | jpeg', (t) => {
 	t.throws(() => ImageUtils.getSize(array, 'image/jpeg'), undefined, 'no size');
 });
 
-test('@gltf-transform/core::image-utils | extensions', (t) => {
+test('extensions', (t) => {
 	t.is(ImageUtils.extensionToMimeType('jpg'), 'image/jpeg', 'extensionToMimeType, jpeg');
 	t.is(ImageUtils.mimeTypeToExtension('image/png'), 'png', 'mimeTypeToExtension, inferred');
 	t.is(ImageUtils.mimeTypeToExtension('image/jpeg'), 'jpg', 'mimeTypeToExtension, jpg');
