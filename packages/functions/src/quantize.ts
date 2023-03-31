@@ -120,7 +120,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		await doc.transform(
 			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL] }),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL] })
+			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] })
 		);
 
 		logger.debug(`${NAME}: Complete.`);
