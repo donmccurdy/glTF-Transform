@@ -97,6 +97,30 @@ test('@gltf-transform/functions::dedup | meshes', async (t) => {
 	t.is(root.listMeshes().length, 3, 'prunes duplicate meshes');
 });
 
+test('@gltf-transform/functions::dedup | skins', async (t) => {
+	const document = new Document();
+	const root = document.getRoot();
+	const boneA = document.createNode('A');
+	const boneB = document.createNode('B');
+	document.createScene().addChild(boneA).addChild(boneB);
+	const skinA = document.createSkin().addJoint(boneA).addJoint(boneB);
+	const skinB = document.createSkin().addJoint(boneA).addJoint(boneB);
+	const skinC = document.createSkin().addJoint(boneA);
+
+	t.is(root.listSkins().length, 3, 'begins with duplicate skins');
+
+	await document.transform(dedup({ propertyTypes: [PropertyType.MESH] }));
+
+	t.is(root.listSkins().length, 3, 'has no effect if disabled');
+
+	await document.transform(dedup({ propertyTypes: [PropertyType.SKIN] }));
+
+	t.is(root.listSkins().length, 2, 'prunes duplicate skins');
+	t.false(skinA.isDisposed(), 'keep skin A');
+	t.true(skinB.isDisposed(), 'dispose skin B');
+	t.false(skinC.isDisposed(), 'keep skin C');
+});
+
 test('@gltf-transform/functions::dedup | textures', (t) => {
 	const doc = new Document();
 	const transmissionExt = doc.createExtension(KHRMaterialsTransmission);

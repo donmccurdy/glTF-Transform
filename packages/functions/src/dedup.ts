@@ -2,13 +2,13 @@ import {
 	Accessor,
 	BufferUtils,
 	Document,
-	ILogger,
 	Material,
 	Mesh,
 	Primitive,
 	PrimitiveTarget,
 	PropertyType,
 	Root,
+	Skin,
 	Texture,
 	Transform,
 } from '@gltf-transform/core';
@@ -22,7 +22,13 @@ export interface DedupOptions {
 }
 
 const DEDUP_DEFAULTS: Required<DedupOptions> = {
-	propertyTypes: [PropertyType.ACCESSOR, PropertyType.MESH, PropertyType.TEXTURE, PropertyType.MATERIAL],
+	propertyTypes: [
+		PropertyType.ACCESSOR,
+		PropertyType.MESH,
+		PropertyType.TEXTURE,
+		PropertyType.MATERIAL,
+		PropertyType.SKIN,
+	],
 };
 
 /**
@@ -51,19 +57,22 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 		}
 	}
 
-	return createTransform(NAME, (doc: Document): void => {
-		const logger = doc.getLogger();
+	return createTransform(NAME, (document: Document): void => {
+		const logger = document.getLogger();
 
-		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(logger, doc);
-		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(logger, doc);
-		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(logger, doc);
-		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(logger, doc);
+		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(document);
+		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(document);
+		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(document);
+		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(document);
+		if (propertyTypes.has(PropertyType.SKIN)) dedupSkins(document);
 
 		logger.debug(`${NAME}: Complete.`);
 	});
 };
 
-function dedupAccessors(logger: ILogger, doc: Document): void {
+function dedupAccessors(doc: Document): void {
+	const logger = doc.getLogger();
+
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
 	const attributeAccessors: Set<Accessor> = new Set();
@@ -166,7 +175,8 @@ function dedupAccessors(logger: ILogger, doc: Document): void {
 	Array.from(duplicateOutputs.keys()).forEach((output) => output.dispose());
 }
 
-function dedupMeshes(logger: ILogger, doc: Document): void {
+function dedupMeshes(doc: Document): void {
+	const logger = doc.getLogger();
 	const root = doc.getRoot();
 
 	// Create Reference -> ID lookup table.
@@ -203,7 +213,8 @@ function dedupMeshes(logger: ILogger, doc: Document): void {
 	logger.debug(`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`);
 }
 
-function dedupImages(logger: ILogger, doc: Document): void {
+function dedupImages(doc: Document): void {
+	const logger = doc.getLogger();
 	const root = doc.getRoot();
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
@@ -247,22 +258,20 @@ function dedupImages(logger: ILogger, doc: Document): void {
 	});
 }
 
-function dedupMaterials(logger: ILogger, doc: Document): void {
+function dedupMaterials(doc: Document): void {
+	const logger = doc.getLogger();
 	const root = doc.getRoot();
 	const materials = root.listMaterials();
-	const duplicates: Map<Material, Material> = new Map();
+	const duplicates = new Map<Material, Material>();
 	const skip = new Set(['name']);
 
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
-
 		if (duplicates.has(a)) continue;
 
-		for (let j = 0; j < materials.length; j++) {
+		for (let j = i + 1; j < materials.length; j++) {
 			const b = materials[j];
-
-			if (a === b) continue;
 			if (duplicates.has(b)) continue;
 
 			if (a.equals(b, skip)) {
@@ -271,10 +280,39 @@ function dedupMaterials(logger: ILogger, doc: Document): void {
 		}
 	}
 
-	logger.debug(
-		// eslint-disable-next-line max-len
-		`${NAME}: Found ${duplicates.size} duplicates among ${root.listMaterials().length} materials.`
-	);
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${materials.length} materials.`);
+
+	Array.from(duplicates.entries()).forEach(([src, dst]) => {
+		src.listParents().forEach((property) => {
+			if (!(property instanceof Root)) property.swap(src, dst);
+		});
+		src.dispose();
+	});
+}
+
+function dedupSkins(document: Document): void {
+	const logger = document.getLogger();
+	const root = document.getRoot();
+	const skins = root.listSkins();
+	const duplicates = new Map<Skin, Skin>();
+	const skip = new Set(['name']);
+
+	for (let i = 0; i < skins.length; i++) {
+		const a = skins[i];
+
+		if (duplicates.has(a)) continue;
+
+		for (let j = i + 1; j < skins.length; j++) {
+			const b = skins[j];
+			if (duplicates.has(b)) continue;
+
+			if (a.equals(b, skip)) {
+				duplicates.set(b, a);
+			}
+		}
+	}
+
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${skins.length} skins.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
