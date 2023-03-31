@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 import mikktspace from 'mikktspace';
 import sharp from 'sharp';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
-import { Logger, NodeIO, PropertyType, VertexLayout, vec2 } from '@gltf-transform/core';
+import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
 import { CenterOptions, InstanceOptions, PartitionOptions, PruneOptions, QUANTIZE_DEFAULTS, ResampleOptions, SequenceOptions, TEXTURE_RESIZE_DEFAULTS, TextureResizeFilter, UnweldOptions, WeldOptions, center, dedup, instance, metalRough, partition, prune, quantize, resample, sequence, tangents, unweld, weld, reorder, dequantize, unlit, meshopt, DRACO_DEFAULTS, draco, DracoOptions, simplify, SIMPLIFY_DEFAULTS, WELD_DEFAULTS, textureCompress, FlattenOptions, flatten, JOIN_DEFAULTS, join, JoinOptions, sparse, SparseOptions } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import { ETC1S_DEFAULTS, Filter, Mode, UASTC_DEFAULTS, ktxfix, merge, toktx, XMPOptions, xmp } from './transforms/index.js';
@@ -212,7 +212,7 @@ commands or using the scripting API.
 		};
 
 		// Baseline transforms.
-		const transforms = [
+		const transforms: Transform[] = [
 			dedup(),
 			instance({min: options.instance as number}),
 		];
@@ -326,7 +326,7 @@ resources as needed. Partitioning is supported only for .gltf, not .glb, files.
 program
 	.command('dedup', 'Deduplicate accessors and textures')
 	.help(`
-Deduplicate accessors, textures, materials, and meshes. Some exporters or
+Deduplicate accessors, textures, materials, meshes, and skins. Some exporters or
 pipeline processing may lead to multiple resources within a file containing
 redundant copies of the same information. This functions scans for these cases
 and merges the duplicates where possible, reducing file size. The process may
@@ -349,6 +349,10 @@ compression and instancing, to be more effective.
 		validator: program.BOOLEAN,
 		default: true,
 	})
+	.option('--skins <skins>', 'Remove duplicate skins', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.option('--textures <textures>', 'Remove duplicate textures', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -358,6 +362,7 @@ compression and instancing, to be more effective.
 		if (options.accessors) propertyTypes.push(PropertyType.ACCESSOR);
 		if (options.materials) propertyTypes.push(PropertyType.MATERIAL);
 		if (options.meshes) propertyTypes.push(PropertyType.MESH);
+		if (options.skins) propertyTypes.push(PropertyType.SKIN);
 		if (options.textures) propertyTypes.push(PropertyType.TEXTURE);
 		return Session.create(io, logger, args.input, args.output)
 			.transform(dedup({propertyTypes}));
