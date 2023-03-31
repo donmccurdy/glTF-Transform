@@ -59,13 +59,14 @@ export interface WeldOptions {
 	tolerance?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
+	/** Enables a more thorough, but slower, search for vertices to weld. */
 	exhaustive?: boolean;
 }
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
 	tolerance: Tolerance.DEFAULT,
 	overwrite: true,
-	exhaustive: false,
+	exhaustive: false, // donmccurdy/glTF-Transform#886
 };
 
 /**
