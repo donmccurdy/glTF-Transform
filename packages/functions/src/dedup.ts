@@ -70,8 +70,8 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 	});
 };
 
-function dedupAccessors(doc: Document): void {
-	const logger = doc.getLogger();
+function dedupAccessors(document: Document): void {
+	const logger = document.getLogger();
 
 	// Find all accessors used for mesh data.
 	const indicesAccessors: Set<Accessor> = new Set();
@@ -79,7 +79,7 @@ function dedupAccessors(doc: Document): void {
 	const inputAccessors: Set<Accessor> = new Set();
 	const outputAccessors: Set<Accessor> = new Set();
 
-	const meshes = doc.getRoot().listMeshes();
+	const meshes = document.getRoot().listMeshes();
 	meshes.forEach((mesh) => {
 		mesh.listPrimitives().forEach((primitive) => {
 			primitive.listAttributes().forEach((accessor) => attributeAccessors.add(accessor));
@@ -88,7 +88,7 @@ function dedupAccessors(doc: Document): void {
 		});
 	});
 
-	for (const animation of doc.getRoot().listAnimations()) {
+	for (const animation of document.getRoot().listAnimations()) {
 		for (const sampler of animation.listSamplers()) {
 			const input = sampler.getInput();
 			const output = sampler.getOutput();
@@ -107,10 +107,9 @@ function dedupAccessors(doc: Document): void {
 
 			if (duplicateAccessors.has(a)) continue;
 
-			for (let j = 0; j < accessors.length; j++) {
+			for (let j = i + 1; j < accessors.length; j++) {
 				const b = accessors[j];
 
-				if (a === b) continue;
 				if (duplicateAccessors.has(b)) continue;
 
 				if (a.getType() !== b.getType()) continue;
@@ -159,7 +158,7 @@ function dedupAccessors(doc: Document): void {
 	Array.from(duplicateAttributes.keys()).forEach((attribute) => attribute.dispose());
 
 	// Dissolve duplicate animation sampler inputs and outputs.
-	for (const animation of doc.getRoot().listAnimations()) {
+	for (const animation of document.getRoot().listAnimations()) {
 		for (const sampler of animation.listSamplers()) {
 			const input = sampler.getInput();
 			const output = sampler.getOutput();
@@ -175,9 +174,9 @@ function dedupAccessors(doc: Document): void {
 	Array.from(duplicateOutputs.keys()).forEach((output) => output.dispose());
 }
 
-function dedupMeshes(doc: Document): void {
-	const logger = doc.getLogger();
-	const root = doc.getRoot();
+function dedupMeshes(document: Document): void {
+	const logger = document.getLogger();
+	const root = document.getRoot();
 
 	// Create Reference -> ID lookup table.
 	const refs = new Map<Accessor | Material, number>();
@@ -213,9 +212,9 @@ function dedupMeshes(doc: Document): void {
 	logger.debug(`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`);
 }
 
-function dedupImages(doc: Document): void {
-	const logger = doc.getLogger();
-	const root = doc.getRoot();
+function dedupImages(document: Document): void {
+	const logger = document.getLogger();
+	const root = document.getRoot();
 	const textures = root.listTextures();
 	const duplicates: Map<Texture, Texture> = new Map();
 
@@ -226,11 +225,10 @@ function dedupImages(doc: Document): void {
 
 		if (duplicates.has(a)) continue;
 
-		for (let j = 0; j < textures.length; j++) {
+		for (let j = i + 1; j < textures.length; j++) {
 			const b = textures[j];
 			const bData = b.getImage();
 
-			if (a === b) continue;
 			if (duplicates.has(b)) continue;
 
 			// URIs are intentionally not compared.
@@ -258,9 +256,9 @@ function dedupImages(doc: Document): void {
 	});
 }
 
-function dedupMaterials(doc: Document): void {
-	const logger = doc.getLogger();
-	const root = doc.getRoot();
+function dedupMaterials(document: Document): void {
+	const logger = document.getLogger();
+	const root = document.getRoot();
 	const materials = root.listMaterials();
 	const duplicates = new Map<Material, Material>();
 	const skip = new Set(['name']);
