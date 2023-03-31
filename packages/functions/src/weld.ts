@@ -65,7 +65,7 @@ export interface WeldOptions {
 export const WELD_DEFAULTS: Required<WeldOptions> = {
 	tolerance: Tolerance.DEFAULT,
 	overwrite: true,
-	exhaustive: true,
+	exhaustive: false,
 };
 
 /**
