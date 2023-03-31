@@ -3,13 +3,13 @@ import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::skin', async (t) => {
-	const doc = new Document();
+	const document = new Document();
 
-	const joints = [doc.createNode('joint1'), doc.createNode('joint2'), doc.createNode('joint3')];
+	const joints = [document.createNode('joint1'), document.createNode('joint2'), document.createNode('joint3')];
 
-	doc.createBuffer('skinBuffer').setURI('skinTest.bin');
+	document.createBuffer('skinBuffer').setURI('skinTest.bin');
 
-	const ibm = doc
+	const ibm = document
 		.createAccessor('ibm')
 		.setType(Accessor.Type.MAT4)
 		.setArray(
@@ -22,7 +22,7 @@ test('@gltf-transform/core::skin', async (t) => {
 			])
 		);
 
-	const skin = doc
+	const skin = document
 		.createSkin('testSkin')
 		.addJoint(joints[0])
 		.addJoint(joints[1])
@@ -30,21 +30,21 @@ test('@gltf-transform/core::skin', async (t) => {
 		.setSkeleton(joints[0])
 		.setInverseBindMatrices(ibm);
 
-	doc.createNode('armature').addChild(joints[0]).addChild(joints[1]).addChild(joints[2]).setSkin(skin);
+	document.createNode('armature').addChild(joints[0]).addChild(joints[1]).addChild(joints[2]).setSkin(skin);
 
-	const sampler = doc
+	const sampler = document
 		.createAnimationSampler()
-		.setInput(doc.createAccessor().setArray(new Uint8Array([0, 1, 2])))
-		.setOutput(doc.createAccessor().setArray(new Uint8Array([0, 0, 0, 1, 1, 1, 2, 2, 2])));
-	const channel = doc
+		.setInput(document.createAccessor().setArray(new Uint8Array([0, 1, 2])))
+		.setOutput(document.createAccessor().setArray(new Uint8Array([0, 0, 0, 1, 1, 1, 2, 2, 2])));
+	const channel = document
 		.createAnimationChannel()
 		.setSampler(sampler)
 		.setTargetNode(joints[0])
 		.setTargetPath(AnimationChannel.TargetPath.TRANSLATION);
-	doc.createAnimation().addChannel(channel).addSampler(sampler);
+	document.createAnimation().addChannel(channel).addSampler(sampler);
 
 	const io = await createPlatformIO();
-	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, {})));
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(document, {})));
 
 	t.deepEqual(
 		jsonDoc.json.nodes[3],
@@ -76,21 +76,21 @@ test('@gltf-transform/core::skin', async (t) => {
 });
 
 test('@gltf-transform/core::skin | copy', (t) => {
-	const doc = new Document();
-	const a = doc
+	const document = new Document();
+	const a = document
 		.createSkin('MySkin')
-		.addJoint(doc.createNode())
-		.addJoint(doc.createNode())
-		.setSkeleton(doc.createNode())
-		.setInverseBindMatrices(doc.createAccessor());
-	const b = doc.createSkin().copy(a);
+		.addJoint(document.createNode())
+		.addJoint(document.createNode())
+		.setSkeleton(document.createNode())
+		.setInverseBindMatrices(document.createAccessor());
+	const b = document.createSkin().copy(a);
 
 	t.is(b.getName(), a.getName(), 'copy name');
 	t.deepEqual(b.listJoints(), a.listJoints(), 'copy joints');
 	t.is(b.getSkeleton(), a.getSkeleton(), 'copy skeleton');
 	t.is(b.getInverseBindMatrices(), a.getInverseBindMatrices(), 'copy inverseBindMatrices');
 
-	a.copy(doc.createSkin());
+	a.copy(document.createSkin());
 
 	t.is(a.getSkeleton(), null, 'unset skeleton');
 	t.is(a.getInverseBindMatrices(), null, 'unset inverseBindMatrices');
@@ -98,11 +98,11 @@ test('@gltf-transform/core::skin | copy', (t) => {
 
 test('@gltf-transform/core::skin | extras', async (t) => {
 	const io = await createPlatformIO();
-	const doc = new Document();
-	doc.createSkin('A').setExtras({ foo: 1, bar: 2 });
+	const document = new Document();
+	document.createSkin('A').setExtras({ foo: 1, bar: 2 });
 
-	const doc2 = await io.readJSON(await io.writeJSON(doc));
+	const doc2 = await io.readJSON(await io.writeJSON(document));
 
-	t.deepEqual(doc.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
+	t.deepEqual(document.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
 });

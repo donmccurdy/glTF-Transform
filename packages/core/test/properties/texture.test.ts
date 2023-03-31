@@ -21,8 +21,8 @@ test('@gltf-transform/core::texture | read', async (t) => {
 	};
 
 	const io = await createPlatformIO();
-	const doc = await io.readJSON(jsonDoc as unknown as JSONDocument);
-	const root = doc.getRoot();
+	const document = await io.readJSON(jsonDoc as unknown as JSONDocument);
+	const root = document.getRoot();
 	const mat1 = root.listMaterials()[0];
 	const mat2 = root.listMaterials()[1];
 
@@ -37,22 +37,27 @@ test('@gltf-transform/core::texture | read', async (t) => {
 });
 
 test('@gltf-transform/core::texture | write', async (t) => {
-	const doc = new Document();
-	doc.createBuffer();
+	const document = new Document();
+	document.createBuffer();
 	const image1 = new Uint8Array(1);
 	const image2 = new Uint8Array(2);
 	const image3 = new Uint8Array(3);
-	const texture1 = doc.createTexture('tex1').setImage(image1).setURI('tex1.png');
-	const texture2 = doc.createTexture('tex2').setImage(image2).setMimeType('image/jpeg');
-	const texture3 = doc.createTexture('tex2').setImage(image3).setMimeType('image/jpeg'); // reused name
-	doc.createMaterial('mat1').setBaseColorTexture(texture1).setNormalTexture(texture2).setOcclusionTexture(texture3);
-	doc.createMaterial('mat2')
+	const texture1 = document.createTexture('tex1').setImage(image1).setURI('tex1.png');
+	const texture2 = document.createTexture('tex2').setImage(image2).setMimeType('image/jpeg');
+	const texture3 = document.createTexture('tex2').setImage(image3).setMimeType('image/jpeg'); // reused name
+	document
+		.createMaterial('mat1')
+		.setBaseColorTexture(texture1)
+		.setNormalTexture(texture2)
+		.setOcclusionTexture(texture3);
+	document
+		.createMaterial('mat2')
 		.setBaseColorTexture(texture1)
 		.getBaseColorTextureInfo()
 		.setWrapS(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
 	const io = await createPlatformIO();
-	const jsonDoc = await io.writeJSON(doc, { basename: '' });
+	const jsonDoc = await io.writeJSON(document, { basename: '' });
 
 	t.false('basename.bin' in jsonDoc.resources, 'external image resources');
 	t.true('tex1.png' in jsonDoc.resources, 'writes tex1.png');
@@ -64,14 +69,14 @@ test('@gltf-transform/core::texture | write', async (t) => {
 });
 
 test('@gltf-transform/core::texture | copy', (t) => {
-	const doc = new Document();
-	const tex = doc
+	const document = new Document();
+	const tex = document
 		.createTexture('MyTexture')
 		.setImage(new Uint8Array(2))
 		.setMimeType('image/gif')
 		.setURI('path/to/image.gif');
 
-	const tex2 = doc.createTexture().copy(tex);
+	const tex2 = document.createTexture().copy(tex);
 	t.is(tex2.getName(), 'MyTexture', 'copy name');
 	t.deepEqual(tex2.getImage(), tex.getImage(), 'copy image');
 	t.is(tex2.getMimeType(), 'image/gif', 'copy mimeType');
@@ -80,28 +85,28 @@ test('@gltf-transform/core::texture | copy', (t) => {
 
 test('@gltf-transform/core::texture | extras', async (t) => {
 	const io = await createPlatformIO();
-	const doc = new Document();
-	doc.createBuffer();
-	doc.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new Uint8Array(10)).setMimeType('image/png');
+	const document = new Document();
+	document.createBuffer();
+	document.createTexture('A').setExtras({ foo: 1, bar: 2 }).setImage(new Uint8Array(10)).setMimeType('image/png');
 
-	const doc2 = await io.readJSON(await io.writeJSON(doc));
+	const doc2 = await io.readJSON(await io.writeJSON(document));
 
-	t.deepEqual(doc.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
+	t.deepEqual(document.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listTextures()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
 });
 
 test('@gltf-transform/core::textureInfo | extras', async (t) => {
 	const io = await createPlatformIO();
-	const doc = new Document();
-	doc.createBuffer();
-	const texture = doc
+	const document = new Document();
+	document.createBuffer();
+	const texture = document
 		.createTexture('A')
 		.setExtras({ foo: 1, bar: 2 })
 		.setImage(new Uint8Array(10))
 		.setMimeType('image/png');
-	const material = doc.createMaterial().setBaseColorTexture(texture);
+	const material = document.createMaterial().setBaseColorTexture(texture);
 	material.getBaseColorTextureInfo()!.setExtras({ textureInfoID: 12345 });
-	const doc2 = await io.readJSON(await io.writeJSON(doc));
+	const doc2 = await io.readJSON(await io.writeJSON(document));
 	const rtMaterial = doc2.getRoot().listMaterials()[0];
 
 	t.deepEqual(material.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'storage');
@@ -112,14 +117,14 @@ test('@gltf-transform/core::texture | padding', async (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
 
-	const doc = new Document();
-	doc.createBuffer();
-	doc.createTexture().setImage(new Uint8Array(17)).setMimeType('image/png');
-	doc.createTexture().setImage(new Uint8Array(21)).setMimeType('image/png');
-	doc.createTexture().setImage(new Uint8Array(20)).setMimeType('image/png');
+	const document = new Document();
+	document.createBuffer();
+	document.createTexture().setImage(new Uint8Array(17)).setMimeType('image/png');
+	document.createTexture().setImage(new Uint8Array(21)).setMimeType('image/png');
+	document.createTexture().setImage(new Uint8Array(20)).setMimeType('image/png');
 
 	const io = await createPlatformIO();
-	const jsonDoc = await io.writeJSON(doc, { format: Format.GLB });
+	const jsonDoc = await io.writeJSON(document, { format: Format.GLB });
 
 	t.deepEqual(
 		jsonDoc.json.images,

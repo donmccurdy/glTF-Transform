@@ -3,15 +3,15 @@ import { Accessor, Document } from '@gltf-transform/core';
 import { getBounds } from '@gltf-transform/core';
 
 test('@gltf-transform/functions::getBounds', (t) => {
-	const doc = new Document();
-	const position = doc
+	const document = new Document();
+	const position = document
 		.createAccessor()
 		.setArray(new Float32Array([0, 0, 0, 1, 1, 1]))
 		.setType(Accessor.Type.VEC3);
-	const prim = doc.createPrimitive().setAttribute('POSITION', position);
-	const mesh = doc.createMesh().addPrimitive(prim);
-	const node = doc.createNode().setMesh(mesh).setTranslation([100, 100, 100]).setScale([5, 5, 5]);
-	const scene = doc.createScene().addChild(node);
+	const prim = document.createPrimitive().setAttribute('POSITION', position);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode().setMesh(mesh).setTranslation([100, 100, 100]).setScale([5, 5, 5]);
+	const scene = document.createScene().addChild(node);
 
 	t.deepEqual(
 		getBounds(scene),

@@ -5,8 +5,8 @@ import { Light, KHRLightsPunctual } from '@gltf-transform/extensions';
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('@gltf-transform/extensions::lights-punctual', async (t) => {
-	const doc = new Document();
-	const lightsExtension = doc.createExtension(KHRLightsPunctual);
+	const document = new Document();
+	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
 		.createLight()
 		.setType(Light.Type.SPOT)
@@ -16,11 +16,11 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 		.setInnerConeAngle(0.5)
 		.setOuterConeAngle(0.75);
 
-	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
+	const node = document.createNode().setExtension('KHR_lights_punctual', light);
 
 	t.is(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(document, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');
@@ -57,8 +57,8 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 });
 
 test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
-	const doc = new Document();
-	const lightsExtension = doc.createExtension(KHRLightsPunctual);
+	const document = new Document();
+	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
 		.createLight()
 		.setType(Light.Type.SPOT)
@@ -67,9 +67,9 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 		.setRange(50)
 		.setInnerConeAngle(0.5)
 		.setOuterConeAngle(0.75);
-	doc.createNode().setExtension('KHR_lights_punctual', light);
+	document.createNode().setExtension('KHR_lights_punctual', light);
 
-	const doc2 = doc.clone();
+	const doc2 = document.clone();
 	const light2 = doc2.getRoot().listNodes()[0].getExtension<Light>('KHR_lights_punctual');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRLightsPunctual');
 	t.truthy(light2, 'copy light');
@@ -82,22 +82,22 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 });
 
 test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
-	const doc = new Document();
-	const lightsExtension = doc.createExtension(KHRLightsPunctual);
+	const document = new Document();
+	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setColorHex(0x111111);
 	t.is(light.getColorHex(), 0x111111, 'colorHex');
 });
 
 test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
-	const doc = new Document();
-	const lightsExtension = doc.createExtension(KHRLightsPunctual);
+	const document = new Document();
+	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setType(Light.Type.POINT).setIntensity(2.0);
 
-	const node = doc.createNode().setExtension('KHR_lights_punctual', light);
+	const node = document.createNode().setExtension('KHR_lights_punctual', light);
 
 	t.is(node.getExtension('KHR_lights_punctual'), light, 'light is attached');
 
-	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(doc, WRITER_OPTIONS);
+	const jsonDoc = await new NodeIO().registerExtensions([KHRLightsPunctual]).writeJSON(document, WRITER_OPTIONS);
 	const nodeDef = jsonDoc.json.nodes[0];
 
 	t.deepEqual(nodeDef.extensions, { KHR_lights_punctual: { light: 0 } }, 'attaches light');

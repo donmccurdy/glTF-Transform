@@ -42,16 +42,16 @@ export async function inspect(
 	);
 
 	// Parse.
-	let doc;
+	let document;
 	try {
-		doc = await io.readJSON(jsonDoc);
+		document = await io.readJSON(jsonDoc);
 	} catch (e) {
 		logger.warn('Unable to parse document.');
 		throw e;
 	}
 
 	// XMP report.
-	const rootPacket = doc.getRoot().getExtension('KHR_xmp_json_ld') as Packet | null;
+	const rootPacket = document.getRoot().getExtension('KHR_xmp_json_ld') as Packet | null;
 	if (rootPacket && rootPacket.listProperties().length > 0) {
 		console.log(formatHeader('metadata'));
 		console.log(
@@ -64,7 +64,7 @@ export async function inspect(
 	}
 
 	// Detailed report.
-	const report = inspectDoc(doc);
+	const report = inspectDoc(document);
 	await reportSection('scenes', format, logger, report.scenes);
 	await reportSection('meshes', format, logger, report.meshes);
 	await reportSection('materials', format, logger, report.materials);

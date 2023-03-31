@@ -19,9 +19,9 @@ test('@gltf-transform/core::property | equals', async (t) => {
 });
 
 test('@gltf-transform/core::property | internal arrays', async (t) => {
-	const doc = new Document();
+	const document = new Document();
 	const translation = [0, 0, 0] as vec3;
-	const node = doc.createNode('A').setTranslation(translation);
+	const node = document.createNode('A').setTranslation(translation);
 
 	t.deepEqual(node.getTranslation(), [0, 0, 0], 'stores original value');
 
