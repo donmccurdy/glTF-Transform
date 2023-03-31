@@ -3,9 +3,9 @@ import { Accessor, Document, GLTF, Primitive, Property, VertexLayout } from '@gl
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::mesh', (t) => {
-	const doc = new Document();
-	const mesh = doc.createMesh('mesh');
-	const prim = doc.createPrimitive();
+	const document = new Document();
+	const mesh = document.createMesh('mesh');
+	const prim = document.createPrimitive();
 
 	mesh.addPrimitive(prim);
 	t.deepEqual(mesh.listPrimitives(), [prim], 'adds primitive');
@@ -15,11 +15,11 @@ test('@gltf-transform/core::mesh', (t) => {
 });
 
 test('@gltf-transform/core::mesh | primitive', (t) => {
-	const doc = new Document();
-	const prim = doc.createPrimitive();
-	const acc1 = doc.createAccessor('acc1');
-	const acc2 = doc.createAccessor('acc2');
-	const acc3 = doc.createAccessor('acc3');
+	const document = new Document();
+	const prim = document.createPrimitive();
+	const acc1 = document.createAccessor('acc1');
+	const acc2 = document.createAccessor('acc2');
+	const acc3 = document.createAccessor('acc3');
 
 	const toType = (p: Property): string => p.propertyType;
 
@@ -43,16 +43,16 @@ test('@gltf-transform/core::mesh | primitive', (t) => {
 });
 
 test('@gltf-transform/core::mesh | primitive targets', async (t) => {
-	const doc = new Document();
-	const mesh = doc.createMesh('mesh');
-	const prim = doc.createPrimitive();
-	const trg1 = doc.createPrimitiveTarget('trg1');
-	const trg2 = doc.createPrimitiveTarget('trg2');
-	const trg3 = doc.createPrimitiveTarget('trg3');
-	const acc1 = doc.createAccessor('acc1');
-	const acc2 = doc.createAccessor('acc2');
-	const acc3 = doc.createAccessor('acc3');
-	const buf = doc.createBuffer('buf');
+	const document = new Document();
+	const mesh = document.createMesh('mesh');
+	const prim = document.createPrimitive();
+	const trg1 = document.createPrimitiveTarget('trg1');
+	const trg2 = document.createPrimitiveTarget('trg2');
+	const trg3 = document.createPrimitiveTarget('trg3');
+	const acc1 = document.createAccessor('acc1');
+	const acc2 = document.createAccessor('acc2');
+	const acc3 = document.createAccessor('acc3');
+	const buf = document.createBuffer('buf');
 
 	trg1.setAttribute('POSITION', acc1.setArray(new Float32Array([0, 0, 0])).setBuffer(buf));
 	trg2.setAttribute('POSITION', acc2.setArray(new Float32Array([0, 0, 0])).setBuffer(buf));
@@ -73,7 +73,7 @@ test('@gltf-transform/core::mesh | primitive targets', async (t) => {
 
 	const io = await createPlatformIO();
 	const options = { basename: 'targetTest' };
-	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(document, options)), options);
 	const meshDef = jsonDoc.json.meshes[0];
 
 	t.deepEqual(meshDef.extras.targetNames, ['trg1', 'trg2', 'trg3'], 'writes target names');
@@ -85,25 +85,25 @@ test('@gltf-transform/core::mesh | primitive targets', async (t) => {
 });
 
 test('@gltf-transform/core::mesh | copy', (t) => {
-	const doc = new Document();
-	const mesh = doc.createMesh('mesh').setWeights([1, 2, 3]).addPrimitive(doc.createPrimitive());
-	const mesh2 = doc.createMesh().copy(mesh);
+	const document = new Document();
+	const mesh = document.createMesh('mesh').setWeights([1, 2, 3]).addPrimitive(document.createPrimitive());
+	const mesh2 = document.createMesh().copy(mesh);
 
 	t.deepEqual(mesh2.getWeights(), mesh.getWeights(), 'copy weights');
 	t.deepEqual(mesh2.listPrimitives(), mesh.listPrimitives(), 'copy primitives');
 });
 
 test('@gltf-transform/core::primitive | copy', (t) => {
-	const doc = new Document();
-	const prim = doc
+	const document = new Document();
+	const prim = document
 		.createPrimitive()
-		.setAttribute('POSITION', doc.createAccessor())
-		.setIndices(doc.createAccessor())
+		.setAttribute('POSITION', document.createAccessor())
+		.setIndices(document.createAccessor())
 		.setMode(3)
-		.setMaterial(doc.createMaterial())
-		.addTarget(doc.createPrimitiveTarget())
-		.addTarget(doc.createPrimitiveTarget());
-	const prim2 = doc.createPrimitive().copy(prim);
+		.setMaterial(document.createMaterial())
+		.addTarget(document.createPrimitiveTarget())
+		.addTarget(document.createPrimitiveTarget());
+	const prim2 = document.createPrimitive().copy(prim);
 
 	t.is(prim2.getAttribute('POSITION'), prim2.getAttribute('POSITION'), 'copy attributes');
 	t.is(prim2.getIndices(), prim.getIndices(), 'copy indices');
@@ -134,18 +134,18 @@ test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 	// Technically meshes must have primitives for the file to be valid, but we'll test that
 	// reading/writing works anyway.
 
-	const doc = new Document();
-	doc.createMesh('EmptyMesh').setWeights([1, 0, 0, 0]);
+	const document = new Document();
+	document.createMesh('EmptyMesh').setWeights([1, 0, 0, 0]);
 
 	const io = await createPlatformIO();
-	let rtDoc = await io.readJSON(await io.writeJSON(doc, {}));
-	let rtMesh = rtDoc.getRoot().listMeshes()[0];
+	let rtDocument = await io.readJSON(await io.writeJSON(document, {}));
+	let rtMesh = rtDocument.getRoot().listMeshes()[0];
 
 	t.deepEqual(rtMesh.listPrimitives(), [], 'primitives');
 	t.deepEqual(rtMesh.getName(), 'EmptyMesh', 'name');
 	t.deepEqual(rtMesh.getWeights(), [1, 0, 0, 0], 'weights');
 
-	rtDoc = await io.readJSON({
+	rtDocument = await io.readJSON({
 		json: {
 			asset: { version: '2.0' },
 			meshes: [
@@ -157,7 +157,7 @@ test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 		},
 		resources: {},
 	});
-	rtMesh = rtDoc.getRoot().listMeshes()[0];
+	rtMesh = rtDocument.getRoot().listMeshes()[0];
 
 	t.deepEqual(rtMesh.listPrimitives(), [], 'primitives');
 	t.deepEqual(rtMesh.getName(), 'EmptyMesh.2', 'name');
@@ -165,14 +165,14 @@ test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 });
 
 test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
-	const doc = new Document();
-	const prim = doc.createPrimitive();
-	const buffer = doc.createBuffer();
+	const document = new Document();
+	const prim = document.createPrimitive();
+	const buffer = document.createBuffer();
 
 	prim.setMode(Primitive.Mode.POINTS)
 		.setAttribute(
 			'POSITION',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Float32Array([0, 0, 0]))
 				.setType(Accessor.Type.VEC3)
@@ -180,7 +180,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_0',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint8Array([128, 128, 128]))
 				.setType(Accessor.Type.VEC3)
@@ -188,7 +188,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_1',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint16Array([64, 64, 64]))
 				.setType(Accessor.Type.VEC3)
@@ -196,7 +196,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_2',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint32Array([32, 32, 32]))
 				.setType(Accessor.Type.VEC3)
@@ -204,7 +204,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_3',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Int16Array([16, 16, 16]))
 				.setType(Accessor.Type.VEC3)
@@ -212,18 +212,18 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_4',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Int8Array([8, 8, 8]))
 				.setType(Accessor.Type.VEC3)
 				.setBuffer(buffer)
 		);
 
-	doc.createMesh().addPrimitive(prim);
+	document.createMesh().addPrimitive(prim);
 
 	const io = await createPlatformIO();
-	const rtDoc = await io.readBinary(await io.writeBinary(doc));
-	const rtPrim = rtDoc.getRoot().listMeshes()[0].listPrimitives()[0];
+	const rtDocument = await io.readBinary(await io.writeBinary(document));
+	const rtPrim = rtDocument.getRoot().listMeshes()[0].listPrimitives()[0];
 
 	t.deepEqual(rtPrim.getAttribute('POSITION').getArray(), new Float32Array([0, 0, 0]), 'float32');
 	t.deepEqual(rtPrim.getAttribute('COLOR_0').getArray(), new Uint8Array([128, 128, 128]), 'uint8');
@@ -234,14 +234,14 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 });
 
 test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
-	const doc = new Document();
-	const prim = doc.createPrimitive();
-	const buffer = doc.createBuffer();
+	const document = new Document();
+	const prim = document.createPrimitive();
+	const buffer = document.createBuffer();
 
 	prim.setMode(Primitive.Mode.POINTS)
 		.setAttribute(
 			'POSITION',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Float32Array([0, 0, 0]))
 				.setType(Accessor.Type.VEC3)
@@ -249,7 +249,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_0',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint8Array([128, 128, 128]))
 				.setType(Accessor.Type.VEC3)
@@ -257,7 +257,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_1',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint16Array([64, 64, 64]))
 				.setType(Accessor.Type.VEC3)
@@ -265,19 +265,19 @@ test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 		)
 		.setAttribute(
 			'COLOR_2',
-			doc
+			document
 				.createAccessor()
 				.setArray(new Uint32Array([32, 32, 32]))
 				.setType(Accessor.Type.VEC3)
 				.setBuffer(buffer)
 		);
 
-	doc.createMesh().addPrimitive(prim);
+	document.createMesh().addPrimitive(prim);
 
 	const io = await createPlatformIO();
 
 	io.setVertexLayout(VertexLayout.INTERLEAVED);
-	const interleavedJSON = await io.binaryToJSON(await io.writeBinary(doc));
+	const interleavedJSON = await io.binaryToJSON(await io.writeBinary(document));
 	t.deepEqual(
 		interleavedJSON.json.bufferViews,
 		[{ buffer: 0, target: 34962, byteOffset: 0, byteLength: 36, byteStride: 36 }],
@@ -285,7 +285,7 @@ test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
 	);
 
 	io.setVertexLayout(VertexLayout.SEPARATE);
-	const separateJSON = await io.binaryToJSON(await io.writeBinary(doc));
+	const separateJSON = await io.binaryToJSON(await io.writeBinary(document));
 	t.deepEqual(
 		separateJSON.json.bufferViews,
 		[

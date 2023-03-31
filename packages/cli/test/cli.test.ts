@@ -19,11 +19,11 @@ test('@gltf-transform/cli::copy', async (t) => {
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
 	const output = tmp.tmpNameSync({ postfix: '.glb' });
 
-	const doc = new Document();
-	doc.createBuffer();
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
-	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	await io.write(input, doc);
+	const document = new Document();
+	document.createBuffer();
+	document.createAccessor().setArray(new Uint8Array([1, 2, 3]));
+	document.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
+	await io.write(input, document);
 
 	return program.exec(['copy', input, output]).then(async () => {
 		const doc2 = await io.read(output);
@@ -82,11 +82,11 @@ test('@gltf-transform/cli::validate', async (t) => {
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
 
-	const doc = new Document();
-	doc.createBuffer();
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
-	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	await io.write(input, doc);
+	const document = new Document();
+	document.createBuffer();
+	document.createAccessor().setArray(new Uint8Array([1, 2, 3]));
+	document.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
+	await io.write(input, document);
 
 	await program.exec(['validate', input], { silent: true });
 	t.pass();
@@ -97,14 +97,14 @@ test('@gltf-transform/cli::inspect', async (t) => {
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
 
-	const doc = new Document();
-	doc.createBuffer();
-	doc.createAccessor().setArray(new Uint8Array([1, 2, 3]));
-	doc.createMesh('MyMesh');
-	doc.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
-	doc.createScene('MyScene').addChild(doc.createNode('MyNode'));
-	doc.createAnimation();
-	await io.write(input, doc);
+	const document = new Document();
+	document.createBuffer();
+	document.createAccessor().setArray(new Uint8Array([1, 2, 3]));
+	document.createMesh('MyMesh');
+	document.createMaterial('MyMaterial').setBaseColorFactor([1, 0, 0, 1]);
+	document.createScene('MyScene').addChild(document.createNode('MyNode'));
+	document.createAnimation();
+	await io.write(input, document);
 	await runSilent(async () => program.exec(['inspect', input], { silent: true }));
 	t.pass();
 });
@@ -117,21 +117,23 @@ test('@gltf-transform/cli::merge', async (t) => {
 	const inputC = tmp.tmpNameSync({ postfix: '.png' });
 	const output = tmp.tmpNameSync({ postfix: '.glb' });
 
-	const docA = new Document();
-	docA.createScene('SceneA');
-	const bufA = docA.createBuffer('BufferA');
-	docA.createAccessor()
+	const documentA = new Document();
+	documentA.createScene('SceneA');
+	const bufA = documentA.createBuffer('BufferA');
+	documentA
+		.createAccessor()
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setBuffer(bufA);
-	await io.write(inputA, docA);
+	await io.write(inputA, documentA);
 
-	const docB = new Document();
-	docB.createScene('');
-	const bufB = docB.createBuffer('BufferB');
-	docB.createAccessor()
+	const documentB = new Document();
+	documentB.createScene('');
+	const bufB = documentB.createBuffer('BufferB');
+	documentB
+		.createAccessor()
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setBuffer(bufB);
-	await io.write(inputB, docB);
+	await io.write(inputB, documentB);
 
 	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
 
@@ -139,8 +141,8 @@ test('@gltf-transform/cli::merge', async (t) => {
 		// https://github.com/mattallty/Caporal.js/issues/195
 		.exec(['merge', [inputA, inputB, inputC, output].join(',')], { silent: true });
 
-	const doc = await io.read(output);
-	const root = doc.getRoot();
+	const document = await io.read(output);
+	const root = document.getRoot();
 	const sceneNames = root.listScenes().map((s) => s.getName());
 	const texName = root.listTextures()[0].getName();
 	t.deepEqual(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');

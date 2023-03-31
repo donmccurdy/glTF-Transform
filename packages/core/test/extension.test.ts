@@ -45,25 +45,25 @@ GizmoExtension.EXTENSION_NAME = EXTENSION_NAME;
 Gizmo.EXTENSION_NAME = EXTENSION_NAME;
 
 test('@gltf-transform/core::extension | list', (t) => {
-	const doc = new Document();
-	const extension = doc.createExtension(GizmoExtension);
+	const document = new Document();
+	const extension = document.createExtension(GizmoExtension);
 
-	t.deepEqual(doc.getRoot().listExtensionsUsed(), [extension], 'listExtensionsUsed()');
-	t.deepEqual(doc.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
+	t.deepEqual(document.getRoot().listExtensionsUsed(), [extension], 'listExtensionsUsed()');
+	t.deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
 
 	extension.setRequired(true);
-	t.deepEqual(doc.getRoot().listExtensionsRequired(), [extension], 'listExtensionsRequired()');
+	t.deepEqual(document.getRoot().listExtensionsRequired(), [extension], 'listExtensionsRequired()');
 
 	extension.dispose();
-	t.deepEqual(doc.getRoot().listExtensionsUsed(), [], 'listExtensionsUsed()');
-	t.deepEqual(doc.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
+	t.deepEqual(document.getRoot().listExtensionsUsed(), [], 'listExtensionsUsed()');
+	t.deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
 });
 
 test('@gltf-transform/core::extension | property', (t) => {
-	const doc = new Document();
-	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
+	const document = new Document();
+	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
-	const node = doc.createNode('MyNode');
+	const node = document.createNode('MyNode');
 
 	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (1)');
 
@@ -93,9 +93,9 @@ test('@gltf-transform/core::extension | property', (t) => {
 
 test('@gltf-transform/core::extension | i/o', async (t) => {
 	const io = (await createPlatformIO()).registerExtensions([GizmoExtension]);
-	const doc = new Document();
-	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
-	doc.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
+	const document = new Document();
+	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
+	document.createNode().setExtension(EXTENSION_NAME, extension.createGizmo());
 
 	const options = { basename: 'extensionTest' };
 
@@ -104,12 +104,12 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 
 	// Write (unregistered).
 
-	jsonDoc = await (await createPlatformIO()).writeJSON(doc, options);
+	jsonDoc = await (await createPlatformIO()).writeJSON(document, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
 
 	// Write (registered).
 
-	jsonDoc = await io.writeJSON(doc, options);
+	jsonDoc = await io.writeJSON(document, options);
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)');
 	t.is(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
 	t.is(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
@@ -135,7 +135,7 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 	// Write + read with extensionsRequired.
 
 	extension.setRequired(true);
-	jsonDoc = await io.writeJSON(doc, options);
+	jsonDoc = await io.writeJSON(document, options);
 	t.deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
 	resultDoc = await io.readJSON(jsonDoc);
 	t.deepEqual(
@@ -149,13 +149,13 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 });
 
 test('@gltf-transform/core::extension | clone', (t) => {
-	const doc = new Document();
-	const extension = doc.createExtension(GizmoExtension) as GizmoExtension;
+	const document = new Document();
+	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
-	doc.createNode().setExtension(EXTENSION_NAME, gizmo);
+	document.createNode().setExtension(EXTENSION_NAME, gizmo);
 
 	let docClone: Document;
 	t.truthy(gizmo.clone(), 'clones gizmo');
-	t.truthy((docClone = doc.clone()), 'clones document');
+	t.truthy((docClone = document.clone()), 'clones document');
 	t.truthy(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
 });

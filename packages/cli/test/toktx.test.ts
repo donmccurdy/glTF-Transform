@@ -38,17 +38,17 @@ test('@gltf-transform/cli::toktx | resize', async (t) => {
 });
 
 async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
-	const tex = doc.createTexture().setImage(new Uint8Array(10)).setMimeType('image/png');
+	const document = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const tex = document.createTexture().setImage(new Uint8Array(10)).setMimeType('image/png');
 	tex.getSize = (): vec2 => size;
 
 	// Assign texture to materials so that the given channels are in use.
 	if (channels === R) {
-		doc.createMaterial().setOcclusionTexture(tex);
+		document.createMaterial().setOcclusionTexture(tex);
 	} else if (channels === G) {
-		const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
+		const clearcoatExtension = document.createExtension(KHRMaterialsClearcoat);
 		const clearcoat = clearcoatExtension.createClearcoat().setClearcoatRoughnessTexture(tex);
-		doc.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
+		document.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
 	} else if (channels !== 0x0000) {
 		throw new Error('Unimplemented channels setting');
 	}
@@ -73,7 +73,7 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 	mockCommandExists(() => Promise.resolve(true));
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	await doc.transform(toktx(options as any));
+	await document.transform(toktx(options as any));
 
 	return actualParams.slice(0, -2).join(' ');
 }

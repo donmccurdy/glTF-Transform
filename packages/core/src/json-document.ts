@@ -32,7 +32,7 @@ import type { GLTF } from './types/gltf.js';
  * 	}
  * };
  *
- * const doc = await new NodeIO().readJSON(jsonDocument);
+ * const document = await new NodeIO().readJSON(jsonDocument);
  * ```
  *
  * @category Documents

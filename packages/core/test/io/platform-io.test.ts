@@ -17,12 +17,12 @@ test('@gltf-transform/core::io | common', async (t) => {
 });
 
 test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
-	const doc = new Document();
-	doc.createScene().addChild(doc.createNode('MyNode'));
+	const document = new Document();
+	document.createScene().addChild(document.createNode('MyNode'));
 
 	const io = await createPlatformIO();
-	const json = await io.writeJSON(doc, { format: Format.GLB });
-	const binary = await io.writeBinary(doc);
+	const json = await io.writeJSON(document, { format: Format.GLB });
+	const binary = await io.writeBinary(document);
 
 	t.truthy(json, 'writes json');
 	t.truthy(binary, 'writes binary');
@@ -42,48 +42,48 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	const io = await createPlatformIO();
 
-	let doc = new Document();
-	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
-	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
+	let document = new Document();
+	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
+	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 
 	await t.throwsAsync(
-		() => io.writeJSON(doc, { format: Format.GLB }),
+		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /buffer required/i },
 		'writeJSON throws'
 	);
-	await t.throwsAsync(() => io.writeBinary(doc), { message: /buffer required/i }, 'writeBinary throws');
+	await t.throwsAsync(() => io.writeBinary(document), { message: /buffer required/i }, 'writeBinary throws');
 
-	doc.createBuffer();
+	document.createBuffer();
 
-	t.truthy(io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
-	t.truthy(io.writeBinary(doc), 'writeBinary succeeds');
+	t.truthy(io.writeJSON(document, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(io.writeBinary(document), 'writeBinary succeeds');
 
-	doc = new Document();
-	doc.createAccessor().setArray(new Float32Array(10));
-	doc.createAccessor().setArray(new Float32Array(20));
+	document = new Document();
+	document.createAccessor().setArray(new Float32Array(10));
+	document.createAccessor().setArray(new Float32Array(20));
 
 	await t.throwsAsync(
-		() => io.writeJSON(doc, { format: Format.GLB }),
+		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /buffer required/i },
 		'writeJSON throws'
 	);
-	await t.throwsAsync(() => io.writeBinary(doc), { message: /buffer required/i }, 'writeBinary throws');
+	await t.throwsAsync(() => io.writeBinary(document), { message: /buffer required/i }, 'writeBinary throws');
 
-	doc.createBuffer();
+	document.createBuffer();
 
-	t.truthy(await io.writeJSON(doc, { format: Format.GLB }), 'writeJSON suceeds');
-	t.truthy(await io.writeBinary(doc), 'writeBinary succeeds');
+	t.truthy(await io.writeJSON(document, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(await io.writeBinary(document), 'writeBinary succeeds');
 });
 
 test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
-	const doc = new Document();
-	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
-	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
-	doc.createBuffer();
+	const document = new Document();
+	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
+	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
+	document.createBuffer();
 
 	const io = await createPlatformIO();
-	const json = await io.writeJSON(doc, { format: Format.GLB });
-	const binary = await io.writeBinary(doc);
+	const json = await io.writeJSON(document, { format: Format.GLB });
+	const binary = await io.writeBinary(document);
 
 	t.truthy(json, 'writes json');
 	t.truthy(binary, 'writes binary');
@@ -98,15 +98,15 @@ test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
 });
 
 test('@gltf-transform/core::io | glb with data uri', async (t) => {
-	const doc = new Document();
-	doc.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
-	doc.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
-	doc.createBuffer();
+	const document = new Document();
+	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
+	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
+	document.createBuffer();
 
 	// (1) Write JSONDocument and replace resources with Data URIs.
 
 	const io = await createPlatformIO();
-	const { json, resources } = await io.writeJSON(doc, { format: Format.GLB });
+	const { json, resources } = await io.writeJSON(document, { format: Format.GLB });
 	for (const buffer of json.buffers!) {
 		const uri = buffer.uri || GLB_BUFFER;
 		const resource = resources[uri]!;

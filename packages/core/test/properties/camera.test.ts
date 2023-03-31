@@ -3,21 +3,22 @@ import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::camera', async (t) => {
-	const doc = new Document();
+	const document = new Document();
 
-	doc.createCamera('p')
+	document
+		.createCamera('p')
 		.setType('perspective')
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
 		.setAspectRatio(0.5);
 
-	doc.createCamera('o').setType('orthographic').setZNear(10).setZFar(100).setXMag(50).setYMag(25);
+	document.createCamera('o').setType('orthographic').setZNear(10).setZFar(100).setXMag(50).setYMag(25);
 
 	const io = await createPlatformIO();
 
 	const options = { basename: 'cameraTest' };
-	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(doc, options)), options);
+	const jsonDoc = await io.writeJSON(await io.readJSON(await io.writeJSON(document, options)), options);
 
 	t.deepEqual(
 		jsonDoc.json.cameras[0],
@@ -51,23 +52,23 @@ test('@gltf-transform/core::camera', async (t) => {
 });
 
 test('@gltf-transform/core::camera | copy', (t) => {
-	const doc = new Document();
+	const document = new Document();
 
-	const a = doc
+	const a = document
 		.createCamera('MyPerspectiveCamera')
 		.setType('perspective')
 		.setZNear(0.1)
 		.setZFar(10)
 		.setYFov(Math.PI / 5)
 		.setAspectRatio(0.5);
-	const b = doc
+	const b = document
 		.createCamera('MyOrthoCamera')
 		.setType('orthographic')
 		.setZNear(10)
 		.setZFar(100)
 		.setXMag(50)
 		.setYMag(25);
-	const c = doc.createCamera().copy(a);
+	const c = document.createCamera().copy(a);
 
 	t.is(c.getName(), a.getName(), 'copy name');
 	t.is(c.getType(), a.getType(), 'copy type');

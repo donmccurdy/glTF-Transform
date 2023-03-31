@@ -154,8 +154,8 @@ test('@gltf-transform/core::accessor | interleaved', async (t) => {
 	};
 
 	const io = await createPlatformIO();
-	const doc = await io.readJSON({ json, resources });
-	const arrays = doc
+	const document = await io.readJSON({ json, resources });
+	const arrays = document
 		.getRoot()
 		.listAccessors()
 		.map((accessor) => accessor.getArray());
@@ -213,8 +213,8 @@ test('@gltf-transform/core::accessor | read sparse', async (t) => {
 	};
 
 	const io = await createPlatformIO();
-	const doc = await io.readJSON({ json, resources });
-	const accessors = doc.getRoot().listAccessors();
+	const document = await io.readJSON({ json, resources });
+	const accessors = document.getRoot().listAccessors();
 
 	const actual = [];
 	t.is(accessors.length, 1, 'found one sparse accessor');
@@ -271,8 +271,8 @@ test('@gltf-transform/core::accessor | write sparse', async (t) => {
 });
 
 test('@gltf-transform/core::accessor | minmax', (t) => {
-	const doc = new Document();
-	const accessor = doc
+	const document = new Document();
+	const accessor = document
 		.createAccessor()
 		.setArray(new Float32Array([0, 0, 0, Infinity, NaN, -Infinity, 1, 0, -1, 0, 0, -3]))
 		.setType(Accessor.Type.VEC3);
@@ -283,14 +283,15 @@ test('@gltf-transform/core::accessor | minmax', (t) => {
 
 test('@gltf-transform/core::accessor | extras', async (t) => {
 	const io = await createPlatformIO();
-	const doc = new Document();
-	doc.createAccessor('A')
+	const document = new Document();
+	document
+		.createAccessor('A')
 		.setArray(new Uint8Array([1, 2, 3]))
 		.setExtras({ foo: 1, bar: 2 })
-		.setBuffer(doc.createBuffer());
+		.setBuffer(document.createBuffer());
 
-	const doc2 = await io.readBinary(await io.writeBinary(doc));
+	const doc2 = await io.readBinary(await io.writeBinary(document));
 
-	t.deepEqual(doc.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
+	t.deepEqual(document.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
 });

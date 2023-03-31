@@ -48,25 +48,25 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
  * import { Document } from '@gltf-transform/core';
  * import { dedup } from '@gltf-transform/functions';
  *
- * const doc = new Document();
+ * const document = new Document();
  *
- * const texture1 = doc.createTexture('myTexture')
+ * const texture1 = document.createTexture('myTexture')
  * 	.setImage(await fs.readFile('path/to/image.png'))
  * 	.setMimeType('image/png');
- * const texture2 = doc.createTexture('myTexture2')
+ * const texture2 = document.createTexture('myTexture2')
  * 	.setImage(await fs.readFile('path/to/image2.png'))
  * 	.setMimeType('image/png');
  *
  * // Document containing duplicate copies of the same texture.
- * doc.getRoot().listTextures(); // → [texture x 2]
+ * document.getRoot().listTextures(); // → [texture x 2]
  *
- * await doc.transform(
+ * await document.transform(
  * 	dedup({textures: true}),
  * 	// ...
  * );
  *
  * // Document with duplicate textures removed.
- * doc.getRoot().listTextures(); // → [texture x 1]
+ * document.getRoot().listTextures(); // → [texture x 1]
  * ```
  *
  * Reference:

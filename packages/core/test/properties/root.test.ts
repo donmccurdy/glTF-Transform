@@ -3,30 +3,30 @@ import { Document, JSONDocument } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('@gltf-transform/core::root', (t) => {
-	const doc = new Document();
-	const accessor = doc.createAccessor();
-	const animation = doc.createAnimation();
-	const buffer = doc.createBuffer();
-	const camera = doc.createCamera();
-	const material = doc.createMaterial();
-	const mesh = doc.createMesh();
-	const node = doc.createNode();
-	const scene = doc.createScene();
-	const skin = doc.createSkin();
-	const texture = doc.createTexture();
+	const document = new Document();
+	const accessor = document.createAccessor();
+	const animation = document.createAnimation();
+	const buffer = document.createBuffer();
+	const camera = document.createCamera();
+	const material = document.createMaterial();
+	const mesh = document.createMesh();
+	const node = document.createNode();
+	const scene = document.createScene();
+	const skin = document.createSkin();
+	const texture = document.createTexture();
 
-	t.deepEqual(doc.getRoot().listAccessors(), [accessor], 'listAccessors()');
-	t.deepEqual(doc.getRoot().listAnimations(), [animation], 'listAnimations()');
-	t.deepEqual(doc.getRoot().listBuffers(), [buffer], 'listBuffers()');
-	t.deepEqual(doc.getRoot().listCameras(), [camera], 'listCameras()');
-	t.deepEqual(doc.getRoot().listMaterials(), [material], 'listMaterials()');
-	t.deepEqual(doc.getRoot().listMeshes(), [mesh], 'listMeshes()');
-	t.deepEqual(doc.getRoot().listNodes(), [node], 'listNodes()');
-	t.deepEqual(doc.getRoot().listScenes(), [scene], 'listScenes()');
-	t.deepEqual(doc.getRoot().listSkins(), [skin], 'listSkins()');
-	t.deepEqual(doc.getRoot().listTextures(), [texture], 'listTextures()');
+	t.deepEqual(document.getRoot().listAccessors(), [accessor], 'listAccessors()');
+	t.deepEqual(document.getRoot().listAnimations(), [animation], 'listAnimations()');
+	t.deepEqual(document.getRoot().listBuffers(), [buffer], 'listBuffers()');
+	t.deepEqual(document.getRoot().listCameras(), [camera], 'listCameras()');
+	t.deepEqual(document.getRoot().listMaterials(), [material], 'listMaterials()');
+	t.deepEqual(document.getRoot().listMeshes(), [mesh], 'listMeshes()');
+	t.deepEqual(document.getRoot().listNodes(), [node], 'listNodes()');
+	t.deepEqual(document.getRoot().listScenes(), [scene], 'listScenes()');
+	t.deepEqual(document.getRoot().listSkins(), [skin], 'listSkins()');
+	t.deepEqual(document.getRoot().listTextures(), [texture], 'listTextures()');
 
-	const root2 = doc.clone().getRoot();
+	const root2 = document.clone().getRoot();
 	t.deepEqual(root2.listAccessors().length, 1, 'listAccessors()');
 	t.deepEqual(root2.listAnimations().length, 1, 'listAnimations()');
 	t.deepEqual(root2.listBuffers().length, 1, 'listBuffers()');
@@ -39,14 +39,14 @@ test('@gltf-transform/core::root', (t) => {
 	t.deepEqual(root2.listTextures().length, 1, 'listTextures()');
 
 	t.throws(() => root2.clone(), undefined, 'no cloning');
-	t.throws(() => root2.copy(doc.getRoot()), undefined, 'no direct copy');
+	t.throws(() => root2.copy(document.getRoot()), undefined, 'no direct copy');
 });
 
 test('@gltf-transform/core::root | default scene', async (t) => {
-	const doc = new Document();
-	const root = doc.getRoot();
-	const sceneA = doc.createScene('A');
-	const sceneB = doc.createScene('B');
+	const document = new Document();
+	const root = document.getRoot();
+	const sceneA = document.createScene('A');
+	const sceneB = document.createScene('B');
 	const io = await createPlatformIO();
 
 	t.is(root.getDefaultScene(), null, 'default scene initially null');
@@ -60,31 +60,31 @@ test('@gltf-transform/core::root | default scene', async (t) => {
 	root.setDefaultScene(sceneB);
 	t.is(root.getDefaultScene(), sceneB, 'default scene = B');
 
-	t.is(doc.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
+	t.is(document.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
 
 	t.is(
-		(await io.readJSON(await io.writeJSON(doc, {}))).getRoot().getDefaultScene().getName(),
+		(await io.readJSON(await io.writeJSON(document, {}))).getRoot().getDefaultScene().getName(),
 		'B',
 		'read / write persistence'
 	);
 });
 
 test('@gltf-transform/core::root | clone child of root', (t) => {
-	const doc = new Document();
-	const a = doc.createAccessor();
+	const document = new Document();
+	const a = document.createAccessor();
 	const b = a.clone();
 	const c = b.clone();
 
-	t.deepEqual(doc.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
+	t.deepEqual(document.getRoot().listAccessors(), [a, b, c], 'clones are attached to Root');
 });
 
 test('@gltf-transform/core::root | extras', async (t) => {
-	const doc = new Document();
+	const document = new Document();
 	const io = await createPlatformIO();
 
-	const jsonDocNoExtras = await io.writeJSON(doc);
-	doc.getRoot().setExtras({ custom: 'value' });
-	const jsonDocExtras = await io.writeJSON(doc);
+	const jsonDocNoExtras = await io.writeJSON(document);
+	document.getRoot().setExtras({ custom: 'value' });
+	const jsonDocExtras = await io.writeJSON(document);
 
 	const rtDocNoExtras = await io.readJSON(jsonDocNoExtras);
 	const rtDocExtras = await io.readJSON(jsonDocExtras);
@@ -96,19 +96,19 @@ test('@gltf-transform/core::root | extras', async (t) => {
 });
 
 test('@gltf-transform/core::root | asset', async (t) => {
-	const doc = new Document();
-	const root = doc.getRoot();
+	const document = new Document();
+	const root = document.getRoot();
 	const io = await createPlatformIO();
 
 	let jsonDoc: JSONDocument;
 	let generator: string;
 
-	jsonDoc = await io.writeJSON(doc);
+	jsonDoc = await io.writeJSON(document);
 	generator = jsonDoc.json.asset.generator;
 	t.true(/^glTF-Transform.*/i.test(generator), 'write default generator');
 
 	root.getAsset().generator = 'Custom Tool v123';
-	jsonDoc = await io.writeJSON(doc);
+	jsonDoc = await io.writeJSON(document);
 	generator = jsonDoc.json.asset.generator;
 	t.true(/^Custom Tool.*/i.test(generator), 'write custom generator');
 
