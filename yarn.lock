@@ -1887,9 +1887,9 @@
   integrity sha512-fQLtGLZXor264zUPWI95WNDsZ3QV43/c0lJpR/h1hhLJumXRmHNsrvBfEzW2YMhb0EWCsn4U6h82IgwsajAuTA==
 
 "@types/tabtab@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/tabtab/-/tabtab-3.0.1.tgz#193df89f765002a194a89760f2fb92e67e1db889"
-  integrity sha512-CGYzrLBI50fKuKVka79lQEjXCQrvU43JHCBRxM5zE4loVJ16M+NgKdMo6QG+n4uRijFxfcTcbuBnHoZ5/mt0EQ==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/tabtab/-/tabtab-3.0.2.tgz#047657fdeb98a13bfd38c6d92d8327066759695c"
+  integrity sha512-d8aOSJPS3SEGZevyr7vbAVUNPWGFmdFlk13vbPPK87vz+gYGM57L8T11k4wK2mOgQYZjEVYQEqmCTvupPoQBWw==
   dependencies:
     "@types/node" "*"
 
@@ -8976,9 +8976,9 @@ spawn-command@^0.0.2-1:
   integrity sha1-YvXpRmmBwbeW3Fkpk34RycaSG9A=
 
 spdx-correct@^3.0.0, spdx-correct@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.1.1.tgz#dece81ac9c1e6713e5f7d1b6f17d468fa53d89a9"
-  integrity sha512-cOYcUWwhCuHCXi49RhFRCyJEK3iPj1Ziz9DpViV3tbZOwXD49QzIN3MpOLJNxh2qwq2lJJZaKMVw9qNi4jTC0w==
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.2.0.tgz#4f5ab0668f0059e34f9c00dce331784a12de4e9c"
+  integrity sha512-kN9dJbvnySHULIluDHy32WHRUu3Og7B9sbY7tsFLctQkIqnMh3hErYgdMjTYuqmcXX+lK5T1lnUt3G7zNswmZA==
   dependencies:
     spdx-expression-parse "^3.0.0"
     spdx-license-ids "^3.0.0"
