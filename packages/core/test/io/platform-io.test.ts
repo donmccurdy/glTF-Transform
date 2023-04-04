@@ -3,7 +3,7 @@ import fs from 'fs';
 import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
 import { createPlatformIO, resolve } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::io | common', async (t) => {
+test('common', async (t) => {
 	const io = await createPlatformIO();
 	await t.throwsAsync(
 		() =>
@@ -16,7 +16,7 @@ test('@gltf-transform/core::io | common', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
+test('glb without optional buffer', async (t) => {
 	const document = new Document();
 	document.createScene().addChild(document.createNode('MyNode'));
 
@@ -39,7 +39,7 @@ test('@gltf-transform/core::io | glb without optional buffer', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::io | glb without required buffer', async (t) => {
+test('glb without required buffer', async (t) => {
 	const io = await createPlatformIO();
 
 	let document = new Document();
@@ -75,7 +75,7 @@ test('@gltf-transform/core::io | glb without required buffer', async (t) => {
 	t.truthy(await io.writeBinary(document), 'writeBinary succeeds');
 });
 
-test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
+test('glb with texture-only buffer', async (t) => {
 	const document = new Document();
 	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
@@ -97,7 +97,7 @@ test('@gltf-transform/core::io | glb with texture-only buffer', async (t) => {
 	t.deepEqual(rtTextures[1].getImage(), new Uint8Array(2), 'reads texture 2 data');
 });
 
-test('@gltf-transform/core::io | glb with data uri', async (t) => {
+test('glb with data uri', async (t) => {
 	const document = new Document();
 	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
@@ -142,7 +142,7 @@ test('@gltf-transform/core::io | glb with data uri', async (t) => {
 	t.deepEqual(Array.from(rtTextures[1].getImage()), Array.from(new Uint8Array(2)), 'reads texture 2 data');
 });
 
-test('@gltf-transform/core::io | gltf embedded', async (t) => {
+test('gltf embedded', async (t) => {
 	const io = await createPlatformIO();
 	const jsonPath = resolve('../in/Box_glTF-Embedded/Box.gltf', import.meta.url);
 	const jsonContent = fs.readFileSync(jsonPath, 'utf-8');

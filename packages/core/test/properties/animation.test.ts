@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::animation', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 
 	const buffer = document.createBuffer('default');
@@ -66,7 +66,7 @@ test('@gltf-transform/core::animation', async (t) => {
 	t.deepEqual(finalDoc.getRoot().listAccessors()[1].getArray(), output.getArray(), 'sampler values');
 });
 
-test('@gltf-transform/core::animation | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const a = document
 		.createAnimation('MyAnim')
@@ -79,7 +79,7 @@ test('@gltf-transform/core::animation | copy', (t) => {
 	t.deepEqual(b.listSamplers(), a.listSamplers(), 'copy samplers');
 });
 
-test('@gltf-transform/core::animationChannel | copy', (t) => {
+test('copy channel', (t) => {
 	const document = new Document();
 	const a = document
 		.createAnimationChannel('MyChannel')
@@ -92,7 +92,7 @@ test('@gltf-transform/core::animationChannel | copy', (t) => {
 	t.is(b.getSampler(), a.getSampler(), 'copy sampler');
 });
 
-test('@gltf-transform/core::animationSampler | copy', (t) => {
+test('copy sampler', (t) => {
 	const document = new Document();
 	const a = document
 		.createAnimationSampler('MySampler')
@@ -107,7 +107,7 @@ test('@gltf-transform/core::animationSampler | copy', (t) => {
 	t.is(b.getOutput(), a.getOutput(), 'copy output');
 });
 
-test('@gltf-transform/core::animation | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document

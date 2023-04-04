@@ -3,7 +3,7 @@ import { Document, Property } from '@gltf-transform/core';
 
 const toType = (p: Property): string => p.propertyType;
 
-test('@gltf-transform/core::primitive-target', (t) => {
+test('basic', (t) => {
 	const doc = new Document();
 	const prim1 = doc.createPrimitiveTarget();
 	const acc1 = doc.createAccessor('acc1');

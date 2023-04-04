@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Document, vec3 } from '@gltf-transform/core';
 
-test('@gltf-transform/core::property | equals', async (t) => {
+test('equals', async (t) => {
 	const document = new Document();
 	const nodeA = document.createNode();
 	const nodeB = document.createNode();
@@ -18,7 +18,7 @@ test('@gltf-transform/core::property | equals', async (t) => {
 	t.falsy(nodeA.equals(nodeB), 'different extras');
 });
 
-test('@gltf-transform/core::property | internal arrays', async (t) => {
+test('internal arrays', async (t) => {
 	const document = new Document();
 	const translation = [0, 0, 0] as vec3;
 	const node = document.createNode('A').setTranslation(translation);

@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::scene | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const scene = document
 		.createScene('MyScene')
@@ -12,7 +12,7 @@ test('@gltf-transform/core::scene | copy', (t) => {
 	t.throws(() => document.createScene().copy(scene), { message: /Scene cannot be copied/i }, 'cannot copy scene');
 });
 
-test('@gltf-transform/core::scene | traverse', (t) => {
+test('traverse', (t) => {
 	const document = new Document();
 	const scene = document
 		.createScene('MyScene')
@@ -24,7 +24,7 @@ test('@gltf-transform/core::scene | traverse', (t) => {
 	t.is(count, 2, 'traverses all nodes');
 });
 
-test('@gltf-transform/core::scene | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document.createScene('A').setExtras({ foo: 1, bar: 2 });

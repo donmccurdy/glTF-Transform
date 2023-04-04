@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Property, VertexLayout } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::mesh', (t) => {
+test('basic', (t) => {
 	const document = new Document();
 	const mesh = document.createMesh('mesh');
 	const prim = document.createPrimitive();
@@ -14,7 +14,7 @@ test('@gltf-transform/core::mesh', (t) => {
 	t.deepEqual(mesh.listPrimitives(), [], 'removes primitive');
 });
 
-test('@gltf-transform/core::mesh | primitive', (t) => {
+test('primitive', (t) => {
 	const document = new Document();
 	const prim = document.createPrimitive();
 	const acc1 = document.createAccessor('acc1');
@@ -42,7 +42,7 @@ test('@gltf-transform/core::mesh | primitive', (t) => {
 	t.deepEqual(acc3.listParents().map(toType), ['Root'], 'unlinks old POSITION');
 });
 
-test('@gltf-transform/core::mesh | primitive targets', async (t) => {
+test('primitive targets', async (t) => {
 	const document = new Document();
 	const mesh = document.createMesh('mesh');
 	const prim = document.createPrimitive();
@@ -84,7 +84,7 @@ test('@gltf-transform/core::mesh | primitive targets', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::mesh | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const mesh = document.createMesh('mesh').setWeights([1, 2, 3]).addPrimitive(document.createPrimitive());
 	const mesh2 = document.createMesh().copy(mesh);
@@ -93,7 +93,7 @@ test('@gltf-transform/core::mesh | copy', (t) => {
 	t.deepEqual(mesh2.listPrimitives(), mesh.listPrimitives(), 'copy primitives');
 });
 
-test('@gltf-transform/core::primitive | copy', (t) => {
+test('copy primitive', (t) => {
 	const document = new Document();
 	const prim = document
 		.createPrimitive()
@@ -112,7 +112,7 @@ test('@gltf-transform/core::primitive | copy', (t) => {
 	t.deepEqual(prim2.listTargets(), prim.listTargets(), 'copy targets');
 });
 
-test('@gltf-transform/core::mesh | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const doc = new Document();
 	doc.createMesh('A')
@@ -130,7 +130,7 @@ test('@gltf-transform/core::mesh | extras', async (t) => {
 	t.deepEqual(prim2.getExtras(), { baz: 3 }, 'roundtrips prim extras');
 });
 
-test('@gltf-transform/core::mesh | empty i/o', async (t) => {
+test('empty i/o', async (t) => {
 	// Technically meshes must have primitives for the file to be valid, but we'll test that
 	// reading/writing works anyway.
 
@@ -164,7 +164,7 @@ test('@gltf-transform/core::mesh | empty i/o', async (t) => {
 	t.deepEqual(rtMesh.getWeights(), [0, 0, 1, 0], 'weights');
 });
 
-test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
+test('primitive i/o', async (t) => {
 	const document = new Document();
 	const prim = document.createPrimitive();
 	const buffer = document.createBuffer();
@@ -233,7 +233,7 @@ test('@gltf-transform/core::mesh | primitive i/o', async (t) => {
 	t.deepEqual(rtPrim.getAttribute('COLOR_4').getArray(), new Int8Array([8, 8, 8]), 'int8');
 });
 
-test('@gltf-transform/core::mesh | primitive vertex layout', async (t) => {
+test('primitive vertex layout', async (t) => {
 	const document = new Document();
 	const prim = document.createPrimitive();
 	const buffer = document.createBuffer();

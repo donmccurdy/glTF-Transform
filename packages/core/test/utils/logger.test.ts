@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Logger } from '@gltf-transform/core';
 
-test('@gltf-transform/core::logger', (t) => {
+test('basic', (t) => {
 	const { debug, info, warn, error } = console;
 
 	const calls = { debug: 0, info: 0, warn: 0, error: 0 };

@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::camera', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 
 	document
@@ -51,7 +51,7 @@ test('@gltf-transform/core::camera', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::camera | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 
 	const a = document

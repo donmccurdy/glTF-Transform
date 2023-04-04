@@ -4,7 +4,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const { R, G, B, A } = TextureChannel;
 
-test('@gltf-transform/core::material | properties', (t) => {
+test('properties', (t) => {
 	const document = new Document();
 
 	const mat = document.createMaterial('mat').setDoubleSided(true).setAlphaMode('MASK').setAlphaCutoff(0.33);
@@ -14,7 +14,7 @@ test('@gltf-transform/core::material | properties', (t) => {
 	t.is(mat.getAlphaCutoff(), 0.33, 'alphaCutoff');
 });
 
-test('@gltf-transform/core::material | factors', (t) => {
+test('factors', (t) => {
 	const document = new Document();
 
 	const mat = document
@@ -30,7 +30,7 @@ test('@gltf-transform/core::material | factors', (t) => {
 	t.is(mat.getRoughnessFactor(), 0.9, 'roughnessFactor');
 });
 
-test('@gltf-transform/core::material | hex', (t) => {
+test('hex', (t) => {
 	const document = new Document();
 
 	const mat = document.createMaterial('mat').setAlpha(0.9).setBaseColorHex(0x00ff00);
@@ -39,7 +39,7 @@ test('@gltf-transform/core::material | hex', (t) => {
 	t.is(mat.getBaseColorHex(), 65024, 'baseColorHex');
 });
 
-test('@gltf-transform/core::material | textures', (t) => {
+test('textures', (t) => {
 	const document = new Document();
 
 	const baseColor = document.createTexture('baseColor');
@@ -67,7 +67,7 @@ test('@gltf-transform/core::material | textures', (t) => {
 	t.is(mat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
 });
 
-test('@gltf-transform/core::material | texture samplers', (t) => {
+test('texture samplers', (t) => {
 	const document = new Document();
 
 	const mat = document.createMaterial('mat');
@@ -99,7 +99,7 @@ test('@gltf-transform/core::material | texture samplers', (t) => {
 	t.is(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture sampler');
 });
 
-test('@gltf-transform/core::material | texture info', (t) => {
+test('texture info', (t) => {
 	const document = new Document();
 
 	const mat = document.createMaterial('mat');
@@ -123,7 +123,7 @@ test('@gltf-transform/core::material | texture info', (t) => {
 	t.is(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture info');
 });
 
-test('@gltf-transform/core::material | texture linking', (t) => {
+test('texture linking', (t) => {
 	const document = new Document();
 
 	const tex1 = document.createTexture('tex1');
@@ -153,7 +153,7 @@ test('@gltf-transform/core::material | texture linking', (t) => {
 	t.deepEqual(tex3.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
 });
 
-test('@gltf-transform/core::material | texture info linking', (t) => {
+test('texture info linking', (t) => {
 	const document = new Document();
 
 	const mat = document.createMaterial('mat');
@@ -184,7 +184,7 @@ test('@gltf-transform/core::material | texture info linking', (t) => {
 	t.is(baseColorTextureInfo.isDisposed(), true, 'textureInfo disposed with material');
 });
 
-test('@gltf-transform/core::material | texture channels', (t) => {
+test('texture channels', (t) => {
 	const document = new Document();
 	const graph = document.getGraph();
 
@@ -227,7 +227,7 @@ test('@gltf-transform/core::material | texture channels', (t) => {
 	t.is(getChannels(occlusionTexture), R | G | B, 'O/R/M channels');
 });
 
-test('@gltf-transform/core::material | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const tex = document.createTexture('MyTex');
 	const mat = document
@@ -277,7 +277,7 @@ test('@gltf-transform/core::material | copy', (t) => {
 	t.is(textureInfo.getWrapT(), TextureInfo.WrapMode.MIRRORED_REPEAT, 'wrapT');
 });
 
-test('@gltf-transform/core::material | equals', (t) => {
+test('equals', (t) => {
 	const document = new Document();
 	const tex = document.createTexture('MyTex');
 	const mat = document
@@ -327,7 +327,7 @@ test('@gltf-transform/core::material | equals', (t) => {
 	t.is(mat.equals(mat2), false, '.baseColorTextureInfo ≠ .baseColorTextureInfo');
 });
 
-test('@gltf-transform/core::material | i/o', async (t) => {
+test('i/o', async (t) => {
 	const document = new Document();
 	document.createBuffer();
 

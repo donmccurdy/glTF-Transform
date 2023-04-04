@@ -49,7 +49,7 @@ test('@gltf-transform/extensions::texture-avif', async (t) => {
 	t.is(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 });
 
-test('@gltf-transform/core::image-utils | avif', (t) => {
+test('image-utils', (t) => {
 	const avif = fs.readFileSync(path.join(__dirname, 'in', 'test.avif'));
 	const buffer = new Uint8Array([0, 1, 2, 3]);
 

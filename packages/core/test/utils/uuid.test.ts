@@ -1,7 +1,7 @@
 import test from 'ava';
 import { uuid } from '@gltf-transform/core';
 
-test('@gltf-transform/core::uuid', (t) => {
+test('basic', (t) => {
 	const set = new Set();
 	for (let i = 0; i < 1000; i++) {
 		set.add(uuid());
@@ -9,7 +9,7 @@ test('@gltf-transform/core::uuid', (t) => {
 	t.is(set.size, 1000, 'generates 1000 unique IDs');
 });
 
-test('@gltf-transform/core::uuid | conflict', (t) => {
+test('conflict', (t) => {
 	const { random } = Math;
 
 	// Number of elements must match ID length.

@@ -5,7 +5,7 @@ const IS_NODEJS = typeof window === 'undefined';
 
 const HELLO_WORLD = 'data:application/octet-stream;base64,aGVsbG8gd29ybGQ=';
 
-test('@gltf-transform/core::buffer-utils | web', (t) => {
+test('web', (t) => {
 	if (IS_NODEJS) return t.pass();
 	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
@@ -15,7 +15,7 @@ test('@gltf-transform/core::buffer-utils | web', (t) => {
 	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 });
 
-test('@gltf-transform/core::buffer-utils | node.js', (t) => {
+test('node.js', (t) => {
 	if (!IS_NODEJS) return t.pass();
 	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),

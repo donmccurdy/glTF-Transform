@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/core::skin', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 
 	const joints = [document.createNode('joint1'), document.createNode('joint2'), document.createNode('joint3')];
@@ -75,7 +75,7 @@ test('@gltf-transform/core::skin', async (t) => {
 	t.deepEqual(Array.from(actualIBM), Array.from(ibm.getArray()), 'stores skin IBMs');
 });
 
-test('@gltf-transform/core::skin | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const a = document
 		.createSkin('MySkin')
@@ -96,7 +96,7 @@ test('@gltf-transform/core::skin | copy', (t) => {
 	t.is(a.getInverseBindMatrices(), null, 'unset inverseBindMatrices');
 });
 
-test('@gltf-transform/core::skin | extras', async (t) => {
+test('extras', async (t) => {
 	const io = await createPlatformIO();
 	const document = new Document();
 	document.createSkin('A').setExtras({ foo: 1, bar: 2 });

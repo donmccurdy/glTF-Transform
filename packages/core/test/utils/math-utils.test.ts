@@ -1,11 +1,11 @@
 import test from 'ava';
 import { MathUtils } from '@gltf-transform/core';
 
-test('@gltf-transform/core::math-utils | identity', (t) => {
+test('identity', (t) => {
 	t.is(MathUtils.identity(25), 25, 'identity');
 });
 
-test('@gltf-transform/core::math-utils | decodeNormalizedInt', (t) => {
+test('decodeNormalizedInt', (t) => {
 	t.is(MathUtils.decodeNormalizedInt(25, 5126), 25, 'float');
 	t.is(MathUtils.decodeNormalizedInt(13107, 5123), 0.2, 'ushort');
 	t.is(MathUtils.decodeNormalizedInt(51, 5121), 0.2, 'ubyte');
@@ -13,7 +13,7 @@ test('@gltf-transform/core::math-utils | decodeNormalizedInt', (t) => {
 	t.is(MathUtils.decodeNormalizedInt(3, 5120).toFixed(4), '0.0236', 'byte');
 });
 
-test('@gltf-transform/core::math-utils | encodeNormalizedInt', (t) => {
+test('encodeNormalizedInt', (t) => {
 	t.is(MathUtils.encodeNormalizedInt(25, 5126), 25, 'float');
 	t.is(MathUtils.encodeNormalizedInt(0.2, 5123), 13107, 'ushort');
 	t.is(MathUtils.encodeNormalizedInt(0.2, 5121), 51, 'ubyte');

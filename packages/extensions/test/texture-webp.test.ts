@@ -49,7 +49,7 @@ test('@gltf-transform/extensions::texture-webp', async (t) => {
 	t.is(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 });
 
-test('@gltf-transform/core::image-utils | webp', (t) => {
+test('image-utils', (t) => {
 	const webpLossy = fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.webp'));
 	const webpLossless = fs.readFileSync(path.join(__dirname, 'in', 'test-lossless.webp'));
 	const buffer = BufferUtils.concat([

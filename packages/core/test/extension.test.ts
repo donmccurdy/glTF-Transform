@@ -44,7 +44,7 @@ class Gizmo extends ExtensionProperty {
 GizmoExtension.EXTENSION_NAME = EXTENSION_NAME;
 Gizmo.EXTENSION_NAME = EXTENSION_NAME;
 
-test('@gltf-transform/core::extension | list', (t) => {
+test('list', (t) => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension);
 
@@ -59,7 +59,7 @@ test('@gltf-transform/core::extension | list', (t) => {
 	t.deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
 });
 
-test('@gltf-transform/core::extension | property', (t) => {
+test('property', (t) => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
@@ -91,7 +91,7 @@ test('@gltf-transform/core::extension | property', (t) => {
 	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (4)');
 });
 
-test('@gltf-transform/core::extension | i/o', async (t) => {
+test('i/o', async (t) => {
 	const io = (await createPlatformIO()).registerExtensions([GizmoExtension]);
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
@@ -148,7 +148,7 @@ test('@gltf-transform/core::extension | i/o', async (t) => {
 	);
 });
 
-test('@gltf-transform/core::extension | clone', (t) => {
+test('clone', (t) => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
