@@ -7,7 +7,7 @@ import type { ChildProcess } from 'child_process';
 
 const { R, G } = TextureChannel;
 
-test('@gltf-transform/cli::toktx | resize', async (t) => {
+test('compress and resize', async (t) => {
 	t.is(await getParams({ mode: Mode.ETC1S }, [508, 508]), '--genmipmap --bcmp', '508x508 → no change');
 
 	t.is(await getParams({ mode: Mode.ETC1S }, [507, 509]), '--genmipmap --bcmp --resize 508x512', '507x509 → 508x512');

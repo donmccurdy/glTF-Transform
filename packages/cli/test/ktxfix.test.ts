@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/cli::ktxfix', async (t) => {
+test('repair', async (t) => {
 	const document = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const material = document.createMaterial();
 	const texture = document
