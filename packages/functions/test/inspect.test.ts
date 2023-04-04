@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/functions::inspect', async (t) => {
+test('basic', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
 	doc.setLogger(new Logger(Logger.Verbosity.SILENT));

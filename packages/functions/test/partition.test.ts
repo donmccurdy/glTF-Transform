@@ -5,7 +5,7 @@ import { partition } from '@gltf-transform/functions';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-test('@gltf-transform/functions::partition', async (t) => {
+test('basic', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
 	doc.setLogger(new Logger(Logger.Verbosity.SILENT));

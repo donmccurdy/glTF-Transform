@@ -21,7 +21,7 @@ for (let i = 0; i < CUBE_POSITIONS.length; i++) {
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::reorder | no indices', async (t) => {
+test('no indices', async (t) => {
 	// Without indices, don't reorder. Need a lossy weld first.
 	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
@@ -35,7 +35,7 @@ test('@gltf-transform/functions::reorder | no indices', async (t) => {
 	t.deepEqual(position1.getArray(), CUBE_POSITIONS, 'positions unchanged');
 });
 
-test('@gltf-transform/functions::reorder | shared indices', async (t) => {
+test('shared indices', async (t) => {
 	// With shared indices and unshared attributes, indices should be cloned.
 	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
@@ -67,7 +67,7 @@ test('@gltf-transform/functions::reorder | shared indices', async (t) => {
 	);
 });
 
-test('@gltf-transform/functions::reorder | shared attributes', async (t) => {
+test('shared attributes', async (t) => {
 	// With shared attributes and unshared indices, attributes should be truncated.
 	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
@@ -93,7 +93,7 @@ test('@gltf-transform/functions::reorder | shared attributes', async (t) => {
 	t.deepEqual(prim3.getAttribute('POSITION').getCount(), 3, 'positions #3 truncated');
 });
 
-test('@gltf-transform/functions::reorder | morph targets', async (t) => {
+test('morph targets', async (t) => {
 	// With shared indices and unshared attributes, indices should be cloned.
 	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();

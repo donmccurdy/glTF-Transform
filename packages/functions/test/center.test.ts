@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, Document, getBounds } from '@gltf-transform/core';
 import { center } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::center', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const position = doc
 		.createAccessor()

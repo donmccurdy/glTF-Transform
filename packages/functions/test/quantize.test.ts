@@ -18,7 +18,7 @@ import { quantize } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 
-test('@gltf-transform/functions::quantize | exclusions', async (t) => {
+test('exclusions', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
 
@@ -34,7 +34,7 @@ test('@gltf-transform/functions::quantize | exclusions', async (t) => {
 	t.truthy(prim.getAttribute('NORMAL').getArray() instanceof Int16Array, 'normal → Int16Array');
 });
 
-test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
+test('mesh volume', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const scene = createScene(doc);
 	const nodeA = doc.getRoot().listNodes()[0];
@@ -72,7 +72,7 @@ test('@gltf-transform/functions::quantize | mesh volume', async (t) => {
 	t.is(doc.getRoot().listSkins().length, 0, 'total skins');
 });
 
-test('@gltf-transform/functions::quantize | scene volume', async (t) => {
+test('scene volume', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const scene = createScene(doc);
 	const nodeA = doc.getRoot().listNodes()[0];
@@ -115,7 +115,7 @@ test('@gltf-transform/functions::quantize | scene volume', async (t) => {
 	t.is(doc.getRoot().listSkins().length, 0, 'total skins');
 });
 
-test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
+test('skinned mesh', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const scene = createScene(doc);
 	const nodeA = doc.getRoot().listNodes()[0];
@@ -169,7 +169,7 @@ test('@gltf-transform/functions::quantize | skinned mesh', async (t) => {
 	t.is(doc.getRoot().listSkins().length, 1, 'total skins');
 });
 
-test('@gltf-transform/functions::quantize | morph targets', async (t) => {
+test('morph targets', async (t) => {
 	const doc = new Document().setLogger(logger);
 
 	// Note: Neither prim.POSITION nor target.POSITION includes the origin (<0,0,0>),
@@ -205,7 +205,7 @@ test('@gltf-transform/functions::quantize | morph targets', async (t) => {
 	t.deepEqual(bboxTarget, { min: [0.125, 0.125, 0.125], max: [1, 1, 1] }, 'bbox - target');
 });
 
-test('@gltf-transform/functions::quantize | attributes', async (t) => {
+test('attributes', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
 	const normalCopy = prim.getAttribute('NORMAL').clone();
@@ -284,7 +284,7 @@ test('@gltf-transform/functions::quantize | attributes', async (t) => {
 	elementPairs(temp, tempCopy, round(3)).forEach(([a, b], i) => t.deepEqual(a, b, `custom value #${i + 1}`));
 });
 
-test('@gltf-transform/functions::quantize | indices', async (t) => {
+test('indices', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
 	prim.setIndices(
@@ -308,7 +308,7 @@ test('@gltf-transform/functions::quantize | indices', async (t) => {
 	elementPairs(indices, indicesCopy, round(8)).forEach(([a, b], i) => t.deepEqual(a, b, `indices value #${i + 1}`));
 });
 
-test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) => {
+test('skinned mesh parenting', async (t) => {
 	let doc: Document;
 	let mesh: Mesh, node: Node;
 	let scaleChannel: AnimationChannel, weightsChannel: AnimationChannel;
@@ -345,7 +345,7 @@ test('@gltf-transform/functions::quantize | skinned mesh parenting', async (t) =
 	t.is(scaleChannel.getTargetNode(), node, "don't retarget TRS animation");
 });
 
-test('@gltf-transform/functions::quantize | instancing', async (t) => {
+test('instancing', async (t) => {
 	const doc = new Document().setLogger(logger);
 	createScene(doc);
 	const node = doc.getRoot().listNodes()[0];
@@ -373,7 +373,7 @@ test('@gltf-transform/functions::quantize | instancing', async (t) => {
 	);
 });
 
-test('@gltf-transform/functions::quantize | volumetric materials', async (t) => {
+test('volumetric materials', async (t) => {
 	const doc = new Document().setLogger(logger);
 	createScene(doc);
 	const primA = doc.getRoot().listNodes()[0].getMesh().listPrimitives()[0];

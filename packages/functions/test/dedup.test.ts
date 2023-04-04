@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/functions::dedup | accessors', async (t) => {
+test('accessors', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.is(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
@@ -22,7 +22,7 @@ test('@gltf-transform/functions::dedup | accessors', async (t) => {
 	t.is(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
 });
 
-test('@gltf-transform/functions::dedup | animation accessors', (t) => {
+test('animation accessors', (t) => {
 	const doc = new Document();
 	const a = doc.createAccessor().setArray(new Float32Array([1, 2, 3]));
 	const b = doc.createAccessor().setArray(new Float32Array([4, 5, 6]));
@@ -53,7 +53,7 @@ test('@gltf-transform/functions::dedup | animation accessors', (t) => {
 	t.truthy(prim.getAttribute('POSITION') !== b, 'no mixing sampler/attribute');
 });
 
-test('@gltf-transform/functions::dedup | materials', (t) => {
+test('materials', (t) => {
 	const doc = new Document();
 	const root = doc.getRoot();
 
@@ -77,7 +77,7 @@ test('@gltf-transform/functions::dedup | materials', (t) => {
 	t.falsy(matUnequal.isDisposed(), 'unequal = ✓');
 });
 
-test('@gltf-transform/functions::dedup | meshes', async (t) => {
+test('meshes', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	const root = doc.getRoot();
@@ -97,7 +97,7 @@ test('@gltf-transform/functions::dedup | meshes', async (t) => {
 	t.is(root.listMeshes().length, 3, 'prunes duplicate meshes');
 });
 
-test('@gltf-transform/functions::dedup | skins', async (t) => {
+test('skins', async (t) => {
 	const document = new Document();
 	const root = document.getRoot();
 	const boneA = document.createNode('A');
@@ -121,7 +121,7 @@ test('@gltf-transform/functions::dedup | skins', async (t) => {
 	t.false(skinC.isDisposed(), 'keep skin C');
 });
 
-test('@gltf-transform/functions::dedup | textures', (t) => {
+test('textures', (t) => {
 	const doc = new Document();
 	const transmissionExt = doc.createExtension(KHRMaterialsTransmission);
 

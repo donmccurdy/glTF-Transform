@@ -4,7 +4,7 @@ import { getNodeScene } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::getNodeScene', async (t) => {
+test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
 	const nodeA = document.createNode('A').setTranslation([2, 0, 0]);
 	const nodeB = document.createNode('B').setScale([4, 4, 4]).addChild(nodeA);

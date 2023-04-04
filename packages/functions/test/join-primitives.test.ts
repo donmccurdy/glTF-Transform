@@ -3,7 +3,7 @@ import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { joinPrimitives } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-test('@gltf-transform/functions::joinPrimitives', async (t) => {
+test('unindexed', async (t) => {
 	const document = new Document().setLogger(logger);
 	const [primA, positionA, colorA] = createPrimA(document);
 	const [primB] = createPrimB(document);
@@ -53,7 +53,7 @@ test('@gltf-transform/functions::joinPrimitives', async (t) => {
 	t.is(primAB.getIndices(), null, 'indices data');
 });
 
-test('@gltf-transform/functions::joinPrimitives | indexed', async (t) => {
+test('indexed', async (t) => {
 	const document = new Document().setLogger(logger);
 	const [primA, positionA, colorA] = createPrimA(document);
 	const [primB] = createPrimB(document);

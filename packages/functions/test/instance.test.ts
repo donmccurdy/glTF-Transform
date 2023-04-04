@@ -3,7 +3,7 @@ import { Document, Logger } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { instance } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::instance | translation', async (t) => {
+test('translation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -36,7 +36,7 @@ test('@gltf-transform/functions::instance | translation', async (t) => {
 	t.falsy(batch.getAttribute('SCALE'), 'skips batch scale');
 });
 
-test('@gltf-transform/functions::instance | rotation', async (t) => {
+test('rotation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -70,7 +70,7 @@ test('@gltf-transform/functions::instance | rotation', async (t) => {
 	t.falsy(batch.getAttribute('SCALE'), 'skips batch scale');
 });
 
-test('@gltf-transform/functions::instance | scale', async (t) => {
+test('scale', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -103,7 +103,7 @@ test('@gltf-transform/functions::instance | scale', async (t) => {
 	t.falsy(batch.getAttribute('ROTATION'), 'skips batch rotation');
 });
 
-test('@gltf-transform/functions::instance | skip distinct meshes', async (t) => {
+test('skip distinct meshes', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
@@ -127,7 +127,7 @@ test('@gltf-transform/functions::instance | skip distinct meshes', async (t) => 
 	t.falsy(batch, 'does not create batch');
 });
 
-test('@gltf-transform/functions::instance | idempotence', async (t) => {
+test('idempotence', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	await doc.transform(instance());

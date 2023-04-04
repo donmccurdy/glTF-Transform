@@ -4,7 +4,7 @@ import { flatten } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::flatten', async (t) => {
+test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
 	const mesh = document.createMesh();
 	const nodeA = document.createNode('A').setTranslation([2, 0, 0]).setMesh(mesh);
@@ -28,7 +28,7 @@ test('@gltf-transform/functions::flatten', async (t) => {
 	t.deepEqual(nodeB.getScale(), [4, 4, 4], 'B.scale');
 });
 
-test('@gltf-transform/functions::flatten | skins', async (t) => {
+test('skins', async (t) => {
 	const document = new Document().setLogger(logger);
 	const mesh = document.createMesh();
 	const skin = document.createSkin();
@@ -56,7 +56,7 @@ test('@gltf-transform/functions::flatten | skins', async (t) => {
 	t.deepEqual(scene.listChildren(), [nodeC], 'Scene → JointRoot (after)');
 });
 
-test('@gltf-transform/functions::flatten | trs animation', async (t) => {
+test('trs animation', async (t) => {
 	const document = new Document().setLogger(logger);
 	const mesh = document.createMesh();
 	const nodeA = document.createNode('A').setMesh(mesh);

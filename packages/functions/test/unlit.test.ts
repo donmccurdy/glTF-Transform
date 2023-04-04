@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { unlit } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::unlit', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 	document.createMaterial();
 	await document.transform(unlit());

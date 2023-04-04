@@ -3,7 +3,7 @@ import { Accessor, Document, Logger } from '@gltf-transform/core';
 import { quat } from '@gltf-transform/test-utils';
 import { resample } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::resample', async (t) => {
+test('all', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
@@ -40,7 +40,7 @@ test('@gltf-transform/functions::resample', async (t) => {
 	t.deepEqual(toArray(samplerC.getOutput()), Array.from(outSplineArray), 'CUBICSPLINE output (unchanged)');
 });
 
-test('@gltf-transform/functions::resample | rotation', async (t) => {
+test('rotation', async (t) => {
 	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);

@@ -14,7 +14,7 @@ const EXPECTED_AVIF = new Uint8Array([106, 107, 108]); // larger than original; 
 
 const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::textureCompress | unknown format', async (t) => {
+test('unknown format', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const texture = document.createTexture('Other').setImage(ORIGINAL_OTHER).setMimeType('image/other');
@@ -24,7 +24,7 @@ test('@gltf-transform/functions::textureCompress | unknown format', async (t) =>
 	t.is(texture.getImage(), ORIGINAL_OTHER, 'unknown image unchanged');
 });
 
-test('@gltf-transform/functions::textureCompress | incompatible format', async (t) => {
+test('incompatible format', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const texture = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png');
@@ -41,7 +41,7 @@ test('@gltf-transform/functions::textureCompress | incompatible format', async (
 	t.deepEqual(texture.getImage(), EXPECTED_PNG, 'texture with alpha optimized');
 });
 
-test('@gltf-transform/functions::textureCompress | size increase', async (t) => {
+test('size increase', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const texture = document.createTexture('AVIF').setImage(ORIGINAL_AVIF).setMimeType('image/avif');
@@ -50,7 +50,7 @@ test('@gltf-transform/functions::textureCompress | size increase', async (t) => 
 	t.is(texture.getImage(), ORIGINAL_AVIF, 'file size not increased');
 });
 
-test('@gltf-transform/functions::textureCompress | original formats', async (t) => {
+test('original formats', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const textureJPEG = document.createTexture('JPEG').setImage(ORIGINAL_JPEG).setMimeType('image/jpeg');
@@ -71,7 +71,7 @@ test('@gltf-transform/functions::textureCompress | original formats', async (t) 
 	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
-test('@gltf-transform/functions::textureCompress | excluded slots', async (t) => {
+test('excluded slots', async (t) => {
 	const { encoder } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const textureJPEG = document.createTexture('JPEG').setImage(ORIGINAL_JPEG).setMimeType('image/jpeg');
@@ -91,7 +91,7 @@ test('@gltf-transform/functions::textureCompress | excluded slots', async (t) =>
 	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
-test('@gltf-transform/functions::textureCompress | jpeg', async (t) => {
+test('jpeg', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const textureJPEG = document
@@ -121,7 +121,7 @@ test('@gltf-transform/functions::textureCompress | jpeg', async (t) => {
 	t.deepEqual(texturePNG.getImage(), EXPECTED_JPEG, 'png optimized');
 });
 
-test('@gltf-transform/functions::textureCompress | png', async (t) => {
+test('png', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const textureJPEG = document
@@ -151,7 +151,7 @@ test('@gltf-transform/functions::textureCompress | png', async (t) => {
 	t.deepEqual(texturePNG.getImage(), EXPECTED_PNG, 'png optimized');
 });
 
-test('@gltf-transform/functions::textureCompress | webp', async (t) => {
+test('webp', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(LOGGER);
 	const textureJPEG = document

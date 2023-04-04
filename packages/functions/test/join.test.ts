@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/functions::joinPrimitives', async (t) => {
+test('basic', async (t) => {
 	const io = await createPlatformIO();
 	const document = await io.read(path.join(__dirname, './in/ShapeCollection.glb'));
 	const scene = document.getRoot().getDefaultScene();
