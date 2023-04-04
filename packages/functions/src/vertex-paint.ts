@@ -94,7 +94,7 @@ function _vertexPaintPrimitive(
 		.createAccessor()
 		.setArray(new Float32Array(uv.getCount() * 3))
 		.setBuffer(uv.getBuffer())
-		.setType('VEC3');
+		.setType('VEC3'); // TODO(bug): Consider opacity?
 
 	const _uv = [0, 0] as vec2;
 	const _color = [0, 0, 0] as vec3;

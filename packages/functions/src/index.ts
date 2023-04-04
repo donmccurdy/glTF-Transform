@@ -88,4 +88,5 @@ export * from './unlit.js';
 export * from './unpartition.js';
 export { getGLPrimitiveCount, isTransformPending, createTransform } from './utils.js';
 export * from './unweld.js';
+export * from './vertex-paint.js';
 export * from './weld.js';
