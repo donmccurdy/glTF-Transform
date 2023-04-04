@@ -4,7 +4,7 @@ import { KHRMaterialsSheen, Sheen } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-sheen', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const sheenExtension = doc.createExtension(KHRMaterialsSheen);
@@ -48,7 +48,7 @@ test('@gltf-transform/extensions::materials-sheen', async (t) => {
 	t.truthy(roundtripExt.getSheenColorTexture(), 'reads sheenColorTexture');
 });
 
-test('@gltf-transform/extensions::materials-sheen | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const sheenExtension = doc.createExtension(KHRMaterialsSheen);
 	const sheen = sheenExtension
@@ -65,7 +65,7 @@ test('@gltf-transform/extensions::materials-sheen | copy', (t) => {
 	t.is(sheen2.getSheenColorTexture().getName(), 'sheen', 'copy sheenColorTexture');
 });
 
-test('@gltf-transform/extensions::materials-sheen | hex', (t) => {
+test('hex', (t) => {
 	const doc = new Document();
 	const sheenExtension = doc.createExtension(KHRMaterialsSheen);
 	const sheen = sheenExtension.createSheen().setSheenColorHex(0x252525);

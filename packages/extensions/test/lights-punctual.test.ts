@@ -4,7 +4,7 @@ import { Light, KHRLightsPunctual } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::lights-punctual', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
@@ -56,7 +56,7 @@ test('@gltf-transform/extensions::lights-punctual', async (t) => {
 	t.is(light2.getOuterConeAngle(), 0.75, 'reads outerConeAngle');
 });
 
-test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension
@@ -81,14 +81,14 @@ test('@gltf-transform/extensions::lights-punctual | copy', (t) => {
 	t.is(light2.getOuterConeAngle(), 0.75, 'copy outerConeAngle');
 });
 
-test('@gltf-transform/extensions::lights-punctual | hex', (t) => {
+test('hex', (t) => {
 	const document = new Document();
 	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setColorHex(0x111111);
 	t.is(light.getColorHex(), 0x111111, 'colorHex');
 });
 
-test('@gltf-transform/extensions::lights-punctual | i/o', async (t) => {
+test('i/o', async (t) => {
 	const document = new Document();
 	const lightsExtension = document.createExtension(KHRLightsPunctual);
 	const light = lightsExtension.createLight().setType(Light.Type.POINT).setIntensity(2.0);

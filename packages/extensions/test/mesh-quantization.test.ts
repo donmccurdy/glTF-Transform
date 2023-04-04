@@ -4,7 +4,7 @@ import { KHRMeshQuantization } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::mesh-quantization', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const quantizationExtension = doc.createExtension(KHRMeshQuantization);
 	let jsonDoc: JSONDocument;
@@ -18,7 +18,7 @@ test('@gltf-transform/extensions::mesh-quantization', async (t) => {
 	t.is(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
 });
 
-test('@gltf-transform/extensions::mesh-quantization | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	doc.createExtension(KHRMeshQuantization);
 

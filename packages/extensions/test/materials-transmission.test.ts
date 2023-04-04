@@ -4,7 +4,7 @@ import { KHRMaterialsTransmission, Transmission } from '@gltf-transform/extensio
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-transmission', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transmissionExtension = doc.createExtension(KHRMaterialsTransmission);
@@ -47,7 +47,7 @@ test('@gltf-transform/extensions::materials-transmission', async (t) => {
 	t.truthy(roundtripExt.getTransmissionTexture(), 'reads transmissionTexture');
 });
 
-test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const transmissionExtension = doc.createExtension(KHRMaterialsTransmission);
 	const transmission = transmissionExtension

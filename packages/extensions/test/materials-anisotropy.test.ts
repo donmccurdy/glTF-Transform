@@ -4,7 +4,7 @@ import { Anisotropy, KHRMaterialsAnisotropy } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-anisotropy | factors', async (t) => {
+test('factors', async (t) => {
 	const document = new Document();
 	const anisotropyExtension = document.createExtension(KHRMaterialsAnisotropy);
 	const anisotropy = anisotropyExtension
@@ -26,7 +26,7 @@ test('@gltf-transform/extensions::materials-anisotropy | factors', async (t) => 
 	t.is(roundtripExt.getAnisotropyRotation(), Math.PI / 3, 'reads anisotropyRottaion');
 });
 
-test('@gltf-transform/extensions::materials-anisotropy | textures', async (t) => {
+test('textures', async (t) => {
 	const document = new Document();
 	document.createBuffer();
 	const anisotropyExtension = document.createExtension(KHRMaterialsAnisotropy);
@@ -72,7 +72,7 @@ test('@gltf-transform/extensions::materials-anisotropy | textures', async (t) =>
 	t.truthy(roundtripExt.getAnisotropyTexture(), 'reads anisotropyTexture');
 });
 
-test('@gltf-transform/extensions::materials-anisotropy | disabled', async (t) => {
+test('disabled', async (t) => {
 	const document = new Document();
 	document.createExtension(KHRMaterialsAnisotropy);
 	document.createMaterial();
@@ -83,7 +83,7 @@ test('@gltf-transform/extensions::materials-anisotropy | disabled', async (t) =>
 	t.is(roundtripMat.getExtension('KHR_materials_anisotropy'), null, 'no effect when not attached');
 });
 
-test('@gltf-transform/extensions::materials-anisotropy | copy', (t) => {
+test('copy', (t) => {
 	const document = new Document();
 	const anisotropyExtension = document.createExtension(KHRMaterialsAnisotropy);
 	const anisotropy = anisotropyExtension

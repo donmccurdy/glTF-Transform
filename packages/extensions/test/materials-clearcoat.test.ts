@@ -4,7 +4,7 @@ import { Clearcoat, KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-clearcoat | factors', async (t) => {
+test('factors', async (t) => {
 	const doc = new Document();
 	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat().setClearcoatFactor(0.9).setClearcoatRoughnessFactor(0.1);
@@ -22,7 +22,7 @@ test('@gltf-transform/extensions::materials-clearcoat | factors', async (t) => {
 	t.is(roundtripExt.getClearcoatRoughnessFactor(), 0.1, 'reads clearcoatFactor');
 });
 
-test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => {
+test('textures', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
@@ -76,7 +76,7 @@ test('@gltf-transform/extensions::materials-clearcoat | textures', async (t) => 
 	t.is(roundtripExt.getClearcoatNormalScale(), 2, 'reads clearcoatNormalScale');
 });
 
-test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => {
+test('disabled', async (t) => {
 	const doc = new Document();
 	doc.createExtension(KHRMaterialsClearcoat);
 	doc.createMaterial();
@@ -87,7 +87,7 @@ test('@gltf-transform/extensions::materials-clearcoat | disabled', async (t) => 
 	t.is(roundtripMat.getExtension('KHR_materials_clearcoat'), null, 'no effect when not attached');
 });
 
-test('@gltf-transform/extensions::materials-clearcoat | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension

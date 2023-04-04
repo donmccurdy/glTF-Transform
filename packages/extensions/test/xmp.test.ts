@@ -20,7 +20,7 @@ const MOCK_JSONLD_PACKET = {
 	'xmpRights:Marked': true,
 };
 
-test('@gltf-transform/extensions::xmp', async (t) => {
+test('basic', async (t) => {
 	const document = new Document();
 	const xmpExtension = document.createExtension(KHRXMP);
 	const packet = xmpExtension.createPacket();
@@ -109,7 +109,7 @@ test('@gltf-transform/extensions::xmp', async (t) => {
 	t.falsy(node.getExtension('KHR_xmp_json_ld'), 'dispose from node');
 });
 
-test('@gltf-transform/extensions::xmp | i/o', async (t) => {
+test('i/o', async (t) => {
 	const document = new Document();
 	const xmpExtension = document.createExtension(KHRXMP);
 	const packet = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
@@ -208,7 +208,7 @@ test('@gltf-transform/extensions::xmp | i/o', async (t) => {
 	t.truthy(rtRoot.listAnimations()[0].getExtension('KHR_xmp_json_ld'), 'reads packet from animation');
 });
 
-test('@gltf-transform/extensions::xmp | clone', async (t) => {
+test('clone', async (t) => {
 	const document1 = new Document();
 	const xmpExtension = document1.createExtension(KHRXMP);
 	const packet1 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);

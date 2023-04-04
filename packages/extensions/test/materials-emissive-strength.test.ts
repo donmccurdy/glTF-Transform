@@ -4,7 +4,7 @@ import { EmissiveStrength, KHRMaterialsEmissiveStrength } from '@gltf-transform/
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-emissive-strength', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const emissiveStrengthExtension = doc.createExtension(KHRMaterialsEmissiveStrength);
 	const emissiveStrength = emissiveStrengthExtension.createEmissiveStrength().setEmissiveStrength(5.0);
@@ -42,7 +42,7 @@ test('@gltf-transform/extensions::materials-emissive-strength', async (t) => {
 	);
 });
 
-test('@gltf-transform/extensions::materials-emissive-strength | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const emissiveStrengthExtension = doc.createExtension(KHRMaterialsEmissiveStrength);
 	const emissiveStrength = emissiveStrengthExtension.createEmissiveStrength().setEmissiveStrength(5.0);

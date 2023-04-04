@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { MappingList, KHRMaterialsVariants } from '@gltf-transform/extensions';
 
-test('@gltf-transform/extensions::materials-variants', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const variantsExtension = doc.createExtension(KHRMaterialsVariants);
 	const var2 = variantsExtension.createVariant('Damaged1');
@@ -63,7 +63,7 @@ test('@gltf-transform/extensions::materials-variants', async (t) => {
 	t.is(mat1.getExtension('KHR_materials_variants'), null, 'unlit is detached');
 });
 
-test('@gltf-transform/extensions::materials-variants | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const variantsExtension = doc.createExtension(KHRMaterialsVariants);
 	const var1 = variantsExtension.createVariant('Dry');

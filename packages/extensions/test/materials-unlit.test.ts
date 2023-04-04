@@ -4,7 +4,7 @@ import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-unlit', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const unlitExtension = doc.createExtension(KHRMaterialsUnlit);
 	const unlit = unlitExtension.createUnlit();
@@ -34,7 +34,7 @@ test('@gltf-transform/extensions::materials-unlit', async (t) => {
 	t.is(mat.getExtension('KHR_materials_unlit'), null, 'unlit is detached');
 });
 
-test('@gltf-transform/extensions::materials-unlit | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const unlitExtension = doc.createExtension(KHRMaterialsUnlit);
 	doc.createMaterial().setExtension('KHR_materials_unlit', unlitExtension.createUnlit());

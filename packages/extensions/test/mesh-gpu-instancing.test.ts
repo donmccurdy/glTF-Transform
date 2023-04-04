@@ -6,7 +6,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([EXTMeshGPUInstancing]);
 
-test('@gltf-transform/extensions::mesh-gpu-instancing', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const data = doc
 		.createAccessor('unused')
@@ -57,7 +57,7 @@ test('@gltf-transform/extensions::mesh-gpu-instancing', async (t) => {
 	t.is(node.getExtension('EXT_mesh_gpu_instancing'), null, 'batch is detached');
 });
 
-test('@gltf-transform/extensions::mesh-gpu-instancing | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const data = doc
 		.createAccessor()

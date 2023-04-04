@@ -4,7 +4,7 @@ import { KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-volume', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const volumeExtension = doc.createExtension(KHRMaterialsVolume);
@@ -56,7 +56,7 @@ test('@gltf-transform/extensions::materials-volume', async (t) => {
 	t.is(volume.getAttenuationColorHex(), 0x4285f4, 'reads/writes hexadecimal sRGB');
 });
 
-test('@gltf-transform/extensions::materials-transmission | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const volumeExtension = doc.createExtension(KHRMaterialsVolume);
 	const volume = volumeExtension

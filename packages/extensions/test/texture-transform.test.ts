@@ -6,7 +6,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([KHRTextureTransform]);
 
-test('@gltf-transform/extensions::texture-transform', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transformExtension = doc.createExtension(KHRTextureTransform);
@@ -58,7 +58,7 @@ test('@gltf-transform/extensions::texture-transform', async (t) => {
 	);
 });
 
-test('@gltf-transform/extensions::texture-transform | clone', (t) => {
+test('clone', (t) => {
 	const srcDoc = new Document();
 	const transformExtension = srcDoc.createExtension(KHRTextureTransform);
 	const tex1 = srcDoc.createTexture();
@@ -116,7 +116,7 @@ test('@gltf-transform/extensions::texture-transform | clone', (t) => {
 	t.deepEqual(dstTransform2.getRotation(), Math.PI, 'emissiveColorTexture.rotation');
 });
 
-test('@gltf-transform/extensions::texture-transform | i/o', async (t) => {
+test('i/o', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const transformExtension = doc.createExtension(KHRTextureTransform);
