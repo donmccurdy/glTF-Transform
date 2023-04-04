@@ -10,7 +10,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([EXTTextureWebP]);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/extensions::texture-webp', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const webpExtension = doc.createExtension(EXTTextureWebP);

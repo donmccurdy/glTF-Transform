@@ -9,7 +9,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-test('@gltf-transform/extensions::texture-basisu', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const basisuExtension = doc.createExtension(KHRTextureBasisu);
@@ -48,7 +48,7 @@ test('@gltf-transform/extensions::texture-basisu', async (t) => {
 	t.is(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 });
 
-test('@gltf-transform/extensions::texture-basisu | image-utils', (t) => {
+test('image-utils', (t) => {
 	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2'));
 
 	t.throws(() => ImageUtils.getSize(new Uint8Array(10), 'image/ktx2'), undefined, 'corrupt file');

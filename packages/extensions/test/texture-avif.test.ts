@@ -10,7 +10,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([EXTTextureAVIF]);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/extensions::texture-avif', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const avifExtension = doc.createExtension(EXTTextureAVIF);

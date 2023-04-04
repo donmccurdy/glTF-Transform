@@ -4,7 +4,7 @@ import { KHRMaterialsSpecular, Specular } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-specular', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const specularExtension = doc.createExtension(KHRMaterialsSpecular);
@@ -52,7 +52,7 @@ test('@gltf-transform/extensions::materials-specular', async (t) => {
 	t.truthy(roundtripExt.getSpecularTexture(), 'reads specularTexture');
 });
 
-test('@gltf-transform/extensions::materials-specular | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const specularExtension = doc.createExtension(KHRMaterialsSpecular);
 	const specular = specularExtension
@@ -73,7 +73,7 @@ test('@gltf-transform/extensions::materials-specular | copy', (t) => {
 	t.is(specular2.getSpecularColorTexture().getName(), 'specColor', 'copy specularColorTexture');
 });
 
-test('@gltf-transform/extensions::materials-specular | hex', (t) => {
+test('hex', (t) => {
 	const doc = new Document();
 	const specularExtension = doc.createExtension(KHRMaterialsSpecular);
 	const specular = specularExtension.createSpecular().setSpecularColorHex(0x252525);

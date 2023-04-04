@@ -4,7 +4,7 @@ import { KHRMaterialsIridescence, Iridescence } from '@gltf-transform/extensions
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-iridescence', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const iridescenceExtension = doc.createExtension(KHRMaterialsIridescence);
@@ -59,7 +59,7 @@ test('@gltf-transform/extensions::materials-iridescence', async (t) => {
 	t.truthy(roundtripExt.getIridescenceThicknessTexture(), 'reads iridescenceThicknessTexture');
 });
 
-test('@gltf-transform/extensions::materials-iridescence | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const iridescenceExtension = doc.createExtension(KHRMaterialsIridescence);
 	const iridescence = iridescenceExtension

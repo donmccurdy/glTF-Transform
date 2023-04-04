@@ -9,7 +9,7 @@ const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) => {
+test('decoding', async (t) => {
 	const io = await createDecoderIO();
 	const document = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
 	const bbox = getBounds(document.getRoot().listScenes()[0]);
@@ -25,7 +25,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | decoding', async (t) 
 	);
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', async (t) => {
+test('encoding complete', async (t) => {
 	// Cases:
 	// (1) Entire primitive reused (share compressed buffer views).
 	// (2) All primitive accessors reused (share compressed buffer views).
@@ -128,7 +128,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding complete', a
 	);
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', async (t) => {
+test('encoding skipped', async (t) => {
 	// Cases:
 	// (1) Non-indexed.
 	// (2) Non-TRIANGLES.
@@ -170,7 +170,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding skipped', as
 	t.falsy(jsonDoc.json.extensionsUsed, 'omitted from extensionsUsed');
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', async (t) => {
+test('encoding sparse', async (t) => {
 	const document = new Document().setLogger(LOGGER);
 	document.createExtension(KHRDracoMeshCompression).setRequired(true);
 
@@ -209,7 +209,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | encoding sparse', asy
 	t.is(accessorDefs[2].sparse.count, 1, '_SPARSE sparse');
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async (t) => {
+test('mixed indices', async (t) => {
 	const document = new Document().setLogger(LOGGER);
 	document.createExtension(KHRDracoMeshCompression).setRequired(true);
 
@@ -264,7 +264,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed indices', async
 	);
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', async (t) => {
+test('mixed attributes', async (t) => {
 	const document = new Document().setLogger(LOGGER);
 	document.createExtension(KHRDracoMeshCompression).setRequired(true);
 
@@ -326,7 +326,7 @@ test('@gltf-transform/extensions::draco-mesh-compression | mixed attributes', as
 	);
 });
 
-test('@gltf-transform/extensions::draco-mesh-compression | non-primitive parent', async (t) => {
+test('non-primitive parent', async (t) => {
 	const document = new Document().setLogger(LOGGER);
 	document.createExtension(KHRDracoMeshCompression).setRequired(true);
 

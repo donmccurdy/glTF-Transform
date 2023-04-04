@@ -9,7 +9,7 @@ const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/extensions::meshopt-compression | decoding', async (t) => {
+test('decoding', async (t) => {
 	const io = await createEncoderIO();
 
 	for (const input of INPUTS) {
@@ -28,7 +28,7 @@ test('@gltf-transform/extensions::meshopt-compression | decoding', async (t) => 
 	}
 });
 
-test('@gltf-transform/extensions::meshopt-compression | encoding', async (t) => {
+test('encoding', async (t) => {
 	const io = await createEncoderIO();
 
 	const doc = await io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
@@ -54,7 +54,7 @@ test('@gltf-transform/extensions::meshopt-compression | encoding', async (t) => 
 	);
 });
 
-test('@gltf-transform/extensions::meshopt-compression | encoding sparse', async (t) => {
+test('encoding sparse', async (t) => {
 	const io = await createEncoderIO();
 
 	const doc = new Document();

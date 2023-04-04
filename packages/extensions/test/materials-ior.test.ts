@@ -4,7 +4,7 @@ import { IOR, KHRMaterialsIOR } from '@gltf-transform/extensions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-ior', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const iorExtension = doc.createExtension(KHRMaterialsIOR);
 	const ior = iorExtension.createIOR().setIOR(1.2);
@@ -32,7 +32,7 @@ test('@gltf-transform/extensions::materials-ior', async (t) => {
 	t.is(roundtripMat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1.2, 'reads ior');
 });
 
-test('@gltf-transform/extensions::materials-ior | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const iorExtension = doc.createExtension(KHRMaterialsIOR);
 	const ior = iorExtension.createIOR().setIOR(1.2);

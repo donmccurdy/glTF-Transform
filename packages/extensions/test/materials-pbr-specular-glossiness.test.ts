@@ -4,7 +4,7 @@ import { KHRMaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '@gltf-
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	doc.createBuffer();
 	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
@@ -55,7 +55,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness', async (t) 
 	t.truthy(roundtripExt.getSpecularGlossinessTexture(), 'reads specularGlossinessTexture');
 });
 
-test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', (t) => {
+test('copy', (t) => {
 	const doc = new Document();
 	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension
@@ -79,7 +79,7 @@ test('@gltf-transform/extensions::materials-pbr-specular-glossiness | copy', (t)
 	t.is(specGloss2.getSpecularGlossinessTexture().getName(), 'specGloss', 'copy specularGlossinessTexture');
 });
 
-test('@gltf-transform/extensions::materials-pbr-specular-glossiness | hex', (t) => {
+test('hex', (t) => {
 	const doc = new Document();
 	const specGlossExtension = doc.createExtension(KHRMaterialsPBRSpecularGlossiness);
 	const specGloss = specGlossExtension.createPBRSpecularGlossiness().setDiffuseHex(0x0000ff);
