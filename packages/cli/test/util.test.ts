@@ -14,8 +14,14 @@ Sesame snaps sweet roll icing macaroon croissant jujubes pastry apple pie
 chocolate cake. Liquorice jelly-o pie jujubes fruitcake chocolate bar jelly-o
 tart. Marshmallow icing tart tootsie roll brownie dragée.`.trim();
 
-test('@gltf-transform/cli::util', (t) => {
+test('formatBytes', (t) => {
 	t.is(formatBytes(1000), '1 KB', 'formatBytes');
+});
+
+test('formatHeader', (t) => {
 	t.is(formatHeader('Hello'), HEADER, 'formatHeader');
+});
+
+test('formatParagraph', (t) => {
 	t.is(formatParagraph(TEXT), PARAGRAPH, 'formatParagraph');
 });

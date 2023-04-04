@@ -13,7 +13,7 @@ tmp.setGracefulCleanup();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/cli::copy', async (t) => {
+test('copy', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -32,7 +32,7 @@ test('@gltf-transform/cli::copy', async (t) => {
 	});
 });
 
-test('@gltf-transform/cli::meshopt', async (t) => {
+test('meshopt', async (t) => {
 	await programReady;
 	await MeshoptDecoder.ready;
 	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
@@ -47,7 +47,7 @@ test('@gltf-transform/cli::meshopt', async (t) => {
 	});
 });
 
-test('@gltf-transform/cli::draco', async (t) => {
+test('draco', async (t) => {
 	await programReady;
 	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
 		'draco3d.decoder': await draco3d.createDecoderModule(),
@@ -62,7 +62,7 @@ test('@gltf-transform/cli::draco', async (t) => {
 	});
 });
 
-test('@gltf-transform/cli::optimize', async (t) => {
+test('optimize', async (t) => {
 	await programReady;
 	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
 		'draco3d.decoder': await draco3d.createDecoderModule(),
@@ -77,7 +77,7 @@ test('@gltf-transform/cli::optimize', async (t) => {
 	});
 });
 
-test('@gltf-transform/cli::validate', async (t) => {
+test('validate', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -92,7 +92,7 @@ test('@gltf-transform/cli::validate', async (t) => {
 	t.pass();
 });
 
-test('@gltf-transform/cli::inspect', async (t) => {
+test('inspect', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -109,7 +109,7 @@ test('@gltf-transform/cli::inspect', async (t) => {
 	t.pass();
 });
 
-test('@gltf-transform/cli::merge', async (t) => {
+test('merge', async (t) => {
 	await programReady;
 	const io = new NodeIO();
 	const inputA = tmp.tmpNameSync({ postfix: '.glb' });
