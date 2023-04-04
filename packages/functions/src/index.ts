@@ -53,7 +53,6 @@
 export * from './center.js';
 export * from './clear-node-parent.js';
 export * from './clear-node-transform.js';
-export * from './colorspace.js';
 export * from './dedup.js';
 export * from './dequantize.js';
 export * from './draco.js';
@@ -88,4 +87,5 @@ export * from './unlit.js';
 export * from './unpartition.js';
 export { getGLPrimitiveCount, isTransformPending, createTransform } from './utils.js';
 export * from './unweld.js';
+export * from './vertex-color-space.js';
 export * from './weld.js';

@@ -1,32 +1,49 @@
 import type { Accessor, Document, Primitive, Transform, vec3 } from '@gltf-transform/core';
 import { createTransform } from './utils.js';
 
-const NAME = 'colorspace';
+const NAME = 'vertexColorSpace';
 
-/** Options for the {@link colorspace} function. */
-export interface ColorspaceOptions {
-	/** Must be `"sRGB"`. Required. */
-	inputEncoding: string;
+/** Options for the {@link vertexColorSpace} function. */
+export interface ColorSpaceOptions {
+	/** Input color space of vertex colors, to be converted to "srgb-linear". Required. */
+	inputColorSpace: 'srgb' | 'srgb-linear' | 'sRGB';
+	/** @deprecated Renamed to 'colorSpace'. */
+	inputEncoding?: 'srgb' | 'srgb-linear' | 'sRGB';
 }
 
+/** @deprecated Renamed to {@link vertexColorSpace}. */
+export const colorspace = vertexColorSpace;
+
 /**
- * Vertex color colorspace correction. The glTF format requires vertex colors to be stored
- * as linear values, and this function provides a way to correct vertex colors that are
- * (incorrectly) sRGB.
+ * Vertex color color space correction. The glTF format requires vertex colors to be stored
+ * in Linear Rec. 709 D65 color space, and this function provides a way to correct vertex
+ * colors that are (incorrectly) stored in sRGB.
+ *
+ * Example:
+ *
+ * ```typescript
+ * import { vertexColorSpace } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ *   vertexColorspace({ inputColorSpace: 'srgb' })
+ * );
+ * ```
  */
-export function colorspace(options: ColorspaceOptions): Transform {
+export function vertexColorSpace(options: ColorSpaceOptions): Transform {
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 
-		if (options.inputEncoding === 'linear') {
+		const inputColorSpace = (options.inputColorSpace || options.inputEncoding || '').toLowerCase();
+
+		if (inputColorSpace === 'srgb-linear') {
 			logger.info(`${NAME}: Vertex colors already linear. Skipping conversion.`);
 			return;
 		}
 
-		if (options.inputEncoding !== 'sRGB') {
+		if (inputColorSpace !== 'srgb') {
 			logger.error(
-				`${NAME}: Unknown input encoding "${options.inputEncoding}" – should be "sRGB" or ` +
-					'"linear". Skipping conversion.'
+				`${NAME}: Unknown input color space "${inputColorSpace}" – should be "srgb" or ` +
+					'"srgb-linear". Skipping conversion.'
 			);
 			return;
 		}
