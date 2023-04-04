@@ -4,7 +4,7 @@ import { clearNodeTransform } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::clearNodeTransform', async (t) => {
+test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	const camera = document.createCamera();

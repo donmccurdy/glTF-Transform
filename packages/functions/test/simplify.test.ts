@@ -20,7 +20,7 @@ async function createIO(): Promise<NodeIO> {
 	return io;
 }
 
-test('@gltf-transform/functions::simplify | welded', async (t) => {
+test('welded', async (t) => {
 	const io = await createIO();
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
@@ -38,7 +38,7 @@ test('@gltf-transform/functions::simplify | welded', async (t) => {
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
 
-test('@gltf-transform/functions::simplify | unwelded', async (t) => {
+test('unwelded', async (t) => {
 	const io = await createIO();
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
@@ -56,7 +56,7 @@ test('@gltf-transform/functions::simplify | unwelded', async (t) => {
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
 
-test('@gltf-transform/functions::simplify | shared accessors', async (t) => {
+test('shared accessors', async (t) => {
 	const io = await createIO();
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 

@@ -4,7 +4,7 @@ import { dequantize } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 
-test('@gltf-transform/functions::dequantize', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const scene = createScene(doc);
 	const node = doc.getRoot().listNodes()[0];

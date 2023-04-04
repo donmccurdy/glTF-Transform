@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { unweld } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::unweld', async (t) => {
+test('basic', async (t) => {
 	const doc = new Document();
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 1, 0, 0, -1, 0, 1, 0, 0, -1, 0, 0]);
 	const position = doc.createAccessor().setType(Accessor.Type.VEC3).setArray(positionArray);

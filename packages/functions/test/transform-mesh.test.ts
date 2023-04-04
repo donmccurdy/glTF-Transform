@@ -5,7 +5,7 @@ import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::transformPrimitive', async (t) => {
+test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const normal = prim.getAttribute('NORMAL')!;
@@ -37,7 +37,7 @@ test('@gltf-transform/functions::transformPrimitive', async (t) => {
 	t.deepEqual(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
 });
 
-test('@gltf-transform/functions::transformMesh | detach shared prims', async (t) => {
+test('detach shared prims', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const meshA = document.createMesh('A').addPrimitive(prim);
@@ -50,7 +50,7 @@ test('@gltf-transform/functions::transformMesh | detach shared prims', async (t)
 	t.not(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA ≠ meshB, after');
 });
 
-test('@gltf-transform/functions::transformMesh | detach shared vertex streams', async (t) => {
+test('detach shared vertex streams', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const primA = prim.clone();
@@ -69,7 +69,7 @@ test('@gltf-transform/functions::transformMesh | detach shared vertex streams', 
 	t.not(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA ≠ primB, after (overwrite=false)');
 });
 
-test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
+test('skip indices', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const mesh = document.createMesh().addPrimitive(prim);
@@ -89,7 +89,7 @@ test('@gltf-transform/functions::transformMesh | skip indices', async (t) => {
 	);
 });
 
-test('@gltf-transform/functions::transformMesh | morph targets', async (t) => {
+test('morph targets', async (t) => {
 	const document = new Document().setLogger(logger);
 	const targetPosition = document
 		.createAccessor()

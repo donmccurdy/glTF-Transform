@@ -9,7 +9,7 @@ const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
+test('tolerance=0', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
 	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
@@ -30,7 +30,7 @@ test('@gltf-transform/functions::weld | tolerance=0', async (t) => {
 	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
 });
 
-test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
+test('tolerance>0', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	// prettier-ignore
 	const positionArray = new Float32Array([
@@ -77,7 +77,7 @@ test('@gltf-transform/functions::weld | tolerance>0', async (t) => {
 	t.is(doc.getRoot().listAccessors().length, 3, 'accessor count');
 });
 
-test('@gltf-transform/functions::weld | attributes', async (t) => {
+test('attributes', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	// prettier-ignore
 	const positionArray = new Uint8Array([
@@ -178,7 +178,7 @@ test('@gltf-transform/functions::weld | attributes', async (t) => {
 	);
 });
 
-test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
+test('u16 vs u32', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	const smArray = new Float32Array(65534 * 3);
 	const lgArray = new Float32Array(65535 * 3);
@@ -195,7 +195,7 @@ test('@gltf-transform/functions::weld | u16 vs u32', async (t) => {
 	t.is(lgPrim.getIndices().getArray().constructor, Uint32Array, 'u32 > 65534');
 });
 
-test('@gltf-transform/functions::weld | modes', async (t) => {
+test('modes', async (t) => {
 	// Extracted primitive data from (unindexed) 01–06 samples:
 	// https://github.com/KhronosGroup/glTF-Asset-Generator/tree/master/Output/Positive/Mesh_PrimitiveMode
 	const datasetPath = path.resolve(__dirname, 'in/Mesh_PrimitiveMode_01_to_06.json');
@@ -221,7 +221,7 @@ test('@gltf-transform/functions::weld | modes', async (t) => {
 	}
 });
 
-test('@gltf-transform/functions::weld | targets', async (t) => {
+test('targets', async (t) => {
 	const document = new Document().setLogger(LOGGER);
 	// prettier-ignore
 	const positionArray = new Float32Array([
@@ -271,7 +271,7 @@ test('@gltf-transform/functions::weld | targets', async (t) => {
 	t.is(document.getRoot().listAccessors().length, 3, 'accessor count');
 });
 
-test('@gltf-transform/functions::weld | degenerate', async (t) => {
+test('degenerate', async (t) => {
 	const doc = new Document().setLogger(LOGGER);
 	// prettier-ignore
 	const positionArray = new Float32Array([

@@ -2,7 +2,7 @@ import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
 import { getGLPrimitiveCount, createTransform, isTransformPending } from '@gltf-transform/functions';
 
-test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
+test('getGLPrimitiveCount', async (t) => {
 	const doc = new Document();
 
 	const indices = doc.createAccessor().setArray(new Uint16Array(6));
@@ -37,7 +37,7 @@ test('@gltf-transform/functions::utils | getGLPrimitiveCount', async (t) => {
 	t.throws(() => getGLPrimitiveCount(prim), { message: /mode/i }, 'invalid');
 });
 
-test('@gltf-transform/functions::utils | transform pipeline', async (t) => {
+test('transform pipeline', async (t) => {
 	const doc = new Document();
 	const first = createTransform('first', (_: Document, context?: TransformContext) => {
 		if (!isTransformPending(context, 'first', 'second')) {

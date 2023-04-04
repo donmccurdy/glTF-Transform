@@ -4,7 +4,7 @@ import { prune } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.SILENT);
 
-test('@gltf-transform/functions::prune', async (t) => {
+test('properties', async (t) => {
 	const doc = new Document().setLogger(logger);
 
 	// Create used resources.
@@ -45,7 +45,7 @@ test('@gltf-transform/functions::prune', async (t) => {
 	t.true(mesh3.isDisposed(), 'empty mesh');
 });
 
-test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
+test('leaf nodes', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	const prim = document.createPrimitive();
@@ -85,7 +85,7 @@ test('@gltf-transform/functions::prune | leaf nodes', async (t) => {
 	t.truthy(nodeA.isDisposed(), 'nodeA disposed');
 });
 
-test('@gltf-transform/functions::prune | attributes', async (t) => {
+test('attributes', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	const position = document.createAccessor('POSITION');

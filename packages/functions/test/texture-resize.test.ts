@@ -12,7 +12,7 @@ const GRADIENT = getPixels(path.resolve(__dirname, './in/pattern.png'));
 const GRADIENT_HALF = getPixels(path.resolve(__dirname, './in/pattern-half.png'));
 const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
-test('@gltf-transform/functions::textureResize', async (t) => {
+test('square', async (t) => {
 	const gradientImage = await savePixels(await GRADIENT, 'image/png');
 	const gradientHalfImage = await savePixels(await GRADIENT_HALF, 'image/png');
 
@@ -40,7 +40,7 @@ test('@gltf-transform/functions::textureResize', async (t) => {
 	);
 });
 
-test('@gltf-transform/functions::textureResize | aspect ratio', async (t) => {
+test('non-square', async (t) => {
 	const nonSquareImage = await savePixels(await NON_SQUARE, 'image/png');
 	const document = new Document();
 	const texture = document.createTexture('target').setImage(nonSquareImage).setMimeType('image/png');

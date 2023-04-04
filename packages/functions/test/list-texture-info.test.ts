@@ -3,7 +3,7 @@ import { Document } from '@gltf-transform/core';
 import { listTextureInfo } from '@gltf-transform/functions';
 import { KHRMaterialsSheen } from '@gltf-transform/extensions';
 
-test('@gltf-transform/functions::listTextureInfo', (t) => {
+test('basic', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();

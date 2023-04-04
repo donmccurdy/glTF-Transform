@@ -5,7 +5,7 @@ import { KHRMaterialsSheen } from '@gltf-transform/extensions';
 
 const { R, G, B, A } = TextureChannel;
 
-test('@gltf-transform/functions::listTextureChannels', (t) => {
+test('listTextureChannels', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();
@@ -27,7 +27,7 @@ test('@gltf-transform/functions::listTextureChannels', (t) => {
 	t.deepEqual(listTextureChannels(textureB), [R, G, B, A], 'sheenColorTexture RGBA');
 });
 
-test('@gltf-transform/functions::getTextureChannelMask', (t) => {
+test('getTextureChannelMask', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();
