@@ -28,7 +28,7 @@ test('welded', async (t) => {
 	const srcCount = getVertexCount(document);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
-	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
@@ -46,7 +46,7 @@ test('unwelded', async (t) => {
 	const srcCount = getVertexCount(document);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
-	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
