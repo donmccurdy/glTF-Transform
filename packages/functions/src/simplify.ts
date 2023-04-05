@@ -17,9 +17,9 @@ const NAME = 'simplify';
 export interface SimplifyOptions {
 	/** MeshoptSimplifier instance. */
 	simplifier: unknown;
-	/** Target ratio (0–1) of vertices to keep. Default: 0.5 (50%). */
+	/** Target ratio (0–1) of vertices to keep. Default: 0.0 (0%). */
 	ratio?: number;
-	/** Limit on error, as a fraction of mesh radius. Default: 0.01 (1%). */
+	/** Limit on error, as a fraction of mesh radius. Default: 0.0001 (0.01%). */
 	error?: number;
 	/**
 	 * Whether to lock topological borders of the mesh. May be necessary when
@@ -30,8 +30,8 @@ export interface SimplifyOptions {
 }
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
-	ratio: 0.5,
-	error: 0.001,
+	ratio: 0.0,
+	error: 0.0001,
 	lockBorder: false,
 };
 
@@ -44,9 +44,9 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * error exceeds the specified 'error' threshold, the algorithm will quit
  * before reaching the target ratio. Examples:
  *
- * - ratio=0.5, error=0.001: Aims for 50% simplification, constrained to 0.1% error.
+ * - ratio=0.0, error=0.0001: Aims for maximum simplification, constrained to 0.01% error.
+ * - ratio=0.5, error=0.0001: Aims for 50% simplification, constrained to 0.01% error.
  * - ratio=0.5, error=1: Aims for 50% simplification, unconstrained by error.
- * - ratio=0.0, error=0.01: Aims for maximum simplification, constrained to 1% error.
  *
  * Topology, particularly split vertices, will also limit the simplifier. For
  * best results, apply a {@link weld} operation before simplification.

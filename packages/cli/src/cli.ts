@@ -162,12 +162,19 @@ commands or using the scripting API.
 		required: false
 	})
 	.option(
-		'--simplify <error>',
+		'--simplify <bool>',
 		'Simplification error limit, as a fraction of mesh radius.' +
 		'Disable with --simplify 0.', {
-		validator: program.NUMBER,
+		validator: program.BOOLEAN,
+		default: true,
 		required: false,
+	})
+	.option(
+		'--simplify-error <error>',
+		'Simplification error limit, as a fraction of mesh radius.', {
+		validator: program.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
+		required: false,
 	})
 	.option(
 		'--compress <method>',
@@ -203,7 +210,8 @@ commands or using the scripting API.
 	.action(async ({args, options, logger}) => {
 		const opts = options as {
 			instance: number,
-			simplify: number,
+			simplify: boolean,
+			simplifyError: number,
 			compress: 'draco' | 'meshopt' | 'quantize' | false,
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false,
 			textureSize: number,
@@ -221,13 +229,13 @@ commands or using the scripting API.
 		if (opts.join) transforms.push(dequantize(), join());
 
 		// Simplification and welding.
-		if (opts.simplify > 0) {
+		if (opts.simplify) {
 			transforms.push(
-				weld({ tolerance: opts.simplify }),
-				simplify({ simplifier: MeshoptSimplifier, ratio: 0.001, error: opts.simplify }),
+				weld({ tolerance: opts.simplifyError / 2 }),
+				simplify({ simplifier: MeshoptSimplifier, error: opts.simplifyError }),
 			);
 		} else {
-			transforms.push(weld({ tolerance: 0.0001 }));
+			transforms.push(weld());
 		}
 
 		transforms.push(
@@ -743,6 +751,10 @@ is indexed in place, without merging.
 	.option('--tolerance', 'Tolerance for vertex welding', {
 		validator: program.NUMBER,
 		default: WELD_DEFAULTS.tolerance,
+	})
+	.option('--exhaustive', 'TODO', {
+		validator: program.BOOLEAN,
+		default: WELD_DEFAULTS.exhaustive,
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
