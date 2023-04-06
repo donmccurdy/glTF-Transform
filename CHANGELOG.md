@@ -2,7 +2,14 @@
 
 ## v3.x
 
-<!-- ### v3.2 — 🚧 Unreleased -->
+<!-- ### v3.3 — 🚧 Unreleased -->
+
+### v3.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/25))
+
+**Features:**
+
+- Improve `optimize` and `simplify()` defaults [#901](https://github.com/donmccurdy/glTF-Transform/pull/901)
+- Rename colorspace() to vertexColorSpace() [#899](https://github.com/donmccurdy/glTF-Transform/pull/899)
 
 ### v3.1 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/24))
 
