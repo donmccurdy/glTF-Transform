@@ -156,32 +156,30 @@ commands or using the scripting API.
 	`.trim())
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--instance <min>', 'Create GPU instances from shared mesh references', {
-		validator: program.NUMBER,
-		default: 5,
-		required: false
-	})
-	.option(
-		'--simplify <bool>',
-		'Simplification error limit, as a fraction of mesh radius.' +
-		'Disable with --simplify 0.', {
+	.option('--instance <bool>', 'Use GPU instancing with shared mesh references.', {
 		validator: program.BOOLEAN,
 		default: true,
-		required: false,
+	})
+	.option('--instance-min <min>', 'Number of instances required for instancing.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
+	.option(
+		'--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
+		validator: program.BOOLEAN,
+		default: true,
 	})
 	.option(
 		'--simplify-error <error>',
-		'Simplification error limit, as a fraction of mesh radius.', {
+		'Simplification error tolerance, as a fraction of mesh extent.', {
 		validator: program.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
-		required: false,
 	})
 	.option(
 		'--compress <method>',
 		'Floating point compression method. Draco compresses geometry; Meshopt ' +
 		'and quantization compress geometry and animation.', {
 		validator: ['draco', 'meshopt', 'quantize', false],
-		required: false,
 		default: 'draco',
 	})
 	.option(
@@ -189,27 +187,24 @@ commands or using the scripting API.
 		'Texture compression format. KTX2 optimizes VRAM usage and performance; ' +
 		'AVIF and WebP optimize transmission size. Auto recompresses in original format.', {
 		validator: ['ktx2', 'webp', 'avif', 'auto', false],
-		required: false,
 		default: 'auto',
 	})
 	.option('--texture-size <size>', 'Maximum texture dimensions, in pixels.', {
 		validator: program.NUMBER,
 		default: 2048,
-		required: false
 	})
 	.option('--flatten <bool>', 'Flatten scene graph.', {
 		validator: program.BOOLEAN,
 		default: true,
-		required: false
 	})
-	.option('--join <bool>', 'Join meshes and reduce draw calls.', {
+	.option('--join <bool>', 'Join meshes and reduce draw calls. Requires `--flatten`.', {
 		validator: program.BOOLEAN,
 		default: true,
-		required: false
 	})
 	.action(async ({args, options, logger}) => {
 		const opts = options as {
-			instance: number,
+			instance: boolean,
+			instanceMin: number,
 			simplify: boolean,
 			simplifyError: number,
 			compress: 'draco' | 'meshopt' | 'quantize' | false,
@@ -220,11 +215,9 @@ commands or using the scripting API.
 		};
 
 		// Baseline transforms.
-		const transforms: Transform[] = [
-			dedup(),
-			instance({min: options.instance as number}),
-		];
+		const transforms: Transform[] = [dedup()];
 
+		if (opts.instance) transforms.push(instance({min: opts.instanceMin}));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
