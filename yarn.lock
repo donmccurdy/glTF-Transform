@@ -8129,10 +8129,10 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-property-graph@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-1.1.0.tgz#4914a9dac0be48d2e9f5f14b2de2e65ab3be90fa"
-  integrity sha512-zaS0ktlJ4TDS0fnlQyFw+YgRzhhvjJISq4OjS7glBuB5FtSIpqvzrr5E2yz7QcuiEfLO/OLgDvxCpwOEV78k7Q==
+property-graph@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-1.2.0.tgz#332b59bc9e7e265879e252a9374d778ecea468ba"
+  integrity sha512-dbJCp1F/uG0G9ZhkJ0GKDoz9MOAtJHvtWVK+9UNOJewkXZVebuaPAAxh27ROJDHGLdLw+DkCGNBk9Le5DRTFJQ==
 
 proto-list@~1.2.1:
   version "1.2.4"
