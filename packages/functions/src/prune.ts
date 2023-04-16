@@ -62,7 +62,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
  *
  * No options are currently implemented for this function.
  */
-export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transform {
+export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
 	const propertyTypes = new Set(options.propertyTypes);
@@ -209,7 +209,7 @@ export const prune = function (_options: PruneOptions = PRUNE_DEFAULTS): Transfo
 			disposed[prop.propertyType]++;
 		}
 	});
-};
+}
 
 /**
  * Lists vertex attribute semantics that are unused when rendering a given primitive.

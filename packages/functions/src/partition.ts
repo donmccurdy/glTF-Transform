@@ -29,7 +29,7 @@ const PARTITION_DEFAULTS: Required<PartitionOptions> = {
  * document.getRoot().listBuffers(); // → [Buffer, Buffer, ...]
  * ```
  */
-const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform => {
+export function partition(_options: PartitionOptions = PARTITION_DEFAULTS): Transform {
 	const options = { ...PARTITION_DEFAULTS, ..._options } as Required<PartitionOptions>;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
@@ -46,7 +46,7 @@ const partition = (_options: PartitionOptions = PARTITION_DEFAULTS): Transform =
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 function partitionMeshes(doc: Document, logger: ILogger, options: PartitionOptions): void {
 	const existingURIs = new Set<string>(
@@ -118,5 +118,3 @@ function createBufferURI(basename: string, existing: Set<string>): string {
 	while (existing.has(uri)) uri = `${basename}_${i++}.bin`;
 	return uri;
 }
-
-export { partition };

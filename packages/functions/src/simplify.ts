@@ -66,7 +66,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * References:
  * - https://github.com/zeux/meshoptimizer/blob/master/js/README.md#simplifier
  */
-export const simplify = (_options: SimplifyOptions): Transform => {
+export function simplify(_options: SimplifyOptions): Transform {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 
 	const simplifier = options.simplifier as typeof MeshoptSimplifier | undefined;
@@ -102,7 +102,7 @@ export const simplify = (_options: SimplifyOptions): Transform => {
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 export function simplifyPrimitive(document: Document, prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;

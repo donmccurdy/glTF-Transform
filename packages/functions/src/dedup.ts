@@ -47,7 +47,7 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
  * document.getRoot().listMeshes(); // → [Mesh]
  * ```
  */
-export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transform {
+export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	const options = { ...DEDUP_DEFAULTS, ..._options } as Required<DedupOptions>;
 
 	const propertyTypes = new Set(options.propertyTypes);
@@ -68,7 +68,7 @@ export const dedup = function (_options: DedupOptions = DEDUP_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 function dedupAccessors(document: Document): void {
 	const logger = document.getLogger();

@@ -22,7 +22,7 @@ const UNPARTITION_DEFAULTS: Required<UnpartitionOptions> = {};
  * document.getRoot().listBuffers(); // → [Buffer]
  * ```
  */
-const unpartition = (_options: UnpartitionOptions = UNPARTITION_DEFAULTS): Transform => {
+export function unpartition(_options: UnpartitionOptions = UNPARTITION_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...UNPARTITION_DEFAULTS, ..._options } as Required<UnpartitionOptions>;
 
@@ -41,6 +41,4 @@ const unpartition = (_options: UnpartitionOptions = UNPARTITION_DEFAULTS): Trans
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
-
-export { unpartition };
+}

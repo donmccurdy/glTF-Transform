@@ -87,7 +87,7 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
  * );
  * ```
  */
-export const textureCompress = function (_options: TextureCompressOptions): Transform {
+export function textureCompress(_options: TextureCompressOptions): Transform {
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 	const targetFormat = options.targetFormat as Format | undefined;
@@ -169,7 +169,7 @@ export const textureCompress = function (_options: TextureCompressOptions): Tran
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 /**
  * Optimizes a single {@link Texture}, optionally resizing or converting to JPEG, PNG, WebP, or AVIF formats.
