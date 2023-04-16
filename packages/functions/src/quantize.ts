@@ -84,7 +84,7 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
  * Quantizes vertex attributes with `KHR_mesh_quantization`, reducing the size and memory footprint
  * of the file.
  */
-const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
+export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform {
 	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
@@ -125,7 +125,7 @@ const quantize = (_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform => {
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 function quantizePrimitive(
 	doc: Document,
@@ -494,5 +494,3 @@ function fromTransform(transform: VectorTransform<vec3>): mat4 {
 		transform.scale,
 	]) as mat4;
 }
-
-export { quantize };

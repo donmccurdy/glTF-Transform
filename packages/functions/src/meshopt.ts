@@ -37,7 +37,7 @@ const NAME = 'meshopt';
  * );
  * ```
  */
-export const meshopt = (_options: MeshoptOptions): Transform => {
+export function meshopt(_options: MeshoptOptions): Transform {
 	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;
 	const encoder = options.encoder as typeof MeshoptEncoder | undefined;
 
@@ -72,4 +72,4 @@ export const meshopt = (_options: MeshoptOptions): Transform => {
 						: EXTMeshoptCompression.EncoderMethod.FILTER,
 			});
 	});
-};
+}

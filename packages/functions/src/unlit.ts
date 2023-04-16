@@ -1,7 +1,7 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
 
-export const unlit = (): Transform => {
+export function unlit(): Transform {
 	return (doc: Document): void => {
 		const unlitExtension = doc.createExtension(KHRMaterialsUnlit) as KHRMaterialsUnlit;
 		const unlit = unlitExtension.createUnlit();
@@ -11,4 +11,4 @@ export const unlit = (): Transform => {
 				material.setExtension('KHR_materials_unlit', unlit);
 			});
 	};
-};
+}

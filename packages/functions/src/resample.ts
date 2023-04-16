@@ -28,7 +28,7 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = { tolerance: 1e-4 };
  *
  * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
  */
-export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform => {
+export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
 
 	return createTransform(NAME, async (document: Document, context?: TransformContext): Promise<void> => {
@@ -76,7 +76,7 @@ export const resample = (_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-};
+}
 
 function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPath, options: ResampleOptions): void {
 	const input = sampler.getInput()!.clone().setSparse(false);
