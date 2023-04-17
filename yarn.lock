@@ -3519,9 +3519,9 @@ csso@^4.0.2:
     css-tree "^1.1.2"
 
 csv-stringify@^6.2.4:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-6.3.0.tgz#21ae523c5c0b25f16d8625bde45dc1b4b5b77eb0"
-  integrity sha512-kTnnBkkLmAR1G409aUdShppWUClNbBQZXhrKrXzKYBGw4yfROspiFvVmjbKonCrdGfwnqwMXKLQG7ej7K/jwjg==
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-6.3.2.tgz#0d5105dcf6f5a6605262d1a008883120684db164"
+  integrity sha512-dD9gfbxNKa5v90NHiE2Qd6F9I52GtJjGTfowwzqiNDZD/+NPW3h19d2Nvv311a8QUW11rYRobco27nvVAnCrLw==
 
 currently-unhandled@^0.4.1:
   version "0.4.1"
