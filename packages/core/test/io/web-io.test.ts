@@ -67,7 +67,7 @@ test.serial('read glb + resources', async (t) => {
 		new Uint8Array(2),
 		new Uint8Array(1),
 		BufferUtils.concat([header, jsonChunk, binaryChunk]),
-	];
+	].map(toArrayBuffer);
 
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
@@ -99,22 +99,26 @@ test.serial('read glb + resources', async (t) => {
 });
 
 test.serial('read gltf', async (t) => {
-	const images = [new Uint8Array(4), new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)];
+	const json = JSON.stringify({
+		asset: { version: '2.0' },
+		scenes: [{ name: 'Default Scene' }],
+		images: [
+			{ uri: 'image1.png' },
+			{ uri: '/abs/path/image2.png' },
+			{ uri: './rel/path/image3.png' },
+			{ uri: 'rel/path/image3.png' },
+		],
+	});
+	const gltf = toArrayBuffer(BufferUtils.encodeText(json));
+	const images = [new Uint8Array(4), new Uint8Array(3), new Uint8Array(2), new Uint8Array(1)].map(toArrayBuffer);
+	const responses = [...images, gltf];
 
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
-		arrayBuffer: () => images.pop(),
-		text: () =>
-			JSON.stringify({
-				asset: { version: '2.0' },
-				scenes: [{ name: 'Default Scene' }],
-				images: [
-					{ uri: 'image1.png' },
-					{ uri: '/abs/path/image2.png' },
-					{ uri: './rel/path/image3.png' },
-					{ uri: 'rel/path/image3.png' },
-				],
-			}),
+		arrayBuffer: () => responses.pop(),
+		text: () => {
+			throw new Error('Do not call.');
+		},
 	});
 
 	const io = new WebIO();
@@ -144,13 +148,18 @@ test.serial('read + data URIs', async (t) => {
 	mockWindow('https://www.example.com/test');
 	const fetchedPaths = mockFetch({
 		arrayBuffer: () => {
+			return toArrayBuffer(
+				BufferUtils.encodeText(
+					JSON.stringify({
+						asset: { version: '2.0' },
+						images: uris.map((uri) => ({ uri })),
+					})
+				)
+			);
+		},
+		text: () => {
 			throw new Error('Do not call.');
 		},
-		text: () =>
-			JSON.stringify({
-				asset: { version: '2.0' },
-				images: uris.map((uri) => ({ uri })),
-			}),
 	});
 
 	const io = new WebIO();
@@ -201,3 +210,24 @@ test.serial('readJSON + data URIs', async (t) => {
 	t.deepEqual(Array.from(textures[1].getImage()), Array.from(images[1]), 'reads texture 1');
 	t.deepEqual(Array.from(textures[2].getImage()), Array.from(images[2]), 'reads texture 2');
 });
+
+test.serial('read + blob URIs', async (t) => {
+	mockWindow('https://www.example.com/test');
+	mockFetch({
+		arrayBuffer: () => BufferUtils.createBufferFromDataURI(SAMPLE_GLB),
+		text: () => {
+			throw new Error('Do not call.');
+		},
+		json: () => {
+			throw new Error('Do not call.');
+		},
+	});
+
+	const io = new WebIO();
+	const document = await io.read('blob:nonsense');
+	t.is(document.getRoot().listBuffers().length, 1, 'reads a GLB from Blob URI');
+});
+
+function toArrayBuffer(view: Uint8Array): ArrayBuffer {
+	return view.slice(view.byteOffset, view.byteLength);
+}

@@ -3,7 +3,7 @@ import type { Document } from '../document.js';
 import type { Extension } from '../extension.js';
 import type { JSONDocument } from '../json-document.js';
 import type { GLTF } from '../types/gltf.js';
-import { BufferUtils, FileUtils, HTTPUtils, ILogger, Logger, uuid } from '../utils/index.js';
+import { BufferUtils, FileUtils, ILogger, Logger, uuid } from '../utils/index.js';
 import { GLTFReader } from './reader.js';
 import { GLTFWriter, WriterOptions } from './writer.js';
 
@@ -46,7 +46,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Registers extensions, enabling I/O class to read and write glTF assets requiring them. */
-	public registerExtensions(extensions: typeof Extension[]): this {
+	public registerExtensions(extensions: (typeof Extension)[]): this {
 		for (const extension of extensions) {
 			this._extensions.add(extension);
 			extension.register();
@@ -91,8 +91,15 @@ export abstract class PlatformIO {
 
 	/** Loads a URI and returns a {@link JSONDocument} struct, without parsing. */
 	public async readAsJSON(uri: string): Promise<JSONDocument> {
-		const isGLB = uri.match(/^data:application\/octet-stream;/) || this.detectFormat(uri) === Format.GLB;
-		return isGLB ? this._readGLB(uri) : this._readGLTF(uri);
+		const view = await this.readURI(uri, 'view');
+		this.lastReadBytes = view.byteLength;
+		const jsonDoc = isGLB(view)
+			? this._binaryToJSON(view)
+			: { json: JSON.parse(BufferUtils.decodeText(view)), resources: {} };
+		// Read external resources first, before Data URIs are replaced.
+		await this._readResourcesExternal(jsonDoc, this.dirname(uri));
+		this._readResourcesInternal(jsonDoc);
+		return jsonDoc;
 	}
 
 	/** Converts glTF-formatted JSON and a resource map to a {@link Document}. */
@@ -175,34 +182,6 @@ export abstract class PlatformIO {
 	 * Internal.
 	 */
 
-	/** @hidden */
-	protected detectFormat(uri: string): Format {
-		// Overriden by WebIO, which only uses HTTPUtils.
-		const extension = HTTPUtils.isAbsoluteURL(uri) ? HTTPUtils.extension(uri) : FileUtils.extension(uri);
-		return extension === 'glb' ? Format.GLB : Format.GLTF;
-	}
-
-	private async _readGLTF(uri: string): Promise<JSONDocument> {
-		this.lastReadBytes = 0;
-		const jsonContent = await this.readURI(uri, 'text');
-		this.lastReadBytes += jsonContent.length;
-		const jsonDoc: JSONDocument = { json: JSON.parse(jsonContent), resources: {} };
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, this.dirname(uri));
-		this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
-	}
-
-	private async _readGLB(uri: string): Promise<JSONDocument> {
-		const view = await this.readURI(uri, 'view');
-		this.lastReadBytes = view.byteLength;
-		const jsonDoc = this._binaryToJSON(view);
-		// Read external resources first, before Data URIs are replaced.
-		await this._readResourcesExternal(jsonDoc, this.dirname(uri));
-		this._readResourcesInternal(jsonDoc);
-		return jsonDoc;
-	}
-
 	private async _readResourcesExternal(jsonDoc: JSONDocument, base: string): Promise<void> {
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
@@ -278,11 +257,8 @@ export abstract class PlatformIO {
 	/** Internal version of binaryToJSON; does not warn about external resources. */
 	private _binaryToJSON(glb: Uint8Array): JSONDocument {
 		// Decode and verify GLB header.
-		const header = new Uint32Array(glb.buffer, glb.byteOffset, 3);
-		if (header[0] !== 0x46546c67) {
-			throw new Error('Invalid glTF asset.');
-		} else if (header[1] !== 2) {
-			throw new Error(`Unsupported glTF binary version, "${header[1]}".`);
+		if (!isGLB(glb)) {
+			throw new Error('Invalid glTF 2.0 binary.');
 		}
 
 		// Decode JSON chunk.
@@ -322,4 +298,10 @@ function isExternalBuffer(jsonDocument: JSONDocument, bufferDef: GLTF.IBuffer): 
 
 function isExternalImage(jsonDocument: JSONDocument, imageDef: GLTF.IImage): boolean {
 	return imageDef.uri !== undefined && !(imageDef.uri in jsonDocument.resources) && imageDef.bufferView === undefined;
+}
+
+function isGLB(view: Uint8Array): boolean {
+	if (view.byteLength < 3 * Uint32Array.BYTES_PER_ELEMENT) return false;
+	const header = new Uint32Array(view.buffer, view.byteOffset, 3);
+	return header[0] === 0x46546c67 && header[1] === 2;
 }
