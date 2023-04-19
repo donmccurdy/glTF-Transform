@@ -301,6 +301,7 @@ function isExternalImage(jsonDocument: JSONDocument, imageDef: GLTF.IImage): boo
 }
 
 function isGLB(view: Uint8Array): boolean {
+	if (view.byteLength < 3 * Uint32Array.BYTES_PER_ELEMENT) return false;
 	const header = new Uint32Array(view.buffer, view.byteOffset, 3);
 	return header[0] === 0x46546c67 && header[1] === 2;
 }
