@@ -1,6 +1,7 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
+import { weld } from './weld.js';
 
 const NAME = 'draco';
 
@@ -36,8 +37,10 @@ export const DRACO_DEFAULTS: DracoOptions = {
  */
 export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
 	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
-	return createTransform(NAME, (doc: Document): void => {
-		doc.createExtension(KHRDracoMeshCompression)
+	return createTransform(NAME, async (document: Document): Promise<void> => {
+		await document.transform(weld({ tolerance: 0 }));
+		document
+			.createExtension(KHRDracoMeshCompression)
 			.setRequired(true)
 			.setEncoderOptions({
 				method:
