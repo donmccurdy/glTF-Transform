@@ -662,11 +662,7 @@ ${underline('References')}
 		default: DRACO_DEFAULTS.quantizationVolume,
 	})
 	.action(({ args, options, logger }) =>
-		// Include a lossless weld — Draco requires indices.
-		Session.create(io, logger, args.input, args.output).transform(
-			weld({ tolerance: 0 }),
-			draco(options as unknown as DracoOptions)
-		)
+		Session.create(io, logger, args.input, args.output).transform(draco(options as unknown as DracoOptions))
 	);
 
 // MESHOPT
