@@ -353,8 +353,17 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	const excluded = new Set<Primitive>();
 
 	// Support compressing only indexed, mode=TRIANGLES primitives.
+	let i = 0;
 	for (const mesh of doc.getRoot().listMeshes()) {
 		for (const prim of mesh.listPrimitives()) {
+			
+			if(i++ % 2 !== 0) 
+			{
+				logger.info(`[${NAME}] Skip Primitive ${i}.`);
+				continue;
+			}
+			logger.info(`[${NAME}] Select Primitive ${i}.`);
+
 			if (!prim.getIndices()) {
 				excluded.add(prim);
 				logger.warn(`[${NAME}] Skipping Draco compression on non-indexed primitive.`);
