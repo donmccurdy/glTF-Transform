@@ -43,7 +43,7 @@
 		"inquirer": "^9.1.4",
 		"ktx-parse": "^0.5.0",
 		"language-tags": "^1.0.8",
-		"listr2": "^5.0.7",
+		"listr2": "^6.0.0",
 		"meshoptimizer": "^0.19.0",
 		"micromatch": "^4.0.5",
 		"mikktspace": "^1.1.1",
