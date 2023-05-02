@@ -23,8 +23,8 @@
 		"node >= 14"
 	],
 	"scripts": {
-		"dist": "microbundle --format modern,cjs --no-compress",
-		"watch": "microbundle watch --format modern,cjs --no-compress",
+		"dist": "microbundle --format modern,cjs",
+		"watch": "microbundle watch --format modern,cjs",
 		"watch:debug": "microbundle watch --format modern,cjs --no-compress"
 	},
 	"keywords": [
