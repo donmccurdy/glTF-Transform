@@ -5779,6 +5779,11 @@ just-diff@^6.0.0:
   resolved "https://registry.yarnpkg.com/just-diff/-/just-diff-6.0.2.tgz#03b65908543ac0521caf6d8eb85035f7d27ea285"
   integrity sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==
 
+keyframe-resample@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.7.tgz#e5ea38e04220d4f0d774a1a2dccbcdc45270fd4b"
+  integrity sha512-hmOOwBIzAP8oTORplB16TkvIikJ/RylsObuurZTlWx858mJwIPBJXx2NyJtZLj04mCNkGZUT0IDPy4pByDiRvg==
+
 kind-of@^6.0.2, kind-of@^6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"

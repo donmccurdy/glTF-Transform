@@ -23,8 +23,8 @@
 		"node >= 14"
 	],
 	"scripts": {
-		"dist": "microbundle --format modern,cjs",
-		"watch": "microbundle watch --format modern,cjs",
+		"dist": "microbundle --format modern,cjs --no-compress",
+		"watch": "microbundle watch --format modern,cjs --no-compress",
 		"watch:debug": "microbundle watch --format modern,cjs --no-compress"
 	},
 	"keywords": [
@@ -37,6 +37,7 @@
 	"dependencies": {
 		"@gltf-transform/core": "^3.2.1",
 		"@gltf-transform/extensions": "^3.2.1",
+		"keyframe-resample": "^0.0.7",
 		"ktx-parse": "^0.5.0",
 		"ndarray": "^1.0.19",
 		"ndarray-lanczos": "^0.3.0",

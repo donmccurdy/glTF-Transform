@@ -3,15 +3,14 @@ import {
 	AnimationSampler,
 	Document,
 	GLTF,
-	MathUtils,
 	PropertyType,
 	Root,
 	Transform,
 	TransformContext,
 } from '@gltf-transform/core';
-import quat, { getAngle, slerp } from 'gl-matrix/quat';
 import { dedup } from './dedup.js';
 import { createTransform, isTransformPending } from './utils.js';
+import { ready, resampleWASM } from 'keyframe-resample';
 
 const NAME = 'resample';
 
@@ -36,6 +35,8 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const srcAccessorCount = document.getRoot().listAccessors().length;
 		const logger = document.getLogger();
 
+		await ready;
+
 		let didSkipMorphTargets = false;
 
 		for (const animation of document.getRoot().listAnimations()) {
@@ -46,14 +47,40 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 			}
 
 			for (const sampler of animation.listSamplers()) {
-				if (samplerTargetPaths.get(sampler) === 'weights') {
+				const targetPath = samplerTargetPaths.get(sampler)!;
+				if (targetPath === 'weights') {
 					didSkipMorphTargets = true;
 					continue;
 				}
-				if (sampler.getInterpolation() === 'STEP' || sampler.getInterpolation() === 'LINEAR') {
-					accessorsVisited.add(sampler.getInput()!);
-					accessorsVisited.add(sampler.getOutput()!);
-					optimize(sampler, samplerTargetPaths.get(sampler)!, options);
+
+				const samplerInterpolation = sampler.getInterpolation();
+
+				if (samplerInterpolation === 'STEP' || samplerInterpolation === 'LINEAR') {
+					const input = sampler.getInput()!;
+					const output = sampler.getOutput()!;
+
+					accessorsVisited.add(input);
+					accessorsVisited.add(output);
+
+					const times = input.getArray() as Float32Array;
+					const values = output.getArray() as Float32Array;
+					const elementSize = values.length / times.length;
+
+					const srcCount = times.length;
+					let dstCount: number;
+
+					if (samplerInterpolation === 'STEP') {
+						dstCount = resampleWASM(times, values, 'step');
+					} else if (targetPath === 'rotation') {
+						dstCount = resampleWASM(times, values, 'slerp');
+					} else {
+						dstCount = resampleWASM(times, values, 'lerp');
+					}
+
+					if (dstCount < srcCount) {
+						sampler.setInput(input.clone().setArray(times.slice(0, dstCount)));
+						sampler.setOutput(output.clone().setArray(values.slice(0, dstCount * elementSize)));
+					}
 				}
 			}
 		}
@@ -76,86 +103,4 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
-}
-
-function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPath, options: ResampleOptions): void {
-	const input = sampler.getInput()!.clone().setSparse(false);
-	const output = sampler.getOutput()!.clone().setSparse(false);
-
-	const tolerance = options.tolerance as number;
-	const interpolation = sampler.getInterpolation();
-
-	const lastIndex = input.getCount() - 1;
-	const tmp: number[] = [];
-	const value: number[] = [];
-	const valueNext: number[] = [];
-	const valuePrev: number[] = [];
-
-	let writeIndex = 1;
-
-	for (let i = 1; i < lastIndex; ++i) {
-		const timePrev = input.getScalar(writeIndex - 1);
-		const time = input.getScalar(i);
-		const timeNext = input.getScalar(i + 1);
-		const t = (time - timePrev) / (timeNext - timePrev);
-
-		let keep = false;
-
-		// Remove unnecessary adjacent keyframes.
-		if (time !== timeNext && (i !== 1 || time !== input.getScalar(0))) {
-			output.getElement(writeIndex - 1, valuePrev);
-			output.getElement(i, value);
-			output.getElement(i + 1, valueNext);
-
-			if (interpolation === 'LINEAR' && path === 'rotation') {
-				// Prune keyframes colinear with prev/next keyframes.
-				const sample = slerp(tmp as quat, valuePrev as quat, valueNext as quat, t) as number[];
-				const angle = getAngle(valuePrev as quat, value as quat) + getAngle(value as quat, valueNext as quat);
-				keep = !MathUtils.eq(value, sample, tolerance) || angle + Number.EPSILON >= Math.PI;
-			} else if (interpolation === 'LINEAR') {
-				// Prune keyframes colinear with prev/next keyframes.
-				const sample = vlerp(tmp, valuePrev, valueNext, t);
-				keep = !MathUtils.eq(value, sample, tolerance);
-			} else if (interpolation === 'STEP') {
-				// Prune keyframes identical to prev/next keyframes.
-				keep = !MathUtils.eq(value, valuePrev) || !MathUtils.eq(value, valueNext);
-			}
-		}
-
-		// In-place compaction.
-		if (keep) {
-			if (i !== writeIndex) {
-				input.setScalar(writeIndex, input.getScalar(i));
-				output.setElement(writeIndex, output.getElement(i, tmp));
-			}
-			writeIndex++;
-		}
-	}
-
-	// Flush last keyframe (compaction looks ahead).
-	if (lastIndex > 0) {
-		input.setScalar(writeIndex, input.getScalar(lastIndex));
-		output.setElement(writeIndex, output.getElement(lastIndex, tmp));
-		writeIndex++;
-	}
-
-	// If the sampler was optimized, truncate and save the results. If not, clean up.
-	if (writeIndex !== input.getCount()) {
-		input.setArray(input.getArray()!.slice(0, writeIndex));
-		output.setArray(output.getArray()!.slice(0, writeIndex * output.getElementSize()));
-		sampler.setInput(input);
-		sampler.setOutput(output);
-	} else {
-		input.dispose();
-		output.dispose();
-	}
-}
-
-function lerp(v0: number, v1: number, t: number): number {
-	return v0 * (1 - t) + v1 * t;
-}
-
-function vlerp(out: number[], a: number[], b: number[], t: number): number[] {
-	for (let i = 0; i < a.length; i++) out[i] = lerp(a[i], b[i], t);
-	return out;
 }
