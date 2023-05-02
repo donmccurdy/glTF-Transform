@@ -37,22 +37,13 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		await ready;
 
-		let didSkipMorphTargets = false;
-
 		for (const animation of document.getRoot().listAnimations()) {
-			// Skip morph targets, see https://github.com/donmccurdy/glTF-Transform/issues/290.
 			const samplerTargetPaths = new Map<AnimationSampler, GLTF.AnimationChannelTargetPath>();
 			for (const channel of animation.listChannels()) {
 				samplerTargetPaths.set(channel.getSampler()!, channel.getTargetPath()!);
 			}
 
 			for (const sampler of animation.listSamplers()) {
-				const targetPath = samplerTargetPaths.get(sampler)!;
-				if (targetPath === 'weights') {
-					didSkipMorphTargets = true;
-					continue;
-				}
-
 				const samplerInterpolation = sampler.getInterpolation();
 
 				if (samplerInterpolation === 'STEP' || samplerInterpolation === 'LINEAR') {
@@ -62,19 +53,19 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					accessorsVisited.add(input);
 					accessorsVisited.add(output);
 
-					const times = input.getArray() as Float32Array;
-					const values = output.getArray() as Float32Array;
+					const times = input.getArray()!.slice() as Float32Array; // TODO(cleanup)
+					const values = output.getArray()!.slice() as Float32Array; // TODO(cleanup)
 					const elementSize = values.length / times.length;
 
 					const srcCount = times.length;
 					let dstCount: number;
 
 					if (samplerInterpolation === 'STEP') {
-						dstCount = resampleWASM(times, values, 'step');
-					} else if (targetPath === 'rotation') {
-						dstCount = resampleWASM(times, values, 'slerp');
+						dstCount = resampleWASM(times, values, 'step', options.tolerance);
+					} else if (samplerTargetPaths.get(sampler) === 'rotation') {
+						dstCount = resampleWASM(times, values, 'slerp', options.tolerance);
 					} else {
-						dstCount = resampleWASM(times, values, 'lerp');
+						dstCount = resampleWASM(times, values, 'lerp', options.tolerance);
 					}
 
 					if (dstCount < srcCount) {
@@ -95,10 +86,6 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const dstAccessorCount = document.getRoot().listAccessors().length;
 		if (dstAccessorCount > srcAccessorCount && !isTransformPending(context, NAME, 'dedup')) {
 			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
-		}
-
-		if (didSkipMorphTargets) {
-			logger.warn(`${NAME}: Skipped optimizing morph target keyframes, not yet supported.`);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
