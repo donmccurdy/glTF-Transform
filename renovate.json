@@ -9,6 +9,13 @@
                 "typedoc"
             ],
             "enabled": false
-        }
+        },
+        {
+          "description": "Node.js v14 EOL",
+          "matchPackageNames": [
+              "listr2"
+          ],
+          "enabled": false
+      }
     ]
 }
