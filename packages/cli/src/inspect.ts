@@ -107,7 +107,7 @@ function formatPropertyReport(property: AnyPropertyReport, index: number, format
 		if (Array.isArray(value)) {
 			row[key] = value.join(', ');
 		} else if (key.match(/size/i) && format !== TableFormat.CSV) {
-			row[key] = value > 0 ? formatBytes(value as number) : '';
+			row[key] = (value as number) > 0 ? formatBytes(value as number) : '';
 		} else if (typeof value === 'number') {
 			row[key] = format !== TableFormat.CSV ? formatLong(value) : value;
 		} else if (typeof value === 'boolean') {

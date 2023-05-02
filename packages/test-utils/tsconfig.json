@@ -5,7 +5,6 @@
       "../global.d.ts"
     ],
     "compilerOptions": {
-      "outDir": "dist",
-      "importsNotUsedAsValues": "error",
+      "outDir": "dist"
     }
   }
