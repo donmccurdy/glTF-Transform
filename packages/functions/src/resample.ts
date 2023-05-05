@@ -16,6 +16,8 @@ import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
 
+const EMPTY_ARRAY = new Float32Array(0);
+
 export interface ResampleOptions {
 	ready?: Promise<void>;
 	resample?: typeof resampleDebug;
@@ -92,8 +94,16 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					}
 
 					if (dstCount < srcCount) {
+						// Clone the input/output accessors, without cloning their underlying
+						// arrays. Then assign the resampled data.
+						const inputArray = input.getArray()!;
+						const outputArray = output.getArray()!;
+						input.setArray(EMPTY_ARRAY);
+						output.setArray(EMPTY_ARRAY);
 						sampler.setInput(input.clone().setArray(times.slice(0, dstCount)));
 						sampler.setOutput(output.clone().setArray(values.slice(0, dstCount * elementSize)));
+						input.setArray(inputArray);
+						output.setArray(outputArray);
 					}
 				}
 			}
