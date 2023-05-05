@@ -1406,7 +1406,13 @@ and LINEAR interpolation. Resampling is nearly lossless, with configurable
 		default: 1e-4,
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(resample(options as unknown as ResampleOptions))
+		Session.create(io, logger, args.input, args.output).transform(
+			resample({
+				ready: resampleReady,
+				resample: resampleWASM,
+				...(options as unknown as ResampleOptions),
+			})
+		)
 	);
 
 // SEQUENCE
