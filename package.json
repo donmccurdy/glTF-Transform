@@ -44,7 +44,7 @@
     "eslint-config-prettier": "8.8.0",
     "gl-matrix": "^3.4.3",
     "gltf-validator": "2.0.0-dev.3.9",
-    "lerna": "6.6.1",
+    "lerna": "6.6.2",
     "meshoptimizer": "0.19.0",
     "microbundle": "0.15.1",
     "mikktspace": "1.1.1",
