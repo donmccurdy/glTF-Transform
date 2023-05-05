@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import mikktspace from 'mikktspace';
 import sharp from 'sharp';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
 import {
 	CenterOptions,
@@ -282,7 +283,11 @@ commands or using the scripting API.
 			transforms.push(weld());
 		}
 
-		transforms.push(resample(), prune({ keepAttributes: false, keepLeaves: false }), sparse());
+		transforms.push(
+			resample({ ready: resampleReady, resample: resampleWASM }),
+			prune({ keepAttributes: false, keepLeaves: false }),
+			sparse()
+		);
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {

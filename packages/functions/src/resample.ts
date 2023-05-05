@@ -3,29 +3,49 @@ import {
 	AnimationSampler,
 	Document,
 	GLTF,
+	MathUtils,
 	PropertyType,
 	Root,
 	Transform,
 	TransformContext,
+	TypedArray,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { createTransform, isTransformPending } from './utils.js';
-import { ready, resampleWASM } from 'keyframe-resample';
+import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
 
 export interface ResampleOptions {
+	ready?: Promise<void>;
+	resample?: typeof resampleDebug;
 	tolerance?: number;
 }
 
-const RESAMPLE_DEFAULTS: Required<ResampleOptions> = { tolerance: 1e-4 };
+const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
+	ready: Promise.resolve(),
+	resample: resampleDebug,
+	tolerance: 1e-4,
+};
 
 /**
  * Resample {@link Animation}s, losslessly deduplicating keyframes to reduce file size. Duplicate
  * keyframes are commonly present in animation 'baked' by the authoring software to apply IK
  * constraints or other software-specific features. Based on THREE.KeyframeTrack.optimize().
  *
- * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
+ * Result: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) → (0,0,1,1,0,0)
+ *
+ * Example:
+ *
+ * ```
+ * import { ready, resample } from 'keyframe-resample';
+ *
+ * // JavaScript (slower)
+ * await document.transform(resample());
+ *
+ * // WebAssembly (faster)
+ * await document.transform(resample({ ready, resample }));
+ * ```
  */
 export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
@@ -34,6 +54,9 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const accessorsVisited = new Set<Accessor>();
 		const srcAccessorCount = document.getRoot().listAccessors().length;
 		const logger = document.getLogger();
+
+		const ready = options.ready;
+		const resample = options.resample;
 
 		await ready;
 
@@ -53,19 +76,19 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					accessorsVisited.add(input);
 					accessorsVisited.add(output);
 
-					const times = input.getArray()!.slice() as Float32Array; // TODO(cleanup)
-					const values = output.getArray()!.slice() as Float32Array; // TODO(cleanup)
+					const times = toFloat32Array(input.getArray()!, input.getComponentType(), input.getNormalized());
+					const values = toFloat32Array(output.getArray()!, input.getComponentType(), input.getNormalized());
 					const elementSize = values.length / times.length;
 
 					const srcCount = times.length;
 					let dstCount: number;
 
 					if (samplerInterpolation === 'STEP') {
-						dstCount = resampleWASM(times, values, 'step', options.tolerance);
+						dstCount = resample(times, values, 'step', options.tolerance);
 					} else if (samplerTargetPaths.get(sampler) === 'rotation') {
-						dstCount = resampleWASM(times, values, 'slerp', options.tolerance);
+						dstCount = resample(times, values, 'slerp', options.tolerance);
 					} else {
-						dstCount = resampleWASM(times, values, 'lerp', options.tolerance);
+						dstCount = resample(times, values, 'lerp', options.tolerance);
 					}
 
 					if (dstCount < srcCount) {
@@ -90,4 +113,19 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 
 		logger.debug(`${NAME}: Complete.`);
 	});
+}
+
+function toFloat32Array(
+	srcArray: TypedArray,
+	componentType: GLTF.AccessorComponentType,
+	normalized: boolean
+): Float32Array {
+	const dstArray = new Float32Array(srcArray);
+	if (!normalized) return dstArray;
+
+	for (let i = 0; i < dstArray.length; i++) {
+		dstArray[i] = MathUtils.decodeNormalizedInt(dstArray[i], componentType);
+	}
+
+	return dstArray;
 }

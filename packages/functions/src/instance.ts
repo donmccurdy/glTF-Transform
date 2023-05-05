@@ -36,13 +36,14 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
-		const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 
 		if (root.listAnimations().length) {
 			logger.warn(`${NAME}: Instancing is not currently supported for animated models.`);
 			logger.debug(`${NAME}: Complete.`);
 			return;
 		}
+
+		const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 
 		let numBatches = 0;
 		let numInstances = 0;
