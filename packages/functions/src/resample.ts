@@ -78,32 +78,46 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					accessorsVisited.add(input);
 					accessorsVisited.add(output);
 
-					const times = toFloat32Array(input.getArray()!, input.getComponentType(), input.getNormalized());
-					const values = toFloat32Array(output.getArray()!, input.getComponentType(), input.getNormalized());
-					const elementSize = values.length / times.length;
+					// prettier-ignore
+					const tmpTimes = toFloat32Array(
+						input.getArray()!,
+						input.getComponentType(),
+						input.getNormalized()
+					);
+					const tmpValues = toFloat32Array(
+						output.getArray()!,
+						output.getComponentType(),
+						output.getNormalized()
+					);
 
-					const srcCount = times.length;
+					const elementSize = tmpValues.length / tmpTimes.length;
+					const srcCount = tmpTimes.length;
 					let dstCount: number;
 
 					if (samplerInterpolation === 'STEP') {
-						dstCount = resample(times, values, 'step', options.tolerance);
+						dstCount = resample(tmpTimes, tmpValues, 'step', options.tolerance);
 					} else if (samplerTargetPaths.get(sampler) === 'rotation') {
-						dstCount = resample(times, values, 'slerp', options.tolerance);
+						dstCount = resample(tmpTimes, tmpValues, 'slerp', options.tolerance);
 					} else {
-						dstCount = resample(times, values, 'lerp', options.tolerance);
+						dstCount = resample(tmpTimes, tmpValues, 'lerp', options.tolerance);
 					}
 
 					if (dstCount < srcCount) {
 						// Clone the input/output accessors, without cloning their underlying
 						// arrays. Then assign the resampled data.
-						const inputArray = input.getArray()!;
-						const outputArray = output.getArray()!;
+						const srcTimes = input.getArray()!;
+						const srcValues = output.getArray()!;
+						const dstTimes = tmpTimes.slice(0, dstCount);
+						const dstValues = tmpValues.slice(0, dstCount * elementSize);
+
 						input.setArray(EMPTY_ARRAY);
 						output.setArray(EMPTY_ARRAY);
-						sampler.setInput(input.clone().setArray(times.slice(0, dstCount)));
-						sampler.setOutput(output.clone().setArray(values.slice(0, dstCount * elementSize)));
-						input.setArray(inputArray);
-						output.setArray(outputArray);
+
+						sampler.setInput(input.clone().setArray(dstTimes).setNormalized(false));
+						sampler.setOutput(output.clone().setArray(dstValues).setNormalized(false));
+
+						input.setArray(srcTimes);
+						output.setArray(srcValues);
 					}
 				}
 			}
