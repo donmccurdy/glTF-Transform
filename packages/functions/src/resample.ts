@@ -1,6 +1,7 @@
 import {
 	Accessor,
 	AnimationSampler,
+	ComponentTypeToTypedArray,
 	Document,
 	GLTF,
 	MathUtils,
@@ -8,25 +9,46 @@ import {
 	Root,
 	Transform,
 	TransformContext,
+	TypedArray,
 } from '@gltf-transform/core';
-import quat, { getAngle, slerp } from 'gl-matrix/quat';
 import { dedup } from './dedup.js';
 import { createTransform, isTransformPending } from './utils.js';
+import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
 
+const EMPTY_ARRAY = new Float32Array(0);
+
 export interface ResampleOptions {
+	ready?: Promise<void>;
+	resample?: typeof resampleDebug;
 	tolerance?: number;
 }
 
-const RESAMPLE_DEFAULTS: Required<ResampleOptions> = { tolerance: 1e-4 };
+const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
+	ready: Promise.resolve(),
+	resample: resampleDebug,
+	tolerance: 1e-4,
+};
 
 /**
  * Resample {@link Animation}s, losslessly deduplicating keyframes to reduce file size. Duplicate
  * keyframes are commonly present in animation 'baked' by the authoring software to apply IK
  * constraints or other software-specific features. Based on THREE.KeyframeTrack.optimize().
  *
- * Example: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) --> (0,0,1,1,0,0)
+ * Result: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) → (0,0,1,1,0,0)
+ *
+ * Example:
+ *
+ * ```
+ * import { ready, resample } from 'keyframe-resample';
+ *
+ * // JavaScript (slower)
+ * await document.transform(resample());
+ *
+ * // WebAssembly (faster)
+ * await document.transform(resample({ ready, resample }));
+ * ```
  */
 export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
@@ -36,24 +58,77 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const srcAccessorCount = document.getRoot().listAccessors().length;
 		const logger = document.getLogger();
 
-		let didSkipMorphTargets = false;
+		const ready = options.ready;
+		const resample = options.resample;
+
+		await ready;
 
 		for (const animation of document.getRoot().listAnimations()) {
-			// Skip morph targets, see https://github.com/donmccurdy/glTF-Transform/issues/290.
 			const samplerTargetPaths = new Map<AnimationSampler, GLTF.AnimationChannelTargetPath>();
 			for (const channel of animation.listChannels()) {
 				samplerTargetPaths.set(channel.getSampler()!, channel.getTargetPath()!);
 			}
 
 			for (const sampler of animation.listSamplers()) {
-				if (samplerTargetPaths.get(sampler) === 'weights') {
-					didSkipMorphTargets = true;
-					continue;
-				}
-				if (sampler.getInterpolation() === 'STEP' || sampler.getInterpolation() === 'LINEAR') {
-					accessorsVisited.add(sampler.getInput()!);
-					accessorsVisited.add(sampler.getOutput()!);
-					optimize(sampler, samplerTargetPaths.get(sampler)!, options);
+				const samplerInterpolation = sampler.getInterpolation();
+
+				if (samplerInterpolation === 'STEP' || samplerInterpolation === 'LINEAR') {
+					const input = sampler.getInput()!;
+					const output = sampler.getOutput()!;
+
+					accessorsVisited.add(input);
+					accessorsVisited.add(output);
+
+					// prettier-ignore
+					const tmpTimes = toFloat32Array(
+						input.getArray()!,
+						input.getComponentType(),
+						input.getNormalized()
+					);
+					const tmpValues = toFloat32Array(
+						output.getArray()!,
+						output.getComponentType(),
+						output.getNormalized()
+					);
+
+					const elementSize = tmpValues.length / tmpTimes.length;
+					const srcCount = tmpTimes.length;
+					let dstCount: number;
+
+					if (samplerInterpolation === 'STEP') {
+						dstCount = resample(tmpTimes, tmpValues, 'step', options.tolerance);
+					} else if (samplerTargetPaths.get(sampler) === 'rotation') {
+						dstCount = resample(tmpTimes, tmpValues, 'slerp', options.tolerance);
+					} else {
+						dstCount = resample(tmpTimes, tmpValues, 'lerp', options.tolerance);
+					}
+
+					if (dstCount < srcCount) {
+						// Clone the input/output accessors, without cloning their underlying
+						// arrays. Then assign the resampled data.
+						const srcTimes = input.getArray()!;
+						const srcValues = output.getArray()!;
+
+						const dstTimes = fromFloat32Array(
+							new Float32Array(tmpTimes.buffer, tmpTimes.byteOffset, dstCount),
+							input.getComponentType(),
+							input.getNormalized()
+						);
+						const dstValues = fromFloat32Array(
+							new Float32Array(tmpValues.buffer, tmpValues.byteOffset, dstCount * elementSize),
+							output.getComponentType(),
+							output.getNormalized()
+						);
+
+						input.setArray(EMPTY_ARRAY);
+						output.setArray(EMPTY_ARRAY);
+
+						sampler.setInput(input.clone().setArray(dstTimes));
+						sampler.setOutput(output.clone().setArray(dstValues));
+
+						input.setArray(srcTimes);
+						output.setArray(srcValues);
+					}
 				}
 			}
 		}
@@ -70,92 +145,40 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 		}
 
-		if (didSkipMorphTargets) {
-			logger.warn(`${NAME}: Skipped optimizing morph target keyframes, not yet supported.`);
-		}
-
 		logger.debug(`${NAME}: Complete.`);
 	});
 }
 
-function optimize(sampler: AnimationSampler, path: GLTF.AnimationChannelTargetPath, options: ResampleOptions): void {
-	const input = sampler.getInput()!.clone().setSparse(false);
-	const output = sampler.getOutput()!.clone().setSparse(false);
+/** Returns a copy of the source array, as a denormalized Float32Array. */
+function toFloat32Array(
+	srcArray: TypedArray,
+	componentType: GLTF.AccessorComponentType,
+	normalized: boolean
+): Float32Array {
+	if (srcArray instanceof Float32Array) return srcArray.slice();
+	const dstArray = new Float32Array(srcArray);
+	if (!normalized) return dstArray;
 
-	const tolerance = options.tolerance as number;
-	const interpolation = sampler.getInterpolation();
-
-	const lastIndex = input.getCount() - 1;
-	const tmp: number[] = [];
-	const value: number[] = [];
-	const valueNext: number[] = [];
-	const valuePrev: number[] = [];
-
-	let writeIndex = 1;
-
-	for (let i = 1; i < lastIndex; ++i) {
-		const timePrev = input.getScalar(writeIndex - 1);
-		const time = input.getScalar(i);
-		const timeNext = input.getScalar(i + 1);
-		const t = (time - timePrev) / (timeNext - timePrev);
-
-		let keep = false;
-
-		// Remove unnecessary adjacent keyframes.
-		if (time !== timeNext && (i !== 1 || time !== input.getScalar(0))) {
-			output.getElement(writeIndex - 1, valuePrev);
-			output.getElement(i, value);
-			output.getElement(i + 1, valueNext);
-
-			if (interpolation === 'LINEAR' && path === 'rotation') {
-				// Prune keyframes colinear with prev/next keyframes.
-				const sample = slerp(tmp as quat, valuePrev as quat, valueNext as quat, t) as number[];
-				const angle = getAngle(valuePrev as quat, value as quat) + getAngle(value as quat, valueNext as quat);
-				keep = !MathUtils.eq(value, sample, tolerance) || angle + Number.EPSILON >= Math.PI;
-			} else if (interpolation === 'LINEAR') {
-				// Prune keyframes colinear with prev/next keyframes.
-				const sample = vlerp(tmp, valuePrev, valueNext, t);
-				keep = !MathUtils.eq(value, sample, tolerance);
-			} else if (interpolation === 'STEP') {
-				// Prune keyframes identical to prev/next keyframes.
-				keep = !MathUtils.eq(value, valuePrev) || !MathUtils.eq(value, valueNext);
-			}
-		}
-
-		// In-place compaction.
-		if (keep) {
-			if (i !== writeIndex) {
-				input.setScalar(writeIndex, input.getScalar(i));
-				output.setElement(writeIndex, output.getElement(i, tmp));
-			}
-			writeIndex++;
-		}
+	for (let i = 0; i < dstArray.length; i++) {
+		dstArray[i] = MathUtils.decodeNormalizedInt(dstArray[i], componentType);
 	}
 
-	// Flush last keyframe (compaction looks ahead).
-	if (lastIndex > 0) {
-		input.setScalar(writeIndex, input.getScalar(lastIndex));
-		output.setElement(writeIndex, output.getElement(lastIndex, tmp));
-		writeIndex++;
-	}
-
-	// If the sampler was optimized, truncate and save the results. If not, clean up.
-	if (writeIndex !== input.getCount()) {
-		input.setArray(input.getArray()!.slice(0, writeIndex));
-		output.setArray(output.getArray()!.slice(0, writeIndex * output.getElementSize()));
-		sampler.setInput(input);
-		sampler.setOutput(output);
-	} else {
-		input.dispose();
-		output.dispose();
-	}
+	return dstArray;
 }
 
-function lerp(v0: number, v1: number, t: number): number {
-	return v0 * (1 - t) + v1 * t;
-}
+/** Returns a copy of the source array, with specified component type and normalization. */
+function fromFloat32Array(
+	srcArray: Float32Array,
+	componentType: GLTF.AccessorComponentType,
+	normalized: boolean
+): TypedArray {
+	if (componentType === Accessor.ComponentType.FLOAT) return srcArray.slice();
+	const TypedArray = ComponentTypeToTypedArray[componentType];
+	const dstArray = new TypedArray(srcArray.length);
 
-function vlerp(out: number[], a: number[], b: number[], t: number): number[] {
-	for (let i = 0; i < a.length; i++) out[i] = lerp(a[i], b[i], t);
-	return out;
+	for (let i = 0; i < dstArray.length; i++) {
+		dstArray[i] = normalized ? MathUtils.encodeNormalizedInt(srcArray[i], componentType) : srcArray[i];
+	}
+
+	return dstArray;
 }

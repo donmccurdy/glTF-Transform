@@ -41,6 +41,7 @@
 		"draco3dgltf": "^1.5.6",
 		"gltf-validator": "^2.0.0-dev.3.9",
 		"inquirer": "^9.1.4",
+		"keyframe-resample": "^0.0.14",
 		"ktx-parse": "^0.5.0",
 		"language-tags": "^1.0.8",
 		"listr2": "^5.0.7",
