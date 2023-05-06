@@ -1,6 +1,7 @@
 import {
 	Accessor,
 	AnimationSampler,
+	ComponentTypeToTypedArray,
 	Document,
 	GLTF,
 	MathUtils,
@@ -107,14 +108,23 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 						// arrays. Then assign the resampled data.
 						const srcTimes = input.getArray()!;
 						const srcValues = output.getArray()!;
-						const dstTimes = tmpTimes.slice(0, dstCount);
-						const dstValues = tmpValues.slice(0, dstCount * elementSize);
+
+						const dstTimes = fromFloat32Array(
+							new Float32Array(tmpTimes.buffer, tmpTimes.byteOffset, dstCount),
+							input.getComponentType(),
+							input.getNormalized()
+						);
+						const dstValues = fromFloat32Array(
+							new Float32Array(tmpValues.buffer, tmpValues.byteOffset, dstCount * elementSize),
+							output.getComponentType(),
+							output.getNormalized()
+						);
 
 						input.setArray(EMPTY_ARRAY);
 						output.setArray(EMPTY_ARRAY);
 
-						sampler.setInput(input.clone().setArray(dstTimes).setNormalized(false));
-						sampler.setOutput(output.clone().setArray(dstValues).setNormalized(false));
+						sampler.setInput(input.clone().setArray(dstTimes));
+						sampler.setOutput(output.clone().setArray(dstValues));
 
 						input.setArray(srcTimes);
 						output.setArray(srcValues);
@@ -139,16 +149,35 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 	});
 }
 
+/** Returns a copy of the source array, as a denormalized Float32Array. */
 function toFloat32Array(
 	srcArray: TypedArray,
 	componentType: GLTF.AccessorComponentType,
 	normalized: boolean
 ): Float32Array {
+	if (srcArray instanceof Float32Array) return srcArray.slice();
 	const dstArray = new Float32Array(srcArray);
 	if (!normalized) return dstArray;
 
 	for (let i = 0; i < dstArray.length; i++) {
 		dstArray[i] = MathUtils.decodeNormalizedInt(dstArray[i], componentType);
+	}
+
+	return dstArray;
+}
+
+/** Returns a copy of the source array, with specified component type and normalization. */
+function fromFloat32Array(
+	srcArray: Float32Array,
+	componentType: GLTF.AccessorComponentType,
+	normalized: boolean
+): TypedArray {
+	if (componentType === Accessor.ComponentType.FLOAT) return srcArray.slice();
+	const TypedArray = ComponentTypeToTypedArray[componentType];
+	const dstArray = new TypedArray(srcArray.length);
+
+	for (let i = 0; i < dstArray.length; i++) {
+		dstArray[i] = normalized ? MathUtils.encodeNormalizedInt(srcArray[i], componentType) : srcArray[i];
 	}
 
 	return dstArray;
