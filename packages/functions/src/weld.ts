@@ -90,6 +90,8 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * 	weld({ tolerance: 0.001 })
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;

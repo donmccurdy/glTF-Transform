@@ -5,8 +5,6 @@ import { PlatformIO } from './platform-io.js';
 import { HTTPUtils } from '../utils/index.js';
 
 /**
- * # NodeIO
- *
  * *I/O service for Node.js.*
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.
@@ -32,7 +30,7 @@ import { HTTPUtils } from '../utils/index.js';
  *
  * By default, NodeIO can only read/write paths on disk. To enable HTTP requests, provide a Fetch
  * API implementation (such as [`node-fetch`](https://www.npmjs.com/package/node-fetch)) and enable
- * {@link setAllowHTTP}. HTTP requests may optionally be configured with
+ * {@link NodeIO.setAllowHTTP setAllowHTTP}. HTTP requests may optionally be configured with
  * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters.
  *
  * ```typescript
@@ -57,7 +55,7 @@ export class NodeIO extends PlatformIO {
 	/**
 	 * Constructs a new NodeIO service. Instances are reusable. By default, only NodeIO can only
 	 * read/write paths on disk. To enable HTTP requests, provide a Fetch API implementation and
-	 * enable {@link setAllowHTTP}.
+	 * enable {@link NodeIO.setAllowHTTP setAllowHTTP}.
 	 *
 	 * @param fetch Implementation of Fetch API.
 	 * @param fetchConfig Configuration object for Fetch API.

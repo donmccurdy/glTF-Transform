@@ -6,8 +6,6 @@ interface IEmissiveStrength extends IProperty {
 }
 
 /**
- * # EmissiveStrength
- *
  * Defines emissive strength for a PBR {@link Material}, allowing high-dynamic-range
  * (HDR) emissive materials. See {@link KHRMaterialsEmissiveStrength}.
  */

@@ -39,11 +39,13 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
 };
 
 /**
- * Resize PNG or JPEG {@link Texture Textures}, with {@link https://en.wikipedia.org/wiki/Lanczos_algorithm Lanczos filtering}.
+ * Resize PNG or JPEG {@link Texture Textures}, with [Lanczos filtering](https://en.wikipedia.org/wiki/Lanczos_algorithm).
  *
- * Implementation provided by {@link https://github.com/donmccurdy/ndarray-lanczos ndarray-lanczos}
+ * Implementation provided by [ndarray-lanczos](https://github.com/donmccurdy/ndarray-lanczos)
  * package, which works in Web and Node.js environments. For a faster and more robust implementation
  * based on Sharp (available only in Node.js), use {@link textureCompress} with the 'resize' option.
+ *
+ * @category Transforms
  */
 export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DEFAULTS): Transform {
 	const options = { ...TEXTURE_RESIZE_DEFAULTS, ..._options } as Required<TextureResizeOptions>;

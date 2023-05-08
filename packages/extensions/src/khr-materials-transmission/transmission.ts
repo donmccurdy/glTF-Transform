@@ -18,8 +18,6 @@ interface ITransmission extends IProperty {
 const { R } = TextureChannel;
 
 /**
- * # Transmission
- *
  * Defines optical transmission on a PBR {@link Material}. See {@link KHRMaterialsTransmission}.
  */
 export class Transmission extends ExtensionProperty<ITransmission> {
@@ -46,12 +44,12 @@ export class Transmission extends ExtensionProperty<ITransmission> {
 	 * Transmission.
 	 */
 
-	/** Transmission; linear multiplier. See {@link getTransmissionTexture}. */
+	/** Transmission; linear multiplier. See {@link Transmission.getTransmissionTexture getTransmissionTexture}. */
 	public getTransmissionFactor(): number {
 		return this.get('transmissionFactor');
 	}
 
-	/** Transmission; linear multiplier. See {@link getTransmissionTexture}. */
+	/** Transmission; linear multiplier. See {@link Transmission.getTransmissionTexture getTransmissionTexture}. */
 	public setTransmissionFactor(factor: number): this {
 		return this.set('transmissionFactor', factor);
 	}
@@ -74,7 +72,7 @@ export class Transmission extends ExtensionProperty<ITransmission> {
 		return this.getRef('transmissionTexture') ? this.getRef('transmissionTextureInfo') : null;
 	}
 
-	/** Sets transmission texture. See {@link getTransmissionTexture}. */
+	/** Sets transmission texture. See {@link Transmission.getTransmissionTexture getTransmissionTexture}. */
 	public setTransmissionTexture(texture: Texture | null): this {
 		return this.setRef('transmissionTexture', texture, { channels: R });
 	}

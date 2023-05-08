@@ -3,8 +3,6 @@ import { PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_UNLIT } from '../constants.js';
 
 /**
- * # Unlit
- *
  * Converts a PBR {@link Material} to an unlit shading model. See {@link KHRMaterialsUnlit}.
  */
 export class Unlit extends ExtensionProperty {

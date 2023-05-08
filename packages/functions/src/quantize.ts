@@ -83,6 +83,8 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
 /**
  * Quantizes vertex attributes with `KHR_mesh_quantization`, reducing the size and memory footprint
  * of the file.
+ *
+ * @category Transforms
  */
 export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform {
 	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;

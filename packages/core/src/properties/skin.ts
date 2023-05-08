@@ -10,8 +10,6 @@ interface ISkin extends IExtensibleProperty {
 }
 
 /**
- * # Skin
- *
  * *Collection of {@link Node} joints and inverse bind matrices used with skinned {@link Mesh}
  * instances.*
  *

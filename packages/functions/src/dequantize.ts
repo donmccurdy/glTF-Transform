@@ -21,6 +21,8 @@ const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
  * Dequantize {@link Primitive Primitives}, removing {@link KHRMeshQuantization `KHR_mesh_quantization`}
  * if present. Dequantization will increase the size of the mesh on disk and in memory, but may be
  * necessary for compatibility with applications that don't support quantization.
+ *
+ * @category Transforms
  */
 export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): Transform {
 	const options = { ...DEQUANTIZE_DEFAULTS, ..._options } as Required<DequantizeOptions>;

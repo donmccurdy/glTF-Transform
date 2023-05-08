@@ -9,8 +9,6 @@ interface IInstancedMesh extends IProperty {
 export const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
 
 /**
- * # InstancedMesh
- *
  * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link EXTMeshGPUInstancing}.
  */
 export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {

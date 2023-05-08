@@ -11,8 +11,6 @@ interface InstancedMeshDef {
 }
 
 /**
- * # EXTMeshGPUInstancing
- *
  * [`EXT_mesh_gpu_instancing`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing/)
  * prepares mesh data for efficient GPU instancing.
  *

@@ -86,6 +86,8 @@ export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'r
  * 	})
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function textureCompress(_options: TextureCompressOptions): Transform {
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;

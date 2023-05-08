@@ -23,23 +23,23 @@ const SEQUENCE_DEFAULTS: Required<SequenceOptions> = {
 
 /**
  * Creates an {@link Animation} displaying each of the specified {@link Node}s sequentially.
+ *
+ * @category Transforms
  */
-export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
-	const options = {...SEQUENCE_DEFAULTS, ..._options} as Required<SequenceOptions>;
+export function sequence(_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
+	const options = { ...SEQUENCE_DEFAULTS, ..._options } as Required<SequenceOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
-
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 		const fps = options.fps;
 
 		// Collect sequence nodes.
-		const sequenceNodes = root.listNodes()
-			.filter((node) => node.getName().match(options.pattern));
+		const sequenceNodes = root.listNodes().filter((node) => node.getName().match(options.pattern));
 
 		// Sort by node name.
 		if (options.sort) {
-			sequenceNodes.sort((a, b) => a.getName() > b.getName() ? 1 : -1);
+			sequenceNodes.sort((a, b) => (a.getName() > b.getName() ? 1 : -1));
 		}
 
 		// Create animation cycling visibility of each node.
@@ -61,18 +61,19 @@ export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transf
 			}
 
 			// Append channel to animation sequence.
-			const input = doc.createAccessor()
-				.setArray(new Float32Array(inputArray))
-				.setBuffer(animBuffer);
-			const output = doc.createAccessor()
+			const input = doc.createAccessor().setArray(new Float32Array(inputArray)).setBuffer(animBuffer);
+			const output = doc
+				.createAccessor()
 				.setArray(new Float32Array(outputArray))
 				.setBuffer(animBuffer)
 				.setType(Accessor.Type.VEC3);
-			const sampler = doc.createAnimationSampler()
+			const sampler = doc
+				.createAnimationSampler()
 				.setInterpolation(AnimationSampler.Interpolation.STEP)
 				.setInput(input)
 				.setOutput(output);
-			const channel = doc.createAnimationChannel()
+			const channel = doc
+				.createAnimationChannel()
 				.setTargetNode(node)
 				.setTargetPath(AnimationChannel.TargetPath.SCALE)
 				.setSampler(sampler);
@@ -80,7 +81,5 @@ export function sequence (_options: SequenceOptions = SEQUENCE_DEFAULTS): Transf
 		});
 
 		logger.debug(`${NAME}: Complete.`);
-
 	});
-
 }

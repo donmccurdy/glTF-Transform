@@ -5,8 +5,6 @@ import type { ReaderContext, WriterContext } from './io/index.js';
 import { ExtensionProperty } from './properties/index.js';
 
 /**
- * # Extension
- *
  * *Base class for all Extensions.*
  *
  * Extensions enhance a glTF {@link Document} with additional features and schema, beyond the core

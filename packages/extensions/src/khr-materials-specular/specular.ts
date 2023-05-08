@@ -23,8 +23,6 @@ interface ISpecular extends IProperty {
 const { R, G, B, A } = TextureChannel;
 
 /**
- * # Specular
- *
  * Defines specular reflectivity on a PBR {@link Material}. See {@link KHRMaterialsSpecular}.
  */
 export class Specular extends ExtensionProperty<ISpecular> {
@@ -54,32 +52,32 @@ export class Specular extends ExtensionProperty<ISpecular> {
 	 * Specular.
 	 */
 
-	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular; linear multiplier. See {@link Specular.getSpecularTexture getSpecularTexture}. */
 	public getSpecularFactor(): number {
 		return this.get('specularFactor');
 	}
 
-	/** Specular; linear multiplier. See {@link getSpecularTexture}. */
+	/** Specular; linear multiplier. See {@link Specular.getSpecularTexture getSpecularTexture}. */
 	public setSpecularFactor(factor: number): this {
 		return this.set('specularFactor', factor);
 	}
 
-	/** Specular color; Linear-sRGB components. See {@link getSpecularTexture}. */
+	/** Specular color; Linear-sRGB components. See {@link Specular.getSpecularTexture getSpecularTexture}. */
 	public getSpecularColorFactor(): vec3 {
 		return this.get('specularColorFactor');
 	}
 
-	/** Specular color; Linear-sRGB components. See {@link getSpecularTexture}. */
+	/** Specular color; Linear-sRGB components. See {@link Specular.getSpecularTexture getSpecularTexture}. */
 	public setSpecularColorFactor(factor: vec3): this {
 		return this.set('specularColorFactor', factor);
 	}
 
-	/** Specular color; sRGB hexadecimal color. See {@link getSpecularTexture} */
+	/** Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture} */
 	public getSpecularColorHex(): number {
 		return ColorUtils.factorToHex(this.getSpecularColorFactor());
 	}
 
-	/** Specular color; sRGB hexadecimal color. See {@link getSpecularTexture} */
+	/** Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture} */
 	public setSpecularColorHex(hex: number): this {
 		const factor = this.getSpecularColorFactor().slice() as vec3;
 		return this.set('specularColorFactor', ColorUtils.hexToFactor(hex, factor));
@@ -105,7 +103,7 @@ export class Specular extends ExtensionProperty<ISpecular> {
 		return this.getRef('specularTexture') ? this.getRef('specularTextureInfo') : null;
 	}
 
-	/** Sets specular texture. See {@link getSpecularTexture}. */
+	/** Sets specular texture. See {@link Specular.getSpecularTexture getSpecularTexture}. */
 	public setSpecularTexture(texture: Texture | null): this {
 		return this.setRef('specularTexture', texture, { channels: A });
 	}
@@ -129,7 +127,7 @@ export class Specular extends ExtensionProperty<ISpecular> {
 		return this.getRef('specularColorTexture') ? this.getRef('specularColorTextureInfo') : null;
 	}
 
-	/** Sets specular color texture. See {@link getSpecularColorTexture}. */
+	/** Sets specular color texture. See {@link Specular.getSpecularColorTexture getSpecularColorTexture}. */
 	public setSpecularColorTexture(texture: Texture | null): this {
 		return this.setRef('specularColorTexture', texture, { channels: R | G | B, isColor: true });
 	}

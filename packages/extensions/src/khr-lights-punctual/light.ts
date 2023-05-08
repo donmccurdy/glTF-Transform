@@ -14,8 +14,6 @@ interface ILight extends IProperty {
 type PunctualLightType = 'point' | 'spot' | 'directional';
 
 /**
- * # Light
- *
  * Defines a light attached to a {@link Node}. See {@link KHRLightsPunctual}.
  */
 export class Light extends ExtensionProperty<ILight> {

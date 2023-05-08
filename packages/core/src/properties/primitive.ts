@@ -14,8 +14,6 @@ interface IPrimitive extends IExtensibleProperty {
 }
 
 /**
- * # Primitive
- *
  * *Primitives are individual GPU draw calls comprising a {@link Mesh}.*
  *
  * Meshes typically have only a single Primitive, although various cases may require more. Each

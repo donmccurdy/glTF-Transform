@@ -10,7 +10,15 @@ import {
 	isRefMap,
 	LiteralKeys,
 } from 'property-graph';
-import { equalsArray, equalsObject, equalsRef, equalsRefList, equalsRefMap, isArray, isPlainObject } from '../utils/index.js';
+import {
+	equalsArray,
+	equalsObject,
+	equalsRef,
+	equalsRefList,
+	equalsRefMap,
+	isArray,
+	isPlainObject,
+} from '../utils/index.js';
 import type { Ref, RefMap, UnknownRef } from '../utils/index.js';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
@@ -24,14 +32,12 @@ export interface IProperty {
 const EMPTY_SET = new Set<string>();
 
 /**
- * # Property
- *
  * *Properties represent distinct resources in a glTF asset, referenced by other properties.*
  *
  * For example, each material and texture is a property, with material properties holding
  * references to the textures. All properties are created with factory methods on the
  * {@link Document} in which they should be constructed. Properties are destroyed by calling
- * {@link dispose}().
+ * {@link Property.dispose}().
  *
  * Usage:
  *

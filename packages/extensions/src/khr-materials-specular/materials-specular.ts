@@ -12,8 +12,6 @@ interface SpecularDef {
 }
 
 /**
- * # KHRMaterialsSpecular
- *
  * [`KHR_materials_specular`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_specular/)
  * adjusts the strength of the specular reflection in the dielectric BRDF.
  *

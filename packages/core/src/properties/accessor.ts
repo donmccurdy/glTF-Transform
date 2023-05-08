@@ -15,8 +15,6 @@ interface IAccessor extends IExtensibleProperty {
 }
 
 /**
- * # Accessor
- *
  * *Accessors store lists of numeric, vector, or matrix elements in a typed array.*
  *
  * All large data for {@link Mesh}, {@link Skin}, and {@link Animation} properties is stored in
@@ -25,15 +23,15 @@ interface IAccessor extends IExtensibleProperty {
  *
  * *Elements* are the logical divisions of the data into useful types: `"SCALAR"`, `"VEC2"`,
  * `"VEC3"`, `"VEC4"`, `"MAT3"`, or `"MAT4"`. The element type can be determined with the
- * {@link getType}() method, and the number of elements in the accessor determine its
- * {@link getCount}(). The number of components in an element — e.g. 9 for `"MAT3"` — are its
- * {@link getElementSize}(). See {@link Accessor.Type}.
+ * {@link Accessor.getType getType}() method, and the number of elements in the accessor determine its
+ * {@link Accessor.getCount getCount}(). The number of components in an element — e.g. 9 for `"MAT3"` — are its
+ * {@link Accessor.getElementSize getElementSize}(). See {@link Accessor.Type}.
  *
  * *Components* are the numeric values within an element — e.g. `.x` and `.y` for `"VEC2"`. Various
  * component types are available: `BYTE`, `UNSIGNED_BYTE`, `SHORT`, `UNSIGNED_SHORT`,
  * `UNSIGNED_INT`, and `FLOAT`. The component type can be determined with the
- * {@link getComponentType} method, and the number of bytes in each component determine its
- * {@link getComponentSize}. See {@link Accessor.ComponentType}.
+ * {@link Accessor.getComponentType getComponentType} method, and the number of bytes in each component determine its
+ * {@link Accessor.getComponentSize getComponentSize}. See {@link Accessor.ComponentType}.
  *
  * Usage:
  *
@@ -51,10 +49,10 @@ interface IAccessor extends IExtensibleProperty {
  * accessor.setElement(0, [10, 20, 30]);
  * ```
  *
- * Data access through the {@link getElement} and {@link setElement} methods reads or overwrites
- * the content of the underlying typed array. These methods use element arrays intended to be
- * compatible with the [gl-matrix](https://github.com/toji/gl-matrix) library, or with the
- * `toArray`/`fromArray` methods of libraries like three.js and babylon.js.
+ * Data access through the {@link Accessor.getElement getElement} and {@link Accessor.setElement setElement}
+ * methods reads or overwrites the content of the underlying typed array. These methods use
+ * element arrays intended to be compatible with the [gl-matrix](https://github.com/toji/gl-matrix)
+ * library, or with the `toArray`/`fromArray` methods of libraries like three.js and babylon.js.
  *
  * Each Accessor must be assigned to a {@link Buffer}, which determines where the accessor's data
  * is stored in the final file. Assigning Accessors to different Buffers allows the data to be
@@ -316,7 +314,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	/**
 	 * Number of components in each element of the accessor. For example, the element size of a
 	 * `VEC2` accessor is 2. This value is determined automatically based on array length and
-	 * accessor type, specified with {@link setType}().
+	 * accessor type, specified with {@link Accessor.setType setType()}.
 	 */
 	public getElementSize(): number {
 		return Accessor.getElementSize(this.get('type'));

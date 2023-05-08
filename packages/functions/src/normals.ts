@@ -25,6 +25,8 @@ const NORMALS_DEFAULTS: Required<NormalsOptions> = {
  *
  * await document.transform(normals({overwrite: true}));
  * ```
+ *
+ * @category Transforms
  */
 export function normals(_options: NormalsOptions = NORMALS_DEFAULTS): Transform {
 	const options = { ...NORMALS_DEFAULTS, ..._options } as Required<NormalsOptions>;

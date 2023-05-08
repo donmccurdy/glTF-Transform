@@ -12,8 +12,6 @@ interface VolumeDef {
 }
 
 /**
- * # KHRMaterialsVolume
- *
  * [KHR_materials_volume](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_volume/)
  * adds refraction, absorption, or scattering to a glTF PBR material already using transmission or
  * translucency.

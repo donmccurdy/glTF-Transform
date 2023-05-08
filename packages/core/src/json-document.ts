@@ -1,8 +1,6 @@
 import type { GLTF } from './types/gltf.js';
 
 /**
- * # JSONDocument
- *
  * *Raw glTF asset, with its JSON and binary resources.*
  *
  * A JSONDocument is a plain object containing the raw JSON of a glTF file, and any binary or image

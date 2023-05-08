@@ -12,8 +12,6 @@ interface TransformDef {
 }
 
 /**
- * # KHRTextureTransform
- *
  * [`KHR_texture_transform`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_texture_transform/)
  * adds offset, rotation, and scale to {@link TextureInfo} properties.
  *

@@ -74,6 +74,8 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
  * 	join({ keepNamed: false }),
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 	const options = { ...JOIN_DEFAULTS, ..._options } as Required<JoinOptions>;

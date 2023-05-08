@@ -28,6 +28,8 @@ export const colorspace = vertexColorSpace;
  *   vertexColorspace({ inputColorSpace: 'srgb' })
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function vertexColorSpace(options: ColorSpaceOptions): Transform {
 	return createTransform(NAME, (doc: Document): void => {

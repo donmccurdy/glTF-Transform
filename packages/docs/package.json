@@ -1,0 +1,31 @@
+{
+	"name": "@gltf-transform/docs",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"watch": "vite dev",
+		"dist": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"devDependencies": {
+		"@greendoc/parse": "^0.1.5",
+		"@greendoc/svelte": "^0.1.5",
+		"@sveltejs/adapter-static": "^2.0.2",
+		"@sveltejs/kit": "^1.5.0",
+		"eslint-plugin-svelte": "^2.26.0",
+		"he": "^1.2.0",
+		"highlight.js": "^11.8.0",
+		"mdsvex": "^0.10.6",
+		"prettier-plugin-svelte": "^2.8.1",
+		"svelte": "^3.54.0",
+		"svelte-check": "^3.0.1",
+		"ts-morph": "^18.0.0",
+		"tslib": "^2.4.1",
+		"vite": "^4.3.0"
+	},
+	"type": "module"
+}

@@ -60,8 +60,6 @@ class WEBPImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # EXTTextureWebP
- *
  * [`EXT_texture_webp`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_webp/)
  * enables WebP images for any material texture.
  *

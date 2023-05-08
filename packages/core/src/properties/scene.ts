@@ -8,8 +8,6 @@ interface IScene extends IExtensibleProperty {
 }
 
 /**
- * # Scene
- *
  * *Scenes represent a set of visual objects to render.*
  *
  * Typically a glTF file contains only a single Scene, although more are allowed and useful in some

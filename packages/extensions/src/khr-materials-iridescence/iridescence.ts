@@ -23,8 +23,6 @@ interface IIridescence extends IProperty {
 const { R, G } = TextureChannel;
 
 /**
- * # Iridescence
- *
  * Defines iridescence (thin film interference) on a PBR {@link Material}. See {@link KHRMaterialsIridescence}.
  */
 export class Iridescence extends ExtensionProperty<IIridescence> {
@@ -56,12 +54,12 @@ export class Iridescence extends ExtensionProperty<IIridescence> {
 	 * Iridescence.
 	 */
 
-	/** Iridescence; linear multiplier. See {@link getIridescenceTexture}. */
+	/** Iridescence; linear multiplier. See {@link Iridescence.getIridescenceTexture getIridescenceTexture}. */
 	public getIridescenceFactor(): number {
 		return this.get('iridescenceFactor');
 	}
 
-	/** Iridescence; linear multiplier. See {@link getIridescenceTexture}. */
+	/** Iridescence; linear multiplier. See {@link Iridescence.getIridescenceTexture getIridescenceTexture}. */
 	public setIridescenceFactor(factor: number): this {
 		return this.set('iridescenceFactor', factor);
 	}
@@ -84,7 +82,7 @@ export class Iridescence extends ExtensionProperty<IIridescence> {
 		return this.getRef('iridescenceTexture') ? this.getRef('iridescenceTextureInfo') : null;
 	}
 
-	/** Iridescence intensity. See {@link getIridescenceTexture}. */
+	/** Iridescence intensity. See {@link Iridescence.getIridescenceTexture getIridescenceTexture}. */
 	public setIridescenceTexture(texture: Texture | null): this {
 		return this.setRef('iridescenceTexture', texture, { channels: R });
 	}
@@ -143,7 +141,10 @@ export class Iridescence extends ExtensionProperty<IIridescence> {
 		return this.getRef('iridescenceThicknessTexture') ? this.getRef('iridescenceThicknessTextureInfo') : null;
 	}
 
-	/** Sets iridescence thickness texture. See {@link getIridescenceThicknessTexture}. */
+	/**
+	 * Sets iridescence thickness texture.
+	 * See {@link Iridescence.getIridescenceThicknessTexture getIridescenceThicknessTexture}.
+	 */
 	public setIridescenceThicknessTexture(texture: Texture | null): this {
 		return this.setRef('iridescenceThicknessTexture', texture, { channels: G });
 	}

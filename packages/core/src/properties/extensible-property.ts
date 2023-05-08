@@ -7,8 +7,6 @@ export interface IExtensibleProperty extends IProperty {
 }
 
 /**
- * # ExtensibleProperty
- *
  * *A {@link Property} that can have {@link ExtensionProperty} instances attached.*
  *
  * Most properties are extensible. See the {@link Extension} documentation for information about

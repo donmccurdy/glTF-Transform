@@ -2,8 +2,6 @@ import { PlatformIO } from './platform-io.js';
 import { HTTPUtils } from '../utils/index.js';
 
 /**
- * # WebIO
- *
  * *I/O service for Web.*
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.

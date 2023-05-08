@@ -9,8 +9,6 @@ interface EmissiveStrengthDef {
 }
 
 /**
- * # KHRMaterialsEmissiveStrength
- *
  * [KHR_materials_emissive_strength](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_emissive_strength/)
  * defines emissive strength and enables high-dynamic-range (HDR) emissive materials.
  *

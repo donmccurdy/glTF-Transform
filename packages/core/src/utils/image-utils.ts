@@ -83,8 +83,6 @@ class PNGImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # ImageUtils
- *
  * *Common utilities for working with image data.*
  *
  * @category Utilities

@@ -10,8 +10,6 @@ interface IAnimationSampler extends IExtensibleProperty {
 }
 
 /**
- * # AnimationSampler
- *
  * *Reusable collection of keyframes affecting particular property of an object.*
  *
  * Each AnimationSampler refers to an input and an output {@link Accessor}. Input contains times
@@ -49,6 +47,8 @@ interface IAnimationSampler extends IExtensibleProperty {
  *
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#animations)
+ *
+ * @category Properties
  */
 export class AnimationSampler extends ExtensibleProperty<IAnimationSampler> {
 	public declare propertyType: PropertyType.ANIMATION_SAMPLER;

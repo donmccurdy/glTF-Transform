@@ -27,7 +27,7 @@ enum BufferViewTarget {
 }
 
 /**
- * Model class providing writing state to a {@link Writer} and its {@link Extension}
+ * Model class providing writing state to a {@link GLTFWriter} and its {@link Extension}
  * implementations.
  *
  * @hidden

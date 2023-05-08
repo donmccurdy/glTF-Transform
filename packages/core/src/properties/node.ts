@@ -20,8 +20,6 @@ interface INode extends IExtensibleProperty {
 }
 
 /**
- * # Node
- *
  * *Nodes are the objects that comprise a {@link Scene}.*
  *
  * Each node may have one or more children, and a transform (position, rotation, and scale) that

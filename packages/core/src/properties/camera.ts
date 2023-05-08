@@ -13,8 +13,6 @@ interface ICamera extends IExtensibleProperty {
 }
 
 /**
- * # Camera
- *
  * *Cameras are perspectives through which the {@link Scene} may be viewed.*
  *
  * Projection can be perspective or orthographic. Cameras are contained in nodes and thus can be

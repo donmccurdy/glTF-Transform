@@ -49,6 +49,8 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
  * // WebAssembly (faster)
  * await document.transform(resample({ ready, resample }));
  * ```
+ *
+ * @category Transforms
  */
 export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;

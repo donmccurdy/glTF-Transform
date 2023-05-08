@@ -14,6 +14,7 @@ import { Material, TextureChannel, PropertyType } from '@gltf-transform/core';
  * if (channels.includes(TextureChannel.R)) {
  *   console.log('texture red channel used');
  * }
+ * ```
  */
 export function listTextureChannels(texture: Texture): TextureChannel[] {
 	const mask = getTextureChannelMask(texture);

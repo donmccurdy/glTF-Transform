@@ -9,8 +9,6 @@ interface IAnimation extends IExtensibleProperty {
 }
 
 /**
- * # Animation
- *
  * *Reusable collections of {@link AnimationChannel}s, together representing a discrete animation
  * clip.*
  *
@@ -43,6 +41,8 @@ interface IAnimation extends IExtensibleProperty {
  *
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#animations)
+ *
+ * @category Properties
  */
 export class Animation extends ExtensibleProperty<IAnimation> {
 	public declare propertyType: PropertyType.ANIMATION;
