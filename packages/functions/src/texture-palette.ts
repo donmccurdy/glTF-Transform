@@ -19,6 +19,7 @@ import { scale as scaleVEC3 } from 'gl-matrix/vec3';
 
 const NAME = 'texturePalette';
 
+// 🚩 TODO(bug): missing *Factor, *Texture, and *TextureInfo suffixes!
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
 const TEXTURABLE_PROPS = ['baseColor', 'emissive', 'metallicRoughness'];
 
@@ -102,7 +103,8 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 		// TODO: Debugging only.
 		logger.warn(`${NAME}:\n${Array.from(materialKeys.values()).join('\n')}`);
 
-		// TODO: If unique props vs. non-texturable props vs. min threshold fails, bail out.
+		// TODO: If we have more than the >min keys, but <min materials can actually share them, bail.
+		// TODO: If scene has 100 opaque and 1 transparent materials, does the latter get included in a palette?
 		// TODO: How should the palette texture be sorted? By RGB components? Hue? Metalness and roughness?
 		// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
 		// TODO: Consider emissive >1.
