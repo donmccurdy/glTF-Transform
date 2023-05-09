@@ -5,6 +5,7 @@ import {
 	Primitive,
 	PropertyType,
 	Texture,
+	TextureInfo,
 	Transform,
 	vec4,
 } from '@gltf-transform/core';
@@ -13,27 +14,32 @@ import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
 import { dedup } from './dedup.js';
 import { savePixels } from 'ndarray-pixels';
+import { scale as scaleVEC4 } from 'gl-matrix/vec4';
+import { scale as scaleVEC3 } from 'gl-matrix/vec3';
 
 const NAME = 'texturePalette';
 
-type TexturableProp = 'baseColor' | 'emissive' | 'roughness' | 'metallic';
-const TEXTURABLE_PROPS = ['baseColor', 'emissive', 'roughness', 'metallic'];
+type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
+const TEXTURABLE_PROPS = ['baseColor', 'emissive', 'metallicRoughness'];
 
 /** Properties skipped for material equality comparisons. */
 const SKIP_PROPS = new Set([...TEXTURABLE_PROPS, 'name', 'extras']);
 
 export interface TexturePaletteOptions {
-	blockSize: number;
-	min: number;
+	blockSize?: number;
+	min?: number;
 }
 
-const TEXTURE_PALETTE_DEFAULTS: Required<TexturePaletteOptions> = {
-	blockSize: 1,
+export const TEXTURE_PALETTE_DEFAULTS: Required<TexturePaletteOptions> = {
+	blockSize: 4,
 	min: 2,
 };
 
 /**
  * TODO: Documentation.
+ * TODO: Name texturePalette() or palette()?
+ *
+ * @category Transforms
  */
 export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE_DEFAULTS): Transform {
 	const options = { ...TEXTURE_PALETTE_DEFAULTS, ..._options } as Required<TexturePaletteOptions>;
@@ -65,7 +71,7 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 				prims.add(prim);
 				materials.add(material);
 
-				// 🚩 TODO: material used by eligible and non-eligible primitives (CLONE MATERIAL)
+				// TODO: material used by eligible and non-eligible primitives (CLONE MATERIAL)
 			}
 		}
 
@@ -75,8 +81,7 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 		const materialProps: Record<TexturableProp, Set<string>> = {
 			baseColor: new Set<string>(),
 			emissive: new Set<string>(),
-			roughness: new Set<string>(),
-			metallic: new Set<string>(),
+			metallicRoughness: new Set<string>(),
 		};
 
 		for (const material of materials) {
@@ -84,32 +89,32 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 			const emissive = encodeRGBA([...material.getEmissiveFactor(), 1]);
 			const roughness = encodeFloat(material.getRoughnessFactor());
 			const metallic = encodeFloat(material.getMetallicFactor());
-			const key = [baseColor, emissive, roughness, metallic].join(':');
+			const key = `baseColor:${baseColor},emissive:${emissive},metallicRoughness:${metallic}+${roughness}`;
 			materialProps.baseColor.add(baseColor);
 			materialProps.emissive.add(emissive);
-			materialProps.roughness.add(roughness);
-			materialProps.metallic.add(metallic);
+			materialProps.metallicRoughness.add(metallic + '+' + roughness);
 			materialKeys.set(material, key);
 		}
 
 		const keyCount = materialKeys.size;
 		if (keyCount < options.min) return;
 
-		// 🚩 TODO: If unique props vs. non-texturable props vs. min threshold fails, bail out.
-		// 🚩 TODO: Materials may differ on non-texturable props, which must be preserved.
-		// 🚩 TODO: Need to identify unique _combinations_, not just unique values.
-		// 🚩 TODO: How should the palette texture be sorted? By RGB components? Hue? Metalness and roughness?
-		// 🚩 TODO: Disable mipmaps (nearest).
-		// 🚩 TODO: Consider a non-transform version of this, accepting a list of primitives as input.
+		// TODO: Debugging only.
+		logger.warn(`${NAME}:\n${Array.from(materialKeys.values()).join('\n')}`);
+
+		// TODO: If unique props vs. non-texturable props vs. min threshold fails, bail out.
+		// TODO: How should the palette texture be sorted? By RGB components? Hue? Metalness and roughness?
+		// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
+		// TODO: Consider emissive >1.
 
 		const w = ceilPowerOfTwo(keyCount) * blockSize;
 		const h = blockSize;
+		const padWidth = w - keyCount * blockSize;
 
 		const paletteTexturePixels: Record<TexturableProp, NdArray<TypedArray> | null> = {
 			baseColor: null,
 			emissive: null,
-			roughness: null,
-			metallic: null,
+			metallicRoughness: null,
 		};
 
 		let baseColorTexture: Texture | null = null;
@@ -117,18 +122,19 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 		let metallicRoughnessTexture: Texture | null = null;
 
 		if (materialProps.baseColor.size > 1) {
-			baseColorTexture = document.createTexture('PaletteBaseColor');
-			paletteTexturePixels.baseColor = ndarray(new Float32Array(w * h * 4), [w, h, 4]);
+			const name = 'PaletteBaseColor';
+			baseColorTexture = document.createTexture(name).setURI(`${name}.png`);
+			paletteTexturePixels.baseColor = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 		}
 		if (materialProps.emissive.size > 1) {
-			emissiveTexture = document.createTexture('PaletteEmissive');
-			paletteTexturePixels.emissive = ndarray(new Float32Array(w * h * 4), [w, h, 4]);
+			const name = 'PaletteEmissive';
+			emissiveTexture = document.createTexture(name).setURI(`${name}.png`);
+			paletteTexturePixels.emissive = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 		}
-		if (materialProps.metallic.size > 1 || materialProps.roughness.size > 1) {
-			metallicRoughnessTexture = document.createTexture('PaletteMetallicRoughness');
-			const pixels = ndarray(new Float32Array(w * h * 4), [w, h, 4]);
-			if (materialProps.metallic.size > 1) paletteTexturePixels.metallic = pixels;
-			if (materialProps.roughness.size > 1) paletteTexturePixels.roughness = pixels;
+		if (materialProps.metallicRoughness.size > 1) {
+			const name = 'PaletteMetallicRoughness';
+			metallicRoughnessTexture = document.createTexture(name).setURI(`${name}.png`);
+			paletteTexturePixels.metallicRoughness = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 		}
 
 		// Create palette textures.
@@ -145,21 +151,27 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 			const index = nextIndex++;
 
 			if (paletteTexturePixels.baseColor) {
-				// 🚩 TODO: Refactor to assignBlock function.
-				const value = material.getBaseColorFactor();
 				const pixels = paletteTexturePixels.baseColor;
-				for (let i = 0; i < blockSize; i++) {
-					for (let j = 0; j < blockSize; j++) {
-						pixels.set(index * blockSize + i, index * blockSize + j, 0, value[0]);
-						pixels.set(index * blockSize + i, index * blockSize + j, 1, value[1]);
-						pixels.set(index * blockSize + i, index * blockSize + j, 2, value[2]);
-						pixels.set(index * blockSize + i, index * blockSize + j, 3, value[3]);
-					}
-				}
+				const baseColor = material.getBaseColorFactor();
+				// ColorUtils.convertLinearToSRGB(baseColor, baseColor); // 🚩 TODO: Why not required?
+				scaleVEC4(baseColor, baseColor, 255);
+				writeBlock(pixels, index, baseColor, blockSize);
 			}
 
-			// 🚩 TODO: Emissive texture.
-			// 🚩 TODO: Packed roughness and metallic texture.
+			if (paletteTexturePixels.emissive) {
+				const pixels = paletteTexturePixels.emissive;
+				const emissive = material.getEmissiveFactor();
+				// ColorUtils.convertLinearToSRGB(emissive, emissive);
+				scaleVEC3(emissive, emissive, 255);
+				writeBlock(pixels, index, [...emissive, 255], blockSize);
+			}
+
+			if (paletteTexturePixels.metallicRoughness) {
+				const pixels = paletteTexturePixels.metallicRoughness;
+				const metallic = material.getMetallicFactor();
+				const roughness = material.getRoughnessFactor();
+				writeBlock(pixels, index, [0, roughness * 255, metallic * 255, 255], blockSize);
+			}
 
 			visitedKeys.add(key);
 			materialIndices.set(key, index);
@@ -169,15 +181,17 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 		for (const prim of prims) {
 			const srcMaterial = prim.getMaterial()!;
 			const key = materialKeys.get(srcMaterial)!;
-			const index = materialIndices.get(key)!;
-			// 🚩 TODO: 'material index' is a confusing term here. block index? palette offset?
+			const blockIndex = materialIndices.get(key)!;
+
+			// UVs are centered horizontally in each block, descending vertically
+			// to form a diagonal line in the UV layout. Easy and compressible.
+			const baseUV = (blockIndex + 0.5) / keyCount;
+			const padUV = (baseUV * (w - padWidth)) / w;
 
 			const position = prim.getAttribute('POSITION')!;
 			const buffer = position.getBuffer();
-			const array = new Float32Array(position.getCount() * 2); // 🚩 TODO: f32? uint16? uint8?
+			const array = new Float32Array(position.getCount() * 2).fill(padUV);
 			const uv = document.createAccessor().setType('VEC2').setArray(array).setBuffer(buffer);
-
-			prim.setAttribute('TEXCOORD_0', uv);
 
 			let dstMaterial;
 			for (const material of paletteMaterials) {
@@ -185,23 +199,45 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 					dstMaterial = material;
 				}
 			}
+
 			if (!dstMaterial) {
-				// 🚩 TODO: Consider cases where texturable property has 1 unique value,
-				// there's no palette texture, and the unique value *isn't* the default below.
-				dstMaterial = srcMaterial
-					.clone()
-					.setName(`PaletteMaterial_${nextPaletteMaterialIndex++}`)
-					.setBaseColorFactor([1, 1, 1, 1])
-					.setBaseColorTexture(baseColorTexture)
-					.setEmissiveFactor(emissiveTexture ? [1, 1, 1] : [0, 0, 0])
-					.setEmissiveTexture(emissiveTexture)
-					.setMetallicFactor(1)
-					.setRoughnessFactor(1)
-					.setMetallicRoughnessTexture(metallicRoughnessTexture);
+				// TODO: Consider cases where texturable property has 1 unique value, there's
+				// no palette texture, and the unique value *isn't* the default below.
+				// TODO: This index skips from 1 to 3 in output materials?
+				dstMaterial = srcMaterial.clone().setName(`PaletteMaterial_${nextPaletteMaterialIndex++}`);
+
+				if (baseColorTexture) {
+					dstMaterial
+						.setBaseColorFactor([1, 1, 1, 1])
+						.setBaseColorTexture(baseColorTexture)
+						.getBaseColorTextureInfo()!
+						.setMinFilter(TextureInfo.MinFilter.NEAREST)
+						.setMagFilter(TextureInfo.MagFilter.NEAREST);
+				}
+
+				if (emissiveTexture) {
+					dstMaterial
+						.setEmissiveFactor([1, 1, 1])
+						.setEmissiveTexture(emissiveTexture)
+						.getEmissiveTextureInfo()!
+						.setMinFilter(TextureInfo.MinFilter.NEAREST)
+						.setMagFilter(TextureInfo.MagFilter.NEAREST);
+				}
+
+				if (metallicRoughnessTexture) {
+					dstMaterial
+						.setMetallicFactor(1)
+						.setRoughnessFactor(1)
+						.setMetallicRoughnessTexture(metallicRoughnessTexture)
+						.getMetallicRoughnessTextureInfo()!
+						.setMinFilter(TextureInfo.MinFilter.NEAREST)
+						.setMagFilter(TextureInfo.MagFilter.NEAREST);
+				}
+
 				paletteMaterials.push(dstMaterial);
 			}
 
-			//
+			prim.setMaterial(dstMaterial).setAttribute('TEXCOORD_0', uv);
 		}
 
 		const mimeType = 'image/png';
@@ -215,14 +251,14 @@ export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE
 			emissiveTexture.setImage(image).setMimeType(mimeType);
 		}
 		if (metallicRoughnessTexture) {
-			const pixels = paletteTexturePixels.roughness || paletteTexturePixels.metallic;
+			const pixels = paletteTexturePixels.metallicRoughness;
 			const image = await savePixels(pixels!, mimeType);
 			metallicRoughnessTexture.setImage(image).setMimeType(mimeType);
 		}
 
 		await document.transform(
 			prune({ propertyTypes: [PropertyType.MATERIAL] }),
-			dedup({ propertyTypes: [PropertyType.MATERIAL] }) // 🚩 TODO: Not necessary?
+			dedup({ propertyTypes: [PropertyType.MATERIAL] }) // TODO: Not necessary?
 		);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -235,26 +271,23 @@ function encodeFloat(value: number): string {
 	return hex.length === 1 ? '0' + hex : hex;
 }
 
-/** Decodes a floating-point value on the interval [0,1] at 8-bit precision. */
-// function decodeFloat(value: string): number {
-// 	return Math.floor(parseInt(value, 16) / 255);
-// }
-
 /** Encodes an RGBA color in Linear-sRGB-D65 color space. */
 function encodeRGBA(value: vec4): string {
 	ColorUtils.convertLinearToSRGB(value, value);
 	return value.map(encodeFloat).join('');
 }
 
-/** Decodes an RGBA color in Linear-sRGB-D65 color space. */
-// function decodeRGBA(value: string): vec4 {
-// 	const target = [0, 0, 0, 0] as vec4;
-// 	for (let i = 0; i < 4; i++) {
-// 		target[i] = decodeFloat(value.slice(i * 2, i * 2 + 2));
-// 	}
-// 	return ColorUtils.convertSRGBToLinear(target, target);
-// }
-
 function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
+}
+
+function writeBlock(pixels: NdArray<TypedArray>, index: number, value: vec4, blockSize: number): void {
+	for (let i = 0; i < blockSize; i++) {
+		for (let j = 0; j < blockSize; j++) {
+			pixels.set(index * blockSize + i, j, 0, value[0]);
+			pixels.set(index * blockSize + i, j, 1, value[1]);
+			pixels.set(index * blockSize + i, j, 2, value[2]);
+			pixels.set(index * blockSize + i, j, 3, value[3]);
+		}
+	}
 }

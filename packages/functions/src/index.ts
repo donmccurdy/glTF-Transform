@@ -80,6 +80,7 @@ export * from './simplify.js';
 export * from './sort-primitive-weights.js';
 export * from './sparse.js';
 export * from './texture-compress.js';
+export * from './texture-palette.js';
 export * from './tangents.js';
 export * from './texture-resize.js';
 export * from './transform-mesh.js';
