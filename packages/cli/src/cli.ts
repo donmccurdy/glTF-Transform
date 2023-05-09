@@ -51,6 +51,9 @@ import {
 	JoinOptions,
 	sparse,
 	SparseOptions,
+	texturePalette,
+	TexturePaletteOptions,
+	TEXTURE_PALETTE_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -215,6 +218,14 @@ commands or using the scripting API.
 		validator: program.NUMBER,
 		default: 5,
 	})
+	.option('--palette <bool>', 'TODO.', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.option('--palette-min <min>', 'TODO.', {
+		validator: program.NUMBER,
+		default: 5,
+	})
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -257,6 +268,8 @@ commands or using the scripting API.
 		const opts = options as {
 			instance: boolean;
 			instanceMin: number;
+			palette: boolean;
+			paletteMin: number;
 			simplify: boolean;
 			simplifyError: number;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
@@ -270,6 +283,7 @@ commands or using the scripting API.
 		const transforms: Transform[] = [dedup()];
 
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
+		if (opts.palette) transforms.push(texturePalette({ min: opts.paletteMin, blockSize: 24 }));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
@@ -953,6 +967,30 @@ should be used as input, and then compressed after this conversion.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, logger }) => Session.create(io, logger, args.input, args.output).transform(metalRough()));
+
+// PALETTE
+program
+	.command('palette', 'TODO')
+	.help(
+		`
+TODO
+`.trim()
+	)
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--block-size <px>', 'TODO', {
+		validator: program.NUMBER,
+		default: TEXTURE_PALETTE_DEFAULTS.blockSize,
+	})
+	.option('--min', 'TODO', {
+		validator: program.NUMBER,
+		default: TEXTURE_PALETTE_DEFAULTS.blockSize,
+	})
+	.action(async ({ args, options, logger }) => {
+		return Session.create(io, logger, args.input, args.output).transform(
+			texturePalette(options as unknown as TexturePaletteOptions)
+		);
+	});
 
 // UNLIT
 program
