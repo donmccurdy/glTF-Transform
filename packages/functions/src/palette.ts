@@ -261,8 +261,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		}
 
 		if (metallicRoughnessTexture) {
-			const pixels = paletteTexturePixels.metallicRoughness;
-			const image = await savePixels(pixels!, mimeType);
+			const image = await savePixels(paletteTexturePixels.metallicRoughness!, mimeType);
 			metallicRoughnessTexture.setImage(image).setMimeType(mimeType);
 		}
 
