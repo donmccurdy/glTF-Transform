@@ -7,14 +7,13 @@ import {
 	Texture,
 	TextureInfo,
 	Transform,
+	vec3,
 	vec4,
 } from '@gltf-transform/core';
 import { createTransform } from './utils.js';
 import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
-import { scale as scaleVEC4 } from 'gl-matrix/vec4';
-import { scale as scaleVEC3 } from 'gl-matrix/vec3';
 
 const NAME = 'palette';
 
@@ -91,7 +90,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		};
 
 		for (const material of materials) {
-			const baseColor = encodeRGBA(material.getBaseColorFactor());
+			const baseColor = encodeRGBA(material.getBaseColorFactor().slice() as vec4);
 			const emissive = encodeRGBA([...material.getEmissiveFactor(), 1]);
 			const roughness = encodeFloat(material.getRoughnessFactor());
 			const metallic = encodeFloat(material.getMetallicFactor());
@@ -159,25 +158,23 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 			if (paletteTexturePixels.baseColor) {
 				const pixels = paletteTexturePixels.baseColor;
-				const baseColor = material.getBaseColorFactor();
-				// ColorUtils.convertLinearToSRGB(baseColor, baseColor); // 🚩 TODO: Why not required?
-				scaleVEC4(baseColor, baseColor, 255);
+				const baseColor = [...material.getBaseColorFactor()] as vec4;
+				ColorUtils.convertLinearToSRGB(baseColor, baseColor);
 				writeBlock(pixels, index, baseColor, blockSize);
 			}
 
 			if (paletteTexturePixels.emissive) {
 				const pixels = paletteTexturePixels.emissive;
-				const emissive = material.getEmissiveFactor();
-				// ColorUtils.convertLinearToSRGB(emissive, emissive);
-				scaleVEC3(emissive, emissive, 255);
-				writeBlock(pixels, index, [...emissive, 255], blockSize);
+				const emissive = [...material.getEmissiveFactor(), 1] as vec4;
+				ColorUtils.convertLinearToSRGB(emissive, emissive);
+				writeBlock(pixels, index, emissive, blockSize);
 			}
 
 			if (paletteTexturePixels.metallicRoughness) {
 				const pixels = paletteTexturePixels.metallicRoughness;
 				const metallic = material.getMetallicFactor();
 				const roughness = material.getRoughnessFactor();
-				writeBlock(pixels, index, [0, roughness * 255, metallic * 255, 255], blockSize);
+				writeBlock(pixels, index, [0, roughness, metallic, 1], blockSize);
 			}
 
 			visitedKeys.add(key);
@@ -289,10 +286,10 @@ function ceilPowerOfTwo(value: number): number {
 function writeBlock(pixels: NdArray<TypedArray>, index: number, value: vec4, blockSize: number): void {
 	for (let i = 0; i < blockSize; i++) {
 		for (let j = 0; j < blockSize; j++) {
-			pixels.set(index * blockSize + i, j, 0, value[0]);
-			pixels.set(index * blockSize + i, j, 1, value[1]);
-			pixels.set(index * blockSize + i, j, 2, value[2]);
-			pixels.set(index * blockSize + i, j, 3, value[3]);
+			pixels.set(index * blockSize + i, j, 0, value[0] * 255);
+			pixels.set(index * blockSize + i, j, 1, value[1] * 255);
+			pixels.set(index * blockSize + i, j, 2, value[2] * 255);
+			pixels.set(index * blockSize + i, j, 3, value[3] * 255);
 		}
 	}
 }
