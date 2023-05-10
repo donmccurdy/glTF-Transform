@@ -19,12 +19,19 @@ import { scale as scaleVEC3 } from 'gl-matrix/vec3';
 
 const NAME = 'texturePalette';
 
-// 🚩 TODO(bug): missing *Factor, *Texture, and *TextureInfo suffixes!
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
-const TEXTURABLE_PROPS = ['baseColor', 'emissive', 'metallicRoughness'];
 
 /** Properties skipped for material equality comparisons. */
-const SKIP_PROPS = new Set([...TEXTURABLE_PROPS, 'name', 'extras']);
+const SKIP_PROPS = new Set([
+	'name',
+	'extras',
+	'baseColorTexture',
+	'baseColorTextureInfo',
+	'emissiveTexture',
+	'emissiveTextureInfo',
+	'metallicRoughnessTexture',
+	'metallicRoughnessTextureInfo',
+]);
 
 export interface TexturePaletteOptions {
 	blockSize?: number;
