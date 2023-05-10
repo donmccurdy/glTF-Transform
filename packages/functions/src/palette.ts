@@ -96,9 +96,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 		// TODO: If we have more than the >min keys, but <min materials can actually share them, bail.
 		// TODO: If scene has 100 opaque and 1 transparent materials, does the latter get included in a palette?
-		// TODO: How should the palette texture be sorted? By RGB components? Hue? Metalness and roughness?
 		// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
-		// TODO: Consider emissive >1.
 
 		const w = ceilPowerOfTwo(keyCount) * blockSize;
 		const h = blockSize;
@@ -199,8 +197,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			}
 
 			if (!dstMaterial) {
-				// TODO: Consider cases where texturable property has 1 unique value, there's
-				// no palette texture, and the unique value *isn't* the default below.
 				const suffix = (nextPaletteMaterialIndex++).toString().padStart(3, '0');
 				dstMaterial = srcMaterial.clone().setName(`PaletteMaterial${suffix}`);
 
