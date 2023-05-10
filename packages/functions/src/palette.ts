@@ -254,20 +254,19 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			const image = await savePixels(paletteTexturePixels.baseColor!, mimeType);
 			baseColorTexture.setImage(image).setMimeType(mimeType);
 		}
+
 		if (emissiveTexture) {
 			const image = await savePixels(paletteTexturePixels.emissive!, mimeType);
 			emissiveTexture.setImage(image).setMimeType(mimeType);
 		}
+
 		if (metallicRoughnessTexture) {
 			const pixels = paletteTexturePixels.metallicRoughness;
 			const image = await savePixels(pixels!, mimeType);
 			metallicRoughnessTexture.setImage(image).setMimeType(mimeType);
 		}
 
-		await document.transform(
-			prune({ propertyTypes: [PropertyType.MATERIAL] }),
-			dedup({ propertyTypes: [PropertyType.MATERIAL] }) // TODO: Not necessary?
-		);
+		await document.transform(prune({ propertyTypes: [PropertyType.MATERIAL] }));
 
 		logger.debug(`${NAME}: Complete.`);
 	});
