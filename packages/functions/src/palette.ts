@@ -7,7 +7,6 @@ import {
 	Texture,
 	TextureInfo,
 	Transform,
-	vec3,
 	vec4,
 } from '@gltf-transform/core';
 import { createTransform } from './utils.js';
@@ -18,18 +17,6 @@ import { savePixels } from 'ndarray-pixels';
 const NAME = 'palette';
 
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
-
-/** Properties skipped for material equality comparisons. */
-const SKIP_PROPS = new Set([
-	'name',
-	'extras',
-	'baseColorTexture',
-	'baseColorTextureInfo',
-	'emissiveTexture',
-	'emissiveTextureInfo',
-	'metallicRoughnessTexture',
-	'metallicRoughnessTextureInfo',
-]);
 
 export interface PaletteOptions {
 	blockSize?: number;
@@ -123,6 +110,10 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			metallicRoughness: null,
 		};
 
+		/** Properties skipped for material equality comparisons. */
+		const skipProps = new Set(['name', 'extras']);
+		const skip = (...props: string[]) => props.forEach((prop) => skipProps.add(prop));
+
 		let baseColorTexture: Texture | null = null;
 		let emissiveTexture: Texture | null = null;
 		let metallicRoughnessTexture: Texture | null = null;
@@ -131,16 +122,19 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			const name = 'PaletteBaseColor';
 			baseColorTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.baseColor = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
+			skip('baseColorFactor', 'baseColorTexture', 'baseColorTextureInfo');
 		}
 		if (materialProps.emissive.size > 1) {
 			const name = 'PaletteEmissive';
 			emissiveTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.emissive = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
+			skip('emissiveFactor', 'emissiveTexture', 'emissiveTextureInfo');
 		}
 		if (materialProps.metallicRoughness.size > 1) {
 			const name = 'PaletteMetallicRoughness';
 			metallicRoughnessTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.metallicRoughness = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
+			skip('metallicFactor', 'roughnessFactor', 'metallicRoughnessTexture', 'metallicRoughnessTextureInfo');
 		}
 
 		// Create palette textures.
@@ -199,7 +193,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 			let dstMaterial;
 			for (const material of paletteMaterials) {
-				if (material.equals(srcMaterial, SKIP_PROPS)) {
+				if (material.equals(srcMaterial, skipProps)) {
 					dstMaterial = material;
 				}
 			}
@@ -207,8 +201,8 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			if (!dstMaterial) {
 				// TODO: Consider cases where texturable property has 1 unique value, there's
 				// no palette texture, and the unique value *isn't* the default below.
-				// TODO: This index skips from 1 to 3 in output materials?
-				dstMaterial = srcMaterial.clone().setName(`PaletteMaterial_${nextPaletteMaterialIndex++}`);
+				const suffix = (nextPaletteMaterialIndex++).toString().padStart(3, '0');
+				dstMaterial = srcMaterial.clone().setName(`PaletteMaterial${suffix}`);
 
 				if (baseColorTexture) {
 					dstMaterial
