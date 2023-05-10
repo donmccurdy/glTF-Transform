@@ -81,7 +81,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			const emissive = encodeRGBA([...material.getEmissiveFactor(), 1]);
 			const roughness = encodeFloat(material.getRoughnessFactor());
 			const metallic = encodeFloat(material.getMetallicFactor());
-			const key = `baseColor:${baseColor},emissive:${emissive},metallicRoughness:${metallic}+${roughness}`;
+			const key = `baseColor:${baseColor},emissive:${emissive},metallicRoughness:${metallic}${roughness}`;
 			materialProps.baseColor.add(baseColor);
 			materialProps.emissive.add(emissive);
 			materialProps.metallicRoughness.add(metallic + '+' + roughness);
