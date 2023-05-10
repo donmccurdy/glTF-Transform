@@ -51,9 +51,9 @@ import {
 	JoinOptions,
 	sparse,
 	SparseOptions,
-	texturePalette,
-	TexturePaletteOptions,
-	TEXTURE_PALETTE_DEFAULTS,
+	palette,
+	PaletteOptions,
+	PALETTE_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -283,7 +283,7 @@ commands or using the scripting API.
 		const transforms: Transform[] = [dedup()];
 
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
-		if (opts.palette) transforms.push(texturePalette({ min: opts.paletteMin, blockSize: 24 }));
+		if (opts.palette) transforms.push(palette({ min: opts.paletteMin, blockSize: 24 }));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
@@ -980,15 +980,15 @@ TODO
 	.argument('<output>', OUTPUT_DESC)
 	.option('--block-size <px>', 'TODO', {
 		validator: program.NUMBER,
-		default: TEXTURE_PALETTE_DEFAULTS.blockSize,
+		default: PALETTE_DEFAULTS.blockSize,
 	})
 	.option('--min', 'TODO', {
 		validator: program.NUMBER,
-		default: TEXTURE_PALETTE_DEFAULTS.blockSize,
+		default: PALETTE_DEFAULTS.blockSize,
 	})
 	.action(async ({ args, options, logger }) => {
 		return Session.create(io, logger, args.input, args.output).transform(
-			texturePalette(options as unknown as TexturePaletteOptions)
+			palette(options as unknown as PaletteOptions)
 		);
 	});
 

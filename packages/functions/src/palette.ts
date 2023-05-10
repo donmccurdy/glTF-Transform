@@ -17,7 +17,7 @@ import { savePixels } from 'ndarray-pixels';
 import { scale as scaleVEC4 } from 'gl-matrix/vec4';
 import { scale as scaleVEC3 } from 'gl-matrix/vec3';
 
-const NAME = 'texturePalette';
+const NAME = 'palette';
 
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
 
@@ -33,24 +33,23 @@ const SKIP_PROPS = new Set([
 	'metallicRoughnessTextureInfo',
 ]);
 
-export interface TexturePaletteOptions {
+export interface PaletteOptions {
 	blockSize?: number;
 	min?: number;
 }
 
-export const TEXTURE_PALETTE_DEFAULTS: Required<TexturePaletteOptions> = {
+export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
 	min: 2,
 };
 
 /**
  * TODO: Documentation.
- * TODO: Name texturePalette() or palette()?
  *
  * @category Transforms
  */
-export function texturePalette(_options: TexturePaletteOptions = TEXTURE_PALETTE_DEFAULTS): Transform {
-	const options = { ...TEXTURE_PALETTE_DEFAULTS, ..._options } as Required<TexturePaletteOptions>;
+export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform {
+	const options = { ...PALETTE_DEFAULTS, ..._options } as Required<PaletteOptions>;
 	const blockSize = Math.max(options.blockSize, 1);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
