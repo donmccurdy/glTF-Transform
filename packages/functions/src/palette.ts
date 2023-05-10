@@ -14,6 +14,8 @@ import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 
+// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
+
 const NAME = 'palette';
 
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
@@ -96,7 +98,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 		// TODO: If we have more than the >min keys, but <min materials can actually share them, bail.
 		// TODO: If scene has 100 opaque and 1 transparent materials, does the latter get included in a palette?
-		// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
 
 		const w = ceilPowerOfTwo(keyCount) * blockSize;
 		const h = blockSize;
@@ -116,19 +117,19 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		let emissiveTexture: Texture | null = null;
 		let metallicRoughnessTexture: Texture | null = null;
 
-		if (materialProps.baseColor.size > 1) {
+		if (materialProps.baseColor.size >= options.min) {
 			const name = 'PaletteBaseColor';
 			baseColorTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.baseColor = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 			skip('baseColorFactor', 'baseColorTexture', 'baseColorTextureInfo');
 		}
-		if (materialProps.emissive.size > 1) {
+		if (materialProps.emissive.size >= options.min) {
 			const name = 'PaletteEmissive';
 			emissiveTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.emissive = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 			skip('emissiveFactor', 'emissiveTexture', 'emissiveTextureInfo');
 		}
-		if (materialProps.metallicRoughness.size > 1) {
+		if (materialProps.metallicRoughness.size >= options.min) {
 			const name = 'PaletteMetallicRoughness';
 			metallicRoughnessTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.metallicRoughness = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
