@@ -309,7 +309,7 @@ function createParams(
 		}
 	}
 
-	if (getTextureColorSpace(texture) !== 'srgb') {
+	if (slots.length && getTextureColorSpace(texture) !== 'srgb') {
 		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
 		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
 	}
