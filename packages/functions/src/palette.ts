@@ -12,7 +12,6 @@ import {
 import { createTransform } from './utils.js';
 import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
-import { dedup } from './dedup.js';
 import { savePixels } from 'ndarray-pixels';
 import { scale as scaleVEC4 } from 'gl-matrix/vec4';
 import { scale as scaleVEC3 } from 'gl-matrix/vec3';
