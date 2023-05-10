@@ -92,7 +92,7 @@ export class Sheen extends ExtensionProperty<ISheen> {
 
 	/** Sets sheen color texture. See {@link getSheenColorTexture}. */
 	public setSheenColorTexture(texture: Texture | null): this {
-		return this.setRef('sheenColorTexture', texture, { channels: R | G | B });
+		return this.setRef('sheenColorTexture', texture, { channels: R | G | B, colorSpace: 'srgb' });
 	}
 
 	/**********************************************************************************************

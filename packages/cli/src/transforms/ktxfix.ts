@@ -1,8 +1,6 @@
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read, write } from 'ktx-parse';
 import type { Document, Transform } from '@gltf-transform/core';
-import { MICROMATCH_OPTIONS } from '../util.js';
-import { listTextureSlots } from '@gltf-transform/functions';
-import micromatch from 'micromatch';
+import { getTextureColorSpace, listTextureSlots } from '@gltf-transform/functions';
 
 const NAME = 'ktxfix';
 
@@ -25,8 +23,8 @@ export function ktxfix(): Transform {
 			// Don't make changes if we have no information.
 			if (slots.length === 0) continue;
 
-			const isLinear = !slots.find((slot) => micromatch.isMatch(slot, '*{color,emissive}*', MICROMATCH_OPTIONS));
-			const colorPrimaries = isLinear ? KHR_DF_PRIMARIES_UNSPECIFIED : KHR_DF_PRIMARIES_BT709;
+			const colorSpace = getTextureColorSpace(texture);
+			const colorPrimaries = colorSpace === 'srgb' ? KHR_DF_PRIMARIES_BT709 : KHR_DF_PRIMARIES_UNSPECIFIED;
 			const name = texture.getURI() || texture.getName();
 
 			let changed = false;
