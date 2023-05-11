@@ -113,10 +113,11 @@ export interface TextureRefAttributes extends RefAttributes {
 	/** Bitmask for {@link TextureChannel TextureChannels} used by a texture reference. */
 	channels: number;
 	/**
-	 * Color space identifier, as defined by CSS Color Module Level 4. For all
-	 * current glTF textures, this property must be 'srgb' or undefined.
+	 * Specifies that the texture contains color data (base color, emissive, …),
+	 * rather than non-color data (normal maps, metallic roughness, …). Used
+	 * when tuning texture compression settings.
 	 */
-	colorSpace?: string;
+	isColor?: boolean;
 }
 
 export function isArray(value: unknown): boolean {
