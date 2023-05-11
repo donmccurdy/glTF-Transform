@@ -16,7 +16,7 @@ interface IAnisotropy extends IProperty {
 	anisotropyTextureInfo: TextureInfo;
 }
 
-const { R, G } = TextureChannel;
+const { R, G, B } = TextureChannel;
 
 /**
  * # Anisotropy
@@ -80,17 +80,18 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 	 */
 
 	/**
-	 * Anisotropy texture. Red and green channels represent the anisotropy direction in [-1, 1]
-	 * tangent, bitangent space. The vector is rotated by anisotropyRotation, and multiplied by
-	 * anisotropyStrength, to obtain the final anisotropy direction and strength.
+	 * Anisotropy texture. Red and green channels represent the anisotropy
+	 * direction in [-1, 1] tangent, bitangent space, to be rotated by
+	 * anisotropyRotation. The blue channel contains strength as [0, 1] to be
+	 * multiplied by anisotropyStrength.
 	 */
 	public getAnisotropyTexture(): Texture | null {
 		return this.getRef('anisotropyTexture');
 	}
 
 	/**
-	 * Settings affecting the material's use of its anisotropy texture. If no texture is attached,
-	 * {@link TextureInfo} is `null`.
+	 * Settings affecting the material's use of its anisotropy texture. If no
+	 * texture is attached, {@link TextureInfo} is `null`.
 	 */
 	public getAnisotropyTextureInfo(): TextureInfo | null {
 		return this.getRef('anisotropyTexture') ? this.getRef('anisotropyTextureInfo') : null;
@@ -98,6 +99,6 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 
 	/** Anisotropy texture. See {@link getAnisotropyTexture}. */
 	public setAnisotropyTexture(texture: Texture | null): this {
-		return this.setRef('anisotropyTexture', texture, { channels: R | G });
+		return this.setRef('anisotropyTexture', texture, { channels: R | G | B });
 	}
 }
