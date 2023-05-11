@@ -241,7 +241,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture | null): this {
-		return this.setRef('baseColorTexture', texture, { channels: R | G | B | A, colorSpace: 'srgb' });
+		return this.setRef('baseColorTexture', texture, { channels: R | G | B | A, isColor: true });
 	}
 
 	/**********************************************************************************************
@@ -292,7 +292,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/** Sets emissive texture. See {@link getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture | null): this {
-		return this.setRef('emissiveTexture', texture, { channels: R | G | B, colorSpace: 'srgb' });
+		return this.setRef('emissiveTexture', texture, { channels: R | G | B, isColor: true });
 	}
 
 	/**********************************************************************************************
