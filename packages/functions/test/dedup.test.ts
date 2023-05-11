@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('accessors', async (t) => {
+test('accessors - geometry', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
 	t.is(doc.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
@@ -22,7 +22,7 @@ test('accessors', async (t) => {
 	t.is(doc.getRoot().listAccessors().length, 3, 'prunes duplicate accessors');
 });
 
-test('animation accessors', (t) => {
+test('accessors - animation', (t) => {
 	const doc = new Document();
 	const a = doc.createAccessor().setArray(new Float32Array([1, 2, 3]));
 	const b = doc.createAccessor().setArray(new Float32Array([4, 5, 6]));
