@@ -112,6 +112,12 @@ export interface AccessorRefAttributes extends RefAttributes {
 export interface TextureRefAttributes extends RefAttributes {
 	/** Bitmask for {@link TextureChannel TextureChannels} used by a texture reference. */
 	channels: number;
+	/**
+	 * Specifies that the texture contains color data (base color, emissive, …),
+	 * rather than non-color data (normal maps, metallic roughness, …). Used
+	 * when tuning texture compression settings.
+	 */
+	isColor?: boolean;
 }
 
 export function isArray(value: unknown): boolean {

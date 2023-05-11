@@ -96,7 +96,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 
 	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
 	public setDiffuseTexture(texture: Texture | null): this {
-		return this.setRef('diffuseTexture', texture, { channels: R | G | B | A });
+		return this.setRef('diffuseTexture', texture, { channels: R | G | B | A, isColor: true });
 	}
 
 	/**********************************************************************************************

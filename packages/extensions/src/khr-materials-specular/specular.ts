@@ -131,6 +131,6 @@ export class Specular extends ExtensionProperty<ISpecular> {
 
 	/** Sets specular color texture. See {@link getSpecularColorTexture}. */
 	public setSpecularColorTexture(texture: Texture | null): this {
-		return this.setRef('specularColorTexture', texture, { channels: R | G | B });
+		return this.setRef('specularColorTexture', texture, { channels: R | G | B, isColor: true });
 	}
 }

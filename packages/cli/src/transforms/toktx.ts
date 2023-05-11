@@ -7,9 +7,24 @@ import semver from 'semver';
 import tmp from 'tmp';
 import pLimit from 'p-limit';
 
-import { Document, FileUtils, ILogger, ImageUtils, TextureChannel, Transform, vec2, uuid } from '@gltf-transform/core';
+import {
+	Document,
+	FileUtils,
+	ILogger,
+	ImageUtils,
+	TextureChannel,
+	Transform,
+	vec2,
+	uuid,
+	Texture,
+} from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
-import { createTransform, getTextureChannelMask, listTextureSlots } from '@gltf-transform/functions';
+import {
+	createTransform,
+	getTextureChannelMask,
+	getTextureColorSpace,
+	listTextureSlots,
+} from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util.js';
 
 tmp.setGracefulCleanup();
@@ -178,7 +193,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				await fs.writeFile(inPath, Buffer.from(image));
 
 				const params = [
-					...createParams(slots, channels, size, logger, numTextures, options, version),
+					...createParams(texture, slots, channels, size, logger, numTextures, options, version),
 					outPath,
 					inPath,
 				];
@@ -230,6 +245,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 /** Create CLI parameters from the given options. Attempts to write only non-default options. */
 function createParams(
+	texture: Texture,
 	slots: string[],
 	channels: number,
 	size: vec2,
@@ -293,7 +309,7 @@ function createParams(
 		}
 	}
 
-	if (slots.length && !slots.find((slot) => micromatch.isMatch(slot, '*{color,emissive}*', MICROMATCH_OPTIONS))) {
+	if (slots.length && getTextureColorSpace(texture) !== 'srgb') {
 		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
 		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
 	}
