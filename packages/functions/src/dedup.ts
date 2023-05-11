@@ -95,7 +95,7 @@ function dedupAccessors(document: Document): void {
 	}
 
 	// Add accessor to the appropriate hash group. Hashes are _non-unique_,
-	// intended only to reduce the set of comparisons required.
+	// intended to quickly compare everything accept the underlying array.
 	function hashAccessor(accessor: Accessor | null, group: Map<string, Set<Accessor>>): void {
 		if (!accessor) return;
 
@@ -125,11 +125,9 @@ function dedupAccessors(document: Document): void {
 
 				if (duplicates.has(b)) continue;
 
-				if (a.getType() !== b.getType()) continue;
-				if (a.getComponentType() !== b.getComponentType()) continue;
-				if (a.getCount() !== b.getCount()) continue;
-				if (a.getNormalized() !== b.getNormalized()) continue;
-				if (a.getSparse() !== b.getSparse()) continue;
+				// Just compare the arrays — everything else was covered by the
+				// hash. Comparing uint8 views is faster than comparing the
+				// original typed arrays.
 				if (BufferUtils.equals(aData, BufferUtils.toView(b.getArray()!))) {
 					duplicates.set(b, a);
 				}
