@@ -16,6 +16,7 @@ import {
 	TextureInfo,
 } from '@gltf-transform/core';
 import { createTransform } from './utils.js';
+import { listTextureInfoByMaterial } from './list-texture-info.js';
 
 const NAME = 'prune';
 
@@ -295,17 +296,9 @@ function listRequiredSemantics(
  * prim, but gaps may remain in their semantic lists.
  */
 function shiftTexCoords(material: Material, prims: Primitive[]) {
-	const graph = material.getGraph();
-
-	// Create map from srcIndex → dstIndex.
-	const textureInfoList = [] as TextureInfo[];
-	const texCoordSet = new Set<number>();
-	for (const child of graph.listChildren(material)) {
-		if (child instanceof TextureInfo) {
-			textureInfoList.push(child);
-			texCoordSet.add(child.getTexCoord());
-		}
-	}
+	// Create map from srcTexCoord → dstTexCoord.
+	const textureInfoList = listTextureInfoByMaterial(material);
+	const texCoordSet = new Set(textureInfoList.map((info: TextureInfo) => info.getTexCoord()));
 	const texCoordList = Array.from(texCoordSet).sort();
 	const texCoordMap = new Map(texCoordList.map((texCoord, index) => [texCoord, index]));
 	const semanticMap = new Map(texCoordList.map((texCoord, index) => [`TEXCOORD_${texCoord}`, `TEXCOORD_${index}`]));

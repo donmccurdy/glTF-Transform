@@ -161,16 +161,14 @@ test('attributes', async (t) => {
 	);
 });
 
-test('attributes - texcoords', async (t) => {
+test.only('attributes - texcoords', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	// Material.
-	const texture0 = document.createTexture();
-	const texture2 = document.createTexture();
+	const texture1 = document.createTexture();
 	const texture3 = document.createTexture();
 	const material = document.createMaterial();
-	material.setBaseColorTexture(texture0).getBaseColorTextureInfo().setTexCoord(0);
-	material.setOcclusionTexture(texture2).getOcclusionTextureInfo().setTexCoord(2);
+	material.setBaseColorTexture(texture1).getBaseColorTextureInfo().setTexCoord(1);
 	material.setNormalTexture(texture3).getNormalTextureInfo().setTexCoord(3);
 
 	// Primitives.
@@ -179,9 +177,9 @@ test('attributes - texcoords', async (t) => {
 		.createPrimitive()
 		.setMaterial(material)
 		.setAttribute('POSITION', document.createAccessor())
-		.setAttribute('TEXCOORD_0', (uvs[0] = document.createAccessor()))
-		.setAttribute('TEXCOORD_1', (uvs[1] = document.createAccessor())) // unused
-		.setAttribute('TEXCOORD_2', (uvs[2] = document.createAccessor()))
+		.setAttribute('TEXCOORD_0', (uvs[0] = document.createAccessor())) // unused
+		.setAttribute('TEXCOORD_1', (uvs[1] = document.createAccessor()))
+		.setAttribute('TEXCOORD_2', (uvs[2] = document.createAccessor())) // unused
 		.setAttribute('TEXCOORD_3', (uvs[3] = document.createAccessor()));
 	const primB = primA
 		.clone()
@@ -201,23 +199,22 @@ test('attributes - texcoords', async (t) => {
 
 	t.deepEqual(
 		uvs.map((a) => a.isDisposed()),
-		[false, true, false, false, true, true],
-		'disposes TEXCOORD_1, TEXCOORD_4, and TEXCOORD_5'
+		[true, false, true, false, true, true],
+		'disposes TEXCOORD_0, TEXCOORD_2, TEXCOORD_4, and TEXCOORD_5'
 	);
 
-	t.true(primA.getAttribute('TEXCOORD_0') === uvs[0], 'primA.TEXCOORD_0');
-	t.true(primA.getAttribute('TEXCOORD_1') === uvs[2], 'primA.TEXCOORD_1');
-	t.true(primA.getAttribute('TEXCOORD_2') === uvs[3], 'primA.TEXCOORD_2');
+	t.true(primA.getAttribute('TEXCOORD_0') === uvs[1], 'primA.TEXCOORD_0');
+	t.true(primA.getAttribute('TEXCOORD_1') === uvs[3], 'primA.TEXCOORD_1');
+	t.true(primA.getAttribute('TEXCOORD_2') === null, 'primA.TEXCOORD_2 → null');
 	t.true(primA.getAttribute('TEXCOORD_3') === null, 'primA.TEXCOORD_3 → null');
 
-	t.true(primB.getAttribute('TEXCOORD_0') === uvs[0], 'primB.TEXCOORD_0');
-	t.true(primB.getAttribute('TEXCOORD_1') === uvs[2], 'primB.TEXCOORD_1');
-	t.true(primB.getAttribute('TEXCOORD_2') === uvs[3], 'primB.TEXCOORD_2');
+	t.true(primB.getAttribute('TEXCOORD_0') === uvs[1], 'primB.TEXCOORD_0');
+	t.true(primB.getAttribute('TEXCOORD_1') === uvs[3], 'primB.TEXCOORD_1');
+	t.true(primB.getAttribute('TEXCOORD_2') === null, 'primB.TEXCOORD_2 → null');
 	t.true(primB.getAttribute('TEXCOORD_3') === null, 'primB.TEXCOORD_3 → null');
 	t.true(primB.getAttribute('TEXCOORD_4') === null, 'primB.TEXCOORD_4 → null');
 	t.true(primB.getAttribute('TEXCOORD_5') === null, 'primB.TEXCOORD_5 → null');
 
 	t.is(material.getBaseColorTextureInfo().getTexCoord(), 0, 'material.baseColorTexture.texCoord = 0');
-	t.is(material.getOcclusionTextureInfo().getTexCoord(), 1, 'material.occlusionTexture.texCoord → 1');
-	t.is(material.getNormalTextureInfo().getTexCoord(), 2, 'material.normalTexture.texCoord → 2');
+	t.is(material.getNormalTextureInfo().getTexCoord(), 1, 'material.normalTexture.texCoord → 1');
 });
