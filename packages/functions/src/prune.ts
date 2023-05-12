@@ -16,6 +16,7 @@ import {
 	TextureInfo,
 } from '@gltf-transform/core';
 import { createTransform } from './utils.js';
+import { listTextureInfoByMaterial } from './list-texture-info.js';
 
 const NAME = 'prune';
 
@@ -101,13 +102,23 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 
 		// Prune unused vertex attributes.
 		if (!options.keepAttributes && propertyTypes.has(PropertyType.ACCESSOR)) {
+			const materialPrims = new Map<Material, Set<Primitive>>();
 			for (const mesh of root.listMeshes()) {
 				for (const prim of mesh.listPrimitives()) {
-					const required = listRequiredSemantics(doc, prim.getMaterial());
+					const material = prim.getMaterial();
+					const required = listRequiredSemantics(doc, material);
 					const unused = listUnusedSemantics(prim, required);
 					pruneAttributes(prim, unused);
 					prim.listTargets().forEach((target) => pruneAttributes(target, unused));
+					if (material) {
+						materialPrims.has(material)
+							? materialPrims.get(material)!.add(prim)
+							: materialPrims.set(material, new Set([prim]));
+					}
 				}
+			}
+			for (const [material, prims] of materialPrims) {
+				shiftTexCoords(material, Array.from(prims));
 			}
 		}
 
@@ -272,4 +283,52 @@ function listRequiredSemantics(
 	}
 
 	return semantics;
+}
+
+/**
+ * Shifts texCoord indices on the given material and primitives assigned to
+ * that material, such that indices start at zero and ascend without gaps.
+ * Prior to calling this function, the implementation must ensure that:
+ * - All TEXCOORD_n attributes on these prims are used by the material.
+ * - Material does not require any unavailable TEXCOORD_n attributes.
+ *
+ * TEXCOORD_n attributes on morph targets are shifted alongside the parent
+ * prim, but gaps may remain in their semantic lists.
+ */
+function shiftTexCoords(material: Material, prims: Primitive[]) {
+	// Create map from srcTexCoord → dstTexCoord.
+	const textureInfoList = listTextureInfoByMaterial(material);
+	const texCoordSet = new Set(textureInfoList.map((info: TextureInfo) => info.getTexCoord()));
+	const texCoordList = Array.from(texCoordSet).sort();
+	const texCoordMap = new Map(texCoordList.map((texCoord, index) => [texCoord, index]));
+	const semanticMap = new Map(texCoordList.map((texCoord, index) => [`TEXCOORD_${texCoord}`, `TEXCOORD_${index}`]));
+
+	// Update material.
+	for (const textureInfo of textureInfoList) {
+		const texCoord = textureInfo.getTexCoord();
+		textureInfo.setTexCoord(texCoordMap.get(texCoord)!);
+	}
+
+	// Update prims.
+	for (const prim of prims) {
+		const semantics = prim
+			.listSemantics()
+			.filter((semantic) => semantic.startsWith('TEXCOORD_'))
+			.sort();
+		updatePrim(prim, semantics);
+		prim.listTargets().forEach((target) => updatePrim(target, semantics));
+	}
+
+	function updatePrim(prim: Primitive | PrimitiveTarget, srcSemantics: string[]) {
+		for (const srcSemantic of srcSemantics) {
+			const uv = prim.getAttribute(srcSemantic);
+			if (!uv) continue;
+
+			const dstSemantic = semanticMap.get(srcSemantic)!;
+			if (dstSemantic === srcSemantic) continue;
+
+			prim.setAttribute(dstSemantic, uv);
+			prim.setAttribute(srcSemantic, null);
+		}
+	}
 }

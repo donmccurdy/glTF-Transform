@@ -1,9 +1,9 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
-import { listTextureInfo } from '@gltf-transform/functions';
-import { KHRMaterialsSheen } from '@gltf-transform/extensions';
+import { listTextureInfo, listTextureInfoByMaterial } from '@gltf-transform/functions';
+import { KHRMaterialsSheen, KHRMaterialsVolume } from '@gltf-transform/extensions';
 
-test('basic', (t) => {
+test('listTextureInfo', (t) => {
 	const document = new Document();
 	const textureA = document.createTexture();
 	const textureB = document.createTexture();
@@ -28,4 +28,25 @@ test('basic', (t) => {
 		['metallicRoughnessTextureInfo', 'occlusionTextureInfo'],
 		'texture B'
 	);
+});
+
+test('listTextureInfoByMaterial', (t) => {
+	const document = new Document();
+	const textureA = document.createTexture();
+	const textureB = document.createTexture();
+	const textureC = document.createTexture();
+	const volumeExtension = document.createExtension(KHRMaterialsVolume);
+	const volume = volumeExtension.createVolume().setThicknessTexture(textureC);
+	const material = document
+		.createMaterial()
+		.setBaseColorTexture(textureA)
+		.setNormalTexture(textureB)
+		.setExtension('KHR_materials_volume', volume);
+
+	const textureInfo = new Set(listTextureInfoByMaterial(material));
+
+	t.is(textureInfo.size, 3, 'finds TextureInfo x 3');
+	t.true(textureInfo.has(material.getBaseColorTextureInfo()), 'finds material.baseColorTextureInfo');
+	t.true(textureInfo.has(material.getNormalTextureInfo()), 'finds material.normalTextureInfo');
+	t.true(textureInfo.has(volume.getThicknessTextureInfo()), 'finds material.volume.thicknessTextureInfo');
 });
