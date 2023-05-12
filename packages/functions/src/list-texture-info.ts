@@ -56,9 +56,8 @@ export function listTextureInfoByMaterial(material: Material): TextureInfo[] {
 	const visited = new Set<Property>();
 	const results = new Set<TextureInfo>();
 
-	// TODO(test): Write a unit test.
-	function traverse(material: Material | ExtensionProperty) {
-		for (const child of graph.listChildren(material)) {
+	function traverse(prop: Material | ExtensionProperty) {
+		for (const child of graph.listChildren(prop)) {
 			if (visited.has(child)) continue;
 			visited.add(child);
 

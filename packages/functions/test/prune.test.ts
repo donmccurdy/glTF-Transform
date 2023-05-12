@@ -161,7 +161,7 @@ test('attributes', async (t) => {
 	);
 });
 
-test.only('attributes - texcoords', async (t) => {
+test('attributes - texcoords', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	// Material.
