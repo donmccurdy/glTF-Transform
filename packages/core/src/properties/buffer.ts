@@ -6,8 +6,6 @@ interface IBuffer extends IExtensibleProperty {
 }
 
 /**
- * # Buffer
- *
  * *Buffers are low-level storage units for binary data.*
  *
  * glTF 2.0 has three concepts relevant to binary storage: accessors, buffer views, and buffers.

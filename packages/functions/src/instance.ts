@@ -29,6 +29,8 @@ const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
  * 	instance({min: 2}),
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
 	const options = { ...INSTANCE_DEFAULTS, ..._options } as Required<InstanceOptions>;

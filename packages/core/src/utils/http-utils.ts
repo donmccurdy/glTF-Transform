@@ -5,8 +5,6 @@ import { FileUtils } from './file-utils.js';
 const NULL_DOMAIN = 'https://null.example';
 
 /**
- * # HTTPUtils
- *
  * *Utility class for working with URLs.*
  *
  * @category Utilities

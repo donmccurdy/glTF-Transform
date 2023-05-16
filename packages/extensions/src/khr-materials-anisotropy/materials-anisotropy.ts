@@ -11,8 +11,6 @@ interface AnisotropyDef {
 }
 
 /**
- * # KHRMaterialsAnisotropy
- *
  * [`KHR_materials_anisotropy`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_anisotropy/)
  * defines anisotropy (directionally-dependent reflections) on a PBR material.
  *

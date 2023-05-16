@@ -30,8 +30,6 @@ interface IMaterial extends IExtensibleProperty {
 }
 
 /**
- * # Material
- *
  * *Materials describe a surface's appearance and response to light.*
  *
  * Each {@link Primitive} within a {@link Mesh} may be assigned a single Material. The number of
@@ -173,7 +171,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.get('alphaMode');
 	}
 
-	/** Sets the mode of the material's alpha channels. See {@link getAlphaMode} for details. */
+	/** Sets the mode of the material's alpha channels. See {@link Material.getAlphaMode getAlphaMode} for details. */
 	public setAlphaMode(alphaMode: GLTF.MaterialAlphaMode): this {
 		return this.set('alphaMode', alphaMode);
 	}
@@ -192,25 +190,31 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Base color.
 	 */
 
-	/** Base color / albedo factor; Linear-sRGB components. See {@link getBaseColorTexture}. */
+	/**
+	 * Base color / albedo factor; Linear-sRGB components.
+	 * See {@link Material.getBaseColorTexture getBaseColorTexture}.
+	 */
 	public getBaseColorFactor(): vec4 {
 		return this.get('baseColorFactor');
 	}
 
-	/** Base color / albedo factor; Linear-sRGB components. See {@link getBaseColorTexture}. */
+	/**
+	 * Base color / albedo factor; Linear-sRGB components.
+	 * See {@link Material.getBaseColorTexture getBaseColorTexture}.
+	 */
 	public setBaseColorFactor(baseColorFactor: vec4): this {
 		return this.set('baseColorFactor', baseColorFactor);
 	}
 
 	/**
-	 * Base color / albedo; sRGB hexadecimal color. See {@link getBaseColorTexture}.
+	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
 	 */
 	public getBaseColorHex(): number {
 		return ColorUtils.factorToHex(this.get('baseColorFactor'));
 	}
 
 	/**
-	 * Base color / albedo; sRGB hexadecimal color. See {@link getBaseColorTexture}.
+	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
 	 */
 	public setBaseColorHex(hex: number): this {
 		const factor = this.get('baseColorFactor').slice() as vec4;
@@ -222,7 +226,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * light would be a linear combination (multiplication) of its vertex colors, base color
 	 * factor, and base color texture. Lighting, and reflections in metallic or smooth surfaces,
 	 * also effect the final color. The alpha (`.a`) channel of base color factors and textures
-	 * will have varying effects, based on the setting of {@link getAlphaMode}.
+	 * will have varying effects, based on the setting of {@link Material.getAlphaMode getAlphaMode}.
 	 *
 	 * Reference:
 	 * - [glTF → material.pbrMetallicRoughness.baseColorFactor](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#pbrmetallicroughnessbasecolorfactor)
@@ -239,7 +243,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.getRef('baseColorTexture') ? this.getRef('baseColorTextureInfo') : null;
 	}
 
-	/** Sets base color / albedo texture. See {@link getBaseColorTexture}. */
+	/** Sets base color / albedo texture. See {@link Material.getBaseColorTexture getBaseColorTexture}. */
 	public setBaseColorTexture(texture: Texture | null): this {
 		return this.setRef('baseColorTexture', texture, { channels: R | G | B | A, isColor: true });
 	}
@@ -248,22 +252,22 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	 * Emissive.
 	 */
 
-	/** Emissive color; Linear-sRGB components. See {@link getEmissiveTexture}. */
+	/** Emissive color; Linear-sRGB components. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
 	public getEmissiveFactor(): vec3 {
 		return this.get('emissiveFactor');
 	}
 
-	/** Emissive color; Linear-sRGB components. See {@link getEmissiveTexture}. */
+	/** Emissive color; Linear-sRGB components. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
 		return this.set('emissiveFactor', emissiveFactor);
 	}
 
-	/** Emissive; sRGB hexadecimal color. See {@link getBaseColorTexture}. */
+	/** Emissive; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}. */
 	public getEmissiveHex(): number {
 		return ColorUtils.factorToHex(this.get('emissiveFactor'));
 	}
 
-	/** Emissive; sRGB hexadecimal color. See {@link getEmissiveTexture}. */
+	/** Emissive; sRGB hexadecimal color. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
 	public setEmissiveHex(hex: number): this {
 		const factor = this.get('emissiveFactor').slice() as vec3;
 		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, factor));
@@ -290,7 +294,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.getRef('emissiveTexture') ? this.getRef('emissiveTextureInfo') : null;
 	}
 
-	/** Sets emissive texture. See {@link getEmissiveTexture}. */
+	/** Sets emissive texture. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
 	public setEmissiveTexture(texture: Texture | null): this {
 		return this.setRef('emissiveTexture', texture, { channels: R | G | B, isColor: true });
 	}
@@ -332,7 +336,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.getRef('normalTexture') ? this.getRef('normalTextureInfo') : null;
 	}
 
-	/** Sets normal (surface detail) texture. See {@link getNormalTexture}. */
+	/** Sets normal (surface detail) texture. See {@link Material.getNormalTexture getNormalTexture}. */
 	public setNormalTexture(texture: Texture | null): this {
 		return this.setRef('normalTexture', texture, { channels: R | G | B });
 	}
@@ -375,7 +379,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.getRef('occlusionTexture') ? this.getRef('occlusionTextureInfo') : null;
 	}
 
-	/** Sets (ambient) occlusion texture. See {@link getOcclusionTexture}. */
+	/** Sets (ambient) occlusion texture. See {@link Material.getOcclusionTexture getOcclusionTexture}. */
 	public setOcclusionTexture(texture: Texture | null): this {
 		return this.setRef('occlusionTexture', texture, { channels: R });
 	}
@@ -386,7 +390,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Roughness factor; linear multiplier. Affects roughness channel of
-	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
+	 * `metallicRoughnessTexture`. See {@link Material.getMetallicRoughnessTexture getMetallicRoughnessTexture}.
 	 */
 	public getRoughnessFactor(): number {
 		return this.get('roughnessFactor');
@@ -394,7 +398,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Sets roughness factor; linear multiplier. Affects roughness channel of
-	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
+	 * `metallicRoughnessTexture`. See {@link Material.getMetallicRoughnessTexture getMetallicRoughnessTexture}.
 	 */
 	public setRoughnessFactor(factor: number): this {
 		return this.set('roughnessFactor', factor);
@@ -402,7 +406,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Metallic factor; linear multiplier. Affects roughness channel of
-	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
+	 * `metallicRoughnessTexture`. See {@link Material.getMetallicRoughnessTexture getMetallicRoughnessTexture}.
 	 */
 	public getMetallicFactor(): number {
 		return this.get('metallicFactor');
@@ -410,7 +414,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Sets metallic factor; linear multiplier. Affects roughness channel of
-	 * `metallicRoughnessTexture`. See {@link getMetallicRoughnessTexture}.
+	 * `metallicRoughnessTexture`. See {@link Material.getMetallicRoughnessTexture getMetallicRoughnessTexture}.
 	 */
 	public setMetallicFactor(factor: number): this {
 		return this.set('metallicFactor', factor);
@@ -437,7 +441,10 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.getRef('metallicRoughnessTexture') ? this.getRef('metallicRoughnessTextureInfo') : null;
 	}
 
-	/** Sets metallic/roughness texture. See {@link getMetallicRoughnessTexture}. */
+	/**
+	 * Sets metallic/roughness texture.
+	 * See {@link Material.getMetallicRoughnessTexture getMetallicRoughnessTexture}.
+	 */
 	public setMetallicRoughnessTexture(texture: Texture | null): this {
 		return this.setRef('metallicRoughnessTexture', texture, { channels: G | B });
 	}

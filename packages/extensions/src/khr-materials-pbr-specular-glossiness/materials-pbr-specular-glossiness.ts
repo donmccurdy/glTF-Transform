@@ -13,8 +13,6 @@ interface SpecularGlossinessDef {
 }
 
 /**
- * # KHRMaterialsPBRSpecularGlossiness
- *
  * [`KHR_materials_pbrSpecularGlossiness`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_pbrSpecularGlossiness/)
  * converts a PBR material from the default metal/rough workflow to a spec/gloss workflow.
  *

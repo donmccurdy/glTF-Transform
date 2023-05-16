@@ -28,6 +28,8 @@ const PARTITION_DEFAULTS: Required<PartitionOptions> = {
  *
  * document.getRoot().listBuffers(); // → [Buffer, Buffer, ...]
  * ```
+ *
+ * @category Transforms
  */
 export function partition(_options: PartitionOptions = PARTITION_DEFAULTS): Transform {
 	const options = { ...PARTITION_DEFAULTS, ..._options } as Required<PartitionOptions>;

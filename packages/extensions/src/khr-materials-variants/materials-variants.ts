@@ -24,12 +24,10 @@ interface VariantMappingDef {
 }
 
 /**
- * # KHRMaterialsVariants
- *
  * [`KHR_materials_variants`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants/)
  * defines alternate {@link Material} states for any {@link Primitive} in the scene.
  *
- * ![Illustration](/media/extensions/khr-materials-variants.png)
+ * ![Illustration](/media/extensions/khr-materials-variants.jpg)
  *
  * > _**Figure:** A sneaker, in three material variants. Source: Khronos Group._
  *

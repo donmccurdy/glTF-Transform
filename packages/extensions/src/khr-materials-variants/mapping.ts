@@ -8,8 +8,6 @@ interface IMapping extends IProperty {
 }
 
 /**
- * # Mapping
- *
  * Maps {@link Variant}s to {@link Material}s. See {@link KHRMaterialsVariants}.
  */
 export class Mapping extends ExtensionProperty<IMapping> {

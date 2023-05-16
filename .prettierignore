@@ -1,9 +1,16 @@
+# General
 **/dist
+**/build
 **/in
 **/out
-**/*.md
-**/*.hbs
-**/*.json
 **/*.yml
 **/*.lock
 **/*.css
+
+# Documentation
+packages/docs/.svelte-kit
+
+# Lockfiles
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

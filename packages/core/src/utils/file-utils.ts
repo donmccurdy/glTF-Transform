@@ -1,8 +1,6 @@
 import { ImageUtils } from './image-utils.js';
 
 /**
- * # FileUtils
- *
  * *Utility class for working with file systems and URI paths.*
  *
  * @category Utilities

@@ -25,8 +25,6 @@ interface LightDef {
 }
 
 /**
- * # KHRLightsPunctual
- *
  * [`KHR_lights_punctual`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_lights_punctual/) defines three "punctual" light types: directional, point and
  * spot.
  *

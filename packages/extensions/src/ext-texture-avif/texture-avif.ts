@@ -55,8 +55,6 @@ class AVIFImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # TextureAVIF
- *
  * [`EXT_texture_avif`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_avif/)
  * enables AVIF images for any material texture.
  *

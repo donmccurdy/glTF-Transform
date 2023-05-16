@@ -11,8 +11,6 @@ interface IAnimationChannel extends IExtensibleProperty {
 }
 
 /**
- * # AnimationChannel
- *
  * *A target-path pair within a larger {@link Animation}, which refers to an
  * {@link AnimationSampler} storing the keyframe data for that pair.*
  *
@@ -38,6 +36,8 @@ interface IAnimationChannel extends IExtensibleProperty {
  *
  * Reference
  * - [glTF → Animations](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#animations)
+ *
+ * @category Properties
  */
 export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 	public declare propertyType: PropertyType.ANIMATION_CHANNEL;

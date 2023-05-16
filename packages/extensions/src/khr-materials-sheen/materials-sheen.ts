@@ -12,8 +12,6 @@ interface SheenDef {
 }
 
 /**
- * # KHRMaterialsSheen
- *
  * [`KHR_materials_sheen`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_sheen/)
  * defines a velvet-like sheen layered on a glTF PBR material.
  *

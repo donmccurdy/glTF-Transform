@@ -3,14 +3,7 @@
         "github>donmccurdy/renovate-config"
     ],
     "packageRules": [
-        {
-            "description": "https://github.com/TypeStrong/typedoc/issues/1633",
-            "matchPackageNames": [
-                "typedoc"
-            ],
-            "enabled": false
-        },
-        {
+      {
           "description": "Node.js v14 EOL",
           "matchPackageNames": [
               "listr2"

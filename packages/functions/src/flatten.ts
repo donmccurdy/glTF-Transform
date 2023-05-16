@@ -27,6 +27,8 @@ export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
  *
  * await document.transform(flatten());
  * ```
+ *
+ * @category Transforms
  */
 export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

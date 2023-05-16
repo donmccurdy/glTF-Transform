@@ -7,8 +7,6 @@ interface IMappingList extends IProperty {
 }
 
 /**
- * # MappingList
- *
  * List of material variant {@link Mapping}s. See {@link KHRMaterialsVariants}.
  */
 export class MappingList extends ExtensionProperty<IMappingList> {

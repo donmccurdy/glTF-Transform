@@ -13,8 +13,6 @@ interface ITextureInfo extends IExtensibleProperty {
 }
 
 /**
- * # TextureInfo
- *
  * *Settings associated with a particular use of a {@link Texture}.*
  *
  * Different materials may reuse the same texture but with different texture coordinates,

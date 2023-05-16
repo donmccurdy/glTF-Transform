@@ -20,11 +20,10 @@
     "lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
     "validate": "scripts/validate.js",
     "preversion": "yarn run test",
-    "version": "yarn clean:dist && lerna run dist && gltf-transform -h > docs/CLI_HELP.md && git add -u docs",
-    "postpublish": "git push && git push --tags && yarn run docs:deploy",
-    "docs": "typedoc packages/core/src/core.ts packages/extensions/src/extensions.ts packages/functions/src/index.ts docs/pages.ts --out docs/dist/ --name glTF-Transform --excludeInternal --excludeNotDocumented --theme docs/theme --media docs/media --readme docs/INDEX.md --includes docs --tsconfig docs/tsconfig.json",
-    "docs:watch": "concurrently \"yarn docs --watch\" \"vercel dev\"",
-    "docs:deploy": "yarn docs && vercel --prod"
+    "version": "yarn clean:dist && lerna run dist && yarn run docs:cli && git add -u docs",
+    "postpublish": "git push && git push --tags && yarn run docs:deploy --prod",
+    "docs:cli": "export CLI_HELP=\"$(gltf-transform -h)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
+    "docs:deploy": "yarn dist && vercel"
   },
   "devDependencies": {
     "@types/command-exists": "1.2.0",
@@ -42,6 +41,7 @@
     "draco3dgltf": "1.5.6",
     "eslint": "8.40.0",
     "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-svelte": "^2.28.0",
     "gl-matrix": "^3.4.3",
     "gltf-validator": "2.0.0-dev.3.9",
     "keyframe-resample": "^0.0.14",
@@ -50,10 +50,10 @@
     "microbundle": "0.15.1",
     "mikktspace": "1.1.1",
     "prettier": "2.8.8",
+    "prettier-plugin-svelte": "^2.10.0",
     "source-map-support": "0.5.21",
     "suppress-experimental-warnings": "1.1.17",
     "ts-node": "10.9.1",
-    "typedoc": "0.21.2",
     "typescript": "5.0.4"
   },
   "ava": {

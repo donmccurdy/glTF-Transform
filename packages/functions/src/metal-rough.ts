@@ -21,6 +21,8 @@ const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};
  * and is a prerequisite for other advanced PBR extensions provided by glTF.
  *
  * No options are currently implemented for this function.
+ *
+ * @category Transforms
  */
 export function metalRough(_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -26,8 +26,6 @@ interface IClearcoat extends IProperty {
 const { R, G, B } = TextureChannel;
 
 /**
- * # Clearcoat
- *
  * Defines clear coat for a PBR material. See {@link KHRMaterialsClearcoat}.
  */
 export class Clearcoat extends ExtensionProperty<IClearcoat> {
@@ -62,12 +60,12 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	 * Clearcoat.
 	 */
 
-	/** Clearcoat; linear multiplier. See {@link getClearcoatTexture}. */
+	/** Clearcoat; linear multiplier. See {@link Clearcoat.getClearcoatTexture getClearcoatTexture}. */
 	public getClearcoatFactor(): number {
 		return this.get('clearcoatFactor');
 	}
 
-	/** Clearcoat; linear multiplier. See {@link getClearcoatTexture}. */
+	/** Clearcoat; linear multiplier. See {@link Clearcoat.getClearcoatTexture getClearcoatTexture}. */
 	public setClearcoatFactor(factor: number): this {
 		return this.set('clearcoatFactor', factor);
 	}
@@ -89,7 +87,7 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 		return this.getRef('clearcoatTexture') ? this.getRef('clearcoatTextureInfo') : null;
 	}
 
-	/** Sets clearcoat texture. See {@link getClearcoatTexture}. */
+	/** Sets clearcoat texture. See {@link Clearcoat.getClearcoatTexture getClearcoatTexture}. */
 	public setClearcoatTexture(texture: Texture | null): this {
 		return this.setRef('clearcoatTexture', texture, { channels: R });
 	}
@@ -98,12 +96,18 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	 * Clearcoat roughness.
 	 */
 
-	/** Clearcoat roughness; linear multiplier. See {@link getClearcoatRoughnessTexture}. */
+	/**
+	 * Clearcoat roughness; linear multiplier.
+	 * See {@link Clearcoat.getClearcoatRoughnessTexture getClearcoatRoughnessTexture}.
+	 */
 	public getClearcoatRoughnessFactor(): number {
 		return this.get('clearcoatRoughnessFactor');
 	}
 
-	/** Clearcoat roughness; linear multiplier. See {@link getClearcoatRoughnessTexture}. */
+	/**
+	 * Clearcoat roughness; linear multiplier.
+	 * See {@link Clearcoat.getClearcoatRoughnessTexture getClearcoatRoughnessTexture}.
+	 */
 	public setClearcoatRoughnessFactor(factor: number): this {
 		return this.set('clearcoatRoughnessFactor', factor);
 	}
@@ -124,7 +128,10 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 		return this.getRef('clearcoatRoughnessTexture') ? this.getRef('clearcoatRoughnessTextureInfo') : null;
 	}
 
-	/** Sets clearcoat roughness texture. See {@link getClearcoatRoughnessTexture}. */
+	/**
+	 * Sets clearcoat roughness texture.
+	 * See {@link Clearcoat.getClearcoatRoughnessTexture getClearcoatRoughnessTexture}.
+	 */
 	public setClearcoatRoughnessTexture(texture: Texture | null): this {
 		return this.setRef('clearcoatRoughnessTexture', texture, { channels: G });
 	}
@@ -133,12 +140,12 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	 * Clearcoat normals.
 	 */
 
-	/** Clearcoat normal scale. See {@link getClearcoatNormalTexture}. */
+	/** Clearcoat normal scale. See {@link Clearcoat.getClearcoatNormalTexture getClearcoatNormalTexture}. */
 	public getClearcoatNormalScale(): number {
 		return this.get('clearcoatNormalScale');
 	}
 
-	/** Clearcoat normal scale. See {@link getClearcoatNormalTexture}. */
+	/** Clearcoat normal scale. See {@link Clearcoat.getClearcoatNormalTexture getClearcoatNormalTexture}. */
 	public setClearcoatNormalScale(scale: number): this {
 		return this.set('clearcoatNormalScale', scale);
 	}
@@ -158,7 +165,7 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 		return this.getRef('clearcoatNormalTexture') ? this.getRef('clearcoatNormalTextureInfo') : null;
 	}
 
-	/** Sets clearcoat normal texture. See {@link getClearcoatNormalTexture}. */
+	/** Sets clearcoat normal texture. See {@link Clearcoat.getClearcoatNormalTexture getClearcoatNormalTexture}. */
 	public setClearcoatNormalTexture(texture: Texture | null): this {
 		return this.setRef('clearcoatNormalTexture', texture, { channels: R | G | B });
 	}

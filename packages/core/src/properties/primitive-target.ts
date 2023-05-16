@@ -8,8 +8,6 @@ interface IPrimitiveTarget extends IExtensibleProperty {
 }
 
 /**
- * # PrimitiveTarget
- *
  * *Morph target or shape key used to deform one {@link Primitive} in a {@link Mesh}.*
  *
  * A PrimitiveTarget contains a `POSITION` attribute (and optionally `NORMAL` and `TANGENT`) that
@@ -21,6 +19,8 @@ interface IPrimitiveTarget extends IExtensibleProperty {
  *
  * Reference:
  * - [glTF → Morph Targets](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#morph-targets)
+ *
+ * @category Properties
  */
 export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	public declare propertyType: PropertyType.PRIMITIVE_TARGET;

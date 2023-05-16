@@ -28,7 +28,10 @@ export interface WriterOptions {
 	extensions?: (typeof Extension)[];
 }
 
-/** @internal */
+/**
+ * @internal
+ * @hidden
+ */
 export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
 		const root = doc.getRoot();

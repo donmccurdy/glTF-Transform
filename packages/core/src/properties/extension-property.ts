@@ -2,8 +2,6 @@ import type { ExtensibleProperty } from './extensible-property.js';
 import { Property, IProperty } from './property.js';
 
 /**
- * # ExtensionProperty
- *
  * *Base class for all {@link Property} types that can be attached by an {@link Extension}.*
  *
  * After an {@link Extension} is attached to a glTF {@link Document}, the Extension may be used to
@@ -16,6 +14,8 @@ import { Property, IProperty } from './property.js';
  *
  * Reference:
  * - [glTF → Extensions](https://github.com/KhronosGroup/gltf/blob/main/specification/2.0/README.md#specifying-extensions)
+ *
+ * @category Properties
  */
 export abstract class ExtensionProperty<T extends IProperty = IProperty> extends Property<T> {
 	public static EXTENSION_NAME: string;

@@ -71,8 +71,6 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 }
 
 /**
- * # KHRTextureBasisu
- *
  * [`KHR_texture_basisu`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_texture_basisu)
  * enables KTX2 GPU textures with Basis Universal supercompression for any material texture.
  *
@@ -107,7 +105,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  *
  * Compression is not done automatically when adding the extension as shown above — you must
  * compress the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}. The
- * [glTF-Transform CLI](/cli.html) has functions to help with this, or any similar KTX2-capable
+ * glTF-Transform CLI has functions to help with this, or any similar KTX2-capable
  * utility will work.
  *
  * When the `KHR_texture_basisu` extension is added to a file by glTF-Transform, the extension

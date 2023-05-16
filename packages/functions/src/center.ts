@@ -21,6 +21,8 @@ const CENTER_DEFAULTS: Required<CenterOptions> = { pivot: 'center' };
  * ```ts
  * await document.transform(center({pivot: 'below'}));
  * ```
+ *
+ * @category Transforms
  */
 export function center(_options: CenterOptions = CENTER_DEFAULTS): Transform {
 	const options = { ...CENTER_DEFAULTS, ..._options } as Required<CenterOptions>;

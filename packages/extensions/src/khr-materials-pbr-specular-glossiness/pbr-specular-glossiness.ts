@@ -25,8 +25,6 @@ interface IPBRSpecularGlossiness extends IProperty {
 const { R, G, B, A } = TextureChannel;
 
 /**
- * # PBRSpecularGlossiness
- *
  * Converts a {@link Material} to a spec/gloss workflow. See {@link KHRMaterialsPBRSpecularGlossiness}.
  */
 export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossiness> {
@@ -57,12 +55,12 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	 * Diffuse.
 	 */
 
-	/** Diffuse; Linear-sRGB components. See {@link getDiffuseTexture}. */
+	/** Diffuse; Linear-sRGB components. See {@link PBRSpecularGlossiness.getDiffuseTexture getDiffuseTexture}. */
 	public getDiffuseFactor(): vec4 {
 		return this.get('diffuseFactor');
 	}
 
-	/** Diffuse; Linear-sRGB components. See {@link getDiffuseTexture}. */
+	/** Diffuse; Linear-sRGB components. See {@link PBRSpecularGlossiness.getDiffuseTexture getDiffuseTexture}. */
 	public setDiffuseFactor(factor: vec4): this {
 		return this.set('diffuseFactor', factor);
 	}
@@ -94,7 +92,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 		return this.getRef('diffuseTexture') ? this.getRef('diffuseTextureInfo') : null;
 	}
 
-	/** Sets diffuse texture. See {@link getDiffuseTexture}. */
+	/** Sets diffuse texture. See {@link PBRSpecularGlossiness.getDiffuseTexture getDiffuseTexture}. */
 	public setDiffuseTexture(texture: Texture | null): this {
 		return this.setRef('diffuseTexture', texture, { channels: R | G | B | A, isColor: true });
 	}

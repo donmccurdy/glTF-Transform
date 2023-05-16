@@ -34,6 +34,8 @@ export const DRACO_DEFAULTS: DracoOptions = {
  * This type of compression can reduce the size of triangle geometry.
  *
  * This function is a thin wrapper around the {@link KHRDracoMeshCompression} extension itself.
+ *
+ * @category Transforms
  */
 export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
 	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;

@@ -36,6 +36,8 @@ const NAME = 'meshopt';
  *   reorder({encoder: MeshoptEncoder, level: 'medium'})
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function meshopt(_options: MeshoptOptions): Transform {
 	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;

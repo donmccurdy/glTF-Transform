@@ -16,7 +16,7 @@ import type { GLTF } from '../types/gltf.js';
 
 /**
  * Model class providing glTF-Transform objects representing each definition in the glTF file, used
- * by a {@link Writer} and its {@link Extension} implementations. Indices of all properties will be
+ * by a {@link GLTFReader} and its {@link Extension} implementations. Indices of all properties will be
  * consistent with the glTF file.
  *
  * @hidden

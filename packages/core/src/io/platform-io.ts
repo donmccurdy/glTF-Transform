@@ -15,8 +15,6 @@ enum ChunkType {
 type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
 
 /**
- * # PlatformIO
- *
  * *Abstract I/O service.*
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.

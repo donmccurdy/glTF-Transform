@@ -1,4 +1,3 @@
-
 import type { Accessor, Document, ILogger, Transform, TypedArray } from '@gltf-transform/core';
 import { createTransform, formatDeltaOp } from './utils.js';
 
@@ -16,6 +15,8 @@ const UNWELD_DEFAULTS: UnweldOptions = {};
  * for creating hard edges.
  *
  * No options are currently implemented for this function.
+ *
+ * @category Transforms
  */
 export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

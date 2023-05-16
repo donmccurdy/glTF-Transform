@@ -7,7 +7,7 @@ Part of the glTF-Transform project.
 
 - GitHub: https://github.com/donmccurdy/glTF-Transform
 - Project Documentation: https://gltf-transform.donmccurdy.com/
-- CLI Documentation: https://gltf-transform.donmccurdy.com/cli.html
+- CLI Documentation: https://gltf-transform.donmccurdy.com/cli
 
 ## Quickstart
 
@@ -57,11 +57,11 @@ gltf-transform uastc input.glb output1.glb \
 gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 ```
 
-... [and much more](https://gltf-transform.donmccurdy.com/cli.html).
+... [and much more](https://gltf-transform.donmccurdy.com/cli).
 
 ## Credits
 
-See [*Credits*](https://gltf-transform.donmccurdy.com/credits.html).
+See [*Credits*](https://gltf-transform.donmccurdy.com/credits).
 
 ## License
 

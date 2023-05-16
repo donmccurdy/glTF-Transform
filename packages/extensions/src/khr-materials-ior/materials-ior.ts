@@ -9,8 +9,6 @@ interface IORDef {
 }
 
 /**
- * # KHRMaterialsIOR
- *
  * [KHR_materials_ior](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_ior/)
  * defines index of refraction on a glTF PBR material.
  *

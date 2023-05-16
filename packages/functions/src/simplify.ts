@@ -65,6 +65,8 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  *
  * References:
  * - https://github.com/zeux/meshoptimizer/blob/master/js/README.md#simplifier
+ *
+ * @category Transforms
  */
 export function simplify(_options: SimplifyOptions): Transform {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;

@@ -38,8 +38,6 @@ interface DracoWriterContext {
 }
 
 /**
- * # KHRDracoMeshCompression
- *
  * [`KHR_draco_mesh_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/)
  * provides advanced compression for mesh geometry.
  *

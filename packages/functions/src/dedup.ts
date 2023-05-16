@@ -46,6 +46,8 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
  *
  * document.getRoot().listMeshes(); // → [Mesh]
  * ```
+ *
+ * @category Transforms
  */
 export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	const options = { ...DEDUP_DEFAULTS, ..._options } as Required<DedupOptions>;

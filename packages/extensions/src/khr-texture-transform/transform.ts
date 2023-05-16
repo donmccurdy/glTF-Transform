@@ -10,8 +10,6 @@ interface ITransform extends IProperty {
 }
 
 /**
- * # Transform
- *
  * Defines UV transform for a {@link TextureInfo}. See {@link KHRTextureTransform}.
  */
 export class Transform extends ExtensionProperty<ITransform> {

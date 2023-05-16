@@ -1,0 +1,1390 @@
+/* ==========================================================================
+* * Base
+* * ========================================================================== */
+html {
+	font-size: 100%;
+}
+
+body {
+	font-family: Iowan Old Style, Apple Garamond, Palatino Linotype, Times New Roman, 'Droid Serif', Times, serif;
+	background: #fdfdfd;
+	font-size: 16px;
+	color: #222;
+}
+/* ==========================================================================
+* * Links
+* * ========================================================================== */
+/**
+* * Address `outline` inconsistency between Chrome and other browsers. */
+a:focus {
+	outline: thin dotted;
+}
+a:active,
+a:hover {
+	outline: 0;
+}
+
+/**
+* * Improve readability when focused and also mouse hovered in all browsers. */
+/* ==========================================================================
+* * Typography
+* * ========================================================================== */
+/**
+* * Address font sizes and margins set differently in IE 6/7.
+* * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+* * and Chrome. */
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+
+h2 {
+	font-size: 1.5em;
+	margin: 2em 0 0.83em;
+}
+
+h3 {
+	font-size: 1.17em;
+	margin: 1em 0;
+}
+
+h4 {
+	font-size: 1em;
+	margin: 1.33em 0;
+}
+
+h5 {
+	font-size: 0.83em;
+	margin: 1.67em 0;
+}
+
+h6 {
+	font-size: 0.67em;
+	margin: 2.33em 0;
+}
+
+/**
+* * Address styling not present in IE 7/8/9, Safari 5, and Chrome. */
+abbr[title] {
+	border-bottom: 1px dotted;
+}
+
+/**
+* * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome. */
+b,
+strong {
+	font-weight: bold;
+}
+
+blockquote {
+	margin: 1em 40px;
+}
+
+/**
+* * Address styling not present in Safari 5 and Chrome. */
+dfn {
+	font-style: italic;
+}
+
+/**
+* * Address differences between Firefox and other browsers.
+* * Known issue: no IE 6/7 normalization. */
+hr {
+	box-sizing: content-box;
+	height: 0;
+}
+
+/**
+* * Address styling not present in IE 6/7/8/9. */
+mark {
+	background: #ff8;
+	color: #000;
+}
+
+/**
+* * Address margins set differently in IE 6/7. */
+p,
+pre {
+	margin: 1em 0;
+}
+
+/**
+* * Correct font family set oddly in IE 6, Safari 4/5, and Chrome. */
+code,
+kbd,
+pre,
+samp {
+	font-family: monospace, serif;
+	_font-family: 'courier new', monospace;
+	font-size: 1em;
+}
+
+/**
+* * Improve readability of pre-formatted text in all browsers. */
+pre {
+	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+/**
+* * Address CSS quotes not supported in IE 6/7. */
+q {
+	quotes: none;
+}
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+/**
+* * Address `quotes` property not supported in Safari 4. */
+/**
+* * Address inconsistent and variable font size in all browsers. */
+small {
+	font-size: 80%;
+}
+
+/**
+* * Prevent `sub` and `sup` affecting `line-height` in all browsers. */
+sub {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+	top: -0.5em;
+}
+
+sub {
+	bottom: -0.25em;
+}
+
+/* ==========================================================================
+* * Lists
+* * ========================================================================== */
+/**
+* * Address margins set differently in IE 6/7. */
+dl,
+menu,
+ol,
+ul {
+	margin: 1em 0;
+}
+
+dd {
+	margin: 0 0 0 40px;
+}
+
+/**
+* * Address paddings set differently in IE 6/7. */
+menu,
+ol,
+ul {
+	padding: 0 0 0 40px;
+}
+
+/**
+* * Correct list images handled incorrectly in IE 7. */
+nav ul,
+nav ol {
+	list-style: none;
+	list-style-image: none;
+}
+
+/* ==========================================================================
+* * Figures
+* * ========================================================================== */
+/**
+* * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11. */
+figure,
+form {
+	margin: 0;
+}
+
+/* 2 */
+/* ==========================================================================
+* * Tables
+* * ========================================================================== */
+/**
+* * Remove most spacing between table cells. */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 40px;
+}
+@media (max-width: 640px) {
+	.container {
+		padding: 0 20px;
+	}
+}
+
+.container-main {
+	padding-bottom: 200px;
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes fade-out {
+	from {
+		opacity: 1;
+		visibility: visible;
+	}
+	to {
+		opacity: 0;
+	}
+}
+@keyframes fade-in-delayed {
+	0% {
+		opacity: 0;
+	}
+	33% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes fade-out-delayed {
+	0% {
+		opacity: 1;
+		visibility: visible;
+	}
+	66% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes shift-to-left {
+	from {
+		transform: translate(0, 0);
+	}
+	to {
+		transform: translate(-25%, 0);
+	}
+}
+@keyframes unshift-to-left {
+	from {
+		transform: translate(-25%, 0);
+	}
+	to {
+		transform: translate(0, 0);
+	}
+}
+@keyframes pop-in-from-right {
+	from {
+		transform: translate(100%, 0);
+	}
+	to {
+		transform: translate(0, 0);
+	}
+}
+@keyframes pop-out-to-right {
+	from {
+		transform: translate(0, 0);
+		visibility: visible;
+	}
+	to {
+		transform: translate(100%, 0);
+	}
+}
+
+a {
+	color: #4da6ff;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+code,
+pre {
+	font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+	padding: 0.2em;
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.5em;
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+pre {
+	padding: 2em;
+}
+pre code {
+	padding: 0;
+	font-size: 100%;
+	background-color: transparent;
+}
+
+.greendoc-typography {
+	line-height: 1.333em;
+}
+.greendoc-typography ul {
+	list-style: square;
+	padding: 0 0 0 20px;
+	margin: 0;
+}
+.greendoc-typography h4,
+.greendoc-typography h5,
+.greendoc-typography h6 {
+	font-size: 1em;
+	margin: 0;
+}
+.greendoc-typography h5,
+.greendoc-typography h6 {
+	font-weight: normal;
+}
+.greendoc-typography p,
+.greendoc-typography ul,
+.greendoc-typography ol {
+	margin: 1em 0;
+}
+
+@media (min-width: 901px) and (max-width: 1024px) {
+	html.default .col-content {
+		width: 72%;
+	}
+	html.default .col-menu {
+		width: 28%;
+	}
+	html.default .greendoc-navigation {
+		padding-left: 10px;
+	}
+}
+@media (max-width: 900px) {
+	html.default .col-content {
+		float: none;
+		width: 100%;
+	}
+	html.default .col-menu {
+		position: fixed !important;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+		z-index: 1024;
+		top: 0 !important;
+		bottom: 0 !important;
+		left: auto !important;
+		right: 0 !important;
+		width: 100%;
+		padding: 20px 20px 0 0;
+		max-width: 450px;
+		visibility: hidden;
+		background-color: #fff;
+		transform: translate(100%, 0);
+	}
+	html.default .col-menu > *:last-child {
+		padding-bottom: 20px;
+	}
+	html.default .overlay {
+		content: '';
+		display: block;
+		position: fixed;
+		z-index: 1023;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.75);
+		visibility: hidden;
+	}
+	html.default.to-has-menu .overlay {
+		animation: fade-in 0.4s;
+	}
+	html.default.to-has-menu header,
+	html.default.to-has-menu footer,
+	html.default.to-has-menu .col-content {
+		animation: shift-to-left 0.4s;
+	}
+	html.default.to-has-menu .col-menu {
+		animation: pop-in-from-right 0.4s;
+	}
+	html.default.from-has-menu .overlay {
+		animation: fade-out 0.4s;
+	}
+	html.default.from-has-menu header,
+	html.default.from-has-menu footer,
+	html.default.from-has-menu .col-content {
+		animation: unshift-to-left 0.4s;
+	}
+	html.default.from-has-menu .col-menu {
+		animation: pop-out-to-right 0.4s;
+	}
+	html.default.has-menu body {
+		overflow: hidden;
+	}
+	html.default.has-menu .overlay {
+		visibility: visible;
+	}
+	html.default.has-menu header,
+	html.default.has-menu footer,
+	html.default.has-menu .col-content {
+		transform: translate(-25%, 0);
+	}
+	html.default.has-menu .col-menu {
+		visibility: visible;
+		transform: translate(0, 0);
+	}
+}
+
+.greendoc-page-title {
+	padding: 70px 0 20px 0;
+	margin: 0 0 40px 0;
+	background: #fff;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+}
+.greendoc-page-title h1 {
+	margin: 0;
+}
+
+.greendoc-breadcrumb {
+	margin: 0;
+	padding: 0;
+	color: #808080;
+}
+.greendoc-breadcrumb a {
+	color: #808080;
+	text-decoration: none;
+}
+.greendoc-breadcrumb a:hover {
+	text-decoration: underline;
+}
+.greendoc-breadcrumb li {
+	display: inline;
+}
+.greendoc-breadcrumb li:after {
+	content: ' / ';
+}
+
+html.minimal .container {
+	margin: 0;
+}
+html.minimal .container-main {
+	padding-top: 50px;
+	padding-bottom: 0;
+}
+html.minimal .content-wrap {
+	padding-left: 300px;
+}
+html.minimal .greendoc-navigation {
+	position: fixed !important;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	box-sizing: border-box;
+	z-index: 1;
+	left: 0;
+	top: 40px;
+	bottom: 0;
+	width: 300px;
+	padding: 20px;
+	margin: 0;
+}
+html.minimal .greendoc-member .greendoc-member {
+	margin-left: 0;
+}
+html.minimal .greendoc-page-toolbar {
+	position: fixed;
+	z-index: 2;
+}
+html.minimal footer {
+	background-color: transparent;
+}
+html.minimal footer .container {
+	padding: 0;
+}
+html.minimal .greendoc-generator {
+	padding: 0;
+}
+@media (max-width: 900px) {
+	html.minimal .greendoc-navigation {
+		display: none;
+	}
+	html.minimal .content-wrap {
+		padding-left: 0;
+	}
+}
+
+dl.greendoc-comment-tags {
+	overflow: hidden;
+}
+dl.greendoc-comment-tags dt {
+	float: left;
+	padding: 1px 5px;
+	margin: 0 10px 0 0;
+	border-radius: 4px;
+	border: 1px solid #808080;
+	color: #808080;
+	font-size: 0.8em;
+	font-weight: normal;
+}
+dl.greendoc-comment-tags dd {
+	margin: 0 0 10px 0;
+}
+dl.greendoc-comment-tags dd:before,
+dl.greendoc-comment-tags dd:after {
+	display: table;
+	content: ' ';
+}
+dl.greendoc-comment-tags dd pre,
+dl.greendoc-comment-tags dd:after {
+	clear: both;
+}
+dl.greendoc-comment-tags p {
+	margin: 0;
+}
+
+.greendoc-comment .lead p:first-child {
+	margin-top: 0;
+}
+.greendoc-comment .lead:last-child {
+	margin-bottom: 0;
+}
+
+.toggle-protected .greendoc-is-private {
+	display: none;
+}
+
+.toggle-public .greendoc-is-private,
+.toggle-public .greendoc-is-protected,
+.toggle-public .greendoc-is-private-protected {
+	display: none;
+}
+
+.toggle-inherited .greendoc-is-inherited {
+	display: none;
+}
+
+.toggle-only-exported .greendoc-is-not-exported {
+	display: none;
+}
+
+.toggle-externals .greendoc-is-external {
+	display: none;
+}
+
+footer {
+	border-top: 1px solid #eee;
+	background-color: #fff;
+}
+footer.with-border-bottom {
+	border-bottom: 1px solid #eee;
+}
+footer .greendoc-legend-group {
+	font-size: 0;
+}
+footer .greendoc-legend {
+	display: inline-block;
+	width: 25%;
+	padding: 0;
+	font-size: 16px;
+	list-style: none;
+	line-height: 1.333em;
+	vertical-align: top;
+}
+@media (max-width: 900px) {
+	footer .greendoc-legend {
+		width: 50%;
+	}
+}
+
+.greendoc-hierarchy {
+	list-style: square;
+	padding: 0 0 0 20px;
+	margin: 0;
+}
+.greendoc-hierarchy .target {
+	font-weight: bold;
+}
+
+.greendoc-flag {
+	display: inline-block;
+	padding: 1px 5px;
+	border-radius: 4px;
+	color: #fff;
+	background-color: #808080;
+	text-indent: 0;
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.greendoc-anchor {
+	position: absolute;
+	top: -100px;
+}
+
+.greendoc-member {
+	position: relative;
+}
+.greendoc-member .greendoc-anchor + h3 {
+	margin-top: 0;
+	margin-bottom: 0;
+	border-bottom: none;
+}
+
+.greendoc-navigation {
+	margin: 0 0 0 40px;
+}
+.greendoc-navigation a {
+	display: block;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	color: #222;
+	text-decoration: none;
+}
+.greendoc-navigation a:hover {
+	text-decoration: underline;
+}
+.greendoc-navigation ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.greendoc-navigation li {
+	padding: 0;
+}
+
+.greendoc-navigation.secondary {
+	max-height: calc(100vh - 1rem - 40px);
+	overflow: auto;
+	position: -webkit-sticky;
+	position: sticky;
+	top: calc(0.5rem + 40px);
+	transition: 0.3s;
+}
+.greendoc-navigation.secondary.greendoc-navigation--toolbar-hide {
+	max-height: calc(100vh - 1rem);
+	top: 0.5rem;
+}
+
+@media (min-width: 901px) {
+	.menu-sticky-wrap {
+		position: static;
+	}
+}
+
+.greendoc-panel {
+	margin: 20px 0;
+	padding: 20px;
+	background-color: #fff;
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+.greendoc-panel:empty {
+	display: none;
+}
+.greendoc-panel > h1,
+.greendoc-panel > h2,
+.greendoc-panel > h3 {
+	margin: 1.5em -20px 10px -20px;
+	padding: 0 20px 10px 20px;
+	border-bottom: 1px solid #eee;
+}
+.greendoc-panel > h1.greendoc-before-signature,
+.greendoc-panel > h2.greendoc-before-signature,
+.greendoc-panel > h3.greendoc-before-signature {
+	margin-bottom: 0;
+	border-bottom: 0;
+}
+.greendoc-panel table {
+	display: block;
+	width: 100%;
+	overflow: auto;
+	margin-top: 10px;
+	word-break: normal;
+	word-break: keep-all;
+}
+.greendoc-panel table th {
+	font-weight: bold;
+}
+.greendoc-panel table th,
+.greendoc-panel table td {
+	padding: 6px 13px;
+	border: 1px solid #ddd;
+}
+.greendoc-panel table tr {
+	background-color: #fff;
+	border-top: 1px solid #ccc;
+}
+.greendoc-panel table tr:nth-child(2n) {
+	background-color: #f8f8f8;
+}
+
+.greendoc-panel-group {
+	margin: 60px 0;
+}
+.greendoc-panel-group > h1,
+.greendoc-panel-group > h2,
+.greendoc-panel-group > h3 {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+#greendoc-search {
+	transition: background-color 0.2s;
+}
+#greendoc-search .title {
+	position: relative;
+	z-index: 2;
+}
+#greendoc-search .field {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 40px;
+	height: 40px;
+}
+#greendoc-search .field input {
+	box-sizing: border-box;
+	position: relative;
+	top: -50px;
+	z-index: 1;
+	width: 100%;
+	padding: 0 10px;
+	opacity: 0;
+	outline: 0;
+	border: 0;
+	background: transparent;
+	color: #222;
+}
+#greendoc-search .field label {
+	position: absolute;
+	overflow: hidden;
+	right: -40px;
+}
+#greendoc-search .field input,
+#greendoc-search .title {
+	transition: opacity 0.2s;
+}
+#greendoc-search .results {
+	position: absolute;
+	visibility: hidden;
+	top: 40px;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+#greendoc-search .results li {
+	padding: 0 10px;
+	background-color: #fdfdfd;
+}
+#greendoc-search .results li:nth-child(even) {
+	background-color: #fff;
+}
+#greendoc-search .results li.state {
+	display: none;
+}
+#greendoc-search .results li.current,
+#greendoc-search .results li:hover {
+	background-color: #eee;
+}
+#greendoc-search .results a {
+	display: block;
+}
+#greendoc-search .results a:before {
+	top: 10px;
+}
+#greendoc-search .results span.parent {
+	color: #808080;
+	font-weight: normal;
+}
+#greendoc-search.has-focus {
+	background-color: #eee;
+}
+#greendoc-search.has-focus .field input {
+	top: 0;
+	opacity: 1;
+}
+#greendoc-search.has-focus .title {
+	z-index: 0;
+	opacity: 0;
+}
+#greendoc-search.has-focus .results {
+	visibility: visible;
+}
+#greendoc-search.loading .results li.state.loading {
+	display: block;
+}
+#greendoc-search.failure .results li.state.failure {
+	display: block;
+}
+
+.greendoc-signature {
+	margin: 0 0 1em 0;
+	padding: 10px;
+	border: 1px solid #eee;
+	font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+	font-size: 14px;
+	overflow-x: auto;
+}
+.greendoc-signature.greendoc-kind-icon {
+	padding-left: 30px;
+}
+.greendoc-signature.greendoc-kind-icon:before {
+	top: 10px;
+	left: 10px;
+}
+.greendoc-panel > .greendoc-signature {
+	margin-left: -20px;
+	margin-right: -20px;
+	border-width: 1px 0;
+}
+.greendoc-panel > .greendoc-signature.greendoc-kind-icon {
+	padding-left: 40px;
+}
+.greendoc-panel > .greendoc-signature.greendoc-kind-icon:before {
+	left: 20px;
+}
+
+.greendoc-signature-symbol {
+	color: #808080;
+	font-weight: normal;
+}
+
+.greendoc-signature-type {
+	font-style: italic;
+	font-weight: normal;
+}
+
+.greendoc-signatures {
+	padding: 0;
+	margin: 0 0 1em 0;
+	border: 1px solid #eee;
+}
+.greendoc-signatures .greendoc-signature {
+	margin: 0;
+	border-width: 1px 0 0 0;
+	transition: background-color 0.1s;
+}
+.greendoc-signatures .greendoc-signature:first-child {
+	border-top-width: 0;
+}
+.greendoc-signatures .greendoc-signature.current {
+	background-color: #eee;
+}
+.greendoc-signatures.active > .greendoc-signature {
+	cursor: pointer;
+}
+.greendoc-panel > .greendoc-signatures {
+	margin-top: -20px;
+	margin-left: -20px;
+	margin-right: -20px;
+	border-width: 1px 0;
+}
+.greendoc-panel > .greendoc-signatures .greendoc-signature.greendoc-kind-icon {
+	padding-left: 40px;
+}
+.greendoc-panel > .greendoc-signatures .greendoc-signature.greendoc-kind-icon:before {
+	left: 20px;
+}
+.greendoc-panel > a.anchor + .greendoc-signatures {
+	border-top-width: 0;
+	margin-top: -20px;
+}
+
+ul.greendoc-descriptions {
+	position: relative;
+	overflow: hidden;
+	padding: 0;
+	margin-bottom: 0;
+	list-style: none;
+}
+ul.greendoc-descriptions.active > .greendoc-description {
+	display: none;
+}
+ul.greendoc-descriptions.active > .greendoc-description.current {
+	display: block;
+}
+ul.greendoc-descriptions.active > .greendoc-description.fade-in {
+	animation: fade-in-delayed 0.3s;
+}
+ul.greendoc-descriptions.active > .greendoc-description.fade-out {
+	animation: fade-out-delayed 0.3s;
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+	right: 0;
+	opacity: 0;
+	visibility: hidden;
+}
+ul.greendoc-descriptions h4,
+ul.greendoc-descriptions .greendoc-index-panel h3,
+.greendoc-index-panel ul.greendoc-descriptions h3 {
+	font-size: 16px;
+	margin: 1em 0 0.5em 0;
+}
+
+ul.greendoc-parameters,
+ul.greendoc-type-parameters {
+	list-style: square;
+	margin: 0;
+	padding-left: 20px;
+}
+ul.greendoc-parameters > li.greendoc-parameter-signature,
+ul.greendoc-type-parameters > li.greendoc-parameter-signature {
+	list-style: none;
+	margin-left: -20px;
+}
+ul.greendoc-parameters h5,
+ul.greendoc-type-parameters h5 {
+	font-size: 16px;
+	margin: 1em 0 0.5em 0;
+}
+ul.greendoc-parameters .greendoc-comment,
+ul.greendoc-type-parameters .greendoc-comment {
+	margin-top: -0.5em;
+}
+
+.greendoc-sources {
+	font-size: 14px;
+	color: #808080;
+	margin: 0 0 1em 0;
+}
+.greendoc-sources a {
+	color: #808080;
+	text-decoration: underline;
+}
+.greendoc-sources ul,
+.greendoc-sources p {
+	margin: 0 !important;
+}
+.greendoc-sources ul {
+	list-style: none;
+	padding: 0;
+}
+
+.greendoc-page-toolbar {
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 40px;
+	color: #333;
+	background: #fff;
+	border-bottom: 1px solid #eee;
+	transition: transform 0.3s linear;
+}
+.greendoc-page-toolbar a {
+	color: #333;
+	text-decoration: none;
+}
+.greendoc-page-toolbar a.title {
+	font-weight: bold;
+}
+.greendoc-page-toolbar a.title:hover {
+	text-decoration: underline;
+}
+.greendoc-page-toolbar .table-wrap {
+	display: table;
+	width: 100%;
+	height: 40px;
+}
+.greendoc-page-toolbar .table-cell {
+	display: table-cell;
+	position: relative;
+	white-space: nowrap;
+	line-height: 40px;
+}
+.greendoc-page-toolbar .table-cell:first-child {
+	width: 100%;
+}
+
+.greendoc-page-toolbar--hide {
+	transform: translateY(-100%);
+}
+
+.greendoc-widget:before {
+	content: '';
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	margin: 0 -8px 0 0;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAAoCAQAAAAlSeuiAAABp0lEQVR4Ae3aUa3jQAyF4QNhIBTCQiiEQlgIhRAGhTAQBkIgBEIgDITZZGXNjZTePiSWYqn/54dGfbAq+SiTutWXAgAAAAAAAAAAAAA8NCz1UFSD2lKDS5d3NVzZj/BVNasaLoRZRUmj2lLrVVHWMUntQ13Wj/i1pWa9lprX6xMRnH4dx6Rjsn26+v+12ms+EcB37P0r+qH+DNQGXgMFcHzbregQ78B8eQCTJk0e979ZW7PdA2O49ceDsYexKgUNoI3EKYDWL3D8miaPh/uXtl6BHqEHFQvgXau/FsCiIWAAbST2fpQRT0sl70j3z5ZiBdD7CG5WZX8kxwmgjbiP5GQA9/3O2XaxnnHi53AEE0AbRh+JQwC3/fzC4hcb6xPvS4i3QaMdwX+0utsRPEY6gm2wNhKHAG77eUi7SIcK4G4NY4GMIan2u2Cxqzncl5DUn7Q8ArjvZ8JFOsl/Ed0jyBom+BomQKSto+9PcblHMM4iuu4X0QQw5hrGQY/gUxFkjZuf4m4alXVU+1De/VhEn5CvDSB/RsBzqWgAAAAAAAAAAAAAAACAfyyYJ5nhVuwIAAAAAElFTkSuQmCC);
+	background-repeat: no-repeat;
+	text-indent: -1024px;
+	vertical-align: bottom;
+}
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+	.greendoc-widget:before {
+		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAABQCAMAAAC+sjQXAAAAM1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACjBUbJAAAAEXRSTlMA3/+/UCBw7xCPYIBAMM+vn1qYQ7QAAALCSURBVHgB7MGBAAAAAICg/akXqQIAAAAAAAAAAAAAAAAAAJids9mdE4bhoDNZCITP93/aSmhV/9uwPWyi8jtkblws2IxsYpz9LwSAaJW8AreE16PxOsMYE6Q4DiYKF7X+8ZHXc/E608xv5snEyIuZrVwMZjbnujR6T3gsXmcLOIRNzD+Ig2UuVtt2+NbAiX/wVLzOlviD9L2BOfGBlL/3D1I+uDjGBJArBPxU3x+K15kCQFo2s21JAOHrKpz4SPrWv4IKA+uFaR6vMwMcb+emA2DWEfDglrkLqEBOKVslA8Dx14oPMiV4CtywWxdQgAwkq2QE0uTXUwJGk2G9s3mTFNBzAkC7HKPsX72AEVjMnAWIpsPCRRjXdQxcjCYpoOcEgHY5Rtk/slWSgM3M2aSeeVgjAOeVpKcdgGMdNAXMuIAqOcZzqF8L+WcAsi8wkTeheCWMegL6mgCorHHyEJ5TVfxrLWDrTUjZdhnhjYqAnlN8TaoELOLVC0gucmoz/3RKcPs2jAs4+J5ET8AEZF+TSgGLeC1V8YuGQQU2IV1Asq9JCwE9XitZVPxr34bpJRj8PqsFLOK108W9aVrWZRrR7Sm2HL4JCToCujHZ6gUs4jUz0P1TEvD+U5wMa363YeziBODIq1YbJrsv9QKW8Ry1nNp+GAHvuingRTfmYcjBf0QpAS37bdUL6PFKtHJq63EsZ5cxcKMkDVIClu1dAK1PcJ5TFQ0M9wZKDCPs3BD7MIJGTs3WfiTfDVQYx5q5ZekCauTU3P5Q0ukGCgh49oFURdobWBY9N/CxEuwGjpGLuPhTdwH1x7HqDDxNgRP2zQ8lraFyF/yJ9vH6QGqtgSbBOU8/j2VORz+Wqfle2d5Ae4R+ML0z7Y+W4P7XHN3AU+tzyK/24EAGAAAAYJC/9T2+CgAAAAAAAAAAAAAAAAAAAADgJpfzHyIKFFBKAAAAAElFTkSuQmCC);
+		background-size: 320px 40px;
+	}
+}
+
+.greendoc-widget {
+	display: inline-block;
+	overflow: hidden;
+	opacity: 0.6;
+	height: 40px;
+	transition: opacity 0.1s, background-color 0.2s;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+.greendoc-widget:hover {
+	opacity: 0.8;
+}
+.greendoc-widget.active {
+	opacity: 1;
+	background-color: #eee;
+}
+.greendoc-widget.no-caption {
+	width: 40px;
+}
+.greendoc-widget.no-caption:before {
+	margin: 0;
+}
+.greendoc-widget.search:before {
+	background-position: 0 0;
+}
+.greendoc-widget.menu:before {
+	background-position: -40px 0;
+}
+.greendoc-widget.options:before {
+	background-position: -80px 0;
+}
+.greendoc-widget.options,
+.greendoc-widget.menu {
+	display: none;
+	background: none;
+	outline: none;
+	border: none;
+}
+@media (max-width: 900px) {
+	.greendoc-widget.options,
+	.greendoc-widget.menu {
+		display: inline-block;
+	}
+}
+input[type='checkbox'] + .greendoc-widget:before {
+	background-position: -120px 0;
+}
+input[type='checkbox']:checked + .greendoc-widget:before {
+	background-position: -160px 0;
+}
+
+.greendoc-select {
+	position: relative;
+	display: inline-block;
+	height: 40px;
+	transition: opacity 0.1s, background-color 0.2s;
+	vertical-align: bottom;
+	cursor: pointer;
+}
+.greendoc-select .greendoc-select-label {
+	opacity: 0.6;
+	transition: opacity 0.2s;
+}
+.greendoc-select .greendoc-select-label:before {
+	background-position: -240px 0;
+}
+.greendoc-select.active .greendoc-select-label {
+	opacity: 0.8;
+}
+.greendoc-select.active .greendoc-select-list {
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0s;
+}
+.greendoc-select .greendoc-select-list {
+	position: absolute;
+	visibility: hidden;
+	top: 40px;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	opacity: 0;
+	list-style: none;
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+	transition: visibility 0s 0.2s, opacity 0.2s;
+}
+.greendoc-select .greendoc-select-list li {
+	padding: 0 20px 0 0;
+	background-color: #fdfdfd;
+}
+.greendoc-select .greendoc-select-list li:before {
+	background-position: 40px 0;
+}
+.greendoc-select .greendoc-select-list li:nth-child(even) {
+	background-color: #fff;
+}
+.greendoc-select .greendoc-select-list li:hover {
+	background-color: #eee;
+}
+.greendoc-select .greendoc-select-list li.selected:before {
+	background-position: -200px 0;
+}
+@media (max-width: 900px) {
+	.greendoc-select .greendoc-select-list {
+		top: 0;
+		left: auto;
+		right: 100%;
+		margin-right: -5px;
+	}
+	.greendoc-select .greendoc-select-label:before {
+		background-position: -280px 0;
+	}
+}
+
+img {
+	max-width: 100%;
+}
+
+/* ==========================================================================
+ * * Highlight.js
+ * * Based on C# theme by Jason Diamond <jason@diamond.name>
+ * * ========================================================================== */
+
+.hljs {
+	display: inline-block;
+	padding: 0.5em;
+	background: white;
+	color: black;
+}
+
+.hljs-comment,
+.hljs-annotation,
+.hljs-template_comment,
+.hljs-chunk {
+	color: #008000;
+}
+
+.hljs-keyword,
+.hljs-id,
+.hljs-built_in,
+.hljs-winutils,
+.bash .hljs-variable,
+.hljs-request,
+.hljs-status,
+.xml .hljs-tag,
+.xml .hljs-tag .hljs-value {
+	color: #00f;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-parent,
+.hljs-tag .hljs-value,
+.hljs-rules .hljs-value,
+.hljs-template_tag,
+.hljs-addition,
+.hljs-flow,
+.hljs-stream,
+.hljs-date {
+	color: #a31515;
+}
+
+.hljs-decorator,
+.hljs-filter .hljs-argument,
+.hljs-localvars,
+.hljs-array,
+.hljs-attr_selector,
+.hljs-pseudo,
+.hljs-pi,
+.hljs-doctype,
+.hljs-deletion,
+.hljs-envvar,
+.hljs-shebang,
+.hljs-preprocessor,
+.hljs-pragma,
+.userType,
+.hljs-prompt {
+	color: #2b91af;
+}
+
+.hljs-phpdoc,
+.hljs-javadoc,
+.hljs-xmlDocTag {
+	color: #808080;
+}
+
+.xml .hljs-attribute {
+	color: #f00;
+}
+
+/* ==========================================================================
+ * * Customizations
+ * * ========================================================================== */
+
+.header-badge img {
+	vertical-align: sub;
+	margin-left: 0.5em;
+}
+
+.greendoc-typography {
+	line-height: 1.6em;
+}
+
+.greendoc-navigation > section {
+	padding: 1em 0;
+	border-bottom: 1px solid #eee;
+}
+
+.greendoc-navigation > section:first-child {
+	padding-top: 0;
+}
+
+.greendoc-navigation > section:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+.greendoc-navigation h4,
+.greendoc-navigation h5 {
+	font-size: 0.8em;
+	font-style: italic;
+	opacity: 0.6;
+}
+
+.greendoc-navigation h4 {
+	margin: 0 0 1em;
+}
+
+.greendoc-navigation h5 {
+	margin-bottom: 0.2em;
+}
+
+.greendoc-navigation a {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.greendoc-navigation.secondary ul li a.active {
+	text-decoration: underline;
+}
+
+.greendoc-panel {
+	box-shadow: none;
+}
+
+pre {
+	padding: 20px;
+	white-space: pre;
+	overflow: auto;
+}
+
+.greendoc-signature {
+	color: #4da6ff;
+}
+
+html.minimal .greendoc-generator,
+.greendoc-panel > .greendoc-signature.greendoc-kind-icon,
+.greendoc-panel > .greendoc-signatures .greendoc-signature.greendoc-kind-icon {
+	padding-left: 20px;
+}
+
+.greendoc-select .greendoc-select-label,
+.greendoc-widget {
+	opacity: 0.8;
+}
+
+.greendoc-select.active .greendoc-select-label,
+.greendoc-widget:hover {
+	opacity: 1;
+}
+
+.greendoc-navigation a[target='_blank']::after {
+	content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+	margin: 0 3px 0 5px;
+}
+
+/** Enum styles are too sprawling. */
+.greendoc-parent-kind-object-literal {
+	padding-bottom: 0;
+	margin-bottom: 0;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.greendoc-parent-kind-object-literal .greendoc-sources {
+	display: none;
+}
+
+.greendoc-parent-kind-object-literal .greendoc-signature.greendoc-kind-icon {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.greendoc-parent-kind-object-literal .greendoc-comment.greendoc-typography p {
+	margin-bottom: 0.3em;
+}
+
+blockquote {
+	border-left: 6px solid #ccc;
+	padding-left: 1em;
+	margin-left: 0;
+	color: #606060;
+	font-style: italic;
+}
+
+html.minimal .greendoc-generator {
+	text-align: center;
+	padding-left: 0;
+}
+
+.greendoc-generator img {
+	max-width: 40%;
+}
+
+details[open] {
+	padding-left: 1em;
+	margin-bottom: 1em;
+}
+
+details[open] > summary {
+	margin-left: -1em;
+}
+
+details > summary {
+	cursor: pointer;
+}
+
+@media (max-width: 900px) {
+	html.minimal .greendoc-navigation {
+		display: block;
+		top: 0;
+		left: -305px; /* Additional 5px for box-shadow blur. */
+		max-height: none;
+		padding-top: 40px;
+		background: #fff;
+		box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.16);
+		transition: left 0.2s ease;
+	}
+
+	html.minimal .toggle-nav .greendoc-navigation {
+		left: 0;
+	}
+
+	.greendoc-generator img {
+		max-width: 60%;
+	}
+
+	.greendoc-generator .line {
+		display: block;
+		line-height: 2em;
+	}
+
+	.greendoc-generator .divider {
+		display: none;
+	}
+}

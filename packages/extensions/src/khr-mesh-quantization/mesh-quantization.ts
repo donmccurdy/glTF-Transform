@@ -4,8 +4,6 @@ import { KHR_MESH_QUANTIZATION } from '../constants.js';
 const NAME = KHR_MESH_QUANTIZATION;
 
 /**
- * # KHRMeshQuantization
- *
  * [`KHR_mesh_quantization`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_mesh_quantization/)
  * expands allowed component types for vertex attributes to include 16- and 8-bit storage.
  *

@@ -23,8 +23,6 @@ interface IPacket extends IProperty {
 }
 
 /**
- * # Packet
- *
  * Defines an XMP packet associated with a Document or Property. See {@link KHRXMP}.
  */
 export class Packet extends ExtensionProperty<IPacket> {

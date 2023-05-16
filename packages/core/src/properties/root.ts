@@ -40,8 +40,6 @@ interface IRoot extends IExtensibleProperty {
 }
 
 /**
- * # Root
- *
  * *Root property of a glTF asset.*
  *
  * Any properties to be exported with a particular asset must be referenced (directly or

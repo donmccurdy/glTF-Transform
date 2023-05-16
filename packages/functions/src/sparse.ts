@@ -36,6 +36,7 @@ const SPARSE_DEFAULTS: Required<SparseOptions> = {
  * ```
  *
  * @experimental
+ * @category Transforms
  */
 export function sparse(_options: SparseOptions = SPARSE_DEFAULTS): Transform {
 	const options = { ...SPARSE_DEFAULTS, ..._options } as Required<SparseOptions>;

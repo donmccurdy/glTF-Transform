@@ -1,8 +1,6 @@
 import type { TypedArray } from '../constants.js';
 
 /**
- * # BufferUtils
- *
  * *Common utilities for working with Uint8Array and Buffer objects.*
  *
  * @category Utilities

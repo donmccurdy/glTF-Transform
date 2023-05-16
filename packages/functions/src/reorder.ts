@@ -37,6 +37,8 @@ const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
  * 	reorder({encoder: MeshoptEncoder})
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function reorder(_options: ReorderOptions): Transform {
 	const options = { ...REORDER_DEFAULTS, ..._options } as Required<ReorderOptions>;
@@ -98,6 +100,7 @@ export function reorder(_options: ReorderOptions): Transform {
 	});
 }
 
+/** @hidden */
 interface LayoutPlan {
 	indicesToMode: Map<Accessor, GLTF.MeshPrimitiveMode>;
 	indicesToAttributes: SetMap<Accessor, Accessor>;
@@ -109,8 +112,10 @@ interface LayoutPlan {
  * index:attribute[] groups. Where different indices are used with the same
  * attributes, we'll end up splitting the primitives to not share attributes,
  * which appears to be consistent with the Meshopt implementation.
+ *
+ * @hidden
  */
-export function createLayoutPlan(document: Document): LayoutPlan {
+function createLayoutPlan(document: Document): LayoutPlan {
 	const indicesToAttributes = new SetMap<Accessor, Accessor>();
 	const indicesToMode = new Map<Accessor, GLTF.MeshPrimitiveMode>();
 	const attributesToPrimitives = new SetMap<Accessor, Primitive>();

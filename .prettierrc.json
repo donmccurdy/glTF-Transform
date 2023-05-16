@@ -3,5 +3,8 @@
 	"useTabs": true,
 	"tabWidth": 4,
 	"printWidth": 120,
-	"bracketSpacing": true
+	"bracketSpacing": true,
+	"plugins": ["prettier-plugin-svelte"],
+	"pluginSearchDirs": ["."],
+	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
 }

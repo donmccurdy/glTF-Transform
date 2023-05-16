@@ -2,8 +2,6 @@ import { ExtensionProperty } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 
 /**
- * # Variant
- *
  * Defines a variant of a {@link Material}. See {@link KHRMaterialsVariants}.
  */
 export class Variant extends ExtensionProperty {

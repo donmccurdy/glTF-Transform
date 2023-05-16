@@ -14,8 +14,6 @@ interface IridescenceDef {
 }
 
 /**
- * # KHRMaterialsIridescence
- *
  * [`KHR_materials_iridescence`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_iridescence/)
  * defines iridescence (thin film interference) on a PBR material.
  *

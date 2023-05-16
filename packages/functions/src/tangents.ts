@@ -35,6 +35,8 @@ const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
  * 	tangents({generateTangents})
  * );
  * ```
+ *
+ * @category Transforms
  */
 export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
 	if (!_options.generateTangents) {

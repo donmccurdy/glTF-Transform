@@ -6,8 +6,6 @@ interface Path {
 }
 
 /**
- * # DenoIO
- *
  * *I/O service for [Deno](https://deno.land/).*
  *
  * The most common use of the I/O service is to read/write a {@link Document} with a given path.

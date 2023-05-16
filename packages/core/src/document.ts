@@ -28,8 +28,6 @@ export interface TransformContext {
 export type Transform = (doc: Document, context?: TransformContext) => void;
 
 /**
- * # Document
- *
  * *Wraps a glTF asset and its resources for easier modification.*
  *
  * Documents manage glTF assets and the relationships among dependencies. The document wrapper

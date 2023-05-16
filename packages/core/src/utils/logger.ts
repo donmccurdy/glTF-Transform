@@ -24,8 +24,6 @@ export interface ILogger {
 }
 
 /**
- * # Logger
- *
  * *Logger utility class.*
  *
  * @category Utilities

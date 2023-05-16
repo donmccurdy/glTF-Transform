@@ -8,8 +8,6 @@ interface IMesh extends IExtensibleProperty {
 }
 
 /**
- * # Mesh
- *
  * *Meshes define reusable geometry (triangles, lines, or points) and are instantiated by
  * {@link Node}s.*
  *

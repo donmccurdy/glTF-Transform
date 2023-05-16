@@ -1,8 +1,6 @@
 import type { vec3, vec4 } from '../constants.js';
 
 /**
- * # ColorUtils
- *
  * *Common utilities for working with colors in vec3, vec4, or hexadecimal form.*
  *
  * Provides methods to convert linear components (vec3, vec4) to sRGB hex values. All colors in

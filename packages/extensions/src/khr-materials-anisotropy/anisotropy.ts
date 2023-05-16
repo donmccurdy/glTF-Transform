@@ -19,8 +19,6 @@ interface IAnisotropy extends IProperty {
 const { R, G, B } = TextureChannel;
 
 /**
- * # Anisotropy
- *
  * Defines anisotropy (directionally-dependent reflections) on a PBR {@link Material}. See
  * {@link KHRMaterialsAnisotropy}.
  *
@@ -97,7 +95,7 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 		return this.getRef('anisotropyTexture') ? this.getRef('anisotropyTextureInfo') : null;
 	}
 
-	/** Anisotropy texture. See {@link getAnisotropyTexture}. */
+	/** Anisotropy texture. See {@link Anisotropy.getAnisotropyTexture getAnisotropyTexture}. */
 	public setAnisotropyTexture(texture: Texture | null): this {
 		return this.setRef('anisotropyTexture', texture, { channels: R | G | B });
 	}

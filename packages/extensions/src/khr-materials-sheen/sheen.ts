@@ -23,8 +23,6 @@ interface ISheen extends IProperty {
 const { R, G, B, A } = TextureChannel;
 
 /**
- * # Sheen
- *
  * Defines sheen on a PBR {@link Material}. See {@link KHRMaterialsSheen}.
  */
 export class Sheen extends ExtensionProperty<ISheen> {
@@ -90,7 +88,7 @@ export class Sheen extends ExtensionProperty<ISheen> {
 		return this.getRef('sheenColorTexture') ? this.getRef('sheenColorTextureInfo') : null;
 	}
 
-	/** Sets sheen color texture. See {@link getSheenColorTexture}. */
+	/** Sets sheen color texture. See {@link Sheen.getSheenColorTexture getSheenColorTexture}. */
 	public setSheenColorTexture(texture: Texture | null): this {
 		return this.setRef('sheenColorTexture', texture, { channels: R | G | B, isColor: true });
 	}
@@ -99,12 +97,12 @@ export class Sheen extends ExtensionProperty<ISheen> {
 	 * Sheen roughness.
 	 */
 
-	/** Sheen roughness; linear multiplier. See {@link getSheenRoughnessTexture}. */
+	/** Sheen roughness; linear multiplier. See {@link Sheen.getSheenRoughnessTexture getSheenRoughnessTexture}. */
 	public getSheenRoughnessFactor(): number {
 		return this.get('sheenRoughnessFactor');
 	}
 
-	/** Sheen roughness; linear multiplier. See {@link getSheenRoughnessTexture}. */
+	/** Sheen roughness; linear multiplier. See {@link Sheen.getSheenRoughnessTexture getSheenRoughnessTexture}. */
 	public setSheenRoughnessFactor(factor: number): this {
 		return this.set('sheenRoughnessFactor', factor);
 	}
