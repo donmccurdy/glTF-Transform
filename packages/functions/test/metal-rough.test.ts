@@ -71,17 +71,19 @@ test('textures', async (t) => {
 	t.truthy(metalRoughTex.isDisposed(), 'disposes metalRoughTexture');
 	t.truthy(specGlossTex.isDisposed(), 'disposes specGlossTexture');
 	t.deepEqual(
-		Array.from((await getPixels(mat.getBaseColorTexture().getImage(), 'image/png')).data),
+		Array.from((await getPixels(mat.getBaseColorTexture().getImage(), 'image/png')).data as Uint8Array),
 		Array.from(DIFFUSE.data),
 		'diffuse -> baseColor'
 	);
 	t.deepEqual(
-		Array.from((await getPixels(mat.getMetallicRoughnessTexture().getImage(), 'image/png')).data),
+		Array.from((await getPixels(mat.getMetallicRoughnessTexture().getImage(), 'image/png')).data as Uint8Array),
 		Array.from(ROUGH.data),
 		'spec -> rough'
 	);
 	t.deepEqual(
-		Array.from((await getPixels(specularExtension.getSpecularTexture().getImage(), 'image/png')).data),
+		Array.from(
+			(await getPixels(specularExtension.getSpecularTexture().getImage(), 'image/png')).data as Uint8Array
+		),
 		Array.from(SPEC.data),
 		'spec -> spec'
 	);
