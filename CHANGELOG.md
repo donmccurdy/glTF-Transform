@@ -2,7 +2,24 @@
 
 ## v3.x
 
-<!-- ### v3.3 — 🚧 Unreleased -->
+<!-- ### v3.X — 🚧 Unreleased -->
+
+### v3.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/27))
+
+_Special thanks to [@kzhsw](https://github.com/kzhsw) for help with performance improvements in v3.3._
+
+**Features:**
+
+- Add `listTextureInfoByMaterial()` function [#947](https://github.com/donmccurdy/glTF-Transform/pull/947)
+- Add `getTextureColorSpace` function [#944](https://github.com/donmccurdy/glTF-Transform/pull/944)
+- Sync with `KHR_materials_anisotropy` release candidate [#946](https://github.com/donmccurdy/glTF-Transform/pull/946)
+- Improve performance of `dedup` [#945](https://github.com/donmccurdy/glTF-Transform/pull/945)
+- Improve performance of `resample`, port to WASM [#934](https://github.com/donmccurdy/glTF-Transform/pull/934)
+
+**Internal:**
+
+- Migrate documentation from TypeDoc to [Greendoc](https://github.com/donmccurdy/greendoc) [#940](https://github.com/donmccurdy/glTF-Transform/pull/940)
+- Update to TypeScript v5
 
 ### v3.2 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/25))
 
