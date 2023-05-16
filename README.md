@@ -17,9 +17,9 @@ glTF-Transform supports reading, editing, and writing 3D models in glTF 2.0 form
 Packages:
 
 - `@gltf-transform/core`: Core SDK, providing an expressive API to read, edit, and write glTF files.
-- `@gltf-transform/extensions`: [Extensions](https://gltf-transform.donmccurdy.com/extensions.html) (optional glTF features) for the Core SDK.
-- `@gltf-transform/functions`: [Functions](https://gltf-transform.donmccurdy.com/functions.html) for common glTF modifications, written using the core API.
-- `@gltf-transform/cli`: [Command-line interface (CLI)](https://gltf-transform.donmccurdy.com/cli.html) to apply functions to glTF files quickly or in batch.
+- `@gltf-transform/extensions`: [Extensions](https://gltf-transform.donmccurdy.com/extensions) (optional glTF features) for the Core SDK.
+- `@gltf-transform/functions`: [Functions](https://gltf-transform.donmccurdy.com/functions) for common glTF modifications, written using the core API.
+- `@gltf-transform/cli`: [Command-line interface (CLI)](https://gltf-transform.donmccurdy.com/cli) to apply functions to glTF files quickly or in batch.
 
 <p align="center">
 <img src="https://gltf-transform.donmccurdy.com/media/kicker.jpg" alt="Function symbol, f(📦) → 📦, where the argument and output are a box labeled 'glTF'." width="40%">
@@ -33,7 +33,7 @@ Install the scripting packages:
 npm install --save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions
 ```
 
-Read and write glTF scenes with platform I/O utilities [WebIO](https://gltf-transform.donmccurdy.com/classes/core.webio.html), [NodeIO](https://gltf-transform.donmccurdy.com/classes/core.nodeio.html), or [DenoIO](https://gltf-transform.donmccurdy.com/classes/core.denoio.html):
+Read and write glTF scenes with platform I/O utilities [WebIO](https://gltf-transform.donmccurdy.com/modules/core/classes/WebIO), [NodeIO](https://gltf-transform.donmccurdy.com/modules/core/classes/NodeIO), or [DenoIO](https://gltf-transform.donmccurdy.com/modules/core/classes/DenoIO):
 
 ```typescript
 import { Document, NodeIO } from '@gltf-transform/core';
@@ -55,7 +55,7 @@ const document = await io.read('path/to/model.glb');
 const glb = await io.writeBinary(document);
 ```
 
-To perform changes to an existing glTF [Document](https://gltf-transform.donmccurdy.com/classes/core.document.html), import off-the-shelf scripts from the [Functions](https://gltf-transform.donmccurdy.com/functions.html) package, or write your own using API classes like [Material](https://gltf-transform.donmccurdy.com/classes/core.material.html), [Primitive](https://gltf-transform.donmccurdy.com/classes/core.primitive.html), and [Texture](https://gltf-transform.donmccurdy.com/classes/core.texture.html).
+To perform changes to an existing glTF [Document](https://gltf-transform.donmccurdy.com/modules/core/classes/Document), import off-the-shelf scripts from the [Functions](https://gltf-transform.donmccurdy.com/functions) package, or write your own using API classes like [Material](https://gltf-transform.donmccurdy.com/modules/core/classes/Material), [Primitive](https://gltf-transform.donmccurdy.com/modules/core/classes/Primitive), and [Texture](https://gltf-transform.donmccurdy.com/modules/core/classes/Texture).
 
 ```typescript
 import { resample, prune, dedup, draco, textureCompress } from '@gltf-transform/functions';
@@ -90,7 +90,7 @@ function backfaceCulling(options) {
 }
 ```
 
-To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](https://gltf-transform.donmccurdy.com/concepts.html). To try out the scripting API without installing anything, visit [gltf.report/](https://gltf.report/), load a glTF model, and open the *Script* tab.
+To learn how glTF-Transform works, and the architecture of the scripting API, start with [Concepts](https://gltf-transform.donmccurdy.com/concepts). To try out the scripting API without installing anything, visit [gltf.report/](https://gltf.report/), load a glTF model, and open the *Script* tab.
 
 ## Command-line API
 
@@ -140,11 +140,11 @@ gltf-transform uastc input.glb output1.glb \
 gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 ```
 
-... [and much more](https://gltf-transform.donmccurdy.com/cli.html).
+... [and much more](https://gltf-transform.donmccurdy.com/cli).
 
 ## Credits
 
-See [*Credits*](https://gltf-transform.donmccurdy.com/credits.html).
+See [*Credits*](https://gltf-transform.donmccurdy.com/credits).
 
 ## License
 
