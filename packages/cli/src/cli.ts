@@ -970,10 +970,19 @@ should be used as input, and then compressed after this conversion.
 
 // PALETTE
 program
-	.command('palette', 'TODO')
+	.command('palette', 'Creates palette textures and merges materials')
 	.help(
 		`
-TODO
+Creates palette textures containing all unique values of scalar Material
+properties within the scene, then merges materials. For scenes with many
+solid-colored materials (often found in CAD, architectural, or low-poly
+styles), texture palettes can reduce the number of materials used, and
+significantly increase the number of Mesh objects eligible for "join"
+operations.
+
+Materials already containing texture coordinates (UVs) are not eligible for
+texture palette optimizations. Currently only a material's base color,
+alpha, metallic factor, and roughness factor are used for palettes.
 `.trim()
 	)
 	.argument('<input>', INPUT_DESC)
@@ -984,7 +993,7 @@ TODO
 	})
 	.option('--min', 'TODO', {
 		validator: program.NUMBER,
-		default: PALETTE_DEFAULTS.blockSize,
+		default: PALETTE_DEFAULTS.min,
 	})
 	.action(async ({ args, options, logger }) => {
 		return Session.create(io, logger, args.input, args.output).transform(
