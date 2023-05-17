@@ -218,14 +218,19 @@ commands or using the scripting API.
 		validator: program.NUMBER,
 		default: 5,
 	})
-	.option('--palette <bool>', 'TODO.', {
+	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
 		validator: program.BOOLEAN,
 		default: true,
 	})
-	.option('--palette-min <min>', 'TODO.', {
-		validator: program.NUMBER,
-		default: 5,
-	})
+	.option(
+		'--palette-min <min>',
+		'Minimum number of blocks in the palette texture. If fewer unique ' +
+			'material values are found, no palettes will be generated.',
+		{
+			validator: program.NUMBER,
+			default: 5,
+		}
+	)
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -283,7 +288,7 @@ commands or using the scripting API.
 		const transforms: Transform[] = [dedup()];
 
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
-		if (opts.palette) transforms.push(palette({ min: opts.paletteMin, blockSize: 24 }));
+		if (opts.palette) transforms.push(palette({ min: opts.paletteMin }));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
@@ -987,14 +992,19 @@ alpha, metallic factor, and roughness factor are used for palettes.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--block-size <px>', 'TODO', {
+	.option('--block-size <px>', 'Size (in pixels) of a single block within each palette texture.', {
 		validator: program.NUMBER,
 		default: PALETTE_DEFAULTS.blockSize,
 	})
-	.option('--min', 'TODO', {
-		validator: program.NUMBER,
-		default: PALETTE_DEFAULTS.min,
-	})
+	.option(
+		'--min <count>',
+		'Minimum number of blocks in the palette texture. If fewer unique ' +
+			'material values are found, no palettes will be generated.',
+		{
+			validator: program.NUMBER,
+			default: PALETTE_DEFAULTS.min,
+		}
+	)
 	.action(async ({ args, options, logger }) => {
 		return Session.create(io, logger, args.input, args.output).transform(
 			palette(options as unknown as PaletteOptions)
