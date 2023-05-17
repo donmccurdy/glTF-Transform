@@ -73,7 +73,8 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 		// (2) Gather list of distinct material properties.
 
-		const materialKeys = new Map<Material, string>();
+		const materialKeys = new Set<string>();
+		const materialKeyMap = new Map<Material, string>();
 		const materialProps: Record<TexturableProp, Set<string>> = {
 			baseColor: new Set<string>(),
 			emissive: new Set<string>(),
@@ -89,8 +90,11 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			materialProps.baseColor.add(baseColor);
 			materialProps.emissive.add(emissive);
 			materialProps.metallicRoughness.add(metallic + '+' + roughness);
-			materialKeys.set(material, key);
+			materialKeys.add(key);
+			materialKeyMap.set(material, key);
 		}
+
+		// logger.debug(`${NAME}:\n${Array.from(materialKeys.values()).join('\n')}`);
 
 		const keyCount = materialKeys.size;
 		if (keyCount < min) {
@@ -98,12 +102,9 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			return;
 		}
 
-		// TODO: Debugging only.
-		logger.warn(`${NAME}:\n${Array.from(materialKeys.values()).join('\n')}`);
-
 		// (3) Allocate palette textures.
 
-		const w = ceilPowerOfTwo(keyCount) * blockSize;
+		const w = ceilPowerOfTwo(keyCount * blockSize);
 		const h = blockSize;
 		const padWidth = w - keyCount * blockSize;
 
@@ -153,7 +154,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 		let nextIndex = 0;
 		for (const material of materials) {
-			const key = materialKeys.get(material)!;
+			const key = materialKeyMap.get(material)!;
 			if (visitedKeys.has(key)) continue;
 
 			const index = nextIndex++;
@@ -203,7 +204,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		let nextPaletteMaterialIndex = 1;
 		for (const prim of prims) {
 			const srcMaterial = prim.getMaterial()!;
-			const key = materialKeys.get(srcMaterial)!;
+			const key = materialKeyMap.get(srcMaterial)!;
 			const blockIndex = materialIndices.get(key)!;
 
 			// UVs are centered horizontally in each block, descending vertically
