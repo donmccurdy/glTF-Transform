@@ -29,7 +29,8 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 
 // NOTE: The minimal implementation below does not read or write any data
 // associated with the extension. See the Extension documentation and
-// official implementations in the /examples package for full usage.
+// official implementations in the @gltf-transform/extensions package
+// for full usage.
 class GizmoExtension extends Extension {
  static EXTENSION_NAME = 'ACME_gizmo';
  extensionName = 'ACME_gizmo';
