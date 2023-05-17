@@ -34,7 +34,29 @@ export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 };
 
 /**
- * TODO: Documentation.
+ * Creates palette textures containing all unique values of scalar
+ * {@link Material} properties within the scene, then removes unnecessary
+ * materials. For scenes with many solid-colored materials (often found in CAD,
+ * architectural, or low-poly styles), texture palettes can reduce the number
+ * of materials used, and significantly increase the number of {@link Mesh}
+ * objects eligible for {@link join} operations.
+ *
+ * Materials already containing texture coordinates (UVs) are not eligible for
+ * texture palette optimizations. Currently only a material's base color,
+ * alpha, metallic factor, and roughness factor are used for palettes.
+ *
+ * Example:
+ *
+ * ```typescript
+ * import { palette, flatten, dequantize, join } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ * 	palette({ min: 5 }),
+ * 	flatten(),
+ * 	dequantize(),
+ * 	join()
+ * );
+ * ```
  *
  * @category Transforms
  */
