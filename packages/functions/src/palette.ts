@@ -14,14 +14,17 @@ import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 
-// TODO: Consider a non-transform version of this, accepting a list of primitives as input.
-
 const NAME = 'palette';
 
 type TexturableProp = 'baseColor' | 'emissive' | 'metallicRoughness';
 
 export interface PaletteOptions {
+	/** Size (in pixels) of a single block within each palette texture. Default: 4. */
 	blockSize?: number;
+	/**
+	 * Minimum number of blocks in the palette texture. If fewer unique
+	 * material values are found, no palettes will be generated. Default: 2.
+	 */
 	min?: number;
 }
 
@@ -38,6 +41,7 @@ export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform {
 	const options = { ...PALETTE_DEFAULTS, ..._options } as Required<PaletteOptions>;
 	const blockSize = Math.max(options.blockSize, 1);
+	const min = Math.max(options.min, 1);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
@@ -55,7 +59,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		const prims = new Set<Primitive>();
 		const materials = new Set<Material>();
 
-		// (1) Gather list of eligible primitives and materials.
+		// (1) Gather list of eligible prims and materials.
 
 		for (const mesh of root.listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
@@ -64,8 +68,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 
 				prims.add(prim);
 				materials.add(material);
-
-				// TODO: material used by eligible and non-eligible primitives (CLONE MATERIAL)
 			}
 		}
 
@@ -91,13 +93,15 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		}
 
 		const keyCount = materialKeys.size;
-		if (keyCount < options.min) return;
+		if (keyCount < min) {
+			logger.debug(`${NAME}: Found <${min} unique material properties. Exiting.`);
+			return;
+		}
 
 		// TODO: Debugging only.
 		logger.warn(`${NAME}:\n${Array.from(materialKeys.values()).join('\n')}`);
 
-		// TODO: If we have more than the >min keys, but <min materials can actually share them, bail.
-		// TODO: If scene has 100 opaque and 1 transparent materials, does the latter get included in a palette?
+		// (3) Allocate palette textures.
 
 		const w = ceilPowerOfTwo(keyCount) * blockSize;
 		const h = blockSize;
@@ -109,7 +113,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			metallicRoughness: null,
 		};
 
-		/** Properties skipped for material equality comparisons. */
+		// Properties skipped for material equality comparisons.
 		const skipProps = new Set(['name', 'extras']);
 		const skip = (...props: string[]) => props.forEach((prop) => skipProps.add(prop));
 
@@ -117,26 +121,31 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		let emissiveTexture: Texture | null = null;
 		let metallicRoughnessTexture: Texture | null = null;
 
-		if (materialProps.baseColor.size >= options.min) {
+		if (materialProps.baseColor.size >= min) {
 			const name = 'PaletteBaseColor';
 			baseColorTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.baseColor = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 			skip('baseColorFactor', 'baseColorTexture', 'baseColorTextureInfo');
 		}
-		if (materialProps.emissive.size >= options.min) {
+		if (materialProps.emissive.size >= min) {
 			const name = 'PaletteEmissive';
 			emissiveTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.emissive = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 			skip('emissiveFactor', 'emissiveTexture', 'emissiveTextureInfo');
 		}
-		if (materialProps.metallicRoughness.size >= options.min) {
+		if (materialProps.metallicRoughness.size >= min) {
 			const name = 'PaletteMetallicRoughness';
 			metallicRoughnessTexture = document.createTexture(name).setURI(`${name}.png`);
 			paletteTexturePixels.metallicRoughness = ndarray(new Uint8Array(w * h * 4), [w, h, 4]);
 			skip('metallicFactor', 'roughnessFactor', 'metallicRoughnessTexture', 'metallicRoughnessTextureInfo');
 		}
 
-		// Create palette textures.
+		if (!(baseColorTexture || emissiveTexture || metallicRoughnessTexture)) {
+			logger.debug(`${NAME}: No material property has ≥${min} unique values. Exiting.`);
+			return;
+		}
+
+		// (4) Write blocks to palette textures.
 
 		const visitedKeys = new Set<string>();
 		const materialIndices = new Map<string, number>();
@@ -155,14 +164,12 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 				ColorUtils.convertLinearToSRGB(baseColor, baseColor);
 				writeBlock(pixels, index, baseColor, blockSize);
 			}
-
 			if (paletteTexturePixels.emissive) {
 				const pixels = paletteTexturePixels.emissive;
 				const emissive = [...material.getEmissiveFactor(), 1] as vec4;
 				ColorUtils.convertLinearToSRGB(emissive, emissive);
 				writeBlock(pixels, index, emissive, blockSize);
 			}
-
 			if (paletteTexturePixels.metallicRoughness) {
 				const pixels = paletteTexturePixels.metallicRoughness;
 				const metallic = material.getMetallicFactor();
@@ -173,6 +180,25 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			visitedKeys.add(key);
 			materialIndices.set(key, index);
 		}
+
+		// (5) Compress palette textures and assign to palette materials.
+
+		const mimeType = 'image/png';
+
+		if (baseColorTexture) {
+			const image = await savePixels(paletteTexturePixels.baseColor!, mimeType);
+			baseColorTexture.setImage(image).setMimeType(mimeType);
+		}
+		if (emissiveTexture) {
+			const image = await savePixels(paletteTexturePixels.emissive!, mimeType);
+			emissiveTexture.setImage(image).setMimeType(mimeType);
+		}
+		if (metallicRoughnessTexture) {
+			const image = await savePixels(paletteTexturePixels.metallicRoughness!, mimeType);
+			metallicRoughnessTexture.setImage(image).setMimeType(mimeType);
+		}
+
+		// (6) Create palette materials, generate UVs, and assign both to prims.
 
 		let nextPaletteMaterialIndex = 1;
 		for (const prim of prims) {
@@ -209,7 +235,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 						.setMinFilter(TextureInfo.MinFilter.NEAREST)
 						.setMagFilter(TextureInfo.MagFilter.NEAREST);
 				}
-
 				if (emissiveTexture) {
 					dstMaterial
 						.setEmissiveFactor([1, 1, 1])
@@ -218,7 +243,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 						.setMinFilter(TextureInfo.MinFilter.NEAREST)
 						.setMagFilter(TextureInfo.MagFilter.NEAREST);
 				}
-
 				if (metallicRoughnessTexture) {
 					dstMaterial
 						.setMetallicFactor(1)
@@ -233,23 +257,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			}
 
 			prim.setMaterial(dstMaterial).setAttribute('TEXCOORD_0', uv);
-		}
-
-		const mimeType = 'image/png';
-
-		if (baseColorTexture) {
-			const image = await savePixels(paletteTexturePixels.baseColor!, mimeType);
-			baseColorTexture.setImage(image).setMimeType(mimeType);
-		}
-
-		if (emissiveTexture) {
-			const image = await savePixels(paletteTexturePixels.emissive!, mimeType);
-			emissiveTexture.setImage(image).setMimeType(mimeType);
-		}
-
-		if (metallicRoughnessTexture) {
-			const image = await savePixels(paletteTexturePixels.metallicRoughness!, mimeType);
-			metallicRoughnessTexture.setImage(image).setMimeType(mimeType);
 		}
 
 		await document.transform(prune({ propertyTypes: [PropertyType.MATERIAL] }));
@@ -270,10 +277,12 @@ function encodeRGBA(value: vec4): string {
 	return value.map(encodeFloat).join('');
 }
 
+/** Returns the nearest higher power of two. */
 function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }
 
+/** Writes an NxN block of pixels to an image, at the given block index. */
 function writeBlock(pixels: NdArray<TypedArray>, index: number, value: vec4, blockSize: number): void {
 	for (let i = 0; i < blockSize; i++) {
 		for (let j = 0; j < blockSize; j++) {
