@@ -987,7 +987,8 @@ operations.
 
 Materials already containing texture coordinates (UVs) are not eligible for
 texture palette optimizations. Currently only a material's base color,
-alpha, metallic factor, and roughness factor are used for palettes.
+alpha, emissive factor, metallic factor, and roughness factor are converted
+to palette textures.
 `.trim()
 	)
 	.argument('<input>', INPUT_DESC)
