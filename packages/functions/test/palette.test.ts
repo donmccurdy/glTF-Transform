@@ -55,7 +55,7 @@ test('options.blockSize', async (t) => {
 	t.is(material.getMetallicRoughnessTexture(), null, 'metallicRoughnessTexture = null');
 
 	const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');
-	t.deepEqual(baseColorPixels.shape, [32, 10, 4], 'dimensions');
+	t.deepEqual(baseColorPixels.shape, [32, 16, 4], 'dimensions');
 });
 
 test('options.min', async (t) => {

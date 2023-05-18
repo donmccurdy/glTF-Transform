@@ -43,7 +43,8 @@ export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
  *
  * Materials already containing texture coordinates (UVs) are not eligible for
  * texture palette optimizations. Currently only a material's base color,
- * alpha, metallic factor, and roughness factor are used for palettes.
+ * alpha, emissive factor, metallic factor, and roughness factor are converted
+ * to palette textures.
  *
  * Example:
  *
@@ -127,7 +128,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		// (3) Allocate palette textures.
 
 		const w = ceilPowerOfTwo(keyCount * blockSize);
-		const h = blockSize;
+		const h = ceilPowerOfTwo(blockSize);
 		const padWidth = w - keyCount * blockSize;
 
 		const paletteTexturePixels: Record<TexturableProp, NdArray<TypedArray> | null> = {
