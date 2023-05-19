@@ -1,33 +1,24 @@
-const IS_NODEJS = typeof window === 'undefined';
-
-import { createCanvas } from 'canvas';
 import test from 'ava';
 import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import ndarray from 'ndarray';
+import { savePixels } from 'ndarray-pixels';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-test('basic', (t) => {
-	if (!IS_NODEJS) return t.pass();
-	let canvas, ctx, buffer;
+test('basic', async (t) => {
+	let pixels = ndarray(new Uint8Array(100 * 50 * 4), [100, 50, 4]);
+	let image = await savePixels(pixels, 'image/png');
+	t.deepEqual(ImageUtils.getSize(image, 'image/png'), [100, 50], 'gets PNG size');
 
-	canvas = createCanvas(100, 50);
-	ctx = canvas.getContext('2d');
-	ctx.fillStyle = '#222222';
-	buffer = canvas.toBuffer('image/png');
-	t.deepEqual(ImageUtils.getSize(buffer, 'image/png'), [100, 50], 'gets PNG size');
-
-	canvas = createCanvas(16, 32);
-	ctx = canvas.getContext('2d');
-	ctx.fillStyle = '#222222';
-	buffer = canvas.toBuffer('image/jpeg');
-	t.deepEqual(ImageUtils.getSize(buffer, 'image/jpeg'), [16, 32], 'gets JPEG size');
+	pixels = ndarray(new Uint8Array(16 * 32 * 4), [16, 32, 4]);
+	image = await savePixels(pixels, 'image/jpeg');
+	t.deepEqual(ImageUtils.getSize(image, 'image/jpeg'), [16, 32], 'gets JPEG size');
 });
 
 test('png', (t) => {
-	if (!IS_NODEJS) return t.pass();
 	const png = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png'));
 	const fried = BufferUtils.concat([
 		new Uint8Array(12),
@@ -49,7 +40,6 @@ test('png', (t) => {
 });
 
 test('jpeg', (t) => {
-	if (!IS_NODEJS) return t.pass();
 	const jpg = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg'));
 	const array = new Uint8Array(100);
 	const view = new DataView(array.buffer, array.byteOffset);

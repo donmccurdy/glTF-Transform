@@ -1,10 +1,11 @@
 import path, { dirname } from 'path';
-import { createCanvas } from 'canvas';
 import test from 'ava';
 import { Document, NodeIO, PropertyType } from '@gltf-transform/core';
 import { dedup } from '@gltf-transform/functions';
 import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 import { fileURLToPath } from 'url';
+import ndarray from 'ndarray';
+import { savePixels } from 'ndarray-pixels';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -121,14 +122,12 @@ test('skins', async (t) => {
 	t.false(skinC.isDisposed(), 'keep skin C');
 });
 
-test('textures', (t) => {
+test('textures', async (t) => {
 	const doc = new Document();
 	const transmissionExt = doc.createExtension(KHRMaterialsTransmission);
 
-	const canvas = createCanvas(100, 50);
-	const ctx = canvas.getContext('2d');
-	ctx.fillStyle = '#222222';
-	const image = canvas.toBuffer('image/png');
+	const pixels = ndarray(new Uint8Array(100 * 50 * 4), [100, 50, 4]);
+	const image = await savePixels(pixels, 'image/png');
 
 	const tex1 = doc.createTexture('copy 1').setMimeType('image/png').setImage(image);
 	const tex2 = doc.createTexture('copy 2').setMimeType('image/png').setImage(image.slice());
