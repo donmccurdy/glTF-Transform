@@ -16,9 +16,6 @@ After cloning the repository, run:
 yarn install
 ```
 
-> **NOTICE:** If installation fails with errors during `node-canvas` compilation, you may need need
-> to complete the one-time setup described in https://github.com/Automattic/node-canvas#compiling.
-
 The project relies on [Yarn workspaces](https://classic.yarnpkg.com/docs/workspaces/) and will not build with npm. To build and test all code,
 run:
 
