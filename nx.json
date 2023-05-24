@@ -1,0 +1,24 @@
+{
+	"tasksRunnerOptions": {
+		"default": {
+			"runner": "nx/tasks-runners/default",
+			"options": {
+				"cacheableOperations": ["dist", "watch", "watch:debug", "lint"]
+			}
+		}
+	},
+	"targetDefaults": {
+		"dist": {
+			"dependsOn": ["^dist"],
+			"outputs": ["{projectRoot}/dist", "{projectRoot}/build", "{projectRoot}/.svelte-kit"]
+		},
+		"watch": {
+			"dependsOn": ["^watch"],
+			"outputs": ["{projectRoot}/dist", "{projectRoot}/build", "{projectRoot}/.svelte-kit"]
+		},
+		"watch:debug": {
+			"dependsOn": ["^watch:debug"],
+			"outputs": ["{projectRoot}/dist", "{projectRoot}/build", "{projectRoot}/.svelte-kit"]
+		}
+	}
+}

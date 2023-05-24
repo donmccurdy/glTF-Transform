@@ -10,8 +10,8 @@
 	"type": "module",
 	"scripts": {
 		"dist": "lerna run dist",
-		"watch": "lerna run watch --parallel --stream",
-		"watch:debug": "lerna run watch:debug --parallel --stream",
+		"watch": "lerna watch -- lerna run dist --scope=$LERNA_PACKAGE_NAME --include-dependents",
+		"watch:debug": "lerna watch -- lerna run dist:debug --scope=$LERNA_PACKAGE_NAME --include-dependents",
 		"clean:dist": "rm -rf packages/*/dist/**",
 		"clean:deps": "rm -rf packages/*/node_modules/**",
 		"test": "ava packages/{core,extensions,functions,cli}/test/**/*.test.ts",

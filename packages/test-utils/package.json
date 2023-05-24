@@ -8,8 +8,7 @@
 	"source": "./src/index.ts",
 	"types": "./dist/index.d.ts",
 	"scripts": {
-		"dist": "microbundle --format modern --no-compress",
-		"watch": "microbundle watch --format modern --no-compress"
+		"dist": "microbundle --format modern --no-compress"
 	},
 	"dependencies": {
 		"@gltf-transform/core": "^3.3.1",

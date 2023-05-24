@@ -18,8 +18,7 @@
 	},
 	"scripts": {
 		"dist": "microbundle --format esm --target node",
-		"watch": "microbundle watch --format esm --target node",
-		"watch:debug": "microbundle watch --no-compress --format esm --target node"
+		"dist:debug": "microbundle --format esm --target node --no-compress"
 	},
 	"bin": {
 		"gltf-transform": "./bin/cli.js"

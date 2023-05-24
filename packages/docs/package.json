@@ -25,5 +25,11 @@
 		"tslib": "^2.4.1",
 		"vite": "^4.3.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@gltf-transform/cli": "^3.3.1",
+		"@gltf-transform/core": "^3.3.1",
+		"@gltf-transform/extensions": "^3.3.1",
+		"@gltf-transform/functions": "^3.3.1"
+	}
 }
