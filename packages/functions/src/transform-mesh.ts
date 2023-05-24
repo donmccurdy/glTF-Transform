@@ -70,8 +70,35 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipI
 	}
 
 	// (3) Apply transform.
-	skipIndices = skipIndices || new Set<number>();
-	for (const prim of mesh.listPrimitives()) {
-		transformPrimitive(prim, matrix, skipIndices);
-	}
+  const primitives = mesh.listPrimitives();
+  const sharedIndices =
+    primitives.length < 2 ||
+    primitives.every(
+      (prim) =>
+        primitives[0].getAttribute('POSITION') == prim.getAttribute('POSITION')
+    );
+  if (sharedIndices) {
+    // (3) Apply transform.
+    skipIndices = skipIndices || new Set<number>();
+    for (const prim of primitives) {
+      transformPrimitive(prim, matrix, skipIndices);
+    }
+  } else {
+    if (skipIndices !== undefined) {
+      throw Error('skipIndices not supported due to non-shared indices');
+    }
+    const skipIndicesMap = new Map<Accessor, Set<number>>();
+    for (const prim of primitives) {
+      const position = prim.getAttribute('POSITION');
+      if (!position) {
+        continue;
+      }
+      let currentSkipIndices = skipIndicesMap.get(position);
+      if (currentSkipIndices === undefined) {
+        currentSkipIndices = new Set<number>();
+        skipIndicesMap.set(position, currentSkipIndices);
+      }
+      transformPrimitive(prim, matrix, currentSkipIndices);
+    }
+  }
 }
