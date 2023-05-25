@@ -207,7 +207,8 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 
 	// (2) Compare and identify vertices to weld.
 
-	const weldMap = createIndices(uniqueIndices.length); // oldIndex → oldCommonIndex
+	const srcMaxIndex = uniqueIndices[uniqueIndices.length - 1];
+	const weldMap = createIndices(srcMaxIndex + 1); // oldIndex → oldCommonIndex
 	const writeMap = new Array(uniqueIndices.length).fill(-1); // oldIndex → newIndex
 
 	const srcVertexCount = srcPosition.getCount();
