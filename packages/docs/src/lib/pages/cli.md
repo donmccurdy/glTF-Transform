@@ -15,6 +15,22 @@ Installation:
 npm install --global @gltf-transform/cli
 ```
 
+<details>
+  <summary><i>Troubleshooting</i></summary>
+
+  glTF Transform uses [Sharp](https://sharp.pixelplumbing.com/) to optimize images. If you encounter errors during
+  installation related to Sharp, consult the [Sharp installation](https://sharp.pixelplumbing.com/install) page. When 
+  installing the glTF Transform CLI in China, a mirror site provided by Alibaba
+  may be required:
+  
+  ```bash
+npm config set sharp_binary_host "https://npmmirror.com/mirrors/sharp"
+npm config set sharp_libvips_binary_host "https://npmmirror.com/mirrors/sharp-libvips"
+npm install --global @gltf-transform/cli
+  ```
+  
+</details>
+
 To run the most common optimizations in one easy step, use the `optimize` command:
 
 ```bash
