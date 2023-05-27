@@ -51,6 +51,9 @@ import {
 	JoinOptions,
 	sparse,
 	SparseOptions,
+	palette,
+	PaletteOptions,
+	PALETTE_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -215,6 +218,19 @@ commands or using the scripting API.
 		validator: program.NUMBER,
 		default: 5,
 	})
+	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
+	.option(
+		'--palette-min <min>',
+		'Minimum number of blocks in the palette texture. If fewer unique ' +
+			'material values are found, no palettes will be generated.',
+		{
+			validator: program.NUMBER,
+			default: 5,
+		}
+	)
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
 		validator: program.BOOLEAN,
 		default: true,
@@ -257,6 +273,8 @@ commands or using the scripting API.
 		const opts = options as {
 			instance: boolean;
 			instanceMin: number;
+			palette: boolean;
+			paletteMin: number;
 			simplify: boolean;
 			simplifyError: number;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
@@ -270,6 +288,7 @@ commands or using the scripting API.
 		const transforms: Transform[] = [dedup()];
 
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
+		if (opts.palette) transforms.push(palette({ min: opts.paletteMin }));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
@@ -953,6 +972,45 @@ should be used as input, and then compressed after this conversion.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, logger }) => Session.create(io, logger, args.input, args.output).transform(metalRough()));
+
+// PALETTE
+program
+	.command('palette', 'Creates palette textures and merges materials')
+	.help(
+		`
+Creates palette textures containing all unique values of scalar Material
+properties within the scene, then merges materials. For scenes with many
+solid-colored materials (often found in CAD, architectural, or low-poly
+styles), texture palettes can reduce the number of materials used, and
+significantly increase the number of Mesh objects eligible for "join"
+operations.
+
+Materials already containing texture coordinates (UVs) are not eligible for
+texture palette optimizations. Currently only a material's base color,
+alpha, emissive factor, metallic factor, and roughness factor are converted
+to palette textures.
+`.trim()
+	)
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--block-size <px>', 'Size (in pixels) of a single block within each palette texture.', {
+		validator: program.NUMBER,
+		default: PALETTE_DEFAULTS.blockSize,
+	})
+	.option(
+		'--min <count>',
+		'Minimum number of blocks in the palette texture. If fewer unique ' +
+			'material values are found, no palettes will be generated.',
+		{
+			validator: program.NUMBER,
+			default: PALETTE_DEFAULTS.min,
+		}
+	)
+	.action(async ({ args, options, logger }) => {
+		return Session.create(io, logger, args.input, args.output).transform(
+			palette(options as unknown as PaletteOptions)
+		);
+	});
 
 // UNLIT
 program

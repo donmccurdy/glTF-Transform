@@ -70,6 +70,7 @@ export * from './list-texture-slots.js';
 export * from './meshopt.js';
 export * from './metal-rough.js';
 export * from './normals.js';
+export * from './palette.js';
 export * from './partition.js';
 export * from './prune.js';
 export * from './quantize.js';
