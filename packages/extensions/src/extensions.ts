@@ -1,5 +1,3 @@
-/** @module extensions */
-
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
 import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';

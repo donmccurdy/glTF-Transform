@@ -37,12 +37,12 @@ Read and write glTF scenes with platform I/O utilities [WebIO](https://gltf-tran
 
 ```typescript
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
 
 // Configure I/O.
 const io = new NodeIO()
-    .registerExtensions(KHRONOS_EXTENSIONS)
+    .registerExtensions(ALL_EXTENSIONS)
     .registerDependencies({
         'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
         'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.

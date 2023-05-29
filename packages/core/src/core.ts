@@ -1,5 +1,3 @@
-/** @module core */
-
 export { Document, Transform, TransformContext } from './document.js';
 export { JSONDocument } from './json-document.js';
 export { Extension } from './extension.js';
