@@ -59,7 +59,7 @@ To perform changes to an existing glTF [Document](https://gltf-transform.donmccu
 
 ```typescript
 import { resample, prune, dedup, draco, textureCompress } from '@gltf-transform/functions';
-import * as sharp from 'sharp'; // Node.js only.
+import sharp from 'sharp'; // Node.js only.
 
 await document.transform(
     // Losslessly resample animation frames.
