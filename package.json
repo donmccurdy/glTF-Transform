@@ -31,7 +31,7 @@
 		"@types/command-exists": "1.2.0",
 		"@types/draco3dgltf": "1.4.0",
 		"@types/ndarray": "1.0.11",
-		"@types/node": "18.16.14",
+		"@types/node": "18.16.16",
 		"@types/node-gzip": "1.1.0",
 		"@types/sharp": "^0.32.0",
 		"@typescript-eslint/eslint-plugin": "5.59.7",
