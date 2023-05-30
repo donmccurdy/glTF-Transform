@@ -54,7 +54,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 3.3.6 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 3.4.0 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
@@ -102,6 +102,7 @@ Full command list:
                                                                                                 
                                          🎨 MATERIAL ─────────────────────────────────────────  
     metalrough                           Convert materials from spec/gloss to metal/rough       
+    palette                              Creates palette textures and merges materials          
     unlit                                Convert materials from metal/rough to unlit            
                                                                                                 
                                                                                                 
