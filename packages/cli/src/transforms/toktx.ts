@@ -68,6 +68,7 @@ interface GlobalOptions {
 	slots?: string;
 	filter?: string;
 	filterScale?: number;
+	resize?: vec2;
 	powerOfTwo?: boolean;
 	jobs?: number;
 }
@@ -173,7 +174,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				}
 
 				const image = texture.getImage();
-				const size = texture.getSize();
+				const size = options.resize || texture.getSize();
 				if (!image || !size) {
 					logger.warn(`${prefix}: Skipping, unreadable texture.`);
 					return;
@@ -339,7 +340,7 @@ function createParams(
 		height = isMultipleOfFour(size[1]) ? size[1] : ceilMultipleOfFour(size[1]);
 	}
 
-	if (width !== size[0] || height !== size[1]) {
+	if (width !== size[0] || height !== size[1] || options.resize) {
 		if (width > 4096 || height > 4096) {
 			logger.warn(
 				`toktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
