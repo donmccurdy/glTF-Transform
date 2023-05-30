@@ -4,6 +4,15 @@
 
 <!-- ### v3.X — 🚧 Unreleased -->
 
+### v3.4 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/29))
+
+_Special thanks to [Muse](https://www.muse.place/) for supporting development of the `palette()` feature._
+
+**Features:**
+
+- Add `palette()` function [#952](https://github.com/donmccurdy/glTF-Transform/pull/952)
+- Add "resize" option in `toktx()` [#968](https://github.com/donmccurdy/glTF-Transform/pull/968)
+
 ### v3.3 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/27))
 
 _Special thanks to [@kzhsw](https://github.com/kzhsw) for help with performance improvements in v3.3._
