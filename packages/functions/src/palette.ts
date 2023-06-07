@@ -59,6 +59,13 @@ export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
  * );
  * ```
  *
+ * The illustration below shows a typical base color palette texture:
+ *
+ * <img
+ * 	src="/media/functions/palette.png"
+ * 	alt="Row of colored blocks"
+ * 	style="width: 100%; max-width: 320px; image-rendering: pixelated;">
+ *
  * @category Transforms
  */
 export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform {
