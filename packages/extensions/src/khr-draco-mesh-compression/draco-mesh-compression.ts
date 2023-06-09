@@ -265,7 +265,7 @@ export class KHRDracoMeshCompression extends Extension {
 				encodedPrim = encodeGeometry(prim, { ...this._encoderOptions, quantizationVolume });
 			} catch (e) {
 				if (e instanceof EncodingError) {
-					logger.warn(`[${NAME}]: ${e.message} Skipping primitive compression.`);
+					logger.warn(`[${NAME}]: ${e.message} Skipping primitive compression – ( name "${prim.getName()}", material "${prim.getMaterial()?.getName()}" )`)
 					continue;
 				}
 				throw e;
