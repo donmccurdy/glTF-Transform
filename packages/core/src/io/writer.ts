@@ -423,10 +423,12 @@ export class GLTFWriter {
 			// For accessor usage that requires grouping by parent (vertex and instance
 			// attributes) organize buffer views accordingly.
 			if (groupByParent.has(usage)) {
-				const parent = accessorEdges[0].getParent();
-				const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
-				parentAccessors.add(accessor);
-				accessorParents.set(parent, parentAccessors);
+				if(accessorEdges.length > 0){
+					const parent = accessorEdges[0].getParent();
+					const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
+					parentAccessors.add(accessor);
+					accessorParents.set(parent, parentAccessors);
+				}
 			}
 		});
 
