@@ -60,9 +60,12 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const options = { ...DEFAULT_ENCODER_OPTIONS, ..._options } as Required<EncoderOptions>;
 	options.quantizationBits = { ...DEFAULT_QUANTIZATION_BITS, ..._options.quantizationBits };
 
-	const encoder = new encoderModule.Encoder();
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
+
+	// TODO(cleanup): Update @types/draco3dgltf definitions.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const encoder = new (encoderModule as any).ExpertEncoder(mesh);
 
 	const attributeIDs: { [key: string]: number } = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
@@ -121,14 +124,14 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
 	encoder.SetTrackEncodedProperties(true);
 
-	// Preserve vertex order for primitives with morph targets.
-	if (options.method === EncoderMethod.SEQUENTIAL || hasMorphTargets || hasSparseAttributes) {
+	if (options.method === EncoderMethod.SEQUENTIAL) {
 		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
 	} else {
 		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
 	}
 
-	const byteLength = encoder.EncodeMeshToDracoBuffer(mesh, dracoBuffer);
+	// Encode, preserving vertex order for primitives with morph targets and sparse accessors.
+	const byteLength = encoder.EncodeToDracoBuffer(!(hasMorphTargets || hasSparseAttributes), dracoBuffer);
 	if (byteLength <= 0) throw new EncodingError('Error applying Draco compression.');
 
 	const data = new Uint8Array(byteLength);
@@ -136,17 +139,8 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 		data[i] = dracoBuffer.GetValue(i);
 	}
 
-	const prevNumVertices = prim.getAttribute('POSITION')!.getCount();
 	const numVertices = encoder.GetNumberOfEncodedPoints();
 	const numIndices = encoder.GetNumberOfEncodedFaces() * 3;
-
-	if ((hasMorphTargets || hasSparseAttributes) && numVertices !== prevNumVertices) {
-		throw new EncodingError(
-			'Compression reduced vertex count unexpectedly, corrupting mesh data.' +
-				' Applying the "weld" function before compression may resolve the issue.' +
-				' See: https://github.com/google/draco/issues/929'
-		);
-	}
 
 	encoderModule.destroy(dracoBuffer);
 	encoderModule.destroy(mesh);
