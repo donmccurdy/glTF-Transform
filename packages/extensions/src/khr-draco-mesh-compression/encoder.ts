@@ -124,7 +124,9 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	encoder.SetSpeedOptions(options.encodeSpeed, options.decodeSpeed);
 	encoder.SetTrackEncodedProperties(true);
 
-	if (options.method === EncoderMethod.SEQUENTIAL) {
+	// TODO(cleanup): Use edgebreaker without deduplication if possible.
+	// See https://github.com/google/draco/issues/929.
+	if (options.method === EncoderMethod.SEQUENTIAL || hasMorphTargets || hasSparseAttributes) {
 		encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
 	} else {
 		encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
