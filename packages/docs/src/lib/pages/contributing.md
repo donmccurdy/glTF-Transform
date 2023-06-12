@@ -83,14 +83,13 @@ Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 All packages are published together. To create a standard release:
 
 ```shell
-lerna publish [ patch | minor | major ] --force-publish "*" --otp <OTP>
+lerna publish [ patch | minor | major ] --force-publish "*"
 ```
 
 To create an alpha release:
 
 ```shell
-lerna publish prerelease --dist-tag next --force-publish "*" --otp <OTP>
+lerna publish prerelease --dist-tag next --force-publish "*"
 ```
 
-If a release contains a new package, `-- --access public` must be appended. Lerna has historically
-been [finicky with 2FA OTPs](https://github.com/lerna/lerna/issues/1091).
+If a release contains a new package, `-- --access public` must be appended. Lerna can be [finicky with 2FA OTPs](https://github.com/lerna/lerna/issues/1091).
