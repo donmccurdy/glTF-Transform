@@ -12,17 +12,14 @@
 <svelte:head>
 	<title>{$page.data.metadata.title}</title>
 	<meta name="description" content={$page.data.metadata.snippet} />
-	<link rel="canonical" href={'https://gltf-transform.donmccurdy.com' + $page.url.pathname} />
+	<link rel="canonical" href={'https://gltf-transform.dev' + $page.url.pathname} />
 
 	<meta property="og:site_name" content="glTF-Transform" />
 	<meta property="og:title" content={$page.data.metadata.title} />
 	<meta property="og:description" content={$page.data.metadata.snippet} />
 	<meta property="og:url" content={$page.url.href} />
 	<meta name="og:image" content="/media/hero.jpg" />
-	<meta
-		name="og:image:alt"
-		content="Function symbol, where the argument and output are a box labeled 'glTF'."
-	/>
+	<meta name="og:image:alt" content="Function symbol, where the argument and output are a box labeled 'glTF'." />
 	<meta name="og:image:width" content="2000" />
 	<meta name="og:image:height" content="1000" />
 	<meta name="twitter:card" content="summary_large_image" />
@@ -30,10 +27,7 @@
 	<meta name="twitter:description" content={$page.data.metadata.snippet} />
 	<meta name="twitter:url" content={$page.url.href} />
 	<meta name="twitter:image" content="/media/hero.jpg" />
-	<meta
-		name="twitter:image:alt"
-		content="Function symbol, where the argument and output are a box labeled 'glTF'."
-	/>
+	<meta name="twitter:image:alt" content="Function symbol, where the argument and output are a box labeled 'glTF'." />
 	<meta name="twitter:label1" content="Written by" />
 	<meta name="twitter:data1" content="Don McCurdy" />
 	<meta name="twitter:creator" content="@donrmccurdy" />
@@ -58,8 +52,7 @@
 					</a>
 				</div>
 				<div class="table-cell" id="greendoc-widgets">
-					<button id="greendoc-menu" class="greendoc-widget menu no-caption" on:click={toggleNav}
-						>Menu</button
+					<button id="greendoc-menu" class="greendoc-widget menu no-caption" on:click={toggleNav}>Menu</button
 					>
 				</div>
 			</div>
@@ -119,15 +112,12 @@
 			/>
 			<p>
 				<span class="line"
-					>Made by <a href="https://twitter.com/donrmccurdy" target="_blank" rel="noopener"
-						>Don McCurdy</a
+					>Made by <a href="https://twitter.com/donrmccurdy" target="_blank" rel="noopener">Don McCurdy</a
 					></span
 				>
 				<span class="divider">•</span>
 				<span class="line"
-					>Documented with <a href="https://github.com/donmccurdy/greendoc" target="_blank"
-						>greendoc</a
-					></span
+					>Documented with <a href="https://github.com/donmccurdy/greendoc" target="_blank">greendoc</a></span
 				>
 				<span class="divider">•</span>
 				<span class="line"

@@ -210,7 +210,7 @@ _Special thanks to [@kzhsw](https://github.com/kzhsw) for help with performance 
 **Features:**
 
 - Add 'ktxfix' command in CLI. [#222](https://github.com/donmccurdy/glTF-Transform/pull/222)
-- Add getter/setter for default [Scene](https://gltf-transform.donmccurdy.com/classes/root.html) on [Root](https://gltf-transform.donmccurdy.com/classes/root.html). [#202](https://github.com/donmccurdy/glTF-Transform/pull/202)
+- Add getter/setter for default [Scene](https://gltf-transform.dev/classes/root.html) on [Root](https://gltf-transform.dev/classes/root.html). [#202](https://github.com/donmccurdy/glTF-Transform/pull/202)
 
 **Breaking changes:**
 
@@ -292,7 +292,7 @@ _Special thanks to [@kzhsw](https://github.com/kzhsw) for help with performance 
 
 **Breaking changes:**
 
-- getExtension/setExtension syntax changed to accept extension names, not constructors. See [ExtensibleProperty](https://gltf-transform.donmccurdy.com/classes/extensibleproperty.html).
+- getExtension/setExtension syntax changed to accept extension names, not constructors. See [ExtensibleProperty](https://gltf-transform.dev/classes/extensibleproperty.html).
 - Scene addNode/removeNode/listNodes are now addChild/removeChild/listChildren, for consistency with Node API.
 
 ### v0.5 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/5))

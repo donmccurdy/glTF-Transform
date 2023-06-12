@@ -2,7 +2,7 @@
 	"name": "@gltf-transform/functions",
 	"version": "3.4.0",
 	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.donmccurdy.com/functions.html",
+	"homepage": "https://gltf-transform.dev/functions.html",
 	"description": "Functions for common glTF modifications, written using the core API",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",

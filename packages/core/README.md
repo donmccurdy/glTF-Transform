@@ -7,11 +7,11 @@
 Part of the glTF-Transform project.
 
 - GitHub: https://github.com/donmccurdy/glTF-Transform
-- Documentation: https://gltf-transform.donmccurdy.com/
+- Documentation: https://gltf-transform.dev/
 
 ## Credits
 
-See [*Credits*](https://gltf-transform.donmccurdy.com/credits).
+See [*Credits*](https://gltf-transform.dev/credits).
 
 ## License
 
