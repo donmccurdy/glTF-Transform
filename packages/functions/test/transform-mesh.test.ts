@@ -69,6 +69,26 @@ test('detach shared vertex streams', async (t) => {
 	t.not(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA ≠ primB, after (overwrite=false)');
 });
 
+test('update multiple vertex streams', async (t) => {
+	const document = new Document().setLogger(logger);
+	const primA = createPrimitive(document);
+	const primB = createPrimitive(document);
+	const mesh = document.createMesh().addPrimitive(primA).addPrimitive(primB);
+
+	transformMesh(mesh, mat4.fromScaling([], [2, 2, 2]));
+
+	// prettier-ignore
+	const SCALED = [
+		0.5, 10, 0.5,
+		0.5, 10, -0.5,
+		-0.5, 10, -0.5,
+		-0.5, 10, 0.5
+	].map((value) => value * 2.0);
+
+	t.deepEqual(Array.from(primA.getAttribute('POSITION').getArray()), SCALED, 'primA.POSITION');
+	t.deepEqual(Array.from(primB.getAttribute('POSITION').getArray()), SCALED, 'primB.POSITION');
+});
+
 test('skip indices', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
