@@ -12,8 +12,8 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@greendoc/parse": "^0.1.5",
-		"@greendoc/svelte": "^0.1.5",
+		"@greendoc/parse": "^0.2.0",
+		"@greendoc/svelte": "^0.2.0",
 		"@sveltejs/adapter-static": "^2.0.2",
 		"@sveltejs/kit": "^1.5.0",
 		"he": "^1.2.0",
