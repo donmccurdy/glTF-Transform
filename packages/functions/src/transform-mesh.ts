@@ -70,8 +70,19 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipI
 	}
 
 	// (3) Apply transform.
-	skipIndices = skipIndices || new Set<number>();
+	const attributeSkipIndices = new Map<Accessor, Set<number>>();
 	for (const prim of mesh.listPrimitives()) {
-		transformPrimitive(prim, matrix, skipIndices);
+		const position = prim.getAttribute('POSITION')!;
+
+		let primSkipIndices;
+		if (skipIndices) {
+			primSkipIndices = skipIndices;
+		} else if (attributeSkipIndices.has(position)) {
+			primSkipIndices = attributeSkipIndices.get(position)!;
+		} else {
+			attributeSkipIndices.set(position, (primSkipIndices = new Set<number>()));
+		}
+
+		transformPrimitive(prim, matrix, primSkipIndices);
 	}
 }
