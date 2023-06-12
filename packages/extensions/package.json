@@ -2,7 +2,7 @@
 	"name": "@gltf-transform/extensions",
 	"version": "3.4.0",
 	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.donmccurdy.com/extensions.html",
+	"homepage": "https://gltf-transform.dev/extensions.html",
 	"description": "Adds extension support to @gltf-transform/core",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",

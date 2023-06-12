@@ -1,3 +1,3 @@
 # Contributing
 
-See https://gltf-transform.donmccurdy.com/contributing.html.
+See https://gltf-transform.dev/contributing.html.

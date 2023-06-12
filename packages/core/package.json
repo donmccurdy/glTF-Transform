@@ -2,7 +2,7 @@
 	"name": "@gltf-transform/core",
 	"version": "3.4.0",
 	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.donmccurdy.com/",
+	"homepage": "https://gltf-transform.dev/",
 	"description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",

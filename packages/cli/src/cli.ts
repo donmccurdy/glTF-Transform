@@ -510,7 +510,7 @@ flag, or use the scripting API to manually input JSONLD fields.
 To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
 
 ${underline('Documentation')}
-- https://gltf-transform.donmccurdy.com/classes/extensions.xmp.html
+- https://gltf-transform.dev/classes/extensions.xmp.html
 `
 	)
 	.argument('<input>', INPUT_DESC)
@@ -640,7 +640,7 @@ Compresses
 - geometry (only triangle meshes)
 
 ${underline('Documentation')}
-- https://gltf-transform.donmccurdy.com/classes/extensions.dracomeshcompression.html
+- https://gltf-transform.dev/classes/extensions.dracomeshcompression.html
 
 ${underline('References')}
 - draco: https://github.com/google/draco
@@ -704,7 +704,7 @@ Compresses
 - animation tracks
 
 ${underline('Documentation')}
-- https://gltf-transform.donmccurdy.com/classes/extensions.meshoptcompression.html
+- https://gltf-transform.dev/classes/extensions.meshoptcompression.html
 
 ${underline('References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
@@ -1085,7 +1085,7 @@ more attention to compression settings to get similar visual results.
 {DETAILS}
 
 ${underline('Documentation')}
-https://gltf-transform.donmccurdy.com/extensions.html#khr_texture_basisu
+https://gltf-transform.dev/extensions.html#khr_texture_basisu
 
 ${underline('Dependencies')}
 KTX-Software (https://github.com/KhronosGroup/KTX-Software/)

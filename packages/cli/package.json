@@ -2,7 +2,7 @@
 	"name": "@gltf-transform/cli",
 	"version": "3.4.0",
 	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.donmccurdy.com/cli.html",
+	"homepage": "https://gltf-transform.dev/cli.html",
 	"description": "CLI interface to glTF Transform",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
