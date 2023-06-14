@@ -270,10 +270,21 @@ function dedupMaterials(document: Document): void {
 	const materials = root.listMaterials();
 	const duplicates = new Map<Material, Material>();
 	const skip = new Set(['name']);
+	let keptMaterials = 0;
 
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
+
+		// Check if any parent edge has the modifyChild attribute set to true in which case we do not want the material to be deduped
+		const keep = document.getGraph()
+			.listParentEdges(a)
+			.some((ref) => ref.getAttributes().modifyChild === true);
+		if(keep) {
+			keptMaterials += 1;
+			continue;
+		}
+
 		if (duplicates.has(a)) continue;
 
 		for (let j = i + 1; j < materials.length; j++) {
@@ -286,7 +297,7 @@ function dedupMaterials(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${materials.length} materials.`);
+	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${materials.length} materials. (Skipped ${keptMaterials} materials)`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
