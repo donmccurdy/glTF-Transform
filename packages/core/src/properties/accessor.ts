@@ -58,7 +58,7 @@ interface IAccessor extends IExtensibleProperty {
  * is stored in the final file. Assigning Accessors to different Buffers allows the data to be
  * written to different `.bin` files.
  *
- * glTF-Transform does not expose many details of sparse, normalized, or interleaved accessors
+ * glTF Transform does not expose many details of sparse, normalized, or interleaved accessors
  * through its API. It reads files using those techniques, presents a simplified view of the data
  * for editing, and attempts to write data back out with optimizations. For example, vertex
  * attributes will typically be interleaved by default, regardless of the input file.

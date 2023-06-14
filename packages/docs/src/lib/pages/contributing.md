@@ -68,11 +68,11 @@ Certain JSDoc tags have notable meanings within this project:
   package.
 - `@hidden` methods and classes are hidden from documentation, but still included in TypeScript
   definitions for the package. This code is not intended for wide use, but may be necessary for
-  other packages in the glTF-Transform monorepo.
+  other packages in the glTF Transform monorepo.
 
 ### Roadmap
 
-glTF-Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF-Transform does provide APIs to build and maintain implementations for those extensions externally.
+glTF Transform supports the complete glTF 2.0 core format, and some extensions. Most official Khronos Group extensions (those prefixed with `KHR_`) will be implemented on a rolling basis — pull requests are very welcome. Multi-vendor extensions (prefixed with `EXT_`) may be included on a case-by-case basis. Single-vendor extensions (any other prefix) are unlikely to be included directly in the project, although glTF Transform does provide APIs to build and maintain implementations for those extensions externally.
 
 Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 

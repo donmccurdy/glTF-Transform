@@ -9,7 +9,7 @@ interface IBuffer extends IExtensibleProperty {
  * *Buffers are low-level storage units for binary data.*
  *
  * glTF 2.0 has three concepts relevant to binary storage: accessors, buffer views, and buffers.
- * In glTF-Transform, an {@link Accessor} is referenced by any property that requires numeric typed
+ * In glTF Transform, an {@link Accessor} is referenced by any property that requires numeric typed
  * array data. Meshes, Primitives, and Animations all reference Accessors. Buffers define how that
  * data is organized into transmitted file(s). A `.glb` file has only a single Buffer, and when
  * exporting to `.glb` your resources should be grouped accordingly. A `.gltf` file may reference
@@ -21,9 +21,9 @@ interface IBuffer extends IExtensibleProperty {
  * binary data for specific meshes into a different `.bin` buffer, or put each animation's binary
  * payload into its own `.bin`.
  *
- * Buffer Views define how Accessors are organized within a given Buffer. glTF-Transform creates an
+ * Buffer Views define how Accessors are organized within a given Buffer. glTF Transform creates an
  * efficient Buffer View layout automatically at export: there is no Buffer View property exposed
- * by the glTF-Transform API, simplifying data management.
+ * by the glTF Transform API, simplifying data management.
  *
  * Usage:
  *

@@ -14,7 +14,7 @@
 	<meta name="description" content={$page.data.metadata.snippet} />
 	<link rel="canonical" href={'https://gltf-transform.dev' + $page.url.pathname} />
 
-	<meta property="og:site_name" content="glTF-Transform" />
+	<meta property="og:site_name" content="glTF Transform" />
 	<meta property="og:title" content={$page.data.metadata.title} />
 	<meta property="og:description" content={$page.data.metadata.snippet} />
 	<meta property="og:url" content={$page.url.href} />

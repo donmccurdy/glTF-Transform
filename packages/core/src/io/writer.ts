@@ -375,7 +375,7 @@ export class GLTFWriter {
 
 		/* Textures. */
 
-		// glTF-Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
+		// glTF Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
 		// with image files. The glTF file may contain more one texture per image, where images
 		// are reused with different sampler properties.
 		json.samplers = [];
