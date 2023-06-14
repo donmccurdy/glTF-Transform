@@ -40,7 +40,7 @@
 		"ktx-parse": "^0.5.0",
 		"ndarray": "^1.0.19",
 		"ndarray-lanczos": "^0.3.0",
-		"ndarray-pixels": "^3.0.2"
+		"ndarray-pixels": "^3.0.4"
 	},
 	"files": [
 		"dist/",
