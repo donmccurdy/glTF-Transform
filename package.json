@@ -45,7 +45,7 @@
 		"gl-matrix": "^3.4.3",
 		"gltf-validator": "2.0.0-dev.3.9",
 		"keyframe-resample": "^0.0.14",
-		"lerna": "6.6.2",
+		"lerna": "7.0.1",
 		"meshoptimizer": "0.19.0",
 		"microbundle": "0.15.1",
 		"mikktspace": "1.1.1",
