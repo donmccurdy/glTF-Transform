@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path, { dirname } from 'path';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import test from 'ava';
@@ -8,8 +9,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const GRADIENT = getPixels(path.resolve(__dirname, './in/pattern.png'));
-const GRADIENT_HALF = getPixels(path.resolve(__dirname, './in/pattern-half.png'));
+const GRADIENT = getPixels(fs.readFileSync(path.resolve(__dirname, './in/pattern.png')), 'image/png');
+const GRADIENT_HALF = getPixels(fs.readFileSync(path.resolve(__dirname, './in/pattern-half.png')), 'image/png');
 const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
 test('square', async (t) => {
