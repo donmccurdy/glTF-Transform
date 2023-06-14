@@ -11,7 +11,7 @@ interface ITexture extends IExtensibleProperty {
 /**
  * *Texture, or images, referenced by {@link Material} properties.*
  *
- * Textures in glTF-Transform are a combination of glTF's `texture` and `image` properties, and
+ * Textures in glTF Transform are a combination of glTF's `texture` and `image` properties, and
  * should be unique within a document, such that no other texture contains the same
  * {@link Texture.getImage getImage()} data. Where duplicates may already exist, the `dedup({textures: true})`
  * transform can remove them. A {@link Document} with N texture properties will be exported to a

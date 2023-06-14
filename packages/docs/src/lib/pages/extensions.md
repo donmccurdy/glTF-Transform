@@ -102,7 +102,7 @@ const document = await io.read('compressed.glb');
 
 In addition to the official Khronos and multi-vendor extensions, the glTF format can be extended
 with [custom extensions](https://github.com/KhronosGroup/gltf/blob/main/extensions/README.md)
-for specific applications. glTF-Transform supports reading/writing custom extensions, without
+for specific applications. glTF Transform supports reading/writing custom extensions, without
 modifications to the core codebase. Any extension implemented correctly and registered with the I/O
 instance may be read from a file, modified programmatically, and written back to a file.
 
@@ -113,7 +113,7 @@ locally with the `@gltf-transform/cli` package using [custom CLI configuration](
 
 ### Writing a custom extension
 
-Custom extensions must define a [Extension](/modules/core/classes/Extension) subclass, optionally implementing read/write operations. By convention, the name of this class is an uppercase adaptation of the full extension name, e.g. `ACME_particle_emitter` → ParticleEmitter. Authors of custom extensions are encouraged to follow the Khronos [extension naming guidelines](https://github.com/KhronosGroup/glTF/tree/main/extensions#naming), and to [reserve a prefix](https://github.com/KhronosGroup/glTF/blob/main/extensions/Prefixes.md) if necessary. However, glTF-Transform's implementation does not depend on any particular naming rules for classes or extensions.
+Custom extensions must define a [Extension](/modules/core/classes/Extension) subclass, optionally implementing read/write operations. By convention, the name of this class is an uppercase adaptation of the full extension name, e.g. `ACME_particle_emitter` → ParticleEmitter. Authors of custom extensions are encouraged to follow the Khronos [extension naming guidelines](https://github.com/KhronosGroup/glTF/tree/main/extensions#naming), and to [reserve a prefix](https://github.com/KhronosGroup/glTF/blob/main/extensions/Prefixes.md) if necessary. However, glTF Transform's implementation does not depend on any particular naming rules for classes or extensions.
 
 ```javascript
 class ParticleEmitter extends Extension {
@@ -188,7 +188,7 @@ class Emitter extends ExtensionProperty {
 }
 ```
 
-Internal methods `.get`, `.set`, `.listRefs`, etc. are defined by the [`property-graph`](https://www.npmjs.com/package/property-graph) package, with optional TypeScript support available. Custom extensions may customize their public APIs as needed. Exhaustive getters and setters are not required, as long as all references are internally routed through the `property-graph` APIs. This internal graph ensures that glTF-Transform operations respect extensions' use of resources like Textures and Accessors, and detect when resources are used or unused.
+Internal methods `.get`, `.set`, `.listRefs`, etc. are defined by the [`property-graph`](https://www.npmjs.com/package/property-graph) package, with optional TypeScript support available. Custom extensions may customize their public APIs as needed. Exhaustive getters and setters are not required, as long as all references are internally routed through the `property-graph` APIs. This internal graph ensures that glTF Transform operations respect extensions' use of resources like Textures and Accessors, and detect when resources are used or unused.
 
 Because we've defined `this.parentTypes = [PropertyType.NODE];` above, the operation will fail if the end-user attempts to attach the ExtensionProperty to another parent type, such as a Texture. Multiple parent types may be defined. For resources never referenced by other glTF properties, `parentTypes` may be left empty.
 

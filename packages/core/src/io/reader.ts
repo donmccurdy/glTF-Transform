@@ -121,7 +121,7 @@ export class GLTFReader {
 
 		/** Textures. */
 
-		// glTF-Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
+		// glTF Transform's "Texture" properties correspond 1:1 with glTF "Image" properties, and
 		// with image files. The glTF file may contain more one texture per image, where images
 		// are reused with different sampler properties.
 		const imageDefs = json.images || [];
@@ -134,7 +134,7 @@ export class GLTFReader {
 		context.textures = imageDefs.map((imageDef) => {
 			const texture = document.createTexture(imageDef.name);
 
-			// glTF Image corresponds 1:1 with glTF-Transform Texture. See `writer.ts`.
+			// glTF Image corresponds 1:1 with glTF Transform Texture. See `writer.ts`.
 			if (imageDef.extras) texture.setExtras(imageDef.extras);
 
 			if (imageDef.bufferView !== undefined) {

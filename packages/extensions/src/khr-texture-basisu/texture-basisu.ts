@@ -105,10 +105,10 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  *
  * Compression is not done automatically when adding the extension as shown above — you must
  * compress the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}. The
- * glTF-Transform CLI has functions to help with this, or any similar KTX2-capable
+ * glTF Transform CLI has functions to help with this, or any similar KTX2-capable
  * utility will work.
  *
- * When the `KHR_texture_basisu` extension is added to a file by glTF-Transform, the extension
+ * When the `KHR_texture_basisu` extension is added to a file by glTF Transform, the extension
  * should always be required. This tool does not support writing assets that "fall back" to optional
  * PNG or JPEG image data.
  *
