@@ -138,7 +138,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		const h = ceilPowerOfTwo(blockSize);
 		const padWidth = w - keyCount * blockSize;
 
-		const paletteTexturePixels: Record<TexturableProp, NdArray<TypedArray> | null> = {
+		const paletteTexturePixels: Record<TexturableProp, NdArray<Uint8Array> | null> = {
 			baseColor: null,
 			emissive: null,
 			metallicRoughness: null,

@@ -95,7 +95,7 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 			}
 
 			const srcImage = texture.getImage()!;
-			const srcPixels = (await getPixels(srcImage, texture.getMimeType())) as ndarray.NdArray<Uint8ClampedArray>;
+			const srcPixels = (await getPixels(srcImage, texture.getMimeType())) as ndarray.NdArray<Uint8Array>;
 			const dstPixels = ndarray(new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]);
 
 			logger.debug(`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`);
