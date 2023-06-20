@@ -146,7 +146,7 @@ function dedupAccessors(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${total} accessors.`);
+	logger.debug(`${NAME}: Merged ${duplicates.size} of ${total} accessors.`);
 
 	// Dissolve duplicate vertex attributes and indices.
 	meshes.forEach((mesh) => {
@@ -178,8 +178,6 @@ function dedupAccessors(document: Document): void {
 	}
 
 	Array.from(duplicates.keys()).forEach((accessor) => accessor.dispose());
-
-	logger.debug(`${NAME}: Complete.`);
 }
 
 function dedupMeshes(document: Document): void {
@@ -217,7 +215,7 @@ function dedupMeshes(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${numMeshes - uniqueMeshes.size} duplicates among ${numMeshes} meshes.`);
+	logger.debug(`${NAME}: Merged ${numMeshes - uniqueMeshes.size} of ${numMeshes} meshes.`);
 }
 
 function dedupImages(document: Document): void {
@@ -254,7 +252,7 @@ function dedupImages(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${root.listTextures().length} textures.`);
+	logger.debug(`${NAME}: Merged ${duplicates.size} of ${root.listTextures().length} textures.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
@@ -275,12 +273,13 @@ function dedupMaterials(document: Document): void {
 	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
 
-		// Check if any parent edge has the modifyChild attribute set to true in which case we do not want the material to be deduped
-		// TODO: handle TextureInfo or material extension animations / KHR_texture_transform animations. See https://github.com/donmccurdy/glTF-Transform/pull/990#discussion_r1229668998
-		const keep = document.getGraph()
+		// TODO(impl): Detect animation of TextureInfo or ExtensionProperty instances.
+		// See: https://github.com/donmccurdy/glTF-Transform/pull/990#discussion_r1229668998
+		const hasModifier = document
+			.getGraph()
 			.listParentEdges(a)
 			.some((ref) => ref.getAttributes().modifyChild === true);
-		if(keep) {
+		if (hasModifier) {
 			continue;
 		}
 
@@ -296,7 +295,7 @@ function dedupMaterials(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${materials.length} materials`);
+	logger.debug(`${NAME}: Merged ${duplicates.size} of ${materials.length} materials.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
@@ -328,7 +327,7 @@ function dedupSkins(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${skins.length} skins.`);
+	logger.debug(`${NAME}: Merged ${duplicates.size} of ${skins.length} skins.`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
