@@ -78,6 +78,25 @@ test('materials', (t) => {
 	t.falsy(matUnequal.isDisposed(), 'unequal = ✓');
 });
 
+test('materials - animation', (t) => {
+	const document = new Document();
+	const root = document.getRoot();
+
+	const matA = document.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
+	const matB = matA.clone();
+	const matC = matA.clone();
+
+	const edge = document.getGraph().listChildEdges(matC)[0];
+	edge.getAttributes().modifyChild = true; // monkeypatch, emulating KHR_animation_pointer.
+
+	dedup()(document);
+
+	t.is(root.listMaterials().length, 2, 'removes duplicate materials');
+	t.false(matA.isDisposed(), 'base = ✓');
+	t.true(matB.isDisposed(), 'cloned = ⨉');
+	t.false(matC.isDisposed(), 'animated = ✓');
+});
+
 test('meshes', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));

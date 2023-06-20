@@ -6,6 +6,7 @@ import {
 	Mesh,
 	Primitive,
 	PrimitiveTarget,
+	Property,
 	PropertyType,
 	Root,
 	Skin,
@@ -268,26 +269,20 @@ function dedupMaterials(document: Document): void {
 	const materials = root.listMaterials();
 	const duplicates = new Map<Material, Material>();
 	const skip = new Set(['name']);
+	const modifierCache = new Map<Material, boolean>();
 
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
 
-		// TODO(impl): Detect animation of TextureInfo or ExtensionProperty instances.
-		// See: https://github.com/donmccurdy/glTF-Transform/pull/990#discussion_r1229668998
-		const hasModifier = document
-			.getGraph()
-			.listParentEdges(a)
-			.some((ref) => ref.getAttributes().modifyChild === true);
-		if (hasModifier) {
-			continue;
-		}
-
 		if (duplicates.has(a)) continue;
+		if (hasModifier(a, modifierCache)) continue;
 
 		for (let j = i + 1; j < materials.length; j++) {
 			const b = materials[j];
+
 			if (duplicates.has(b)) continue;
+			if (hasModifier(b, modifierCache)) continue;
 
 			if (a.equals(b, skip)) {
 				duplicates.set(b, a);
@@ -359,4 +354,40 @@ function createPrimitiveKey(prim: Primitive | PrimitiveTarget, refs: Map<Accesso
 		}
 	}
 	return primKeyItems.join(',');
+}
+
+/**
+ * Detects dependencies modified by a parent reference, to conservatively prevent merging. When
+ * implementing extensions like KHR_animation_pointer, the 'modifyChild' attribute should be added
+ * to graph edges connecting the animation channel to the animated target property.
+ *
+ * NOTICE: Implementation is conservative, and could prevent merging two materials sharing the
+ * same animated "Clearcoat" ExtensionProperty. While that scenario is possible for an in-memory
+ * glTF Transform graph, valid glTF input files do not have that risk.
+ */
+function hasModifier(prop: Property, cache: Map<Property, boolean>): boolean {
+	if (cache.has(prop)) return cache.get(prop)!;
+
+	const graph = prop.getGraph();
+	const visitedNodes = new Set<Property>();
+	const edgeQueue = graph.listChildEdges(prop);
+
+	// Search dependency subtree for 'modifyChild' attribute.
+	while (edgeQueue.length > 0) {
+		const edge = edgeQueue.pop()!;
+		if (edge.getAttributes().modifyChild === true) {
+			cache.set(prop, true);
+			return true;
+		}
+
+		const child = edge.getChild();
+		if (visitedNodes.has(child)) continue;
+
+		for (const childEdge of graph.listChildEdges(child)) {
+			edgeQueue.push(childEdge);
+		}
+	}
+
+	cache.set(prop, false);
+	return false;
 }
