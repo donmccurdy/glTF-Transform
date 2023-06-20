@@ -38,7 +38,7 @@
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
-					<strong><a href="/">glTF-Transform</a></strong>
+					<strong><a href="/">glTF Transform</a></strong>
 					<a
 						class="header-badge"
 						target="_blank"
@@ -111,21 +111,10 @@
 				alt="Function symbol, where the argument and output are a box labeled 'glTF'."
 			/>
 			<p>
-				<span class="line"
-					>Made by <a href="https://twitter.com/donrmccurdy" target="_blank" rel="noopener">Don McCurdy</a
-					></span
-				>
-				<span class="divider">•</span>
-				<span class="line"
-					>Documented with <a href="https://github.com/donmccurdy/greendoc" target="_blank">greendoc</a></span
-				>
-				<span class="divider">•</span>
-				<span class="line"
-					>&copy; 2023 <a
-						href="https://github.com/donmccurdy/glTF-Transform/blob/master/LICENSE"
-						target="_blank">MIT License</a
-					></span
-				>
+				<i>
+					Project made by <a href="https://www.donmccurdy.com/" target="_blank" rel="noopener">Don McCurdy</a
+					>, website built with <a href="https://github.com/donmccurdy/greendoc" target="_blank">greendoc</a>
+				</i>
 			</p>
 		</div>
 	</div>

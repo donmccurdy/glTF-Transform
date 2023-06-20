@@ -1378,13 +1378,4 @@ details > summary {
 	.greendoc-generator img {
 		max-width: 60%;
 	}
-
-	.greendoc-generator .line {
-		display: block;
-		line-height: 2em;
-	}
-
-	.greendoc-generator .divider {
-		display: none;
-	}
 }
