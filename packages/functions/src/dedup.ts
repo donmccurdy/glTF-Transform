@@ -274,6 +274,16 @@ function dedupMaterials(document: Document): void {
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++) {
 		const a = materials[i];
+
+		// Check if any parent edge has the modifyChild attribute set to true in which case we do not want the material to be deduped
+		// TODO: handle TextureInfo or material extension animations / KHR_texture_transform animations. See https://github.com/donmccurdy/glTF-Transform/pull/990#discussion_r1229668998
+		const keep = document.getGraph()
+			.listParentEdges(a)
+			.some((ref) => ref.getAttributes().modifyChild === true);
+		if(keep) {
+			continue;
+		}
+
 		if (duplicates.has(a)) continue;
 
 		for (let j = i + 1; j < materials.length; j++) {
@@ -286,7 +296,7 @@ function dedupMaterials(document: Document): void {
 		}
 	}
 
-	logger.debug(`${NAME}: Found ${duplicates.size} duplicates among ${materials.length} materials.`);
+	logger.debug(`${NAME}: Merged ${duplicates.size} of ${materials.length} materials`);
 
 	Array.from(duplicates.entries()).forEach(([src, dst]) => {
 		src.listParents().forEach((property) => {
