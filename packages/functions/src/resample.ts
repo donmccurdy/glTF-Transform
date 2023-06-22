@@ -21,7 +21,7 @@ const EMPTY_ARRAY = new Float32Array(0);
 
 export interface ResampleOptions {
 	ready?: Promise<void>;
-	resample?: typeof resampleDebug;
+	resample?: unknown; // glTF-Transform/issues/996
 	tolerance?: number;
 }
 
@@ -61,7 +61,7 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const logger = document.getLogger();
 
 		const ready = options.ready;
-		const resample = options.resample;
+		const resample = options.resample as typeof resampleDebug;
 
 		await ready;
 
