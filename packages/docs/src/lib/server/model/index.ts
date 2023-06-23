@@ -1,4 +1,4 @@
-import { Encoder, GD, Parser } from '@greendoc/parse';
+import { Encoder, GD, Parser, createPrefixSort } from '@greendoc/parse';
 import { Project } from 'ts-morph';
 import he from 'he';
 
@@ -13,9 +13,9 @@ const project = new Project({
 		paths: {
 			'@gltf-transform/core': [corePath],
 			'@gltf-transform/extensions': [extensionsPath],
-			'@gltf-transform/functions': [functionsPath]
-		}
-	}
+			'@gltf-transform/functions': [functionsPath],
+		},
+	},
 });
 
 export const parser = new Parser(project)
@@ -26,15 +26,15 @@ export const parser = new Parser(project)
 	.setBaseURL('https://github.com/donmccurdy/glTF-Transform/tree/main')
 	.init();
 
-export const encoder = new Encoder();
+export const encoder = new Encoder(parser).setSort(createPrefixSort());
 
-export function getMetadata(item: GD.ApiClass | GD.ApiInterface | GD.ApiEnum | GD.ApiFunction): {
+export function getMetadata(item: GD.ApiItem): {
 	title: string;
 	snippet: string;
 } {
 	return {
 		title: item.name + ' | glTF Transform',
-		snippet: item.comment ? getSnippet(item.comment) : ''
+		snippet: item.comment ? getSnippet(item.comment) : '',
 	};
 }
 

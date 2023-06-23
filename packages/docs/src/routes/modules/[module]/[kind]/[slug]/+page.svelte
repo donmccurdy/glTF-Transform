@@ -4,6 +4,10 @@
 	export let data: PageData;
 </script>
 
+<section class="greendoc-panel" style="padding-bottom: 0;">
+	<h1>{data.export.name}</h1>
+</section>
+
 {#if data.export.kind === 'Class'}
 	<Class data={data.export} />
 {:else if data.export.kind === 'Interface'}

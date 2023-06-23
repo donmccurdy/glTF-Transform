@@ -1179,21 +1179,21 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@greendoc/parse@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@greendoc/parse/-/parse-0.2.0.tgz#2241084b454f709534432bc225bab4750c64d69c"
-  integrity sha512-9IXxvnz7P8L/mWBMTAxDlVJgBnwycHOrJEk+apZZYXybltMdile4N/0vZtWbU340M2/0UH5JLgP25rKtSU1jGg==
+"@greendoc/parse@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@greendoc/parse/-/parse-0.3.0.tgz#b0db4211e95529cbf758b36b1cbb60b3cb9baea1"
+  integrity sha512-VoxmcdGLjlyVReDgTxFjp8utd7g89MtNfxekA4AVgheaVwh8+11dPoN0bOPG/JvzVUbu6frprB+0+bJgGo9UhQ==
   dependencies:
     highlight.js "^11.8.0"
     marked "^4.2.3"
-    ts-morph "^18.0.0"
+    ts-morph "^19.0.0"
 
-"@greendoc/svelte@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@greendoc/svelte/-/svelte-0.2.0.tgz#cab96c05c5a7b0fb4eaeebe4ee6740681b698dc3"
-  integrity sha512-itmSu8u6jYGc9GBI3cIFQiEEZqvCk1YXBOfZQ78Scr3drgX2l/e1ra+CDaOg1BB5sx3B7vYMnT5HD/2p6iCitQ==
+"@greendoc/svelte@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@greendoc/svelte/-/svelte-0.3.0.tgz#31c1c07201ec98aa6bc2f40f631053516f227126"
+  integrity sha512-AMUZQV6uF/HF4FKCM84kptWkaegAwT6Ks6MpbpRfV78tNH28x6xlovMEeyirbwgcvrqVkYG3eU4XqlNFmh5VAg==
   dependencies:
-    "@greendoc/parse" "^0.2.0"
+    "@greendoc/parse" "^0.3.0"
 
 "@humanwhocodes/config-array@^0.11.10":
   version "0.11.10"
@@ -1779,10 +1779,10 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
-"@ts-morph/common@~0.19.0":
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.19.0.tgz#927fcd81d1bbc09c89c4a310a84577fb55f3694e"
-  integrity sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==
+"@ts-morph/common@~0.20.0":
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.20.0.tgz#3f161996b085ba4519731e4d24c35f6cba5b80af"
+  integrity sha512-7uKjByfbPpwuzkstL3L5MQyuXPSKdoNG93Fmi2JoDcTf3pEP731JdRFAduRVkOs8oqxPsXKA+ScrWkdQ8t/I+Q==
   dependencies:
     fast-glob "^3.2.12"
     minimatch "^7.4.3"
@@ -7447,10 +7447,10 @@ promzard@^1.0.0:
   dependencies:
     read "^2.0.0"
 
-property-graph@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-1.2.0.tgz#332b59bc9e7e265879e252a9374d778ecea468ba"
-  integrity sha512-dbJCp1F/uG0G9ZhkJ0GKDoz9MOAtJHvtWVK+9UNOJewkXZVebuaPAAxh27ROJDHGLdLw+DkCGNBk9Le5DRTFJQ==
+property-graph@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-1.3.1.tgz#25fb2c8040ba9b15f04cda90a443f3f844505293"
+  integrity sha512-gei3N/bHWJdCItJ4blnlGWd9iauEZI+JZYj/A0D177XSI01+QhiJGAVscYBhe3Yywow3A2QJzVtsO2P+UgrRRQ==
 
 protocols@^2.0.0, protocols@^2.0.1:
   version "2.0.1"
@@ -8715,12 +8715,12 @@ triple-beam@^1.3.0:
   resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.3.0.tgz#a595214c7298db8339eeeee083e4d10bd8cb8dd9"
   integrity sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==
 
-ts-morph@^18.0.0:
-  version "18.0.0"
-  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-18.0.0.tgz#b9e7a898ea115064585a8a775d86da6edc9c5b4e"
-  integrity sha512-Kg5u0mk19PIIe4islUI/HWRvm9bC1lHejK4S0oh1zaZ77TMZAEmQC0sHQYiu2RgCQFZKXz1fMVi/7nOOeirznA==
+ts-morph@^19.0.0:
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-19.0.0.tgz#43e95fb0156c3fe3c77c814ac26b7d0be2f93169"
+  integrity sha512-D6qcpiJdn46tUqV45vr5UGM2dnIEuTGNxVhg0sk5NX11orcouwj6i1bMqZIz2mZTZB1Hcgy7C3oEVhAT+f6mbQ==
   dependencies:
-    "@ts-morph/common" "~0.19.0"
+    "@ts-morph/common" "~0.20.0"
     code-block-writer "^12.0.0"
 
 ts-node@10.9.1:
