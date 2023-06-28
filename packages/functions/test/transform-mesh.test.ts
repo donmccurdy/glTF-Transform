@@ -1,9 +1,7 @@
 import test from 'ava';
-import { bbox, Document, Logger, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
-import { mat4 } from '@gltf-transform/test-utils';
+import { bbox, Document, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
+import { logger, mat4 } from '@gltf-transform/test-utils';
 import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
-
-const logger = new Logger(Logger.Verbosity.SILENT);
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);

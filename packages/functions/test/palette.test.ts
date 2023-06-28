@@ -1,13 +1,12 @@
 import test from 'ava';
 import { getPixels } from 'ndarray-pixels';
-import { Document, GLTF, Logger, Material } from '@gltf-transform/core';
+import { Document, GLTF, Material } from '@gltf-transform/core';
 import { KHRMaterialsSpecular } from '@gltf-transform/extensions';
 import { palette } from '@gltf-transform/functions';
-
-const LOGGER = new Logger(Logger.Verbosity.SILENT);
+import { logger } from '@gltf-transform/test-utils';
 
 test('basic', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const [materialA, materialB, materialC, materialD, materialE] = createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
@@ -35,7 +34,7 @@ test('basic', async (t) => {
 });
 
 test('options.blockSize', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
@@ -59,7 +58,7 @@ test('options.blockSize', async (t) => {
 });
 
 test('options.min', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
@@ -80,7 +79,7 @@ test('options.min', async (t) => {
 });
 
 test('preserve extensions', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const [material] = createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
@@ -108,7 +107,7 @@ test('preserve extensions', async (t) => {
 });
 
 test('pixel values', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	createMaterials(
 		document,
 		['A', 'B', 'C'],

@@ -1,14 +1,15 @@
 import path from 'path';
 import test from 'ava';
-import { Logger, NodeIO } from '@gltf-transform/core';
+import { NodeIO } from '@gltf-transform/core';
 import { partition } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 test('basic', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
-	doc.setLogger(new Logger(Logger.Verbosity.SILENT));
+	doc.setLogger(logger);
 	t.is(doc.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 
 	partition({ meshes: [] })(doc);

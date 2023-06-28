@@ -1,10 +1,10 @@
 import test from 'ava';
-import { Accessor, Document, Logger } from '@gltf-transform/core';
-import { quat } from '@gltf-transform/test-utils';
+import { Accessor, Document } from '@gltf-transform/core';
+import { logger, quat } from '@gltf-transform/test-utils';
 import { resample } from '@gltf-transform/functions';
 
 test('all', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
 	const outArray = new Uint8Array([1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 1, 4, 1, 5]);
@@ -41,7 +41,7 @@ test('all', async (t) => {
 });
 
 test('rotation', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
 	const outArray = new Float32Array([

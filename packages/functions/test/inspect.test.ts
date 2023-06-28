@@ -1,7 +1,8 @@
 import path, { dirname } from 'path';
 import test from 'ava';
-import { Logger, NodeIO } from '@gltf-transform/core';
+import { NodeIO } from '@gltf-transform/core';
 import { inspect } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -9,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 test('basic', async (t) => {
 	const io = new NodeIO();
 	const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
-	doc.setLogger(new Logger(Logger.Verbosity.SILENT));
+	doc.setLogger(logger);
 
 	doc.createAnimation('TestAnim');
 	doc.createTexture('TestTex').setImage(new Uint8Array(10)).setMimeType('image/fake');

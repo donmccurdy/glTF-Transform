@@ -1,6 +1,7 @@
 import test from 'ava';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { unpartition } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 test('basic', async (t) => {
 	const document = new Document();
@@ -12,7 +13,7 @@ test('basic', async (t) => {
 	const accessorB = document.createAccessor().setBuffer(bufferB);
 	const accessorC = document.createAccessor().setBuffer(bufferC);
 
-	document.setLogger(new Logger(Logger.Verbosity.SILENT));
+	document.setLogger(logger);
 
 	await document.transform(unpartition());
 

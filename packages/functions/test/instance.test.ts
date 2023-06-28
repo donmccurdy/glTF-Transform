@@ -1,10 +1,11 @@
 import test from 'ava';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { instance } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 test('translation', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
 	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
@@ -37,7 +38,7 @@ test('translation', async (t) => {
 });
 
 test('rotation', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
 	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
@@ -71,7 +72,7 @@ test('rotation', async (t) => {
 });
 
 test('scale', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
 	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
@@ -104,7 +105,7 @@ test('scale', async (t) => {
 });
 
 test('skip distinct meshes', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 	const root = doc.getRoot();
 	const buffer = doc.createBuffer();
 	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
@@ -128,7 +129,7 @@ test('skip distinct meshes', async (t) => {
 });
 
 test('idempotence', async (t) => {
-	const doc = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const doc = new Document().setLogger(logger);
 
 	await doc.transform(instance());
 

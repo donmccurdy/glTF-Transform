@@ -1,6 +1,7 @@
 import test from 'ava';
-import { Accessor, Document, GLTF, Logger, Primitive } from '@gltf-transform/core';
+import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
 import { reorder } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 import { MeshoptEncoder } from 'meshoptimizer';
 
 const CUBE_INDICES = new Uint32Array([4, 2, 5, 3, 1, 4, 0, 1, 3, 1, 2, 4]);
@@ -18,8 +19,6 @@ for (let i = 0; i < CUBE_POSITIONS.length; i++) {
 	CUBE_POSITIONS_EXPECTED[REMAP[i] * 3 + 1] = CUBE_POSITIONS[i * 3 + 1];
 	CUBE_POSITIONS_EXPECTED[REMAP[i] * 3 + 2] = CUBE_POSITIONS[i * 3 + 2];
 }
-
-const logger = new Logger(Logger.Verbosity.SILENT);
 
 test('no indices', async (t) => {
 	// Without indices, don't reorder. Need a lossy weld first.
