@@ -37,16 +37,19 @@ test('listTextureInfoByMaterial', (t) => {
 	const textureC = document.createTexture();
 	const volumeExtension = document.createExtension(KHRMaterialsVolume);
 	const volume = volumeExtension.createVolume().setThicknessTexture(textureC);
-	const material = document
+	const materialA = document
 		.createMaterial()
 		.setBaseColorTexture(textureA)
 		.setNormalTexture(textureB)
 		.setExtension('KHR_materials_volume', volume);
+	const materialB = document.createMaterial().setBaseColorTexture(textureA);
 
-	const textureInfo = new Set(listTextureInfoByMaterial(material));
-
+	let textureInfo = new Set(listTextureInfoByMaterial(materialA));
 	t.is(textureInfo.size, 3, 'finds TextureInfo x 3');
-	t.true(textureInfo.has(material.getBaseColorTextureInfo()), 'finds material.baseColorTextureInfo');
-	t.true(textureInfo.has(material.getNormalTextureInfo()), 'finds material.normalTextureInfo');
+	t.true(textureInfo.has(materialA.getBaseColorTextureInfo()), 'finds material.baseColorTextureInfo');
+	t.true(textureInfo.has(materialA.getNormalTextureInfo()), 'finds material.normalTextureInfo');
 	t.true(textureInfo.has(volume.getThicknessTextureInfo()), 'finds material.volume.thicknessTextureInfo');
+
+	textureInfo = new Set(listTextureInfoByMaterial(materialB));
+	t.is(textureInfo.size, 1, 'finds TextureInfo x 1');
 });
