@@ -57,14 +57,21 @@ export function listTextureInfoByMaterial(material: Material): TextureInfo[] {
 	const results = new Set<TextureInfo>();
 
 	function traverse(prop: Material | ExtensionProperty) {
-		for (const child of graph.listChildren(prop)) {
+		const textureInfoNames = new Set<string>();
+
+		for (const edge of graph.listChildEdges(prop)) {
+			if (edge.getChild() instanceof Texture) {
+				textureInfoNames.add(edge.getName() + 'Info');
+			}
+		}
+
+		for (const edge of graph.listChildEdges(prop)) {
+			const child = edge.getChild();
 			if (visited.has(child)) continue;
 			visited.add(child);
 
-			if (child instanceof Texture) {
-				for (const textureInfo of listTextureInfo(child)) {
-					results.add(textureInfo);
-				}
+			if (child instanceof TextureInfo && textureInfoNames.has(edge.getName())) {
+				results.add(child);
 			} else if (child instanceof ExtensionProperty) {
 				traverse(child);
 			}
