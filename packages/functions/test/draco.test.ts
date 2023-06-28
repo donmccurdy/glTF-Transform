@@ -1,9 +1,10 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { draco } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 test('basic', async (t) => {
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	await document.transform(draco({ method: 'edgebreaker' }));
 	await document.transform(draco({ method: 'sequential' }));
 	const dracoExtension = document.getRoot().listExtensionsUsed()[0];

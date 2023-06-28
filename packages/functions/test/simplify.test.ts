@@ -1,8 +1,9 @@
 import test from 'ava';
 import path, { dirname } from 'path';
-import { bbox, getBounds, Document, Logger, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
+import { bbox, getBounds, Document, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { weld, unweld, simplify } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'url';
@@ -11,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function createIO(): Promise<NodeIO> {
 	const io = new NodeIO()
-		.setLogger(new Logger(Logger.Verbosity.SILENT))
+		.setLogger(logger)
 		.registerExtensions([KHRDracoMeshCompression, KHRMeshQuantization])
 		.registerDependencies({
 			'draco3d.decoder': await draco3d.createDecoderModule(),

@@ -1,16 +1,15 @@
 import test from 'ava';
 import fs from 'fs/promises';
 import path, { dirname } from 'path';
-import { Document, Logger, Primitive } from '@gltf-transform/core';
+import { Document, Primitive } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 import { fileURLToPath } from 'url';
-
-const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('tolerance=0', async (t) => {
-	const doc = new Document().setLogger(LOGGER);
+	const doc = new Document().setLogger(logger);
 	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
 	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
 	const indices = doc.createAccessor().setArray(new Uint32Array([3, 4, 5, 0, 1, 2]));
@@ -31,7 +30,7 @@ test('tolerance=0', async (t) => {
 });
 
 test('tolerance>0', async (t) => {
-	const doc = new Document().setLogger(LOGGER);
+	const doc = new Document().setLogger(logger);
 	// prettier-ignore
 	const positionArray = new Float32Array([
 		0, 0, 0,
@@ -78,7 +77,7 @@ test('tolerance>0', async (t) => {
 });
 
 test('attributes', async (t) => {
-	const doc = new Document().setLogger(LOGGER);
+	const doc = new Document().setLogger(logger);
 	// prettier-ignore
 	const positionArray = new Uint8Array([
 		0, 0, 0, // A: All A's match, weld 3
@@ -179,7 +178,7 @@ test('attributes', async (t) => {
 });
 
 test('u16 vs u32', async (t) => {
-	const doc = new Document().setLogger(LOGGER);
+	const doc = new Document().setLogger(logger);
 	const smArray = new Float32Array(65534 * 3);
 	const lgArray = new Float32Array(65535 * 3);
 	const smPosition = doc.createAccessor().setType('VEC3').setArray(smArray);
@@ -203,7 +202,7 @@ test('modes', async (t) => {
 
 	for (let i = 0; i < dataset.length; i++) {
 		const primDef = dataset[i];
-		const document = new Document().setLogger(LOGGER);
+		const document = new Document().setLogger(logger);
 		const position = document
 			.createAccessor()
 			.setArray(new Float32Array(primDef.attributes.POSITION))
@@ -222,7 +221,7 @@ test('modes', async (t) => {
 });
 
 test('targets', async (t) => {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	// prettier-ignore
 	const positionArray = new Float32Array([
 		0, 0, 0,
@@ -272,7 +271,7 @@ test('targets', async (t) => {
 });
 
 test('degenerate', async (t) => {
-	const doc = new Document().setLogger(LOGGER);
+	const doc = new Document().setLogger(logger);
 	// prettier-ignore
 	const positionArray = new Float32Array([
 		0, 0, 0,

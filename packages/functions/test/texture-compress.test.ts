@@ -1,6 +1,7 @@
 import test from 'ava';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { textureCompress } from '@gltf-transform/functions';
+import { logger } from '@gltf-transform/test-utils';
 
 const ORIGINAL_JPEG = new Uint8Array([1, 2, 3, 4]);
 const ORIGINAL_PNG = new Uint8Array([5, 6, 7, 8]);
@@ -12,11 +13,9 @@ const EXPECTED_PNG = new Uint8Array([103, 104]);
 const EXPECTED_WEBP = new Uint8Array([105]);
 const EXPECTED_AVIF = new Uint8Array([106, 107, 108]); // larger than original; skipped.
 
-const LOGGER = new Logger(Logger.Verbosity.SILENT);
-
 test('unknown format', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const texture = document.createTexture('Other').setImage(ORIGINAL_OTHER).setMimeType('image/other');
 	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(calls, [], '0 conversions');
@@ -26,7 +25,7 @@ test('unknown format', async (t) => {
 
 test('incompatible format', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const texture = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png');
 	document.createMaterial().setBaseColorTexture(texture).setAlphaMode('BLEND');
 
@@ -43,7 +42,7 @@ test('incompatible format', async (t) => {
 
 test('size increase', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const texture = document.createTexture('AVIF').setImage(ORIGINAL_AVIF).setMimeType('image/avif');
 	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i, targetFormat: 'avif' }));
 	t.deepEqual(calls, [['toFormat', ['avif', { quality: null, effort: null, lossless: false }]]], '1 call');
@@ -52,7 +51,7 @@ test('size increase', async (t) => {
 
 test('original formats', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const textureJPEG = document.createTexture('JPEG').setImage(ORIGINAL_JPEG).setMimeType('image/jpeg');
 	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png');
 
@@ -73,7 +72,7 @@ test('original formats', async (t) => {
 
 test('excluded slots', async (t) => {
 	const { encoder } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const textureJPEG = document.createTexture('JPEG').setImage(ORIGINAL_JPEG).setMimeType('image/jpeg');
 	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png');
 	document.createMaterial().setBaseColorTexture(textureJPEG).setNormalTexture(texturePNG);
@@ -93,7 +92,7 @@ test('excluded slots', async (t) => {
 
 test('jpeg', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const textureJPEG = document
 		.createTexture('JPEG')
 		.setImage(ORIGINAL_JPEG)
@@ -123,7 +122,7 @@ test('jpeg', async (t) => {
 
 test('png', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const textureJPEG = document
 		.createTexture('JPEG')
 		.setImage(ORIGINAL_JPEG)
@@ -153,7 +152,7 @@ test('png', async (t) => {
 
 test('webp', async (t) => {
 	const { encoder, calls } = createMockEncoder();
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(logger);
 	const textureJPEG = document
 		.createTexture('JPEG')
 		.setImage(ORIGINAL_JPEG)

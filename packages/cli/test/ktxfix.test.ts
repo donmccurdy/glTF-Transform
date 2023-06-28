@@ -2,14 +2,15 @@ import fs from 'fs';
 import path, { dirname } from 'path';
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';
 import test from 'ava';
-import { Document, Logger, Texture } from '@gltf-transform/core';
+import { Document, Texture } from '@gltf-transform/core';
 import { ktxfix } from '@gltf-transform/cli';
+import { logger } from '@gltf-transform/test-utils';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('repair', async (t) => {
-	const document = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const document = new Document().setLogger(logger);
 	const material = document.createMaterial();
 	const texture = document
 		.createTexture()

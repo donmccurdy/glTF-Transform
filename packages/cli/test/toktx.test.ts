@@ -1,8 +1,9 @@
 import fs from 'fs/promises';
 import test from 'ava';
-import { Document, Logger, TextureChannel, vec2 } from '@gltf-transform/core';
+import { Document, TextureChannel, vec2 } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '@gltf-transform/cli';
+import { logger } from '@gltf-transform/test-utils';
 import type { ChildProcess } from 'child_process';
 
 const { R, G } = TextureChannel;
@@ -38,7 +39,7 @@ test('compress and resize', async (t) => {
 });
 
 async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {
-	const document = new Document().setLogger(new Logger(Logger.Verbosity.SILENT));
+	const document = new Document().setLogger(logger);
 	const tex = document.createTexture().setImage(new Uint8Array(10)).setMimeType('image/png');
 	tex.getSize = (): vec2 => size;
 

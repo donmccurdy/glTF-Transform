@@ -1,8 +1,7 @@
 import test from 'ava';
-import { Accessor, Document, Logger, PropertyType } from '@gltf-transform/core';
+import { Accessor, Document, PropertyType } from '@gltf-transform/core';
 import { prune } from '@gltf-transform/functions';
-
-const logger = new Logger(Logger.Verbosity.SILENT);
+import { logger } from '@gltf-transform/test-utils';
 
 test('properties', async (t) => {
 	const doc = new Document().setLogger(logger);

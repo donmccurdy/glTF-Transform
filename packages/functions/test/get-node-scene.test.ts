@@ -1,8 +1,7 @@
 import test from 'ava';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { getNodeScene } from '@gltf-transform/functions';
-
-const logger = new Logger(Logger.Verbosity.SILENT);
+import { logger } from '@gltf-transform/test-utils';
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
