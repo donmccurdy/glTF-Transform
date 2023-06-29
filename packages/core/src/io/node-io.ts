@@ -113,7 +113,9 @@ export class NodeIO extends PlatformIO {
 		if (HTTPUtils.isAbsoluteURL(base) || HTTPUtils.isAbsoluteURL(path)) {
 			return HTTPUtils.resolve(base, path);
 		}
-		return this._path.resolve(base, path);
+		// https://github.com/KhronosGroup/glTF/issues/1449
+		// https://stackoverflow.com/a/27278490/1314762
+		return this._path.resolve(base, decodeURIComponent(path));
 	}
 
 	protected dirname(uri: string): string {
