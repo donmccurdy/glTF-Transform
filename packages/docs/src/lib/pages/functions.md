@@ -9,7 +9,7 @@ Common operations on glTF data are implemented by the `@gltf-transform/functions
 
 Installation:
 
-```shell
+```bash
 npm install --save @gltf-transform/functions
 ```
 

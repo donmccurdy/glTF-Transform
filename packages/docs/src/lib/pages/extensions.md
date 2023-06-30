@@ -55,7 +55,7 @@ as prescribed by the extension itself.
 
 To use extensions, first install the `@gltf-transform/extensions` package:
 
-```shell
+```bash
 npm install --save @gltf-transform/extensions
 ```
 

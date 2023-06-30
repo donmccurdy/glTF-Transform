@@ -12,14 +12,14 @@ when dealing with glTF schema objects.
 
 After cloning the repository, run:
 
-```shell
+```bash
 yarn install
 ```
 
 The project relies on [Yarn workspaces](https://classic.yarnpkg.com/docs/workspaces/) and will not build with npm. To build and test all code,
 run:
 
-```shell
+```bash
 # Build on MacOS or Linux
 yarn run dist
 
@@ -32,7 +32,7 @@ yarn test
 
 To run an arbitrary command across all packages:
 
-```shell
+```bash
 lerna exec -- <command>
 ```
 
@@ -88,13 +88,13 @@ Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 
 All packages are published together. To create a standard release:
 
-```shell
+```bash
 lerna publish [ patch | minor | major ] --force-publish "*"
 ```
 
 To create an alpha release:
 
-```shell
+```bash
 lerna publish prerelease --dist-tag next --force-publish "*"
 ```
 
