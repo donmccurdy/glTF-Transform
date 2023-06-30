@@ -20,7 +20,13 @@ The project relies on [Yarn workspaces](https://classic.yarnpkg.com/docs/workspa
 run:
 
 ```shell
+# Build on MacOS or Linux
 yarn run dist
+
+# Build on Windows, see https://github.com/donmccurdy/glTF-Transform/pull/959
+yarn run dist --ignore "@gltf-transform/docs"
+
+# Test
 yarn test
 ```
 
