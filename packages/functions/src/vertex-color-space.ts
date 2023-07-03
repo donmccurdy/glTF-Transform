@@ -25,7 +25,7 @@ export const colorspace = vertexColorSpace;
  * import { vertexColorSpace } from '@gltf-transform/functions';
  *
  * await document.transform(
- *   vertexColorspace({ inputColorSpace: 'srgb' })
+ *   vertexColorSpace({ inputColorSpace: 'srgb' })
  * );
  * ```
  *
