@@ -5446,6 +5446,11 @@ keyframe-resample@^0.0.14:
   resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.14.tgz#0bd6af293d08ab5f149ba4766818cbb957378b45"
   integrity sha512-6rUeRnOlA7QvCgb4+4akR74kgVEGobcEFMCbkDmPMykPeQ5b81a1/03iIO+vNrYudRH0rYMMPmIB8mPxdxSY9w==
 
+keyframe-resample@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.15.tgz#2cc5e2e3d87dd368ca0f58d64f7caf5c97a247d9"
+  integrity sha512-Kt+Nx01nJl+0FEG5/sexs+KvupIoKBOxGKv85RRdvqF1IbvMKGBC3xrZ9NMNOVi5RoX9SRgbMDDJkRtlovzDpg==
+
 kind-of@^6.0.2, kind-of@^6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
