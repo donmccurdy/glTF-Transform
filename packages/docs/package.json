@@ -19,7 +19,7 @@
 		"he": "^1.2.0",
 		"highlight.js": "^11.8.0",
 		"mdsvex": "^0.11.0",
-		"svelte": "^3.54.0",
+		"svelte": "^4.0.0",
 		"svelte-check": "^3.0.1",
 		"ts-morph": "^19.0.0",
 		"tslib": "^2.4.1",
