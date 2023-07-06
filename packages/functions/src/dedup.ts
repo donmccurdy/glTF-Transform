@@ -370,7 +370,7 @@ function hasModifier(prop: Property, cache: Map<Property, boolean>): boolean {
 
 	const graph = prop.getGraph();
 	const visitedNodes = new Set<Property>();
-	const edgeQueue = graph.listChildEdges(prop);
+	const edgeQueue = graph.listParentEdges(prop);
 
 	// Search dependency subtree for 'modifyChild' attribute.
 	while (edgeQueue.length > 0) {
