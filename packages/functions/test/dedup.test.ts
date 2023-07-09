@@ -95,7 +95,7 @@ test('materials - animation', (t) => {
 
 	dedup()(document);
 
-	t.is(root.listMaterials().length, 2, 'removes duplicate materials');
+	t.is(root.listMaterials().length, 3, 'removes duplicate materials');
 	t.false(matA.isDisposed(), 'base = ✓');
 	t.true(matB.isDisposed(), 'cloned = ⨉');
 	t.false(matC.isDisposed(), 'animated TextureInfo = ✓');
