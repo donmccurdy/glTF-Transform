@@ -85,16 +85,21 @@ test('materials - animation', (t) => {
 	const matA = document.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
 	const matB = matA.clone();
 	const matC = matA.clone();
+	const matD = matA.clone();
 
-	const edge = document.getGraph().listChildEdges(matC)[0];
-	edge.getAttributes().modifyChild = true; // monkeypatch, emulating KHR_animation_pointer.
+	const edgeC = document.getGraph().listChildEdges(matC)[0];
+	edgeC.getAttributes().modifyChild = true; // monkeypatch, emulating KHR_animation_pointer.
+
+	const edgeD = document.getGraph().listParentEdges(matD)[0];
+	edgeD.getAttributes().modifyChild = true; // monkeypatch, emulating KHR_animation_pointer.
 
 	dedup()(document);
 
 	t.is(root.listMaterials().length, 2, 'removes duplicate materials');
 	t.false(matA.isDisposed(), 'base = ✓');
 	t.true(matB.isDisposed(), 'cloned = ⨉');
-	t.false(matC.isDisposed(), 'animated = ✓');
+	t.false(matC.isDisposed(), 'animated TextureInfo = ✓');
+	t.false(matD.isDisposed(), 'animated Material = ✓');
 });
 
 test('meshes', async (t) => {
