@@ -269,6 +269,10 @@ commands or using the scripting API.
 		validator: program.BOOLEAN,
 		default: true,
 	})
+	.option('--weld <bool>', 'Index geometry and merge similar vertices. Often required when simplifying geometry.', {
+		validator: program.BOOLEAN,
+		default: true,
+	})
 	.action(async ({ args, options, logger }) => {
 		const opts = options as {
 			instance: boolean;
@@ -282,6 +286,7 @@ commands or using the scripting API.
 			textureSize: number;
 			flatten: boolean;
 			join: boolean;
+			weld: boolean;
 		};
 
 		// Baseline transforms.
@@ -292,14 +297,12 @@ commands or using the scripting API.
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(dequantize(), join());
 
-		// Simplification and welding.
+		if (opts.weld) {
+			transforms.push(weld({ tolerance: opts.simplify ? opts.simplifyError / 2 : WELD_DEFAULTS.tolerance }));
+		}
+
 		if (opts.simplify) {
-			transforms.push(
-				weld({ tolerance: opts.simplifyError / 2 }),
-				simplify({ simplifier: MeshoptSimplifier, error: opts.simplifyError })
-			);
-		} else {
-			transforms.push(weld());
+			transforms.push(simplify({ simplifier: MeshoptSimplifier, error: opts.simplifyError }));
 		}
 
 		transforms.push(
@@ -1048,7 +1051,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--pattern <pattern>', 'Pattern (regex) to match textures, by name or URI.', {
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
 		validator: program.STRING,
 	})
 	.option('--filter', 'Resampling filter', {
