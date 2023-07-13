@@ -1,6 +1,37 @@
 import test from 'ava';
-import { Document } from '@gltf-transform/core';
+import { Document, Property } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
+
+const toName = (p: Property) => p.getName();
+
+test('parent', (t) => {
+	const document = new Document();
+	const sceneA = document.createScene('SceneA');
+	const sceneB = document.createScene('SceneB');
+	const nodeA = document.createNode('NodeA');
+	const nodeB = document.createNode('NodeB');
+
+	// 1. adding node as child of node must de-parent from N scenes [and ≤1 node, tested in node.test.ts]
+	// 2. adding node as child of scene must de-parent from ≤1 node [but not scenes]
+
+	sceneA.addChild(nodeA);
+	sceneB.addChild(nodeA);
+
+	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], '');
+	t.deepEqual(sceneB.listChildren().map(toName), ['NodeA'], '');
+
+	nodeB.addChild(nodeA);
+
+	t.deepEqual(sceneA.listChildren().map(toName), [], '');
+	t.deepEqual(sceneB.listChildren().map(toName), [], '');
+	t.deepEqual(nodeB.listChildren().map(toName), ['NodeA'], '');
+
+	sceneA.addChild(nodeA);
+
+	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], '');
+	t.deepEqual(sceneB.listChildren().map(toName), [], '');
+	t.deepEqual(nodeB.listChildren().map(toName), [], '');
+});
 
 test('copy', (t) => {
 	const document = new Document();
