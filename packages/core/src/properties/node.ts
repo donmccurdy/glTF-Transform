@@ -206,11 +206,9 @@ export class Node extends ExtensibleProperty<INode> {
 		// Remove existing parents.
 		if (child._parentNode) child._parentNode.removeChild(child);
 		if (child._parentScenes.size) {
-			const prevSize = child._parentScenes.size;
 			for (const scene of child._parentScenes) {
 				scene.removeChild(child);
 			}
-			console.log(`parentScenes: ${prevSize} -> ${child._parentScenes.size}`);
 		}
 
 		// Edge in graph.
