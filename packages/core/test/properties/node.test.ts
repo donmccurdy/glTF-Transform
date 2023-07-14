@@ -8,6 +8,9 @@ test('parent', (t) => {
 	const b = document.createNode('B');
 	const c = document.createNode('C');
 
+	// 1. adding node as child of node must de-parent from ≤1 node [and N scenes, tested in scene.test.ts]
+	// 2. adding node as child of scene must de-parent from ≤1 node [also tested in scene.test.ts]
+
 	a.addChild(c);
 	b.addChild(c);
 

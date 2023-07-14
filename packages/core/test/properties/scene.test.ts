@@ -17,20 +17,20 @@ test('parent', (t) => {
 	sceneA.addChild(nodeA);
 	sceneB.addChild(nodeA);
 
-	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], '');
-	t.deepEqual(sceneB.listChildren().map(toName), ['NodeA'], '');
+	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], 'NodeA ∈ SceneA');
+	t.deepEqual(sceneB.listChildren().map(toName), ['NodeA'], 'NodeA ∈ SceneB');
 
 	nodeB.addChild(nodeA);
 
-	t.deepEqual(sceneA.listChildren().map(toName), [], '');
-	t.deepEqual(sceneB.listChildren().map(toName), [], '');
-	t.deepEqual(nodeB.listChildren().map(toName), ['NodeA'], '');
+	t.deepEqual(sceneA.listChildren().map(toName), [], 'SceneA = ∅');
+	t.deepEqual(sceneB.listChildren().map(toName), [], 'SceneB = ∅');
+	t.deepEqual(nodeB.listChildren().map(toName), ['NodeA'], 'NodeA ∈ NodeB');
 
 	sceneA.addChild(nodeA);
 
-	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], '');
-	t.deepEqual(sceneB.listChildren().map(toName), [], '');
-	t.deepEqual(nodeB.listChildren().map(toName), [], '');
+	t.deepEqual(sceneA.listChildren().map(toName), ['NodeA'], 'NodeA ∈ SceneA');
+	t.deepEqual(sceneB.listChildren().map(toName), [], 'SceneB = ∅');
+	t.deepEqual(nodeB.listChildren().map(toName), [], 'NodeB = ∅');
 });
 
 test('copy', (t) => {
