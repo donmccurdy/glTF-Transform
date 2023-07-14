@@ -1,3 +1,4 @@
+import { $attributes } from 'property-graph';
 import { Nullable, PropertyType } from '../constants.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Node } from './node.js';
@@ -39,9 +40,35 @@ export class Scene extends ExtensibleProperty<IScene> {
 		return super.copy(other, resolve);
 	}
 
-	/** Adds a {@link Node} to the Scene. */
+	/**
+	 * Adds a {@link Node} to the Scene.
+	 *
+	 * Requirements:
+	 *
+	 * 1. Nodes MAY be root children of multiple {@link Scene Scenes}
+	 * 2. Nodes MUST NOT be children of >1 Node
+	 * 3. Nodes MUST NOT be children of both Nodes and {@link Scene Scenes}
+	 *
+	 * The `addChild` method enforces these restrictions automatically, and will
+	 * remove the new child from previous parents where needed. This behavior
+	 * may change in future major releases of the library.
+	 *
+	 * @privateRemarks Requires non-graph state.
+	 */
 	public addChild(node: Node): this {
-		return this.addRef('children', node);
+		// Remove existing parent.
+		if (node._parentNode) node._parentNode.removeChild(node);
+
+		// Edge in graph.
+		this.addRef('children', node);
+
+		// Set new parent.
+		// TODO(cleanup): Avoid reaching into $attributes.
+		node._parentScenes.add(this);
+		const childrenRefs = this[$attributes]['children'];
+		const ref = childrenRefs[childrenRefs.length - 1];
+		ref.addEventListener('dispose', () => node._parentScenes.delete(this));
+		return this;
 	}
 
 	/** Removes a {@link Node} from the Scene. */
