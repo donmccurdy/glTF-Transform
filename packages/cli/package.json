@@ -42,7 +42,7 @@
 		"gltf-validator": "^2.0.0-dev.3.9",
 		"inquirer": "^9.1.4",
 		"keyframe-resample": "^0.0.15",
-		"ktx-parse": "^0.5.0",
+		"ktx-parse": "^0.6.0",
 		"language-tags": "^1.0.8",
 		"listr2": "^5.0.7",
 		"meshoptimizer": "^0.19.0",
