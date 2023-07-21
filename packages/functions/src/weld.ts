@@ -336,7 +336,8 @@ function getAttributeTolerance(semantic: string, attribute: Accessor, tolerance:
 	_a.length = _b.length = 0;
 	attribute.getMinNormalized(_a);
 	attribute.getMaxNormalized(_b);
-	const range = Math.max(..._b) - Math.min(..._a) || 1;
+	const diff = _b.map((bi, i) => bi - _a[i]);
+	const range = Math.max(...diff);
 	return tolerance * range;
 }
 
