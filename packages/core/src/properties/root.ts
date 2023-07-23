@@ -44,7 +44,7 @@ interface IRoot extends IExtensibleProperty {
  *
  * Any properties to be exported with a particular asset must be referenced (directly or
  * indirectly) by the root. Metadata about the asset's license, generator, and glTF specification
- * version are stored in the asset, accessible with {@link .getAsset}().
+ * version are stored in the asset, accessible with {@link Root.getAsset}.
  *
  * Properties are added to the root with factory methods on its {@link Document}, and removed by
  * calling {@link Property.dispose}() on the resource. Any properties that have been created but
