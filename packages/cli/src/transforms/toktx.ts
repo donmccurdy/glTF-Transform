@@ -65,7 +65,13 @@ export const Filter = {
 
 interface GlobalOptions {
 	mode: string;
-	slots?: string;
+	/** Pattern identifying textures to compress, matched to name or URI. */
+	pattern?: RegExp | null;
+	/**
+	 * Pattern matching the material texture slot(s) to be compressed or converted.
+	 * Passing a string (glob) is deprecated; use a RegExp instead.
+	 */
+	slots?: RegExp | string | null;
 	filter?: string;
 	filterScale?: number;
 	resize?: vec2;
@@ -92,11 +98,12 @@ export interface UASTCOptions extends GlobalOptions {
 	zstd?: number;
 }
 
-const GLOBAL_DEFAULTS = {
+const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'mode'> = {
 	filter: Filter.LANCZOS4,
 	filterScale: 1,
 	powerOfTwo: false,
-	slots: '*',
+	pattern: null,
+	slots: null,
 	// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
 	jobs: 2 * NUM_CPUS,
 };
@@ -159,17 +166,25 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
+				if (typeof options.slots === 'string') {
+					options.slots = micromatch.makeRe(options.slots, MICROMATCH_OPTIONS);
+					logger.warn('toktx: Argument "slots" should be of type `RegExp | null`.');
+				}
+
+				const patternRe = options.pattern as RegExp | null;
+				const slotsRe = options.slots as RegExp | null;
+
 				if (texture.getMimeType() === 'image/ktx2') {
 					logger.debug(`${prefix}: Skipping, already KTX.`);
 					return;
 				} else if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
 					logger.warn(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
-				} else if (
-					options.slots !== '*' &&
-					!slots.find((slot) => micromatch.isMatch(slot, options.slots!, MICROMATCH_OPTIONS))
-				) {
-					logger.debug(`${prefix}: Skipping, excluded by pattern "${options.slots}".`);
+				} else if (slotsRe && !slots.find((slot) => slot.match(slotsRe))) {
+					logger.debug(`${prefix}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
+					return;
+				} else if (patternRe && !(texture.getURI().match(patternRe) || texture.getName().match(patternRe))) {
+					logger.debug(`${prefix}: Skipping, excluded by "pattern" parameter.`);
 					return;
 				}
 

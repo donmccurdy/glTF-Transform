@@ -1112,7 +1112,10 @@ normal maps and ETC1S for other textures, for example.`.trim()
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: program.STRING,
+	})
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING })
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: ETC1S_DEFAULTS.filter,
@@ -1171,9 +1174,11 @@ normal maps and ETC1S for other textures, for example.`.trim()
 		validator: program.NUMBER,
 		default: ETC1S_DEFAULTS.jobs,
 	})
-	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(toktx({ mode: Mode.ETC1S, ...options }))
-	);
+	.action(({ args, options, logger }) => {
+		const mode = Mode.ETC1S;
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		return Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern }));
+	});
 
 // UASTC
 program
@@ -1191,7 +1196,10 @@ for textures where the quality is sufficient.`.trim()
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: program.STRING,
+	})
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING })
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: UASTC_DEFAULTS.filter,
@@ -1284,9 +1292,11 @@ for textures where the quality is sufficient.`.trim()
 		validator: program.NUMBER,
 		default: UASTC_DEFAULTS.jobs,
 	})
-	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(toktx({ mode: Mode.UASTC, ...options }))
-	);
+	.action(({ args, options, logger }) => {
+		const mode = Mode.UASTC;
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern }));
+	});
 
 // KTXFIX
 program
