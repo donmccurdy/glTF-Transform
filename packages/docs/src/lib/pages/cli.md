@@ -88,7 +88,7 @@ Full command list:
     join                                 ✨ Join meshes and reduce draw calls                   
                                                                                                 
                                                                                                 
-                                         🕋 GEOMETRY ─────────────────────────────────────────  
+                                         🫖 GEOMETRY ─────────────────────────────────────────  
     draco                                Compress geometry with Draco                           
     meshopt                              Compress geometry and animation with Meshopt           
     quantize                             Quantize geometry, reducing precision and memory       
