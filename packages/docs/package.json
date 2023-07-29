@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/docs",
-	"version": "3.4.8",
+	"version": "3.5.0",
 	"private": true,
 	"scripts": {
 		"watch": "vite dev",

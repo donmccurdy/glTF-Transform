@@ -54,7 +54,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 3.4.8 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 3.5.0 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
@@ -88,7 +88,7 @@ Full command list:
     join                                 ✨ Join meshes and reduce draw calls                   
                                                                                                 
                                                                                                 
-                                         🫖 GEOMETRY ─────────────────────────────────────────  
+                                         🫖 GEOMETRY ─────────────────────────────────────────   
     draco                                Compress geometry with Draco                           
     meshopt                              Compress geometry and animation with Meshopt           
     quantize                             Quantize geometry, reducing precision and memory       
