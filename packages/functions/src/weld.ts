@@ -48,7 +48,7 @@ const Tolerance = {
 	DEFAULT: 0.0001,
 	TEXCOORD: 0.0001, // [0, 1]
 	COLOR: 0.01, // [0, 1]
-	NORMAL: 0.5, // [-1, 1]
+	NORMAL: 0.05, // [-1, 1]
 	JOINTS: 0.0, // [0, ∞]
 	WEIGHTS: 0.01, // [0, ∞]
 };
