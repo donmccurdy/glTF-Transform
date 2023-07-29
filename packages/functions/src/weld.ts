@@ -105,13 +105,14 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 	if (options.tolerance < 0 || options.tolerance > 0.1) {
 		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
-	} else {
-		options.tolerance = Math.max(options.tolerance, Number.EPSILON);
 	}
 
 	if (options.toleranceNormal < 0 || options.toleranceNormal > Math.PI / 2) {
 		throw new Error(`${NAME}: Requires 0 ≤ toleranceNormal ≤ ${(Math.PI / 2).toFixed(2)}`);
-	} else {
+	}
+
+	if (options.tolerance > 0) {
+		options.tolerance = Math.max(options.tolerance, Number.EPSILON);
 		options.toleranceNormal = Math.max(options.toleranceNormal, Number.EPSILON);
 	}
 
