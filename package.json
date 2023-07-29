@@ -48,7 +48,7 @@
 		"meshoptimizer": "0.19.0",
 		"microbundle": "0.15.1",
 		"mikktspace": "1.1.1",
-		"prettier": "2.8.8",
+		"prettier": "3.0.0",
 		"prettier-plugin-svelte": "^2.10.0",
 		"suppress-experimental-warnings": "1.1.17",
 		"ts-node": "10.9.1",
