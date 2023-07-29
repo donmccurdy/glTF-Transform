@@ -298,7 +298,12 @@ commands or using the scripting API.
 		if (opts.join) transforms.push(dequantize(), join());
 
 		if (opts.weld) {
-			transforms.push(weld({ tolerance: opts.simplify ? opts.simplifyError / 2 : WELD_DEFAULTS.tolerance }));
+			transforms.push(
+				weld({
+					tolerance: opts.simplify ? opts.simplifyError / 2 : WELD_DEFAULTS.tolerance,
+					toleranceNormal: opts.simplify ? 0.5 : WELD_DEFAULTS.toleranceNormal,
+				})
+			);
 		}
 
 		if (opts.simplify) {
@@ -821,13 +826,21 @@ bounding box (AABB). For example, --tolerance=0.01 welds vertices within +/-1%
 of the AABB's longest dimension. Other vertex attributes are also compared
 during welding, with attribute-specific thresholds. For --tolerance=0, geometry
 is indexed in place, without merging.
+
+To preserve visual appearance consistently, use low --tolerance-normal thresholds
+around 0.1 (±3º). To pre-processing a scene before simplification or LOD creation,
+use higher thresholds around 0.5 (±30º).
 	`.trim()
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--tolerance', 'Tolerance for vertex welding', {
+	.option('--tolerance', 'Tolerance for vertex positions, as a fraction of primitive AABB', {
 		validator: program.NUMBER,
 		default: WELD_DEFAULTS.tolerance,
+	})
+	.option('--tolerance-normal', 'Tolerance for vertex normals, in radians', {
+		validator: program.NUMBER,
+		default: WELD_DEFAULTS.toleranceNormal,
 	})
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(weld(options as unknown as WeldOptions))

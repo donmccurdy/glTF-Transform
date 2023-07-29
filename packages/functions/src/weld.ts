@@ -48,15 +48,17 @@ const Tolerance = {
 	DEFAULT: 0.0001,
 	TEXCOORD: 0.0001, // [0, 1]
 	COLOR: 0.01, // [0, 1]
-	NORMAL: 0.05, // [-1, 1]
+	NORMAL: 0.05, // [-1, 1], ±3º
 	JOINTS: 0.0, // [0, ∞]
 	WEIGHTS: 0.01, // [0, ∞]
 };
 
 /** Options for the {@link weld} function. */
 export interface WeldOptions {
-	/** Tolerance, as a fraction of primitive AABB, used when merging similar vertices. */
+	/** Tolerance for vertex positions, as a fraction of primitive AABB. */
 	tolerance?: number;
+	/** Tolerance for vertex normals, in radians. */
+	toleranceNormal?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
 	/** Enables a more thorough, but slower, search for vertices to weld. */
@@ -65,6 +67,7 @@ export interface WeldOptions {
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
 	tolerance: Tolerance.DEFAULT,
+	toleranceNormal: Tolerance.NORMAL,
 	overwrite: true,
 	exhaustive: false, // donmccurdy/glTF-Transform#886
 };
@@ -78,8 +81,12 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * welding based on distance between the vertices as a fraction of the primitive's
  * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
  * of the AABB's longest dimension. Other vertex attributes are also compared
- * during welding, with attribute-specific thresholds. For --tolerance=0, geometry
+ * during welding, with attribute-specific thresholds. For `tolerance=0`, geometry
  * is indexed in place, without merging.
+ *
+ * To preserve visual appearance consistently, use low `toleranceNormal` thresholds
+ * around 0.1 (±3º). To pre-processing a scene before simplification or LOD creation,
+ * use higher thresholds around 0.5 (±30º).
  *
  * Example:
  *
@@ -87,7 +94,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * import { weld } from '@gltf-transform/functions';
  *
  * await document.transform(
- * 	weld({ tolerance: 0.001 })
+ * 	weld({ tolerance: 0.001, toleranceNormal: 0.5 })
  * );
  * ```
  *
@@ -96,8 +103,17 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
 
-	if (options.tolerance > 0.1 || options.tolerance < 0) {
+	if (options.tolerance < 0 || options.tolerance > 0.1) {
 		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
+	}
+
+	if (options.toleranceNormal < 0 || options.toleranceNormal > Math.PI / 2) {
+		throw new Error(`${NAME}: Requires 0 ≤ toleranceNormal ≤ ${(Math.PI / 2).toFixed(2)}`);
+	}
+
+	if (options.tolerance > 0) {
+		options.tolerance = Math.max(options.tolerance, Number.EPSILON);
+		options.toleranceNormal = Math.max(options.toleranceNormal, Number.EPSILON);
 	}
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
@@ -181,11 +197,10 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 
 	// (1) Compute per-attribute tolerance and spatial grid for vertices.
 
-	const baseTolerance = Math.max(options.tolerance, Number.EPSILON);
 	const attributeTolerance: Record<string, number> = {};
 	for (const semantic of prim.listSemantics()) {
 		const attribute = prim.getAttribute(semantic)!;
-		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, baseTolerance);
+		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, options);
 	}
 
 	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
@@ -324,10 +339,10 @@ const _a = [] as number[];
 const _b = [] as number[];
 
 /** Computes a per-attribute tolerance, based on domain and usage of the attribute. */
-function getAttributeTolerance(semantic: string, attribute: Accessor, tolerance: number): number {
+function getAttributeTolerance(semantic: string, attribute: Accessor, options: Required<WeldOptions>): number {
 	// Attributes like NORMAL and COLOR_# do not vary in range like POSITION,
 	// so do not apply the given tolerance factor to these attributes.
-	if (semantic === 'NORMAL' || semantic === 'TANGENT') return Tolerance.NORMAL;
+	if (semantic === 'NORMAL' || semantic === 'TANGENT') return options.toleranceNormal;
 	if (semantic.startsWith('COLOR_')) return Tolerance.COLOR;
 	if (semantic.startsWith('TEXCOORD_')) return Tolerance.TEXCOORD;
 	if (semantic.startsWith('JOINTS_')) return Tolerance.JOINTS;
@@ -338,7 +353,7 @@ function getAttributeTolerance(semantic: string, attribute: Accessor, tolerance:
 	attribute.getMaxNormalized(_b);
 	const diff = _b.map((bi, i) => bi - _a[i]);
 	const range = Math.max(...diff);
-	return tolerance * range;
+	return options.tolerance * range;
 }
 
 /** Compares two vertex attributes against a tolerance threshold. */
