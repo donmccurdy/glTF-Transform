@@ -4,6 +4,16 @@
 
 <!-- ### v3.X — 🚧 Unreleased -->
 
+### v3.5 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/30))
+
+**Features:**
+
+- Improvements to `weld()` [#1029](https://github.com/donmccurdy/glTF-Transform/pull/1029) by [@rotu](https://github.com/rotu)
+- Add `--pattern` flag in `etc1s` and `uastc` CLI commands [#1037](https://github.com/donmccurdy/glTF-Transform/pull/1037)
+- Add `toleranceNormal` option in `weld()` [#1046](https://github.com/donmccurdy/glTF-Transform/pull/1046)
+  - Default vertex normal tolerance has been reduced ([#1035](https://github.com/donmccurdy/glTF-Transform/pull/1035)), reducing loss of quality in some cases. Where more aggressive welding is required (such as simplification and LODs), users should specify `toleranceNormal=0.5` to restore the previous default.
+
+
 ### v3.4 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/29))
 
 _Special thanks to [Muse](https://www.muse.place/) for supporting development of the `palette()` feature._
