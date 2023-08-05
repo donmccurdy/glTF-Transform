@@ -6,6 +6,7 @@
 	"description": "Adds extension support to @gltf-transform/core",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
+	"funding": "https://github.com/sponsors/donmccurdy",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

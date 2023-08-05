@@ -6,6 +6,7 @@
 	"description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
+	"funding": "https://github.com/sponsors/donmccurdy",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

@@ -6,6 +6,7 @@
 	"description": "Functions for common glTF modifications, written using the core API",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
+	"funding": "https://github.com/sponsors/donmccurdy",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

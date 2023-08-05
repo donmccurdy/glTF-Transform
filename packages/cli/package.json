@@ -6,6 +6,7 @@
 	"description": "CLI interface to glTF Transform",
 	"author": "Don McCurdy <dm@donmccurdy.com>",
 	"license": "MIT",
+	"funding": "https://github.com/sponsors/donmccurdy",
 	"type": "module",
 	"exports": "./dist/cli.esm.js",
 	"source": "./src/cli.ts",
