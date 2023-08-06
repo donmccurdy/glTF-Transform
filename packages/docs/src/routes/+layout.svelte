@@ -34,7 +34,7 @@
 </svelte:head>
 
 <header>
-	<div class="greendoc-page-toolbar">
+	<div class="greendoc-toolbar">
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
@@ -59,7 +59,7 @@
 		</div>
 	</div>
 </header>
-<nav class="greendoc-navigation secondary">
+<nav class="greendoc-navigation">
 	{#each data.navigation.sections as section}
 		<section>
 			<h4>{section.title}</h4>
