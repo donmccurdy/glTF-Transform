@@ -4,6 +4,14 @@
 
 	export let data: LayoutData;
 
+	let innerWidth: number;
+
+	const resourceSection = data.navigation.sections.find(({ title }) => title === 'Resources');
+	const resources = resourceSection.items.filter(({ external }) => external);
+
+	const LG = 900;
+	const SM = 450;
+
 	function toggleNav() {
 		document.body.classList.toggle('toggle-nav');
 	}
@@ -33,31 +41,50 @@
 	<meta name="twitter:creator" content="@donrmccurdy" />
 </svelte:head>
 
+<svelte:window bind:innerWidth />
+
 <header>
-	<div class="greendoc-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell">
-					<strong><a href="/">glTF Transform</a></strong>
-					<a
-						class="header-badge"
-						target="_blank"
-						href="https://github.com/donmccurdy/glTF-Transform"
-						rel="noreferrer"
-					>
-						<img
-							alt="GitHub stars"
-							src="https://img.shields.io/github/stars/donmccurdy/glTF-Transform?style=social"
-						/>
-					</a>
-				</div>
-				<div class="table-cell" id="greendoc-widgets">
-					<button id="greendoc-menu" class="greendoc-widget menu no-caption" on:click={toggleNav}>Menu</button
-					>
-				</div>
-			</div>
-		</div>
-	</div>
+	<ul class="greendoc-toolbar">
+		<li><strong><a class="title" href="/">glTF Transform</a></strong></li>
+		{#if innerWidth > SM}
+			<li>
+				<a
+					class="greendoc-toolbar-badge"
+					target="_blank"
+					href="https://github.com/donmccurdy/glTF-Transform"
+					rel="noreferrer"
+				>
+					<img
+						alt="GitHub stars"
+						src="https://img.shields.io/github/stars/donmccurdy/glTF-Transform?style=social"
+					/>
+				</a>
+			</li>
+		{/if}
+		<li class="flex" />
+		{#if innerWidth > LG}
+			{#each resources as resource}
+				<li>
+					<a target="_blank" href={resource.href} rel="noreferrer">{resource.text}</a>
+				</li>
+			{/each}
+		{/if}
+		<li>
+			<a
+				class="greendoc-toolbar-pro-btn"
+				target="_blank"
+				href="https://store.donmccurdy.com/l/gltf-transform-pro"
+				rel="noreferrer"
+			>
+				Pro 💎
+			</a>
+		</li>
+		{#if innerWidth <= LG}
+			<li id="greendoc-widgets">
+				<button id="greendoc-menu" class="greendoc-widget menu no-caption" on:click={toggleNav}>Menu</button>
+			</li>
+		{/if}
+	</ul>
 </header>
 <nav class="greendoc-navigation">
 	{#each data.navigation.sections as section}

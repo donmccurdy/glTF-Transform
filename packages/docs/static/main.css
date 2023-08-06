@@ -531,6 +531,9 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 
 .greendoc-toolbar {
 	position: fixed;
+	display: flex;
+	box-sizing: border-box;
+	list-style: none;
 	z-index: 2;
 	top: 0;
 	left: 0;
@@ -540,6 +543,17 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 	background: #fff;
 	border-bottom: 1px solid #eee;
 	transition: transform 0.3s linear;
+	padding: 0 20px;
+	margin: 0;
+	gap: 20px;
+}
+.greendoc-toolbar > * {
+	position: relative;
+	white-space: nowrap;
+	line-height: 40px;
+}
+.greendoc-toolbar > .flex {
+	flex-grow: 1;
 }
 .greendoc-toolbar a {
 	color: #333;
@@ -548,33 +562,44 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 .greendoc-toolbar a.title {
 	font-weight: bold;
 }
-.greendoc-toolbar a.title:hover {
+.greendoc-toolbar a:hover,
+.greendoc-toolbar a:focus {
 	text-decoration: underline;
-}
-.greendoc-toolbar .table-wrap {
-	display: table;
-	width: 100%;
-	height: 40px;
-}
-.greendoc-toolbar .table-cell {
-	display: table-cell;
-	position: relative;
-	white-space: nowrap;
-	line-height: 40px;
-}
-.greendoc-toolbar .table-cell:first-child {
-	width: 100%;
 }
 
 .greendoc-toolbar--hide {
 	transform: translateY(-100%);
 }
 
-.header-badge img {
+.greendoc-toolbar-badge img {
 	vertical-align: sub;
-	margin-left: 0.5em;
 }
 
+.greendoc-toolbar .greendoc-toolbar-pro-btn {
+	background-image: linear-gradient(to right, #177bbb 0%, #514A9D  51%, #177bbb  100%);
+	background-size: 200% auto;
+	transition: 0.5s;
+	color: #ffffff;
+	height: 28px;
+	display: inline-block;
+	line-height: 28px;
+	border-radius: 14px;
+	padding: 0 0.75em 0 0.9em;
+}
+
+.greendoc-toolbar .greendoc-toolbar-pro-btn:hover,
+.greendoc-toolbar .greendoc-toolbar-pro-btn:focus {
+	background-position: right center; /* reverse direction */
+	text-decoration: none;
+	transform: translate(-0.15rem, -0.15rem);
+	box-shadow: .15rem .15rem 0 #333;
+}
+
+@media (max-width: 900px) {
+	.greendoc-toolbar-pro-btn {
+		display: none;
+	}
+}
 
 /******************************************************************************
  * HEADER WIDGET
