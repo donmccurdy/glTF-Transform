@@ -605,6 +605,9 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
  * HEADER WIDGET
  ******************************************************************************/
 
+.greendoc-widget-item {
+	margin-left: -20px;
+}
 .greendoc-widget {
 	display: none;
 	background: none;

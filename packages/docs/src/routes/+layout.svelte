@@ -80,8 +80,8 @@
 			</a>
 		</li>
 		{#if innerWidth <= LG}
-			<li id="greendoc-widgets">
-				<button id="greendoc-menu" class="greendoc-widget menu no-caption" on:click={toggleNav}>Menu</button>
+			<li class="greendoc-widget-item">
+				<button class="greendoc-widget menu no-caption" on:click={toggleNav}>Menu</button>
 			</li>
 		{/if}
 	</ul>
