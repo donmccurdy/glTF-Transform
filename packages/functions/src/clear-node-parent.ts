@@ -29,7 +29,7 @@ export function clearNodeParent(node: Node): Node {
 	if (!parent) return node;
 
 	// Apply inherited transforms to local matrix. Skinned meshes are not affected
-	// by the node parent's trasnform, and can be ignored. Updates to IBMs and TRS
+	// by the node parent's transform, and can be ignored. Updates to IBMs and TRS
 	// animations are out of scope in this context.
 	node.setMatrix(node.getWorldMatrix());
 
