@@ -129,7 +129,11 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }));
+        if (options.tolerance > 0) {
+            // If tolerance is greater than 0, welding may remove a mesh, so we prune
+		    await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }));
+        }
+
 		await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 
 		logger.debug(`${NAME}: Complete.`);
