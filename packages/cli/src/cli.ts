@@ -112,7 +112,7 @@ is comprised of geometry vs. textures, which extensions are needed when loading
 the file, and which material properties are being used.
 
 Use --format=csv or --format=md for alternative display formats.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.option('--format <format>', 'Table output format', {
@@ -125,7 +125,7 @@ Use --format=csv or --format=md for alternative display formats.
 			await io.readAsJSON(args.input as string),
 			io,
 			logger as unknown as Logger,
-			options.format as TableFormat
+			options.format as TableFormat,
 		);
 	});
 
@@ -148,7 +148,7 @@ https://github.com/KhronosGroup/glTF-Validator
 Example:
 
   ▸ gltf-transform validate input.glb --ignore ACCESSOR_WEIGHTS_NON_NORMALIZED
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.option('--limit <limit>', 'Limit number of issues to display', {
@@ -191,7 +191,7 @@ certain aspects of data layout may change slightly with this process:
 - Vertex attributes within a mesh are interleaved.
 - Accessors are organized into buffer views according to usage.
 - Draco compression is removed to avoid a lossy decompress/compress round trip.
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -199,14 +199,14 @@ certain aspects of data layout may change slightly with this process:
 
 // OPTIMIZE
 program
-	.command('optimize', '✨ Optimize model by all available methods')
+	.command('optimize', 'Optimize model by all available methods')
 	.help(
 		`
 Optimize the model by all available methods. Combines many features of the
 glTF Transform CLI into a single command for convenience and faster results.
 For more control over the optimization process, consider running individual
 commands or using the scripting API.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -229,7 +229,7 @@ commands or using the scripting API.
 		{
 			validator: program.NUMBER,
 			default: 5,
-		}
+		},
 	)
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
 		validator: program.BOOLEAN,
@@ -246,7 +246,7 @@ commands or using the scripting API.
 		{
 			validator: ['draco', 'meshopt', 'quantize', false],
 			default: 'draco',
-		}
+		},
 	)
 	.option(
 		'--texture-compress <format>',
@@ -255,7 +255,7 @@ commands or using the scripting API.
 		{
 			validator: ['ktx2', 'webp', 'avif', 'auto', false],
 			default: 'auto',
-		}
+		},
 	)
 	.option('--texture-size <size>', 'Maximum texture dimensions, in pixels.', {
 		validator: program.NUMBER,
@@ -302,7 +302,7 @@ commands or using the scripting API.
 				weld({
 					tolerance: opts.simplify ? opts.simplifyError / 2 : WELD_DEFAULTS.tolerance,
 					toleranceNormal: opts.simplify ? 0.5 : WELD_DEFAULTS.toleranceNormal,
-				})
+				}),
 			);
 		}
 
@@ -313,7 +313,7 @@ commands or using the scripting API.
 		transforms.push(
 			resample({ ready: resampleReady, resample: resampleWASM }),
 			prune({ keepAttributes: false, keepLeaves: false }),
-			sparse()
+			sparse(),
 		);
 
 		// Texture compression.
@@ -321,7 +321,7 @@ commands or using the scripting API.
 			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
 			transforms.push(
 				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
-				toktx({ mode: Mode.ETC1S, quality: 255 })
+				toktx({ mode: Mode.ETC1S, quality: 255 }),
 			);
 		} else if (opts.textureCompress !== false) {
 			transforms.push(
@@ -329,7 +329,7 @@ commands or using the scripting API.
 					encoder: sharp,
 					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					resize: [opts.textureSize, opts.textureSize],
-				})
+				}),
 			);
 		}
 
@@ -360,7 +360,7 @@ binary data for each model may be kept in a separate buffer with the
 Example:
 
   ▸ gltf-transform merge a.glb b.glb c.glb output.glb
-	`.trim()
+	`.trim(),
 	)
 	.argument('<path...>', `${INPUT_DESC}(s). Final path is used to write output.`)
 	.option('--partition', 'Whether to keep separate buffers for each input file. Invalid for GLB output.', {
@@ -382,7 +382,7 @@ Partition binary data for meshes or animations into separate .bin files. In
 engines that support lazy-loading resources within glTF files, this allows
 restructuring the data to minimize initial load time, fetching additional
 resources as needed. Partitioning is supported only for .gltf, not .glb, files.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -395,7 +395,7 @@ resources as needed. Partitioning is supported only for .gltf, not .glb, files.
 		default: false,
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(partition(options as PartitionOptions))
+		Session.create(io, logger, args.input, args.output).transform(partition(options as PartitionOptions)),
 	);
 
 // DEDUP
@@ -411,7 +411,7 @@ be very slow on large files with many accessors.
 
 Deduplication early in a pipeline may also help other optimizations, like
 compression and instancing, to be more effective.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -456,7 +456,7 @@ may (conservatively) fail to identify some unused extension properties, such as
 lights, but it will not remove anything that is still in use, even if used by
 an extension. Animations are considered unused if they do not target any nodes
 that are children of a scene.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -469,7 +469,7 @@ that are children of a scene.
 		default: false,
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(prune(options as unknown as PruneOptions))
+		Session.create(io, logger, args.input, args.output).transform(prune(options as unknown as PruneOptions)),
 	);
 
 // GZIP
@@ -486,7 +486,7 @@ When the model contains resources that are already effectively compressed, like
 JPEG textures or Draco geometry, gzip is unlikely to add much further benefit
 and can be skipped. Other compression strategies, like Meshopt and quantization,
 work best when combined with gzip.
-`
+`,
 	)
 	.argument('<input>', INPUT_DESC)
 	.action(async ({ args, logger }) => {
@@ -519,7 +519,7 @@ To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
 
 ${underline('Documentation')}
 - https://gltf-transform.dev/classes/extensions.xmp.html
-`
+`,
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -529,7 +529,7 @@ ${underline('Documentation')}
 		default: false,
 	})
 	.action(async ({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(xmp({ ...options } as XMPOptions))
+		Session.create(io, logger, args.input, args.output).transform(xmp({ ...options } as XMPOptions)),
 	);
 
 program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
@@ -543,7 +543,7 @@ Center the scene at the origin, or above/below it. When loading a model into
 a larger scene, or into an augmented reality context, it's often best to ensure
 the model's pivot is centered beneath the object. For objects meant to be
 attached a surface, like a ceiling fan, the pivot may be located above instead.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -552,7 +552,7 @@ attached a surface, like a ceiling fan, the pivot may be located above instead.
 		default: 'center',
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(center({ ...options } as CenterOptions))
+		Session.create(io, logger, args.input, args.output).transform(center({ ...options } as CenterOptions)),
 	);
 
 // INSTANCE
@@ -574,17 +574,17 @@ Instanced meshes cannot be animated, and must share the same materials. For
 further details, see:
 
 https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_gpu_instancing.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(instance({ ...options } as InstanceOptions))
+		Session.create(io, logger, args.input, args.output).transform(instance({ ...options } as InstanceOptions)),
 	);
 
 // FLATTEN
 program
-	.command('flatten', '✨ Flatten scene graph')
+	.command('flatten', 'Flatten scene graph')
 	.help(
 		`
 Flattens the scene graph, leaving Nodes with Meshes, Cameras, and other
@@ -593,17 +593,17 @@ descendants are left in their original Node structure.
 
 Animation targeting a Node or its parents will prevent that Node from being
 moved.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(flatten({ ...options } as FlattenOptions))
+		Session.create(io, logger, args.input, args.output).transform(flatten({ ...options } as FlattenOptions)),
 	);
 
 // JOIN
 program
-	.command('join', '✨ Join meshes and reduce draw calls')
+	.command('join', 'Join meshes and reduce draw calls')
 	.help(
 		`
 Joins compatible Primitives and reduces draw calls. Primitives are eligible for
@@ -614,7 +614,7 @@ first, to maximize the number of Primitives that can be joined.
 NOTE: In a Scene that heavily reuses the same Mesh data, joining may increase
 vertex count. Consider alternatives, like \`instance\` with
 EXT_mesh_gpu_instancing.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -630,8 +630,8 @@ EXT_mesh_gpu_instancing.
 		Session.create(io, logger, args.input, args.output).transform(
 			dedup({ propertyTypes: [PropertyType.MATERIAL] }),
 			flatten(),
-			join({ ...options } as unknown as JoinOptions)
-		)
+			join({ ...options } as unknown as JoinOptions),
+		),
 	);
 
 program.command('', '\n\n🫖 GEOMETRY ─────────────────────────────────────────');
@@ -653,7 +653,7 @@ ${underline('Documentation')}
 ${underline('References')}
 - draco: https://github.com/google/draco
 - KHR_draco_mesh_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -694,7 +694,7 @@ ${underline('References')}
 		default: DRACO_DEFAULTS.quantizationVolume,
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(draco(options as unknown as DracoOptions))
+		Session.create(io, logger, args.input, args.output).transform(draco(options as unknown as DracoOptions)),
 	);
 
 // MESHOPT
@@ -717,7 +717,7 @@ ${underline('Documentation')}
 ${underline('References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
 - EXT_meshopt_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -726,7 +726,7 @@ ${underline('References')}
 		default: 'high',
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(meshopt({ encoder: MeshoptEncoder, ...options }))
+		Session.create(io, logger, args.input, args.output).transform(meshopt({ encoder: MeshoptEncoder, ...options })),
 	);
 
 // QUANTIZE
@@ -748,7 +748,7 @@ bit depths used by this command are generally between 8 and 16 bits.
 
 Bit depths for indices and JOINTS_* are determined automatically.
 
-Requires KHR_mesh_quantization support.`.trim()
+Requires KHR_mesh_quantization support.`.trim(),
 	)
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -798,7 +798,7 @@ Removes quantization from an asset. This will increase the size of the asset on
 disk and in memory, but may be necessary for applications that don't support
 quantization.
 
-Removes KHR_mesh_quantization, if present.`.trim()
+Removes KHR_mesh_quantization, if present.`.trim(),
 	)
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
@@ -830,7 +830,7 @@ is indexed in place, without merging.
 To preserve visual appearance consistently, use low --tolerance-normal thresholds
 around 0.1 (±3º). To pre-processing a scene before simplification or LOD creation,
 use higher thresholds around 0.5 (±30º).
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -843,7 +843,7 @@ use higher thresholds around 0.5 (±30º).
 		default: WELD_DEFAULTS.toleranceNormal,
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(weld(options as unknown as WeldOptions))
+		Session.create(io, logger, args.input, args.output).transform(weld(options as unknown as WeldOptions)),
 	);
 
 // UNWELD
@@ -855,12 +855,12 @@ De-index geometry, disconnecting any shared vertices. This tends to increase
 the file size of the geometry and decrease efficiency, and so is not
 recommended unless disconnected vertices ("vertex soup") are required for some
 paricular software application.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(unweld(options as unknown as UnweldOptions))
+		Session.create(io, logger, args.input, args.output).transform(unweld(options as unknown as UnweldOptions)),
 	);
 
 // TANGENTS
@@ -882,7 +882,7 @@ to generate vertex tangents while creating a normal map, and the technique is
 recommended by the glTF 2.0 specification. Generating vertex tangents with this
 tool may resolve rendering issues related to normal maps in engines that cannot
 compute MikkTSpace tangents at runtime.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -892,8 +892,8 @@ compute MikkTSpace tangents at runtime.
 	})
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(
-			tangents({ generateTangents: mikktspace.generateTangents, ...options })
-		)
+			tangents({ generateTangents: mikktspace.generateTangents, ...options }),
+		),
 	);
 
 // REORDER
@@ -909,7 +909,7 @@ processing step before applying Meshopt compression and lossless supercompressio
 brotli). Reordering will only reduce size when used in combination with other compression methods.
 
 Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -918,7 +918,7 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 		default: 'size',
 	})
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(reorder({ encoder: MeshoptEncoder, ...options }))
+		Session.create(io, logger, args.input, args.output).transform(reorder({ encoder: MeshoptEncoder, ...options })),
 	);
 
 // SIMPLIFY
@@ -944,7 +944,7 @@ Topology, particularly split vertices, will also limit the simplifier. For
 best results, apply a 'weld' operation before simplification.
 
 Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -962,8 +962,8 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 	})
 	.action(async ({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(
-			simplify({ simplifier: MeshoptSimplifier, ...options })
-		)
+			simplify({ simplifier: MeshoptSimplifier, ...options }),
+		),
 	);
 
 program.command('', '\n\n🎨 MATERIAL ─────────────────────────────────────────');
@@ -983,7 +983,7 @@ further adjustments after the conversion.
 This conversion rewrites spec/gloss textures, and the resulting textures may
 have less optimal compression than the original. Ideally, lossless PNG textures
 should be used as input, and then compressed after this conversion.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1005,7 +1005,7 @@ Materials already containing texture coordinates (UVs) are not eligible for
 texture palette optimizations. Currently only a material's base color,
 alpha, emissive factor, metallic factor, and roughness factor are converted
 to palette textures.
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1020,11 +1020,11 @@ to palette textures.
 		{
 			validator: program.NUMBER,
 			default: PALETTE_DEFAULTS.min,
-		}
+		},
 	)
 	.action(async ({ args, options, logger }) => {
 		return Session.create(io, logger, args.input, args.output).transform(
-			palette(options as unknown as PaletteOptions)
+			palette(options as unknown as PaletteOptions),
 		);
 	});
 
@@ -1041,7 +1041,7 @@ likely that the GPU is fragment shader bound, and a simpler material (such as
 an unlit material) may improve performance.
 
 Unlit materials are also helpful for non-physically-based visual styles.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1060,7 +1060,7 @@ to reduce ringing artifacts in some cases.
 
 Limits --width and --height are applied as maximum dimensions for each texture,
 preserving original aspect ratio. Texture dimensions are never increased.
-`.trim()
+`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1087,7 +1087,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 				resize: [options.width, options.height] as vec2,
 				resizeFilter: options.filter as TextureResizeFilter,
 				pattern,
-			})
+			}),
 		);
 	});
 
@@ -1119,9 +1119,9 @@ quality than UASTC. In some cases it may be useful to increase the resolution
 of the texture, to minimize compression artifacts while still retaining an
 overall smaller filesize. Consider using less aggressive compression settings
 for normal maps than for other texture types: you may want to use UASTC for
-normal maps and ETC1S for other textures, for example.`.trim()
+normal maps and ETC1S for other textures, for example.`.trim(),
 		),
-		{ sectionName: 'SUMMARY' }
+		{ sectionName: 'SUMMARY' },
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1142,7 +1142,7 @@ normal maps and ETC1S for other textures, for example.`.trim()
 		'Compression level, an encoding speed vs. quality tradeoff.' +
 			' Higher values are slower, but give higher quality. Try' +
 			' --quality before experimenting with this option.',
-		{ validator: [0, 1, 2, 3, 4, 5], default: ETC1S_DEFAULTS.compression }
+		{ validator: [0, 1, 2, 3, 4, 5], default: ETC1S_DEFAULTS.compression },
 	)
 	.option(
 		'--quality <qlevel>',
@@ -1150,17 +1150,17 @@ normal maps and ETC1S for other textures, for example.`.trim()
 			' compression, lower quality, and faster encoding. Higher gives less compression,' +
 			' higher quality, and slower encoding. Quality level determines values of' +
 			' --max_endpoints and --max-selectors, unless those values are explicitly set.',
-		{ validator: program.NUMBER, default: ETC1S_DEFAULTS.quality }
+		{ validator: program.NUMBER, default: ETC1S_DEFAULTS.quality },
 	)
 	.option(
 		'--max-endpoints <max_endpoints>',
 		'Manually set the maximum number of color endpoint clusters from' + ' 1-16128.',
-		{ validator: program.NUMBER }
+		{ validator: program.NUMBER },
 	)
 	.option(
 		'--max-selectors <max_selectors>',
 		'Manually set the maximum number of color selector clusters from' + ' 1-16128.',
-		{ validator: program.NUMBER }
+		{ validator: program.NUMBER },
 	)
 	.option(
 		'--power-of-two',
@@ -1168,20 +1168,20 @@ normal maps and ETC1S for other textures, for example.`.trim()
 			' dimensions, not exceeding 2048x2048px. Required for ' +
 			' compatibility on some older devices and APIs, particularly ' +
 			' WebGL 1.0.',
-		{ validator: program.BOOLEAN }
+		{ validator: program.BOOLEAN },
 	)
 	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower' +
 			' is higher quality but less quality per output bit (try 1.0-3.0).' +
 			' Overrides --quality.',
-		{ validator: program.NUMBER }
+		{ validator: program.NUMBER },
 	)
 	.option(
 		'--rdo-off',
 		'Disable endpoint and selector RDO (slightly' +
 			' faster, less noisy output, but lower quality per output bit).',
-		{ validator: program.BOOLEAN }
+		{ validator: program.BOOLEAN },
 	)
 	.option('--jobs <num_jobs>', 'Spawns up to num_jobs instances of toktx', {
 		validator: program.NUMBER,
@@ -1203,9 +1203,9 @@ program
 UASTC, one of the two Basis Universal bitstreams, offers higher size and higher
 quality than ETC1S. While it is suitable for all texture types, you may find it
 useful to apply UASTC only where higher quality is necessary, and apply ETC1S
-for textures where the quality is sufficient.`.trim()
+for textures where the quality is sufficient.`.trim(),
 		),
-		{ sectionName: 'SUMMARY' }
+		{ sectionName: 'SUMMARY' },
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1234,7 +1234,7 @@ for textures where the quality is sufficient.`.trim()
 			'\n2     | Default   | 47.47dB' +
 			'\n3     | Slower    | 48.01dB' +
 			'\n4     | Very slow | 48.24dB',
-		{ validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level }
+		{ validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level },
 	)
 	.option(
 		'--power-of-two',
@@ -1242,7 +1242,7 @@ for textures where the quality is sufficient.`.trim()
 			' dimensions, not exceeding 2048x2048px. Required for ' +
 			' compatibility on some older devices and APIs, particularly ' +
 			' WebGL 1.0.',
-		{ validator: program.BOOLEAN }
+		{ validator: program.BOOLEAN },
 	)
 	.option(
 		'--rdo <uastc_rdo_l>',
@@ -1251,32 +1251,32 @@ for textures where the quality is sufficient.`.trim()
 			' quality/larger LZ compressed files, higher values yield lower' +
 			' quality/smaller LZ compressed files. A good range to try is [.25, 10].' +
 			' For normal maps, try [.25, .75]. Full range is [.001, 10.0].',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdo }
+		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdo },
 	)
 	.option(
 		'--rdo-dictionary-size <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower' +
 			' values=faster, but give less compression. Possible range is [256, 65536].',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize }
+		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize },
 	)
 	.option(
 		'--rdo-block-scale <uastc_rdo_b>',
 		'Set UASTC RDO max smooth block error scale. Range is [1.0, 300.0].' +
 			' Default is 10.0, 1.0 is disabled. Larger values suppress more' +
 			' artifacts (and allocate more bits) on smooth blocks.',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale }
+		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale },
 	)
 	.option(
 		'--rdo-std-dev <uastc_rdo_s>',
 		'Set UASTC RDO max smooth block standard deviation. Range is' +
 			' [.01, 65536.0]. Default is 18.0. Larger values expand the range' +
 			' of blocks considered smooth.',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoStdDev }
+		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoStdDev },
 	)
 	.option(
 		'--rdo-multithreading <uastc_rdo_m>',
 		'Enable RDO multithreading (slightly lower compression, non-deterministic).',
-		{ validator: program.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading }
+		{ validator: program.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading },
 	)
 	.option(
 		'--zstd <compressionLevel>',
@@ -1299,7 +1299,7 @@ for textures where the quality is sufficient.`.trim()
 			'\n20    |       34 MB ' +
 			'\n21    |       67 MB ' +
 			'\n22    |      134 MB ',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.zstd }
+		{ validator: program.NUMBER, default: UASTC_DEFAULTS.zstd },
 	)
 	.option('--jobs <num_jobs>', 'Spawns up to num_jobs instances of toktx', {
 		validator: program.NUMBER,
@@ -1322,7 +1322,7 @@ incorrectly when a texture exhibits this issue.
 
 This command determines correct color primaries based on usage in the glTF
 file, and updates the KTX texture accordingly. The change is lossless, and
-affects only the container metadata.`.trim()
+affects only the container metadata.`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1339,7 +1339,7 @@ and require less tuning to achieve good visual and filesize results.
 
 // AVIF
 program
-	.command('avif', '✨ AVIF texture compression')
+	.command('avif', 'AVIF texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'AVIF'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1366,7 +1366,7 @@ program
 				quality: options.quality as number,
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
-			})
+			}),
 		);
 	});
 
@@ -1404,7 +1404,7 @@ program
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
 				nearLossless: options.nearLossless as boolean,
-			})
+			}),
 		);
 	});
 
@@ -1435,7 +1435,7 @@ program
 				slots,
 				quality: options.quality as number,
 				effort: options.effort as number,
-			})
+			}),
 		);
 	});
 
@@ -1461,7 +1461,7 @@ program
 				formats,
 				slots,
 				quality: options.quality as number,
-			})
+			}),
 		);
 	});
 
@@ -1481,7 +1481,7 @@ as engines can interpolate animation at 60–120 FPS even with sparse keyframes.
 The resampling process removes redundant keyframes from animations using STEP
 and LINEAR interpolation. Resampling is nearly lossless, with configurable
 --tolerance, and should have no visible effect on animation playback.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
@@ -1495,8 +1495,8 @@ and LINEAR interpolation. Resampling is nearly lossless, with configurable
 				ready: resampleReady,
 				resample: resampleWASM,
 				...(options as unknown as ResampleOptions),
-			})
-		)
+			}),
+		),
 	);
 
 // SEQUENCE
@@ -1511,7 +1511,7 @@ sequence function generates a new animation, playing back each mesh matching
 the given pattern, at a specific framerate. Displaying a sequence of textures
 is also supported, but note that texture memory usage may be quite high and
 so this workflow is not a replacement for video playback.
-	`.trim()
+	`.trim(),
 	)
 
 	.argument('<input>', INPUT_DESC)
@@ -1535,13 +1535,13 @@ so this workflow is not a replacement for video playback.
 	.action(({ args, options, logger }) => {
 		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output).transform(
-			sequence({ ...options, pattern } as SequenceOptions)
+			sequence({ ...options, pattern } as SequenceOptions),
 		);
 	});
 
 // SPARSE
 program
-	.command('sparse', '✨ Reduces storage for zero-filled arrays')
+	.command('sparse', 'Reduces storage for zero-filled arrays')
 	.help(
 		`
 Scans all Accessors in the Document, detecting whether each Accessor would
@@ -1549,12 +1549,12 @@ benefit from sparse data storage. Currently, sparse data storage is used only
 when many values (≥ 1/3) are zeroes. Particularly for assets using morph
 target ("shape key") animation, sparse data storage may significantly reduce
 file sizes.
-	`.trim()
+	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, options, logger }) =>
-		Session.create(io, logger, args.input, args.output).transform(sparse(options as unknown as SparseOptions))
+		Session.create(io, logger, args.input, args.output).transform(sparse(options as unknown as SparseOptions)),
 	);
 
 program.option('--allow-http', 'Allows reads from HTTP requests.', {
