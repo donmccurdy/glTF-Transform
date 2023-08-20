@@ -1,4 +1,4 @@
-import caporal from '@caporal/core';
+import _program, { Command, Logger as WinstonLogger } from '@donmccurdy/caporal';
 import { ILogger, Verbosity } from '@gltf-transform/core';
 
 const PAD_EMOJI = new Set(['🫖', '🖼', '⏯️']);
@@ -32,36 +32,36 @@ export type IActionFn = (params: {
 	logger: Logger;
 }) => void;
 
-class Program implements IInternalProgram {
+class ProgramImpl implements IInternalProgram {
 	version(version: string) {
-		caporal.program.version(version);
+		_program.version(version);
 		return this;
 	}
 	description(desc: string) {
-		caporal.program.description(desc);
+		_program.description(desc);
 		return this;
 	}
 	section(_name: string, _icon: string) {
 		const icon = _icon + (PAD_EMOJI.has(_icon) ? ' ' : '');
 		const name = _name.toUpperCase();
 		const line = ''.padEnd(50 - name.length - 1, '─');
-		caporal.program.command('', `\n\n${icon} ${name} ${line}`);
+		_program.command('', `\n\n${icon} ${name} ${line}`);
 		return this;
 	}
 	command(name: string, desc: string): ICommand {
-		return new Command(caporal.program, name, desc);
+		return new CommandImpl(_program, name, desc);
 	}
 	option<T>(name: string, desc: string, options: IProgramOptions<T>) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		caporal.program.option(name, desc, { global: true, ...options } as any);
+		_program.option(name, desc, { global: true, ...options } as any);
 		return this;
 	}
 	disableGlobalOption(name: string) {
-		caporal.program.disableGlobalOption(name);
+		_program.disableGlobalOption(name);
 		return this;
 	}
 	run() {
-		caporal.program.run();
+		_program.run();
 		return this;
 	}
 }
@@ -80,9 +80,9 @@ export interface ICommand {
 
 export interface ICommandOptions {}
 
-class Command implements ICommand {
-	_ctx: caporal.Command;
-	constructor(program: typeof caporal.program, name: string, desc: string) {
+class CommandImpl implements ICommand {
+	_ctx: Command;
+	constructor(program: typeof _program, name: string, desc: string) {
 		this._ctx = program.command(name, desc);
 	}
 	help(text: string) {
@@ -98,9 +98,11 @@ class Command implements ICommand {
 		return this;
 	}
 	action(fn: IActionFn) {
-		this._ctx.action(async ({ logger: _logger, ...args }) => {
-			const logger = new Logger(_logger);
-			return fn({ ...args, logger });
+		this._ctx.action(async (args) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const logger = new Logger(args.logger as any);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return fn({ ...args, logger } as any);
 		});
 		return this;
 	}
@@ -110,7 +112,7 @@ class Command implements ICommand {
 	}
 }
 
-export const program = new Program();
+export const program = new ProgramImpl();
 
 /**********************************************************************************************
  * Validator.
@@ -120,10 +122,10 @@ type ValidatorFn = unknown;
 type ValidatorType = 'NUMBER' | 'ARRAY' | 'BOOLEAN' | 'STRING';
 
 export const Validator: Record<ValidatorType, ValidatorFn> = {
-	NUMBER: caporal.program.NUMBER,
-	ARRAY: caporal.program.ARRAY,
-	BOOLEAN: caporal.program.BOOLEAN,
-	STRING: caporal.program.STRING,
+	NUMBER: _program.NUMBER,
+	ARRAY: _program.ARRAY,
+	BOOLEAN: _program.BOOLEAN,
+	STRING: _program.STRING,
 };
 
 /**********************************************************************************************
@@ -131,9 +133,9 @@ export const Validator: Record<ValidatorType, ValidatorFn> = {
  */
 
 export class Logger implements ILogger {
-	_logger: caporal.Logger;
+	_logger: WinstonLogger;
 	_verbosity: Verbosity;
-	constructor(logger: caporal.Logger) {
+	constructor(logger: WinstonLogger) {
 		this._logger = logger;
 
 		switch (logger.level) {
