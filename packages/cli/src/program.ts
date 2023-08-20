@@ -13,11 +13,16 @@ export interface IProgram {
 	section: (name: string, icon: string) => this;
 }
 
+interface IExecOptions {
+	silent?: boolean;
+}
+
 interface IInternalProgram extends IProgram {
 	version: (version: string) => this;
 	description: (desc: string) => this;
 	disableGlobalOption: (name: string) => this;
 	run: () => this;
+	exec: (args: unknown[], options?: IExecOptions) => Promise<void>;
 }
 
 export interface IProgramOptions<T = unknown> {
@@ -63,6 +68,10 @@ class ProgramImpl implements IInternalProgram {
 	run() {
 		_program.run();
 		return this;
+	}
+	async exec(args: unknown[], options?: IExecOptions) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		await _program.exec(args as any, options as any);
 	}
 }
 
