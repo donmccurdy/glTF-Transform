@@ -1027,19 +1027,20 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@donmccurdy/caporal@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@donmccurdy/caporal/-/caporal-0.0.4.tgz#976b201e84b8f9e70edd6e448eb747a66c133bd6"
-  integrity sha512-D2cTMHMlkY7692XE8y/28IID7OYGPPTiyvecblz1sSQEv4vEeBeJ2vMFYKVnHoNE4z+TNCgLUxFZmBO8tuvMHA==
+"@donmccurdy/caporal@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@donmccurdy/caporal/-/caporal-0.0.5.tgz#0542206036cf66f1978f172534895bad5c7d62c3"
+  integrity sha512-3crD412Lx9s6SC1zzbnr5tFOGTpdHYzdcS0mkYoyC66rEpiiinfSIR4dpaUZR5L/hyiUwFtkFo+4wpXViQw2oQ==
   dependencies:
     "@types/glob" "^7.1.1"
+    "@types/lodash" "^4.14.197"
     "@types/node" "20.5.1"
     "@types/table" "5.0.0"
     "@types/tabtab" "^3.0.1"
     "@types/wrap-ansi" "^3.0.0"
-    ava "^5.3.1"
     chalk "3.0.0"
     glob "^7.1.6"
+    lodash "^4.17.21"
     table "5.4.6"
     tabtab "^3.0.2"
     winston "3.10.0"
@@ -1964,6 +1965,11 @@
   resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.1.tgz#58e04ca5a27031b8cb7c0c91eec653f245b6bde9"
   integrity sha512-rTtRNIewaBrkMUfsCe7ES3xsTRQcEVgic2yoDY9hM3D/nwmABcG2du4l4+dTbWvfO8pUYwL4/2TbWFJa/AGc2g==
 
+"@types/lodash@^4.14.197":
+  version "4.14.197"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.197.tgz#e95c5ddcc814ec3e84c891910a01e0c8a378c54b"
+  integrity sha512-BMVOiWs0uNxHVlHBgzTIqJYmj+PgCo4euloGF+5m4okL3rEYzM2EEv78mw8zWSMM57dM7kVIgJ2QDvwHSoCI5g==
+
 "@types/micromatch@^4.0.2":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/micromatch/-/micromatch-4.0.2.tgz#ce29c8b166a73bf980a5727b1e4a4d099965151d"
@@ -2478,7 +2484,7 @@ autoprefixer@^10.1.0:
     picocolors "^1.0.0"
     postcss-value-parser "^4.2.0"
 
-ava@^5.2.0, ava@^5.3.1:
+ava@^5.2.0:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/ava/-/ava-5.3.1.tgz#335737dd963b7941b90214836cea2e8de1f4d5f4"
   integrity sha512-Scv9a4gMOXB6+ni4toLuhAm9KYWEjsgBglJl+kMGI5+IVDt120CCDZyB5HNU9DjmLI2t4I0GbnxGLmmRfGTJGg==
