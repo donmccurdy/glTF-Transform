@@ -1,4 +1,3 @@
-import caporal from '@caporal/core';
 import { URL } from 'url';
 import { promises as fs, readFileSync } from 'fs';
 import micromatch from 'micromatch';
@@ -71,8 +70,7 @@ import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util.
 import { Session } from './session.js';
 import { ValidateOptions, validate } from './validate.js';
 import { getConfig, loadConfig } from './config.js';
-
-const program = caporal.program;
+import { Validator, program } from './program.js';
 
 let io: NodeIO;
 
@@ -84,7 +82,7 @@ const programReady = new Promise<void>((resolve) => {
 	return getConfig().then(async (config) => {
 		io = new NodeIO(fetch).registerExtensions(config.extensions).registerDependencies(config.dependencies);
 		if (config.onProgramReady) {
-			program.command('', '\n\n👤 USER ─────────────────────────────────────────────');
+			program.section('User', '👤');
 			await config.onProgramReady({ program, io, Session });
 		}
 		resolve();
@@ -98,7 +96,7 @@ const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.u
 
 program.version(PACKAGE.version).description('Command-line interface (CLI) for the glTF Transform SDK.');
 
-program.command('', '\n\n🔎 INSPECT ──────────────────────────────────────────');
+program.section('Inspect', '🔎');
 
 // INSPECT
 program
@@ -152,11 +150,11 @@ Example:
 	)
 	.argument('<input>', INPUT_DESC)
 	.option('--limit <limit>', 'Limit number of issues to display', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 1e7,
 	})
 	.option('--ignore <CODE>,<CODE>,...', 'Issue codes to be ignored', {
-		validator: program.ARRAY,
+		validator: Validator.ARRAY,
 		default: [],
 	})
 	.option('--format <format>', 'Table output format', {
@@ -167,7 +165,7 @@ Example:
 		validate(args.input as string, options as unknown as ValidateOptions, logger as unknown as Logger);
 	});
 
-program.command('', '\n\n📦 PACKAGE ──────────────────────────────────────────');
+program.section('Package', '📦');
 
 // COPY
 program
@@ -211,15 +209,15 @@ commands or using the scripting API.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--instance <bool>', 'Use GPU instancing with shared mesh references.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--instance-min <min>', 'Number of instances required for instancing.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 5,
 	})
 	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option(
@@ -227,16 +225,16 @@ commands or using the scripting API.
 		'Minimum number of blocks in the palette texture. If fewer unique ' +
 			'material values are found, no palettes will be generated.',
 		{
-			validator: program.NUMBER,
+			validator: Validator.NUMBER,
 			default: 5,
 		},
 	)
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--simplify-error <error>', 'Simplification error tolerance, as a fraction of mesh extent.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
 	.option(
@@ -258,19 +256,19 @@ commands or using the scripting API.
 		},
 	)
 	.option('--texture-size <size>', 'Maximum texture dimensions, in pixels.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 2048,
 	})
 	.option('--flatten <bool>', 'Flatten scene graph.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--join <bool>', 'Join meshes and reduce draw calls. Requires `--flatten`.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--weld <bool>', 'Index geometry and merge similar vertices. Often required when simplifying geometry.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.action(async ({ args, options, logger }) => {
@@ -364,7 +362,7 @@ Example:
 	)
 	.argument('<path...>', `${INPUT_DESC}(s). Final path is used to write output.`)
 	.option('--partition', 'Whether to keep separate buffers for each input file. Invalid for GLB output.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(({ args, options, logger }) => {
@@ -387,11 +385,11 @@ resources as needed. Partitioning is supported only for .gltf, not .glb, files.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--animations', 'Partition each animation into a separate .bin file', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.option('--meshes', 'Partition each mesh into a separate .bin file', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(({ args, options, logger }) =>
@@ -416,23 +414,23 @@ compression and instancing, to be more effective.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--accessors <accessors>', 'Remove duplicate accessors', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--materials <materials>', 'Remove duplicate materials', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--meshes <meshes>', 'Remove duplicate meshes', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--skins <skins>', 'Remove duplicate skins', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--textures <textures>', 'Remove duplicate textures', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.action(({ args, options, logger }) => {
@@ -461,11 +459,11 @@ that are children of a scene.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--keep-attributes <keepAttributes>', 'Whether to keep unused vertex attributes', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option('--keep-leaves <keepLeaves>', 'Whether to keep empty leaf nodes', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(({ args, options, logger }) =>
@@ -525,14 +523,14 @@ ${underline('Documentation')}
 	.argument('<output>', OUTPUT_DESC)
 	.option('--packet <path>', 'Path to XMP packet (.jsonld or .json)')
 	.option('--reset', 'Reset metadata and remove XMP extension', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(async ({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(xmp({ ...options } as XMPOptions)),
 	);
 
-program.command('', '\n\n🌍 SCENE ────────────────────────────────────────────');
+program.section('Scene', '🌍');
 
 // CENTER
 program
@@ -619,11 +617,11 @@ EXT_mesh_gpu_instancing.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
 	})
 	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepNamed,
 	})
 	.action(({ args, options, logger }) =>
@@ -634,7 +632,7 @@ EXT_mesh_gpu_instancing.
 		),
 	);
 
-program.command('', '\n\n🫖 GEOMETRY ─────────────────────────────────────────');
+program.section('Geometry', '🫖');
 
 // DRACO
 program
@@ -662,31 +660,31 @@ ${underline('References')}
 		default: 'edgebreaker',
 	})
 	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.encodeSpeed,
 	})
 	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.decodeSpeed,
 	})
 	.option('--quantize-position <bits>', 'Quantization bits for POSITION, 1-16.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.quantizePosition,
 	})
 	.option('--quantize-normal <bits>', 'Quantization bits for NORMAL, 1-16.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.quantizeNormal,
 	})
 	.option('--quantize-color <bits>', 'Quantization bits for COLOR_*, 1-16.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.quantizeColor,
 	})
 	.option('--quantize-texcoord <bits>', 'Quantization bits for TEXCOORD_*, 1-16.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.quantizeTexcoord,
 	})
 	.option('--quantize-generic <bits>', 'Quantization bits for other attributes, 1-16.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.quantizeGeneric,
 	})
 	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
@@ -753,31 +751,31 @@ Requires KHR_mesh_quantization support.`.trim(),
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--pattern <pattern>', 'Pattern for vertex attributes (case-insensitive glob)', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 		default: '*',
 	})
 	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizePosition,
 	})
 	.option('--quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeNormal,
 	})
 	.option('--quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeTexcoord,
 	})
 	.option('--quantize-color <bits>', 'Precision for COLOR_* attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeColor,
 	})
 	.option('--quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeWeight,
 	})
 	.option('--quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: QUANTIZE_DEFAULTS.quantizeGeneric,
 	})
 	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
@@ -803,7 +801,7 @@ Removes KHR_mesh_quantization, if present.`.trim(),
 	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
 	.argument('<output>', 'Path to write output')
 	.option('--pattern <pattern>', 'Pattern for vertex attributes (case-insensitive glob)', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 		default: '!JOINTS_*',
 	})
 	.action(({ args, options, logger }) => {
@@ -835,11 +833,11 @@ use higher thresholds around 0.5 (±30º).
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--tolerance', 'Tolerance for vertex positions, as a fraction of primitive AABB', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: WELD_DEFAULTS.tolerance,
 	})
 	.option('--tolerance-normal', 'Tolerance for vertex normals, in radians', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: WELD_DEFAULTS.toleranceNormal,
 	})
 	.action(({ args, options, logger }) =>
@@ -887,7 +885,7 @@ compute MikkTSpace tangents at runtime.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--overwrite', 'Overwrite existing vertex tangents', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(({ args, options, logger }) =>
@@ -949,15 +947,15 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--ratio <ratio>', 'Target ratio (0–1) of vertices to keep', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.ratio,
 	})
 	.option('--error <error>', 'Limit on error, as a fraction of mesh radius', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
 	.option('--lock-border <lockBorder>', 'Whether to lock topological borders of the mesh', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: SIMPLIFY_DEFAULTS.lockBorder,
 	})
 	.action(async ({ args, options, logger }) =>
@@ -966,7 +964,7 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 		),
 	);
 
-program.command('', '\n\n🎨 MATERIAL ─────────────────────────────────────────');
+program.section('Material', '🎨');
 
 // METALROUGH
 program
@@ -1010,7 +1008,7 @@ to palette textures.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--block-size <px>', 'Size (in pixels) of a single block within each palette texture.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: PALETTE_DEFAULTS.blockSize,
 	})
 	.option(
@@ -1018,7 +1016,7 @@ to palette textures.
 		'Minimum number of blocks in the palette texture. If fewer unique ' +
 			'material values are found, no palettes will be generated.',
 		{
-			validator: program.NUMBER,
+			validator: Validator.NUMBER,
 			default: PALETTE_DEFAULTS.min,
 		},
 	)
@@ -1047,7 +1045,7 @@ Unlit materials are also helpful for non-physically-based visual styles.
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, logger }) => Session.create(io, logger, args.input, args.output).transform(unlit()));
 
-program.command('', '\n\n🖼  TEXTURE ──────────────────────────────────────────');
+program.section('Texture', '🖼');
 
 // RESIZE
 program
@@ -1065,18 +1063,18 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 	})
 	.option('--filter', 'Resampling filter', {
 		validator: [TextureResizeFilter.LANCZOS3, TextureResizeFilter.LANCZOS2],
 		default: TEXTURE_RESIZE_DEFAULTS.filter,
 	})
 	.option('--width <pixels>', 'Maximum width (px) of output textures.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		required: true,
 	})
 	.option('--height <pixels>', 'Maximum height (px) of output textures.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		required: true,
 	})
 	.action(async ({ args, options, logger }) => {
@@ -1121,20 +1119,19 @@ overall smaller filesize. Consider using less aggressive compression settings
 for normal maps than for other texture types: you may want to use UASTC for
 normal maps and ETC1S for other textures, for example.`.trim(),
 		),
-		{ sectionName: 'SUMMARY' },
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: ETC1S_DEFAULTS.filter,
 	})
 	.option('--filter-scale <fscale>', 'Specifies the filter scale to use when generating mipmaps.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: ETC1S_DEFAULTS.filterScale,
 	})
 	.option(
@@ -1150,17 +1147,17 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 			' compression, lower quality, and faster encoding. Higher gives less compression,' +
 			' higher quality, and slower encoding. Quality level determines values of' +
 			' --max_endpoints and --max-selectors, unless those values are explicitly set.',
-		{ validator: program.NUMBER, default: ETC1S_DEFAULTS.quality },
+		{ validator: Validator.NUMBER, default: ETC1S_DEFAULTS.quality },
 	)
 	.option(
 		'--max-endpoints <max_endpoints>',
 		'Manually set the maximum number of color endpoint clusters from' + ' 1-16128.',
-		{ validator: program.NUMBER },
+		{ validator: Validator.NUMBER },
 	)
 	.option(
 		'--max-selectors <max_selectors>',
 		'Manually set the maximum number of color selector clusters from' + ' 1-16128.',
-		{ validator: program.NUMBER },
+		{ validator: Validator.NUMBER },
 	)
 	.option(
 		'--power-of-two',
@@ -1168,23 +1165,23 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 			' dimensions, not exceeding 2048x2048px. Required for ' +
 			' compatibility on some older devices and APIs, particularly ' +
 			' WebGL 1.0.',
-		{ validator: program.BOOLEAN },
+		{ validator: Validator.BOOLEAN },
 	)
 	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower' +
 			' is higher quality but less quality per output bit (try 1.0-3.0).' +
 			' Overrides --quality.',
-		{ validator: program.NUMBER },
+		{ validator: Validator.NUMBER },
 	)
 	.option(
 		'--rdo-off',
 		'Disable endpoint and selector RDO (slightly' +
 			' faster, less noisy output, but lower quality per output bit).',
-		{ validator: program.BOOLEAN },
+		{ validator: Validator.BOOLEAN },
 	)
 	.option('--jobs <num_jobs>', 'Spawns up to num_jobs instances of toktx', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: ETC1S_DEFAULTS.jobs,
 	})
 	.action(({ args, options, logger }) => {
@@ -1205,20 +1202,19 @@ quality than ETC1S. While it is suitable for all texture types, you may find it
 useful to apply UASTC only where higher quality is necessary, and apply ETC1S
 for textures where the quality is sufficient.`.trim(),
 		),
-		{ sectionName: 'SUMMARY' },
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: UASTC_DEFAULTS.filter,
 	})
 	.option('--filter-scale <fscale>', 'Specifies the filter scale to use when generating mipmaps.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: UASTC_DEFAULTS.filterScale,
 	})
 	.option(
@@ -1242,7 +1238,7 @@ for textures where the quality is sufficient.`.trim(),
 			' dimensions, not exceeding 2048x2048px. Required for ' +
 			' compatibility on some older devices and APIs, particularly ' +
 			' WebGL 1.0.',
-		{ validator: program.BOOLEAN },
+		{ validator: Validator.BOOLEAN },
 	)
 	.option(
 		'--rdo <uastc_rdo_l>',
@@ -1251,32 +1247,32 @@ for textures where the quality is sufficient.`.trim(),
 			' quality/larger LZ compressed files, higher values yield lower' +
 			' quality/smaller LZ compressed files. A good range to try is [.25, 10].' +
 			' For normal maps, try [.25, .75]. Full range is [.001, 10.0].',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdo },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdo },
 	)
 	.option(
 		'--rdo-dictionary-size <uastc_rdo_d>',
 		'Set UASTC RDO dictionary size in bytes. Default is 32768. Lower' +
 			' values=faster, but give less compression. Possible range is [256, 65536].',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdoDictionarySize },
 	)
 	.option(
 		'--rdo-block-scale <uastc_rdo_b>',
 		'Set UASTC RDO max smooth block error scale. Range is [1.0, 300.0].' +
 			' Default is 10.0, 1.0 is disabled. Larger values suppress more' +
 			' artifacts (and allocate more bits) on smooth blocks.',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdoBlockScale },
 	)
 	.option(
 		'--rdo-std-dev <uastc_rdo_s>',
 		'Set UASTC RDO max smooth block standard deviation. Range is' +
 			' [.01, 65536.0]. Default is 18.0. Larger values expand the range' +
 			' of blocks considered smooth.',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.rdoStdDev },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdoStdDev },
 	)
 	.option(
 		'--rdo-multithreading <uastc_rdo_m>',
 		'Enable RDO multithreading (slightly lower compression, non-deterministic).',
-		{ validator: program.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading },
+		{ validator: Validator.BOOLEAN, default: UASTC_DEFAULTS.rdoMultithreading },
 	)
 	.option(
 		'--zstd <compressionLevel>',
@@ -1299,10 +1295,10 @@ for textures where the quality is sufficient.`.trim(),
 			'\n20    |       34 MB ' +
 			'\n21    |       67 MB ' +
 			'\n22    |      134 MB ',
-		{ validator: program.NUMBER, default: UASTC_DEFAULTS.zstd },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.zstd },
 	)
 	.option('--jobs <num_jobs>', 'Spawns up to num_jobs instances of toktx', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: UASTC_DEFAULTS.jobs,
 	})
 	.action(({ args, options, logger }) => {
@@ -1347,13 +1343,13 @@ program
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: '*',
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 50.', { validator: program.NUMBER, default: 50 })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
+	.option('--quality <quality>', 'Quality, 1-100. Default: 50.', { validator: Validator.NUMBER, default: 50 })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 44.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 44,
 	})
-	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: program.BOOLEAN, default: false })
+	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: Validator.BOOLEAN, default: false })
 	.action(({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
@@ -1380,15 +1376,15 @@ program
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: '*',
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: program.NUMBER, default: 80 })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
+	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: Validator.NUMBER, default: 80 })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 67.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 67,
 	})
-	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: program.BOOLEAN, default: false })
+	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: Validator.BOOLEAN, default: false })
 	.option('--near-lossless <nearLossless>', 'Use near lossless compression mode.', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: false,
 	})
 	.action(({ args, options, logger }) => {
@@ -1418,10 +1414,10 @@ program
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: 'image/png',
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 100.', { validator: program.NUMBER, default: 100 })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
+	.option('--quality <quality>', 'Quality, 1-100. Default: 100.', { validator: Validator.NUMBER, default: 100 })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 70.', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 70,
 	})
 	.action(({ args, options, logger }) => {
@@ -1449,8 +1445,8 @@ program
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: 'image/jpeg',
 	})
-	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: program.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: program.NUMBER, default: 80 })
+	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
+	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: Validator.NUMBER, default: 80 })
 	.action(({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
@@ -1465,7 +1461,7 @@ program
 		);
 	});
 
-program.command('', '\n\n⏯  ANIMATION ────────────────────────────────────────');
+program.section('Animation', '⏯️');
 
 // RESAMPLE
 program
@@ -1486,7 +1482,7 @@ and LINEAR interpolation. Resampling is nearly lossless, with configurable
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--tolerance', 'Per-value tolerance to merge similar keyframes', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 1e-4,
 	})
 	.action(({ args, options, logger }) =>
@@ -1517,19 +1513,19 @@ so this workflow is not a replacement for video playback.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--name <name>', 'Name of new animation', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 		default: '',
 	})
 	.option('--pattern <pattern>', 'Pattern for node names (case-insensitive glob)', {
-		validator: program.STRING,
+		validator: Validator.STRING,
 		required: true,
 	})
 	.option('--fps <fps>', 'FPS (frames / second)', {
-		validator: program.NUMBER,
+		validator: Validator.NUMBER,
 		default: 10,
 	})
 	.option('--sort <sort>', 'Order sequence by node name', {
-		validator: program.BOOLEAN,
+		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.action(({ args, options, logger }) => {
@@ -1558,15 +1554,13 @@ file sizes.
 	);
 
 program.option('--allow-http', 'Allows reads from HTTP requests.', {
-	global: true,
 	default: false,
-	validator: program.BOOLEAN,
+	validator: Validator.BOOLEAN,
 	action: ({ options }) => {
 		if (options.allowHttp) io.setAllowHTTP(true);
 	},
 });
 program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
-	global: true,
 	default: VertexLayout.INTERLEAVED,
 	validator: [VertexLayout.INTERLEAVED, VertexLayout.SEPARATE],
 	action: ({ options }) => {
@@ -1574,8 +1568,7 @@ program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
 	},
 });
 program.option('--config <path>', 'Installs custom commands or extensions. (EXPERIMENTAL)', {
-	global: true,
-	validator: program.STRING,
+	validator: Validator.STRING,
 });
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
