@@ -44,7 +44,7 @@
 		"inquirer": "^9.1.4",
 		"keyframe-resample": "^0.0.15",
 		"ktx-parse": "^0.6.0",
-		"language-tags": "^1.0.8",
+		"language-tags": "^1.0.9",
 		"listr2": "^5.0.7",
 		"meshoptimizer": "^0.19.0",
 		"micromatch": "^4.0.5",
@@ -53,7 +53,7 @@
 		"node-gzip": "^1.1.2",
 		"p-limit": "4.0.0",
 		"semver": "^7.5.4",
-		"sharp": "^0.32.0",
+		"sharp": "^0.32.5",
 		"spdx-correct": "^3.1.1",
 		"tmp": "^0.2.1"
 	},
