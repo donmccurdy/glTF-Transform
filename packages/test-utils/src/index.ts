@@ -24,9 +24,13 @@ export function resolve(path: string, base: string): string {
 }
 
 /** Creates a rounding function for given decimal precision. */
-function round(decimals: number): (v: number) => number {
+export function round(decimals = 4): (v: number) => number {
 	const f = Math.pow(10, decimals);
-	return (v: number) => Math.round(v * f) / f;
+	return (v: number) => {
+		v = Math.round(v * f) / f;
+		v = Object.is(v, -0) ? 0 : v;
+		return v;
+	};
 }
 
 /** Rounds a 3D bounding box to given decimal precision. */
