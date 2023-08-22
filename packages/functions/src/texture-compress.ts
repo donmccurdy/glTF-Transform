@@ -49,6 +49,7 @@ export interface TextureCompressOptions {
 
 export type CompressTextureOptions = Omit<TextureCompressOptions, 'pattern' | 'formats' | 'slots'>;
 
+// IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
 export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'>> =
 	{
 		resizeFilter: TextureResizeFilter.LANCZOS3,
@@ -150,7 +151,7 @@ export function textureCompress(_options: TextureCompressOptions): Transform {
 				const flag = srcImage === dstImage ? ' (SKIPPED' : '';
 
 				logger.debug(`${prefix}: Size = ${formatBytes(srcByteLength)} → ${formatBytes(dstByteLength)}${flag}`);
-			})
+			}),
 		);
 
 		// Attach EXT_texture_webp if needed.
@@ -277,7 +278,7 @@ function getFormat(texture: Texture): Format {
 	return format;
 }
 
-function remap(value: number | null | undefined, srcMax: number, dstMax: number): number | null {
-	if (value == null) return null;
+function remap(value: number | null | undefined, srcMax: number, dstMax: number): number | undefined {
+	if (value == null) return undefined;
 	return Math.round((value / srcMax) * dstMax);
 }
