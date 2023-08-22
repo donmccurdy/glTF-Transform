@@ -15,6 +15,7 @@ import {
 } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '@gltf-transform/functions';
+import { round, roundBbox } from '@gltf-transform/test-utils';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 
@@ -96,7 +97,7 @@ test('scene volume', async (t) => {
 		quantize({
 			quantizePosition: 14,
 			quantizationVolume: 'scene',
-		})
+		}),
 	);
 
 	const bboxScene = roundBbox(getBounds(scene), 3);
@@ -141,7 +142,7 @@ test('skinned mesh', async (t) => {
 		.setArray(
 			new Float32Array([
 				1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-			])
+			]),
 		);
 	nodeB.setSkin(doc.createSkin().setInverseBindMatrices(ibm));
 
@@ -162,7 +163,7 @@ test('skinned mesh', async (t) => {
 	t.deepEqual(
 		Array.from(nodeB.getSkin().getInverseBindMatrices().getArray()),
 		[50, 0, 0, 0, 0, 50, 0, 0, 0, 0, 50, 0, 50, 50, 50, 1, 50, 0, 0, 0, 0, 50, 0, 0, 0, 0, 50, 0, 50, 50, 50, 1],
-		'ibm - meshB'
+		'ibm - meshB',
 	);
 	t.is(doc.getRoot().listNodes().length, 2, 'total nodes');
 	t.is(doc.getRoot().listAccessors().length, 3, 'total accessors');
@@ -179,7 +180,7 @@ test('morph targets', async (t) => {
 		doc
 			.createAccessor()
 			.setType('VEC3')
-			.setArray(new Float32Array([5, 5, 5, 10, 5, 5, 10, 20, 5, 10, 5, 30, 40, 40, 40]))
+			.setArray(new Float32Array([5, 5, 5, 10, 5, 5, 10, 20, 5, 10, 5, 30, 40, 40, 40])),
 	);
 	const prim = createPrimitive(doc).addTarget(target);
 	prim.getAttribute('POSITION').setArray(new Float32Array([10, 10, 5, 10, 15, 5, 15, 10, 5, 15, 15, 5, 10, 10, 5]));
@@ -223,7 +224,7 @@ test('attributes', async (t) => {
 			quantizeColor: 8,
 			quantizeWeight: 10,
 			quantizeGeneric: 10,
-		})
+		}),
 	);
 
 	const normal = prim.getAttribute('NORMAL');
@@ -291,7 +292,7 @@ test('indices', async (t) => {
 		doc
 			.createAccessor()
 			.setType('SCALAR')
-			.setArray(new Uint32Array([0, 1, 2, 3, 4]))
+			.setArray(new Uint32Array([0, 1, 2, 3, 4])),
 	);
 	const indicesCopy = prim.getIndices().clone();
 
@@ -369,7 +370,7 @@ test('instancing', async (t) => {
 	t.deepEqual(
 		Array.from(batch.getAttribute('TRANSLATION').getArray()),
 		[12.5, 12.5, 0, 13.5, 13.5, 1],
-		'batch translation includes quantization transform'
+		'batch translation includes quantization transform',
 	);
 });
 
@@ -400,19 +401,6 @@ test('volumetric materials', async (t) => {
 });
 
 /* UTILITIES */
-
-/** Creates a rounding function for given decimal precision. */
-function round(decimals: number): (v: number) => number {
-	const f = Math.pow(10, decimals);
-	return (v: number) => Math.round(v * f) / f;
-}
-
-function roundBbox(bbox: bbox, decimals: number): bbox {
-	return {
-		min: bbox.min.map(round(decimals)) as vec3,
-		max: bbox.max.map(round(decimals)) as vec3,
-	};
-}
 
 function primBounds(prim: Primitive | PrimitiveTarget): bbox {
 	return {
@@ -446,9 +434,9 @@ function createScene(doc: Document): Scene {
 						15, 10, 0,
 						15, 15, 0,
 						10, 10, 0
-					])
-				)
-		)
+					]),
+				),
+		),
 	);
 
 	const meshB = doc.createMesh('B').addPrimitive(
@@ -465,9 +453,9 @@ function createScene(doc: Document): Scene {
 						100, 0, 0,
 						100, 0, 100,
 						100, 100, 0
-					])
-				)
-		)
+					]),
+				),
+		),
 	);
 
 	const nodeA = doc.createNode('A').setTranslation([10, 0, 0]).setScale([1, 1, 1]).setMesh(meshA);
@@ -486,14 +474,14 @@ function createPrimitive(doc: Document): Primitive {
 			doc
 				.createAccessor('POSITION')
 				.setType('VEC3')
-				.setArray(new Float32Array([10, 10, 0, 10, 15, 0, 15, 10, 0, 15, 15, 0, 10, 10, 0]))
+				.setArray(new Float32Array([10, 10, 0, 10, 15, 0, 15, 10, 0, 15, 15, 0, 10, 10, 0])),
 		)
 		.setAttribute(
 			'TEXCOORD_0',
 			doc
 				.createAccessor('TEXCOORD_0')
 				.setType('VEC2')
-				.setArray(new Float32Array([0.0, 0.0, 0.5, 0.5, 0.75, 0.25, 1.0, 0.0, 1.0, 1.0]))
+				.setArray(new Float32Array([0.0, 0.0, 0.5, 0.5, 0.75, 0.25, 1.0, 0.0, 1.0, 1.0])),
 		)
 		.setAttribute(
 			'NORMAL',
@@ -504,8 +492,8 @@ function createPrimitive(doc: Document): Primitive {
 					new Float32Array([
 						-0.19211, -0.93457, 0.29946, -0.08526, -0.99393, 0.06957, 0.82905, -0.39715, 0.39364, 0.37303,
 						-0.68174, 0.62934, -0.06048, 0.04752, 0.99704,
-					])
-				)
+					]),
+				),
 		)
 		.setAttribute(
 			'TANGENT',
@@ -516,8 +504,8 @@ function createPrimitive(doc: Document): Primitive {
 					new Float32Array([
 						-0.19211, -0.93457, 0.29946, 1.0, -0.08526, -0.99393, 0.06957, -1.0, 0.82905, -0.39715, 0.39364,
 						1.0, 0.37303, -0.68174, 0.62934, 1.0, -0.06048, 0.04752, 0.99704, -1.0,
-					])
-				)
+					]),
+				),
 		)
 		.setAttribute(
 			'COLOR_0',
@@ -527,29 +515,29 @@ function createPrimitive(doc: Document): Primitive {
 				.setArray(
 					new Float32Array([
 						0.19, 0.93, 0.29, 0.08, 0.99, 0.06, 0.82, 0.39, 0.39, 0.37, 0.68, 0.62, 0.06, 0.04, 0.99,
-					])
-				)
+					]),
+				),
 		)
 		.setAttribute(
 			'JOINTS_0',
 			doc
 				.createAccessor('JOINTS_0')
 				.setType('VEC4')
-				.setArray(new Float32Array([0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0]))
+				.setArray(new Float32Array([0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0])),
 		)
 		.setAttribute(
 			'WEIGHTS_0',
 			doc
 				.createAccessor('WEIGHTS_0')
 				.setType('VEC4')
-				.setArray(new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]))
+				.setArray(new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])),
 		)
 		.setAttribute(
 			'_TEMPERATURE',
 			doc
 				.createAccessor('_TEMPERATURE')
 				.setType('SCALAR')
-				.setArray(new Float32Array([0.56, 0.65, 0.85, 0.92, 0.81]))
+				.setArray(new Float32Array([0.56, 0.65, 0.85, 0.92, 0.81])),
 		);
 
 	doc.createScene().addChild(doc.createNode().setMesh(doc.createMesh().addPrimitive(prim)));

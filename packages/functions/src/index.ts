@@ -2,7 +2,7 @@ export * from './center.js';
 export * from './clear-node-parent.js';
 export * from './clear-node-transform.js';
 export * from './dedup.js';
-export * from './dequantize.js';
+export { dequantize, dequantizePrimitive, DequantizeOptions } from './dequantize.js';
 export * from './draco.js';
 export * from './flatten.js';
 export * from './get-node-scene.js';

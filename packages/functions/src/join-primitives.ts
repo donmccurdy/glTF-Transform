@@ -40,7 +40,7 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		throw new Error(
 			'' +
 				'Requires ≥2 Primitives, sharing the same Material ' +
-				'and Mode, with compatible vertex attributes and indices.'
+				'and Mode, with compatible vertex attributes and indices.',
 		);
 	}
 
