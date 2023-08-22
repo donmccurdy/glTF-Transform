@@ -35,7 +35,7 @@ test('incompatible format', async (t) => {
 	t.is(texture.getImage(), ORIGINAL_PNG, 'texture with alpha unchanged');
 
 	await document.transform(textureCompress({ encoder, targetFormat: 'png', formats: /.*/i, slots: /.*/i }));
-	t.deepEqual(calls, [['toFormat', ['png', { quality: null, effort: null }]]], '1 call');
+	t.deepEqual(calls, [['toFormat', ['png', { quality: undefined, effort: undefined }]]], '1 call');
 	t.is(texture.getMimeType(), 'image/png', 'texture with alpha optimized');
 	t.deepEqual(texture.getImage(), EXPECTED_PNG, 'texture with alpha optimized');
 });
@@ -45,7 +45,7 @@ test('size increase', async (t) => {
 	const document = new Document().setLogger(logger);
 	const texture = document.createTexture('AVIF').setImage(ORIGINAL_AVIF).setMimeType('image/avif');
 	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i, targetFormat: 'avif' }));
-	t.deepEqual(calls, [['toFormat', ['avif', { quality: null, effort: null, lossless: false }]]], '1 call');
+	t.deepEqual(calls, [['toFormat', ['avif', { quality: undefined, effort: undefined, lossless: false }]]], '1 call');
 	t.is(texture.getImage(), ORIGINAL_AVIF, 'file size not increased');
 });
 
@@ -59,10 +59,10 @@ test('original formats', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['jpeg', { quality: null }]],
-			['toFormat', ['png', { quality: null, effort: null }]],
+			['toFormat', ['jpeg', { quality: undefined }]],
+			['toFormat', ['png', { quality: undefined, effort: undefined }]],
 		],
-		'2 calls'
+		'2 calls',
 	);
 	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg mime type unchanged');
 	t.is(texturePNG.getMimeType(), 'image/png', 'png mime type unchanged');
@@ -107,10 +107,10 @@ test('jpeg', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['jpeg', { quality: null }]],
-			['toFormat', ['jpeg', { quality: null }]],
+			['toFormat', ['jpeg', { quality: undefined }]],
+			['toFormat', ['jpeg', { quality: undefined }]],
 		],
-		'2 calls'
+		'2 calls',
 	);
 	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg → image/jpeg');
 	t.is(texturePNG.getMimeType(), 'image/jpeg', 'png → image/jpeg');
@@ -137,10 +137,10 @@ test('png', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['png', { quality: null, effort: null }]],
-			['toFormat', ['png', { quality: null, effort: null }]],
+			['toFormat', ['png', { quality: undefined, effort: undefined }]],
+			['toFormat', ['png', { quality: undefined, effort: undefined }]],
 		],
-		'2 calls'
+		'2 calls',
 	);
 	t.is(textureJPEG.getMimeType(), 'image/png', 'jpeg → image/png');
 	t.is(texturePNG.getMimeType(), 'image/png', 'png → image/png');
@@ -167,10 +167,10 @@ test('webp', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['webp', { quality: null, effort: null, lossless: false, nearLossless: false }]],
-			['toFormat', ['webp', { quality: null, effort: null, lossless: false, nearLossless: false }]],
+			['toFormat', ['webp', { quality: undefined, effort: undefined, lossless: false, nearLossless: false }]],
+			['toFormat', ['webp', { quality: undefined, effort: undefined, lossless: false, nearLossless: false }]],
 		],
-		'2 calls'
+		'2 calls',
 	);
 	t.is(textureJPEG.getMimeType(), 'image/webp', 'jpeg → image/webp');
 	t.is(texturePNG.getMimeType(), 'image/webp', 'png → image/webp');

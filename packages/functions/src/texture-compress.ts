@@ -50,17 +50,16 @@ export interface TextureCompressOptions {
 export type CompressTextureOptions = Omit<TextureCompressOptions, 'pattern' | 'formats' | 'slots'>;
 
 // IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
-export const TEXTURE_COMPRESS_DEFAULTS: Required<Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'>> =
-	{
-		resizeFilter: TextureResizeFilter.LANCZOS3,
-		pattern: null,
-		formats: null,
-		slots: null,
-		quality: null,
-		effort: null,
-		lossless: false,
-		nearLossless: false,
-	};
+export const TEXTURE_COMPRESS_DEFAULTS: Omit<TextureCompressOptions, 'resize' | 'targetFormat' | 'encoder'> = {
+	resizeFilter: TextureResizeFilter.LANCZOS3,
+	pattern: undefined,
+	formats: undefined,
+	slots: undefined,
+	quality: undefined,
+	effort: undefined,
+	lossless: false,
+	nearLossless: false,
+};
 
 /**
  * Optimizes images, optionally resizing or converting to JPEG, PNG, WebP, or AVIF formats.
