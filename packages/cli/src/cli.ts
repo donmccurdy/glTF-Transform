@@ -293,7 +293,7 @@ commands or using the scripting API.
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
 		if (opts.palette) transforms.push(palette({ min: opts.paletteMin }));
 		if (opts.flatten) transforms.push(flatten());
-		if (opts.join) transforms.push(dequantize(), join());
+		if (opts.join) transforms.push(join());
 
 		if (opts.weld) {
 			transforms.push(
