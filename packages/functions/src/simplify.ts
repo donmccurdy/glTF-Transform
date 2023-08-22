@@ -10,6 +10,7 @@ import {
 import { weld } from './weld.js';
 import type { MeshoptSimplifier } from 'meshoptimizer';
 import { dedup } from './dedup.js';
+import { prune } from './prune.js';
 
 const NAME = 'simplify';
 
@@ -88,13 +89,22 @@ export function simplify(_options: SimplifyOptions): Transform {
 			for (const prim of mesh.listPrimitives()) {
 				if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
 					logger.warn(
-						`${NAME}: Skipping primitive of mesh "${mesh.getName()}": Requires TRIANGLES draw mode.`
+						`${NAME}: Skipping primitive of mesh "${mesh.getName()}": Requires TRIANGLES draw mode.`,
 					);
 					continue;
 				}
 				simplifyPrimitive(document, prim, options);
+
+				if (prim.getIndices()!.getCount() === 0) prim.dispose();
 			}
+
+			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
+
+		// Where simplification removes meshes, we may need to prune leaf nodes.
+		await document.transform(
+			prune({ keepLeaves: false, propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }),
+		);
 
 		// Where multiple primitive indices point into the same vertex streams, simplification
 		// may write duplicate streams. Find and remove the duplicates after processing.
@@ -150,7 +160,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 		3,
 		targetCount,
 		options.error,
-		options.lockBorder ? ['LockBorder'] : []
+		options.lockBorder ? ['LockBorder'] : [],
 	);
 
 	const [remap, unique] = simplifier.compactMesh(dstIndicesArray);
