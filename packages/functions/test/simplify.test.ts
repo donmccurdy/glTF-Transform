@@ -92,6 +92,26 @@ test('shared accessors', async (t) => {
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
 
+test('degenerate', async (t) => {
+	const document = new Document().setLogger(logger);
+	const position = document
+		.createAccessor()
+		.setArray(new Float32Array([0, 0, 0, 0, 0.01, 0, 0, 0, 1]))
+		.setType('VEC3');
+	const prim = document.createPrimitive().setAttribute('POSITION', position);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode().setMesh(mesh);
+	const scene = document.createScene().addChild(node);
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.01, error: 0.1 }));
+
+	t.true(prim.isDisposed(), 'prim disposed');
+	t.true(mesh.isDisposed(), 'mesh disposed');
+	t.true(node.isDisposed(), 'node disposed');
+	t.false(scene.isDisposed(), 'scene kept');
+	t.is(getVertexCount(document), 0, '0 vertices');
+});
+
 /* UTILITIES */
 
 /** Creates a rounding function for given decimal precision. */
@@ -123,8 +143,8 @@ function splitPrim(prim: Primitive, start: number, end: number) {
 	indices.setArray(
 		indicesArray.slice(
 			Math.floor((start * indices.getCount()) / 3) * 3,
-			Math.ceil((end * indices.getCount()) / 3) * 3
-		)
+			Math.ceil((end * indices.getCount()) / 3) * 3,
+		),
 	);
 	prim.setIndices(indices);
 }
