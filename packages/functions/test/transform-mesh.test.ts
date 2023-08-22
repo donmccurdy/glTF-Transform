@@ -1,6 +1,6 @@
 import test from 'ava';
 import { bbox, Document, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
-import { logger, mat4 } from '@gltf-transform/test-utils';
+import { logger, mat4, round, roundBbox } from '@gltf-transform/test-utils';
 import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
 
 test('basic', async (t) => {
@@ -119,7 +119,7 @@ test('morph targets', async (t) => {
 				0, 1, 0,
 				0, 1, 0,
 				0, 1, 0,
-			])
+			]),
 		);
 	const target = document.createPrimitiveTarget().setAttribute('POSITION', targetPosition);
 	const prim = createPrimitive(document).addTarget(target);
@@ -143,7 +143,7 @@ test('morph targets', async (t) => {
 			0, 2, 0,
 			0, 2, 0,
 		],
-		'scales target position'
+		'scales target position',
 	);
 
 	t.deepEqual(
@@ -155,28 +155,11 @@ test('morph targets', async (t) => {
 			0, 1, 0,
 			0, 1, 0,
 		],
-		'skips shared target position'
+		'skips shared target position',
 	);
 });
 
 /* UTILITIES */
-
-/** Creates a rounding function for given decimal precision. */
-function round(decimals = 4): (v: number) => number {
-	const f = Math.pow(10, decimals);
-	return (v: number) => {
-		v = Math.round(v * f) / f;
-		v = Object.is(v, -0) ? 0 : v;
-		return v;
-	};
-}
-
-function roundBbox(bbox: bbox, decimals = 4): bbox {
-	return {
-		min: bbox.min.map(round(decimals)) as vec3,
-		max: bbox.max.map(round(decimals)) as vec3,
-	};
-}
 
 function primBounds(prim: Primitive | PrimitiveTarget): bbox {
 	return {
@@ -200,7 +183,7 @@ function createPrimitive(document: Document): Primitive {
 					0.5, 10, -0.5,
 					-0.5, 10, -0.5,
 					-0.5, 10, 0.5,
-				]))
+				])),
 		)
 		.setAttribute(
 			'NORMAL',
@@ -215,7 +198,7 @@ function createPrimitive(document: Document): Primitive {
 						0, 1, 0,
 						0, 1, 0,
 					])
-				)
+				),
 		)
 		.setAttribute(
 			'TANGENT',
@@ -230,7 +213,7 @@ function createPrimitive(document: Document): Primitive {
 						1, 0, 0, 1,
 						1, 0, 0, 1,
 					])
-				)
+				),
 		);
 	return prim;
 }

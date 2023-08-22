@@ -1,9 +1,9 @@
 import test from 'ava';
 import path, { dirname } from 'path';
-import { bbox, getBounds, Document, NodeIO, Primitive, vec3 } from '@gltf-transform/core';
+import { getBounds, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { weld, unweld, simplify } from '@gltf-transform/functions';
-import { logger } from '@gltf-transform/test-utils';
+import { logger, roundBbox } from '@gltf-transform/test-utils';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'url';
@@ -113,19 +113,6 @@ test('degenerate', async (t) => {
 });
 
 /* UTILITIES */
-
-/** Creates a rounding function for given decimal precision. */
-function round(decimals: number): (v: number) => number {
-	const f = Math.pow(10, decimals);
-	return (v: number) => Math.round(v * f) / f;
-}
-
-function roundBbox(bbox: bbox, decimals: number): bbox {
-	return {
-		min: bbox.min.map(round(decimals)) as vec3,
-		max: bbox.max.map(round(decimals)) as vec3,
-	};
-}
 
 function getVertexCount(document: Document): number {
 	let count = 0;

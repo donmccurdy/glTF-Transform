@@ -14,6 +14,7 @@ import { joinPrimitives } from './join-primitives.js';
 import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
 import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
+import { dequantizeAttribute } from './dequantize.js';
 
 const NAME = 'join';
 
@@ -96,7 +97,7 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 				propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
 				keepLeaves: false,
 				keepAttributes: true,
-			})
+			}),
 		);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -142,6 +143,8 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			// Skip prims with volumetric materials; unsupported.
 			const material = prim.getMaterial();
 			if (material && material.getExtension('KHR_materials_volume')) continue;
+
+			dequantizeTransformableAttributes(prim);
 
 			let key = createPrimGroupKey(prim);
 
@@ -219,7 +222,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 		logger.debug(
 			`${NAME}: Joined Primitives (${prims.length}) containing ` +
-				`${formatLong(dstVertexCount)} vertices under Node "${dstNode.getName()}".`
+				`${formatLong(dstVertexCount)} vertices under Node "${dstNode.getName()}".`,
 		);
 	}
 }
@@ -243,4 +246,19 @@ function hasSharedAttributes(prim: Primitive): boolean {
 		}
 	}
 	return false;
+}
+
+/**
+ * Dequantize attributes that would be affected by {@link transformPrimitive},
+ * to avoid invalidating our primitive group keys.
+ *
+ * See: https://github.com/donmccurdy/glTF-Transform/issues/844
+ */
+function dequantizeTransformableAttributes(prim: Primitive) {
+	for (const semantic of ['POSITION', 'NORMAL', 'TANGENT']) {
+		const attribute = prim.getAttribute(semantic);
+		if (attribute && attribute.getComponentSize() < 4) {
+			dequantizeAttribute(semantic, attribute, { pattern: /.*/ });
+		}
+	}
 }

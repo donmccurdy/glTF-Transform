@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '@gltf-transform/functions';
+import { round } from '@gltf-transform/test-utils';
 
 test('basic', async (t) => {
 	const prim = createSkinnedPrimitive();
@@ -118,12 +119,4 @@ function createSkinnedPrimitive() {
 		.setAttribute('WEIGHTS_1', document.createAccessor().setType('VEC4').setArray(weights1))
 		.setAttribute('JOINTS_0', document.createAccessor().setType('VEC4').setArray(joints0))
 		.setAttribute('JOINTS_1', document.createAccessor().setType('VEC4').setArray(joints1));
-}
-
-/* UTILITIES */
-
-/** Creates a rounding function for given decimal precision. */
-function round(decimals: number): (v: number) => number {
-	const f = Math.pow(10, decimals);
-	return (v: number) => Math.round(v * f) / f;
 }

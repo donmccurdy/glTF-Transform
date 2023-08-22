@@ -1,4 +1,4 @@
-import { PlatformIO, WebIO, NodeIO, Logger } from '@gltf-transform/core';
+import { PlatformIO, WebIO, NodeIO, Logger, bbox, vec3 as _vec3 } from '@gltf-transform/core';
 
 export enum Environment {
 	WEB,
@@ -21,6 +21,24 @@ export const createPlatformIO = async (): Promise<PlatformIO> => {
 
 export function resolve(path: string, base: string): string {
 	return new URL(path, base).pathname;
+}
+
+/** Creates a rounding function for given decimal precision. */
+export function round(decimals = 4): (v: number) => number {
+	const f = Math.pow(10, decimals);
+	return (v: number) => {
+		v = Math.round(v * f) / f;
+		v = Object.is(v, -0) ? 0 : v;
+		return v;
+	};
+}
+
+/** Rounds a 3D bounding box to given decimal precision. */
+export function roundBbox(bbox: bbox, decimals = 4): bbox {
+	return {
+		min: bbox.min.map(round(decimals)) as _vec3,
+		max: bbox.max.map(round(decimals)) as _vec3,
+	};
 }
 
 // bundle and re-export these, because the tests can't import them directly.
