@@ -1334,6 +1334,7 @@ and require less tuning to achieve good visual and filesize results.
 `.trim();
 
 // AVIF
+// IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
 program
 	.command('avif', 'AVIF texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'AVIF'))
@@ -1344,12 +1345,9 @@ program
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 50.', { validator: Validator.NUMBER, default: 50 })
-	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 44.', {
-		validator: Validator.NUMBER,
-		default: 44,
-	})
-	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: Validator.BOOLEAN, default: false })
+	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
+	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
+	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
 	.action(({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
@@ -1367,6 +1365,7 @@ program
 	});
 
 // WEBP
+// IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
 program
 	.command('webp', 'WebP texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
@@ -1377,12 +1376,9 @@ program
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: Validator.NUMBER, default: 80 })
-	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 67.', {
-		validator: Validator.NUMBER,
-		default: 67,
-	})
-	.option('--lossless <lossless>', 'Use lossless compression mode.', { validator: Validator.BOOLEAN, default: false })
+	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
+	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
+	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
 	.option('--near-lossless <nearLossless>', 'Use near lossless compression mode.', {
 		validator: Validator.BOOLEAN,
 		default: false,
@@ -1405,6 +1401,7 @@ program
 	});
 
 // PNG
+// IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
 program
 	.command('png', 'PNG texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'PNG'))
@@ -1415,11 +1412,8 @@ program
 		default: 'image/png',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 100.', { validator: Validator.NUMBER, default: 100 })
-	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100. Default: 70.', {
-		validator: Validator.NUMBER,
-		default: 70,
-	})
+	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
+	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.action(({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
@@ -1436,6 +1430,7 @@ program
 	});
 
 // JPEG
+// IMPORTANT: No defaults for quality flags, see https://github.com/donmccurdy/glTF-Transform/issues/969.
 program
 	.command('jpeg', 'JPEG texture compression')
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'JPEG'))
@@ -1446,7 +1441,7 @@ program
 		default: 'image/jpeg',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
-	.option('--quality <quality>', 'Quality, 1-100. Default: 80.', { validator: Validator.NUMBER, default: 80 })
+	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.action(({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
