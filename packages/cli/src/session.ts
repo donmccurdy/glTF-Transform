@@ -1,23 +1,28 @@
-import { Document, NodeIO, Logger, FileUtils, Transform, Format, ILogger } from '@gltf-transform/core';
+import { Document, NodeIO, FileUtils, Transform, Format, Verbosity } from '@gltf-transform/core';
 import type { Packet, KHRXMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, ListrTask } from 'listr2';
 import { dim, formatBytes, formatLong, XMPContext } from './util.js';
-import type caporal from '@caporal/core';
 import { performance } from 'perf_hooks'; // global in Node.js v16+
+import { Logger } from './program.js';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
 	private _outputFormat: Format;
 	private _display = false;
 
-	constructor(private _io: NodeIO, private _logger: ILogger, private _input: string, private _output: string) {
+	constructor(
+		private _io: NodeIO,
+		private _logger: Logger,
+		private _input: string,
+		private _output: string,
+	) {
 		_io.setLogger(_logger);
 		this._outputFormat = FileUtils.extension(_output) === 'glb' ? Format.GLB : Format.GLTF;
 	}
 
-	public static create(io: NodeIO, logger: unknown, input: unknown, output: unknown): Session {
-		return new Session(io, logger as Logger, input as string, output as string);
+	public static create(io: NodeIO, logger: Logger, input: unknown, output: unknown): Session {
+		return new Session(io, logger, input as string, output as string);
 	}
 
 	public setDisplay(display: boolean): this {
@@ -26,7 +31,7 @@ export class Session {
 	}
 
 	public async transform(...transforms: Transform[]): Promise<void> {
-		const logger = this._logger as caporal.Logger;
+		const logger = this._logger;
 		const document = this._input
 			? (await this._io.read(this._input)).setLogger(this._logger)
 			: new Document().setLogger(this._logger);
@@ -57,14 +62,14 @@ export class Session {
 				});
 			}
 
-			const prevLevel = logger.level;
-			if (prevLevel === 'info') logger.level = 'warn';
+			const prevLevel = logger.getVerbosity();
+			if (prevLevel === Verbosity.INFO) logger.setVerbosity(Verbosity.WARN);
 
 			// Simple renderer shows warnings and errors. Disable signal listeners so Ctrl+C works.
 			await new Listr(tasks, { renderer: 'simple', registerSignalListeners: false }).run();
 			console.log('');
 
-			logger.level = prevLevel;
+			logger.setVerbosity(prevLevel);
 		} else {
 			await document.transform(...transforms);
 		}
@@ -85,7 +90,7 @@ export class Session {
 			const input = FileUtils.basename(this._input) + '.' + FileUtils.extension(this._input);
 			const output = FileUtils.basename(this._output) + '.' + FileUtils.extension(this._output);
 			this._logger.info(
-				`${input} (${formatBytes(lastReadBytes)})` + ` → ${output} (${formatBytes(lastWriteBytes)})`
+				`${input} (${formatBytes(lastReadBytes)})` + ` → ${output} (${formatBytes(lastWriteBytes)})`,
 			);
 		}
 	}
