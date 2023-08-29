@@ -37,7 +37,7 @@ export function isTransformPending(context: TransformContext | undefined, initia
 export async function rewriteTexture(
 	source: Texture,
 	target: Texture,
-	fn: (pixels: NdArray, i: number, j: number) => void
+	fn: (pixels: NdArray, i: number, j: number) => void,
 ): Promise<Texture | null> {
 	if (!source) return null;
 
@@ -163,6 +163,17 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 	for (const target of prim.listTargets()) {
 		target.swap(src, dst);
 	}
+}
+
+/** @hidden */
+export function deepEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null) {
+	if (a == null && b == null) return true;
+	if (a == null || b == null) return false;
+	if (a.length !== b.length) return false;
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
 }
 
 /** @hidden */
