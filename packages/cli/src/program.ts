@@ -1,4 +1,4 @@
-import _program, { Command, Logger as WinstonLogger } from '@donmccurdy/caporal';
+import { program as _program, Command, Logger as WinstonLogger } from '@donmccurdy/caporal';
 import { ILogger, Verbosity } from '@gltf-transform/core';
 
 const PAD_EMOJI = new Set(['🫖', '🖼', '⏯️']);
