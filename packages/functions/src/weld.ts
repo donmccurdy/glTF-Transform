@@ -101,20 +101,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * @category Transforms
  */
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
-	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
-
-	if (options.tolerance < 0 || options.tolerance > 0.1) {
-		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
-	}
-
-	if (options.toleranceNormal < 0 || options.toleranceNormal > Math.PI / 2) {
-		throw new Error(`${NAME}: Requires 0 ≤ toleranceNormal ≤ ${(Math.PI / 2).toFixed(2)}`);
-	}
-
-	if (options.tolerance > 0) {
-		options.tolerance = Math.max(options.tolerance, Number.EPSILON);
-		options.toleranceNormal = Math.max(options.toleranceNormal, Number.EPSILON);
-	}
+	const options = expandWeldOptions(_options);
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -129,10 +116,10 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-        if (options.tolerance > 0) {
-            // If tolerance is greater than 0, welding may remove a mesh, so we prune
-		    await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }));
-        }
+		if (options.tolerance > 0) {
+			// If tolerance is greater than 0, welding may remove a mesh, so we prune
+			await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }));
+		}
 
 		await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 
@@ -149,7 +136,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
  * welding based on distance between the vertices as a fraction of the primitive's
  * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
  * of the AABB's longest dimension. Other vertex attributes are also compared
- * during welding, with attribute-specific thresholds. For --tolerance=0, geometry
+ * during welding, with attribute-specific thresholds. For tolerance=0, geometry
  * is indexed in place, without merging.
  *
  * Example:
@@ -161,17 +148,38 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
  * 	.find((mesh) => mesh.getName() === 'Gizmo');
  *
  * for (const prim of mesh.listPrimitives()) {
- *   weldPrimitive(document, prim, {tolerance: 0.0001});
+ *   weldPrimitive(prim, {tolerance: 0.0001});
  * }
  * ```
+ *
+ * @privateRemarks TODO(v4): Remove the "Document" parameter.
  */
-export function weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
-	if (prim.getIndices() && !options.overwrite) return;
-	if (prim.getMode() === Primitive.Mode.POINTS) return;
-	if (options.tolerance === 0) {
-		_indexPrimitive(doc, prim);
+export function weldPrimitive(
+	a: Document | Primitive,
+	b: Primitive | WeldOptions = WELD_DEFAULTS,
+	c = WELD_DEFAULTS,
+): void {
+	let _document: Document;
+	let _prim: Primitive;
+	let _options: Required<WeldOptions>;
+	if (a instanceof Primitive) {
+		const graph = a.getGraph();
+		_document = Document.fromGraph(graph)!;
+		_prim = a;
+		_options = expandWeldOptions(b as WeldOptions);
 	} else {
-		_weldPrimitive(doc, prim, options);
+		_document = a;
+		_prim = b as Primitive;
+		_options = expandWeldOptions(c as WeldOptions);
+	}
+
+	if (_prim.getIndices() && !_options.overwrite) return;
+	if (_prim.getMode() === Primitive.Mode.POINTS) return;
+
+	if (_options.tolerance === 0) {
+		_indexPrimitive(_document, _prim);
+	} else {
+		_weldPrimitive(_document, _prim, _options);
 	}
 }
 
@@ -320,7 +328,7 @@ function swapAttributes(
 	parent: Primitive | PrimitiveTarget,
 	srcAttr: Accessor,
 	reorder: number[],
-	dstCount: number
+	dstCount: number,
 ): void {
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
@@ -402,4 +410,23 @@ function getGridKey(p: vec3, cellSize: number): string {
 	const cellY = Math.round(p[1] / cellSize);
 	const cellZ = Math.round(p[2] / cellSize);
 	return cellX + ':' + cellY + ':' + cellZ;
+}
+
+function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {
+	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
+
+	if (options.tolerance < 0 || options.tolerance > 0.1) {
+		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
+	}
+
+	if (options.toleranceNormal < 0 || options.toleranceNormal > Math.PI / 2) {
+		throw new Error(`${NAME}: Requires 0 ≤ toleranceNormal ≤ ${(Math.PI / 2).toFixed(2)}`);
+	}
+
+	if (options.tolerance > 0) {
+		options.tolerance = Math.max(options.tolerance, Number.EPSILON);
+		options.toleranceNormal = Math.max(options.toleranceNormal, Number.EPSILON);
+	}
+
+	return options;
 }
