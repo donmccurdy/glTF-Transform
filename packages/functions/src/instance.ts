@@ -1,4 +1,4 @@
-import { Document, ILogger, MathUtils, Mesh, Node, Transform, vec3, vec4 } from '@gltf-transform/core';
+import { Document, ILogger, MathUtils, Mesh, Node, Primitive, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
 
@@ -65,6 +65,10 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 				const nodes = Array.from(meshInstances.get(mesh)!);
 				if (nodes.length < options.min) continue;
 				if (nodes.some((node) => node.getSkin())) continue;
+
+				// Cannot preserve volumetric effects when instancing with varying scale.
+				// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/AttenuationTest
+				if (mesh.listPrimitives().some(hasVolume) && nodes.some(hasScale)) continue;
 
 				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
 				const batchTranslation = batch.getAttribute('TRANSLATION')!;
@@ -141,6 +145,16 @@ function pruneUnusedNodes(nodes: Node[], logger: ILogger): void {
 	}
 
 	logger.debug(`${NAME}: Removed ${unusedNodes} unused nodes.`);
+}
+
+function hasVolume(prim: Primitive) {
+	const material = prim.getMaterial();
+	return !!(material && material.getExtension('KHR_materials_volume'));
+}
+
+function hasScale(node: Node) {
+	const scale = node.getWorldScale();
+	return !MathUtils.eq(scale, [1, 1, 1]);
 }
 
 function createBatch(doc: Document, batchExtension: EXTMeshGPUInstancing, mesh: Mesh, count: number): InstancedMesh {
