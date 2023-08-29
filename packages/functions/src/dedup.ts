@@ -13,7 +13,7 @@ import {
 	Texture,
 	Transform,
 } from '@gltf-transform/core';
-import { createTransform, deepEqualsArray } from './utils.js';
+import { createTransform, shallowEqualsArray } from './utils.js';
 
 const NAME = 'dedup';
 
@@ -318,7 +318,7 @@ function dedupSkins(document: Document): void {
 
 			// Check joints with shallow equality, not deep equality.
 			// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
-			if (a.equals(b, skip) && deepEqualsArray(a.listJoints(), b.listJoints())) {
+			if (a.equals(b, skip) && shallowEqualsArray(a.listJoints(), b.listJoints())) {
 				duplicates.set(b, a);
 			}
 		}

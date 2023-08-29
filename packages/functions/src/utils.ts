@@ -166,7 +166,7 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 }
 
 /** @hidden */
-export function deepEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null) {
+export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null) {
 	if (a == null && b == null) return true;
 	if (a == null || b == null) return false;
 	if (a.length !== b.length) return false;
