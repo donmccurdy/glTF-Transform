@@ -1,8 +1,10 @@
-import type { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
+import { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
 import { createIndices } from './utils.js';
+import { weldPrimitive } from './weld.js';
+import { determinant } from 'gl-matrix/mat4';
 
 /**
  * Applies a transform matrix to a {@link Primitive}.
@@ -60,6 +62,12 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 		if (tangent) {
 			applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
 		}
+	}
+
+	// Reverse winding order if scale is negative.
+	// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/NegativeScaleTest
+	if (determinant(matrix) < 0) {
+		reversePrimitiveWindingOrder(prim);
 	}
 
 	// Update mask.
@@ -133,5 +141,18 @@ function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Ar
 		attribute.setElement(index, v4);
 
 		skipIndices.add(index);
+	}
+}
+
+function reversePrimitiveWindingOrder(prim: Primitive) {
+	if (prim.getMode() !== Primitive.Mode.TRIANGLES) return;
+	if (!prim.getIndices()) weldPrimitive(prim, { tolerance: 0 });
+
+	const indices = prim.getIndices()!;
+	for (let i = 0, il = indices.getCount(); i < il; i += 3) {
+		const a = indices.getScalar(i);
+		const c = indices.getScalar(i + 2);
+		indices.setScalar(i, c);
+		indices.setScalar(i + 2, a);
 	}
 }
