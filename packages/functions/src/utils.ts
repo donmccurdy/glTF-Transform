@@ -9,6 +9,7 @@ import {
 	Texture,
 	Transform,
 	TransformContext,
+	vec2,
 } from '@gltf-transform/core';
 
 /**
@@ -245,4 +246,27 @@ export function createPrimGroupKey(prim: Primitive): string {
 		.join('~');
 
 	return `${materialIndex}|${mode}|${indices}|${attributes}|${targets}`;
+}
+
+/** @hidden */
+export function fitWithin(size: vec2, limit: vec2): vec2 {
+	const [maxWidth, maxHeight] = limit;
+	const [srcWidth, srcHeight] = size;
+
+	if (srcWidth <= maxWidth && srcHeight <= maxHeight) return size;
+
+	let dstWidth = srcWidth;
+	let dstHeight = srcHeight;
+
+	if (dstWidth > maxWidth) {
+		dstHeight = Math.floor(dstHeight * (maxWidth / dstWidth));
+		dstWidth = maxWidth;
+	}
+
+	if (dstHeight > maxHeight) {
+		dstWidth = Math.floor(dstWidth * (maxHeight / dstHeight));
+		dstHeight = maxHeight;
+	}
+
+	return [dstWidth, dstHeight];
 }
