@@ -1,7 +1,10 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
+import { EXTTextureWebP } from '@gltf-transform/extensions';
 import { textureCompress } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import ndarray from 'ndarray';
+import { savePixels } from 'ndarray-pixels';
 
 const ORIGINAL_JPEG = new Uint8Array([1, 2, 3, 4]);
 const ORIGINAL_PNG = new Uint8Array([5, 6, 7, 8]);
@@ -12,6 +15,8 @@ const EXPECTED_JPEG = new Uint8Array([101, 102]);
 const EXPECTED_PNG = new Uint8Array([103, 104]);
 const EXPECTED_WEBP = new Uint8Array([105]);
 const EXPECTED_AVIF = new Uint8Array([106, 107, 108]); // larger than original; skipped.
+
+const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
 test('unknown format', async (t) => {
 	const { encoder, calls } = createMockEncoder();
@@ -178,6 +183,31 @@ test('webp', async (t) => {
 	t.is(texturePNG.getURI(), 'normal.webp', '.png → .webp');
 	t.deepEqual(textureJPEG.getImage(), EXPECTED_WEBP, 'jpeg optimized');
 	t.deepEqual(texturePNG.getImage(), EXPECTED_WEBP, 'png optimized');
+});
+
+test('fallback to ndarray-pixels', async (t) => {
+	const document = new Document().setLogger(logger);
+	document.createExtension(EXTTextureWebP);
+
+	const textureA = document
+		.createTexture('JPEG')
+		.setImage(await savePixels(NON_SQUARE, 'image/jpeg'))
+		.setMimeType('image/jpeg');
+	const textureB = document
+		.createTexture('PNG')
+		.setImage(await savePixels(NON_SQUARE, 'image/png'))
+		.setMimeType('image/png');
+
+	await document.transform(textureCompress({ targetFormat: 'webp', resize: [128, 128] }));
+
+	t.is(textureA.getMimeType(), 'image/webp');
+	t.is(textureB.getMimeType(), 'image/webp');
+
+	// TODO(cleanup): Not registered automatically without I/O.
+	EXTTextureWebP.register();
+
+	t.deepEqual(textureA.getSize(), [64, 128]);
+	t.deepEqual(textureB.getSize(), [64, 128]);
 });
 
 function createMockEncoder() {

@@ -1,9 +1,9 @@
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import type { Document, Transform, vec2 } from '@gltf-transform/core';
+import { MathUtils, type Document, type Transform, type vec2 } from '@gltf-transform/core';
 import { listTextureSlots } from './list-texture-slots.js';
-import { createTransform } from './utils.js';
+import { createTransform, fitWithin } from './utils.js';
 
 const NAME = 'textureResize';
 
@@ -43,8 +43,10 @@ export const TEXTURE_RESIZE_DEFAULTS: TextureResizeOptions = {
  *
  * Implementation provided by [ndarray-lanczos](https://github.com/donmccurdy/ndarray-lanczos)
  * package, which works in Web and Node.js environments. For a faster and more robust implementation
- * based on Sharp (available only in Node.js), use {@link textureCompress} with the 'resize' option.
+ * in Node.js, use {@link textureCompress}, providing a Sharp encoder and 'resize' options instead.
  *
+ * @deprecated Prefer {@link textureCompress}, instead.
+ * @privateRemarks TODO(v4): Remove this function, using `textureCompress()` instead.
  * @category Transforms
  */
 export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DEFAULTS): Transform {
@@ -73,30 +75,17 @@ export function textureResize(_options: TextureResizeOptions = TEXTURE_RESIZE_DE
 				continue;
 			}
 
-			const [maxWidth, maxHeight] = options.size;
-			const [srcWidth, srcHeight] = texture.getSize()!;
+			const srcSize = texture.getSize()!;
+			const dstSize = fitWithin(srcSize, options.size);
 
-			if (srcWidth <= maxWidth && srcHeight <= maxHeight) {
+			if (MathUtils.eq(srcSize, dstSize)) {
 				logger.debug(`${NAME}: Skipping, not within size range.`);
 				continue;
 			}
 
-			let dstWidth = srcWidth;
-			let dstHeight = srcHeight;
-
-			if (dstWidth > maxWidth) {
-				dstHeight = Math.floor(dstHeight * (maxWidth / dstWidth));
-				dstWidth = maxWidth;
-			}
-
-			if (dstHeight > maxHeight) {
-				dstWidth = Math.floor(dstWidth * (maxHeight / dstHeight));
-				dstHeight = maxHeight;
-			}
-
 			const srcImage = texture.getImage()!;
 			const srcPixels = (await getPixels(srcImage, texture.getMimeType())) as ndarray.NdArray<Uint8Array>;
-			const dstPixels = ndarray(new Uint8Array(dstWidth * dstHeight * 4), [dstWidth, dstHeight, 4]);
+			const dstPixels = ndarray(new Uint8Array(dstSize[0] * dstSize[1] * 4), [...dstSize, 4]);
 
 			logger.debug(`${NAME}: Resizing "${uri || name}", ${srcPixels.shape} → ${dstPixels.shape}...`);
 			logger.debug(`${NAME}: Slots → [${slots.join(', ')}]`);
