@@ -46,6 +46,10 @@ class ProgramImpl implements IInternalProgram {
 		_program.description(desc);
 		return this;
 	}
+	help(help: string) {
+		_program.help(help);
+		return this;
+	}
 	section(_name: string, _icon: string) {
 		const icon = _icon + (PAD_EMOJI.has(_icon) ? ' ' : '');
 		const name = _name.toUpperCase();

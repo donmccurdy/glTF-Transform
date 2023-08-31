@@ -94,7 +94,10 @@ const OUTPUT_DESC = 'Path to write output';
 
 const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
 
-program.version(PACKAGE.version).description('Command-line interface (CLI) for the glTF Transform SDK.');
+program
+	.version(PACKAGE.version)
+	.help('HELLO WORLD')
+	.description('Command-line interface (CLI) for the glTF Transform SDK.');
 
 program.section('Inspect', '🔎');
 
