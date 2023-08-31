@@ -40,6 +40,7 @@ export {
 	getBounds,
 	bounds,
 	uuid,
+	getTextureColorSpace,
 } from './utils/index.js';
 export {
 	TypedArray,

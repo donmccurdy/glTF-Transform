@@ -1,6 +1,4 @@
-import { Texture } from '@gltf-transform/core';
-
-const SRGB_PATTERN = /color|emissive|diffuse/i;
+import { Texture, getTextureColorSpace as _getTextureColorSpace } from '@gltf-transform/core';
 
 /**
  * Returns the color space (if any) implied by the {@link Material} slots to
@@ -24,10 +22,5 @@ const SRGB_PATTERN = /color|emissive|diffuse/i;
  * ```
  */
 export function getTextureColorSpace(texture: Texture): string | null {
-	const graph = texture.getGraph();
-	const edges = graph.listParentEdges(texture);
-	const isSRGB = edges.some((edge) => {
-		return edge.getAttributes().isColor || SRGB_PATTERN.test(edge.getName());
-	});
-	return isSRGB ? 'srgb' : null;
+	return _getTextureColorSpace(texture);
 }
