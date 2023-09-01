@@ -1,3 +1,8 @@
+<script context="module" lang="ts">
+import CommercialUse from '$lib/components/commercial-use.svelte';
+import License from '$lib/components/license.svelte';
+</script>
+
 # glTF Transform
 
 [![Latest NPM release](https://img.shields.io/npm/v/@gltf-transform/core.svg)](https://www.npmjs.com/package/@gltf-transform/core)
@@ -136,3 +141,6 @@ gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 
 ... [and much more](/cli).
 
+<CommercialUse />
+
+<License />

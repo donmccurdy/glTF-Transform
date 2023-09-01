@@ -76,7 +76,7 @@
 				href="https://store.donmccurdy.com/l/gltf-transform-pro"
 				rel="noreferrer"
 			>
-				Pro 💎
+				Get glTF Transform Pro 💎
 			</a>
 		</li>
 		{#if innerWidth <= LG}
@@ -139,8 +139,13 @@
 			/>
 			<p>
 				<i>
-					Project made by <a href="https://www.donmccurdy.com/" target="_blank" rel="noopener">Don McCurdy</a
-					>, website built with <a href="https://github.com/donmccurdy/greendoc" target="_blank">greendoc</a>
+					Made by <a href="https://www.donmccurdy.com/" target="_blank" rel="noopener">Don McCurdy</a>.
+					Documentation built with
+					<a href="https://github.com/donmccurdy/greendoc" target="_blank">greendoc</a>
+					and published under
+					<a href="https://creativecommons.org/licenses/by/3.0/us/" target="_blank" rel="noopener"
+						>Creative Commons Attribution 3.0</a
+					>.
 				</i>
 			</p>
 		</div>

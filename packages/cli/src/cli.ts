@@ -66,7 +66,7 @@ import {
 	XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat } from './util.js';
+import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat, dim } from './util.js';
 import { Session } from './session.js';
 import { ValidateOptions, validate } from './validate.js';
 import { getConfig, loadConfig } from './config.js';
@@ -95,6 +95,42 @@ const OUTPUT_DESC = 'Path to write output';
 const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
 
 program.version(PACKAGE.version).description('Command-line interface (CLI) for the glTF Transform SDK.');
+
+if (process.argv && !process.argv.includes('--no-editorial')) {
+	program
+		.help(
+			`
+To run the most common optimizations in one easy step, use the 'optimize' command:
+
+▸ gltf-transform optimize <input> <output> --compress draco --texture-compress webp
+
+Defaults in the 'optimize' command may not be ideal for all scenes. Some of its
+features can be configured (${dim(`optimize --help`)}), or more advanced users may wish
+to inspect their scenes then pick and choose optimizations.
+
+▸ gltf-transform inspect <input>
+
+The report printed by the 'inspect' command should identify performance issues,
+and whether the scene is generally geometry-heavy, texture-heavy, has too many
+draw calls, etc. Apply individual commands below to deal with any of these
+issues as needed.
+`.trim(),
+		)
+		.help(
+			`
+${underline('Using glTF Transform for a personal project?')} That's great! Sponsorship is
+neither expected nor required. Feel free to share screenshots if you've
+made something you're excited about — I enjoy seeing those!
+
+${underline('Using glTF Transform in for-profit work?')} That's wonderful! Your support is
+important to keep glTF Transform maintained, independent, and open source under
+MIT License. Please consider a subscription or GitHub sponsorship.
+
+Learn more in the glTF Transform Pro FAQs (https://store.donmccurdy.com/l/gltf-transform-pro).
+`.trim(),
+			{ sectionName: 'COMMERCIAL USE' },
+		);
+}
 
 program.section('Inspect', '🔎');
 

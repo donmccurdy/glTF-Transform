@@ -37,6 +37,10 @@ export type IActionFn = (params: {
 	logger: Logger;
 }) => void;
 
+export interface IHelpOptions {
+	sectionName?: string;
+}
+
 class ProgramImpl implements IInternalProgram {
 	version(version: string) {
 		_program.version(version);
@@ -44,6 +48,10 @@ class ProgramImpl implements IInternalProgram {
 	}
 	description(desc: string) {
 		_program.description(desc);
+		return this;
+	}
+	help(help: string, options?: IHelpOptions) {
+		_program.help(help, options);
 		return this;
 	}
 	section(_name: string, _icon: string) {
