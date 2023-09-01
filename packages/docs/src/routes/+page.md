@@ -1,3 +1,8 @@
+<script context="module" lang="ts">
+import CommercialUse from '$lib/components/commercial-use.svelte';
+import License from '$lib/components/license.svelte';
+</script>
+
 # glTF Transform
 
 [![Latest NPM release](https://img.shields.io/npm/v/@gltf-transform/core.svg)](https://www.npmjs.com/package/@gltf-transform/core)
@@ -136,14 +141,6 @@ gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 
 ... [and much more](/cli).
 
-## Commercial Use
+<CommercialUse></CommercialUse>
 
-**Using glTF Transform for a personal project?** Glad to hear it, have fun! Please feel free to file bug reports, make pull requests, or share screenshots if you've made something you're excited about.
-
-**Using glTF Transform in a for-profit organization?** That's great! Your support is important to keep glTF Transform maintained, independent, and open source under MIT License. Please consider a subscription to [glTF Transform Pro](https://store.donmccurdy.com/l/gltf-transform-pro) or a [GitHub sponsorship](https://github.com/sponsors/donmccurdy).
-
-*Learn more in the [glTF Transform Pro](https://store.donmccurdy.com/l/gltf-transform-pro) FAQs.*
-
-## License
-
-Copyright 2023, MIT License.
+<License></License>
