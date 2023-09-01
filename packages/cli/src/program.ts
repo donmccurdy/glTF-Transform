@@ -29,6 +29,7 @@ export interface IProgramOptions<T = unknown> {
 	default?: T;
 	validator?: ValidatorFn | T[];
 	action?: IActionFn;
+	visible?: boolean;
 }
 
 export type IActionFn = (params: {
@@ -36,6 +37,10 @@ export type IActionFn = (params: {
 	options: Record<string, unknown>;
 	logger: Logger;
 }) => void;
+
+export interface IHelpOptions {
+	sectionName?: string;
+}
 
 class ProgramImpl implements IInternalProgram {
 	version(version: string) {
@@ -46,8 +51,8 @@ class ProgramImpl implements IInternalProgram {
 		_program.description(desc);
 		return this;
 	}
-	help(help: string) {
-		_program.help(help);
+	help(help: string, options?: IHelpOptions) {
+		_program.help(help, options);
 		return this;
 	}
 	section(_name: string, _icon: string) {

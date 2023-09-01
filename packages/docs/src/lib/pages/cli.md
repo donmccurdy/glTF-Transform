@@ -49,7 +49,7 @@ may wish to inspect their scenes then pick and choose optimizations.
 gltf-transform inspect input.glb
 ```
 
-The report printed by the `inspect` command should identify validation issues,
+The report printed by the `inspect` command should identify performance issues,
 and whether the scene is generally geometry-heavy, texture-heavy,
 has too many draw calls, etc. Apply individual commands below to deal with any of
 these issues as needed.
@@ -63,9 +63,6 @@ Full command list:
   USAGE 
   
     ▸ gltf-transform <command> [ARGUMENTS...] [OPTIONS...]
-
-
-  HELLO WORLD
 
 
   COMMANDS — Type 'gltf-transform help <command>' to get some help about a command
