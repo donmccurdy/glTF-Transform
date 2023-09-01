@@ -29,7 +29,6 @@ export interface IProgramOptions<T = unknown> {
 	default?: T;
 	validator?: ValidatorFn | T[];
 	action?: IActionFn;
-	visible?: boolean;
 }
 
 export type IActionFn = (params: {
