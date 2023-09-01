@@ -141,6 +141,6 @@ gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 
 ... [and much more](/cli).
 
-<CommercialUse></CommercialUse>
+<CommercialUse />
 
-<License></License>
+<License />

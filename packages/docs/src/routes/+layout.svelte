@@ -77,10 +77,6 @@
 				rel="noreferrer"
 			>
 				Get glTF Transform Pro 💎
-				<!-- Pro Subscription -->
-				<!-- Subscribe to Pro -->
-				<!-- Get glTF Transform Pro -->
-				<!-- Subscribe to glTF Transform Pro -->
 			</a>
 		</li>
 		{#if innerWidth <= LG}
