@@ -1,1 +1,10 @@
-{"cleanUrls": true}
+{
+	"cleanUrls": true,
+	"redirects": [
+		{
+			"source": "/pro",
+			"destination": "https://store.donmccurdy.com/l/gltf-transform-pro",
+			"permanent": false
+		}
+	]
+}
