@@ -70,12 +70,7 @@
 			{/each}
 		{/if}
 		<li>
-			<a
-				class="greendoc-toolbar-pro-btn"
-				target="_blank"
-				href="https://store.donmccurdy.com/l/gltf-transform-pro"
-				rel="noreferrer"
-			>
+			<a class="greendoc-toolbar-pro-btn" target="_blank" href="https://gltf-transform.dev/pro" rel="noreferrer">
 				Get glTF Transform Pro 💎
 			</a>
 		</li>

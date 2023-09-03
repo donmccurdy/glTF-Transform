@@ -126,7 +126,7 @@ ${underline('Using glTF Transform in for-profit work?')} That's wonderful! Your 
 important to keep glTF Transform maintained, independent, and open source under
 MIT License. Please consider a subscription or GitHub sponsorship.
 
-Learn more in the glTF Transform Pro FAQs (https://store.donmccurdy.com/l/gltf-transform-pro).
+Learn more in the glTF Transform Pro FAQs (https://gltf-transform.dev/pro).
 `.trim(),
 			{ sectionName: 'COMMERCIAL USE' },
 		);
