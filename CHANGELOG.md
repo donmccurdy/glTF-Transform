@@ -4,6 +4,17 @@
 
 <!-- ### v3.X — 🚧 Unreleased -->
 
+### v3.6 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/31))
+
+**Features:**
+
+- Add limited `textureCompress()` support in web browsers (PNG, JPEG, WebP) [#1075](https://github.com/donmccurdy/glTF-Transform/pull/1075)
+- Bug fixes and quality improvements in `optimize()`, `dedup()`, `instance()`, `flatten()` and `join()` operations [#1073](https://github.com/donmccurdy/glTF-Transform/pull/1073)
+- `textureCompress()` PNG compression is now lossless by default [#1068](https://github.com/donmccurdy/glTF-Transform/pull/1068)
+- `join()` now supports quantized meshes [#1067](https://github.com/donmccurdy/glTF-Transform/pull/1067)
+- `simplify()` now cleans up degenerate mesh primitives [#1066](https://github.com/donmccurdy/glTF-Transform/pull/1066)
+- Moved CLI to a fork of Caporal.js [#1065](https://github.com/donmccurdy/glTF-Transform/pull/1065)
+
 ### v3.5 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/30))
 
 **Features:**
