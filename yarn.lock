@@ -1961,9 +1961,9 @@
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
 
 "@types/language-tags@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.1.tgz#58e04ca5a27031b8cb7c0c91eec653f245b6bde9"
-  integrity sha512-rTtRNIewaBrkMUfsCe7ES3xsTRQcEVgic2yoDY9hM3D/nwmABcG2du4l4+dTbWvfO8pUYwL4/2TbWFJa/AGc2g==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.2.tgz#9478180dc68f986ad0fadfe43c6844b7f691c547"
+  integrity sha512-yrpbdlA+8vK2s2Xhyt+DOy0QptYR7OI7yLsUuyySAAuieNtTqslmLCmnQFLF+Z/HeatYg2FfkfiP7gIQRBg9wQ==
 
 "@types/lodash@^4.14.197":
   version "4.14.197"
