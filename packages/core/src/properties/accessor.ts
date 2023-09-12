@@ -107,7 +107,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		UNSIGNED_BYTE: 5121,
 		/**
 		 * 2-byte signed integer, stored as
-		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array Int16Array}.
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array Int16Array}.
 		 */
 		SHORT: 5122,
 		/**
