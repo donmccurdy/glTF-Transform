@@ -1,6 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-import validator from 'gltf-validator';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import type { ILogger } from '@gltf-transform/core';
 import { formatHeader, formatTable, TableFormat } from './util.js';
 
@@ -18,20 +17,19 @@ interface ValidatorMessage {
 	severity: number;
 }
 
-export function validate(input: string, options: ValidateOptions, logger: ILogger): void {
-	const buffer = fs.readFileSync(input);
+export async function validate(input: string, options: ValidateOptions, logger: ILogger): Promise<void> {
+	const [buffer, validator] = await Promise.all([fs.readFile(input), import('gltf-validator')]);
 	return validator
 		.validateBytes(new Uint8Array(buffer), {
 			maxIssues: options.limit,
 			ignoredIssues: options.ignore,
-			externalResourceFunction: (uri: string) =>
-				new Promise((resolve, reject) => {
-					uri = path.resolve(path.dirname(input), decodeURIComponent(uri));
-					fs.readFile(uri, (err, data) => {
-						if (err) logger.warn(`Unable to validate "${uri}": ${err.toString()}.`);
-						err ? reject(err.toString()) : resolve(data);
-					});
-				}),
+			externalResourceFunction: (uri: string) => {
+				uri = path.resolve(path.dirname(input), decodeURIComponent(uri));
+				return fs.readFile(uri).catch((err) => {
+					logger.warn(`Unable to validate "${uri}": ${err.toString()}.`);
+					throw err.toString();
+				});
+			},
 		})
 		.then(async (report: ValidatorReport) => {
 			await printIssueSection('error', 0, report, logger, options.format);
@@ -46,7 +44,7 @@ async function printIssueSection(
 	severity: number,
 	report: ValidatorReport,
 	logger: ILogger,
-	format: TableFormat
+	format: TableFormat,
 ): Promise<void> {
 	console.log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
@@ -55,8 +53,8 @@ async function printIssueSection(
 			(await formatTable(
 				format,
 				['code', 'message', 'severity', 'pointer'],
-				messages.map((m) => Object.values(m))
-			)) + '\n\n'
+				messages.map((m) => Object.values(m)),
+			)) + '\n\n',
 		);
 	} else {
 		logger.info(`No ${header}s found.`);
