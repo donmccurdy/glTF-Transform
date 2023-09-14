@@ -26,7 +26,7 @@
 		"gltf-transform": "./bin/cli.js"
 	},
 	"dependencies": {
-		"@donmccurdy/caporal": "^0.0.8",
+		"@donmccurdy/caporal": "^0.0.10",
 		"@gltf-transform/core": "^3.6.0",
 		"@gltf-transform/extensions": "^3.6.0",
 		"@gltf-transform/functions": "^3.6.0",
