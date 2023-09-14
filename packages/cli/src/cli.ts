@@ -4,7 +4,6 @@ import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
 import fetch from 'node-fetch';
 import mikktspace from 'mikktspace';
-import sharp from 'sharp';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
@@ -198,7 +197,7 @@ Example:
 		default: TableFormat.PRETTY,
 	})
 	.action(({ args, options, logger }) => {
-		validate(args.input as string, options as unknown as ValidateOptions, logger as unknown as Logger);
+		return validate(args.input as string, options as unknown as ValidateOptions, logger as unknown as Logger);
 	});
 
 program.section('Package', '📦');
@@ -358,9 +357,10 @@ commands or using the scripting API.
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
 			);
 		} else if (opts.textureCompress !== false) {
+			const { default: encoder } = await import('sharp');
 			transforms.push(
 				textureCompress({
-					encoder: sharp,
+					encoder,
 					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					resize: [opts.textureSize, opts.textureSize],
 				}),
@@ -1115,9 +1115,10 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	})
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
-				encoder: sharp,
+				encoder,
 				resize: [options.width, options.height] as vec2,
 				resizeFilter: options.filter as TextureResizeFilter,
 				pattern,
@@ -1384,13 +1385,14 @@ program
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
 				targetFormat: 'avif',
-				encoder: sharp,
+				encoder,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1419,13 +1421,14 @@ program
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
 				targetFormat: 'webp',
-				encoder: sharp,
+				encoder,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1450,13 +1453,14 @@ program
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
 				targetFormat: 'png',
-				encoder: sharp,
+				encoder,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1478,13 +1482,14 @@ program
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
 				targetFormat: 'jpeg',
-				encoder: sharp,
+				encoder,
 				formats,
 				slots,
 				quality: options.quality as number,
