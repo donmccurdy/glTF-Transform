@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/core",
-	"version": "3.6.0",
+	"version": "3.7.0",
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.dev/",
 	"description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
