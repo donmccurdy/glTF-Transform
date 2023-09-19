@@ -13,7 +13,7 @@
 **Other:**
 
 - Fixed regression in quality of Draco compression [#1077](https://github.com/donmccurdy/glTF-Transform/pull/1077)
-- Updated `sharp` CLI dependency to address high-priority WebP vulnerability
+- Updated `sharp` CLI dependency to address high-priority WebP vulnerability in libwebp
     - See [CVE-2023-4863](https://github.com/advisories/GHSA-j7hp-h8jx-5ppr) and [CVE-2023-41064](https://github.com/advisories/GHSA-8c6q-gxj3-w77f)
 
 ### v3.6 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/31))
