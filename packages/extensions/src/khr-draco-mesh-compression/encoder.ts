@@ -63,9 +63,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
 
-	// TODO(cleanup): Update @types/draco3dgltf definitions.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const encoder = new (encoderModule as any).ExpertEncoder(mesh);
+	const encoder = new encoderModule.ExpertEncoder(mesh);
 
 	const attributeIDs: { [key: string]: number } = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
