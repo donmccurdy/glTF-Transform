@@ -63,9 +63,7 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 	const builder = new encoderModule.MeshBuilder();
 	const mesh = new encoderModule.Mesh();
 
-	// TODO(cleanup): Update @types/draco3dgltf definitions.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const encoder = new (encoderModule as any).ExpertEncoder(mesh);
+	const encoder = new encoderModule.ExpertEncoder(mesh);
 
 	const attributeIDs: { [key: string]: number } = {};
 	const dracoBuffer = new encoderModule.DracoInt8Array();
@@ -89,27 +87,27 @@ export function encodeGeometry(prim: Primitive, _options: EncoderOptions = DEFAU
 			encoderModule[attributeEnum],
 			attribute.getCount(),
 			attribute.getElementSize(),
-			attribute.getArray()!
+			attribute.getArray()!,
 		);
 
 		if (attributeID === -1) throw new Error(`Error compressing "${semantic}" attribute.`);
 
 		attributeIDs[semantic] = attributeID;
 		if (options.quantizationVolume === 'mesh' || semantic !== 'POSITION') {
-			encoder.SetAttributeQuantization(encoderModule[attributeEnum], options.quantizationBits[attributeEnum]);
+			encoder.SetAttributeQuantization(attributeID, options.quantizationBits[attributeEnum]);
 		} else if (typeof options.quantizationVolume === 'object') {
 			const { quantizationVolume } = options;
 			const range = Math.max(
 				quantizationVolume.max[0] - quantizationVolume.min[0],
 				quantizationVolume.max[1] - quantizationVolume.min[1],
-				quantizationVolume.max[2] - quantizationVolume.min[2]
+				quantizationVolume.max[2] - quantizationVolume.min[2],
 			);
 			encoder.SetAttributeExplicitQuantization(
-				encoderModule[attributeEnum],
+				attributeID,
 				options.quantizationBits[attributeEnum],
 				attribute.getElementSize(),
 				quantizationVolume.min,
-				range
+				range,
 			);
 		} else {
 			throw new Error('Invalid quantization volume state.');
@@ -172,7 +170,7 @@ function addAttribute(
 	attribute: number,
 	count: number,
 	itemSize: number,
-	array: TypedArray
+	array: TypedArray,
 ): number {
 	switch (componentType) {
 		case Accessor.ComponentType.UNSIGNED_BYTE:
