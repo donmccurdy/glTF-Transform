@@ -1915,7 +1915,7 @@
   resolved "https://registry.yarnpkg.com/@types/draco3d/-/draco3d-1.4.4.tgz#40dda9b31da4c0fe1b21aed372212ca4179c45e7"
   integrity sha512-qmFieVcgNRvXphmSjnQnJGXbKq2ymE38L/22GlDD/IIzyA0dHQNI0za+RLSfyW6aG/lOoYWkGudFZnrs9PmqCw==
 
-"@types/draco3dgltf@^1.4.0":
+"@types/draco3dgltf@1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@types/draco3dgltf/-/draco3dgltf-1.4.0.tgz#61a839f199dd9bd92029ce5640d2890ffc7903d0"
   integrity sha512-vo/GQzRmdYaae7uNiJd2QE/zfeMHgRPfWeqoKtCwWSTBwCd+XzrFrJEcgubooA4ZJNTEcx8+N8BUbCx9gIlR3Q==
