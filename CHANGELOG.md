@@ -4,6 +4,18 @@
 
 <!-- ### v3.X — 🚧 Unreleased -->
 
+### v3.7 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/32))
+
+**Features:**
+
+- Reduced CLI initialization time [#1091](https://github.com/donmccurdy/glTF-Transform/pull/1091), [#1093](https://github.com/donmccurdy/glTF-Transform/pull/1093)
+
+**Other:**
+
+- Fixed regression in quality of Draco compression [#1077](https://github.com/donmccurdy/glTF-Transform/pull/1077)
+- Updated `sharp` CLI dependency to address high-priority WebP vulnerability
+    - See [CVE-2023-4863](https://github.com/advisories/GHSA-j7hp-h8jx-5ppr) and [CVE-2023-41064](https://github.com/advisories/GHSA-8c6q-gxj3-w77f)
+
 ### v3.6 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/31))
 
 **Features:**
@@ -23,7 +35,6 @@
 - Add `--pattern` flag in `etc1s` and `uastc` CLI commands [#1037](https://github.com/donmccurdy/glTF-Transform/pull/1037)
 - Add `toleranceNormal` option in `weld()` [#1046](https://github.com/donmccurdy/glTF-Transform/pull/1046)
   - Default vertex normal tolerance has been reduced ([#1035](https://github.com/donmccurdy/glTF-Transform/pull/1035)), reducing loss of quality in some cases. Where more aggressive welding is required (such as simplification and LODs), users should specify `toleranceNormal=0.5` to restore the previous default.
-
 
 ### v3.4 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/29))
 
