@@ -3,6 +3,7 @@ import type { ChildProcess } from 'child_process';
 import _commandExists from 'command-exists';
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
+import stripAnsi from 'strip-ansi';
 
 // Constants.
 
@@ -127,7 +128,7 @@ export async function formatTable(format: TableFormat, head: string[], rows: str
 			const table = new CLITable({ head, chars: CLI_TABLE_MARKDOWN_CHARS });
 			table.push(new Array(rows[0].length).fill('---'));
 			table.push(...rows);
-			return table.toString();
+			return stripAnsi(table.toString());
 		}
 	}
 }
