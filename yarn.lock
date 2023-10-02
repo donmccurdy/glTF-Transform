@@ -2058,9 +2058,9 @@
   integrity sha512-7aqorHYgdNO4DM36stTiGO3DvKoex9TQRwsJU6vMaFGyqpBA1MNZkz+PG3gaNUPpTAOYhT1WR7M1JyA3fbS9Cw==
 
 "@types/spdx-correct@^3.0.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@types/spdx-correct/-/spdx-correct-3.1.0.tgz#a02033b4e7ef5e1ffdf218f2acb2113f1ab63707"
-  integrity sha512-P/0qd5OA3fmZiVQVMHF/0xiYAvDGJnwNZA0p7K1Yo88J+QrtB1vovIjNHuB4XTqYbtpAVcf/j7yl8cDaUxyMzw==
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/spdx-correct/-/spdx-correct-3.1.1.tgz#01fe37457e9d93506d19439b130ee250e887951a"
+  integrity sha512-AtP8iC+xlDLkZdrHdkwGaXvqspGu7ubvLNSpn3Q8mxfuk7ygMA4CcNHUDW4dtMu9EeLT34xXVSoLJBIGRSS2OQ==
 
 "@types/table@5.0.0":
   version "5.0.0"
