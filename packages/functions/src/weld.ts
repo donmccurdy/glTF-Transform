@@ -110,7 +110,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(doc, prim, options);
 
-				if (prim.getIndices()!.getCount() === 0) prim.dispose();
+				if (prim.getIndices()?.getCount() === 0) prim.dispose();
 			}
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
