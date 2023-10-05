@@ -215,9 +215,23 @@ test('modes', async (t) => {
 		t.deepEqual(
 			Array.from(primDef.indices),
 			Array.from(prim.getIndices().getArray()),
-			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`
+			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`,
 		);
 	}
+});
+
+test('points', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
+	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
+	const prim = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.POINTS);
+	doc.createMesh().addPrimitive(prim);
+
+	// points can't be welded, but also shouldn't throw an error.
+	await doc.transform(weld({ tolerance: 0.001 }));
+
+	t.false(prim.isDisposed(), 'prim not disposed');
+	t.is(prim.getAttribute('POSITION').getArray().length, positionArray.length, 'prim vertices');
 });
 
 test('targets', async (t) => {
@@ -265,7 +279,7 @@ test('targets', async (t) => {
 	t.deepEqual(
 		prim.listTargets()[0].getAttribute('POSITION').getArray(),
 		positionTargetArray.slice(9, 27),
-		'target positions'
+		'target positions',
 	);
 	t.is(document.getRoot().listAccessors().length, 3, 'accessor count');
 });
@@ -297,6 +311,6 @@ test('degenerate', async (t) => {
 			0, 0, 1,
 			0, 0, -1
 		],
-		'vertices on prim'
+		'vertices on prim',
 	);
 });

@@ -110,7 +110,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(doc, prim, options);
 
-				if (prim.getIndices()?.getCount() === 0) prim.dispose();
+				if (isPrimEmpty(prim)) prim.dispose();
 			}
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
@@ -429,4 +429,14 @@ function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {
 	}
 
 	return options;
+}
+
+/**
+ * For purposes of welding, we consider a primitive to be 'empty' or degenerate
+ * if (1) it has an index, and (2) that index is empty. In some cases
+ * (mode=POINTS) the index may be missing — this is outside the scope of welding.
+ */
+function isPrimEmpty(prim: Primitive): boolean {
+	const indices = prim.getIndices();
+	return !!indices && indices.getCount() === 0;
 }
