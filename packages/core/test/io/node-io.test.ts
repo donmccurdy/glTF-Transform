@@ -172,6 +172,7 @@ test('resource URI encoding', async (t) => {
 
 	await io.write(resolve(dstDir, 'Unicode ❤♻ Test.gltf'), document);
 
+	// Decoded URIs match source resources, not the (encoded) URI in the source glTF JSON.
 	t.true(fs.existsSync(resolve(dstDir, 'Unicode ❤♻ Binary.bin')), 'file path to buffer');
 	t.true(fs.existsSync(resolve(dstDir, 'Unicode ❤♻ Texture.png')), 'file path to texture');
 });
