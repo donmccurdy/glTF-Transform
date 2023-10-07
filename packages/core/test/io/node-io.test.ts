@@ -134,3 +134,44 @@ test('write gltf with HTTP', async (t) => {
 	t.falsy(fs.existsSync(join(outputURI, 'external.png')), 'skips external image');
 	t.truthy(io.lastWriteBytes < 2048, 'writes < 2048 bytes');
 });
+
+test('resource URI encoding', async (t) => {
+	if (environment !== Environment.NODE) return t.pass();
+	const io = (await createPlatformIO()) as NodeIO;
+
+	const srcDir = resolve(__dirname, '..', 'in', 'EncodingTest');
+	const dstDir = resolve(__dirname, '..', 'out', 'EncodingTest');
+	ensureDir(dstDir);
+
+	const srcJSONDocument = await io.readAsJSON(resolve(srcDir, 'Unicode ❤♻ Test.gltf'));
+
+	t.deepEqual(
+		Object.keys(srcJSONDocument.resources).sort(),
+		['Unicode%20❤♻ Binary.bin', 'Unicode%20❤♻ Texture.png'],
+		'URIs in source JSON document',
+	);
+
+	const document = await io.readJSON(srcJSONDocument);
+	const buffer = document.getRoot().listBuffers()[0];
+	const texture = document.getRoot().listTextures()[0];
+
+	// TODO(v4): For backward-compatibility, URIs remain encoded in memory.
+	t.deepEqual(
+		[buffer.getURI(), texture.getURI()],
+		['Unicode%20❤♻ Binary.bin', 'Unicode%20❤♻ Texture.png'],
+		'URIs in document',
+	);
+
+	const dstJSONDocument = await io.writeJSON(document);
+
+	t.deepEqual(
+		Object.keys(dstJSONDocument.resources).sort(),
+		['Unicode%20❤♻ Binary.bin', 'Unicode%20❤♻ Texture.png'],
+		'URIs in source JSON document',
+	);
+
+	await io.write(resolve(dstDir, 'Unicode ❤♻ Test.gltf'), document);
+
+	t.true(fs.existsSync(resolve(dstDir, 'Unicode ❤♻ Binary.bin')), 'file path to buffer');
+	t.true(fs.existsSync(resolve(dstDir, 'Unicode ❤♻ Texture.png')), 'file path to texture');
+});
