@@ -71,7 +71,7 @@
 		{/if}
 		<li>
 			<a class="greendoc-toolbar-pro-btn" target="_blank" href="https://gltf-transform.dev/pro" rel="noreferrer">
-				Get glTF Transform Pro 💎
+				{#if innerWidth > 580}Get glTF Transform{/if} Pro 💎
 			</a>
 		</li>
 		{#if innerWidth <= LG}
