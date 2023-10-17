@@ -1377,6 +1377,9 @@ program
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'AVIF'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: Validator.STRING,
+	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: '*',
@@ -1386,6 +1389,7 @@ program
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
 	.action(async ({ args, options, logger }) => {
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
@@ -1393,6 +1397,7 @@ program
 			textureCompress({
 				targetFormat: 'avif',
 				encoder,
+				pattern,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1409,6 +1414,9 @@ program
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'WebP'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: Validator.STRING,
+	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: '*',
@@ -1422,6 +1430,7 @@ program
 		default: false,
 	})
 	.action(async ({ args, options, logger }) => {
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
@@ -1429,6 +1438,7 @@ program
 			textureCompress({
 				targetFormat: 'webp',
 				encoder,
+				pattern,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1446,6 +1456,9 @@ program
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'PNG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: Validator.STRING,
+	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: 'image/png',
@@ -1454,6 +1467,7 @@ program
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
@@ -1461,6 +1475,7 @@ program
 			textureCompress({
 				targetFormat: 'png',
 				encoder,
+				pattern,
 				formats,
 				slots,
 				quality: options.quality as number,
@@ -1476,6 +1491,9 @@ program
 	.help(TEXTURE_COMPRESS_SUMMARY.replace(/{VARIANT}/g, 'JPEG'))
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
+		validator: Validator.STRING,
+	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
 		validator: ['image/png', 'image/jpeg', '*'],
 		default: 'image/jpeg',
@@ -1483,6 +1501,7 @@ program
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
+		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
@@ -1490,6 +1509,7 @@ program
 			textureCompress({
 				targetFormat: 'jpeg',
 				encoder,
+				pattern,
 				formats,
 				slots,
 				quality: options.quality as number,
