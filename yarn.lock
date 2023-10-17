@@ -1941,9 +1941,9 @@
     "@types/node" "*"
 
 "@types/inquirer@^9.0.3":
-  version "9.0.3"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-9.0.3.tgz#dc99da4f2f6de9d26c284b4f6aaab4d98c456db1"
-  integrity sha512-CzNkWqQftcmk2jaCWdBTf9Sm7xSw4rkI1zpU/Udw3HX5//adEZUIm9STtoRP1qgWj0CWQtJ9UTvqmO2NNjhMJw==
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-9.0.4.tgz#f20d6bce87c2aef4fabe8de9e3a397e80aea309f"
+  integrity sha512-x8UgutCLm5tsp995aeYB8dlT+sGBCtv0zE43tHvo7OljtlA2Rn4+COyLKe9+YjB20uy0G14y0C9vCD2KtNtyGA==
   dependencies:
     "@types/through" "*"
     rxjs "^7.2.0"
