@@ -52,7 +52,7 @@
 		"prettier": "3.0.3",
 		"prettier-plugin-svelte": "^3.0.0",
 		"rimraf": "^5.0.5",
-		"ts-node": "10.9.1",
+		"tsx": "^3.14.0",
 		"typescript": "5.2.2"
 	},
 	"ava": {
@@ -60,7 +60,7 @@
 			"ts": "module"
 		},
 		"nodeArguments": [
-			"--loader=ts-node/esm",
+			"--loader=tsx",
 			"--no-warnings=ExperimentalWarnings"
 		]
 	}
