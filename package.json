@@ -52,7 +52,6 @@
 		"prettier": "3.0.3",
 		"prettier-plugin-svelte": "^3.0.0",
 		"rimraf": "^5.0.5",
-		"suppress-experimental-warnings": "1.1.17",
 		"ts-node": "10.9.1",
 		"typescript": "5.2.2"
 	},
@@ -62,7 +61,7 @@
 		},
 		"nodeArguments": [
 			"--loader=ts-node/esm",
-			"--require=suppress-experimental-warnings"
+			"--no-warnings=ExperimentalWarnings"
 		]
 	}
 }
