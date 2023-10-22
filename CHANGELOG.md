@@ -9,6 +9,7 @@
 **Features:**
 
 - Reduced CLI initialization time [#1091](https://github.com/donmccurdy/glTF-Transform/pull/1091), [#1093](https://github.com/donmccurdy/glTF-Transform/pull/1093)
+- Add `pruneSolidTextures` option to `prune()` [`be73c8`](https://github.com/donmccurdy/glTF-Transform/commit/c0bf86aedefe3795f145b86f590917eff2be73c8)
 
 **Other:**
 
