@@ -2,6 +2,11 @@ import test from 'ava';
 import { Accessor, Document, PropertyType } from '@gltf-transform/core';
 import { prune } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import ndarray from 'ndarray';
+import { savePixels } from 'ndarray-pixels';
+
+const PIXELS_SOLID = ndarray(new Uint8Array([128, 128, 192, 1]), [1, 1, 4]);
+const PIXELS_NON_SOLID = ndarray(new Uint8Array([64, 64, 128, 1, 32, 32, 128, 1]), [1, 2, 4]);
 
 test('properties', async (t) => {
 	const doc = new Document().setLogger(logger);
@@ -116,26 +121,26 @@ test('attributes', async (t) => {
 		prune({
 			propertyTypes: [PropertyType.ACCESSOR],
 			keepAttributes: true,
-		})
+		}),
 	);
 
 	t.deepEqual(
 		[position, tangent, texcoord0, texcoord1, color0, color1].map((a) => a.isDisposed()),
 		new Array(6).fill(false),
-		'keeps required attributes (1/3)'
+		'keeps required attributes (1/3)',
 	);
 
 	await document.transform(
 		prune({
 			propertyTypes: [PropertyType.ACCESSOR],
 			keepAttributes: false,
-		})
+		}),
 	);
 
 	t.deepEqual(
 		[position, tangent, texcoord0, texcoord1, color0].map((a) => a.isDisposed()),
 		new Array(5).fill(false),
-		'keeps required attributes (2/3)'
+		'keeps required attributes (2/3)',
 	);
 	t.is(color1.isDisposed(), true, 'discards COLOR_1');
 
@@ -145,18 +150,18 @@ test('attributes', async (t) => {
 		prune({
 			propertyTypes: [PropertyType.ACCESSOR],
 			keepAttributes: false,
-		})
+		}),
 	);
 
 	t.deepEqual(
 		[position, texcoord0, color0].map((a) => a.isDisposed()),
 		[false, false, false],
-		'keeps required attributes (3/3)'
+		'keeps required attributes (3/3)',
 	);
 	t.deepEqual(
 		[tangent, texcoord1].map((a) => a.isDisposed()),
 		[true, true],
-		'discards TANGENT, TEXCOORD_1'
+		'discards TANGENT, TEXCOORD_1',
 	);
 });
 
@@ -191,7 +196,7 @@ test('attributes - texcoords', async (t) => {
 	t.deepEqual(
 		uvs.map((a) => a.isDisposed()),
 		[false, false, false, false, false, false],
-		'keeps all texcoords'
+		'keeps all texcoords',
 	);
 
 	await document.transform(prune({ propertyTypes: [PropertyType.ACCESSOR], keepAttributes: false }));
@@ -199,7 +204,7 @@ test('attributes - texcoords', async (t) => {
 	t.deepEqual(
 		uvs.map((a) => a.isDisposed()),
 		[true, false, true, false, true, true],
-		'disposes TEXCOORD_0, TEXCOORD_2, TEXCOORD_4, and TEXCOORD_5'
+		'disposes TEXCOORD_0, TEXCOORD_2, TEXCOORD_4, and TEXCOORD_5',
 	);
 
 	t.true(primA.getAttribute('TEXCOORD_0') === uvs[1], 'primA.TEXCOORD_0');
@@ -216,4 +221,45 @@ test('attributes - texcoords', async (t) => {
 
 	t.is(material.getBaseColorTextureInfo().getTexCoord(), 0, 'material.baseColorTexture.texCoord = 0');
 	t.is(material.getNormalTextureInfo().getTexCoord(), 1, 'material.normalTexture.texCoord → 1');
+});
+
+test('solid textures', async (t) => {
+	const document = new Document().setLogger(logger);
+
+	const textureNonSolid = document
+		.createTexture()
+		.setImage(await savePixels(PIXELS_NON_SOLID, 'image/png'))
+		.setMimeType('image/png');
+	const textureSolid = document
+		.createTexture()
+		.setImage(await savePixels(PIXELS_SOLID, 'image/png'))
+		.setMimeType('image/png');
+	const textureUnknown = document.createTexture().setImage(new Uint8Array(1)).setMimeType('image/png');
+	const material = document
+		.createMaterial()
+		.setBaseColorTexture(textureNonSolid)
+		.setMetallicRoughnessTexture(textureSolid)
+		.setEmissiveTexture(textureUnknown);
+	const prim = document.createPrimitive().setMaterial(material);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode('A').setMesh(mesh);
+	document.createScene().addChild(node);
+
+	await document.transform(prune({ keepSolidTextures: true }));
+
+	t.false(textureSolid.isDisposed());
+	t.false(textureNonSolid.isDisposed());
+	t.false(textureUnknown.isDisposed());
+
+	await document.transform(prune({ keepSolidTextures: false }));
+
+	t.true(textureSolid.isDisposed());
+	t.false(textureNonSolid.isDisposed());
+	t.false(textureUnknown.isDisposed());
+
+	t.deepEqual(material.getBaseColorFactor(), [1, 1, 1, 1], 'baseColorFactor');
+	t.deepEqual(material.getEmissiveFactor(), [0, 0, 0], 'baseColorFactor');
+	t.is(material.getRoughnessFactor().toFixed(2), '0.50', 'roughnessFactor');
+	t.is(material.getMetallicFactor().toFixed(2), '0.75', 'metallicFactor');
+	t.is(material.getMetallicRoughnessTexture(), null, 'metallicRoughnessTexture');
 });
