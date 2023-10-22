@@ -1,24 +1,36 @@
 import {
 	AnimationChannel,
+	ColorUtils,
 	Document,
+	ExtensionProperty,
 	Graph,
+	ILogger,
+	Material,
+	Node,
+	Primitive,
+	PrimitiveTarget,
 	Property,
 	PropertyType,
 	Root,
-	Transform,
-	Node,
 	Scene,
-	ExtensionProperty,
-	Material,
-	Primitive,
-	PrimitiveTarget,
 	Texture,
 	TextureInfo,
+	Transform,
+	vec3,
+	vec4,
 } from '@gltf-transform/core';
-import { createTransform } from './utils.js';
+import { mul as mulVec3 } from 'gl-matrix/vec3';
+import { add, create, len, mul, scale, sub } from 'gl-matrix/vec4';
+import { NdArray } from 'ndarray';
+import { getPixels } from 'ndarray-pixels';
+import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';
+import { listTextureSlots } from './list-texture-slots.js';
+import { createTransform } from './utils.js';
 
 const NAME = 'prune';
+
+const EPS = 3 / 255;
 
 export interface PruneOptions {
 	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
@@ -27,6 +39,8 @@ export interface PruneOptions {
 	keepLeaves?: boolean;
 	/** Whether to keep unused vertex attributes, such as UVs without an assigned texture. */
 	keepAttributes?: boolean;
+	/** Whether to keep single-color textures that can be converted to material factors. */
+	keepSolidTextures?: boolean;
 }
 const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	propertyTypes: [
@@ -44,6 +58,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	],
 	keepLeaves: false,
 	keepAttributes: true,
+	keepSolidTextures: true,
 };
 
 /**
@@ -70,10 +85,10 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
 	const propertyTypes = new Set(options.propertyTypes);
 
-	return createTransform(NAME, (doc: Document): void => {
-		const logger = doc.getLogger();
-		const root = doc.getRoot();
-		const graph = doc.getGraph();
+	return createTransform(NAME, async (document: Document): Promise<void> => {
+		const logger = document.getLogger();
+		const root = document.getRoot();
+		const graph = document.getGraph();
 
 		const disposed: Record<string, number> = {};
 
@@ -108,7 +123,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			for (const mesh of root.listMeshes()) {
 				for (const prim of mesh.listPrimitives()) {
 					const material = prim.getMaterial();
-					const required = listRequiredSemantics(doc, material);
+					const required = listRequiredSemantics(document, material);
 					const unused = listUnusedSemantics(prim, required);
 					pruneAttributes(prim, unused);
 					prim.listTargets().forEach((target) => pruneAttributes(target, unused));
@@ -147,7 +162,14 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		}
 
 		if (propertyTypes.has(PropertyType.MATERIAL)) root.listMaterials().forEach(treeShake);
-		if (propertyTypes.has(PropertyType.TEXTURE)) root.listTextures().forEach(treeShake);
+
+		if (propertyTypes.has(PropertyType.TEXTURE)) {
+			root.listTextures().forEach(treeShake);
+			if (!options.keepSolidTextures) {
+				await pruneSolidTextures(document);
+			}
+		}
+
 		if (propertyTypes.has(PropertyType.ACCESSOR)) root.listAccessors().forEach(treeShake);
 		if (propertyTypes.has(PropertyType.BUFFER)) root.listBuffers().forEach(treeShake);
 
@@ -248,7 +270,7 @@ function listUnusedSemantics(prim: Primitive | PrimitiveTarget, required: Set<st
 function listRequiredSemantics(
 	document: Document,
 	material: Material | ExtensionProperty | null,
-	semantics = new Set<string>()
+	semantics = new Set<string>(),
 ): Set<string> {
 	if (!material) return semantics;
 
@@ -332,5 +354,108 @@ function shiftTexCoords(material: Material, prims: Primitive[]) {
 			prim.setAttribute(dstSemantic, uv);
 			prim.setAttribute(srcSemantic, null);
 		}
+	}
+}
+
+/**********************************************************************************************
+ * Prune solid (single-color) textures.
+ */
+
+async function pruneSolidTextures(document: Document): Promise<void> {
+	const root = document.getRoot();
+	const graph = document.getGraph();
+	const logger = document.getLogger();
+	const textures = root.listTextures();
+
+	const pending = textures.map(async (texture) => {
+		const factor = await getTextureFactor(texture);
+		if (!factor) return;
+
+		if (getTextureColorSpace(texture) === 'srgb') {
+			ColorUtils.convertSRGBToLinear(factor, factor);
+		}
+
+		const name = texture.getName() || texture.getURI();
+		const size = texture.getSize()?.join('x');
+		const slots = listTextureSlots(texture);
+
+		for (const edge of graph.listParentEdges(texture)) {
+			const parent = edge.getParent();
+			if (parent !== root && applyMaterialFactor(parent as Material, factor, edge.getName(), logger)) {
+				edge.dispose();
+			}
+		}
+
+		if (texture.listParents().length === 1) {
+			texture.dispose();
+			logger.debug(`${NAME}: Removed single-color texture "${name}" (${size}px ${slots.join(', ')})`);
+		}
+	});
+
+	await Promise.all(pending);
+}
+
+function applyMaterialFactor(
+	material: Material | ExtensionProperty,
+	factor: vec4,
+	slot: string,
+	logger: ILogger,
+): boolean {
+	if (material instanceof Material) {
+		switch (slot) {
+			case 'baseColorTexture':
+				material.setBaseColorFactor(mul(factor, factor, material.getBaseColorFactor()) as vec4);
+				return true;
+			case 'emissiveTexture':
+				material.setEmissiveFactor(
+					mulVec3([0, 0, 0], factor.slice(0, 3) as vec3, material.getEmissiveFactor()) as vec3,
+				);
+				return true;
+			case 'occlusionTexture':
+				return Math.abs(factor[0] - 1) <= EPS;
+			case 'metallicRoughnessTexture':
+				material.setRoughnessFactor(factor[1] * material.getRoughnessFactor());
+				material.setMetallicFactor(factor[2] * material.getMetallicFactor());
+				return true;
+			case 'normalTexture':
+				return len(sub(create(), factor, [0.5, 0.5, 1, 1])) <= EPS;
+		}
+	}
+
+	logger.warn(`${NAME}: Detected single-color ${slot} texture. Pruning ${slot} not yet supported.`);
+	return false;
+}
+
+async function getTextureFactor(texture: Texture): Promise<vec4 | null> {
+	const pixels = await maybeGetPixels(texture);
+	if (!pixels) return null;
+
+	const min: vec4 = [Infinity, Infinity, Infinity, Infinity];
+	const max: vec4 = [-Infinity, -Infinity, -Infinity, -Infinity];
+	const target: vec4 = [0, 0, 0, 0];
+
+	const [width, height] = pixels.shape;
+
+	for (let i = 0; i < width; i++) {
+		for (let j = 0; j < height; j++) {
+			for (let k = 0; k < 4; k++) {
+				min[k] = Math.min(min[k], pixels.get(i, j, k));
+				max[k] = Math.max(max[k], pixels.get(i, j, k));
+			}
+		}
+
+		if (len(sub(target, max, min)) / 255 > EPS) {
+			return null;
+		}
+	}
+
+	return scale(target, add(target, max, min), 0.5 / 255) as vec4;
+}
+
+async function maybeGetPixels(texture: Texture): Promise<NdArray<Uint8Array> | null> {
+	try {
+		return await getPixels(texture.getImage()!, texture.getMimeType());
+	} catch (e) {
+		return null;
 	}
 }

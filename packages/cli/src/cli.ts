@@ -345,7 +345,7 @@ commands or using the scripting API.
 
 		transforms.push(
 			resample({ ready: resampleReady, resample: resampleWASM }),
-			prune({ keepAttributes: false, keepLeaves: false }),
+			prune({ keepAttributes: false, keepLeaves: false, keepSolidTextures: false }),
 			sparse(),
 		);
 
@@ -496,12 +496,20 @@ that are children of a scene.
 	.argument('<output>', OUTPUT_DESC)
 	.option('--keep-attributes <keepAttributes>', 'Whether to keep unused vertex attributes', {
 		validator: Validator.BOOLEAN,
-		default: true,
+		default: true, // TODO(v4): Default false.
 	})
 	.option('--keep-leaves <keepLeaves>', 'Whether to keep empty leaf nodes', {
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
+	.option(
+		'--keep-solid-textures <keepSolidTextures>',
+		'Whether to keep solid (single-color) textures, or convert to material factors',
+		{
+			validator: Validator.BOOLEAN,
+			default: true, // TODO(v4): Default false.
+		},
+	)
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(prune(options as unknown as PruneOptions)),
 	);
