@@ -37,9 +37,16 @@ export interface TextureCompressOptions {
 	resizeFilter?: TextureResizeFilter;
 	/** Pattern identifying textures to compress, matched to name or URI. */
 	pattern?: RegExp | null;
-	/** Pattern matching the format(s) to be compressed or converted. */
+	/**
+	 * Pattern matching the format(s) to be compressed or converted. Some examples
+	 * of formats include "jpeg" and "png".
+	 */
 	formats?: RegExp | null;
-	/** Pattern matching the material texture slot(s) to be compressed or converted. */
+	/**
+	 * Pattern matching the material texture slot(s) to be compressed or converted.
+	 * Some examples of slot names include "baseColorTexture", "occlusionTexture",
+	 * "metallicRoughnessTexture", and "normalTexture".
+	 */
 	slots?: RegExp | null;
 
 	/** Quality, 1-100. Default: auto. */
