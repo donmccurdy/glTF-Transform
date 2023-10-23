@@ -1924,19 +1924,19 @@
   integrity sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ==
 
 "@types/language-tags@^1.0.1":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.2.tgz#9478180dc68f986ad0fadfe43c6844b7f691c547"
-  integrity sha512-yrpbdlA+8vK2s2Xhyt+DOy0QptYR7OI7yLsUuyySAAuieNtTqslmLCmnQFLF+Z/HeatYg2FfkfiP7gIQRBg9wQ==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.3.tgz#fbce4205013e2d9b79bdc93df6fce03def98db04"
+  integrity sha512-YwOfmHfZmsPZjLu4tnGFDukszUPk2LMkAOYjyIEfqeyoPs7ZHmXRZN/U+d4vePDDbDPhOcOe6htR8UEgsCCwDw==
 
 "@types/lodash@^4.14.197":
-  version "4.14.198"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.198.tgz#4d27465257011aedc741a809f1269941fa2c5d4c"
-  integrity sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==
+  version "4.14.200"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.200.tgz#435b6035c7eba9cdf1e039af8212c9e9281e7149"
+  integrity sha512-YI/M/4HRImtNf3pJgbF+W6FrXovqj+T+/HpENLTooK9PnkacBsDpeP3IpHab40CClUfhNmdM2WTNP2sa2dni5Q==
 
 "@types/micromatch@^4.0.2":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@types/micromatch/-/micromatch-4.0.3.tgz#aa5e22621629e22d92dc46b4639dd5bf11ca3d49"
-  integrity sha512-QX1czv7QoLU76Asb1NSVSlu5zTMx/TFNswUDtQSbH9hgvCg+JHvIEoVvVSzBf1WNCT8XsK515W+p3wFOCuvhCg==
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@types/micromatch/-/micromatch-4.0.4.tgz#775c32e6ca3933652c8ce7567bd51662db9a20ef"
+  integrity sha512-ZeDgs/tFSdUqkAZmgdnu5enRwFXJ+nIF4TxK5ENw6x0bvfcgMD1H3GnTS+fIkBUcvijQNF7ZOa2tuOtOaEjt3w==
   dependencies:
     "@types/braces" "*"
 
