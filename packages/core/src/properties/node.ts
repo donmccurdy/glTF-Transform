@@ -1,4 +1,5 @@
 import { multiply } from 'gl-matrix/mat4';
+import { RefSet } from 'property-graph';
 import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants.js';
 import { MathUtils } from '../utils/index.js';
 import type { Camera } from './camera.js';
@@ -16,7 +17,7 @@ interface INode extends IExtensibleProperty {
 	camera: Camera;
 	mesh: Mesh;
 	skin: Skin;
-	children: Node[];
+	children: RefSet<Node>;
 }
 
 /**
@@ -61,7 +62,7 @@ export class Node extends ExtensibleProperty<INode> {
 			camera: null,
 			mesh: null,
 			skin: null,
-			children: [],
+			children: new RefSet<Node>(),
 		});
 	}
 

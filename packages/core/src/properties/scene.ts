@@ -1,10 +1,11 @@
+import { RefSet } from 'property-graph';
 import { Nullable, PropertyType } from '../constants.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Node } from './node.js';
 import { COPY_IDENTITY } from './property.js';
 
 interface IScene extends IExtensibleProperty {
-	children: Node[];
+	children: RefSet<Node>;
 }
 
 /**
@@ -29,7 +30,7 @@ export class Scene extends ExtensibleProperty<IScene> {
 	}
 
 	protected getDefaults(): Nullable<IScene> {
-		return Object.assign(super.getDefaults() as IExtensibleProperty, { children: [] });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { children: new RefSet<Node>() });
 	}
 
 	public copy(other: this, resolve = COPY_IDENTITY): this {
@@ -56,7 +57,6 @@ export class Scene extends ExtensibleProperty<IScene> {
 		// Remove existing parent.
 		const parentNode = node.getParentNode();
 		if (parentNode) parentNode.removeChild(node);
-
 		return this.addRef('children', node);
 	}
 

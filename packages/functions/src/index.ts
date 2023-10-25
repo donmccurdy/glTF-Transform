@@ -13,7 +13,6 @@ export * from './inspect.js';
 export * from './instance.js';
 export * from './join-primitives.js';
 export * from './join.js';
-export * from './list-node-scenes.js';
 export * from './list-texture-channels.js';
 export * from './list-texture-info.js';
 export * from './list-texture-slots.js';

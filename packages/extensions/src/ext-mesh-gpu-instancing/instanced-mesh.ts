@@ -1,8 +1,8 @@
-import { Accessor, ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
+import { Accessor, ExtensionProperty, IProperty, Nullable, PropertyType, RefMap } from '@gltf-transform/core';
 import { EXT_MESH_GPU_INSTANCING } from '../constants.js';
 
 interface IInstancedMesh extends IProperty {
-	attributes: { [key: string]: Accessor };
+	attributes: RefMap<Accessor>;
 }
 
 // See BufferViewUsage in `writer-context.ts`.
@@ -24,7 +24,7 @@ export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
 	}
 
 	protected getDefaults(): Nullable<IInstancedMesh> {
-		return Object.assign(super.getDefaults() as IProperty, { attributes: {} });
+		return Object.assign(super.getDefaults() as IProperty, { attributes: new RefMap<Accessor>() });
 	}
 
 	/** Returns an instance attribute as an {@link Accessor}. */

@@ -5,21 +5,23 @@ import {
 	Graph,
 	GraphNode,
 	GraphEdge,
-	isRef,
-	isRefList,
-	isRefMap,
 	LiteralKeys,
+	RefList,
+	RefSet,
+	RefMap,
+	Ref,
+	Literal,
 } from 'property-graph';
 import {
 	equalsArray,
 	equalsObject,
 	equalsRef,
-	equalsRefList,
+	equalsRefSet,
 	equalsRefMap,
 	isArray,
 	isPlainObject,
 } from '../utils/index.js';
-import type { Ref, RefMap, UnknownRef } from '../utils/index.js';
+import type { UnknownRef } from '../utils/index.js';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
@@ -177,18 +179,17 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public copy(other: this, resolve: PropertyResolver<Property> = COPY_IDENTITY): this {
 		// Remove previous references.
 		for (const key in this[$attributes]) {
-			const value = this[$attributes][key];
+			const value = this[$attributes][key] as GraphEdge<Property, Property> | RefList | RefSet | RefMap;
 			if (value instanceof GraphEdge) {
 				if (!this[$immutableKeys].has(key)) {
 					value.dispose();
 				}
-			} else if (isRefList(value)) {
-				for (const ref of value as unknown as Ref[]) {
+			} else if (value instanceof RefList || value instanceof RefSet) {
+				for (const ref of value.values()) {
 					ref.dispose();
 				}
-			} else if (isRefMap(value)) {
-				for (const subkey in value) {
-					const ref = value[subkey] as Ref;
+			} else if (value instanceof RefMap) {
+				for (const ref of value.values()) {
 					ref.dispose();
 				}
 			}
@@ -200,22 +201,22 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			const otherValue = other[$attributes][key];
 			if (otherValue instanceof GraphEdge) {
 				if (this[$immutableKeys].has(key)) {
-					const ref = thisValue as unknown as Ref;
+					const ref = thisValue as unknown as Ref<Property>;
 					ref.getChild().copy(resolve(otherValue.getChild()), resolve);
 				} else {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					this.setRef(key as any, resolve(otherValue.getChild()), otherValue.getAttributes());
 				}
-			} else if (isRefList(otherValue)) {
-				for (const ref of otherValue as unknown as Ref[]) {
+			} else if (otherValue instanceof RefSet || otherValue instanceof RefList) {
+				for (const ref of otherValue.values()) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.addRef(key as any, resolve(ref.getChild()), ref.getAttributes());
+					this.addRef(key as any, resolve(ref.getChild()) as any, ref.getAttributes());
 				}
-			} else if (isRefMap(otherValue)) {
-				for (const subkey in otherValue) {
-					const ref = otherValue[subkey] as Ref;
+			} else if (otherValue instanceof RefMap) {
+				for (const subkey of otherValue.keys()) {
+					const ref = otherValue.get(subkey)!;
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.setRefMap(key as any, subkey, resolve(ref.getChild()), ref.getAttributes());
+					this.setRefMap(key as any, subkey, resolve(ref.getChild()) as any, ref.getAttributes());
 				}
 			} else if (isPlainObject(otherValue)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));
@@ -250,19 +251,19 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 		for (const key in this[$attributes]) {
 			if (skip.has(key)) continue;
 
-			const a = this[$attributes][key] as UnknownRef;
-			const b = other[$attributes][key] as UnknownRef;
+			const a = this[$attributes][key] as UnknownRef | Literal;
+			const b = other[$attributes][key] as UnknownRef | Literal;
 
-			if (isRef(a) || isRef(b)) {
-				if (!equalsRef(a as Ref, b as Ref)) {
+			if (a instanceof GraphEdge || b instanceof GraphEdge) {
+				if (!equalsRef(a as Ref<Property>, b as Ref<Property>)) {
 					return false;
 				}
-			} else if (isRefList(a) || isRefList(b)) {
-				if (!equalsRefList(a as Ref[], b as Ref[])) {
+			} else if (a instanceof RefSet || b instanceof RefSet || a instanceof RefList || b instanceof RefList) {
+				if (!equalsRefSet(a as RefSet<Property>, b as RefSet<Property>)) {
 					return false;
 				}
-			} else if (isRefMap(a) || isRefMap(b)) {
-				if (!equalsRefMap(a as RefMap, b as RefMap)) {
+			} else if (a instanceof RefMap || b instanceof RefMap) {
+				if (!equalsRefMap(a as RefMap<Property>, b as RefMap<Property>)) {
 					return false;
 				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {

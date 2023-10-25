@@ -1,10 +1,11 @@
+import { RefSet } from 'property-graph';
 import { Nullable, PropertyType } from '../constants.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Primitive } from './primitive.js';
 
 interface IMesh extends IExtensibleProperty {
 	weights: number[];
-	primitives: Primitive[];
+	primitives: RefSet<Primitive>;
 }
 
 /**
@@ -46,7 +47,10 @@ export class Mesh extends ExtensibleProperty<IMesh> {
 	}
 
 	protected getDefaults(): Nullable<IMesh> {
-		return Object.assign(super.getDefaults() as IExtensibleProperty, { weights: [], primitives: [] });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			weights: [],
+			primitives: new RefSet<Primitive>(),
+		});
 	}
 
 	/** Adds a {@link Primitive} to the mesh's draw call list. */
