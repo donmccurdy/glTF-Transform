@@ -1,9 +1,10 @@
+import { RefMap } from 'property-graph';
 import type { Nullable } from '../constants.js';
 import type { ExtensionProperty } from './extension-property.js';
 import { Property, IProperty } from './property.js';
 
 export interface IExtensibleProperty extends IProperty {
-	extensions: { [key: string]: ExtensionProperty };
+	extensions: RefMap<ExtensionProperty>;
 }
 
 /**
@@ -16,7 +17,7 @@ export interface IExtensibleProperty extends IProperty {
  */
 export abstract class ExtensibleProperty<T extends IExtensibleProperty = IExtensibleProperty> extends Property<T> {
 	protected getDefaults(): Nullable<T> {
-		return Object.assign(super.getDefaults(), { extensions: {} });
+		return Object.assign(super.getDefaults(), { extensions: new RefMap<ExtensionProperty>() });
 	}
 
 	/** Returns an {@link ExtensionProperty} attached to this Property, if any. */

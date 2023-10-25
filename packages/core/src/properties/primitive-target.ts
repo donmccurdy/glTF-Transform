@@ -1,10 +1,11 @@
+import { RefMap } from 'property-graph';
 import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
-import type { Accessor } from './accessor.js';
+import { Accessor } from './accessor.js';
 import type { IExtensibleProperty } from './extensible-property.js';
 import { Property } from './property.js';
 
 interface IPrimitiveTarget extends IExtensibleProperty {
-	attributes: { [key: string]: Accessor };
+	attributes: RefMap<Accessor>;
 }
 
 /**
@@ -30,7 +31,7 @@ export class PrimitiveTarget extends Property<IPrimitiveTarget> {
 	}
 
 	protected getDefaults(): Nullable<IPrimitiveTarget> {
-		return Object.assign(super.getDefaults() as IExtensibleProperty, { attributes: {} });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { attributes: new RefMap<Accessor>() });
 	}
 
 	/** Returns a morph target vertex attribute as an {@link Accessor}. */

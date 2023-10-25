@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
-import { createPlatformIO } from '@gltf-transform/test-utils';
+import { createPlatformIO, logger } from '@gltf-transform/test-utils';
 
 test('parent', (t) => {
 	const document = new Document();
@@ -118,7 +118,7 @@ test('identity transforms', async (t) => {
 		{
 			name: 'A',
 		},
-		'exclude identity transforms'
+		'exclude identity transforms',
 	);
 
 	t.deepEqual(
@@ -127,7 +127,7 @@ test('identity transforms', async (t) => {
 			name: 'B',
 			translation: [1, 2, 1],
 		},
-		'has only set transform info'
+		'has only set transform info',
 	);
 
 	t.deepEqual(
@@ -138,6 +138,31 @@ test('identity transforms', async (t) => {
 			rotation: [1, 0, 0, 0],
 			scale: [1, 2, 1],
 		},
-		'has transform info'
+		'has transform info',
 	);
+});
+
+test('listNodeScenes', async (t) => {
+	const document = new Document().setLogger(logger);
+	const nodeA = document.createNode('A').setTranslation([2, 0, 0]);
+	const nodeB = document.createNode('B').setScale([4, 4, 4]).addChild(nodeA);
+	const nodeC = document.createNode('C').addChild(nodeB);
+	const sceneA = document.createScene().addChild(nodeC);
+	const sceneB = document.createScene().addChild(nodeC);
+
+	t.deepEqual(nodeA.listParentScenes(), [sceneA, sceneB], 'A → Scene');
+	t.deepEqual(nodeB.listParentScenes(), [sceneA, sceneB], 'B → Scene');
+	t.deepEqual(nodeC.listParentScenes(), [sceneA, sceneB], 'C → Scene');
+
+	sceneA.removeChild(nodeC);
+
+	t.deepEqual(nodeA.listParentScenes(), [sceneB], 'A → null');
+	t.deepEqual(nodeB.listParentScenes(), [sceneB], 'B → null');
+	t.deepEqual(nodeC.listParentScenes(), [sceneB], 'C → null');
+
+	sceneB.removeChild(nodeC);
+
+	t.deepEqual(nodeA.listParentScenes(), [], 'A → null');
+	t.deepEqual(nodeB.listParentScenes(), [], 'B → null');
+	t.deepEqual(nodeC.listParentScenes(), [], 'C → null');
 });

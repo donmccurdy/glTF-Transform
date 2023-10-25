@@ -1,28 +1,31 @@
-import type { GraphEdge } from 'property-graph';
+import type { Ref, RefList, RefMap, RefSet } from 'property-graph';
 import { isPlainObject } from './is-plain-object.js';
 import type { BufferViewUsage } from '../constants.js';
 import type { Property } from '../properties/index.js';
 
-export type Ref = GraphEdge<Property, Property>;
-export type RefMap = { [key: string]: Ref };
-export type UnknownRef = Ref | Ref[] | RefMap | unknown;
+export type UnknownRef = Ref<Property> | RefList<Property> | RefSet<Property> | RefMap<Property>;
 
-export function equalsRef(refA: Ref, refB: Ref): boolean {
+export function equalsRef(refA: Ref<Property>, refB: Ref<Property>): boolean {
 	if (!!refA !== !!refB) return false;
 
-	const a = refA.getChild();
-	const b = refB.getChild();
+	const a = refA.getChild()!;
+	const b = refB.getChild()!;
 
 	return a === b || a.equals(b);
 }
 
-export function equalsRefList(refListA: Ref[], refListB: Ref[]): boolean {
-	if (!!refListA !== !!refListB) return false;
-	if (refListA.length !== refListB.length) return false;
+export function equalsRefSet<
+	A extends RefList<Property> | RefSet<Property>,
+	B extends RefList<Property> | RefSet<Property>,
+>(refSetA: A, refSetB: B): boolean {
+	if (!!refSetA !== !!refSetB) return false;
+	const refValuesA = refSetA.values();
+	const refValuesB = refSetB.values();
+	if (refValuesA.length !== refValuesB.length) return false;
 
-	for (let i = 0; i < refListA.length; i++) {
-		const a = refListA[i];
-		const b = refListB[i];
+	for (let i = 0; i < refValuesA.length; i++) {
+		const a = refValuesA[i];
+		const b = refValuesB[i];
 
 		if (a.getChild() === b.getChild()) continue;
 
@@ -32,16 +35,16 @@ export function equalsRefList(refListA: Ref[], refListB: Ref[]): boolean {
 	return true;
 }
 
-export function equalsRefMap(refMapA: RefMap, refMapB: RefMap): boolean {
+export function equalsRefMap(refMapA: RefMap<Property>, refMapB: RefMap<Property>): boolean {
 	if (!!refMapA !== !!refMapB) return false;
 
-	const keysA = Object.keys(refMapA);
-	const keysB = Object.keys(refMapB);
+	const keysA = refMapA.keys();
+	const keysB = refMapB.keys();
 	if (keysA.length !== keysB.length) return false;
 
-	for (const key in refMapA) {
-		const refA = refMapA[key];
-		const refB = refMapB[key];
+	for (const key of keysA) {
+		const refA = refMapA.get(key)!;
+		const refB = refMapB.get(key)!;
 		if (!!refA !== !!refB) return false;
 
 		const a = refA.getChild();

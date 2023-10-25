@@ -1,3 +1,4 @@
+import { RefSet } from 'property-graph';
 import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
 import type { Accessor } from './accessor.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
@@ -6,7 +7,7 @@ import type { Node } from './node.js';
 interface ISkin extends IExtensibleProperty {
 	skeleton: Node;
 	inverseBindMatrices: Accessor;
-	joints: Node[];
+	joints: RefSet<Node>;
 }
 
 /**
@@ -29,7 +30,7 @@ export class Skin extends ExtensibleProperty<ISkin> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			skeleton: null,
 			inverseBindMatrices: null,
-			joints: [],
+			joints: new RefSet<Node>(),
 		});
 	}
 

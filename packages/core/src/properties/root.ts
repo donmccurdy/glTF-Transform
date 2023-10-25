@@ -1,6 +1,7 @@
 import { Nullable, PropertyType, VERSION } from '../constants.js';
 import type { Extension } from '../extension.js';
 import type { Graph } from 'property-graph';
+import { RefSet } from 'property-graph';
 import { Accessor } from './accessor.js';
 import { Animation } from './animation.js';
 import { Buffer } from './buffer.js';
@@ -27,16 +28,16 @@ interface IRoot extends IExtensibleProperty {
 	asset: IAsset;
 	defaultScene: Scene;
 
-	accessors: Accessor[];
-	animations: Animation[];
-	buffers: Buffer[];
-	cameras: Camera[];
-	materials: Material[];
-	meshes: Mesh[];
-	nodes: Node[];
-	scenes: Scene[];
-	skins: Skin[];
-	textures: Texture[];
+	accessors: RefSet<Accessor>;
+	animations: RefSet<Animation>;
+	buffers: RefSet<Buffer>;
+	cameras: RefSet<Camera>;
+	materials: RefSet<Material>;
+	meshes: RefSet<Mesh>;
+	nodes: RefSet<Node>;
+	scenes: RefSet<Scene>;
+	skins: RefSet<Skin>;
+	textures: RefSet<Texture>;
 }
 
 /**
@@ -85,16 +86,16 @@ export class Root extends ExtensibleProperty<IRoot> {
 				version: '2.0',
 			},
 			defaultScene: null,
-			accessors: [],
-			animations: [],
-			buffers: [],
-			cameras: [],
-			materials: [],
-			meshes: [],
-			nodes: [],
-			scenes: [],
-			skins: [],
-			textures: [],
+			accessors: new RefSet<Accessor>(),
+			animations: new RefSet<Animation>(),
+			buffers: new RefSet<Buffer>(),
+			cameras: new RefSet<Camera>(),
+			materials: new RefSet<Material>(),
+			meshes: new RefSet<Mesh>(),
+			nodes: new RefSet<Node>(),
+			scenes: new RefSet<Scene>(),
+			skins: new RefSet<Skin>(),
+			textures: new RefSet<Texture>(),
 		});
 	}
 

@@ -1,6 +1,7 @@
+import { RefMap, RefSet } from 'property-graph';
 import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
-import type { Accessor } from './accessor.js';
+import { Accessor } from './accessor.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Material } from './material.js';
 import type { PrimitiveTarget } from './primitive-target.js';
@@ -9,8 +10,8 @@ interface IPrimitive extends IExtensibleProperty {
 	mode: GLTF.MeshPrimitiveMode;
 	material: Material;
 	indices: Accessor;
-	attributes: { [key: string]: Accessor };
-	targets: PrimitiveTarget[];
+	attributes: RefMap<Accessor>;
+	targets: RefSet<PrimitiveTarget>;
 }
 
 /**
@@ -90,8 +91,8 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 			mode: Primitive.Mode.TRIANGLES,
 			material: null,
 			indices: null,
-			attributes: {},
-			targets: [],
+			attributes: new RefMap<Accessor>(),
+			targets: new RefSet<PrimitiveTarget>(),
 		});
 	}
 
