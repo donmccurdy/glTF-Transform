@@ -2,15 +2,18 @@ import type { Document, Transform } from '@gltf-transform/core';
 import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { reorder } from './reorder.js';
-import { quantize } from './quantize.js';
+import { QUANTIZE_DEFAULTS, QuantizeOptions, quantize } from './quantize.js';
 import { createTransform } from './utils.js';
 
-export interface MeshoptOptions {
+export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern'> {
 	encoder: unknown;
 	level?: 'medium' | 'high';
 }
 
-export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = { level: 'high' };
+export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = {
+	level: 'high',
+	...QUANTIZE_DEFAULTS,
+};
 
 const NAME = 'meshopt';
 
@@ -54,14 +57,11 @@ export function meshopt(_options: MeshoptOptions): Transform {
 				target: 'size',
 			}),
 			quantize({
+				...options,
 				// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
 				// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
 				pattern: options.level === 'medium' ? /.*/ : /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/,
-				quantizePosition: 14,
-				quantizeTexcoord: 12,
-				quantizeColor: 8,
-				quantizeNormal: 8,
-			})
+			}),
 		);
 
 		document
