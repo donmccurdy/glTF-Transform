@@ -52,6 +52,7 @@ import {
 	palette,
 	PaletteOptions,
 	PALETTE_DEFAULTS,
+	MESHOPT_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -766,6 +767,34 @@ ${underline('References')}
 	.option('--level <level>', 'Compression level.', {
 		validator: ['medium', 'high'],
 		default: 'high',
+	})
+	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizePosition,
+	})
+	.option('--quantize-normal <bits>', 'Precision for NORMAL and TANGENT attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizeNormal,
+	})
+	.option('--quantize-texcoord <bits>', 'Precision for TEXCOORD_* attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizeTexcoord,
+	})
+	.option('--quantize-color <bits>', 'Precision for COLOR_* attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizeColor,
+	})
+	.option('--quantize-weight <bits>', 'Precision for WEIGHTS_* attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizeWeight,
+	})
+	.option('--quantize-generic <bits>', 'Precision for custom (_*) attributes.', {
+		validator: Validator.NUMBER,
+		default: MESHOPT_DEFAULTS.quantizeGeneric,
+	})
+	.option('--quantization-volume <volume>', 'Bounds for quantization grid.', {
+		validator: ['mesh', 'scene'],
+		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(meshopt({ encoder: MeshoptEncoder, ...options })),
