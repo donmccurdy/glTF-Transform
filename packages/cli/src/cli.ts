@@ -53,6 +53,7 @@ import {
 	PaletteOptions,
 	PALETTE_DEFAULTS,
 	MESHOPT_DEFAULTS,
+	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -352,7 +353,10 @@ commands or using the scripting API.
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
-			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
+			const slotsUASTC = micromatch.makeRe(
+				'{normalTexture,occlusionTexture,metallicRoughnessTexture}',
+				MICROMATCH_OPTIONS,
+			);
 			transforms.push(
 				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
@@ -1418,7 +1422,7 @@ program
 		validator: Validator.STRING,
 	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
@@ -1455,7 +1459,7 @@ program
 		validator: Validator.STRING,
 	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
@@ -1497,7 +1501,7 @@ program
 		validator: Validator.STRING,
 	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: 'image/png',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
@@ -1532,7 +1536,7 @@ program
 		validator: Validator.STRING,
 	})
 	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: 'image/jpeg',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
