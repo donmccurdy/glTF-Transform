@@ -126,6 +126,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 				treeShake(mesh, counter);
 			}
 		}
+
 		if (propertyTypes.has(PropertyType.CAMERA)) {
 			for (const camera of root.listCameras()) {
 				treeShake(camera, counter);
@@ -201,8 +202,6 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		if (propertyTypes.has(PropertyType.BUFFER)) {
 			root.listBuffers().forEach((buffer) => treeShake(buffer, counter));
 		}
-
-		//
 
 		// TODO(bug): This process does not identify unused ExtensionProperty instances. That could
 		// be a future enhancement, either tracking unlinked properties as if they were connected
