@@ -90,7 +90,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		const root = document.getRoot();
 		const graph = document.getGraph();
 
-		const disposed: Record<string, number> = {};
+		const counter = new DisposeCounter();
 
 		// Prune top-down, so that low-level properties like accessors can be removed if the
 		// properties referencing them are removed.
@@ -99,22 +99,46 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		if (propertyTypes.has(PropertyType.MESH)) {
 			for (const mesh of root.listMeshes()) {
 				if (mesh.listPrimitives().length > 0) continue;
-				mesh.dispose();
-				markDisposed(mesh);
+				counter.dispose(mesh);
 			}
 		}
 
-		if (propertyTypes.has(PropertyType.NODE) && !options.keepLeaves) root.listScenes().forEach(nodeTreeShake);
-		if (propertyTypes.has(PropertyType.NODE)) root.listNodes().forEach(treeShake);
-		if (propertyTypes.has(PropertyType.SKIN)) root.listSkins().forEach(treeShake);
-		if (propertyTypes.has(PropertyType.MESH)) root.listMeshes().forEach(treeShake);
-		if (propertyTypes.has(PropertyType.CAMERA)) root.listCameras().forEach(treeShake);
+		if (propertyTypes.has(PropertyType.NODE)) {
+			if (!options.keepLeaves) {
+				for (const scene of root.listScenes()) {
+					nodeTreeShake(graph, scene, counter);
+				}
+			}
+
+			for (const node of root.listNodes()) {
+				treeShake(node, counter);
+			}
+		}
+
+		if (propertyTypes.has(PropertyType.SKIN)) {
+			for (const skin of root.listSkins()) {
+				treeShake(skin, counter);
+			}
+		}
+
+		if (propertyTypes.has(PropertyType.MESH)) {
+			for (const mesh of root.listMeshes()) {
+				treeShake(mesh, counter);
+			}
+		}
+
+		if (propertyTypes.has(PropertyType.CAMERA)) {
+			for (const camera of root.listCameras()) {
+				treeShake(camera, counter);
+			}
+		}
 
 		if (propertyTypes.has(PropertyType.PRIMITIVE)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE, counter);
 		}
+
 		if (propertyTypes.has(PropertyType.PRIMITIVE_TARGET)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET, counter);
 		}
 
 		// Prune unused vertex attributes.
@@ -147,40 +171,47 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			for (const anim of root.listAnimations()) {
 				for (const channel of anim.listChannels()) {
 					if (!channel.getTargetNode()) {
-						channel.dispose();
-						markDisposed(channel);
+						counter.dispose(channel);
 					}
 				}
 				if (!anim.listChannels().length) {
 					const samplers = anim.listSamplers();
-					treeShake(anim);
-					samplers.forEach(treeShake);
+					treeShake(anim, counter);
+					samplers.forEach((sampler) => treeShake(sampler, counter));
 				} else {
-					anim.listSamplers().forEach(treeShake);
+					anim.listSamplers().forEach((sampler) => treeShake(sampler, counter));
 				}
 			}
 		}
 
-		if (propertyTypes.has(PropertyType.MATERIAL)) root.listMaterials().forEach(treeShake);
+		if (propertyTypes.has(PropertyType.MATERIAL)) {
+			root.listMaterials().forEach((material) => treeShake(material, counter));
+		}
 
 		if (propertyTypes.has(PropertyType.TEXTURE)) {
-			root.listTextures().forEach(treeShake);
+			root.listTextures().forEach((texture) => treeShake(texture, counter));
 			if (!options.keepSolidTextures) {
-				await pruneSolidTextures(document);
+				await pruneSolidTextures(document, counter);
 			}
 		}
 
-		if (propertyTypes.has(PropertyType.ACCESSOR)) root.listAccessors().forEach(treeShake);
-		if (propertyTypes.has(PropertyType.BUFFER)) root.listBuffers().forEach(treeShake);
+		if (propertyTypes.has(PropertyType.ACCESSOR)) {
+			root.listAccessors().forEach((accessor) => treeShake(accessor, counter));
+		}
+
+		if (propertyTypes.has(PropertyType.BUFFER)) {
+			root.listBuffers().forEach((buffer) => treeShake(buffer, counter));
+		}
 
 		// TODO(bug): This process does not identify unused ExtensionProperty instances. That could
 		// be a future enhancement, either tracking unlinked properties as if they were connected
 		// to the Graph, or iterating over a property list provided by the Extension. Properties in
 		// use by an Extension are correctly preserved, in the meantime.
 
-		if (Object.keys(disposed).length) {
-			const str = Object.keys(disposed)
-				.map((t) => `${t} (${disposed[t]})`)
+		if (!counter.empty()) {
+			const str = counter
+				.entries()
+				.map(([type, count]) => `${type} (${count})`)
 				.join(', ');
 			logger.info(`${NAME}: Removed types... ${str}`);
 		} else {
@@ -188,62 +219,85 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		}
 
 		logger.debug(`${NAME}: Complete.`);
-
-		//
-
-		/** Disposes of the given property if it is unused. */
-		function treeShake(prop: Property): void {
-			// Consider a property unused if it has no references from another property, excluding
-			// types Root and AnimationChannel.
-			const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
-			if (!parents.length) {
-				prop.dispose();
-				markDisposed(prop);
-			}
-		}
-
-		/**
-		 * For property types the Root does not maintain references to, we'll need to search the
-		 * graph. It's possible that objects may have been constructed without any outbound links,
-		 * but since they're not on the graph they don't need to be tree-shaken.
-		 */
-		function indirectTreeShake(graph: Graph<Property>, propertyType: string): void {
-			graph
-				.listEdges()
-				.map((edge) => edge.getParent())
-				.filter((parent) => parent.propertyType === propertyType)
-				.forEach(treeShake);
-		}
-
-		/** Iteratively prunes leaf Nodes without contents. */
-		function nodeTreeShake(prop: Node | Scene): void {
-			prop.listChildren().forEach(nodeTreeShake);
-
-			if (prop instanceof Scene) return;
-
-			const isUsed = graph.listParentEdges(prop).some((e) => {
-				const ptype = e.getParent().propertyType;
-				return ptype !== PropertyType.ROOT && ptype !== PropertyType.SCENE && ptype !== PropertyType.NODE;
-			});
-			const isEmpty = graph.listChildren(prop).length === 0;
-			if (isEmpty && !isUsed) {
-				prop.dispose();
-				markDisposed(prop);
-			}
-		}
-
-		function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
-			for (const semantic of unused) {
-				prim.setAttribute(semantic, null);
-			}
-		}
-
-		/** Records properties disposed by type. */
-		function markDisposed(prop: Property): void {
-			disposed[prop.propertyType] = disposed[prop.propertyType] || 0;
-			disposed[prop.propertyType]++;
-		}
 	});
+}
+
+/**********************************************************************************************
+ * Utility for disposing properties and reporting statistics afterward.
+ */
+
+class DisposeCounter {
+	public readonly disposed: Record<string, number> = {};
+
+	empty(): boolean {
+		for (const key in this.disposed) return false;
+		return true;
+	}
+
+	entries(): [string, number][] {
+		return Object.entries(this.disposed);
+	}
+
+	/** Records properties disposed by type. */
+	dispose(prop: Property): void {
+		this.disposed[prop.propertyType] = this.disposed[prop.propertyType] || 0;
+		this.disposed[prop.propertyType]++;
+		prop.dispose();
+	}
+}
+
+/**********************************************************************************************
+ * Helper functions for the {@link prune} transform.
+ *
+ * IMPORTANT: These functions were previously declared in function scope, but
+ * broke in the CommonJS build due to a buggy Babel transform. See:
+ * https://github.com/donmccurdy/glTF-Transform/issues/1140
+ */
+
+/** Disposes of the given property if it is unused. */
+function treeShake(prop: Property, counter: DisposeCounter): void {
+	// Consider a property unused if it has no references from another property, excluding
+	// types Root and AnimationChannel.
+	const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
+	if (!parents.length) {
+		counter.dispose(prop);
+	}
+}
+
+/**
+ * For property types the Root does not maintain references to, we'll need to search the
+ * graph. It's possible that objects may have been constructed without any outbound links,
+ * but since they're not on the graph they don't need to be tree-shaken.
+ */
+function indirectTreeShake(graph: Graph<Property>, propertyType: string, counter: DisposeCounter): void {
+	for (const edge of graph.listEdges()) {
+		const parent = edge.getParent();
+		if (parent.propertyType === propertyType) {
+			treeShake(parent, counter);
+		}
+	}
+}
+
+/** Iteratively prunes leaf Nodes without contents. */
+function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene, counter: DisposeCounter): void {
+	prop.listChildren().forEach((child) => nodeTreeShake(graph, child, counter));
+
+	if (prop instanceof Scene) return;
+
+	const isUsed = graph.listParentEdges(prop).some((e) => {
+		const ptype = e.getParent().propertyType;
+		return ptype !== PropertyType.ROOT && ptype !== PropertyType.SCENE && ptype !== PropertyType.NODE;
+	});
+	const isEmpty = graph.listChildren(prop).length === 0;
+	if (isEmpty && !isUsed) {
+		counter.dispose(prop);
+	}
+}
+
+function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
+	for (const semantic of unused) {
+		prim.setAttribute(semantic, null);
+	}
 }
 
 /**
@@ -361,7 +415,7 @@ function shiftTexCoords(material: Material, prims: Primitive[]) {
  * Prune solid (single-color) textures.
  */
 
-async function pruneSolidTextures(document: Document): Promise<void> {
+async function pruneSolidTextures(document: Document, counter: DisposeCounter): Promise<void> {
 	const root = document.getRoot();
 	const graph = document.getGraph();
 	const logger = document.getLogger();
@@ -387,8 +441,8 @@ async function pruneSolidTextures(document: Document): Promise<void> {
 		}
 
 		if (texture.listParents().length === 1) {
-			texture.dispose();
-			logger.debug(`${NAME}: Removed single-color texture "${name}" (${size}px ${slots.join(', ')})`);
+			counter.dispose(texture);
+			logger.debug(`${NAME}: Removed solid-color texture "${name}" (${size}px ${slots.join(', ')})`);
 		}
 	});
 
