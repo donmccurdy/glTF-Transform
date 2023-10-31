@@ -53,6 +53,7 @@ import {
 	PaletteOptions,
 	PALETTE_DEFAULTS,
 	MESHOPT_DEFAULTS,
+	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -66,7 +67,7 @@ import {
 	XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat, dim } from './util.js';
+import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat, dim, regexFromArray } from './util.js';
 import { Session } from './session.js';
 import { ValidateOptions, validate } from './validate.js';
 import { getConfig, loadConfig } from './config.js';
@@ -352,7 +353,10 @@ commands or using the scripting API.
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
-			const slotsUASTC = '{normalTexture,occlusionTexture,metallicRoughnessTexture}';
+			const slotsUASTC = micromatch.makeRe(
+				'{normalTexture,occlusionTexture,metallicRoughnessTexture}',
+				MICROMATCH_OPTIONS,
+			);
 			transforms.push(
 				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
@@ -1417,8 +1421,8 @@ program
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
 		validator: Validator.STRING,
 	})
-	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+	.option('--formats <formats>', 'Texture formats to include', {
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
@@ -1427,7 +1431,7 @@ program
 	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const formats = regexFromArray([options.formats] as string[]);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
@@ -1454,8 +1458,8 @@ program
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
 		validator: Validator.STRING,
 	})
-	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
+	.option('--formats <formats>', 'Texture formats to include', {
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
@@ -1468,7 +1472,7 @@ program
 	})
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const formats = regexFromArray([options.formats] as string[]);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
@@ -1496,16 +1500,16 @@ program
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
 		validator: Validator.STRING,
 	})
-	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
-		default: 'image/png',
+	.option('--formats <formats>', 'Texture formats to include', {
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
+		default: 'png',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const formats = regexFromArray([options.formats] as string[]);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
@@ -1531,15 +1535,15 @@ program
 	.option('--pattern <pattern>', 'Pattern (glob) to match textures, by name or URI.', {
 		validator: Validator.STRING,
 	})
-	.option('--formats <formats>', 'Texture formats to include (glob)', {
-		validator: ['image/png', 'image/jpeg', '*'],
-		default: 'image/jpeg',
+	.option('--formats <formats>', 'Texture formats to include', {
+		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
+		default: 'jpeg',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const formats = micromatch.makeRe(String(options.formats), MICROMATCH_OPTIONS);
+		const formats = regexFromArray([options.formats] as string[]);
 		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(

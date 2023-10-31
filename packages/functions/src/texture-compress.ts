@@ -11,8 +11,8 @@ import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 
 const NAME = 'textureCompress';
 
-type Format = (typeof FORMATS)[number];
-const FORMATS = ['jpeg', 'png', 'webp', 'avif'] as const;
+type Format = (typeof TEXTURE_COMPRESS_SUPPORTED_FORMATS)[number];
+export const TEXTURE_COMPRESS_SUPPORTED_FORMATS = ['jpeg', 'png', 'webp', 'avif'] as const;
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
 export interface TextureCompressOptions {
@@ -339,7 +339,7 @@ function getFormat(texture: Texture): Format {
 
 function getFormatFromMimeType(mimeType: string): Format {
 	const format = mimeType.split('/').pop() as Format | undefined;
-	if (!format || !FORMATS.includes(format)) {
+	if (!format || !TEXTURE_COMPRESS_SUPPORTED_FORMATS.includes(format)) {
 		throw new Error(`Unknown MIME type "${mimeType}".`);
 	}
 	return format;

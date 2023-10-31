@@ -4,6 +4,7 @@ import _commandExists from 'command-exists';
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
 import stripAnsi from 'strip-ansi';
+import micromatch from 'micromatch';
 
 // Constants.
 
@@ -18,6 +19,12 @@ export const XMPContext: Record<string, string> = {
 // Using 'micromatch' because 'contains: true' did not work as expected with
 // minimatch. Need to ensure that '*' matches patterns like 'image/png'.
 export const MICROMATCH_OPTIONS = { nocase: true, contains: true };
+
+// See: https://github.com/micromatch/micromatch/issues/224
+export function regexFromArray(values: string[]): RegExp {
+	const pattern = values.map((s) => `(${s})`).join('|');
+	return micromatch.makeRe(pattern, MICROMATCH_OPTIONS);
+}
 
 // Mocks for tests.
 
