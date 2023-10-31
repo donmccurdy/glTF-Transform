@@ -58,6 +58,7 @@ export function meshopt(_options: MeshoptOptions): Transform {
 		// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
 		// Note that normals and tangents use octahedral filters, but _morph_ normals
 		// and tangents do not.
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/1142
 		if (options.level === 'medium') {
 			pattern = /.*/;
 			patternTargets = /.*/;
