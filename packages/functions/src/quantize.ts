@@ -122,7 +122,7 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 
 		await doc.transform(
 			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL] }),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] })
+			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
 		);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -133,7 +133,7 @@ function quantizePrimitive(
 	doc: Document,
 	prim: Primitive | PrimitiveTarget,
 	nodeTransform: VectorTransform<vec3>,
-	options: Required<QuantizeOptions>
+	options: Required<QuantizeOptions>,
 ): void {
 	const logger = doc.getLogger();
 
@@ -193,7 +193,7 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	const scale = Math.max(
 		(max[0] - min[0]) / 2, // Divide because interval [-1,1] has length 2.
 		(max[1] - min[1]) / 2,
-		(max[2] - min[2]) / 2
+		(max[2] - min[2]) / 2,
 	);
 
 	// Original center of the mesh, in local space.
@@ -294,7 +294,7 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 			instanceTranslation ? (instanceTranslation.getElement(i, t) as vec3) : T_IDENTITY,
 			instanceRotation ? (instanceRotation.getElement(i, r) as vec4) : R_IDENTITY,
 			instanceScale ? (instanceScale.getElement(i, s) as vec3) : S_IDENTITY,
-			instanceMatrix
+			instanceMatrix,
 		);
 
 		multiplyMat4(instanceMatrix, instanceMatrix, transformMatrix);
@@ -370,7 +370,7 @@ function getQuantizationSettings(
 	semantic: string,
 	attribute: Accessor,
 	logger: ILogger,
-	options: Required<QuantizeOptions>
+	options: Required<QuantizeOptions>,
 ): { bits: number; ctor?: TypedArrayConstructor } {
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMaxNormalized([]);

@@ -23,7 +23,7 @@ export function prepareAccessor(
 	accessor: Accessor,
 	encoder: typeof MeshoptEncoder,
 	mode: MeshoptMode,
-	filterOptions: { filter: MeshoptFilter; bits?: number }
+	filterOptions: { filter: MeshoptFilter; bits?: number },
 ): PreparedAccessor {
 	const { filter, bits } = filterOptions as { filter: MeshoptFilter; bits: number };
 	const result: PreparedAccessor = {
