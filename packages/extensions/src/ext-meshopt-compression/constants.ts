@@ -16,9 +16,13 @@ export enum MeshoptMode {
 }
 
 export enum MeshoptFilter {
+	/** No filter — quantize only. */
 	NONE = 'NONE',
+	/** Four 8- or 16-bit normalized values. */
 	OCTAHEDRAL = 'OCTAHEDRAL',
+	/** Four 16-bit normalized values. */
 	QUATERNION = 'QUATERNION',
+	/** K single-precision floating point values. */
 	EXPONENTIAL = 'EXPONENTIAL',
 }
 

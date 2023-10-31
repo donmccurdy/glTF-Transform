@@ -5,7 +5,7 @@ import { reorder } from './reorder.js';
 import { QUANTIZE_DEFAULTS, QuantizeOptions, quantize } from './quantize.js';
 import { createTransform } from './utils.js';
 
-export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern'> {
+export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern' | 'patternTargets'> {
 	encoder: unknown;
 	level?: 'medium' | 'high';
 }
@@ -51,6 +51,21 @@ export function meshopt(_options: MeshoptOptions): Transform {
 	}
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
+		let pattern: RegExp;
+		let patternTargets: RegExp;
+
+		// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
+		// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
+		// Note that normals and tangents use octahedral filters, but _morph_ normals
+		// and tangents do not.
+		if (options.level === 'medium') {
+			pattern = /.*/;
+			patternTargets = /.*/;
+		} else {
+			pattern = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/;
+			patternTargets = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS|NORMAL|TANGENT)(_\d+)?$/;
+		}
+
 		await document.transform(
 			reorder({
 				encoder: encoder,
@@ -58,9 +73,8 @@ export function meshopt(_options: MeshoptOptions): Transform {
 			}),
 			quantize({
 				...options,
-				// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
-				// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
-				pattern: options.level === 'medium' ? /.*/ : /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/,
+				pattern,
+				patternTargets,
 			}),
 		);
 

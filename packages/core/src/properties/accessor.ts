@@ -360,7 +360,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		this.set('normalized', normalized);
 
 		if (normalized) {
-			this._out = (c: number): number => MathUtils.decodeNormalizedInt(c, this.get('componentType'));
+			this._out = (i: number): number => MathUtils.decodeNormalizedInt(i, this.get('componentType'));
 			this._in = (f: number): number => MathUtils.encodeNormalizedInt(f, this.get('componentType'));
 		} else {
 			this._out = MathUtils.identity;
