@@ -8,6 +8,7 @@ import {
 	GLTF,
 	MathUtils,
 	Primitive,
+	PropertyType,
 	Root,
 	TypedArray,
 	TypedArrayConstructor,
@@ -23,7 +24,7 @@ export function prepareAccessor(
 	accessor: Accessor,
 	encoder: typeof MeshoptEncoder,
 	mode: MeshoptMode,
-	filterOptions: { filter: MeshoptFilter; bits?: number }
+	filterOptions: { filter: MeshoptFilter; bits?: number },
 ): PreparedAccessor {
 	const { filter, bits } = filterOptions as { filter: MeshoptFilter; bits: number };
 	const result: PreparedAccessor = {
@@ -36,7 +37,7 @@ export function prepareAccessor(
 	if (mode !== MeshoptMode.ATTRIBUTES) return result;
 
 	if (filter !== MeshoptFilter.NONE) {
-		let array = accessor.getNormalized() ? denormalizeArray(accessor) : new Float32Array(result.array);
+		let array = accessor.getNormalized() ? decodeNormalizedIntArray(accessor) : new Float32Array(result.array);
 
 		switch (filter) {
 			case MeshoptFilter.EXPONENTIAL: // → K single-precision floating point values.
@@ -83,7 +84,7 @@ export function prepareAccessor(
 	return result;
 }
 
-function denormalizeArray(attribute: Accessor): Float32Array {
+function decodeNormalizedIntArray(attribute: Accessor): Float32Array {
 	const componentType = attribute.getComponentType();
 	const srcArray = attribute.getArray()!;
 	const dstArray = new Float32Array(srcArray.length);
@@ -141,6 +142,7 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 	for (const ref of refs) {
 		const refName = ref.getName();
 		const refKey = (ref.getAttributes().key || '') as string;
+		const isDelta = ref.getParent().propertyType === PropertyType.PRIMITIVE_TARGET;
 
 		// Indices.
 		if (refName === 'indices') return { filter: MeshoptFilter.NONE };
@@ -153,13 +155,17 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 		// - POSITION and TEXCOORD_0 could use exponential filtering, but this produces broken
 		//   output in some cases (e.g. Matilda.glb), for unknown reasons. gltfpack uses manual
 		//   quantization for these attributes.
+		// - NORMAL and TANGENT attributes use Octahedral filters, but deltas in morphs do not.
+		// - When specifying bit depth for vertex attributes, check the defaults in `quantize.ts`
+		//	 and overrides in `meshopt.ts`. Don't store deltas at higher precision than base.
 		if (refName === 'attributes') {
 			if (refKey === 'POSITION') return { filter: MeshoptFilter.NONE };
 			if (refKey === 'TEXCOORD_0') return { filter: MeshoptFilter.NONE };
-			if (refKey === 'NORMAL') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
-			if (refKey === 'TANGENT') return { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
 			if (refKey.startsWith('JOINTS_')) return { filter: MeshoptFilter.NONE };
 			if (refKey.startsWith('WEIGHTS_')) return { filter: MeshoptFilter.NONE };
+			if (refKey === 'NORMAL' || refKey === 'TANGENT') {
+				return isDelta ? { filter: MeshoptFilter.NONE } : { filter: MeshoptFilter.OCTAHEDRAL, bits: 8 };
+			}
 		}
 
 		// Animation.

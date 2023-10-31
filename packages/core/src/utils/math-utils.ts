@@ -19,41 +19,44 @@ export class MathUtils {
 		return true;
 	}
 
-	public static decodeNormalizedInt(c: number, componentType: GLTF.AccessorComponentType): number {
+	// TODO(v4): Compare performance if we replace the switch with individual functions.
+	public static decodeNormalizedInt(i: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
-			case 5126:
-				return c;
-			case 5123:
-				return c / 65535.0;
-			case 5121:
-				return c / 255.0;
-			case 5122:
-				return Math.max(c / 32767.0, -1.0);
-			case 5120:
-				return Math.max(c / 127.0, -1.0);
+			case 5126: // FLOAT
+				return i;
+			case 5123: // UNSIGNED_SHORT
+				return i / 65535.0;
+			case 5121: // UNSIGNED_BYTE
+				return i / 255.0;
+			case 5122: // SHORT
+				return Math.max(i / 32767.0, -1.0);
+			case 5120: // BYTE
+				return Math.max(i / 127.0, -1.0);
 			default:
 				throw new Error('Invalid component type.');
 		}
 	}
 
 	/** @deprecated Renamed to {@link MathUtils.decodeNormalizedInt}. */
-	public static denormalize(c: number, componentType: GLTF.AccessorComponentType): number {
-		return MathUtils.decodeNormalizedInt(c, componentType);
+	public static denormalize(i: number, componentType: GLTF.AccessorComponentType): number {
+		return MathUtils.decodeNormalizedInt(i, componentType);
 	}
 
+	// TODO(v4): Compare performance if we replace the switch with individual functions.
+	// TODO(v4): Consider clamping to [0, 1] or [-1, 1] here.
 	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
-			case 5126:
+			case 5126: // FLOAT
 				return f;
-			case 5123:
+			case 5123: // UNSIGNED_SHORT
 				return Math.round(f * 65535.0);
-			case 5121:
+			case 5121: // UNSIGNED_BYTE
 				return Math.round(f * 255.0);
-			case 5122:
+			case 5122: // SHORT
 				return Math.round(f * 32767.0);
-			case 5120:
+			case 5120: // BYTE
 				return Math.round(f * 127.0);
 			default:
 				throw new Error('Invalid component type.');

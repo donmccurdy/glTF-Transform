@@ -42,6 +42,8 @@ const TRS_CHANNELS = [TRANSLATION, ROTATION, SCALE];
 export interface QuantizeOptions {
 	/** Pattern (regex) used to filter vertex attribute semantics for quantization. Default: all. */
 	pattern?: RegExp;
+	/** Pattern (regex) used to filter morph target semantics for quantization. Default: `options.pattern`. */
+	patternTargets?: RegExp;
 	/** Bounds for quantization grid. */
 	quantizationVolume?: 'mesh' | 'scene';
 	/** Quantization bits for `POSITION` attributes. */
@@ -60,7 +62,7 @@ export interface QuantizeOptions {
 	normalizeWeights?: boolean;
 }
 
-export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
+export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>> = {
 	pattern: /.*/,
 	quantizationVolume: 'mesh',
 	quantizePosition: 14,
@@ -88,6 +90,8 @@ export const QUANTIZE_DEFAULTS: Required<QuantizeOptions> = {
  */
 export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform {
 	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;
+
+	options.patternTargets = options.patternTargets || options.pattern;
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -122,7 +126,7 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 
 		await doc.transform(
 			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL] }),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] })
+			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
 		);
 
 		logger.debug(`${NAME}: Complete.`);
@@ -133,14 +137,17 @@ function quantizePrimitive(
 	doc: Document,
 	prim: Primitive | PrimitiveTarget,
 	nodeTransform: VectorTransform<vec3>,
-	options: Required<QuantizeOptions>
+	options: Required<QuantizeOptions>,
 ): void {
+	const isTarget = prim instanceof PrimitiveTarget;
 	const logger = doc.getLogger();
 
 	for (const semantic of prim.listSemantics()) {
-		if (!options.pattern.test(semantic)) continue;
+		if (!isTarget && !options.pattern.test(semantic)) continue;
+		if (isTarget && !options.patternTargets.test(semantic)) continue;
 
 		const srcAttribute = prim.getAttribute(semantic)!;
+
 		const { bits, ctor } = getQuantizationSettings(semantic, srcAttribute, logger, options);
 
 		if (!ctor) continue;
@@ -193,7 +200,7 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	const scale = Math.max(
 		(max[0] - min[0]) / 2, // Divide because interval [-1,1] has length 2.
 		(max[1] - min[1]) / 2,
-		(max[2] - min[2]) / 2
+		(max[2] - min[2]) / 2,
 	);
 
 	// Original center of the mesh, in local space.
@@ -294,7 +301,7 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 			instanceTranslation ? (instanceTranslation.getElement(i, t) as vec3) : T_IDENTITY,
 			instanceRotation ? (instanceRotation.getElement(i, r) as vec4) : R_IDENTITY,
 			instanceScale ? (instanceScale.getElement(i, s) as vec3) : S_IDENTITY,
-			instanceMatrix
+			instanceMatrix,
 		);
 
 		multiplyMat4(instanceMatrix, instanceMatrix, transformMatrix);
@@ -347,12 +354,16 @@ function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bit
 	const scale = Math.pow(2, quantBits) - 1;
 	const lo = storageBits - quantBits;
 	const hi = 2 * quantBits - storageBits;
+	const range = [signBits > 0 ? -1 : 0, 1] as vec2;
 
 	for (let i = 0, di = 0, el: number[] = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
 		for (let j = 0; j < el.length; j++) {
+			// Clamp to range.
+			let value = clamp(el[j], range);
+
 			// Map [0.0 ... 1.0] to [0 ... scale].
-			let value = Math.round(Math.abs(el[j]) * scale);
+			value = Math.round(Math.abs(value) * scale);
 
 			// Replicate msb to missing lsb.
 			value = (value << lo) | (value >> hi);
@@ -370,7 +381,7 @@ function getQuantizationSettings(
 	semantic: string,
 	attribute: Accessor,
 	logger: ILogger,
-	options: Required<QuantizeOptions>
+	options: Required<QuantizeOptions>,
 ): { bits: number; ctor?: TypedArrayConstructor } {
 	const min = attribute.getMinNormalized([]);
 	const max = attribute.getMaxNormalized([]);
@@ -495,4 +506,8 @@ function fromTransform(transform: VectorTransform<vec3>): mat4 {
 		transform.scale,
 		transform.scale,
 	]) as mat4;
+}
+
+function clamp(value: number, range: vec2): number {
+	return Math.min(Math.max(value, range[0]), range[1]);
 }
