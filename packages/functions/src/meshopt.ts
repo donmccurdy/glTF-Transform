@@ -53,6 +53,7 @@ export function meshopt(_options: MeshoptOptions): Transform {
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		let pattern: RegExp;
 		let patternTargets: RegExp;
+		let quantizeNormal = options.quantizeNormal;
 
 		// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
 		// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
@@ -65,6 +66,7 @@ export function meshopt(_options: MeshoptOptions): Transform {
 		} else {
 			pattern = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/;
 			patternTargets = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS|NORMAL|TANGENT)(_\d+)?$/;
+			quantizeNormal = Math.min(quantizeNormal, 8); // See meshopt::getMeshoptFilter.
 		}
 
 		await document.transform(
@@ -76,6 +78,7 @@ export function meshopt(_options: MeshoptOptions): Transform {
 				...options,
 				pattern,
 				patternTargets,
+				quantizeNormal,
 			}),
 		);
 

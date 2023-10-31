@@ -156,6 +156,8 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 		//   output in some cases (e.g. Matilda.glb), for unknown reasons. gltfpack uses manual
 		//   quantization for these attributes.
 		// - NORMAL and TANGENT attributes use Octahedral filters, but deltas in morphs do not.
+		// - When specifying bit depth for vertex attributes, check the defaults in `quantize.ts`
+		//	 and overrides in `meshopt.ts`. Don't store deltas at higher precision than base.
 		if (refName === 'attributes') {
 			if (refKey === 'POSITION') return { filter: MeshoptFilter.NONE };
 			if (refKey === 'TEXCOORD_0') return { filter: MeshoptFilter.NONE };
