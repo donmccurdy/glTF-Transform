@@ -1460,7 +1460,6 @@ program
 	})
 	.option('--formats <formats>', 'Texture formats to include', {
 		validator: [...TEXTURE_COMPRESS_SUPPORTED_FORMATS, '*'],
-		typeHint: 'hello world',
 		default: '*',
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
