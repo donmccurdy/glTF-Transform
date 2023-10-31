@@ -359,8 +359,7 @@ function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bit
 	for (let i = 0, di = 0, el: number[] = []; i < attribute.getCount(); i++) {
 		attribute.getElement(i, el);
 		for (let j = 0; j < el.length; j++) {
-			// Clamp to [min, max] range.
-			// See: https://github.com/donmccurdy/glTF-Transform/issues/1142
+			// Clamp to range.
 			let value = clamp(el[j], range);
 
 			// Map [0.0 ... 1.0] to [0 ... scale].
