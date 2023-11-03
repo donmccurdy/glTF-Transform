@@ -3,7 +3,7 @@
 	"packageRules": [
 		{
 			"description": "Node.js v14 EOL",
-			"matchPackageNames": ["listr2"],
+			"matchPackageNames": ["listr2", "p-limit"],
 			"enabled": false
 		},
 		{
