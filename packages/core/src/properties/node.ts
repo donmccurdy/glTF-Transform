@@ -50,7 +50,7 @@ export class Node extends ExtensibleProperty<INode> {
 	public declare propertyType: PropertyType.NODE;
 
 	/**
-	 * Internal reference to ≤1 parent Nodes, omitted from {@link Graph}.
+	 * Internal reference to <=1 parent Nodes, omitted from {@link Graph}.
 	 * @internal
 	 * @privateRemarks Requires non-graph state.
 	 */

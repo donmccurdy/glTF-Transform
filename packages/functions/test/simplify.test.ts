@@ -34,7 +34,7 @@ test('welded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
 	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
@@ -52,7 +52,7 @@ test('unwelded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
 	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
@@ -87,7 +87,7 @@ test('shared accessors', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.truthy((srcCount - dstCount) / srcCount > 0.5, '≥50% reduction');
+	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
 	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });

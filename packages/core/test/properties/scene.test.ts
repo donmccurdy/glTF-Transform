@@ -11,8 +11,8 @@ test('parent', (t) => {
 	const nodeA = document.createNode('NodeA');
 	const nodeB = document.createNode('NodeB');
 
-	// 1. adding node as child of node must de-parent from N scenes [and ≤1 node, tested in node.test.ts]
-	// 2. adding node as child of scene must de-parent from ≤1 node [but not scenes]
+	// 1. adding node as child of node must de-parent from N scenes [and <=1 node, tested in node.test.ts]
+	// 2. adding node as child of scene must de-parent from <=1 node [but not scenes]
 
 	sceneA.addChild(nodeA);
 	sceneB.addChild(nodeA);

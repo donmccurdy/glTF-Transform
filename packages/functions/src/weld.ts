@@ -416,11 +416,11 @@ function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {
 	const options = { ...WELD_DEFAULTS, ..._options } as Required<WeldOptions>;
 
 	if (options.tolerance < 0 || options.tolerance > 0.1) {
-		throw new Error(`${NAME}: Requires 0 ≤ tolerance ≤ 0.1`);
+		throw new Error(`${NAME}: Requires 0 <= tolerance <= 0.1`);
 	}
 
 	if (options.toleranceNormal < 0 || options.toleranceNormal > Math.PI / 2) {
-		throw new Error(`${NAME}: Requires 0 ≤ toleranceNormal ≤ ${(Math.PI / 2).toFixed(2)}`);
+		throw new Error(`${NAME}: Requires 0 <= toleranceNormal <= ${(Math.PI / 2).toFixed(2)}`);
 	}
 
 	if (options.tolerance > 0) {

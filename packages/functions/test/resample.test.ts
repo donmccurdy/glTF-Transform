@@ -49,7 +49,7 @@ test('rotation', async (t) => {
 		...quat.fromEuler([], 45, 0, 0),
 		...quat.fromEuler([], 90, 0, 0),
 		...quat.fromEuler([], 135, 0, 0),
-		...quat.fromEuler([], 180, 0, 0), // resampling can't create ≥180º steps!
+		...quat.fromEuler([], 180, 0, 0), // resampling can't create >=180º steps!
 		...quat.fromEuler([], 225, 0, 0),
 		...quat.fromEuler([], 270, 0, 0),
 	]);
