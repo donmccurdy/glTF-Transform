@@ -114,7 +114,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 		if (numBatches > 0) {
 			logger.info(`${NAME}: Created ${numBatches} batches, with ${numInstances} total instances.`);
 		} else {
-			logger.info(`${NAME}: No meshes with ≥${options.min} parent nodes were found.`);
+			logger.info(`${NAME}: No meshes with >=${options.min} parent nodes were found.`);
 		}
 
 		if (batchExtension.listProperties().length === 0) {

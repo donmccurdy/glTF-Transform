@@ -39,7 +39,7 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 	if (!options.skipValidation && new Set(prims.map(createPrimGroupKey)).size > 1) {
 		throw new Error(
 			'' +
-				'Requires ≥2 Primitives, sharing the same Material ' +
+				'Requires >=2 Primitives, sharing the same Material ' +
 				'and Mode, with compatible vertex attributes and indices.',
 		);
 	}

@@ -1639,7 +1639,7 @@ program
 		`
 Scans all Accessors in the Document, detecting whether each Accessor would
 benefit from sparse data storage. Currently, sparse data storage is used only
-when many values (≥ 1/3) are zeroes. Particularly for assets using morph
+when many values (>= 1/3) are zeroes. Particularly for assets using morph
 target ("shape key") animation, sparse data storage may significantly reduce
 file sizes.
 	`.trim(),

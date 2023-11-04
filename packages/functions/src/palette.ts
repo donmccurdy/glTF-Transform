@@ -172,7 +172,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		}
 
 		if (!(baseColorTexture || emissiveTexture || metallicRoughnessTexture)) {
-			logger.debug(`${NAME}: No material property has ≥${min} unique values. Exiting.`);
+			logger.debug(`${NAME}: No material property has >=${min} unique values. Exiting.`);
 			return;
 		}
 
