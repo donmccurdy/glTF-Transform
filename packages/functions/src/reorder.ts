@@ -66,7 +66,7 @@ export function reorder(_options: ReorderOptions): Transform {
 			const [remap, unique] = encoder.reorderMesh(
 				indicesArray,
 				plan.indicesToMode.get(srcIndices) === Primitive.Mode.TRIANGLES,
-				options.target === 'size'
+				options.target === 'size',
 			);
 
 			dstIndices.setArray(unique <= 65534 ? new Uint16Array(indicesArray) : indicesArray);
@@ -90,7 +90,13 @@ export function reorder(_options: ReorderOptions): Transform {
 		}
 
 		// Clean up any attributes left unused by earlier cloning.
-		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
+		await doc.transform(
+			prune({
+				propertyTypes: [PropertyType.ACCESSOR],
+				keepAttributes: true,
+				keepIndices: true,
+			}),
+		);
 
 		if (!plan.indicesToAttributes.size) {
 			logger.warn(`${NAME}: No qualifying primitives found; may need to weld first.`);
