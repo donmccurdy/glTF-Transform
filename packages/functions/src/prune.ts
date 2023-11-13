@@ -60,7 +60,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	],
 	keepLeaves: false,
 	keepAttributes: true,
-	keepIndices: false,
+	keepIndices: true,
 	keepSolidTextures: true,
 };
 
