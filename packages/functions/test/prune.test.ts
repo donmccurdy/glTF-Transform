@@ -223,6 +223,62 @@ test('attributes - texcoords', async (t) => {
 	t.is(material.getNormalTextureInfo().getTexCoord(), 1, 'material.normalTexture.texCoord → 1');
 });
 
+test('indices', async (t) => {
+	const document = new Document().setLogger(logger);
+
+	const indicesA = document
+		.createAccessor()
+		.setType('SCALAR')
+		.setArray(new Uint16Array([0, 1, 2, 3, 4, 5, 6, 7, 8]));
+	const indicesB = document
+		.createAccessor()
+		.setType('SCALAR')
+		.setArray(new Uint16Array([0, 1, 2, 0, 3, 4]));
+	// prettier-ignore
+	const position = document.createAccessor()
+		.setType('VEC3')
+		.setArray(new Float32Array([
+			0, 0, 0,
+			0, 0, 1,
+			0, 1, 0,
+			1, 0, 0,
+			0, 1, 1,
+			1, 1, 0,
+			1, 1, 1,
+			0, 0, 0,
+			0, 0, 0,
+		]));
+	const primA = document.createPrimitive().setIndices(indicesA).setAttribute('POSITION', position);
+	const primB = document.createPrimitive().setIndices(indicesB).setAttribute('POSITION', position);
+	const mesh = document.createMesh().addPrimitive(primA).addPrimitive(primB);
+
+	await document.transform(
+		prune({
+			propertyTypes: [PropertyType.ACCESSOR],
+			keepIndices: true,
+		}),
+	);
+
+	t.is(primA.getIndices(), indicesA, 'no change (1/2)');
+	t.is(primB.getIndices(), indicesB, 'no change (2/2)');
+
+	await document.transform(
+		prune({
+			propertyTypes: [PropertyType.ACCESSOR],
+			keepIndices: false,
+		}),
+	);
+
+	t.is(primA.getIndices(), null, 'prune (1/2)');
+	t.is(primB.getIndices(), indicesB, 'keep (2/2)');
+
+	t.is(indicesA.isDisposed(), true, 'unused indices disposed');
+
+	t.is(primA.isDisposed(), false, 'prim kept (1/2)');
+	t.is(primB.isDisposed(), false, 'prim kept (2/2)');
+	t.is(mesh.isDisposed(), false, 'mesh kept');
+});
+
 test('solid textures', async (t) => {
 	const document = new Document().setLogger(logger);
 
