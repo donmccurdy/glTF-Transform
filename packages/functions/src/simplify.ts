@@ -103,7 +103,12 @@ export function simplify(_options: SimplifyOptions): Transform {
 
 		// Where simplification removes meshes, we may need to prune leaf nodes.
 		await document.transform(
-			prune({ keepLeaves: false, propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE] }),
+			prune({
+				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+				keepAttributes: true,
+				keepIndices: true,
+				keepLeaves: false,
+			}),
 		);
 
 		// Where multiple primitive indices point into the same vertex streams, simplification

@@ -80,10 +80,11 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		// Find and remove unused TEXCOORD_n attributes.
 		await document.transform(
 			prune({
-				keepAttributes: false,
-				keepLeaves: true,
 				propertyTypes: [PropertyType.ACCESSOR],
-			})
+				keepAttributes: false,
+				keepIndices: true,
+				keepLeaves: true,
+			}),
 		);
 
 		const prims = new Set<Primitive>();

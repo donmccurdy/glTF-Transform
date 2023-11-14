@@ -347,7 +347,12 @@ commands or using the scripting API.
 
 		transforms.push(
 			resample({ ready: resampleReady, resample: resampleWASM }),
-			prune({ keepAttributes: false, keepLeaves: false, keepSolidTextures: false }),
+			prune({
+				keepAttributes: false,
+				keepIndices: false,
+				keepLeaves: false,
+				keepSolidTextures: false,
+			}),
 			sparse(),
 		);
 
@@ -500,6 +505,10 @@ that are children of a scene.
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--keep-attributes <keepAttributes>', 'Whether to keep unused vertex attributes', {
+		validator: Validator.BOOLEAN,
+		default: true, // TODO(v4): Default false.
+	})
+	.option('--keep-indices <keepIndices>', 'Whether to keep unused mesh indices', {
 		validator: Validator.BOOLEAN,
 		default: true, // TODO(v4): Default false.
 	})

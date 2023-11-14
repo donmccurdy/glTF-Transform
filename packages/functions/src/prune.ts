@@ -39,6 +39,8 @@ export interface PruneOptions {
 	keepLeaves?: boolean;
 	/** Whether to keep unused vertex attributes, such as UVs without an assigned texture. */
 	keepAttributes?: boolean;
+	/** Whether to keep redundant mesh indices, where vertex count equals index count. */
+	keepIndices?: boolean;
 	/** Whether to keep single-color textures that can be converted to material factors. */
 	keepSolidTextures?: boolean;
 }
@@ -58,6 +60,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	],
 	keepLeaves: false,
 	keepAttributes: true,
+	keepIndices: true,
 	keepSolidTextures: true,
 };
 
@@ -76,7 +79,8 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
  * document.getRoot().listMaterials(); // → [Material]
  * ```
  *
- * Use {@link PruneOptions} to control what content should be pruned. For example, you can preserve empty objects in the scene hierarchy using the option `keepLeaves`. 
+ * Use {@link PruneOptions} to control what content should be pruned. For example, you can preserve
+ * empty objects in the scene hierarchy using the option `keepLeaves`.
  *
  * @category Transforms
  */
@@ -160,6 +164,15 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			}
 			for (const [material, prims] of materialPrims) {
 				shiftTexCoords(material, Array.from(prims));
+			}
+		}
+
+		// Prune unused mesh indices.
+		if (!options.keepIndices && propertyTypes.has(PropertyType.ACCESSOR)) {
+			for (const mesh of root.listMeshes()) {
+				for (const prim of mesh.listPrimitives()) {
+					pruneIndices(prim);
+				}
 			}
 		}
 
@@ -297,6 +310,14 @@ function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene, counter: Disp
 function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
 	for (const semantic of unused) {
 		prim.setAttribute(semantic, null);
+	}
+}
+
+function pruneIndices(prim: Primitive) {
+	const indices = prim.getIndices();
+	const attribute = prim.listAttributes()[0];
+	if (indices && attribute && indices.getCount() === attribute.getCount()) {
+		prim.setIndices(null);
 	}
 }
 

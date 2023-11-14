@@ -125,7 +125,11 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 		}
 
 		await doc.transform(
-			prune({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL] }),
+			prune({
+				propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
+				keepAttributes: true,
+				keepIndices: true,
+			}),
 			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
 		);
 

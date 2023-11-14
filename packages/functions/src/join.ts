@@ -95,8 +95,9 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 		await document.transform(
 			prune({
 				propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
-				keepLeaves: false,
 				keepAttributes: true,
+				keepIndices: true,
+				keepLeaves: false,
 			}),
 		);
 
