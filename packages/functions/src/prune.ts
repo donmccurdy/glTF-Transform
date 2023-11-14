@@ -71,7 +71,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
  *
  * Example:
  *
- * ```
+ * ```javascript
  * document.getRoot().listMaterials(); // → [Material, Material]
  *
  * await document.transform(prune());
