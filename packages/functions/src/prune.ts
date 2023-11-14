@@ -76,7 +76,7 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
  * document.getRoot().listMaterials(); // → [Material]
  * ```
  *
- * No options are currently implemented for this function.
+ * Use {@link PruneOptions} to control what content should be pruned. For example, you can preserve empty objects in the scene hierarchy using the option `keepLeaves`. 
  *
  * @category Transforms
  */
