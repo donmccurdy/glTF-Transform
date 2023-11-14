@@ -4,6 +4,20 @@
 
 <!-- ### v3.X — 🚧 Unreleased -->
 
+### v3.9 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/36))
+
+**Features:**
+
+- Update `prune()` to remove redundant mesh indices [#1164](https://github.com/donmccurdy/glTF-Transform/pull/1164)
+- Update meshoptimizer to v0.20
+
+### v3.8 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/35))
+
+**Features:**
+
+- Add quantization options in `meshopt()` function [#1144](https://github.com/donmccurdy/glTF-Transform/pull/1144)
+- Improve encoding of morh normals with quantization and meshopt encoding [#1151](https://github.com/donmccurdy/glTF-Transform/pull/1151)
+
 ### v3.7 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/32))
 
 **Features:**
