@@ -33,7 +33,7 @@ class WEBPImageUtils implements ImageUtilsFormat {
 					view.getUint8(offset + 1),
 					view.getUint8(offset + 2),
 					view.getUint8(offset + 3),
-				])
+				]),
 			);
 			const chunkByteLength = view.getUint32(offset + 4, true);
 			if (chunkId === 'VP8 ') {
@@ -62,8 +62,6 @@ class WEBPImageUtils implements ImageUtilsFormat {
 /**
  * [`EXT_texture_webp`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_webp/)
  * enables WebP images for any material texture.
- *
- * [[include:_VENDOR_EXTENSIONS.md]]
  *
  * WebP offers greatly reduced transmission size, but
  * [requires browser support](https://caniuse.com/webp). Like PNG and JPEG, a WebP image is

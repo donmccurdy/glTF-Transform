@@ -58,8 +58,6 @@ class AVIFImageUtils implements ImageUtilsFormat {
  * [`EXT_texture_avif`](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_texture_avif/)
  * enables AVIF images for any material texture.
  *
- * [[include:_VENDOR_EXTENSIONS.md]]
- *
  * AVIF offers greatly reduced transmission size, but
  * [requires browser support](https://caniuse.com/avif). Like PNG and JPEG, an AVIF image is
  * *fully decompressed* when uploaded to the GPU, which increases upload time and GPU memory cost.

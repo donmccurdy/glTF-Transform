@@ -171,12 +171,12 @@ export class Root extends ExtensibleProperty<IRoot> {
 	 * Extensions.
 	 */
 
-	/** Lists all {@link Extension} properties enabled for this root. */
+	/** Lists all {@link Extension Extensions} enabled for this root. */
 	public listExtensionsUsed(): Extension[] {
 		return Array.from(this._extensions);
 	}
 
-	/** Lists all {@link Extension} properties enabled and required for this root. */
+	/** Lists all {@link Extension Extensions} enabled and required for this root. */
 	public listExtensionsRequired(): Extension[] {
 		return this.listExtensionsUsed().filter((extension) => extension.isRequired());
 	}
