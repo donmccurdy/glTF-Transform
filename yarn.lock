@@ -2030,9 +2030,9 @@
   integrity sha512-7aqorHYgdNO4DM36stTiGO3DvKoex9TQRwsJU6vMaFGyqpBA1MNZkz+PG3gaNUPpTAOYhT1WR7M1JyA3fbS9Cw==
 
 "@types/spdx-correct@^3.1.2":
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/@types/spdx-correct/-/spdx-correct-3.1.2.tgz#d8d02db996b725239c581314d42a17a1b2326e0d"
-  integrity sha512-R1+0vL6IOu8Eturewkz8UVTpu1aYSWaXUDuK39auLnuqctJjRWWmMUdXX4vzd6LEo8yxALqQ8hRQcMU6X727NA==
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@types/spdx-correct/-/spdx-correct-3.1.3.tgz#f807c64d297bcca0aa8d42299402b7c06e5cf67b"
+  integrity sha512-fdQ0oyqcKpAH+FwNEerZl1oTslsrhFYhdbb21IO1FKXK/+TFYM2IO1c/Nvsh7MCPVp8TYEAPXIOlXUJRkWoUWQ==
 
 "@types/table@5.0.0":
   version "5.0.0"
@@ -2040,9 +2040,9 @@
   integrity sha512-fQLtGLZXor264zUPWI95WNDsZ3QV43/c0lJpR/h1hhLJumXRmHNsrvBfEzW2YMhb0EWCsn4U6h82IgwsajAuTA==
 
 "@types/through@*":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/through/-/through-0.0.31.tgz#eb410602641807e74a90c5e951f46686e75eed1c"
-  integrity sha512-LpKpmb7FGevYgXnBXYs6HWnmiFyVG07Pt1cnbgM1IhEacITTiUaBXXvOR3Y50ksaJWGSfhbEvQFivQEFGCC55w==
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@types/through/-/through-0.0.33.tgz#14ebf599320e1c7851e7d598149af183c6b9ea56"
+  integrity sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==
   dependencies:
     "@types/node" "*"
 
