@@ -5,9 +5,9 @@ import {
   PropertyType,
 } from "@gltf-transform/core";
 import * as VRM0Type from "@pixiv/types-vrm-0.0";
-import { VRM0 as NAME } from "../constants.ts";
-import VRM0MetaProp from "./vrm0-meta-prop.ts";
-import VRM0HumanoidProp from "./vrm0-humanoid-prop.ts";
+import { VRM0 as NAME } from "../constants.js";
+import VRM0MetaProp from "./vrm0-meta-prop.js";
+import VRM0HumanoidProp from "./vrm0-humanoid-prop.js";
 
 interface IVRM0Prop extends IProperty {
   metaProp: VRM0MetaProp;

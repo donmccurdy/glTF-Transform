@@ -1,6 +1,6 @@
 import { Extension, ReaderContext, WriterContext } from "@gltf-transform/core";
-import { VRMC_MATERIALS_MTOON } from "./constants.ts";
-import VRM1MaterialMToonProp from "./properties/vrm1-material-mtoon-prop.ts";
+import { VRMC_MATERIALS_MTOON } from "./constants.js";
+import VRM1MaterialMToonProp from "./properties/vrm1-material-mtoon-prop.js";
 
 const NAME = VRMC_MATERIALS_MTOON;
 

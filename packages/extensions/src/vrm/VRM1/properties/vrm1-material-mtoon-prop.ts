@@ -1,6 +1,6 @@
 import { PropertyType } from "@gltf-transform/core";
-import MaterialMToon from "../../material-mtoon-prop.ts";
-import { VRMC_MATERIALS_MTOON as NAME } from "../constants.ts";
+import MaterialMToon from "../../material-mtoon-prop.js";
+import { VRMC_MATERIALS_MTOON as NAME } from "../constants.js";
 
 export default class VRM1MaterialMToon extends MaterialMToon {
   public static EXTENSION_NAME = NAME;

@@ -9,8 +9,8 @@ import {
   vec3,
   ColorUtils,
 } from "@gltf-transform/core";
-import { VRM0 as VRM0NAME } from "./VRM0/constants.ts";
-import { VRMC_MATERIALS_MTOON as VRM1NAME } from "./VRM1/constants.ts";
+import { VRM0 as VRM0NAME } from "./VRM0/constants.js";
+import { VRMC_MATERIALS_MTOON as VRM1NAME } from "./VRM1/constants.js";
 
 const { R, G, B } = TextureChannel;
 

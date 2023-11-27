@@ -6,13 +6,13 @@ import {
 } from "@gltf-transform/core";
 import * as VRM0Type from "@pixiv/types-vrm-0.0";
 import * as VRM1Type from "@pixiv/types-vrmc-vrm-1.0";
-import VRM0Prop from "./properties/vrm0-vrm-prop.ts";
-import { VRM0 as NAME } from "./constants.ts";
-import * as VRMConstants from "../constants.ts";
-import VRM0MaterialMToonProp from "./properties/vrm0-material-mtoon-prop.ts";
-import VRM0MetaProp from "./properties/vrm0-meta-prop.ts";
-import VRM0HumanoidProp from "./properties/vrm0-humanoid-prop.ts";
-import VRM0HumanoidHumanBoneProp from "./properties/vrm0-humanoid-human-bone-prop.ts";
+import VRM0Prop from "./properties/vrm0-vrm-prop.js";
+import { VRM0 as NAME } from "./constants.js";
+import * as VRMConstants from "../constants.js";
+import VRM0MaterialMToonProp from "./properties/vrm0-material-mtoon-prop.js";
+import VRM0MetaProp from "./properties/vrm0-meta-prop.js";
+import VRM0HumanoidProp from "./properties/vrm0-humanoid-prop.js";
+import VRM0HumanoidHumanBoneProp from "./properties/vrm0-humanoid-human-bone-prop.js";
 
 export default class VRM0VRM extends Extension {
   public readonly extensionName = NAME;

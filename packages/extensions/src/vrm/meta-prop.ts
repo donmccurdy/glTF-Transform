@@ -7,8 +7,8 @@ import {
   TextureChannel,
   TextureInfo,
 } from "@gltf-transform/core";
-import { VRM0 } from "./VRM0/constants.ts";
-import { VRMC_VRM } from "./VRM1/constants.ts";
+import { VRM0 } from "./VRM0/constants.js";
+import { VRMC_VRM } from "./VRM1/constants.js";
 
 const { R, G, B } = TextureChannel;
 

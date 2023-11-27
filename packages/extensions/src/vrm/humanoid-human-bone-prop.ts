@@ -1,5 +1,5 @@
 import { IProperty, Nullable, Property, Node } from "@gltf-transform/core";
-import { PropertyType as VRMPropertyType } from "./constants.ts";
+import { PropertyType as VRMPropertyType } from "./constants.js";
 
 export interface IHumanoidHumanBoneProp extends IProperty {
   node: Node;

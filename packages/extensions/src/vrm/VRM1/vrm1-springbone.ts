@@ -1,5 +1,5 @@
 import { Extension } from "@gltf-transform/core";
-import { VRMC_SPRINGBONE } from "./constants.ts";
+import { VRMC_SPRINGBONE } from "./constants.js";
 
 const NAME = VRMC_SPRINGBONE;
 

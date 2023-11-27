@@ -5,9 +5,9 @@ import {
   PropertyType,
 } from "@gltf-transform/core";
 import * as VRM1Def from "@pixiv/types-vrmc-vrm-1.0";
-import { VRM0 as VRM0NAME } from "./VRM0/constants.ts";
-import { VRMC_VRM as VRM1NAME } from "./VRM1/constants.ts";
-import { HumanoidHumanBoneProp } from "./humanoid-human-bone-prop.ts";
+import { VRM0 as VRM0NAME } from "./VRM0/constants.js";
+import { VRMC_VRM as VRM1NAME } from "./VRM1/constants.js";
+import { HumanoidHumanBoneProp } from "./humanoid-human-bone-prop.js";
 
 export interface IHumanoidProp extends IProperty {
   hips: HumanoidHumanBoneProp;

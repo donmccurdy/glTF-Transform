@@ -1,6 +1,6 @@
 import { PropertyType } from "@gltf-transform/core";
-import { VRM0 as NAME } from "../constants.ts";
-import { HumanoidProp } from "../../humanoid-prop.ts";
+import { VRM0 as NAME } from "../constants.js";
+import { HumanoidProp } from "../../humanoid-prop.js";
 
 export default class VRM0HumanoidProp extends HumanoidProp {
   protected init(): void {

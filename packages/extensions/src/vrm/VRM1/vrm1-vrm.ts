@@ -1,6 +1,6 @@
 import { Extension } from "@gltf-transform/core";
 // import * as VRM1Def from "@pixiv/types-vrmc-vrm-1.0";
-import { VRMC_VRM } from "./constants.ts";
+import { VRMC_VRM } from "./constants.js";
 
 const NAME = VRMC_VRM;
 

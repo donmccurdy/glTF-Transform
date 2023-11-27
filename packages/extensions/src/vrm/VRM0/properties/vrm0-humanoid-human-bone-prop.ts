@@ -1,5 +1,5 @@
-import { PropertyType as VRMPropertyType } from "../../constants.ts";
-import { HumanoidHumanBoneProp } from "../../humanoid-human-bone-prop.ts";
+import { PropertyType as VRMPropertyType } from "../../constants.js";
+import { HumanoidHumanBoneProp } from "../../humanoid-human-bone-prop.js";
 
 export default class VRM0HumanoidHumanBoneProp extends HumanoidHumanBoneProp {
   protected init(): void {
