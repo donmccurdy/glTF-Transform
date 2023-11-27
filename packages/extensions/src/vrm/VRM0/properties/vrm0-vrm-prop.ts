@@ -36,7 +36,7 @@ export default class VRM0Prop extends ExtensionProperty<IVRM0Prop> {
   protected getDefaults(): Nullable<IVRM0Prop> {
     return Object.assign(super.getDefaults() as IProperty, {
       metaProp: null,
-      exporterVersion: "VRM Sparks 0.0",
+      exporterVersion: "GLTF Transform",
       humanoidProp: null,
       serializedHumanoid: "{}",
       serializedFirstPerson: "{}",
