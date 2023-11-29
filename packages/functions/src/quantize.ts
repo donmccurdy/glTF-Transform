@@ -11,19 +11,16 @@ import {
 	Primitive,
 	PrimitiveTarget,
 	Property,
-	PropertyType,
 	Skin,
 	Transform,
 	vec2,
 	vec3,
 	vec4,
 } from '@gltf-transform/core';
-import { dedup } from './dedup.js';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
-import { prune } from './prune.js';
 import { createTransform } from './utils.js';
 import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 
@@ -148,14 +145,14 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 			}
 		}
 
-		await doc.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
-				keepAttributes: true,
-				keepIndices: true,
-			}),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
-		);
+		// await doc.transform(
+		// 	prune({
+		// 		propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
+		// 		keepAttributes: true,
+		// 		keepIndices: true,
+		// 	}),
+		// 	dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
+		// );
 
 		logger.debug(`${NAME}: Complete.`);
 	});
