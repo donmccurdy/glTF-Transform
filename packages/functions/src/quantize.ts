@@ -10,6 +10,7 @@ import {
 	Node,
 	Primitive,
 	PrimitiveTarget,
+	Property,
 	PropertyType,
 	Skin,
 	Transform,
@@ -97,6 +98,8 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 
+		const context: QuantizeContext = { touched: new Set() };
+
 		doc.createExtension(KHRMeshQuantization).setRequired(true);
 
 		// Compute vertex position quantization volume.
@@ -112,15 +115,36 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 			}
 
 			if (nodeTransform && options.pattern.test('POSITION')) {
-				transformMeshParents(doc, mesh, nodeTransform);
-				transformMeshMaterials(mesh, 1 / nodeTransform.scale);
+				transformMeshParents(doc, mesh, nodeTransform, context);
+				transformMeshMaterials(mesh, 1 / nodeTransform.scale, context);
 			}
 
 			for (const prim of mesh.listPrimitives()) {
-				quantizePrimitive(doc, prim, nodeTransform!, options);
+				quantizePrimitive(doc, prim, nodeTransform!, options, context);
 				for (const target of prim.listTargets()) {
-					quantizePrimitive(doc, target, nodeTransform!, options);
+					quantizePrimitive(doc, target, nodeTransform!, options, context);
 				}
+			}
+		}
+
+		const touchedByType: Record<string, Property[]> = {};
+
+		// prune
+		for (const property of context.touched) {
+			if (property.listParents().some((parent) => parent !== root)) {
+				touchedByType[property.propertyType] = touchedByType[property.propertyType] || [];
+				touchedByType[property.propertyType].push(property);
+			} else {
+				property.dispose();
+			}
+		}
+
+		// dedup
+		for (const propertyType in touchedByType) {
+			for (const property in touchedByType[propertyType]) {
+				// TODO: Deduplicate touched properties. The dedup() implementation is not easily
+				// repurposed for this, but could probably be cleaned up a lot now that .equals()
+				// is available.
 			}
 		}
 
@@ -142,6 +166,7 @@ function quantizePrimitive(
 	prim: Primitive | PrimitiveTarget,
 	nodeTransform: VectorTransform<vec3>,
 	options: Required<QuantizeOptions>,
+	context: QuantizeContext,
 ): void {
 	const isTarget = prim instanceof PrimitiveTarget;
 	const logger = doc.getLogger();
@@ -177,6 +202,9 @@ function quantizePrimitive(
 		// Quantize the vertex attribute.
 		quantizeAttribute(dstAttribute, ctor, bits);
 		prim.swap(srcAttribute, dstAttribute);
+
+		context.touched.add(srcAttribute);
+		context.touched.add(dstAttribute);
 	}
 
 	// Normalize skinning weights.
@@ -218,7 +246,12 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 }
 
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
-function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTransform<vec3>): void {
+function transformMeshParents(
+	doc: Document,
+	mesh: Mesh,
+	nodeTransform: VectorTransform<vec3>,
+	context: QuantizeContext,
+): void {
 	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
 		if (!(parent instanceof Node)) continue;
@@ -229,13 +262,13 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTr
 
 		const skin = parent.getSkin();
 		if (skin) {
-			parent.setSkin(transformSkin(skin, nodeTransform));
+			parent.setSkin(transformSkin(skin, nodeTransform, context));
 			continue;
 		}
 
 		const batch = parent.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
 		if (batch) {
-			parent.setExtension('EXT_mesh_gpu_instancing', transformBatch(batch, nodeTransform));
+			parent.setExtension('EXT_mesh_gpu_instancing', transformBatch(batch, nodeTransform, context));
 			continue;
 		}
 
@@ -257,30 +290,47 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTr
 }
 
 /** Applies corrective scale and offset to skin IBMs. */
-function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
-	skin = skin.clone(); // quantize() does cleanup.
+function transformSkin(srcSkin: Skin, nodeTransform: VectorTransform<vec3>, context: QuantizeContext): Skin {
+	const dstSkin = srcSkin.clone();
+
 	const transformMatrix = fromTransform(nodeTransform);
-	const inverseBindMatrices = skin.getInverseBindMatrices()!.clone();
+	const srcInverseBindMatrices = dstSkin.getInverseBindMatrices()!;
+	const dstInverseBindMatrices = srcInverseBindMatrices.clone();
 	const ibm = [] as unknown as mat4;
-	for (let i = 0, count = inverseBindMatrices.getCount(); i < count; i++) {
-		inverseBindMatrices.getElement(i, ibm);
+	for (let i = 0, count = dstInverseBindMatrices.getCount(); i < count; i++) {
+		dstInverseBindMatrices.getElement(i, ibm);
 		multiplyMat4(ibm, ibm, transformMatrix);
-		inverseBindMatrices.setElement(i, ibm);
+		dstInverseBindMatrices.setElement(i, ibm);
 	}
-	return skin.setInverseBindMatrices(inverseBindMatrices);
+
+	context.touched.add(srcSkin);
+	context.touched.add(dstSkin);
+
+	context.touched.add(srcInverseBindMatrices);
+	context.touched.add(dstInverseBindMatrices);
+
+	return dstSkin.setInverseBindMatrices(dstInverseBindMatrices);
 }
 
 /** Applies corrective scale and offset to GPU instancing batches. */
-function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec3>): InstancedMesh {
-	if (!batch.getAttribute('TRANSLATION') && !batch.getAttribute('ROTATION') && !batch.getAttribute('SCALE')) {
-		return batch;
+function transformBatch(
+	srcBatch: InstancedMesh,
+	nodeTransform: VectorTransform<vec3>,
+	context: QuantizeContext,
+): InstancedMesh {
+	const srcTranslation = srcBatch.getAttribute('TRANSLATION');
+	const srcRotation = srcBatch.getAttribute('ROTATION');
+	const srcScale = srcBatch.getAttribute('SCALE');
+
+	if (!srcTranslation && !srcRotation && !srcScale) {
+		return srcBatch;
 	}
 
-	batch = batch.clone(); // quantize() does cleanup.
-	const instanceTranslation = batch.getAttribute('TRANSLATION')?.clone();
-	const instanceRotation = batch.getAttribute('ROTATION')?.clone();
-	const instanceScale = batch.getAttribute('SCALE')?.clone();
-	const tpl = (instanceTranslation || instanceRotation || instanceScale)!;
+	const dstBatch = srcBatch.clone();
+	const dstTranslation = srcTranslation?.clone();
+	const dstRotation = srcRotation?.clone();
+	const dstScale = srcScale?.clone();
+	const tpl = (dstTranslation || dstRotation || dstScale)!;
 
 	const T_IDENTITY = [0, 0, 0] as vec3;
 	const R_IDENTITY = [0, 0, 0, 1] as vec4;
@@ -302,9 +352,9 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 
 	for (let i = 0, count = tpl.getCount(); i < count; i++) {
 		MathUtils.compose(
-			instanceTranslation ? (instanceTranslation.getElement(i, t) as vec3) : T_IDENTITY,
-			instanceRotation ? (instanceRotation.getElement(i, r) as vec4) : R_IDENTITY,
-			instanceScale ? (instanceScale.getElement(i, s) as vec3) : S_IDENTITY,
+			dstTranslation ? (dstTranslation.getElement(i, t) as vec3) : T_IDENTITY,
+			dstRotation ? (dstRotation.getElement(i, r) as vec4) : R_IDENTITY,
+			dstScale ? (dstScale.getElement(i, s) as vec3) : S_IDENTITY,
 			instanceMatrix,
 		);
 
@@ -312,31 +362,44 @@ function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec
 
 		MathUtils.decompose(instanceMatrix, t, r, s);
 
-		if (instanceTranslation) instanceTranslation.setElement(i, t);
-		if (instanceRotation) instanceRotation.setElement(i, r);
-		if (instanceScale) instanceScale.setElement(i, s);
+		if (dstTranslation) dstTranslation.setElement(i, t);
+		if (dstRotation) dstRotation.setElement(i, r);
+		if (dstScale) dstScale.setElement(i, s);
 	}
 
-	if (instanceTranslation) batch.setAttribute('TRANSLATION', instanceTranslation);
-	if (instanceRotation) batch.setAttribute('ROTATION', instanceRotation);
-	if (instanceScale) batch.setAttribute('SCALE', instanceScale);
+	if (dstTranslation) dstBatch.setAttribute('TRANSLATION', dstTranslation);
+	if (dstRotation) dstBatch.setAttribute('ROTATION', dstRotation);
+	if (dstScale) dstBatch.setAttribute('SCALE', dstScale);
 
-	return batch;
+	context.touched.add(srcBatch);
+	context.touched.add(dstBatch);
+
+	for (const property of [srcTranslation, srcRotation, srcScale, dstTranslation, dstRotation, dstScale]) {
+		if (!property) continue;
+		context.touched.add(property);
+	}
+
+	return dstBatch;
 }
 
 /** Applies corrective scale to volumetric materials, which give thickness in local units. */
-function transformMeshMaterials(mesh: Mesh, scale: number) {
+function transformMeshMaterials(mesh: Mesh, scale: number, context: QuantizeContext) {
 	for (const prim of mesh.listPrimitives()) {
-		let material = prim.getMaterial();
-		if (!material) continue;
+		const srcMaterial = prim.getMaterial();
+		if (!srcMaterial) continue;
 
-		let volume = material.getExtension<Volume>('KHR_materials_volume');
-		if (!volume || volume.getThicknessFactor() <= 0) continue;
+		const srcVolume = srcMaterial.getExtension<Volume>('KHR_materials_volume');
+		if (!srcVolume || srcVolume.getThicknessFactor() <= 0) continue;
 
-		// quantize() does cleanup.
-		volume = volume.clone().setThicknessFactor(volume.getThicknessFactor() * scale);
-		material = material.clone().setExtension('KHR_materials_volume', volume);
-		prim.setMaterial(material);
+		const dstVolume = srcVolume.clone().setThicknessFactor(srcVolume.getThicknessFactor() * scale);
+		const dstMaterial = srcMaterial.clone().setExtension('KHR_materials_volume', dstVolume);
+		prim.setMaterial(dstMaterial);
+
+		context.touched.add(srcMaterial);
+		context.touched.add(dstMaterial);
+
+		context.touched.add(srcVolume);
+		context.touched.add(dstVolume);
 	}
 }
 
@@ -514,4 +577,8 @@ function fromTransform(transform: VectorTransform<vec3>): mat4 {
 
 function clamp(value: number, range: vec2): number {
 	return Math.min(Math.max(value, range[0]), range[1]);
+}
+
+interface QuantizeContext {
+	touched: Set<Property>;
 }
