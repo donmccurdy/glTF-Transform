@@ -18,11 +18,14 @@ import { createTransform, shallowEqualsArray } from './utils.js';
 const NAME = 'dedup';
 
 export interface DedupOptions {
+	/** Keep properties with unique names, even if they are duplicates. */
+	keepUniqueNames?: boolean;
 	/** List of {@link PropertyType} identifiers to be de-duplicated.*/
-	propertyTypes: string[];
+	propertyTypes?: string[];
 }
 
 const DEDUP_DEFAULTS: Required<DedupOptions> = {
+	keepUniqueNames: false,
 	propertyTypes: [
 		PropertyType.ACCESSOR,
 		PropertyType.MESH,
@@ -64,10 +67,10 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 		const logger = document.getLogger();
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(document);
-		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(document);
-		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(document);
-		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(document);
-		if (propertyTypes.has(PropertyType.SKIN)) dedupSkins(document);
+		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(document, options);
+		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(document, options);
+		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(document, options);
+		if (propertyTypes.has(PropertyType.SKIN)) dedupSkins(document, options);
 
 		logger.debug(`${NAME}: Complete.`);
 	});
@@ -181,7 +184,7 @@ function dedupAccessors(document: Document): void {
 	Array.from(duplicates.keys()).forEach((accessor) => accessor.dispose());
 }
 
-function dedupMeshes(document: Document): void {
+function dedupMeshes(document: Document, options: Required<DedupOptions>): void {
 	const logger = document.getLogger();
 	const root = document.getRoot();
 
@@ -202,7 +205,10 @@ function dedupMeshes(document: Document): void {
 
 		// If another mesh exists with the same key, replace all instances with that, and dispose
 		// of the duplicate. If not, just cache it.
-		const meshKey = srcKeyItems.join(';');
+		let meshKey = '';
+		if (!options.keepUniqueNames) meshKey += src.getName() + ';';
+		meshKey += srcKeyItems.join(';');
+
 		if (uniqueMeshes.has(meshKey)) {
 			const targetMesh = uniqueMeshes.get(meshKey)!;
 			src.listParents().forEach((parent) => {
@@ -219,7 +225,7 @@ function dedupMeshes(document: Document): void {
 	logger.debug(`${NAME}: Merged ${numMeshes - uniqueMeshes.size} of ${numMeshes} meshes.`);
 }
 
-function dedupImages(document: Document): void {
+function dedupImages(document: Document, options: Required<DedupOptions>): void {
 	const logger = document.getLogger();
 	const root = document.getRoot();
 	const textures = root.listTextures();
@@ -240,6 +246,7 @@ function dedupImages(document: Document): void {
 
 			// URIs are intentionally not compared.
 			if (a.getMimeType() !== b.getMimeType()) continue;
+			if (options.keepUniqueNames && a.getName() !== b.getName()) continue;
 
 			const aSize = a.getSize();
 			const bSize = b.getSize();
@@ -263,13 +270,17 @@ function dedupImages(document: Document): void {
 	});
 }
 
-function dedupMaterials(document: Document): void {
+function dedupMaterials(document: Document, options: Required<DedupOptions>): void {
 	const logger = document.getLogger();
 	const root = document.getRoot();
 	const materials = root.listMaterials();
 	const duplicates = new Map<Material, Material>();
-	const skip = new Set(['name']);
 	const modifierCache = new Map<Material, boolean>();
+	const skip = new Set<string>();
+
+	if (!options.keepUniqueNames) {
+		skip.add('name');
+	}
 
 	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
 	for (let i = 0; i < materials.length; i++) {
@@ -300,12 +311,16 @@ function dedupMaterials(document: Document): void {
 	});
 }
 
-function dedupSkins(document: Document): void {
+function dedupSkins(document: Document, options: Required<DedupOptions>): void {
 	const logger = document.getLogger();
 	const root = document.getRoot();
 	const skins = root.listSkins();
 	const duplicates = new Map<Skin, Skin>();
-	const skip = new Set(['name', 'joints']);
+	const skip = new Set(['joints']);
+
+	if (!options.keepUniqueNames) {
+		skip.add('name');
+	}
 
 	for (let i = 0; i < skins.length; i++) {
 		const a = skins[i];
