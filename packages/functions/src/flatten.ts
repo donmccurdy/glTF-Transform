@@ -46,12 +46,12 @@ export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform 
 			}
 		}
 
-		// (2) Mark animated nodes.
+		// (2) Mark nodes with TRS animation.
 		const animated = new Set<Node>();
 		for (const animation of root.listAnimations()) {
 			for (const channel of animation.listChannels()) {
 				const node = channel.getTargetNode();
-				if (node) {
+				if (node && channel.getTargetPath() !== 'weights') {
 					animated.add(node);
 				}
 			}
