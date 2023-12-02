@@ -206,7 +206,7 @@ function dedupMeshes(document: Document, options: Required<DedupOptions>): void 
 		// If another mesh exists with the same key, replace all instances with that, and dispose
 		// of the duplicate. If not, just cache it.
 		let meshKey = '';
-		if (!options.keepUniqueNames) meshKey += src.getName() + ';';
+		if (options.keepUniqueNames) meshKey += src.getName() + ';';
 		meshKey += srcKeyItems.join(';');
 
 		if (uniqueMeshes.has(meshKey)) {
