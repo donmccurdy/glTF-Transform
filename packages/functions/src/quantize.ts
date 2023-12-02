@@ -129,8 +129,13 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 				propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
 				keepAttributes: true,
 				keepIndices: true,
+				keepLeaves: true,
+				keepSolidTextures: true,
 			}),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN] }),
+			dedup({
+				propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN],
+				keepUniqueNames: true,
+			}),
 		);
 
 		logger.debug(`${NAME}: Complete.`);
