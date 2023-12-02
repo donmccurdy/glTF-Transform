@@ -411,10 +411,14 @@ Example:
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
+	.option('--merge-scenes', 'Whether to merge scenes, or keep one scene per input file.', {
+		validator: Validator.BOOLEAN,
+		default: false,
+	})
 	.action(({ args, options, logger }) => {
 		const paths = typeof args.path === 'string' ? args.path.split(',') : (args.path as string[]);
 		const output = paths.pop();
-		return Session.create(io, logger, '', output).transform(merge({ io, paths, partition: !!options.partition }));
+		return Session.create(io, logger, '', output).transform(merge({ io, paths, ...options }));
 	});
 
 // PARTITION
