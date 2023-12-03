@@ -72,12 +72,18 @@ export class Specular extends ExtensionProperty<ISpecular> {
 		return this.set('specularColorFactor', factor);
 	}
 
-	/** Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture} */
+	/**
+	 * Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture}
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public getSpecularColorHex(): number {
 		return ColorUtils.factorToHex(this.getSpecularColorFactor());
 	}
 
-	/** Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture} */
+	/**
+	 * Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture}
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public setSpecularColorHex(hex: number): this {
 		const factor = this.getSpecularColorFactor().slice() as vec3;
 		return this.set('specularColorFactor', ColorUtils.hexToFactor(hex, factor));

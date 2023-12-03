@@ -12,7 +12,7 @@ test('basic', async (t) => {
 		['A', 'B', 'C', 'D', 'E'],
 		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
 		[1.0, 1.0, 1.0, 0.0, 1.0],
-		['OPAQUE', 'OPAQUE', 'OPAQUE', 'OPAQUE', 'BLEND']
+		['OPAQUE', 'OPAQUE', 'OPAQUE', 'OPAQUE', 'BLEND'],
 	);
 
 	await document.transform(palette({ min: 2 }));
@@ -40,7 +40,7 @@ test('options.blockSize', async (t) => {
 		['A', 'B', 'C', 'D', 'E'],
 		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
 		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE')
+		new Array(5).fill('OPAQUE'),
 	);
 
 	await document.transform(palette({ blockSize: 10 }));
@@ -64,7 +64,7 @@ test('options.min', async (t) => {
 		['A', 'B', 'C', 'D', 'E'],
 		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
 		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE')
+		new Array(5).fill('OPAQUE'),
 	);
 
 	t.is(document.getRoot().listMaterials().length, 5, 'initial');
@@ -85,7 +85,7 @@ test('preserve extensions', async (t) => {
 		['A', 'B', 'C', 'D', 'E'],
 		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
 		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE')
+		new Array(5).fill('OPAQUE'),
 	);
 
 	const specular = document
@@ -113,7 +113,7 @@ test('pixel values', async (t) => {
 		['A', 'B', 'C'],
 		[0x808080, 0x000080, 0x800000],
 		new Array(3).fill(1.0),
-		new Array(3).fill('OPAQUE')
+		new Array(3).fill('OPAQUE'),
 	);
 
 	await document.transform(palette({ blockSize: 2 }));
@@ -145,7 +145,7 @@ test('pixel values', async (t) => {
 			0, 0, 0, 0,
 			0, 0, 0, 0,
 		],
-		'pixel values'
+		'pixel values',
 	);
 });
 
@@ -154,9 +154,9 @@ test('pixel values', async (t) => {
 function createMaterials(
 	document: Document,
 	names: string[],
-	baseColorFactors: number[],
+	baseColorHexCodes: number[],
 	roughnessFactors: number[],
-	alphaModes: GLTF.MaterialAlphaMode[]
+	alphaModes: GLTF.MaterialAlphaMode[],
 ): Material[] {
 	const position = document
 		.createAccessor()
@@ -169,7 +169,7 @@ function createMaterials(
 	for (let i = 0; i < names.length; i++) {
 		const material = document
 			.createMaterial(names[i])
-			.setBaseColorHex(baseColorFactors[i])
+			.setBaseColorHex(baseColorHexCodes[i])
 			.setRoughnessFactor(roughnessFactors[i])
 			.setAlphaMode(alphaModes[i]);
 		mesh.addPrimitive(prim.clone().setMaterial(material));
