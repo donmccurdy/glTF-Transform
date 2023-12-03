@@ -131,6 +131,7 @@ export class Volume extends ExtensionProperty<IVolume> {
 	/**
 	 * Color (sRGB) that white light turns into due to absorption when reaching the attenuation
 	 * distance.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
 	 */
 	public getAttenuationColorHex(): number {
 		return ColorUtils.factorToHex(this.getAttenuationColor());
@@ -139,6 +140,7 @@ export class Volume extends ExtensionProperty<IVolume> {
 	/**
 	 * Color (sRGB) that white light turns into due to absorption when reaching the attenuation
 	 * distance.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
 	 */
 	public setAttenuationColorHex(hex: number): this {
 		const factor = this.getAttenuationColor().slice() as vec3;

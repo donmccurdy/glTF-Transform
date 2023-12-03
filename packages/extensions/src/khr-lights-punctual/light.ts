@@ -67,12 +67,18 @@ export class Light extends ExtensionProperty<ILight> {
 		return this.set('color', color);
 	}
 
-	/** Light color; sRGB hexadecimal color. */
+	/**
+	 * Light color; sRGB hexadecimal color.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public getColorHex(): number {
 		return ColorUtils.factorToHex(this.getColor());
 	}
 
-	/** Light color; sRGB hexadecimal color. */
+	/**
+	 * Light color; sRGB hexadecimal color.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public setColorHex(hex: number): this {
 		const color = this.getColor().slice() as vec3;
 		ColorUtils.hexToFactor(hex, color);

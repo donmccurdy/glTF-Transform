@@ -208,6 +208,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
 	 */
 	public getBaseColorHex(): number {
 		return ColorUtils.factorToHex(this.get('baseColorFactor'));
@@ -215,6 +216,7 @@ export class Material extends ExtensibleProperty<IMaterial> {
 
 	/**
 	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
 	 */
 	public setBaseColorHex(hex: number): this {
 		const factor = this.get('baseColorFactor').slice() as vec4;
@@ -262,12 +264,18 @@ export class Material extends ExtensibleProperty<IMaterial> {
 		return this.set('emissiveFactor', emissiveFactor);
 	}
 
-	/** Emissive; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}. */
+	/**
+	 * Emissive; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public getEmissiveHex(): number {
 		return ColorUtils.factorToHex(this.get('emissiveFactor'));
 	}
 
-	/** Emissive; sRGB hexadecimal color. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
+	/**
+	 * Emissive; sRGB hexadecimal color. See {@link Material.getEmissiveTexture getEmissiveTexture}.
+	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
+	 */
 	public setEmissiveHex(hex: number): this {
 		const factor = this.get('emissiveFactor').slice() as vec3;
 		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, factor));
