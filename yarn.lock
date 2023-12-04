@@ -6271,14 +6271,14 @@ ndarray-ops@^1.2.2:
     cwise-compiler "^1.0.0"
 
 ndarray-pixels@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-3.0.4.tgz#77fdc866c5bf19db7ed433130673ace3e5be56c1"
-  integrity sha512-CMDl8XqJB4YWcRJ1h7ogfxCNUQtnh9HbppIh/QYSwt6wyJvX3zs+ZnLCa8TyLUHWdDfc0Qy6Wev1SGdHYyK84Q==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ndarray-pixels/-/ndarray-pixels-3.1.0.tgz#0e8ab0f0c04adab2f50f62f4a70442ba0c103d1b"
+  integrity sha512-icw7L/kbxlHVoBgFWc0fCl1sYcatYSoZrAudD6KiQ1WXy84hRXIfqel5CLkh/SeLhb02Q2NW1ud9lE5G84V0zQ==
   dependencies:
     "@types/ndarray" "^1.0.11"
     ndarray "^1.0.19"
     ndarray-ops "^1.2.2"
-    sharp "^0.32.1"
+    sharp "^0.32.6"
 
 ndarray@^1.0.19:
   version "1.0.19"
@@ -7937,7 +7937,7 @@ shallow-clone@^3.0.0:
   dependencies:
     kind-of "^6.0.2"
 
-sharp@^0.32.1, sharp@^0.32.6:
+sharp@^0.32.6:
   version "0.32.6"
   resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.32.6.tgz#6ad30c0b7cd910df65d5f355f774aa4fce45732a"
   integrity sha512-KyLTWwgcR9Oe4d9HwCwNM2l7+J0dUQwn/yf7S0EnTtb0eVS4RxO0eUSvxPtzT4F3SY+C4K6fqdv/DO27sJ/v/w==
