@@ -151,15 +151,15 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			for (const mesh of root.listMeshes()) {
 				for (const prim of mesh.listPrimitives()) {
 					const material = prim.getMaterial();
+					if (!material) continue;
+
 					const required = listRequiredSemantics(document, material);
 					const unused = listUnusedSemantics(prim, required);
 					pruneAttributes(prim, unused);
 					prim.listTargets().forEach((target) => pruneAttributes(target, unused));
-					if (material) {
-						materialPrims.has(material)
-							? materialPrims.get(material)!.add(prim)
-							: materialPrims.set(material, new Set([prim]));
-					}
+					materialPrims.has(material)
+						? materialPrims.get(material)!.add(prim)
+						: materialPrims.set(material, new Set([prim]));
 				}
 			}
 			for (const [material, prims] of materialPrims) {
@@ -327,7 +327,9 @@ function pruneIndices(prim: Primitive) {
 function listUnusedSemantics(prim: Primitive | PrimitiveTarget, required: Set<string>): string[] {
 	const unused = [];
 	for (const semantic of prim.listSemantics()) {
-		if (semantic === 'TANGENT' && !required.has(semantic)) {
+		if (semantic === 'NORMAL' && !required.has(semantic)) {
+			unused.push(semantic);
+		} else if (semantic === 'TANGENT' && !required.has(semantic)) {
 			unused.push(semantic);
 		} else if (semantic.startsWith('TEXCOORD_') && !required.has(semantic)) {
 			unused.push(semantic);
@@ -344,11 +346,9 @@ function listUnusedSemantics(prim: Primitive | PrimitiveTarget, required: Set<st
  */
 function listRequiredSemantics(
 	document: Document,
-	material: Material | ExtensionProperty | null,
+	material: Material | ExtensionProperty,
 	semantics = new Set<string>(),
 ): Set<string> {
-	if (!material) return semantics;
-
 	const graph = document.getGraph();
 
 	const edges = graph.listChildEdges(material);
@@ -379,6 +379,10 @@ function listRequiredSemantics(
 		}
 
 		// TODO(#748): Does KHR_materials_anisotropy imply required vertex attributes?
+	}
+
+	if (material instanceof Material && !material.getExtension('KHR_materials_unlit')) {
+		semantics.add('NORMAL');
 	}
 
 	return semantics;
