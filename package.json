@@ -20,6 +20,7 @@
 		"coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
 		"lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
 		"validate": "scripts/validate.js",
+		"benchmark": "tsx test/benchmark.ts",
 		"preversion": "yarn run test",
 		"version": "yarn clean:dist && lerna run dist && yarn run docs:cli && git add -u packages/docs",
 		"postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
@@ -52,6 +53,7 @@
 		"prettier": "3.1.1",
 		"prettier-plugin-svelte": "^3.0.0",
 		"rimraf": "^5.0.5",
+		"tinybench": "^2.5.1",
 		"tsx": "^4.0.0",
 		"typescript": "5.3.3"
 	},
