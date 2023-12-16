@@ -89,13 +89,15 @@ function createMesh(document: Document): Mesh {
 
 await bench.run();
 
-const results: IResult[] = [];
-for (const task of bench.tasks) {
-	results.push({
-		name: task.name,
-		value: Number(task.result!.mean.toFixed(4)),
-		unit: 'ms',
-	});
-}
+console.table(bench.table());
 
-console.log(JSON.stringify(results, null, 2));
+// const results: IResult[] = [];
+// for (const task of bench.tasks) {
+// 	results.push({
+// 		name: task.name,
+// 		value: Number(task.result!.mean.toFixed(4)),
+// 		unit: 'ms',
+// 	});
+// }
+
+// console.log(JSON.stringify(results, null, 2));
