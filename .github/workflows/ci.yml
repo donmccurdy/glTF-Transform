@@ -84,3 +84,38 @@ jobs:
     - uses: codecov/codecov-action@v3
       with:
         files: coverage/coverage.lcov
+
+  #############################################################################
+  # BENCHMARK
+  benchmark:
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: v18.18.x
+    steps:
+    # Setup.
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: yarn
+
+    # Build.
+    - run: yarn install --frozen-lockfile
+    - run: yarn dist
+
+    # Benchmark.
+    - run: yarn --silent benchmark | tee bench-results.json
+    - name: Download benchmark archive
+      uses: actions/cache@v1
+      with:
+        path: ./cache
+        key: ${{ runner.os }}-benchmark
+    - name: Upload benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'customSmallerIsBetter'
+        output-file-path: bench-results.json
+        external-data-json-path: ./cache/benchmark-data.json
+        fail-on-alert: true
