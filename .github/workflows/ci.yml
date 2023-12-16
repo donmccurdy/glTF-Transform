@@ -108,7 +108,7 @@ jobs:
     # Benchmark.
     - run: yarn --silent benchmark | tee bench-results.json
     - name: Download benchmark archive
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ./cache
         key: ${{ runner.os }}-benchmark
