@@ -118,4 +118,6 @@ jobs:
         tool: 'customSmallerIsBetter'
         output-file-path: bench-results.json
         external-data-json-path: ./cache/benchmark-data.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        summary-always: true
         fail-on-alert: true
