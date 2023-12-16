@@ -33,9 +33,9 @@ let _document: Document;
 
 const bench = new Bench({ time: 1000 })
 	.add('create::sm', () => createLargeDocument(Size.SM))
-	.add('create::lg', () => createLargeDocument(Size.LG))
+	.add('create::md', () => createLargeDocument(Size.MD))
 	.add('clone::sm', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.SM)) })
-	.add('clone::lg', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.LG)) })
+	.add('clone::md', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.MD)) })
 	.add(
 		'dispose::md',
 		() => {
