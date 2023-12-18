@@ -15,7 +15,7 @@
 		"@greendoc/parse": "^0.3.0",
 		"@greendoc/svelte": "^0.3.0",
 		"@sveltejs/adapter-static": "^2.0.2",
-		"@sveltejs/kit": "^1.27.3",
+		"@sveltejs/kit": "^2.0.0",
 		"he": "^1.2.0",
 		"highlight.js": "^11.8.0",
 		"mdsvex": "^0.11.0",
