@@ -10,14 +10,14 @@
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
-		"types": "./dist/core.d.ts",
-		"require": "./dist/core.cjs",
-		"default": "./dist/core.modern.js"
+		"types": "./dist/index.d.ts",
+		"require": "./dist/index.cjs",
+		"default": "./dist/index.modern.js"
 	},
-	"types": "./dist/core.d.ts",
-	"main": "./dist/core.cjs",
-	"module": "./dist/core.modern.js",
-	"source": "./src/core.ts",
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.modern.js",
+	"source": "./src/index.ts",
 	"browserslist": [
 		"defaults",
 		"not IE 11",
