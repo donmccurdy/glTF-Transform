@@ -53,7 +53,6 @@ import {
 	PALETTE_DEFAULTS,
 	MESHOPT_DEFAULTS,
 	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
-	TEXTURE_COMPRESS_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {

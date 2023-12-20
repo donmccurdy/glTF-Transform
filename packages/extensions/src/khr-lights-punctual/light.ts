@@ -1,5 +1,4 @@
 import { ExtensionProperty, IProperty, Nullable, PropertyType, vec3 } from '@gltf-transform/core';
-import { ColorUtils } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 
 interface ILight extends IProperty {
