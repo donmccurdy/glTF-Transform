@@ -36,7 +36,7 @@ test('basic', async (t) => {
 				specularColorTexture: { index: 1 },
 			},
 		},
-		'writes specular extension'
+		'writes specular extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsSpecular.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -71,11 +71,4 @@ test('copy', (t) => {
 	t.deepEqual(specular2.getSpecularColorFactor(), [0.9, 0.5, 0.8], 'copy specularColorFactor');
 	t.is(specular2.getSpecularTexture().getName(), 'spec', 'copy specularTexture');
 	t.is(specular2.getSpecularColorTexture().getName(), 'specColor', 'copy specularColorTexture');
-});
-
-test('hex', (t) => {
-	const doc = new Document();
-	const specularExtension = doc.createExtension(KHRMaterialsSpecular);
-	const specular = specularExtension.createSpecular().setSpecularColorHex(0x252525);
-	t.is(specular.getSpecularColorHex(), 0x252525, 'specularColorHex');
 });

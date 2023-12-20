@@ -1,5 +1,4 @@
 import {
-	ColorUtils,
 	ExtensionProperty,
 	IProperty,
 	Nullable,
@@ -63,23 +62,6 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	/** Diffuse; Linear-sRGB components. See {@link PBRSpecularGlossiness.getDiffuseTexture getDiffuseTexture}. */
 	public setDiffuseFactor(factor: vec4): this {
 		return this.set('diffuseFactor', factor);
-	}
-
-	/**
-	 * Diffuse; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getDiffuseHex(): number {
-		return ColorUtils.factorToHex(this.getDiffuseFactor());
-	}
-
-	/**
-	 * Diffuse; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setDiffuseHex(hex: number): this {
-		const factor = this.getDiffuseFactor().slice() as vec4;
-		return this.setDiffuseFactor(ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**

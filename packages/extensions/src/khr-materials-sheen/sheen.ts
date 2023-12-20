@@ -1,5 +1,4 @@
 import {
-	ColorUtils,
 	ExtensionProperty,
 	IProperty,
 	Nullable,
@@ -57,26 +56,9 @@ export class Sheen extends ExtensionProperty<ISheen> {
 		return this.get('sheenColorFactor');
 	}
 
-	/**
-	 * Sheen; hex color in sRGB colorspace.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getSheenColorHex(): number {
-		return ColorUtils.factorToHex(this.getSheenColorFactor());
-	}
-
 	/** Sheen; linear multiplier. */
 	public setSheenColorFactor(factor: vec3): this {
 		return this.set('sheenColorFactor', factor);
-	}
-
-	/**
-	 * Sheen; hex color in sRGB colorspace.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setSheenColorHex(hex: number): this {
-		const factor = this.getSheenColorFactor().slice() as vec3;
-		return this.set('sheenColorFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**

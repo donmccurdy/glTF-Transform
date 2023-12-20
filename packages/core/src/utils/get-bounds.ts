@@ -30,12 +30,6 @@ export function getBounds(node: Node | Scene): bbox {
 	return resultBounds;
 }
 
-/**
- * @deprecated Renamed to {@link getBounds}.
- * @hidden
- */
-export const bounds = getBounds;
-
 /** Computes mesh bounds in local space. */
 function getMeshBounds(mesh: Mesh, worldMatrix: mat4): bbox {
 	const meshBounds = createBounds();

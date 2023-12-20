@@ -36,7 +36,7 @@ test('basic', async (t) => {
 				attenuationColor: [0.1, 0.2, 0.3],
 			},
 		},
-		'writes volume extension'
+		'writes volume extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsVolume.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -51,9 +51,6 @@ test('basic', async (t) => {
 	t.truthy(roundtripExt.getThicknessTexture(), 'reads thicknessTexture');
 	t.is(roundtripExt.getAttenuationDistance(), 2, 'reads attenuationDistance');
 	t.deepEqual(roundtripExt.getAttenuationColor(), [0.1, 0.2, 0.3], 'reads attenuationColor');
-
-	volume.setAttenuationColorHex(0x4285f4);
-	t.is(volume.getAttenuationColorHex(), 0x4285f4, 'reads/writes hexadecimal sRGB');
 });
 
 test('copy', (t) => {

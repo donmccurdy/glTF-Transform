@@ -4,7 +4,6 @@ import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
 import type sharp from 'sharp';
 import { createTransform, fitWithin, formatBytes } from './utils.js';
-import { TextureResizeFilter } from './texture-resize.js';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
@@ -14,6 +13,14 @@ const NAME = 'textureCompress';
 type Format = (typeof TEXTURE_COMPRESS_SUPPORTED_FORMATS)[number];
 export const TEXTURE_COMPRESS_SUPPORTED_FORMATS = ['jpeg', 'png', 'webp', 'avif'] as const;
 const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
+/** Resampling filter methods. LANCZOS3 is sharper, LANCZOS2 is smoother. */
+export enum TextureResizeFilter {
+	/** Lanczos3 (sharp) */
+	LANCZOS3 = 'lanczos3',
+	/** Lanczos2 (smooth) */
+	LANCZOS2 = 'lanczos2',
+}
 
 export interface TextureCompressOptions {
 	/** Instance of the Sharp encoder, which must be installed from the

@@ -108,7 +108,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				weldPrimitive(doc, prim, options);
+				weldPrimitive(prim, options);
 
 				if (isPrimEmpty(prim)) prim.dispose();
 			}
@@ -158,35 +158,19 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
  *   weldPrimitive(prim, {tolerance: 0.0001});
  * }
  * ```
- *
- * @privateRemarks TODO(v4): Remove the "Document" parameter.
  */
-export function weldPrimitive(
-	a: Document | Primitive,
-	b: Primitive | WeldOptions = WELD_DEFAULTS,
-	c = WELD_DEFAULTS,
-): void {
-	let _document: Document;
-	let _prim: Primitive;
-	let _options: Required<WeldOptions>;
-	if (a instanceof Primitive) {
-		const graph = a.getGraph();
-		_document = Document.fromGraph(graph)!;
-		_prim = a;
-		_options = expandWeldOptions(b as WeldOptions);
-	} else {
-		_document = a;
-		_prim = b as Primitive;
-		_options = expandWeldOptions(c as WeldOptions);
-	}
+export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFAULTS): void {
+	const graph = prim.getGraph();
+	const document = Document.fromGraph(graph)!;
+	const options = expandWeldOptions(_options);
 
-	if (_prim.getIndices() && !_options.overwrite) return;
-	if (_prim.getMode() === Primitive.Mode.POINTS) return;
+	if (prim.getIndices() && !_options.overwrite) return;
+	if (prim.getMode() === Primitive.Mode.POINTS) return;
 
 	if (_options.tolerance === 0) {
-		_indexPrimitive(_document, _prim);
+		_indexPrimitive(document, prim);
 	} else {
-		_weldPrimitive(_document, _prim, _options);
+		_weldPrimitive(document, prim, options);
 	}
 }
 

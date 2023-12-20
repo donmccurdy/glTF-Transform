@@ -1,5 +1,4 @@
 import { ExtensionProperty, IProperty, Nullable, PropertyType, vec3 } from '@gltf-transform/core';
-import { ColorUtils } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 
 interface ILight extends IProperty {
@@ -65,24 +64,6 @@ export class Light extends ExtensionProperty<ILight> {
 	/** Light color; Linear-sRGB components. */
 	public setColor(color: vec3): this {
 		return this.set('color', color);
-	}
-
-	/**
-	 * Light color; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getColorHex(): number {
-		return ColorUtils.factorToHex(this.getColor());
-	}
-
-	/**
-	 * Light color; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setColorHex(hex: number): this {
-		const color = this.getColor().slice() as vec3;
-		ColorUtils.hexToFactor(hex, color);
-		return this.setColor(color);
 	}
 
 	/**********************************************************************************************

@@ -1,6 +1,6 @@
 import test from 'ava';
 import { getPixels } from 'ndarray-pixels';
-import { Document, GLTF, Material } from '@gltf-transform/core';
+import { Document, GLTF, Material, vec4 } from '@gltf-transform/core';
 import { KHRMaterialsSpecular } from '@gltf-transform/extensions';
 import { palette } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
@@ -10,7 +10,13 @@ test('basic', async (t) => {
 	const [materialA, materialB, materialC, materialD, materialE] = createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
-		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
+		[
+			[1, 0, 0, 1],
+			[0, 1, 0, 1],
+			[0, 0, 1, 1],
+			[0, 1, 0, 1],
+			[1, 0, 0, 1],
+		],
 		[1.0, 1.0, 1.0, 0.0, 1.0],
 		['OPAQUE', 'OPAQUE', 'OPAQUE', 'OPAQUE', 'BLEND'],
 	);
@@ -38,7 +44,13 @@ test('options.blockSize', async (t) => {
 	createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
-		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
+		[
+			[1, 0, 0, 1],
+			[0, 1, 0, 1],
+			[0, 0, 1, 1],
+			[0, 1, 0, 1],
+			[1, 0, 0, 1],
+		],
 		new Array(5).fill(1.0),
 		new Array(5).fill('OPAQUE'),
 	);
@@ -62,7 +74,13 @@ test('options.min', async (t) => {
 	createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
-		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
+		[
+			[1, 0, 0, 1],
+			[0, 1, 0, 1],
+			[0, 0, 1, 1],
+			[0, 1, 0, 1],
+			[1, 0, 0, 1],
+		],
 		new Array(5).fill(1.0),
 		new Array(5).fill('OPAQUE'),
 	);
@@ -83,7 +101,13 @@ test('preserve extensions', async (t) => {
 	const [material] = createMaterials(
 		document,
 		['A', 'B', 'C', 'D', 'E'],
-		[0xff0000, 0x00ff00, 0x0000ff, 0x00ff00, 0xff0000],
+		[
+			[1, 0, 0, 1],
+			[0, 1, 0, 1],
+			[0, 0, 1, 1],
+			[0, 1, 0, 1],
+			[1, 0, 0, 1],
+		],
 		new Array(5).fill(1.0),
 		new Array(5).fill('OPAQUE'),
 	);
@@ -111,7 +135,11 @@ test('pixel values', async (t) => {
 	createMaterials(
 		document,
 		['A', 'B', 'C'],
-		[0x808080, 0x000080, 0x800000],
+		[
+			[0.218, 0.218, 0.218, 1],
+			[0, 0, 0.218, 1],
+			[0.218, 0, 0, 1],
+		],
 		new Array(3).fill(1.0),
 		new Array(3).fill('OPAQUE'),
 	);
@@ -154,7 +182,7 @@ test('pixel values', async (t) => {
 function createMaterials(
 	document: Document,
 	names: string[],
-	baseColorHexCodes: number[],
+	baseColorFactors: vec4[],
 	roughnessFactors: number[],
 	alphaModes: GLTF.MaterialAlphaMode[],
 ): Material[] {
@@ -169,7 +197,7 @@ function createMaterials(
 	for (let i = 0; i < names.length; i++) {
 		const material = document
 			.createMaterial(names[i])
-			.setBaseColorHex(baseColorHexCodes[i])
+			.setBaseColorFactor(baseColorFactors[i])
 			.setRoughnessFactor(roughnessFactors[i])
 			.setAlphaMode(alphaModes[i]);
 		mesh.addPrimitive(prim.clone().setMaterial(material));
