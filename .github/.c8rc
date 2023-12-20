@@ -1,5 +1,11 @@
 {
-	"exclude": ["node_modules/**", "**/*.test.ts", "packages/test-utils"],
-	"excludeNodeModules": true,
-	"excludeAfterRemap": true
+	"exclude": [
+		"packages/*/vendor",
+		"packages/*/test",
+		"packages/test-utils/**/*",
+		"packages/core/src/constants.ts",
+		"packages/cli/src/cli.ts",
+		"packages/cli/src/transforms/toktx.ts",
+		"packages/cli/src/transforms/xmp.ts"
+	]
 }
