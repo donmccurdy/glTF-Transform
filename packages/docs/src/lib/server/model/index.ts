@@ -4,8 +4,8 @@ import he from 'he';
 
 const BASE = new URL('../../../../../../', import.meta.url).pathname.replace(/\/$/, '');
 
-const corePath = `${BASE}/packages/core/src/core.ts`;
-const extensionsPath = `${BASE}/packages/extensions/src/extensions.ts`;
+const corePath = `${BASE}/packages/core/src/index.ts`;
+const extensionsPath = `${BASE}/packages/extensions/src/index.ts`;
 const functionsPath = `${BASE}/packages/functions/src/index.ts`;
 
 const project = new Project({
