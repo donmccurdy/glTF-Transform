@@ -1,8 +1,12 @@
 # Changelog
 
-## v3.x
+## v4.x - 🚧 Unreleased
 
-<!-- ### v3.X — 🚧 Unreleased -->
+**Breaking changes:**
+
+- Requires Node.js >=18 (non-Node.js runtimes unaffected)
+
+## v3.x
 
 ### v3.9 ([Milestone](https://github.com/donmccurdy/glTF-Transform/milestone/36))
 

@@ -2,11 +2,6 @@
 	"extends": ["github>donmccurdy/renovate-config"],
 	"packageRules": [
 		{
-			"description": "Node.js v14 EOL",
-			"matchPackageNames": ["listr2", "p-limit"],
-			"enabled": false
-		},
-		{
 			"description": "Requires changes to greendoc",
 			"matchPackageNames": ["ts-morph"],
 			"enabled": false

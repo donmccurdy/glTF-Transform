@@ -116,7 +116,7 @@ To learn how glTF Transform works, and the architecture of the scripting API, st
 
 ## Command-line API
 
-Install the CLI, supported in Node.js v14+.
+Install the CLI, supported in Node.js LTS versions.
 
 ```bash
 npm install --global @gltf-transform/cli
