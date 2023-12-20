@@ -30,15 +30,6 @@ test('factors', (t) => {
 	t.is(mat.getRoughnessFactor(), 0.9, 'roughnessFactor');
 });
 
-test('hex', (t) => {
-	const document = new Document();
-
-	const mat = document.createMaterial('mat').setAlpha(0.9).setBaseColorHex(0x00ff00);
-
-	t.is(mat.getAlpha(), 0.9, 'alpha');
-	t.is(mat.getBaseColorHex(), 65024, 'baseColorHex');
-});
-
 test('textures', (t) => {
 	const document = new Document();
 

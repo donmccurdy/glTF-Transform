@@ -15,7 +15,6 @@ import {
 	QUANTIZE_DEFAULTS,
 	ResampleOptions,
 	SequenceOptions,
-	TEXTURE_RESIZE_DEFAULTS,
 	TextureResizeFilter,
 	UnweldOptions,
 	WeldOptions,
@@ -54,6 +53,7 @@ import {
 	PALETTE_DEFAULTS,
 	MESHOPT_DEFAULTS,
 	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
+	TEXTURE_COMPRESS_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -1157,7 +1157,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	})
 	.option('--filter', 'Resampling filter', {
 		validator: [TextureResizeFilter.LANCZOS3, TextureResizeFilter.LANCZOS2],
-		default: TEXTURE_RESIZE_DEFAULTS.filter,
+		default: TextureResizeFilter.LANCZOS3,
 	})
 	.option('--width <pixels>', 'Maximum width (px) of output textures.', {
 		validator: Validator.NUMBER,

@@ -126,7 +126,7 @@ export class Node extends ExtensibleProperty<INode> {
 			this.get('translation'),
 			this.get('rotation'),
 			this.get('scale'),
-			[] as unknown as mat4
+			[] as unknown as mat4,
 		);
 	}
 
@@ -233,13 +233,6 @@ export class Node extends ExtensibleProperty<INode> {
 		return this.listRefs('children');
 	}
 
-	/** @deprecated Use {@link Node.getParentNode} and {@link listNodeScenes} instead. */
-	public getParent(): SceneNode | null {
-		if (this._parentNode) return this._parentNode;
-		const scene = this.listParents().find((parent) => parent.propertyType === PropertyType.SCENE);
-		return (scene as unknown as SceneNode) || null;
-	}
-
 	/**
 	 * Returns the Node's unique parent Node within the scene graph. If the
 	 * Node has no parents, or is a direct child of the {@link Scene}
@@ -315,11 +308,4 @@ export class Node extends ExtensibleProperty<INode> {
 		for (const child of this.listChildren()) child.traverse(fn);
 		return this;
 	}
-}
-
-interface SceneNode {
-	propertyType: PropertyType;
-	_parent?: SceneNode | null;
-	addChild(node: Node): this;
-	removeChild(node: Node): this;
 }

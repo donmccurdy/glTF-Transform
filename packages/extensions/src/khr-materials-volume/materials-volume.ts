@@ -54,7 +54,7 @@ interface VolumeDef {
  * 	.setThicknessFactor(1.0)
  * 	.setThicknessTexture(texture)
  * 	.setAttenuationDistance(1.0)
- * 	.setAttenuationColorHex(0xFFEEEE);
+ * 	.setAttenuationColorFactor([1, 0.5, 0.5]);
  *
  * // Attach the property to a Material.
  * material.setExtension('KHR_materials_volume', volume);

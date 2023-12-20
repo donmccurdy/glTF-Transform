@@ -38,7 +38,6 @@ export {
 	MathUtils,
 	Verbosity,
 	getBounds,
-	bounds,
 	uuid,
 } from './utils/index.js';
 export {

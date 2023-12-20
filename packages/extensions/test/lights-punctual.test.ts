@@ -81,13 +81,6 @@ test('copy', (t) => {
 	t.is(light2.getOuterConeAngle(), 0.75, 'copy outerConeAngle');
 });
 
-test('hex', (t) => {
-	const document = new Document();
-	const lightsExtension = document.createExtension(KHRLightsPunctual);
-	const light = lightsExtension.createLight().setColorHex(0x111111);
-	t.is(light.getColorHex(), 0x111111, 'colorHex');
-});
-
 test('i/o', async (t) => {
 	const document = new Document();
 	const lightsExtension = document.createExtension(KHRLightsPunctual);

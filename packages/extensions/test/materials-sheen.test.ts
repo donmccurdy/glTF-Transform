@@ -33,7 +33,7 @@ test('basic', async (t) => {
 				sheenColorTexture: { index: 0 },
 			},
 		},
-		'writes sheen extension'
+		'writes sheen extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsSheen.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -63,11 +63,4 @@ test('copy', (t) => {
 	t.truthy(sheen2, 'copy Sheen');
 	t.deepEqual(sheen2.getSheenColorFactor(), [0.9, 0.5, 0.8], 'copy sheenColorFactor');
 	t.is(sheen2.getSheenColorTexture().getName(), 'sheen', 'copy sheenColorTexture');
-});
-
-test('hex', (t) => {
-	const doc = new Document();
-	const sheenExtension = doc.createExtension(KHRMaterialsSheen);
-	const sheen = sheenExtension.createSheen().setSheenColorHex(0x252525);
-	t.is(sheen.getSheenColorHex(), 0x252525, 'sheenColorHex');
 });

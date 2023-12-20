@@ -1,6 +1,5 @@
 import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
-import { ColorUtils } from '../utils/index.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 import type { Texture } from './texture.js';
 import { TextureInfo } from './texture-info.js';
@@ -207,23 +206,6 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	}
 
 	/**
-	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getBaseColorHex(): number {
-		return ColorUtils.factorToHex(this.get('baseColorFactor'));
-	}
-
-	/**
-	 * Base color / albedo; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setBaseColorHex(hex: number): this {
-		const factor = this.get('baseColorFactor').slice() as vec4;
-		return this.set('baseColorFactor', ColorUtils.hexToFactor(hex, factor));
-	}
-
-	/**
 	 * Base color / albedo. The visible color of a non-metallic surface under constant ambient
 	 * light would be a linear combination (multiplication) of its vertex colors, base color
 	 * factor, and base color texture. Lighting, and reflections in metallic or smooth surfaces,
@@ -262,23 +244,6 @@ export class Material extends ExtensibleProperty<IMaterial> {
 	/** Emissive color; Linear-sRGB components. See {@link Material.getEmissiveTexture getEmissiveTexture}. */
 	public setEmissiveFactor(emissiveFactor: vec3): this {
 		return this.set('emissiveFactor', emissiveFactor);
-	}
-
-	/**
-	 * Emissive; sRGB hexadecimal color. See {@link Material.getBaseColorTexture getBaseColorTexture}.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getEmissiveHex(): number {
-		return ColorUtils.factorToHex(this.get('emissiveFactor'));
-	}
-
-	/**
-	 * Emissive; sRGB hexadecimal color. See {@link Material.getEmissiveTexture getEmissiveTexture}.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setEmissiveHex(hex: number): this {
-		const factor = this.get('emissiveFactor').slice() as vec3;
-		return this.set('emissiveFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**

@@ -58,7 +58,11 @@ test('materials', (t) => {
 	const document = new Document();
 	const root = document.getRoot();
 
-	const mat = document.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
+	const mat = document
+		.createMaterial('MatA')
+		.setBaseColorFactor([0.8, 0.8, 0.8, 1])
+		.setAlpha(0.9)
+		.setAlphaMode('OPAQUE');
 	const matCloned = mat.clone();
 	const matRenamed = mat.clone().setName('MatC');
 	const matUnequal = mat.clone().setName('MatD').setAlphaMode('MASK');
@@ -82,7 +86,11 @@ test('materials - animation', (t) => {
 	const document = new Document();
 	const root = document.getRoot();
 
-	const matA = document.createMaterial('MatA').setBaseColorHex(0xf2f2f2).setAlpha(0.9).setAlphaMode('OPAQUE');
+	const matA = document
+		.createMaterial('MatA')
+		.setBaseColorFactor([0.8, 0.8, 0.8, 1])
+		.setAlpha(0.9)
+		.setAlphaMode('OPAQUE');
 	const matB = matA.clone();
 	const matC = matA.clone();
 	const matD = matA.clone();
@@ -178,9 +186,9 @@ test('textures', async (t) => {
 test('unique names', async (t) => {
 	const document = new Document();
 
-	const matA = document.createMaterial('A').setBaseColorHex(0xcccccc);
+	const matA = document.createMaterial('A').setBaseColorFactor([0.5, 0.5, 0.5, 1]);
 	const matB = matA.clone().setName('B');
-	const matC = matA.clone().setName('C').setBaseColorHex(0xdddddd);
+	const matC = matA.clone().setName('C').setBaseColorFactor([0.6, 0.6, 0.6, 1]);
 
 	const positionA = document
 		.createAccessor()

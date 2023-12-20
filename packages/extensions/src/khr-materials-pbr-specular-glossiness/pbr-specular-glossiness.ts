@@ -66,23 +66,6 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	}
 
 	/**
-	 * Diffuse; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getDiffuseHex(): number {
-		return ColorUtils.factorToHex(this.getDiffuseFactor());
-	}
-
-	/**
-	 * Diffuse; sRGB hexadecimal color.
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setDiffuseHex(hex: number): this {
-		const factor = this.getDiffuseFactor().slice() as vec4;
-		return this.setDiffuseFactor(ColorUtils.hexToFactor(hex, factor));
-	}
-
-	/**
 	 * Diffuse texture; sRGB. Alternative to baseColorTexture, used within the
 	 * spec/gloss PBR workflow.
 	 */

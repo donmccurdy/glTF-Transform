@@ -6,13 +6,8 @@ const NAME = 'vertexColorSpace';
 /** Options for the {@link vertexColorSpace} function. */
 export interface ColorSpaceOptions {
 	/** Input color space of vertex colors, to be converted to "srgb-linear". Required. */
-	inputColorSpace: 'srgb' | 'srgb-linear' | 'sRGB';
-	/** @deprecated Renamed to 'colorSpace'. */
-	inputEncoding?: 'srgb' | 'srgb-linear' | 'sRGB';
+	inputColorSpace: 'srgb' | 'srgb-linear';
 }
-
-/** @deprecated Renamed to {@link vertexColorSpace}. */
-export const colorspace = vertexColorSpace;
 
 /**
  * Vertex color color space correction. The glTF format requires vertex colors to be stored
@@ -35,7 +30,7 @@ export function vertexColorSpace(options: ColorSpaceOptions): Transform {
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 
-		const inputColorSpace = (options.inputColorSpace || options.inputEncoding || '').toLowerCase();
+		const inputColorSpace = (options.inputColorSpace || '').toLowerCase();
 
 		if (inputColorSpace === 'srgb-linear') {
 			logger.info(`${NAME}: Vertex colors already linear. Skipping conversion.`);
@@ -45,7 +40,7 @@ export function vertexColorSpace(options: ColorSpaceOptions): Transform {
 		if (inputColorSpace !== 'srgb') {
 			logger.error(
 				`${NAME}: Unknown input color space "${inputColorSpace}" – should be "srgb" or ` +
-					'"srgb-linear". Skipping conversion.'
+					'"srgb-linear". Skipping conversion.',
 			);
 			return;
 		}

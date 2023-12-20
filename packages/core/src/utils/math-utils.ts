@@ -38,11 +38,6 @@ export class MathUtils {
 		}
 	}
 
-	/** @deprecated Renamed to {@link MathUtils.decodeNormalizedInt}. */
-	public static denormalize(i: number, componentType: GLTF.AccessorComponentType): number {
-		return MathUtils.decodeNormalizedInt(i, componentType);
-	}
-
 	// TODO(v4): Compare performance if we replace the switch with individual functions.
 	// TODO(v4): Consider clamping to [0, 1] or [-1, 1] here.
 	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
@@ -61,11 +56,6 @@ export class MathUtils {
 			default:
 				throw new Error('Invalid component type.');
 		}
-	}
-
-	/** @deprecated Renamed to {@link MathUtils.encodeNormalizedInt}. */
-	public static normalize(f: number, componentType: GLTF.AccessorComponentType): number {
-		return MathUtils.encodeNormalizedInt(f, componentType);
 	}
 
 	/**

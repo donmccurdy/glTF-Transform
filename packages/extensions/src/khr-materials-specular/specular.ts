@@ -73,23 +73,6 @@ export class Specular extends ExtensionProperty<ISpecular> {
 	}
 
 	/**
-	 * Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture}
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public getSpecularColorHex(): number {
-		return ColorUtils.factorToHex(this.getSpecularColorFactor());
-	}
-
-	/**
-	 * Specular color; sRGB hexadecimal color. See {@link Specular.getSpecularTexture getSpecularTexture}
-	 * @deprecated Will be removed in v4. Use {@link ColorUtils.hexToFactor} / {@link ColorUtils.factorToHex} instead.
-	 */
-	public setSpecularColorHex(hex: number): this {
-		const factor = this.getSpecularColorFactor().slice() as vec3;
-		return this.set('specularColorFactor', ColorUtils.hexToFactor(hex, factor));
-	}
-
-	/**
 	 * Specular texture; linear multiplier. Configures the strength of the specular reflection in
 	 * the dielectric BRDF. A value of zero disables the specular reflection, resulting in a pure
 	 * diffuse material.
