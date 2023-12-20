@@ -3,7 +3,7 @@ import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, environment, Environment, logger } from '@gltf-transform/test-utils';
 import fs from 'fs';
 import { dirname, join, resolve } from 'path';
-import glob from 'glob';
+import { glob } from 'glob';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
