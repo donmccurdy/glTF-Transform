@@ -13,5 +13,5 @@ export const load: PageServerLoad<{ export: GD.ApiItem }> = async ({ params }) =
 			export: encodedItem,
 		};
 	}
-	throw error(404, 'Not found');
+	error(404, 'Not found');
 };

@@ -1316,11 +1316,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.56.0.tgz#ef20350fec605a7f7035a01764731b2de0f3782b"
   integrity sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==
 
-"@fastify/busboy@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.0.0.tgz#f22824caff3ae506b18207bad4126dbc6ccdb6b8"
-  integrity sha512-JUFJad5lv7jxj926GPgymrWQxxjPYuJNiNjNMzqT+HiuP6Vl3dk5xzG+8sTX96np0ZAluvaMzPsjhHZ5rNuNQQ==
-
 "@greendoc/parse@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@greendoc/parse/-/parse-0.3.0.tgz#b0db4211e95529cbf758b36b1cbb60b3cb9baea1"
@@ -2002,49 +1997,47 @@
     magic-string "^0.25.0"
     string.prototype.matchall "^4.0.6"
 
-"@sveltejs/adapter-static@^2.0.2":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-static/-/adapter-static-2.0.3.tgz#616836c30bdce4d673a2e26c0f5ffbd5c1bc7c67"
-  integrity sha512-VUqTfXsxYGugCpMqQv1U0LIdbR3S5nBkMMDmpjGVJyM6Q2jHVMFtdWJCkeHMySc6mZxJ+0eZK3T7IgmUCDrcUQ==
+"@sveltejs/adapter-static@^3.0.0":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@sveltejs/adapter-static/-/adapter-static-3.0.1.tgz#64c36020435d7b1eacd362b2d027fefda5ec2e44"
+  integrity sha512-6lMvf7xYEJ+oGeR5L8DFJJrowkefTK6ZgA4JiMqoClMkKq0s6yvsd3FZfCFvX1fQ0tpCD7fkuRVHsnUVgsHyNg==
 
-"@sveltejs/kit@^1.27.3":
-  version "1.30.3"
-  resolved "https://registry.yarnpkg.com/@sveltejs/kit/-/kit-1.30.3.tgz#3e1d57283352bcc6900592171139f1ff97d4e85f"
-  integrity sha512-0DzVXfU4h+tChFvoc8C61IqErCyskD4ydSIDjpKS2lYlEzIYrtYrY7juSqACFxqcvZAnOEXvSY+zZ8br0+ZMMg==
+"@sveltejs/kit@^2.0.0":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@sveltejs/kit/-/kit-2.0.4.tgz#7870bab67acc72f887d9bf32de7fc124da761d16"
+  integrity sha512-pqUOo1Slp2fybNjTouF7qgeN815hO2boRCNO1Z7/XtXu5IPNg9OSwI485qmQ0GUU2v2NmA0XZciFHGrgzOixyw==
   dependencies:
-    "@sveltejs/vite-plugin-svelte" "^2.5.0"
-    "@types/cookie" "^0.5.1"
-    cookie "^0.5.0"
-    devalue "^4.3.1"
+    "@types/cookie" "^0.6.0"
+    cookie "^0.6.0"
+    devalue "^4.3.2"
     esm-env "^1.0.0"
     kleur "^4.1.5"
-    magic-string "^0.30.0"
+    magic-string "^0.30.5"
     mrmime "^1.0.1"
     sade "^1.8.1"
     set-cookie-parser "^2.6.0"
-    sirv "^2.0.2"
+    sirv "^2.0.3"
     tiny-glob "^0.2.9"
-    undici "~5.26.2"
 
-"@sveltejs/vite-plugin-svelte-inspector@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@sveltejs/vite-plugin-svelte-inspector/-/vite-plugin-svelte-inspector-1.0.4.tgz#c99fcb73aaa845a3e2c0563409aeb3ee0b863add"
-  integrity sha512-zjiuZ3yydBtwpF3bj0kQNV0YXe+iKE545QGZVTaylW3eAzFr+pJ/cwK8lZEaRp4JtaJXhD5DyWAV4AxLh6DgaQ==
+"@sveltejs/vite-plugin-svelte-inspector@^2.0.0-next.0 || ^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sveltejs/vite-plugin-svelte-inspector/-/vite-plugin-svelte-inspector-2.0.0.tgz#365afaa0dd63517838ce4686a3dc3982be348a9b"
+  integrity sha512-gjr9ZFg1BSlIpfZ4PRewigrvYmHWbDrq2uvvPB1AmTWKuM+dI1JXQSUu2pIrYLb/QncyiIGkFDFKTwJ0XqQZZg==
   dependencies:
     debug "^4.3.4"
 
-"@sveltejs/vite-plugin-svelte@^2.5.0":
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/@sveltejs/vite-plugin-svelte/-/vite-plugin-svelte-2.5.2.tgz#de9e9cab3d9614407788702514bc57258a3cac77"
-  integrity sha512-Dfy0Rbl+IctOVfJvWGxrX/3m6vxPLH8o0x+8FA5QEyMUQMo4kGOVIojjryU7YomBAexOTAuYf1RT7809yDziaA==
+"@sveltejs/vite-plugin-svelte@^3.0.0":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@sveltejs/vite-plugin-svelte/-/vite-plugin-svelte-3.0.1.tgz#475d3496a2a1c7fb4ec6ee3a4d3f0af01fb052e1"
+  integrity sha512-CGURX6Ps+TkOovK6xV+Y2rn8JKa8ZPUHPZ/NKgCxAmgBrXReavzFl8aOSCj3kQ1xqT7yGJj53hjcV/gqwDAaWA==
   dependencies:
-    "@sveltejs/vite-plugin-svelte-inspector" "^1.0.4"
+    "@sveltejs/vite-plugin-svelte-inspector" "^2.0.0-next.0 || ^2.0.0"
     debug "^4.3.4"
     deepmerge "^4.3.1"
     kleur "^4.1.5"
-    magic-string "^0.30.3"
+    magic-string "^0.30.5"
     svelte-hmr "^0.15.3"
-    vitefu "^0.2.4"
+    vitefu "^0.2.5"
 
 "@tootallnate/once@2":
   version "2.0.0"
@@ -2102,10 +2095,10 @@
   resolved "https://registry.yarnpkg.com/@types/command-exists/-/command-exists-1.2.3.tgz#b83f6a0b4d5aa2765f39950bca90c8d4203528e0"
   integrity sha512-PpbaE2XWLaWYboXD6k70TcXO/OdOyyRFq5TVpmlUELNxdkkmXU9fkImNosmXU1DtsNrqdUgWd/nJQYXgwmtdXQ==
 
-"@types/cookie@^0.5.1":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.5.2.tgz#9bf9d62c838c85a07c92fdf2334c2c14fd9c59a9"
-  integrity sha512-DBpRoJGKJZn7RY92dPrgoMew8xCWc2P71beqsjyhEI/Ds9mOyVmBwtekyfhpwFIVt1WrxTonFifiOZ62V8CnNA==
+"@types/cookie@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.6.0.tgz#eac397f28bf1d6ae0ae081363eca2f425bedf0d5"
+  integrity sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==
 
 "@types/draco3d@*":
   version "1.4.4"
@@ -3530,10 +3523,10 @@ convert-to-spaces@^2.0.1:
   resolved "https://registry.yarnpkg.com/convert-to-spaces/-/convert-to-spaces-2.0.1.tgz#61a6c98f8aa626c16b296b862a91412a33bceb6b"
   integrity sha512-rcQ1bsQO9799wq24uE5AM2tAILy4gXGIK/njFWcVQkGNZ96edlpY+A7bjwvzjYvLDyzmG1MmMLZhpcsb+klNMQ==
 
-cookie@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.5.0.tgz#d1f5d71adec6558c58f389987c366aa47e994f8b"
-  integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
+cookie@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.6.0.tgz#2798b04b071b0ecbff0dbb62a505a8efa4e19051"
+  integrity sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==
 
 core-js-compat@^3.31.0:
   version "3.32.2"
@@ -3828,7 +3821,7 @@ detect-libc@^2.0.0, detect-libc@^2.0.2:
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.0.2.tgz#8ccf2ba9315350e1241b88d0ac3b0e1fbd99605d"
   integrity sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==
 
-devalue@^4.3.1:
+devalue@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/devalue/-/devalue-4.3.2.tgz#cc44e4cf3872ac5a78229fbce3b77e57032727b5"
   integrity sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==
@@ -6166,14 +6159,7 @@ magic-string@^0.27.0:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.13"
 
-magic-string@^0.30.0, magic-string@^0.30.3:
-  version "0.30.3"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.3.tgz#403755dfd9d6b398dfa40635d52e96c5ac095b85"
-  integrity sha512-B7xGbll2fG/VjP+SWg4sX3JynwIU0mjoTc6MPpKNuIvftk6u6vqhDnk1R80b8C2GBR6ywqy+1DcKBrevBg+bmw==
-  dependencies:
-    "@jridgewell/sourcemap-codec" "^1.4.15"
-
-magic-string@^0.30.4:
+magic-string@^0.30.4, magic-string@^0.30.5:
   version "0.30.5"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.5.tgz#1994d980bd1c8835dc6e78db7cbd4ae4f24746f9"
   integrity sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==
@@ -8492,7 +8478,7 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
-sirv@^2.0.2:
+sirv@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/sirv/-/sirv-2.0.3.tgz#ca5868b87205a74bef62a469ed0296abceccd446"
   integrity sha512-O9jm9BsID1P+0HOi81VpXPoDxYP374pkOLzACAoyUQ/3OUVndNpsz6wMnY2z+yOxzbllCKZrM+9QrWsv4THnyA==
@@ -9369,13 +9355,6 @@ undici-types@~5.26.4:
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
 
-undici@~5.26.2:
-  version "5.26.5"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-5.26.5.tgz#f6dc8c565e3cad8c4475b187f51a13e505092838"
-  integrity sha512-cSb4bPFd5qgR7qr2jYAi0hlX9n5YKK2ONKkLFkxl+v/9BvC0sOpZjBHDBSXc5lWAf5ty9oZdRXytBIHzgUcerw==
-  dependencies:
-    "@fastify/busboy" "^2.0.0"
-
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-2.0.0.tgz#301acdc525631670d39f6146e0e77ff6bbdebddc"
@@ -9525,10 +9504,10 @@ vite@^5.0.10:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitefu@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/vitefu/-/vitefu-0.2.4.tgz#212dc1a9d0254afe65e579351bed4e25d81e0b35"
-  integrity sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==
+vitefu@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/vitefu/-/vitefu-0.2.5.tgz#c1b93c377fbdd3e5ddd69840ea3aa70b40d90969"
+  integrity sha512-SgHtMLoqaeeGnd2evZ849ZbACbnwQCIwRH57t18FxcXoZop0uQu0uzlIhJBlF/eWVzuce0sHeqPcDo+evVcg8Q==
 
 wcwidth@^1.0.0, wcwidth@^1.0.1:
   version "1.0.1"

@@ -12,7 +12,7 @@ export const load = async ({ params }) => {
 		//
 	}
 
-	if (!html) throw error(404, 'Not found');
+	if (!html) error(404, 'Not found');
 
 	return { html, metadata };
 };
