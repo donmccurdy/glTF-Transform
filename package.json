@@ -11,7 +11,6 @@
 	"scripts": {
 		"dist": "lerna run dist",
 		"watch": "lerna run watch --parallel --stream",
-		"watch:debug": "lerna run watch:debug --parallel --stream",
 		"clean:dist": "rimraf packages/*/dist/**",
 		"clean:deps": "rimraf packages/*/node_modules/**",
 		"clean:test": "rimraf packages/*/test/out/**",
