@@ -39,9 +39,8 @@ export interface TextureCompressOptions {
 	 * For example, a 4096x8192 texture, resized with limit [2048, 2048] will
 	 * be reduced to 1024x2048.
 	 *
-	 * Presets "nearest-pot", "ceil-pot", and "floor-pot" may be reused to
-	 * resize textures to power-of-two dimensions, required by older graphics
-	 * APIs including WebGL 1.0.
+	 * Presets "nearest-pot", "ceil-pot", and "floor-pot" resize textures to
+	 * power-of-two dimensions, for older graphics APIs including WebGL 1.0.
 	 */
 	resize?: vec2 | 'nearest-pot' | 'ceil-pot' | 'floor-pot';
 	/** Interpolation used if resizing. Default: TextureResizeFilter.LANCZOS3. */
