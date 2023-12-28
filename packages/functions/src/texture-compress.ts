@@ -3,7 +3,7 @@ import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
 import type sharp from 'sharp';
-import { createTransform, fitWithin, formatBytes } from './utils.js';
+import { createTransform, fitPowerOfTwo, fitWithin, formatBytes } from './utils.js';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
@@ -38,8 +38,12 @@ export interface TextureCompressOptions {
 	 * Resizes textures to given maximum width/height, preserving aspect ratio.
 	 * For example, a 4096x8192 texture, resized with limit [2048, 2048] will
 	 * be reduced to 1024x2048.
+	 *
+	 * Presets "nearest-pot", "ceil-pot", and "floor-pot" may be reused to
+	 * resize textures to power-of-two dimensions, required by older graphics
+	 * APIs including WebGL 1.0.
 	 */
-	resize?: vec2;
+	resize?: vec2 | 'nearest-pot' | 'ceil-pot' | 'floor-pot';
 	/** Interpolation used if resizing. Default: TextureResizeFilter.LANCZOS3. */
 	resizeFilter?: TextureResizeFilter;
 	/** Pattern identifying textures to compress, matched to name or URI. */
@@ -309,11 +313,14 @@ async function _encodeWithSharp(
 	const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
 
 	if (options.resize) {
-		instance.resize(options.resize[0], options.resize[1], {
-			fit: 'inside',
-			kernel: options.resizeFilter,
-			withoutEnlargement: true,
-		});
+		const srcSize = ImageUtils.getSize(srcImage, _srcMimeType)!;
+		const dstSize = Array.isArray(options.resize)
+			? fitWithin(srcSize, options.resize)
+			: fitPowerOfTwo(srcSize, options.resize);
+		const fit = Array.isArray(options.resize) ? 'inside' : 'fill';
+		const kernel = options.resizeFilter;
+		const withoutEnlargement = Array.isArray(options.resize);
+		instance.resize(dstSize[0], dstSize[1], { fit, kernel, withoutEnlargement });
 	}
 
 	return BufferUtils.toView(await instance.toBuffer());
@@ -329,7 +336,9 @@ async function _encodeWithNdarrayPixels(
 
 	if (options.resize) {
 		const [w, h] = srcPixels.shape;
-		const dstSize = fitWithin([w, h], options.resize);
+		const dstSize = Array.isArray(options.resize)
+			? fitWithin([w, h], options.resize)
+			: fitPowerOfTwo([w, h], options.resize);
 		const dstPixels = ndarray(new Uint8Array(dstSize[0] * dstSize[1] * 4), [...dstSize, 4]);
 		options.resizeFilter === TextureResizeFilter.LANCZOS3
 			? lanczos3(srcPixels, dstPixels)
