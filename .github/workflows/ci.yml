@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # See: https://github.com/privatenumber/tsx/issues/354
-        node-version: [v18.18.x, v20, v22]
+        node-version: [v18.18.x, v20]
     env:
       CI: true
     steps:
