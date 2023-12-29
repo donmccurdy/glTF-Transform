@@ -29,7 +29,7 @@ jobs:
     - run: yarn dist
 
     # Test.
-    - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn test
     - run: yarn lint
 
   #############################################################################
@@ -79,7 +79,7 @@ jobs:
     - run: yarn dist
 
     # Coverage.
-    - run: yarn coverage --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn coverage
     - run: yarn coverage:report
     - uses: codecov/codecov-action@v3
       with:
