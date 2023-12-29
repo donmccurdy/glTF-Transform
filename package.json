@@ -14,13 +14,13 @@
 		"clean:dist": "rimraf packages/*/dist/**",
 		"clean:deps": "rimraf packages/*/node_modules/**",
 		"clean:test": "rimraf packages/*/test/out/**",
-		"test": "ava packages/{core,extensions,functions,cli}/test/**/*.test.ts",
+		"test": "ava --no-worker-threads packages/{core,extensions,functions,cli}/test/**/*.test.ts",
 		"coverage": "c8 --config .github/.c8rc --reporter=lcov --reporter=text yarn test --tap",
 		"coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
 		"lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
 		"validate": "scripts/validate.js",
 		"benchmark": "tsx test/benchmark.ts",
-		"preversion": "yarn run test",
+		"preversion": "yarn test",
 		"version": "yarn clean:dist && lerna run dist && yarn run docs:cli && git add -u packages/docs",
 		"postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
 		"docs:cli": "export CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
@@ -61,8 +61,7 @@
 			"ts": "module"
 		},
 		"nodeArguments": [
-			"--loader=tsx",
-			"--no-warnings=ExperimentalWarnings"
+			"--import=tsx"
 		]
 	}
 }
