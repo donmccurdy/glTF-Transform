@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # See: https://github.com/privatenumber/tsx/issues/354
-        node-version: [v18.18.x]
+        node-version: [v18, v20]
     env:
       CI: true
     steps:
@@ -29,7 +29,7 @@ jobs:
     - run: yarn dist
 
     # Test.
-    - run: yarn test --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn test
     - run: yarn lint
 
   #############################################################################
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      NODE_VERSION: v18.18.x
+      NODE_VERSION: v18
     steps:
     # Setup.
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      NODE_VERSION: v18.18.x
+      NODE_VERSION: v18
     steps:
     # Setup.
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -79,7 +79,7 @@ jobs:
     - run: yarn dist
 
     # Coverage.
-    - run: yarn coverage --no-worker-threads # https://github.com/avajs/ava/discussions/3158
+    - run: yarn coverage
     - run: yarn coverage:report
     - uses: codecov/codecov-action@v3
       with:
