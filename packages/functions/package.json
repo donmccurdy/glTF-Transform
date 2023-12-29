@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/functions",
-	"version": "4.0.0-alpha.2",
+	"version": "4.0.0-alpha.3",
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.dev/functions.html",
 	"description": "Functions for common glTF modifications, written using the core API",
@@ -35,8 +35,8 @@
 		"threejs"
 	],
 	"dependencies": {
-		"@gltf-transform/core": "^4.0.0-alpha.2",
-		"@gltf-transform/extensions": "^4.0.0-alpha.2",
+		"@gltf-transform/core": "^4.0.0-alpha.3",
+		"@gltf-transform/extensions": "^4.0.0-alpha.3",
 		"ktx-parse": "^0.6.0",
 		"ndarray": "^1.0.19",
 		"ndarray-lanczos": "^0.3.0",
@@ -52,5 +52,5 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"gitHead": "405359aa647acc95d47f1da9ac11cb83060ab482"
+	"gitHead": "f2b911d41dd35f81a3e85debdfd17f5fb45df429"
 }
