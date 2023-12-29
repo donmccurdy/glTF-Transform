@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { EXTTextureWebP } from '@gltf-transform/extensions';
-import { textureCompress } from '@gltf-transform/functions';
+import { compressTexture, textureCompress } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
@@ -210,6 +210,44 @@ test('fallback to ndarray-pixels', async (t) => {
 	t.deepEqual(textureB.getSize(), [64, 128]);
 });
 
+test('resize - sharp', async (t) => {
+	const document = new Document();
+	const srcImage = await savePixels(ndarray(new Uint8Array(200 * 350 * 4), [200, 350, 4]), 'image/png');
+	const srcTexture = document.createTexture().setImage(srcImage).setMimeType('image/png');
+
+	const dstTextureCeil = srcTexture.clone();
+	const dstTextureFloor = srcTexture.clone();
+	const dstTextureNearest = srcTexture.clone();
+
+	const { encoder, calls } = createMockEncoder();
+
+	await compressTexture(dstTextureCeil, { encoder, resize: 'ceil-pot' });
+	await compressTexture(dstTextureFloor, { encoder, resize: 'floor-pot' });
+	await compressTexture(dstTextureNearest, { encoder, resize: 'nearest-pot' });
+
+	t.deepEqual(calls[1][1].slice(0, 2), [256, 512], 'ceil - sharp');
+	t.deepEqual(calls[3][1].slice(0, 2), [128, 256], 'floor - sharp');
+	t.deepEqual(calls[5][1].slice(0, 2), [256, 256], 'nearest - sharp');
+});
+
+test('resize - ndarray-pixels', async (t) => {
+	const document = new Document();
+	const srcImage = await savePixels(ndarray(new Uint8Array(200 * 350 * 4), [200, 350, 4]), 'image/png');
+	const srcTexture = document.createTexture().setImage(srcImage).setMimeType('image/png');
+
+	const dstTextureCeil = srcTexture.clone();
+	const dstTextureFloor = srcTexture.clone();
+	const dstTextureNearest = srcTexture.clone();
+
+	await compressTexture(dstTextureCeil, { resize: 'ceil-pot' });
+	await compressTexture(dstTextureFloor, { resize: 'floor-pot' });
+	await compressTexture(dstTextureNearest, { resize: 'nearest-pot' });
+
+	t.deepEqual(dstTextureCeil.getSize(), [256, 512], 'ceil - ndarray-pixels');
+	t.deepEqual(dstTextureFloor.getSize(), [128, 256], 'floor - ndarray-pixels');
+	t.deepEqual(dstTextureNearest.getSize(), [256, 256], 'nearest - ndarray-pixels');
+});
+
 function createMockEncoder() {
 	const calls = [];
 
@@ -229,6 +267,12 @@ function createMockEncoder() {
 			this.calls.push(call);
 			return this;
 		}
+		resize(...args) {
+			const call = ['resize', args];
+			calls.push(call);
+			this.calls.push(call);
+			return this;
+		}
 		async toBuffer(): Promise<Uint8Array> {
 			if (this.calls.length === 0) {
 				switch (this.image) {
@@ -243,7 +287,7 @@ function createMockEncoder() {
 				}
 			}
 
-			const lastCall = this.calls[this.calls.length - 1];
+			const lastCall = findLast(this.calls, ([name]) => name === 'toFormat');
 			const format = lastCall[1][0];
 			switch (format) {
 				case 'png':
@@ -261,4 +305,11 @@ function createMockEncoder() {
 	}
 
 	return { encoder, calls };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function findLast(calls: any[], fn: (call: any) => boolean): any {
+	for (let i = calls.length - 1; i >= 0; i--) {
+		if (fn(calls[i])) return calls[i];
+	}
 }
