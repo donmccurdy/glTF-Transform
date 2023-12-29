@@ -1160,19 +1160,31 @@ preserving original aspect ratio. Texture dimensions are never increased.
 	})
 	.option('--width <pixels>', 'Maximum width (px) of output textures.', {
 		validator: Validator.NUMBER,
-		required: true,
 	})
 	.option('--height <pixels>', 'Maximum height (px) of output textures.', {
 		validator: Validator.NUMBER,
-		required: true,
+	})
+	.option('--power-of-two <pot>', 'Resize in two dimensions. Overrides --width and --height.', {
+		validator: ['nearest', 'ceil', 'floor'],
 	})
 	.action(async ({ args, options, logger }) => {
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const { default: encoder } = await import('sharp');
+
+		type Preset = 'nearest-pot' | 'ceil-pot' | 'floor-pot';
+		let resize: vec2 | Preset;
+		if (options.powerOfTwo) {
+			resize = `${options.powerOfTwo}-pot` as Preset;
+		} else if (Number.isInteger(options.width) && Number.isInteger(options.height)) {
+			resize = [Number(options.width), Number(options.height)];
+		} else {
+			throw new Error(`Must specify --width and --height, or --power-of-two.`);
+		}
+
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
 				encoder,
-				resize: [options.width, options.height] as vec2,
+				resize,
 				resizeFilter: options.filter as TextureResizeFilter,
 				pattern,
 			}),
