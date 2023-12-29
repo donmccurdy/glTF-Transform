@@ -270,3 +270,44 @@ export function fitWithin(size: vec2, limit: vec2): vec2 {
 
 	return [dstWidth, dstHeight];
 }
+
+type ResizePreset = 'nearest-pot' | 'ceil-pot' | 'floor-pot';
+
+/** @hidden */
+export function fitPowerOfTwo(size: vec2, method: ResizePreset): vec2 {
+	if (isPowerOfTwo(size[0]) && isPowerOfTwo(size[1])) {
+		return size;
+	}
+
+	switch (method) {
+		case 'nearest-pot':
+			return size.map(nearestPowerOfTwo) as vec2;
+		case 'ceil-pot':
+			return size.map(ceilPowerOfTwo) as vec2;
+		case 'floor-pot':
+			return size.map(floorPowerOfTwo) as vec2;
+	}
+}
+
+function isPowerOfTwo(value: number): boolean {
+	if (value <= 2) return true;
+	return (value & (value - 1)) === 0 && value !== 0;
+}
+
+function nearestPowerOfTwo(value: number): number {
+	if (value <= 4) return 4;
+
+	const lo = floorPowerOfTwo(value);
+	const hi = ceilPowerOfTwo(value);
+
+	if (hi - value > value - lo) return lo;
+	return hi;
+}
+
+function floorPowerOfTwo(value: number): number {
+	return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
+}
+
+function ceilPowerOfTwo(value: number): number {
+	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
+}
