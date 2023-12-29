@@ -316,10 +316,11 @@ async function _encodeWithSharp(
 		const dstSize = Array.isArray(options.resize)
 			? fitWithin(srcSize, options.resize)
 			: fitPowerOfTwo(srcSize, options.resize);
-		const fit = Array.isArray(options.resize) ? 'inside' : 'fill';
-		const kernel = options.resizeFilter;
-		const withoutEnlargement = Array.isArray(options.resize);
-		instance.resize(dstSize[0], dstSize[1], { fit, kernel, withoutEnlargement });
+		instance.resize(dstSize[0], dstSize[1], {
+			withoutEnlargement: Array.isArray(options.resize),
+			fit: Array.isArray(options.resize) ? 'inside' : 'fill',
+			kernel: options.resizeFilter,
+		});
 	}
 
 	return BufferUtils.toView(await instance.toBuffer());
