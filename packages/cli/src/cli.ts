@@ -1174,6 +1174,9 @@ preserving original aspect ratio. Texture dimensions are never increased.
 		type Preset = 'nearest-pot' | 'ceil-pot' | 'floor-pot';
 		let resize: vec2 | Preset;
 		if (options.powerOfTwo) {
+			if (options.width || options.height) {
+				logger.warn('When --power-of-two is specified, --width and --height are ignored.');
+			}
 			resize = `${options.powerOfTwo}-pot` as Preset;
 		} else if (Number.isInteger(options.width) && Number.isInteger(options.height)) {
 			resize = [Number(options.width), Number(options.height)];
