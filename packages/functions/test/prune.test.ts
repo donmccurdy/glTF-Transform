@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Accessor, Document, Primitive, PropertyType } from '@gltf-transform/core';
 import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
-import { prune, unlit } from '@gltf-transform/functions';
+import { prune } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
