@@ -153,7 +153,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 					const material = prim.getMaterial();
 					if (!material) continue;
 
-					const required = listRequiredSemantics(document, material);
+					const required = listRequiredSemantics(document, prim, material);
 					const unused = listUnusedSemantics(prim, required);
 					pruneAttributes(prim, unused);
 					prim.listTargets().forEach((target) => pruneAttributes(target, unused));
@@ -346,6 +346,7 @@ function listUnusedSemantics(prim: Primitive | PrimitiveTarget, required: Set<st
  */
 function listRequiredSemantics(
 	document: Document,
+	prim: Primitive,
 	material: Material | ExtensionProperty,
 	semantics = new Set<string>(),
 ): Set<string> {
@@ -375,13 +376,15 @@ function listRequiredSemantics(
 		}
 
 		if (child instanceof ExtensionProperty) {
-			listRequiredSemantics(document, child, semantics);
+			listRequiredSemantics(document, prim, child, semantics);
 		}
 
 		// TODO(#748): Does KHR_materials_anisotropy imply required vertex attributes?
 	}
 
-	if (material instanceof Material && !material.getExtension('KHR_materials_unlit')) {
+	const isLit = material instanceof Material && !material.getExtension('KHR_materials_unlit');
+	const isPoints = prim.getMode() === Primitive.Mode.POINTS;
+	if (isLit && !isPoints) {
 		semantics.add('NORMAL');
 	}
 

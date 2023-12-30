@@ -1,6 +1,7 @@
 import test from 'ava';
-import { Accessor, Document, PropertyType } from '@gltf-transform/core';
-import { prune } from '@gltf-transform/functions';
+import { Accessor, Document, Primitive, PropertyType } from '@gltf-transform/core';
+import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
+import { prune, unlit } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
@@ -221,6 +222,39 @@ test('attributes - texcoords', async (t) => {
 
 	t.is(material.getBaseColorTextureInfo().getTexCoord(), 0, 'material.baseColorTexture.texCoord = 0');
 	t.is(material.getNormalTextureInfo().getTexCoord(), 1, 'material.normalTexture.texCoord → 1');
+});
+
+test('attributes - normals', async (t) => {
+	const document = new Document().setLogger(logger);
+
+	const unlitExtension = document.createExtension<KHRMaterialsUnlit>(KHRMaterialsUnlit);
+	const material = document.createMaterial();
+	const materialUnlit = document.createMaterial().setExtension('KHR_materials_unlit', unlitExtension.createUnlit());
+
+	const attribute = document.createAccessor().setArray(new Float32Array(12));
+	const primTriangles = document
+		.createPrimitive()
+		.setMaterial(material)
+		.setAttribute('POSITION', attribute)
+		.setAttribute('NORMAL', attribute)
+		.setMode(Primitive.Mode.TRIANGLES);
+	const primPoints = primTriangles.clone().setMode(Primitive.Mode.POINTS);
+	const primUnlit = primTriangles.clone().setMaterial(materialUnlit);
+	const mesh = document.createMesh().addPrimitive(primTriangles).addPrimitive(primPoints).addPrimitive(primUnlit);
+	const node = document.createNode().setMesh(mesh);
+	document.createScene().addChild(node);
+
+	await document.transform(prune({ keepAttributes: true, propertyTypes: [PropertyType.ACCESSOR] }));
+
+	t.deepEqual(primTriangles.listSemantics(), ['POSITION', 'NORMAL'], 'triangles, keepAttributes=true');
+	t.deepEqual(primPoints.listSemantics(), ['POSITION', 'NORMAL'], 'points, keepAttributes=true');
+	t.deepEqual(primUnlit.listSemantics(), ['POSITION', 'NORMAL'], 'unlit, keepAttributes=true');
+
+	await document.transform(prune({ keepAttributes: false, propertyTypes: [PropertyType.ACCESSOR] }));
+
+	t.deepEqual(primTriangles.listSemantics(), ['POSITION', 'NORMAL'], 'triangles, keepAttributes=false');
+	t.deepEqual(primPoints.listSemantics(), ['POSITION'], 'points, keepAttributes=false');
+	t.deepEqual(primUnlit.listSemantics(), ['POSITION'], 'unlit, keepAttributes=false');
 });
 
 test('indices', async (t) => {
