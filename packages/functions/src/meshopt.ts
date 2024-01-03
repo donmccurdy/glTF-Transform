@@ -31,12 +31,12 @@ const NAME = 'meshopt';
  *
  * ```javascript
  * import { MeshoptEncoder } from 'meshoptimizer';
- * import { reorder } from '@gltf-transform/functions';
+ * import { meshopt } from '@gltf-transform/functions';
  *
  * await MeshoptEncoder.ready;
  *
  * await document.transform(
- *   reorder({encoder: MeshoptEncoder, level: 'medium'})
+ *   meshopt({encoder: MeshoptEncoder, level: 'medium'})
  * );
  * ```
  *
