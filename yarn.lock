@@ -5825,6 +5825,11 @@ keyframe-resample@^0.0.15:
   resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.15.tgz#2cc5e2e3d87dd368ca0f58d64f7caf5c97a247d9"
   integrity sha512-Kt+Nx01nJl+0FEG5/sexs+KvupIoKBOxGKv85RRdvqF1IbvMKGBC3xrZ9NMNOVi5RoX9SRgbMDDJkRtlovzDpg==
 
+keyframe-resample@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.16.tgz#4d2b5c330d033996e682f1bd3ed97742aea64730"
+  integrity sha512-w/7dRZuD4xxkcwxGHz413qtp8wIZG1V4pbftAMa4IjukJClriLJUqYcRIIaWJx+8CIl6f2LB5wgQTAzH+GhGiw==
+
 keyv@^4.5.3:
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.3.tgz#00873d2b046df737963157bd04f294ca818c9c25"
