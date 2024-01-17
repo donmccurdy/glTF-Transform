@@ -39,7 +39,7 @@ interface IAccessor extends IExtensibleProperty {
  * const accessor = doc.createAccessor('myData')
  * 	.setArray(new Float32Array([1,2,3,4,5,6,7,8,9,10,11,12]))
  * 	.setType(Accessor.Type.VEC3)
- * 	.setBuffer(doc.listBuffers()[0]);
+ * 	.setBuffer(doc.getRoot().listBuffers()[0]);
  *
  * accessor.getCount();        // → 4
  * accessor.getElementSize();  // → 3
