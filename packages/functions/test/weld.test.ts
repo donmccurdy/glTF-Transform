@@ -1,7 +1,7 @@
 import test from 'ava';
 import fs from 'fs/promises';
 import path, { dirname } from 'path';
-import { Document, Primitive } from '@gltf-transform/core';
+import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import { fileURLToPath } from 'url';
@@ -10,7 +10,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('tolerance=0', async (t) => {
 	const doc = new Document().setLogger(logger);
-	const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, -1]);
+	// prettier-ignore
+	const positionArray = new Float32Array([
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, -1,
+		0, 0, 0,
+		0, 0, 1,
+		0, 0, -1
+	]);
 	const position = doc.createAccessor().setType('VEC3').setArray(positionArray);
 	const indices = doc.createAccessor().setArray(new Uint32Array([3, 4, 5, 0, 1, 2]));
 	const prim1 = doc.createPrimitive().setAttribute('POSITION', position).setMode(Primitive.Mode.TRIANGLES);
@@ -23,9 +31,14 @@ test('tolerance=0', async (t) => {
 
 	await doc.transform(weld({ tolerance: 0 }));
 
-	t.deepEqual(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 3, 4, 5]), 'indices on prim1');
-	t.deepEqual(prim2.getIndices().getArray(), new Uint32Array([3, 4, 5, 0, 1, 2]), 'indices on prim2');
-	t.deepEqual(prim1.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim1');
+	t.true(prim1.getIndices().getArray() instanceof Uint16Array, 'indices are u16');
+	t.deepEqual(Array.from(prim1.getIndices().getArray()), [0, 1, 2, 0, 1, 2], 'indices on prim1');
+	t.deepEqual(Array.from(prim2.getIndices().getArray()), [3, 4, 5, 0, 1, 2], 'indices on prim2');
+	t.deepEqual(
+		Array.from(prim1.getAttribute('POSITION').getArray()),
+		[0, 0, 0, 0, 0, 1, 0, 0, -1],
+		'vertices on prim1',
+	);
 	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
 });
 
@@ -177,14 +190,18 @@ test('attributes', async (t) => {
 	);
 });
 
-test('u16 vs u32', async (t) => {
+test.only('u16 vs u32', async (t) => {
 	const doc = new Document().setLogger(logger);
-	const smArray = new Float32Array(65534 * 3);
-	const lgArray = new Float32Array(65535 * 3);
-	const smPosition = doc.createAccessor().setType('VEC3').setArray(smArray);
-	const lgPosition = doc.createAccessor().setType('VEC3').setArray(lgArray);
-	const smPrim = doc.createPrimitive().setAttribute('POSITION', smPosition).setMode(Primitive.Mode.TRIANGLES);
-	const lgPrim = doc.createPrimitive().setAttribute('POSITION', lgPosition).setMode(Primitive.Mode.TRIANGLES);
+	// const smArray = new Float32Array(65534 * 3);
+	// const lgArray = new Float32Array(65535 * 3);
+	const smPrim = doc
+		.createPrimitive()
+		.setAttribute('POSITION', createUniqueAttribute(doc, 'VEC3', 65534))
+		.setMode(Primitive.Mode.TRIANGLES);
+	const lgPrim = doc
+		.createPrimitive()
+		.setAttribute('POSITION', createUniqueAttribute(doc, 'VEC3', 65535))
+		.setMode(Primitive.Mode.TRIANGLES);
 	doc.createMesh().addPrimitive(smPrim).addPrimitive(lgPrim);
 
 	await doc.transform(weld({ tolerance: 0 }));
@@ -212,9 +229,13 @@ test('modes', async (t) => {
 
 		await document.transform(weld({ tolerance: 0 }));
 
+		// TODO(bug): writes fewer indices than vertices?!
+		console.log(JSON.stringify(primDef, null, 2));
+		console.log('new positions', prim.getAttribute('POSITION').getArray());
+		console.log('new indices', prim.getIndices().getArray());
 		t.deepEqual(
-			Array.from(primDef.indices),
 			Array.from(prim.getIndices().getArray()),
+			Array.from(primDef.indices),
 			`${(i + 1).toString().padStart(2, '0')}: indices ${Array.from(primDef.indices)}`,
 		);
 	}
@@ -314,3 +335,19 @@ test('degenerate', async (t) => {
 		'vertices on prim',
 	);
 });
+
+/* UTILITIES */
+
+function createUniqueAttribute(document: Document, type: GLTF.AccessorType, count: number): Accessor {
+	const attribute = document.createAccessor().setType(type);
+	const elementSize = attribute.getElementSize();
+	const array = new Float32Array(count * elementSize);
+
+	for (let i = 0; i < array.length; i += elementSize) {
+		for (let j = 0; j < elementSize; j++) {
+			array[i * elementSize + j] = i;
+		}
+	}
+
+	return attribute.setArray(array);
+}

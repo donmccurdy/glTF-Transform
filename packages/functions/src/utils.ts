@@ -304,10 +304,10 @@ function nearestPowerOfTwo(value: number): number {
 	return hi;
 }
 
-function floorPowerOfTwo(value: number): number {
+export function floorPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
 }
 
-function ceilPowerOfTwo(value: number): number {
+export function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }

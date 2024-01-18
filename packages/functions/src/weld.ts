@@ -1,5 +1,6 @@
 import {
 	Accessor,
+	BufferUtils,
 	Document,
 	Primitive,
 	PrimitiveTarget,
@@ -11,7 +12,7 @@ import {
 import { cleanPrimitive } from './clean-primitive.js';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
-import { createIndices, createTransform, formatDeltaOp } from './utils.js';
+import { ceilPowerOfTwo, createIndices, createTransform, deepListAttributes, formatDeltaOp } from './utils.js';
 
 // DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
 // and tunable. The writeup below tracks my attempts to solve for these
@@ -35,6 +36,8 @@ import { createIndices, createTransform, formatDeltaOp } from './utils.js';
 // (Approach #4) Hybrid of (1) and (2), assigning vertices to a spatial
 // grid, then searching the local neighborhood (27 cells) for weld candidates.
 //
+// (Approach #5) ... TODO
+//
 // RESULTS: For the "Lovecraftian" sample model, after joining, a primitive
 // with 873,000 vertices can be welded down to 230,000 vertices. Results:
 // - (1) Not tested, but prior results suggest not robust enough.
@@ -43,6 +46,8 @@ import { createIndices, createTransform, formatDeltaOp } from './utils.js';
 // - (4) 5 seconds exhaustive, 1.5s non-exhaustive
 
 const NAME = 'weld';
+
+const EMPTY = 2 ** 32 - 1;
 
 const Tolerance = {
 	DEFAULT: 0.0001,
@@ -106,6 +111,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
+		console.time('weld');
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(prim, options);
@@ -115,6 +121,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
+		console.timeEnd('weld');
 
 		if (options.tolerance > 0) {
 			// If tolerance is greater than 0, welding may remove a mesh, so we prune
@@ -168,34 +175,80 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 	if (prim.getMode() === Primitive.Mode.POINTS) return;
 
 	if (_options.tolerance === 0) {
-		_indexPrimitive(document, prim);
+		_weldPrimitiveStrict(document, prim);
 	} else {
 		_weldPrimitive(document, prim, options);
 	}
 }
 
-/** @internal Adds indices, if missing. Does not merge vertices. */
-function _indexPrimitive(doc: Document, prim: Primitive): void {
-	// No need to overwrite here, even if options.overwrite=true.
-	if (prim.getIndices()) return;
+/** @internal Weld and merge, combining vertices that are bitwise-equal. */
+function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
+	const logger = document.getLogger();
+	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
+	const srcIndices = prim.getIndices();
+	const srcIndicesArray = srcIndices?.getArray() || createIndices(srcVertexCount);
 
-	const attr = prim.listAttributes()[0];
-	const numVertices = attr.getCount();
-	const buffer = attr.getBuffer();
-	const indices = doc
-		.createAccessor()
-		.setBuffer(buffer)
-		.setType(Accessor.Type.SCALAR)
-		.setArray(createIndices(numVertices));
-	prim.setIndices(indices);
+	const hash = new HashTable(prim);
+	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
+	const table = new Uint32Array(tableSize).fill(-1);
+	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY); // oldIndex → newIndex
+
+	// (1) Compare and identify indices to weld.
+
+	let dstVertexCount = 0;
+
+	for (let i = 0; i < srcIndicesArray.length; i++) {
+		const srcIndex = srcIndicesArray[i];
+		if (writeMap[srcIndex] !== EMPTY) continue;
+
+		const hashIndex = hashLookup(table, tableSize, hash, srcIndex, EMPTY);
+		const dstIndex = table[hashIndex];
+
+		if (dstIndex === EMPTY) {
+			table[hashIndex] = srcIndex;
+			writeMap[srcIndex] = dstVertexCount++;
+		} else {
+			writeMap[srcIndex] = writeMap[dstIndex];
+		}
+	}
+
+	// TODO(cleanup): Everything below is redundantly in _weldPrimitive.
+
+	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
+
+	// (2) Update indices.
+
+	const dstIndicesCount = srcIndicesArray.length; // # primitives does not change.
+	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
+	for (let i = 0; i < dstIndicesCount; i++) {
+		dstIndicesArray[i] = writeMap[srcIndicesArray[i]];
+	}
+	const dstIndices = srcIndices ? srcIndices.clone() : document.createAccessor();
+	prim.setIndices(dstIndices.setArray(dstIndicesArray));
+	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
+
+	// (3) Update vertex attributes.
+
+	for (const srcAttr of prim.listAttributes()) {
+		swapAttributes(prim, srcAttr, writeMap, dstVertexCount);
+	}
+	for (const target of prim.listTargets()) {
+		for (const srcAttr of target.listAttributes()) {
+			swapAttributes(target, srcAttr, writeMap, dstVertexCount);
+		}
+	}
+
+	// (4) Clean up degenerate triangles.
+
+	cleanPrimitive(prim);
 }
 
-/** @internal Weld and merge, combining vertices that are similar on all vertex attributes. */
-function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOptions>): void {
-	const logger = doc.getLogger();
+/** @internal Weld and merge, combining vertices within tolerance. */
+function _weldPrimitive(document: Document, prim: Primitive, options: Required<WeldOptions>): void {
+	const logger = document.getLogger();
 
 	const srcPosition = prim.getAttribute('POSITION')!;
-	const srcIndices = prim.getIndices() || doc.createAccessor().setArray(createIndices(srcPosition.getCount()));
+	const srcIndices = prim.getIndices() || document.createAccessor().setArray(createIndices(srcPosition.getCount()));
 	const uniqueIndices = new Uint32Array(new Set(srcIndices.getArray()!)).sort();
 
 	// (1) Compute per-attribute tolerance and spatial grid for vertices.
@@ -208,7 +261,7 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 
 	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
 
-	// (2) Compare and identify vertices to weld.
+	// (2) Build the lookup grid.
 
 	const posA: vec3 = [0, 0, 0];
 	const posB: vec3 = [0, 0, 0];
@@ -223,7 +276,7 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 		grid[key].push(uniqueIndices[i]);
 	}
 
-	// (2) Compare and identify vertices to weld.
+	// (3) Compare and identify vertices to weld.
 
 	const srcMaxIndex = uniqueIndices[uniqueIndices.length - 1];
 	const weldMap = createIndices(srcMaxIndex + 1); // oldIndex → oldCommonIndex
@@ -282,7 +335,7 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	// (3) Update indices.
+	// (4) Update indices.
 
 	const dstIndicesCount = srcIndices.getCount(); // # primitives does not change.
 	const dstIndicesArray = createIndices(dstIndicesCount, uniqueIndices.length);
@@ -292,7 +345,7 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 	prim.setIndices(srcIndices.clone().setArray(dstIndicesArray));
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
 
-	// (4) Update vertex attributes.
+	// (5) Update vertex attributes.
 
 	for (const srcAttr of prim.listAttributes()) {
 		swapAttributes(prim, srcAttr, writeMap, dstVertexCount);
@@ -303,7 +356,7 @@ function _weldPrimitive(doc: Document, prim: Primitive, options: Required<WeldOp
 		}
 	}
 
-	// (5) Clean up degenerate triangles.
+	// (6) Clean up degenerate triangles.
 
 	cleanPrimitive(prim);
 }
@@ -318,9 +371,11 @@ function createArrayOfType<T extends TypedArray>(array: T, length: number): T {
 function swapAttributes(
 	parent: Primitive | PrimitiveTarget,
 	srcAttr: Accessor,
-	reorder: number[],
+	reorder: number[] | TypedArray,
 	dstCount: number,
 ): void {
+	// TODO(v4): Needs cleanup and optimization. Also see remapAttribute in utils.ts.
+
 	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
 	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
 	const done = new Uint8Array(dstCount);
@@ -430,4 +485,134 @@ function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {
 function isPrimEmpty(prim: Primitive): boolean {
 	const indices = prim.getIndices();
 	return !!indices && indices.getCount() === 0;
+}
+
+/******************************************************************************
+ * MURMUR HASH
+ */
+
+class HashTable {
+	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
+
+	/** Temporary vertex in 4-byte-aligned memory shared with {@link u32}. */
+	private u8: Uint8Array;
+
+	/** Temporary vertex in 4-byte-aligned memory shared with {@link u8}. */
+	private u32: Uint32Array;
+
+	constructor(prim: Primitive) {
+		let byteStride = 0;
+		for (const attribute of deepListAttributes(prim)) {
+			byteStride += this._initAttribute(attribute);
+		}
+		this.u8 = new Uint8Array(byteStride);
+		this.u32 = new Uint32Array(this.u8.buffer);
+	}
+
+	private _initAttribute(attribute: Accessor): number {
+		const array = attribute.getArray()!;
+		const u8 = new Uint8Array(array.buffer, array.byteOffset, array.byteLength);
+		const byteStride = attribute.getElementSize() * attribute.getComponentSize();
+		const paddedByteStride = BufferUtils.padNumber(byteStride);
+		this.attributes.push({ u8, byteStride, paddedByteStride });
+		return paddedByteStride;
+	}
+
+	hash(index: number): number {
+		// Load vertex into byte-aligned view.
+		for (const { u8, byteStride, paddedByteStride } of this.attributes) {
+			for (let i = 0; i < paddedByteStride; i++) {
+				this.u8[i] = i < byteStride ? u8[index * byteStride + i] : 0;
+			}
+		}
+
+		// Compute hash.
+		// return hashUpdate(0, this.u32);
+		return murmurHash2(0, this.u8);
+	}
+
+	equal(a: number, b: number): boolean {
+		for (const { u8, byteStride } of this.attributes) {
+			for (let j = 0; j < byteStride; j++) {
+				if (u8[a * byteStride + j] !== u8[b * byteStride + j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+}
+
+// https://github.com/zeux/meshoptimizer/blob/e47e1be6d3d9513153188216455bdbed40a206ef/src/indexgenerator.cpp#L12
+/*
+function _murmurHash2(h: number, data: Uint32Array) {
+	// MurmurHash2.
+	const m = 0x5bd1e995;
+	const r = 24;
+
+	for (let i = 0, il = data.length; i < il; i++) {
+		let k = data[i];
+
+		k *= m;
+		k ^= k >> r;
+		k *= m;
+
+		h *= m;
+		h ^= k;
+	}
+
+	return h;
+}
+ */
+
+// https://github.com/mikolalysenko/murmurhash-js/blob/f19136e9f9c17f8cddc216ca3d44ec7c5c502f60/murmurhash2_gc.js#L14
+function murmurHash2(seed: number, data: Uint8Array) {
+	let l = data.length,
+		h = seed ^ l,
+		i = 0,
+		k;
+
+	while (l >= 4) {
+		k = (data[i] & 0xff) | ((data[++i] & 0xff) << 8) | ((data[++i] & 0xff) << 16) | ((data[++i] & 0xff) << 24);
+
+		k = (k & 0xffff) * 0x5bd1e995 + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16);
+		k ^= k >>> 24;
+		k = (k & 0xffff) * 0x5bd1e995 + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16);
+
+		h = ((h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16)) ^ k;
+
+		l -= 4;
+		++i;
+	}
+
+	if (l === 3) h ^= (data[i + 2] & 0xff) << 16;
+	if (l >= 2) h ^= (data[i + 1] & 0xff) << 8;
+	if (l >= 1) h ^= data[i] & 0xff;
+	h = (h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16);
+
+	h ^= h >>> 13;
+	h = (h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16);
+	h ^= h >>> 15;
+
+	return h >>> 0;
+}
+
+function hashLookup(table: Uint32Array, buckets: number, hash: HashTable, key: number, empty = EMPTY): number {
+	const hashmod = buckets - 1;
+	const hashval = hash.hash(key);
+	let bucket = hashval & hashmod;
+	// TODO(cleanup)
+	// console.log(`key ${key} -> hashval ${hashval} & ${hashmod} -> bucket ${bucket}`);
+
+	for (let probe = 0; probe <= hashmod; probe++) {
+		const item = table[bucket];
+
+		if (item === empty || hash.equal(item, key)) {
+			return bucket;
+		}
+
+		bucket = (bucket + probe + 1) & hashmod; // Hash collision.
+	}
+
+	throw new Error('Hash table full.');
 }
