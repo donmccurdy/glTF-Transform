@@ -1,5 +1,5 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey } from './utils.js';
+import { createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -74,23 +74,17 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 	for (const semantic of templatePrim.listSemantics()) {
 		const tplAttribute = templatePrim.getAttribute(semantic)!;
 		const AttributeArray = ComponentTypeToTypedArray[tplAttribute.getComponentType()];
-		const dstAttribute = document
-			.createAccessor()
-			.setType(tplAttribute.getType())
-			.setBuffer(tplAttribute.getBuffer())
-			.setNormalized(tplAttribute.getNormalized())
-			.setArray(new AttributeArray(dstVertexCount * tplAttribute.getElementSize()));
+		const dstAttribute = shallowCloneAccessor(document, tplAttribute).setArray(
+			new AttributeArray(dstVertexCount * tplAttribute.getElementSize()),
+		);
 		dstPrim.setAttribute(semantic, dstAttribute);
 	}
 
 	// (4) Allocate joined indices.
-	const dstIndicesArray = templatePrim.getIndices() ? createIndices(dstVertexCount) : null;
-	const dstIndices =
-		dstIndicesArray &&
-		document
-			.createAccessor()
-			.setBuffer(templatePrim.getIndices()!.getBuffer())
-			.setArray(createIndices(dstIndicesCount, dstVertexCount));
+	const srcIndices = templatePrim.getIndices();
+	const dstIndices = srcIndices
+		? shallowCloneAccessor(document, srcIndices).setArray(createIndices(dstIndicesCount, dstVertexCount))
+		: null;
 	dstPrim.setIndices(dstIndices);
 
 	// (5) Remap attributes into joined Primitive.

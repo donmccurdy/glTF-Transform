@@ -1,6 +1,6 @@
 import { Accessor, Document, GLTF, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune.js';
-import { createTransform, deepListAttributes, remapAttribute, SetMap } from './utils.js';
+import { createTransform, deepListAttributes, remapAttribute, SetMap, shallowCloneAccessor } from './utils.js';
 import type { MeshoptEncoder } from 'meshoptimizer';
 
 const NAME = 'reorder';
@@ -48,18 +48,19 @@ export function reorder(_options: ReorderOptions): Transform {
 		throw new Error(`${NAME}: encoder dependency required — install "meshoptimizer".`);
 	}
 
-	return createTransform(NAME, async (doc: Document): Promise<void> => {
-		const logger = doc.getLogger();
+	return createTransform(NAME, async (document: Document): Promise<void> => {
+		const logger = document.getLogger();
 
 		await encoder.ready;
 
-		const plan = createLayoutPlan(doc);
+		const plan = createLayoutPlan(document);
 
 		for (const srcIndices of plan.indicesToAttributes.keys()) {
-			const dstIndices = srcIndices.clone();
-			let indicesArray = dstIndices.getArray()!.slice();
+			let indicesArray = srcIndices.getArray()!;
 			if (!(indicesArray instanceof Uint32Array)) {
 				indicesArray = new Uint32Array(indicesArray);
+			} else {
+				indicesArray = indicesArray.slice();
 			}
 
 			// Compute optimal order.
@@ -69,11 +70,12 @@ export function reorder(_options: ReorderOptions): Transform {
 				options.target === 'size',
 			);
 
+			const dstIndices = shallowCloneAccessor(document, srcIndices);
 			dstIndices.setArray(unique <= 65534 ? new Uint16Array(indicesArray) : indicesArray);
 
 			// Update affected primitives.
 			for (const srcAttribute of plan.indicesToAttributes.get(srcIndices)) {
-				const dstAttribute = srcAttribute.clone();
+				const dstAttribute = shallowCloneAccessor(document, srcAttribute);
 				remapAttribute(dstAttribute, remap, unique);
 				for (const prim of plan.attributesToPrimitives.get(srcAttribute)) {
 					if (prim.getIndices() === srcIndices) {
@@ -90,7 +92,7 @@ export function reorder(_options: ReorderOptions): Transform {
 		}
 
 		// Clean up any attributes left unused by earlier cloning.
-		await doc.transform(
+		await document.transform(
 			prune({
 				propertyTypes: [PropertyType.ACCESSOR],
 				keepAttributes: true,
