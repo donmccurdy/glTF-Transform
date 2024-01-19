@@ -12,6 +12,7 @@ import {
 	TypedArray,
 	vec2,
 } from '@gltf-transform/core';
+import { cleanPrimitive } from './clean-primitive.js';
 
 /**
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
@@ -178,8 +179,52 @@ export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<un
 	return true;
 }
 
+export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
+	const document = Document.fromGraph(prim.getGraph())!;
+
+	// Remap indices.
+
+	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
+	const srcIndices = prim.getIndices();
+	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
+	const dstIndices = srcIndices ? srcIndices.clone() : document.createAccessor();
+	const dstIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount; // primitive count does not change.
+	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
+	for (let i = 0; i < dstIndicesCount; i++) {
+		dstIndicesArray[i] = remap[srcIndicesArray ? srcIndicesArray[i] : i];
+	}
+	prim.setIndices(dstIndices.setArray(dstIndicesArray));
+
+	// Remap vertices.
+
+	const srcAttributes = deepListAttributes(prim);
+	for (const srcAttribute of prim.listAttributes()) {
+		prim.swap(srcAttribute, remapAttribute(srcAttribute.clone(), remap, dstVertexCount));
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
+	for (const target of prim.listTargets()) {
+		for (const srcAttribute of target.listAttributes()) {
+			prim.swap(srcAttribute, remapAttribute(srcAttribute.clone(), remap, dstVertexCount));
+			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+		}
+	}
+
+	// Clean up accessors.
+
+	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
+	for (const srcAttribute of srcAttributes) {
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
+
+	// Clean up degenerate topology.
+
+	cleanPrimitive(prim);
+
+	return prim;
+}
+
 /** @hidden */
-export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount: number) {
+export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount: number): Accessor {
 	const elementSize = attribute.getElementSize();
 	const srcCount = attribute.getCount();
 	const srcArray = attribute.getArray()!;
@@ -195,7 +240,7 @@ export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount:
 		done[dstIndex] = 1;
 	}
 
-	attribute.setArray(dstArray);
+	return attribute.setArray(dstArray);
 }
 
 /** @hidden */

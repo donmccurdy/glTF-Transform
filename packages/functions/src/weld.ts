@@ -1,15 +1,4 @@
-import {
-	Accessor,
-	BufferUtils,
-	Document,
-	Primitive,
-	PrimitiveTarget,
-	PropertyType,
-	Transform,
-	TypedArray,
-	vec3,
-} from '@gltf-transform/core';
-import { cleanPrimitive } from './clean-primitive.js';
+import { Accessor, BufferUtils, Document, Primitive, PropertyType, Transform, vec3 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import {
@@ -18,7 +7,7 @@ import {
 	createTransform,
 	deepListAttributes,
 	formatDeltaOp,
-	remapAttribute,
+	remapPrimitive,
 } from './utils.js';
 
 // DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
@@ -194,7 +183,8 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 	const logger = document.getLogger();
 	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
 	const srcIndices = prim.getIndices();
-	const srcIndicesArray = srcIndices?.getArray() || createIndices(srcVertexCount);
+	const srcIndicesArray = srcIndices?.getArray();
+	const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
 
 	const hash = new HashTable(prim);
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
@@ -205,8 +195,8 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	let dstVertexCount = 0;
 
-	for (let i = 0; i < srcIndicesArray.length; i++) {
-		const srcIndex = srcIndicesArray[i];
+	for (let i = 0; i < srcIndicesCount; i++) {
+		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
 		if (writeMap[srcIndex] !== EMPTY) continue;
 
 		const hashIndex = hashLookup(table, tableSize, hash, srcIndex, EMPTY);
@@ -220,35 +210,9 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 		}
 	}
 
-	// TODO(cleanup): Everything below is redundantly in _weldPrimitive.
-
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	// (2) Update indices.
-
-	const dstIndicesCount = srcIndicesArray.length; // # primitives does not change.
-	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
-	for (let i = 0; i < dstIndicesCount; i++) {
-		dstIndicesArray[i] = writeMap[srcIndicesArray[i]];
-	}
-	const dstIndices = srcIndices ? srcIndices.clone() : document.createAccessor();
-	prim.setIndices(dstIndices.setArray(dstIndicesArray));
-	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
-
-	// (3) Update vertex attributes.
-
-	for (const srcAttr of prim.listAttributes()) {
-		swapAttributes(prim, srcAttr, writeMap, dstVertexCount);
-	}
-	for (const target of prim.listTargets()) {
-		for (const srcAttr of target.listAttributes()) {
-			swapAttributes(target, srcAttr, writeMap, dstVertexCount);
-		}
-	}
-
-	// (4) Clean up degenerate triangles.
-
-	cleanPrimitive(prim);
+	remapPrimitive(prim, writeMap, dstVertexCount);
 }
 
 /** @internal Weld and merge, combining vertices within tolerance. */
@@ -343,43 +307,7 @@ function _weldPrimitive(document: Document, prim: Primitive, options: Required<W
 
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	// (4) Update indices.
-
-	const dstIndicesCount = srcIndices.getCount(); // # primitives does not change.
-	const dstIndicesArray = createIndices(dstIndicesCount, uniqueIndices.length);
-	for (let i = 0; i < dstIndicesCount; i++) {
-		dstIndicesArray[i] = writeMap[srcIndices.getScalar(i)];
-	}
-	prim.setIndices(srcIndices.clone().setArray(dstIndicesArray));
-	if (srcIndices.listParents().length === 1) srcIndices.dispose();
-
-	// (5) Update vertex attributes.
-
-	for (const srcAttr of prim.listAttributes()) {
-		swapAttributes(prim, srcAttr, writeMap, dstVertexCount);
-	}
-	for (const target of prim.listTargets()) {
-		for (const srcAttr of target.listAttributes()) {
-			swapAttributes(target, srcAttr, writeMap, dstVertexCount);
-		}
-	}
-
-	// (6) Clean up degenerate triangles.
-
-	cleanPrimitive(prim);
-}
-
-/** Replaces an {@link Attribute}, creating a new one with the given elements. */
-function swapAttributes(
-	parent: Primitive | PrimitiveTarget,
-	srcAttribute: Accessor,
-	remap: TypedArray,
-	dstCount: number,
-): void {
-	const dstAttribute = srcAttribute.clone();
-	remapAttribute(dstAttribute, remap, dstCount);
-	parent.swap(srcAttribute, dstAttribute);
-	if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	remapPrimitive(prim, writeMap, dstVertexCount);
 }
 
 const _a = [] as number[];
@@ -483,11 +411,8 @@ function isPrimEmpty(prim: Primitive): boolean {
 class HashTable {
 	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
 
-	/** Temporary vertex in 4-byte-aligned memory shared with {@link u32}. */
+	/** Temporary vertex view in 4-byte-aligned memory. */
 	private u8: Uint8Array;
-
-	/** Temporary vertex in 4-byte-aligned memory shared with {@link u8}. */
-	private u32: Uint32Array;
 
 	constructor(prim: Primitive) {
 		let byteStride = 0;
@@ -495,7 +420,6 @@ class HashTable {
 			byteStride += this._initAttribute(attribute);
 		}
 		this.u8 = new Uint8Array(byteStride);
-		this.u32 = new Uint32Array(this.u8.buffer);
 	}
 
 	private _initAttribute(attribute: Accessor): number {
@@ -508,7 +432,7 @@ class HashTable {
 	}
 
 	hash(index: number): number {
-		// Load vertex into byte-aligned view.
+		// Load vertex into 4-byte-aligned view.
 		for (const { u8, byteStride, paddedByteStride } of this.attributes) {
 			for (let i = 0; i < paddedByteStride; i++) {
 				this.u8[i] = i < byteStride ? u8[index * byteStride + i] : 0;
@@ -516,7 +440,6 @@ class HashTable {
 		}
 
 		// Compute hash.
-		// return hashUpdate(0, this.u32);
 		return murmurHash2(0, this.u8);
 	}
 
@@ -532,29 +455,11 @@ class HashTable {
 	}
 }
 
-// https://github.com/zeux/meshoptimizer/blob/e47e1be6d3d9513153188216455bdbed40a206ef/src/indexgenerator.cpp#L12
-/*
-function _murmurHash2(h: number, data: Uint32Array) {
-	// MurmurHash2.
-	const m = 0x5bd1e995;
-	const r = 24;
-
-	for (let i = 0, il = data.length; i < il; i++) {
-		let k = data[i];
-
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-
-		h *= m;
-		h ^= k;
-	}
-
-	return h;
-}
+/**
+ * References:
+ * - https://github.com/mikolalysenko/murmurhash-js/blob/f19136e9f9c17f8cddc216ca3d44ec7c5c502f60/murmurhash2_gc.js#L14
+ * - https://github.com/zeux/meshoptimizer/blob/e47e1be6d3d9513153188216455bdbed40a206ef/src/indexgenerator.cpp#L12
  */
-
-// https://github.com/mikolalysenko/murmurhash-js/blob/f19136e9f9c17f8cddc216ca3d44ec7c5c502f60/murmurhash2_gc.js#L14
 function murmurHash2(seed: number, data: Uint8Array) {
 	let l = data.length,
 		h = seed ^ l,
