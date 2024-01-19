@@ -80,7 +80,7 @@ test('tolerance>0', async (t) => {
 		.setAttribute('NORMAL', normal);
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
-	await doc.transform(weld());
+	await doc.transform(weld({ tolerance: 0.0001 }));
 
 	t.deepEqual(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim1');
 	t.deepEqual(prim2.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');

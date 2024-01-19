@@ -65,8 +65,9 @@ export class Session {
 			const prevLevel = logger.getVerbosity();
 			if (prevLevel === Verbosity.INFO) logger.setVerbosity(Verbosity.WARN);
 
-			// Simple renderer shows warnings and errors. Disable signal listeners so Ctrl+C works.
-			await new Listr(tasks, { renderer: 'simple', registerSignalListeners: false }).run();
+			// Disable signal listeners so Ctrl+C works. Note that 'simple' and 'default'
+			// renderers have different capability to display errors and warnings.
+			await new Listr(tasks, { renderer: 'default', registerSignalListeners: false }).run();
 			console.log('');
 
 			logger.setVerbosity(prevLevel);

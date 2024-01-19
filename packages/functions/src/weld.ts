@@ -32,7 +32,7 @@ import {
 // (Approach #4) Hybrid of (1) and (2), assigning vertices to a spatial
 // grid, then searching the local neighborhood (27 cells) for weld candidates.
 //
-// (Approach #5) ... TODO
+// (Approach #5) ... TODO(DO NOT SUBMIT): Document new implementation.
 //
 // RESULTS: For the "Lovecraftian" sample model, after joining, a primitive
 // with 873,000 vertices can be welded down to 230,000 vertices. Results:
@@ -47,7 +47,7 @@ const NAME = 'weld';
 const EMPTY = 2 ** 32 - 1;
 
 const Tolerance = {
-	DEFAULT: 0.0001,
+	DEFAULT: 0,
 	TEXCOORD: 0.0001, // [0, 1]
 	COLOR: 0.01, // [0, 1]
 	NORMAL: 0.05, // [-1, 1], ±3º
@@ -75,6 +75,8 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 };
 
 /**
+ * TODO(DO NOT SUBMIT): Document new implementation.
+ *
  * Index {@link Primitive Primitives} and (optionally) merge similar vertices. When merged
  * and indexed, data is shared more efficiently between vertices. File size can
  * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
@@ -108,7 +110,6 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 
-		console.time('weld');
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(prim, options);
@@ -118,7 +119,6 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
-		console.timeEnd('weld');
 
 		if (options.tolerance > 0) {
 			// If tolerance is greater than 0, welding may remove a mesh, so we prune
@@ -139,6 +139,8 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 }
 
 /**
+ * TODO(DO NOT SUBMIT): Document new implementation.
+ *
  * Index a {@link Primitive} and (optionally) weld similar vertices. When merged
  * and indexed, data is shared more efficiently between vertices. File size can
  * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
