@@ -179,6 +179,17 @@ export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<un
 	return true;
 }
 
+/** Clones an {@link Accessor} without creating a copy of its underlying TypedArray data. */
+export function shallowCloneAccessor(document: Document, accessor: Accessor): Accessor {
+	return document
+		.createAccessor(accessor.getName())
+		.setArray(accessor.getArray())
+		.setType(accessor.getType())
+		.setBuffer(accessor.getBuffer())
+		.setNormalized(accessor.getNormalized())
+		.setSparse(accessor.getSparse());
+}
+
 export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
 
@@ -187,7 +198,7 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
 	const srcIndices = prim.getIndices();
 	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
-	const dstIndices = srcIndices ? srcIndices.clone() : document.createAccessor();
+	const dstIndices = document.createAccessor();
 	const dstIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount; // primitive count does not change.
 	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
 	for (let i = 0; i < dstIndicesCount; i++) {
@@ -199,12 +210,14 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 
 	const srcAttributes = deepListAttributes(prim);
 	for (const srcAttribute of prim.listAttributes()) {
-		prim.swap(srcAttribute, remapAttribute(srcAttribute.clone(), remap, dstVertexCount));
+		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
+		prim.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}
 	for (const target of prim.listTargets()) {
 		for (const srcAttribute of target.listAttributes()) {
-			prim.swap(srcAttribute, remapAttribute(srcAttribute.clone(), remap, dstVertexCount));
+			const dstAttribute = shallowCloneAccessor(document, srcAttribute);
+			target.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
 			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 		}
 	}

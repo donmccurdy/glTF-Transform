@@ -460,7 +460,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	}
 
 	/** Assigns the raw typed array underlying this accessor. */
-	public setArray(array: TypedArray): this {
+	public setArray(array: TypedArray | null): this {
 		this.set('componentType', array ? arrayToComponentType(array) : Accessor.ComponentType.FLOAT);
 		this.set('array', array);
 		return this;
