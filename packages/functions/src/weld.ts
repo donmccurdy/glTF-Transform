@@ -12,7 +12,14 @@ import {
 import { cleanPrimitive } from './clean-primitive.js';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
-import { ceilPowerOfTwo, createIndices, createTransform, deepListAttributes, formatDeltaOp } from './utils.js';
+import {
+	ceilPowerOfTwo,
+	createIndices,
+	createTransform,
+	deepListAttributes,
+	formatDeltaOp,
+	remapAttribute,
+} from './utils.js';
 
 // DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
 // and tunable. The writeup below tracks my attempts to solve for these
@@ -47,6 +54,7 @@ import { ceilPowerOfTwo, createIndices, createTransform, deepListAttributes, for
 
 const NAME = 'weld';
 
+/** Flags 'empty' values in a Uint32Array index. */
 const EMPTY = 2 ** 32 - 1;
 
 const Tolerance = {
@@ -190,7 +198,7 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	const hash = new HashTable(prim);
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
-	const table = new Uint32Array(tableSize).fill(-1);
+	const table = new Uint32Array(tableSize).fill(EMPTY);
 	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY); // oldIndex → newIndex
 
 	// (1) Compare and identify indices to weld.
@@ -280,7 +288,7 @@ function _weldPrimitive(document: Document, prim: Primitive, options: Required<W
 
 	const srcMaxIndex = uniqueIndices[uniqueIndices.length - 1];
 	const weldMap = createIndices(srcMaxIndex + 1); // oldIndex → oldCommonIndex
-	const writeMap = new Array(uniqueIndices.length).fill(-1); // oldIndex → newIndex
+	const writeMap = new Uint32Array(uniqueIndices.length).fill(EMPTY); // oldIndex → newIndex
 
 	const srcVertexCount = srcPosition.getCount();
 	let dstVertexCount = 0;
@@ -361,36 +369,17 @@ function _weldPrimitive(document: Document, prim: Primitive, options: Required<W
 	cleanPrimitive(prim);
 }
 
-/** Creates a new TypedArray of the same type as an original, with a new length. */
-function createArrayOfType<T extends TypedArray>(array: T, length: number): T {
-	const ArrayCtor = array.constructor as new (length: number) => T;
-	return new ArrayCtor(length);
-}
-
 /** Replaces an {@link Attribute}, creating a new one with the given elements. */
 function swapAttributes(
 	parent: Primitive | PrimitiveTarget,
-	srcAttr: Accessor,
-	reorder: number[] | TypedArray,
+	srcAttribute: Accessor,
+	remap: TypedArray,
 	dstCount: number,
 ): void {
-	// TODO(v4): Needs cleanup and optimization. Also see remapAttribute in utils.ts.
-
-	const dstAttrArray = createArrayOfType(srcAttr.getArray()!, dstCount * srcAttr.getElementSize());
-	const dstAttr = srcAttr.clone().setArray(dstAttrArray);
-	const done = new Uint8Array(dstCount);
-
-	for (let i = 0, el = [] as number[]; i < reorder.length; i++) {
-		if (!done[reorder[i]]) {
-			dstAttr.setElement(reorder[i], srcAttr.getElement(i, el));
-			done[reorder[i]] = 1;
-		}
-	}
-
-	parent.swap(srcAttr, dstAttr);
-
-	// Clean up.
-	if (srcAttr.listParents().length === 1) srcAttr.dispose();
+	const dstAttribute = srcAttribute.clone();
+	remapAttribute(dstAttribute, remap, dstCount);
+	parent.swap(srcAttribute, dstAttribute);
+	if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 }
 
 const _a = [] as number[];
@@ -601,8 +590,6 @@ function hashLookup(table: Uint32Array, buckets: number, hash: HashTable, key: n
 	const hashmod = buckets - 1;
 	const hashval = hash.hash(key);
 	let bucket = hashval & hashmod;
-	// TODO(cleanup)
-	// console.log(`key ${key} -> hashval ${hashval} & ${hashmod} -> bucket ${bucket}`);
 
 	for (let probe = 0; probe <= hashmod; probe++) {
 		const item = table[bucket];

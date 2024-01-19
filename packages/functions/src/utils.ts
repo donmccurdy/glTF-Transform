@@ -9,6 +9,7 @@ import {
 	Texture,
 	Transform,
 	TransformContext,
+	TypedArray,
 	vec2,
 } from '@gltf-transform/core';
 
@@ -178,16 +179,20 @@ export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<un
 }
 
 /** @hidden */
-export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {
+export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount: number) {
 	const elementSize = attribute.getElementSize();
 	const srcCount = attribute.getCount();
 	const srcArray = attribute.getArray()!;
 	const dstArray = srcArray.slice(0, dstCount * elementSize);
+	const done = new Uint8Array(dstCount);
 
-	for (let i = 0; i < srcCount; i++) {
+	for (let srcIndex = 0; srcIndex < srcCount; srcIndex++) {
+		const dstIndex = remap[srcIndex];
+		if (done[dstIndex]) continue;
 		for (let j = 0; j < elementSize; j++) {
-			dstArray[remap[i] * elementSize + j] = srcArray[i * elementSize + j];
+			dstArray[dstIndex * elementSize + j] = srcArray[srcIndex * elementSize + j];
 		}
+		done[dstIndex] = 1;
 	}
 
 	attribute.setArray(dstArray);
