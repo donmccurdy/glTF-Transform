@@ -10,36 +10,44 @@ import {
 	remapPrimitive,
 } from './utils.js';
 
-// DEVELOPER NOTES: Ideally a weld() implementation should be fast, robust,
-// and tunable. The writeup below tracks my attempts to solve for these
-// constraints.
-//
-// (Approach #1) Follow the mergeVertices() implementation of three.js,
-// hashing vertices with a string concatenation of all vertex attributes.
-// The approach does not allow per-attribute tolerance in local units.
-//
-// (Approach #2) Sort points along the X axis, then make cheaper
-// searches up/down the sorted list for merge candidates. While this allows
-// simpler comparison based on specified tolerance, it's much slower, even
-// for cases where choice of the X vs. Y or Z axes is reasonable.
-//
-// (Approach #3) Attempted a Delaunay triangulation in three dimensions,
-// expecting it would be an n * log(n) algorithm, but the only implementation
-// I found (with delaunay-triangulate) appeared to be much slower than that,
-// and was notably slower than the sort-based approach, just building the
-// Delaunay triangulation alone.
-//
-// (Approach #4) Hybrid of (1) and (2), assigning vertices to a spatial
-// grid, then searching the local neighborhood (27 cells) for weld candidates.
-//
-// (Approach #5) ... TODO(DO NOT SUBMIT): Document new implementation.
-//
-// RESULTS: For the "Lovecraftian" sample model, after joining, a primitive
-// with 873,000 vertices can be welded down to 230,000 vertices. Results:
-// - (1) Not tested, but prior results suggest not robust enough.
-// - (2) 30 seconds
-// - (3) 660 seconds
-// - (4) 5 seconds exhaustive, 1.5s non-exhaustive
+/**
+ * CONTRIBUTOR NOTES
+ *
+ * Ideally a weld() implementation should be fast, robust, and tunable. The
+ * writeup below tracks my attempts to solve for these constraints.
+ *
+ * (Approach #1) Follow the mergeVertices() implementation of three.js,
+ * hashing vertices with a string concatenation of all vertex attributes.
+ * The approach does not allow per-attribute tolerance in local units.
+ *
+ * (Approach #2) Sort points along the X axis, then make cheaper
+ * searches up/down the sorted list for merge candidates. While this allows
+ * simpler comparison based on specified tolerance, it's much slower, even
+ * for cases where choice of the X vs. Y or Z axes is reasonable.
+ *
+ * (Approach #3) Attempted a Delaunay triangulation in three dimensions,
+ * expecting it would be an n * log(n) algorithm, but the only implementation
+ * I found (with delaunay-triangulate) appeared to be much slower than that,
+ * and was notably slower than the sort-based approach, just building the
+ * Delaunay triangulation alone.
+ *
+ * (Approach #4) Hybrid of (1) and (2), assigning vertices to a spatial
+ * grid, then searching the local neighborhood (27 cells) for weld candidates.
+ *
+ * (Approach #5) Based on Meshoptimizer's implementation, when tolerance=0
+ * use a hashtable to find bitwise-equal vertices quickly. Vastly faster than
+ * previous approaches, but without tolerance options.
+ *
+ * RESULTS: For the "Lovecraftian" sample model linked below, after joining,
+ * a primitive with 873,000 vertices can be welded down to 230,000 vertices.
+ * https://sketchfab.com/3d-models/sculpt-january-day-19-lovecraftian-34ad2501108e4fceb9394f5b816b9f42
+ *
+ * - (1) Not tested, but prior results suggest not robust enough.
+ * - (2) 30s
+ * - (3) 660s
+ * - (4) 5s exhaustive, 1.5s non-exhaustive
+ * - (5) 0.2s
+ */
 
 const NAME = 'weld';
 
@@ -75,31 +83,34 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 };
 
 /**
- * TODO(DO NOT SUBMIT): Document new implementation.
- *
- * Index {@link Primitive Primitives} and (optionally) merge similar vertices. When merged
+ * Welds {@link Primitive Primitives}, merging similar vertices. When merged
  * and indexed, data is shared more efficiently between vertices. File size can
- * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
+ * be reduced, and the GPU uses the vertex cache more efficiently.
  *
  * When welding, the 'tolerance' threshold determines which vertices qualify for
  * welding based on distance between the vertices as a fraction of the primitive's
  * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
  * of the AABB's longest dimension. Other vertex attributes are also compared
- * during welding, with attribute-specific thresholds. For `tolerance=0`, geometry
- * is indexed in place, without merging.
+ * during welding, with attribute-specific thresholds. For `tolerance=0`, welding
+ * requires bitwise-equality and completes much faster.
  *
- * To preserve visual appearance consistently, use low `toleranceNormal` thresholds
- * around 0.1 (±3º). To pre-processing a scene before simplification or LOD creation,
- * use higher thresholds around 0.5 (±30º).
+ * To preserve visual appearance consistently with non-zero `tolerance`, use low
+ * `toleranceNormal` thresholds around 0.1 (±3º). To pre-processing a scene
+ * before simplification or LOD creation, consider higher thresholds around 0.5 (±30º).
  *
  * Example:
  *
  * ```javascript
  * import { weld } from '@gltf-transform/functions';
  *
- * await document.transform(
- * 	weld({ tolerance: 0.001, toleranceNormal: 0.5 })
- * );
+ * // Lossless and fast.
+ * await document.transform(weld());
+ *
+ * // Lossy and slower.
+ * await document.transform(weld({ tolerance: 0.001, toleranceNormal: 0.5 }));
+ *
+ * // Lossy and slowest, maximizing vertex count reduction.
+ * await document.transform(weld({ tolerance: 0.001, toleranceNormal: 0.5, exhaustive: true }));
  * ```
  *
  * @category Transforms
@@ -139,18 +150,16 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 }
 
 /**
- * TODO(DO NOT SUBMIT): Document new implementation.
- *
- * Index a {@link Primitive} and (optionally) weld similar vertices. When merged
- * and indexed, data is shared more efficiently between vertices. File size can
- * be reduced, and the GPU can sometimes use the vertex cache more efficiently.
+ * Welds a {@link Primitive}, merging similar vertices. When merged and
+ * indexed, data is shared more efficiently between vertices. File size can
+ * be reduced, and the GPU uses the vertex cache more efficiently.
  *
  * When welding, the 'tolerance' threshold determines which vertices qualify for
  * welding based on distance between the vertices as a fraction of the primitive's
  * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
  * of the AABB's longest dimension. Other vertex attributes are also compared
- * during welding, with attribute-specific thresholds. For tolerance=0, geometry
- * is indexed in place, without merging.
+ * during welding, with attribute-specific thresholds. For `tolerance=0`, welding
+ * requires bitwise-equality and completes much faster.
  *
  * Example:
  *
@@ -161,7 +170,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
  * 	.find((mesh) => mesh.getName() === 'Gizmo');
  *
  * for (const prim of mesh.listPrimitives()) {
- *   weldPrimitive(prim, {tolerance: 0.0001});
+ *   weldPrimitive(prim, {tolerance: 0});
  * }
  * ```
  */
