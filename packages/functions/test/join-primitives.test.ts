@@ -106,6 +106,7 @@ test('indexed', async (t) => {
 		0, 0, 0, 0,
 	], 'position data');
 
+	console.log({ indices: primAB.getIndices().getArray() });
 	t.is(primAB.getIndices().getCount(), 6, 'indices data');
 });
 

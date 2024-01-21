@@ -1,5 +1,5 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
+import { createIndices, createPrimGroupKey, remapAttribute, shallowCloneAccessor } from './utils.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -53,6 +53,7 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 
 	// (2) Build remap lists.
 	for (const srcPrim of prims) {
+		// TODO(perf): Don't allocate indices if we don't need them.
 		const indices = _getOrCreateIndices(srcPrim);
 		const remap = [];
 		let count = 0;
@@ -88,32 +89,42 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 	dstPrim.setIndices(dstIndices);
 
 	// (5) Remap attributes into joined Primitive.
-	let dstNextIndex = 0;
+	// let dstNextIndex = 0;
 	for (let primIndex = 0; primIndex < remapList.length; primIndex++) {
 		const srcPrim = prims[primIndex];
+		const srcVertexCount = srcPrim.getAttribute('POSITION')!.getCount();
+		const srcIndices = srcPrim.getIndices();
+		const srcIndicesCount = srcIndices ? srcIndices.getCount() : -1;
+
 		const remap = remapList[primIndex];
-		const indicesArray = indicesList[primIndex];
+		// const indicesArray = indicesList[primIndex];
 
-		const primStartIndex = dstNextIndex;
-		let primNextIndex = primStartIndex;
+		// const primStartIndex = dstNextIndex;
+		// let primNextIndex = primStartIndex;
 
+		// TODO(test): I did something different with indices before... why?
+		if (srcIndices && dstIndices) {
+			remapAttribute(srcIndices, remap, srcIndicesCount, dstIndices);
+		}
+
+		// TODO(test): Shouldn't `indicesArray` be involved here?
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
-			const el = [] as number[];
+			remapAttribute(srcAttribute, remap, srcVertexCount, dstAttribute);
 
-			primNextIndex = primStartIndex;
-			for (let i = 0; i < indicesArray.length; i++) {
-				const index = indicesArray[i];
-				srcAttribute.getElement(index, el);
-				dstAttribute.setElement(remap[index], el);
-				if (dstIndices) {
-					dstIndices.setScalar(primNextIndex++, remap[index]);
-				}
-			}
+			// primNextIndex = primStartIndex;
+			// for (let i = 0; i < indicesArray.length; i++) {
+			// 	const index = indicesArray[i];
+			// 	srcAttribute.getElement(index, el);
+			// 	dstAttribute.setElement(remap[index], el);
+			// 	if (dstIndices) {
+			// 		dstIndices.setScalar(primNextIndex++, remap[index]);
+			// 	}
+			// }
 		}
 
-		dstNextIndex = primNextIndex;
+		// dstNextIndex = primNextIndex;
 	}
 
 	return dstPrim;
