@@ -422,8 +422,9 @@ function isPrimEmpty(prim: Primitive): boolean {
 class HashTable {
 	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
 
-	/** Temporary vertex view in 4-byte-aligned memory. */
+	/** Temporary vertex views in 4-byte-aligned memory. */
 	private u8: Uint8Array;
+	private u32: Uint32Array;
 
 	constructor(prim: Primitive) {
 		let byteStride = 0;
@@ -431,6 +432,7 @@ class HashTable {
 			byteStride += this._initAttribute(attribute);
 		}
 		this.u8 = new Uint8Array(byteStride);
+		this.u32 = new Uint32Array(this.u8.buffer);
 	}
 
 	private _initAttribute(attribute: Accessor): number {
@@ -444,14 +446,20 @@ class HashTable {
 
 	hash(index: number): number {
 		// Load vertex into 4-byte-aligned view.
+		let byteOffset = 0;
 		for (const { u8, byteStride, paddedByteStride } of this.attributes) {
 			for (let i = 0; i < paddedByteStride; i++) {
-				this.u8[i] = i < byteStride ? u8[index * byteStride + i] : 0;
+				if (i < byteStride) {
+					this.u8[byteOffset + i] = u8[index * byteStride + i];
+				} else {
+					this.u8[byteOffset + i] = 0;
+				}
 			}
+			byteOffset += paddedByteStride;
 		}
 
 		// Compute hash.
-		return murmurHash2(0, this.u8);
+		return murmurHash2(0, this.u32);
 	}
 
 	equal(a: number, b: number): boolean {
@@ -471,35 +479,23 @@ class HashTable {
  * - https://github.com/mikolalysenko/murmurhash-js/blob/f19136e9f9c17f8cddc216ca3d44ec7c5c502f60/murmurhash2_gc.js#L14
  * - https://github.com/zeux/meshoptimizer/blob/e47e1be6d3d9513153188216455bdbed40a206ef/src/indexgenerator.cpp#L12
  */
-function murmurHash2(seed: number, data: Uint8Array) {
-	let l = data.length,
-		h = seed ^ l,
-		i = 0,
-		k;
+export function murmurHash2(h: number, key: Uint32Array): number {
+	// MurmurHash2
+	const m = 0x5bd1e995;
+	const r = 24;
 
-	while (l >= 4) {
-		k = (data[i] & 0xff) | ((data[++i] & 0xff) << 8) | ((data[++i] & 0xff) << 16) | ((data[++i] & 0xff) << 24);
+	for (let i = 0, il = key.length; i < il; i++) {
+		let k = key[i];
 
-		k = (k & 0xffff) * 0x5bd1e995 + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16);
-		k ^= k >>> 24;
-		k = (k & 0xffff) * 0x5bd1e995 + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16);
+		k = Math.imul(k, m) >>> 0;
+		k = (k ^ (k >> r)) >>> 0;
+		k = Math.imul(k, m) >>> 0;
 
-		h = ((h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16)) ^ k;
-
-		l -= 4;
-		++i;
+		h = Math.imul(h, m) >>> 0;
+		h = (h ^ k) >>> 0;
 	}
 
-	if (l === 3) h ^= (data[i + 2] & 0xff) << 16;
-	if (l >= 2) h ^= (data[i + 1] & 0xff) << 8;
-	if (l >= 1) h ^= data[i] & 0xff;
-	h = (h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16);
-
-	h ^= h >>> 13;
-	h = (h & 0xffff) * 0x5bd1e995 + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16);
-	h ^= h >>> 15;
-
-	return h >>> 0;
+	return h;
 }
 
 function hashLookup(table: Uint32Array, buckets: number, hash: HashTable, key: number, empty = EMPTY): number {
