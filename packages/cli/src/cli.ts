@@ -999,7 +999,9 @@ compute MikkTSpace tangents at runtime.
 	})
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(
+			unweld(),
 			tangents({ generateTangents: mikktspace.generateTangents, ...options }),
+			weld({ tolerance: 0 }),
 		),
 	);
 
