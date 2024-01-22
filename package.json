@@ -19,7 +19,7 @@
 		"coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
 		"lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
 		"validate": "scripts/validate.js",
-		"benchmark": "tsx test/benchmark.ts",
+		"bench": "tsx benchmarks/benchmark.ts",
 		"preversion": "yarn test",
 		"version": "yarn clean:dist && lerna run dist && yarn run docs:cli && git add -u packages/docs",
 		"postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
