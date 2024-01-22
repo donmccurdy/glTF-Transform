@@ -6,6 +6,7 @@ import {
 	remapAttribute,
 	deepSwapAttribute,
 	isTransformPending,
+	shallowCloneAccessor,
 } from './utils.js';
 import { weld } from './weld.js';
 import type { MeshoptSimplifier } from 'meshoptimizer';
@@ -175,7 +176,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	// (3) Write vertex attributes.
 
 	for (const srcAttribute of deepListAttributes(prim)) {
-		const dstAttribute = srcAttribute.clone();
+		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
 		remapAttribute(dstAttribute, remap, unique);
 		deepSwapAttribute(prim, srcAttribute, dstAttribute);
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
@@ -183,7 +184,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 
 	// (4) Write indices.
 
-	const dstIndices = srcIndices.clone();
+	const dstIndices = shallowCloneAccessor(document, srcIndices);
 	dstIndices.setArray(srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : dstIndicesArray);
 	prim.setIndices(dstIndices);
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
