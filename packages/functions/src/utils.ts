@@ -9,8 +9,10 @@ import {
 	Texture,
 	Transform,
 	TransformContext,
+	TypedArray,
 	vec2,
 } from '@gltf-transform/core';
+import { cleanPrimitive } from './clean-primitive.js';
 
 /**
  * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
@@ -177,20 +179,81 @@ export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<un
 	return true;
 }
 
+/** Clones an {@link Accessor} without creating a copy of its underlying TypedArray data. */
+export function shallowCloneAccessor(document: Document, accessor: Accessor): Accessor {
+	return document
+		.createAccessor(accessor.getName())
+		.setArray(accessor.getArray())
+		.setType(accessor.getType())
+		.setBuffer(accessor.getBuffer())
+		.setNormalized(accessor.getNormalized())
+		.setSparse(accessor.getSparse());
+}
+
+export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
+	const document = Document.fromGraph(prim.getGraph())!;
+
+	// Remap indices.
+
+	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
+	const srcIndices = prim.getIndices();
+	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
+	const dstIndices = document.createAccessor();
+	const dstIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount; // primitive count does not change.
+	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
+	for (let i = 0; i < dstIndicesCount; i++) {
+		dstIndicesArray[i] = remap[srcIndicesArray ? srcIndicesArray[i] : i];
+	}
+	prim.setIndices(dstIndices.setArray(dstIndicesArray));
+
+	// Remap vertices.
+
+	const srcAttributes = deepListAttributes(prim);
+	for (const srcAttribute of prim.listAttributes()) {
+		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
+		prim.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
+	for (const target of prim.listTargets()) {
+		for (const srcAttribute of target.listAttributes()) {
+			const dstAttribute = shallowCloneAccessor(document, srcAttribute);
+			target.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
+			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+		}
+	}
+
+	// Clean up accessors.
+
+	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
+	for (const srcAttribute of srcAttributes) {
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
+
+	// Clean up degenerate topology.
+
+	cleanPrimitive(prim);
+
+	return prim;
+}
+
 /** @hidden */
-export function remapAttribute(attribute: Accessor, remap: Uint32Array, dstCount: number) {
+export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount: number): Accessor {
 	const elementSize = attribute.getElementSize();
 	const srcCount = attribute.getCount();
 	const srcArray = attribute.getArray()!;
 	const dstArray = srcArray.slice(0, dstCount * elementSize);
+	const done = new Uint8Array(dstCount);
 
-	for (let i = 0; i < srcCount; i++) {
+	for (let srcIndex = 0; srcIndex < srcCount; srcIndex++) {
+		const dstIndex = remap[srcIndex];
+		if (done[dstIndex]) continue;
 		for (let j = 0; j < elementSize; j++) {
-			dstArray[remap[i] * elementSize + j] = srcArray[i * elementSize + j];
+			dstArray[dstIndex * elementSize + j] = srcArray[srcIndex * elementSize + j];
 		}
+		done[dstIndex] = 1;
 	}
 
-	attribute.setArray(dstArray);
+	return attribute.setArray(dstArray);
 }
 
 /** @hidden */
@@ -304,10 +367,10 @@ function nearestPowerOfTwo(value: number): number {
 	return hi;
 }
 
-function floorPowerOfTwo(value: number): number {
+export function floorPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
 }
 
-function ceilPowerOfTwo(value: number): number {
+export function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }

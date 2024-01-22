@@ -1,5 +1,4 @@
-import type { Primitive } from '@gltf-transform/core';
-import { createIndices } from './utils.js';
+import { ComponentTypeToTypedArray, Primitive } from '@gltf-transform/core';
 
 /**
  * Removes degenerate triangles from the {@link Primitive}. Any triangle containing fewer than
@@ -9,24 +8,25 @@ import { createIndices } from './utils.js';
  * @internal
  */
 export function cleanPrimitive(prim: Primitive): void {
+	// TODO(feat): Clean degenerate primitives of other topologies.
 	const indices = prim.getIndices();
-	if (!indices) return;
+	if (!indices || prim.getMode() !== Primitive.Mode.TRIANGLES) return;
 
-	const tmpIndicesArray = [];
+	const srcIndicesArray = indices.getArray()!;
+	const dstIndicesArray = [];
 	let maxIndex = -Infinity;
 
-	for (let i = 0, il = indices.getCount(); i < il; i += 3) {
-		const a = indices.getScalar(i);
-		const b = indices.getScalar(i + 1);
-		const c = indices.getScalar(i + 2);
+	for (let i = 0, il = srcIndicesArray.length; i < il; i += 3) {
+		const a = srcIndicesArray[i];
+		const b = srcIndicesArray[i + 1];
+		const c = srcIndicesArray[i + 2];
 
 		if (a === b || a === c || b === c) continue;
 
-		tmpIndicesArray.push(a, b, c);
+		dstIndicesArray.push(a, b, c);
 		maxIndex = Math.max(maxIndex, a, b, c);
 	}
 
-	const dstIndicesArray = createIndices(tmpIndicesArray.length, maxIndex);
-	dstIndicesArray.set(tmpIndicesArray);
-	indices.setArray(dstIndicesArray);
+	const TypedArray = ComponentTypeToTypedArray[indices.getComponentType()];
+	indices.setArray(new TypedArray(dstIndicesArray));
 }

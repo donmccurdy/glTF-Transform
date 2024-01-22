@@ -307,6 +307,15 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
+	.option(
+		'--weld-tolerance <tolerance>',
+		'Tolerance for welding vertex positions, as a fraction of primitive AABB. ' +
+			'When set to zero, welds run much faster and require bitwise equality.',
+		{
+			validator: Validator.NUMBER,
+			default: WELD_DEFAULTS.tolerance,
+		},
+	)
 	.action(async ({ args, options, logger }) => {
 		const opts = options as {
 			instance: boolean;
@@ -321,6 +330,7 @@ commands or using the scripting API.
 			flatten: boolean;
 			join: boolean;
 			weld: boolean;
+			weldTolerance: number;
 		};
 
 		// Baseline transforms.
@@ -334,7 +344,7 @@ commands or using the scripting API.
 		if (opts.weld) {
 			transforms.push(
 				weld({
-					tolerance: opts.simplify ? opts.simplifyError / 2 : WELD_DEFAULTS.tolerance,
+					tolerance: opts.weldTolerance,
 					toleranceNormal: opts.simplify ? 0.5 : WELD_DEFAULTS.toleranceNormal,
 				}),
 			);
@@ -921,14 +931,24 @@ use higher thresholds around 0.5 (±30º).
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--tolerance', 'Tolerance for vertex positions, as a fraction of primitive AABB', {
-		validator: Validator.NUMBER,
-		default: WELD_DEFAULTS.tolerance,
-	})
-	.option('--tolerance-normal', 'Tolerance for vertex normals, in radians', {
-		validator: Validator.NUMBER,
-		default: WELD_DEFAULTS.toleranceNormal,
-	})
+	.option(
+		'--tolerance',
+		'Tolerance for welding vertex positions, as a fraction of primitive AABB. ' +
+			'When set to zero, welds run much faster and require bitwise equality.',
+		{
+			validator: Validator.NUMBER,
+			default: WELD_DEFAULTS.tolerance,
+		},
+	)
+	.option(
+		'--tolerance-normal',
+		'Tolerance for vertex normals, in radians. If --tolerance is zero, ' +
+			'--tolerance-normal is ignored and welds require bitwise equality.',
+		{
+			validator: Validator.NUMBER,
+			default: WELD_DEFAULTS.toleranceNormal,
+		},
+	)
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(weld(options as unknown as WeldOptions)),
 	);
