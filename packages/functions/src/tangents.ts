@@ -98,7 +98,7 @@ export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transfo
 				const tangentArray = options.generateTangents(
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
-					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord)
+					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord),
 				);
 
 				// See: https://github.com/KhronosGroup/glTF-Sample-Models/issues/174
@@ -143,7 +143,7 @@ function filterPrimitive(prim: Primitive, logger: ILogger, meshName: string, i: 
 	) {
 		logger.debug(
 			`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must` +
-				' have attributes=[POSITION, NORMAL, TEXCOORD_0] and mode=TRIANGLES.'
+				' have attributes=[POSITION, NORMAL, TEXCOORD_0] and mode=TRIANGLES.',
 		);
 		return false;
 	}
@@ -154,7 +154,6 @@ function filterPrimitive(prim: Primitive, logger: ILogger, meshName: string, i: 
 	}
 
 	if (prim.getIndices()) {
-		// TODO(feat): Do this automatically for qualifying primitives.
 		logger.warn(`${NAME}: Skipping primitive ${i} of mesh "${meshName}": primitives must` + ' be unwelded.');
 		return false;
 	}
