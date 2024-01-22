@@ -55,6 +55,7 @@ const TORUS_KNOT_DEFAULTS: Required<TorusKnotOptions> = {
 	q: 3,
 };
 
+/** Based on THREE.TorusKnotGeometry. */
 export function createTorusKnotPrimitive(
 	document: Document,
 	options: TorusKnotOptions = TORUS_KNOT_DEFAULTS,
@@ -101,18 +102,10 @@ export function createTorusKnotPrimitive(
 		glvec3.cross(B, T, N);
 		glvec3.cross(N, B, T);
 
-		// T.subVectors(P2, P1);
-		// N.addVectors(P2, P1);
-		// B.crossVectors(T, N);
-		// N.crossVectors(B, T);
-
 		// normalize B, N. T can be ignored, we don't use it
 
 		glvec3.normalize(B, B);
 		glvec3.normalize(N, N);
-
-		// B.normalize();
-		// N.normalize();
 
 		for (let j = 0; j <= radialSegments; ++j) {
 			// now calculate the vertices. they are nothing more than an extrusion of the torus curve.
@@ -126,24 +119,18 @@ export function createTorusKnotPrimitive(
 			// first we orient the extrusion with our basis vectors, then we add it to the current position on the curve
 
 			vertex[0] = P1[0] + (cx * N[0] + cy + B[0]);
-			// vertex.x = P1.x + (cx * N.x + cy * B.x);
 
 			vertex[1] = P1[1] + (cx * N[1] + cy + B[1]);
-			// vertex.y = P1.y + (cx * N.y + cy * B.y);
 
 			vertex[2] = P1[2] + (cx * N[2] + cy + B[2]);
-			// vertex.z = P1.z + (cx * N.z + cy * B.z);
 
 			vertices.push(vertex[0], vertex[1], vertex[2]);
-			// vertices.push(vertex.x, vertex.y, vertex.z);
 
 			// normal (P1 is always the center/origin of the extrusion, thus we can use it to calculate the normal)
 
 			glvec3.normalize(normal, glvec3.subtract(normal, vertex, P1));
-			// normal.subVectors(vertex, P1).normalize();
 
 			normals.push(normal[0], normal[1], normal[2]);
-			// normals.push(normal.x, normal.y, normal.z);
 
 			// uv
 
