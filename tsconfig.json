@@ -1,35 +1,35 @@
 {
-  "compilerOptions": {
-    "baseUrl": "./packages",
-    "paths": {
-      "@gltf-transform/core": ["./packages/core/"],
-      "@gltf-transform/extensions": ["./packages/extensions/"],
-      "@gltf-transform/functions": ["./packages/functions/"],
-      "@gltf-transform/cli": ["./packages/cli/"],
-      "@gltf-transform/test-utils": ["./packages/test-utils/"]
-    },
-    "esModuleInterop": true,
-    "moduleResolution": "nodenext",
-    "lib": ["es2020", "dom"],
-    "target": "es2020",
-    "module": "ESNext",
-    "declaration": true,
-    "stripInternal": true,
-    "typeRoots": ["node_modules/@types"],
+	"compilerOptions": {
+		"baseUrl": "./packages",
+		"paths": {
+			"@gltf-transform/core": ["./packages/core/"],
+			"@gltf-transform/extensions": ["./packages/extensions/"],
+			"@gltf-transform/functions": ["./packages/functions/"],
+			"@gltf-transform/cli": ["./packages/cli/"],
+			"@gltf-transform/test-utils": ["./packages/test-utils/"]
+		},
+		"esModuleInterop": true,
+		"moduleResolution": "nodenext",
+		"lib": ["es2020", "dom"],
+		"target": "es2020",
+		"module": "nodenext",
+		"declaration": true,
+		"stripInternal": true,
+		"typeRoots": ["node_modules/@types"],
 
-    // Components of "strict" mode.
-    "alwaysStrict": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "noImplicitThis": true,
+		// Components of "strict" mode.
+		"alwaysStrict": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"noImplicitThis": true
 
-    // Certain rules (noImplicitAny, strictNullChecks, strictPropertyInitialization)
-    // are tightend by sub-package tsconfig. Global tsconfig affects unit tests, and
-    // I consider those rules too strict for unit tests.
-  },
-  "include": [
-    "packages/*/src/**/*.ts",
-    // Included to allow TypeDoc to find `pages.ts` content.
-    "docs/*.ts"
-  ]
+		// Certain rules (noImplicitAny, strictNullChecks, strictPropertyInitialization)
+		// are tightend by sub-package tsconfig. Global tsconfig affects unit tests, and
+		// I consider those rules too strict for unit tests.
+	},
+	"include": [
+		"packages/*/src/**/*.ts",
+		// Included to allow TypeDoc to find `pages.ts` content.
+		"docs/*.ts"
+	]
 }
