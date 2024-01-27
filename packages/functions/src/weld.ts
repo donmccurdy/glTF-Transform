@@ -52,7 +52,7 @@ import {
 const NAME = 'weld';
 
 /** Flags 'empty' values in a Uint32Array index. */
-const EMPTY = 2 ** 32 - 1;
+const EMPTY_U32 = 2 ** 32 - 1;
 
 const Tolerance = {
 	DEFAULT: 0,
@@ -199,8 +199,8 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	const hash = new HashTable(prim);
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
-	const table = new Uint32Array(tableSize).fill(EMPTY);
-	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY); // oldIndex → newIndex
+	const table = new Uint32Array(tableSize).fill(EMPTY_U32);
+	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY_U32); // oldIndex → newIndex
 
 	// (1) Compare and identify indices to weld.
 
@@ -208,12 +208,12 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	for (let i = 0; i < srcIndicesCount; i++) {
 		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
-		if (writeMap[srcIndex] !== EMPTY) continue;
+		if (writeMap[srcIndex] !== EMPTY_U32) continue;
 
-		const hashIndex = hashLookup(table, tableSize, hash, srcIndex, EMPTY);
+		const hashIndex = hashLookup(table, tableSize, hash, srcIndex, EMPTY_U32);
 		const dstIndex = table[hashIndex];
 
-		if (dstIndex === EMPTY) {
+		if (dstIndex === EMPTY_U32) {
 			table[hashIndex] = srcIndex;
 			writeMap[srcIndex] = dstVertexCount++;
 		} else {
@@ -263,7 +263,7 @@ function _weldPrimitive(document: Document, prim: Primitive, options: Required<W
 
 	const srcMaxIndex = uniqueIndices[uniqueIndices.length - 1];
 	const weldMap = createIndices(srcMaxIndex + 1); // oldIndex → oldCommonIndex
-	const writeMap = new Uint32Array(uniqueIndices.length).fill(EMPTY); // oldIndex → newIndex
+	const writeMap = new Uint32Array(uniqueIndices.length).fill(EMPTY_U32); // oldIndex → newIndex
 
 	const srcVertexCount = srcPosition.getCount();
 	let dstVertexCount = 0;
@@ -498,7 +498,7 @@ export function murmurHash2(h: number, key: Uint32Array): number {
 	return h;
 }
 
-function hashLookup(table: Uint32Array, buckets: number, hash: HashTable, key: number, empty = EMPTY): number {
+function hashLookup(table: Uint32Array, buckets: number, hash: HashTable, key: number, empty = EMPTY_U32): number {
 	const hashmod = buckets - 1;
 	const hashval = hash.hash(key);
 	let bucket = hashval & hashmod;

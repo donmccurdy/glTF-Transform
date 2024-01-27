@@ -237,11 +237,19 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 }
 
 /** @hidden */
-export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount: number): Accessor {
-	const elementSize = attribute.getElementSize();
-	const srcCount = attribute.getCount();
-	const srcArray = attribute.getArray()!;
-	const dstArray = srcArray.slice(0, dstCount * elementSize);
+export function remapAttribute(
+	srcAttribute: Accessor,
+	remap: TypedArray,
+	dstCount: number,
+	dstAttribute = srcAttribute,
+): Accessor {
+	const elementSize = srcAttribute.getElementSize();
+	const srcCount = srcAttribute.getCount();
+	const srcArray = srcAttribute.getArray()!;
+	// prettier-ignore
+	const dstArray = dstAttribute === srcAttribute
+		? srcArray.slice(0, dstCount * elementSize)
+		: dstAttribute.getArray()!;
 	const done = new Uint8Array(dstCount);
 
 	for (let srcIndex = 0; srcIndex < srcCount; srcIndex++) {
@@ -253,7 +261,28 @@ export function remapAttribute(attribute: Accessor, remap: TypedArray, dstCount:
 		done[dstIndex] = 1;
 	}
 
-	return attribute.setArray(dstArray);
+	return dstAttribute.setArray(dstArray);
+}
+
+/** @hidden */
+export function remapIndices(
+	srcIndices: Accessor,
+	remap: TypedArray,
+	dstOffset: number,
+	dstCount: number,
+	dstIndices = srcIndices,
+): Accessor {
+	const srcCount = srcIndices.getCount();
+	const srcArray = srcIndices.getArray()!;
+	const dstArray = dstIndices === srcIndices ? srcArray.slice(0, dstCount) : dstIndices.getArray()!;
+
+	for (let i = 0; i < srcCount; i++) {
+		const srcIndex = srcArray[i];
+		const dstIndex = remap[srcIndex];
+		dstArray[dstOffset + i] = dstIndex;
+	}
+
+	return dstIndices.setArray(dstArray);
 }
 
 /** @hidden */

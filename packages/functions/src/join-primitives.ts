@@ -1,5 +1,5 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
+import { createIndices, createPrimGroupKey, remapAttribute, remapIndices, shallowCloneAccessor } from './utils.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -8,6 +8,8 @@ interface JoinPrimitiveOptions {
 const JOIN_PRIMITIVE_DEFAULTS: Required<JoinPrimitiveOptions> = {
 	skipValidation: false,
 };
+
+const EMPTY_U32 = 2 ** 32 - 1;
 
 /**
  * Given a list of compatible Mesh {@link Primitive Primitives}, returns new Primitive
@@ -44,29 +46,32 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		);
 	}
 
-	const remapList = [] as Uint32Array[]; // remap[srcIndex] → dstIndex, by prim
-	const countList = [] as number[]; // vertex count, by prim
-	const indicesList = [] as (Uint32Array | Uint16Array)[]; // indices, by prim
+	const primRemaps = [] as Uint32Array[]; // remap[srcIndex] → dstIndex, by prim
+	const primVertexCounts = new Uint32Array(prims.length); // vertex count, by prim
 
 	let dstVertexCount = 0;
 	let dstIndicesCount = 0;
 
 	// (2) Build remap lists.
-	for (const srcPrim of prims) {
-		const indices = _getOrCreateIndices(srcPrim);
-		const remap = [];
-		let count = 0;
-		for (let i = 0; i < indices.length; i++) {
-			const index = indices[i];
-			if (remap[index] === undefined) {
+	for (let primIndex = 0; primIndex < prims.length; primIndex++) {
+		const srcPrim = prims[primIndex];
+		const srcIndices = srcPrim.getIndices();
+		const srcVertexCount = srcPrim.getAttribute('POSITION')!.getCount();
+		const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
+		const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
+
+		const remap = new Uint32Array(getIndicesMax(srcPrim) + 1).fill(EMPTY_U32);
+
+		for (let i = 0; i < srcIndicesCount; i++) {
+			const index = srcIndicesArray ? srcIndicesArray[i] : i;
+			if (remap[index] === EMPTY_U32) {
 				remap[index] = dstVertexCount++;
-				count++;
+				primVertexCounts[primIndex]++;
 			}
-			dstIndicesCount++;
 		}
-		remapList.push(new Uint32Array(remap));
-		countList.push(count);
-		indicesList.push(indices);
+
+		primRemaps.push(new Uint32Array(remap));
+		dstIndicesCount += srcIndicesCount;
 	}
 
 	// (3) Allocate joined attributes.
@@ -88,40 +93,42 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 	dstPrim.setIndices(dstIndices);
 
 	// (5) Remap attributes into joined Primitive.
-	let dstNextIndex = 0;
-	for (let primIndex = 0; primIndex < remapList.length; primIndex++) {
+	let dstIndicesOffset = 0;
+	for (let primIndex = 0; primIndex < primRemaps.length; primIndex++) {
 		const srcPrim = prims[primIndex];
-		const remap = remapList[primIndex];
-		const indicesArray = indicesList[primIndex];
+		const srcVertexCount = srcPrim.getAttribute('POSITION')!.getCount();
+		const srcIndices = srcPrim.getIndices();
+		const srcIndicesCount = srcIndices ? srcIndices.getCount() : -1;
 
-		const primStartIndex = dstNextIndex;
-		let primNextIndex = primStartIndex;
+		const remap = primRemaps[primIndex];
+
+		if (srcIndices && dstIndices) {
+			remapIndices(srcIndices, remap, dstIndicesOffset, srcIndicesCount, dstIndices);
+		}
 
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
-			const el = [] as number[];
-
-			primNextIndex = primStartIndex;
-			for (let i = 0; i < indicesArray.length; i++) {
-				const index = indicesArray[i];
-				srcAttribute.getElement(index, el);
-				dstAttribute.setElement(remap[index], el);
-				if (dstIndices) {
-					dstIndices.setScalar(primNextIndex++, remap[index]);
-				}
-			}
+			remapAttribute(srcAttribute, remap, srcVertexCount, dstAttribute);
 		}
 
-		dstNextIndex = primNextIndex;
+		dstIndicesOffset += srcIndicesCount;
 	}
 
 	return dstPrim;
 }
 
-function _getOrCreateIndices(prim: Primitive): Uint16Array | Uint32Array {
+function getIndicesMax(prim: Primitive): number {
 	const indices = prim.getIndices();
-	if (indices) return indices.getArray() as Uint32Array | Uint16Array;
 	const position = prim.getAttribute('POSITION')!;
-	return createIndices(position.getCount());
+	if (!indices) return position.getCount() - 1;
+
+	const indicesArray = indices.getArray()!;
+	const indicesCount = indices.getCount();
+
+	let indicesMax = -1;
+	for (let i = 0; i < indicesCount; i++) {
+		indicesMax = Math.max(indicesMax, indicesArray[i]);
+	}
+	return indicesMax;
 }

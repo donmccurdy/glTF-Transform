@@ -1,12 +1,14 @@
-import { Document, Mesh, Node, Primitive, Scene, vec3 } from '@gltf-transform/core';
+import { Document, Logger, Mesh, Node, Primitive, Scene, vec3 } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
+
+export const LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 /******************************************************************************
  * PROPERTY CONSTRUCTORS
  */
 
 export function createLargeDocument(rootNodeCount: number): Document {
-	const document = new Document();
+	const document = new Document().setLogger(LOGGER);
 	createSubtree(document, document.createScene('Scene'), rootNodeCount);
 	return document;
 }
