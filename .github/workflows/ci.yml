@@ -56,7 +56,7 @@ jobs:
     - run: yarn dist
 
     # Test.
-    - run: deno test --allow-read --config test/deno.json test/deno.test.ts
+    - run: deno test --allow-read --config scripts/deno.json scripts/deno.test.ts
 
   #############################################################################
   # COVERAGE
