@@ -261,7 +261,28 @@ export function remapAttribute(
 		done[dstIndex] = 1;
 	}
 
-	return srcAttribute.setArray(dstArray);
+	return dstAttribute.setArray(dstArray);
+}
+
+/** @hidden */
+export function remapIndices(
+	srcIndices: Accessor,
+	remap: TypedArray,
+	dstOffset: number,
+	dstCount: number,
+	dstIndices = srcIndices,
+): Accessor {
+	const srcCount = srcIndices.getCount();
+	const srcArray = srcIndices.getArray()!;
+	const dstArray = dstIndices === srcIndices ? srcArray.slice(0, dstCount) : dstIndices.getArray()!;
+
+	for (let i = 0; i < srcCount; i++) {
+		const srcIndex = srcArray[i];
+		const dstIndex = remap[srcIndex];
+		dstArray[dstOffset + i] = dstIndex;
+	}
+
+	return dstIndices.setArray(dstArray);
 }
 
 /** @hidden */
