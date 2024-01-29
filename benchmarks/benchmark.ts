@@ -9,13 +9,17 @@ import { tasks } from './tasks/index.js';
  * Options on the Suite appear to do nothing. Switched to tinybench.
  */
 
+const filter = process.argv[2];
+
 /******************************************************************************
  * BENCHMARK SUITE
  */
 
 const bench = new Bench({ time: 1000 });
-for (const task of tasks) {
-	bench.add(...task);
+for (const [title, fn, options] of tasks) {
+	if (!filter || title.startsWith(filter)) {
+		bench.add(title, fn, options);
+	}
 }
 
 /******************************************************************************
