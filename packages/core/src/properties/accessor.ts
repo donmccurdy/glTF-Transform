@@ -399,7 +399,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 
 	/**
 	 * Returns the vector or matrix element value at the given index. For
-	 * {@link getNormalized normalized} integer accessors, decodes the element's components
+	 * {@link Accessor.getNormalized normalized} integer accessors, decodes the element's components
 	 * to floating-point values before returning the result.
 	 *
 	 * Example:
@@ -431,7 +431,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 
 	/**
 	 * Assigns the vector or matrix element value at the given index. For
-	 * {@link getNormalized normalized} integer accessors, "value" should be
+	 * {@link Accessor.getNormalized normalized} integer accessors, "value" should be
 	 * given in floating-point form — it will be integer-encoded before writing
 	 * to the underlying array.
 	 *
