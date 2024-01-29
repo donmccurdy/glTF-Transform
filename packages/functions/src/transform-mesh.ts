@@ -30,7 +30,7 @@ import { deepListAttributes } from './utils.js';
  * 		streams shared with other meshes will be detached.
  * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipIndices?: Set<number>): void {
+export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipIndices?: Uint32Array): void {
 	// (1) Detach shared prims.
 	for (const srcPrim of mesh.listPrimitives()) {
 		const isShared = srcPrim.listParents().some((p) => p.propertyType === PropertyType.MESH && p !== mesh);
@@ -70,7 +70,7 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipI
 	}
 
 	// (3) Apply transform.
-	const attributeSkipIndices = new Map<Accessor, Set<number>>();
+	const attributeSkipIndices = new Map<Accessor, Uint32Array>();
 	for (const prim of mesh.listPrimitives()) {
 		const position = prim.getAttribute('POSITION')!;
 
@@ -80,7 +80,8 @@ export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipI
 		} else if (attributeSkipIndices.has(position)) {
 			primSkipIndices = attributeSkipIndices.get(position)!;
 		} else {
-			attributeSkipIndices.set(position, (primSkipIndices = new Set<number>()));
+			primSkipIndices = new Uint32Array(position.getCount());
+			attributeSkipIndices.set(position, primSkipIndices);
 		}
 
 		transformPrimitive(prim, matrix, primSkipIndices);
