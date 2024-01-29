@@ -358,15 +358,20 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 */
 	public setNormalized(normalized: boolean): this {
 		this.set('normalized', normalized);
+		this._updateNormalizedAccessors();
+		return this;
+	}
 
-		if (normalized) {
-			this._out = (i: number): number => MathUtils.decodeNormalizedInt(i, this.get('componentType'));
-			this._in = (f: number): number => MathUtils.encodeNormalizedInt(f, this.get('componentType'));
+	/** @privateRemarks Requires non-graph state. */
+	private _updateNormalizedAccessors(): this {
+		if (this.get('normalized')) {
+			const componentType = this.get('componentType');
+			this._out = MathUtils.createNormalizedIntDecoder(componentType);
+			this._in = MathUtils.createNormalizedIntEncoder(componentType);
 		} else {
 			this._out = MathUtils.identity;
 			this._in = MathUtils.identity;
 		}
-
 		return this;
 	}
 
@@ -393,12 +398,31 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	}
 
 	/**
-	 * Returns the vector or matrix element value at the given index, accounting for normalization
-	 * if applicable.
+	 * Returns the vector or matrix element value at the given index. For
+	 * {@link getNormalized normalized} integer accessors, decodes the element's components
+	 * to floating-point values before returning the result.
+	 *
+	 * Example:
+	 *
+	 * ```javascript
+	 * import { add } from 'gl-matrix/add';
+	 *
+	 * const element = [];
+	 * const offset = [1, 1, 1];
+	 *
+	 * for (let i = 0; i < accessor.getCount(); i++) {
+	 * 	accessor.getElement(i, element);
+	 *  add(element, element, offset);
+	 * 	accessor.setElement(i, element);
+	 * }
+	 * ```
 	 */
 	public getElement(index: number, target: number[]): number[] {
-		const elementSize = this.getElementSize();
-		const array = this.get('array')!;
+		return this.getElementInternal(index, target, this.getArray()!, this.getElementSize());
+	}
+
+	/** @hidden */
+	public getElementInternal(index: number, target: number[], array: TypedArray, elementSize: number): number[] {
 		for (let i = 0; i < elementSize; i++) {
 			target[i] = this._out(array[index * elementSize + i]);
 		}
@@ -406,14 +430,34 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	}
 
 	/**
-	 * Assigns the vector or matrix element value at the given index, accounting for normalization
-	 * if applicable.
+	 * Assigns the vector or matrix element value at the given index. For
+	 * {@link getNormalized normalized} integer accessors, "value" should be
+	 * given in floating-point form — it will be integer-encoded before writing
+	 * to the underlying array.
+	 *
+	 * Example:
+	 *
+	 * ```javascript
+	 * import { add } from 'gl-matrix/add';
+	 *
+	 * const element = [];
+	 * const offset = [1, 1, 1];
+	 *
+	 * for (let i = 0; i < accessor.getCount(); i++) {
+	 * 	accessor.getElement(i, element);
+	 *  add(element, element, offset);
+	 * 	accessor.setElement(i, element);
+	 * }
+	 * ```
 	 */
 	public setElement(index: number, value: number[]): this {
-		const elementSize = this.getElementSize();
-		const array = this.get('array')!;
+		return this.setElementInternal(index, value, this.getArray()!, this.getElementSize());
+	}
+
+	/** @hidden */
+	public setElementInternal(index: number, value: number[], array: TypedArray, elementSize: number): this {
 		for (let i = 0; i < elementSize; i++) {
-			array![index * elementSize + i] = this._in(value[i]);
+			array[index * elementSize + i] = this._in(value[i]);
 		}
 		return this;
 	}
@@ -463,6 +507,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	public setArray(array: TypedArray | null): this {
 		this.set('componentType', array ? arrayToComponentType(array) : Accessor.ComponentType.FLOAT);
 		this.set('array', array);
+		this._updateNormalizedAccessors();
 		return this;
 	}
 

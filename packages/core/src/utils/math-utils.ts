@@ -3,6 +3,18 @@ import { length } from 'gl-matrix/vec3';
 import type { mat4, vec3, vec4 } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
 
+// TODO(v4): Consider clamping to [0, 1] or [-1, 1].
+
+const decodeNormalizedU8 = (i: number) => i / 255.0;
+const decodeNormalizedU16 = (i: number) => i / 65535.0;
+const decodeNormalizedI8 = (i: number) => Math.max(i / 127.0, -1.0);
+const decodeNormalizedI16 = (i: number) => Math.max(i / 32767.0, -1.0);
+
+const encodeNormalizedU8 = (f: number) => Math.round(f * 255.0);
+const encodeNormalizedU16 = (f: number) => Math.round(f * 65535.0);
+const encodeNormalizedI8 = (f: number) => Math.round(f * 127.0);
+const encodeNormalizedI16 = (f: number) => Math.round(f * 32767.0);
+
 /** @hidden */
 export class MathUtils {
 	public static identity(v: number): number {
@@ -19,40 +31,45 @@ export class MathUtils {
 		return true;
 	}
 
-	// TODO(v4): Compare performance if we replace the switch with individual functions.
 	public static decodeNormalizedInt(i: number, componentType: GLTF.AccessorComponentType): number {
+		return MathUtils.createNormalizedIntDecoder(componentType)(i);
+	}
+
+	public static createNormalizedIntDecoder(componentType: GLTF.AccessorComponentType): (i: number) => number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
 			case 5126: // FLOAT
-				return i;
+				return MathUtils.identity;
 			case 5123: // UNSIGNED_SHORT
-				return i / 65535.0;
+				return decodeNormalizedU16;
 			case 5121: // UNSIGNED_BYTE
-				return i / 255.0;
+				return decodeNormalizedU8;
 			case 5122: // SHORT
-				return Math.max(i / 32767.0, -1.0);
+				return decodeNormalizedI16;
 			case 5120: // BYTE
-				return Math.max(i / 127.0, -1.0);
+				return decodeNormalizedI8;
 			default:
 				throw new Error('Invalid component type.');
 		}
 	}
 
-	// TODO(v4): Compare performance if we replace the switch with individual functions.
-	// TODO(v4): Consider clamping to [0, 1] or [-1, 1] here.
 	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
+		return MathUtils.createNormalizedIntEncoder(componentType)(f);
+	}
+
+	public static createNormalizedIntEncoder(componentType: GLTF.AccessorComponentType): (f: number) => number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
 			case 5126: // FLOAT
-				return f;
+				return MathUtils.identity;
 			case 5123: // UNSIGNED_SHORT
-				return Math.round(f * 65535.0);
+				return encodeNormalizedU16;
 			case 5121: // UNSIGNED_BYTE
-				return Math.round(f * 255.0);
+				return encodeNormalizedU8;
 			case 5122: // SHORT
-				return Math.round(f * 32767.0);
+				return encodeNormalizedI16;
 			case 5120: // BYTE
-				return Math.round(f * 127.0);
+				return encodeNormalizedI8;
 			default:
 				throw new Error('Invalid component type.');
 		}

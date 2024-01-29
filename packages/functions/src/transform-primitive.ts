@@ -77,11 +77,13 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
 	// An arbitrary transform may not keep vertex positions in the required
 	// range of a normalized attribute. Replace the array, instead.
+	const srcArray = attribute.getArray()!;
 	const dstArray = new Float32Array(attribute.getCount() * 3);
 	const elementSize = attribute.getElementSize();
 
-	for (let i = 0, el: number[] = [], il = attribute.getCount(); i < il; i++) {
-		dstArray.set(attribute.getElement(i, el), i * elementSize);
+	for (let index = 0, el: number[] = [], il = attribute.getCount(); index < il; index++) {
+		el = attribute.getElementInternal(index, el, srcArray, elementSize);
+		dstArray.set(el, index * elementSize);
 	}
 
 	const vector = createVec3() as vec3;
@@ -89,7 +91,8 @@ function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, sk
 		const index = indices[i];
 		if (skipIndices.has(index)) continue;
 
-		attribute.getElement(index, vector);
+		attribute.getElementInternal(index, vector, srcArray, elementSize);
+
 		transformMat4(vector, vector, matrix);
 		dstArray.set(vector, index * 3);
 
@@ -100,6 +103,9 @@ function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, sk
 }
 
 function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+	const array = attribute.getArray()!;
+	const elementSize = attribute.getElementSize();
+
 	const normalMatrix = createMat3();
 	fromMat4(normalMatrix, matrix);
 	invert(normalMatrix, normalMatrix);
@@ -110,23 +116,26 @@ function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Arr
 		const index = indices[i];
 		if (skipIndices.has(index)) continue;
 
-		attribute.getElement(index, vector);
+		attribute.getElementInternal(index, vector, array, elementSize);
 		transformMat3(vector, vector, normalMatrix);
 		normalizeVec3(vector, vector);
-		attribute.setElement(index, vector);
+		attribute.setElementInternal(index, vector, array, elementSize);
 
 		skipIndices.add(index);
 	}
 }
 
 function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+	const array = attribute.getArray()!;
+	const elementSize = attribute.getElementSize();
+
 	const v3 = createVec3() as vec3;
 	const v4 = createVec4() as vec4;
 	for (let i = 0; i < indices.length; i++) {
 		const index = indices[i];
 		if (skipIndices.has(index)) continue;
 
-		attribute.getElement(index, v4);
+		attribute.getElementInternal(index, v4, array, elementSize);
 
 		// mat4 affine matrix applied to vector, vector interpreted as a direction.
 		// Reference: https://github.com/mrdoob/three.js/blob/9f4de99828c05e71c47e6de0beb4c6e7652e486a/src/math/Vector3.js#L286-L300
@@ -138,7 +147,7 @@ function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Ar
 
 		(v4[0] = v3[0]), (v4[1] = v3[1]), (v4[2] = v3[2]);
 
-		attribute.setElement(index, v4);
+		attribute.setElementInternal(index, v4, array, elementSize);
 
 		skipIndices.add(index);
 	}
