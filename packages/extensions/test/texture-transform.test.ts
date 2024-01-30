@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsClearcoat, KHRTextureTransform, Transform } from '@gltf-transform/extensions';
+import { Clearcoat, KHRMaterialsClearcoat, KHRTextureTransform, Transform } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
@@ -151,6 +151,7 @@ test('i/o', async (t) => {
 	);
 });
 
+// See https://github.com/donmccurdy/glTF-Transform/issues/1256.
 test('order independence', async (t) => {
 	const documentA = new Document().setLogger(logger);
 	const documentB = new Document().setLogger(logger);
@@ -169,11 +170,11 @@ test('order independence', async (t) => {
 	const transformExtensionB = documentB.createExtension(KHRTextureTransform);
 
 	const fixtures = [
-		[documentA, transformExtensionA, clearcoatExtensionA],
-		[documentB, transformExtensionB, clearcoatExtensionB],
-	] as [Document, KHRTextureTransform, KHRMaterialsClearcoat][];
+		['transform then clearcoat', ioA, documentA, transformExtensionA, clearcoatExtensionA],
+		['clearcoat then transform', ioB, documentB, transformExtensionB, clearcoatExtensionB],
+	] as [string, NodeIO, Document, KHRTextureTransform, KHRMaterialsClearcoat][];
 
-	for (const [document, transformExtension, clearcoatExtension] of fixtures) {
+	for (const [title, io, document, transformExtension, clearcoatExtension] of fixtures) {
 		const texture = document.createTexture().setMimeType('image/png').setImage(new Uint8Array(10));
 		const transform = transformExtension.createTransform().setScale([100, 100]);
 		const material = document.createMaterial().setBaseColorTexture(texture);
@@ -182,11 +183,38 @@ test('order independence', async (t) => {
 		const clearcoat = clearcoatExtension.createClearcoat().setClearcoatTexture(texture);
 		clearcoat.getClearcoatTextureInfo()!.setExtension('KHR_texture_transform', transform);
 		material.setExtension('KHR_materials_clearcoat', clearcoat);
+
+		const { json, resources } = await io.writeJSON(document);
+
+		t.deepEqual(
+			json.materials,
+			[
+				{
+					extensions: {
+						KHR_materials_clearcoat: {
+							clearcoatFactor: 0,
+							clearcoatRoughnessFactor: 0,
+							clearcoatTexture: {
+								extensions: { KHR_texture_transform: { scale: [100, 100] } },
+								index: 0,
+							},
+						},
+					},
+					pbrMetallicRoughness: {
+						baseColorTexture: {
+							extensions: { KHR_texture_transform: { scale: [100, 100] } },
+							index: 0,
+						},
+					},
+				},
+			],
+			`writes material (${title})`,
+		);
+
+		const dstDocument = await io.readJSON({ json, resources });
+		const dstMaterial = dstDocument.getRoot().listMaterials()[0];
+		const dstClearcoat = dstMaterial.getExtension<Clearcoat>('KHR_materials_clearcoat');
+		const dstTransform = dstClearcoat.getClearcoatTextureInfo()!.getExtension<Transform>('KHR_texture_transform');
+		t.deepEqual(dstTransform.getScale(), [100, 100], `reads transform.scale (${title})`);
 	}
-
-	const { json: jsonA } = await ioA.writeJSON(documentA);
-	const { json: jsonB } = await ioB.writeJSON(documentB);
-
-	t.deepEqual(jsonA.materials, jsonB.materials, 'jsonA.materials == jsonB.materials');
-	t.deepEqual(jsonA.textures, jsonB.textures, 'jsonA.textures == jsonB.textures');
 });
