@@ -53,12 +53,13 @@ export class GLTFWriter {
 		const extensionsUsed = doc
 			.getRoot()
 			.listExtensionsUsed()
-			.filter((ext) => extensionsRegistered.has(ext.extensionName));
+			.filter((ext) => extensionsRegistered.has(ext.extensionName))
+			.sort((a, b) => (a.extensionName > b.extensionName ? 1 : -1));
 		const extensionsRequired = doc
 			.getRoot()
 			.listExtensionsRequired()
-			.filter((ext) => extensionsRegistered.has(ext.extensionName));
-
+			.filter((ext) => extensionsRegistered.has(ext.extensionName))
+			.sort((a, b) => (a.extensionName > b.extensionName ? 1 : -1));
 		if (extensionsUsed.length < doc.getRoot().listExtensionsUsed().length) {
 			logger.warn('Some extensions were not registered for I/O, and will not be written.');
 		}

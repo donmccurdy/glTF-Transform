@@ -48,6 +48,9 @@ export class GLTFReader {
 
 		const extensionsUsed = json.extensionsUsed || [];
 		const extensionsRequired = json.extensionsRequired || [];
+
+		options.extensions.sort((a, b) => (a.EXTENSION_NAME > b.EXTENSION_NAME ? 1 : -1));
+
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
 				const extension = document
