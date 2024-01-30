@@ -21,7 +21,7 @@ test('basic', async (t) => {
 			min: [-2.5, -2.5, -2.5],
 			max: [2.5, 2.5, 2.5],
 		},
-		'center'
+		'center',
 	);
 
 	await doc.transform(center({ pivot: 'above' }));
@@ -32,7 +32,7 @@ test('basic', async (t) => {
 			min: [-2.5, -5.0, -2.5],
 			max: [2.5, 0.0, 2.5],
 		},
-		'above'
+		'above',
 	);
 
 	await doc.transform(center({ pivot: 'below' }));
@@ -43,6 +43,6 @@ test('basic', async (t) => {
 			min: [-2.5, 0.0, -2.5],
 			max: [2.5, 5.0, 2.5],
 		},
-		'below'
+		'below',
 	);
 });

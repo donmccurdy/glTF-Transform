@@ -118,7 +118,7 @@ test('identity transforms', async (t) => {
 		{
 			name: 'A',
 		},
-		'exclude identity transforms'
+		'exclude identity transforms',
 	);
 
 	t.deepEqual(
@@ -127,7 +127,7 @@ test('identity transforms', async (t) => {
 			name: 'B',
 			translation: [1, 2, 1],
 		},
-		'has only set transform info'
+		'has only set transform info',
 	);
 
 	t.deepEqual(
@@ -138,6 +138,6 @@ test('identity transforms', async (t) => {
 			rotation: [1, 0, 0, 0],
 			scale: [1, 2, 1],
 		},
-		'has transform info'
+		'has transform info',
 	);
 });

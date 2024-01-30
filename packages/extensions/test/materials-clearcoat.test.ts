@@ -57,7 +57,7 @@ test('textures', async (t) => {
 				clearcoatNormalTexture: { index: 2, scale: 2 },
 			},
 		},
-		'writes clearcoat extension'
+		'writes clearcoat extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsClearcoat.EXTENSION_NAME], 'writes extensionsUsed');
 

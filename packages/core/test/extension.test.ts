@@ -123,13 +123,13 @@ test('i/o', async (t) => {
 			.listExtensionsUsed()
 			.map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],
-		'roundtrip extensionsUsed'
+		'roundtrip extensionsUsed',
 	);
 	t.deepEqual(resultDoc.getRoot().listExtensionsRequired(), [], 'roundtrip omit extensionsRequired');
 	t.is(
 		resultDoc.getRoot().listNodes()[0].getExtension(EXTENSION_NAME).extensionName,
 		'TEST_node_gizmo',
-		'roundtrip extend node'
+		'roundtrip extend node',
 	);
 
 	// Write + read with extensionsRequired.
@@ -144,7 +144,7 @@ test('i/o', async (t) => {
 			.listExtensionsRequired()
 			.map((ext) => ext.extensionName),
 		['TEST_node_gizmo'],
-		'roundtrip extensionsRequired'
+		'roundtrip extensionsRequired',
 	);
 });
 

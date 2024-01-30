@@ -12,7 +12,7 @@ test('common', async (t) => {
 				resources: {},
 			}),
 		{ message: /Unsupported/i },
-		'1.0'
+		'1.0',
 	);
 });
 
@@ -35,7 +35,7 @@ test('glb without optional buffer', async (t) => {
 			.listNodes()
 			.map((n) => n.getName()),
 		['MyNode'],
-		'same nodes'
+		'same nodes',
 	);
 });
 
@@ -49,7 +49,7 @@ test('glb without required buffer', async (t) => {
 	await t.throwsAsync(
 		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /buffer required/i },
-		'writeJSON throws'
+		'writeJSON throws',
 	);
 	await t.throwsAsync(() => io.writeBinary(document), { message: /buffer required/i }, 'writeBinary throws');
 
@@ -65,7 +65,7 @@ test('glb without required buffer', async (t) => {
 	await t.throwsAsync(
 		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /buffer required/i },
-		'writeJSON throws'
+		'writeJSON throws',
 	);
 	await t.throwsAsync(() => io.writeBinary(document), { message: /buffer required/i }, 'writeBinary throws');
 

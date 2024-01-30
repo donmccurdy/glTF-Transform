@@ -26,7 +26,7 @@ test('basic', async (t) => {
 			{ uri: 'CubeA.bin', byteLength: 324, name: 'CubeA' },
 			{ uri: 'CubeB.bin', byteLength: 324, name: 'CubeB' },
 		],
-		'partitions into two buffers'
+		'partitions into two buffers',
 	);
 
 	const bufferReferences = jsonDoc.json.bufferViews.map((b) => b.buffer);

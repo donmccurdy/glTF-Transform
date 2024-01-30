@@ -80,7 +80,7 @@ test('primitive targets', async (t) => {
 	t.deepEqual(
 		meshDef.primitives[0].targets,
 		[{ POSITION: 0 }, { POSITION: 1 }, { POSITION: 2 }],
-		'writes target accessors'
+		'writes target accessors',
 	);
 });
 
@@ -176,7 +176,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Float32Array([0, 0, 0]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_0',
@@ -184,7 +184,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Uint8Array([128, 128, 128]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_1',
@@ -192,7 +192,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Uint16Array([64, 64, 64]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_2',
@@ -200,7 +200,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Uint32Array([32, 32, 32]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_3',
@@ -208,7 +208,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Int16Array([16, 16, 16]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_4',
@@ -216,7 +216,7 @@ test('primitive i/o', async (t) => {
 				.createAccessor()
 				.setArray(new Int8Array([8, 8, 8]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		);
 
 	document.createMesh().addPrimitive(prim);
@@ -245,7 +245,7 @@ test('primitive vertex layout', async (t) => {
 				.createAccessor()
 				.setArray(new Float32Array([0, 0, 0]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_0',
@@ -253,7 +253,7 @@ test('primitive vertex layout', async (t) => {
 				.createAccessor()
 				.setArray(new Uint8Array([128, 128, 128]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_1',
@@ -261,7 +261,7 @@ test('primitive vertex layout', async (t) => {
 				.createAccessor()
 				.setArray(new Uint16Array([64, 64, 64]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		)
 		.setAttribute(
 			'COLOR_2',
@@ -269,7 +269,7 @@ test('primitive vertex layout', async (t) => {
 				.createAccessor()
 				.setArray(new Uint32Array([32, 32, 32]))
 				.setType(Accessor.Type.VEC3)
-				.setBuffer(buffer)
+				.setBuffer(buffer),
 		);
 
 	document.createMesh().addPrimitive(prim);
@@ -281,7 +281,7 @@ test('primitive vertex layout', async (t) => {
 	t.deepEqual(
 		interleavedJSON.json.bufferViews,
 		[{ buffer: 0, target: 34962, byteOffset: 0, byteLength: 36, byteStride: 36 }],
-		'interleaved buffer byte length'
+		'interleaved buffer byte length',
 	);
 
 	io.setVertexLayout(VertexLayout.SEPARATE);
@@ -294,6 +294,6 @@ test('primitive vertex layout', async (t) => {
 			{ buffer: 0, target: 34962, byteOffset: 16, byteLength: 8, byteStride: 8 },
 			{ buffer: 0, target: 34962, byteOffset: 24, byteLength: 12, byteStride: 12 },
 		],
-		'separate buffer byte length'
+		'separate buffer byte length',
 	);
 });

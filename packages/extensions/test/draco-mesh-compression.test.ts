@@ -15,12 +15,12 @@ test('decoding', async (t) => {
 	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
-		'decompress (min)'
+		'decompress (min)',
 	);
 	t.deepEqual(
 		bbox.max.map((v) => +v.toFixed(3)),
 		[0.5, 0.5, 0.5],
-		'decompress (max)'
+		'decompress (max)',
 	);
 });
 
@@ -62,7 +62,7 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 1/4'
+		'primitiveDef 1/4',
 	);
 	t.deepEqual(
 		primitiveDefs[1],
@@ -77,7 +77,7 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 2/4'
+		'primitiveDef 2/4',
 	);
 	t.deepEqual(
 		primitiveDefs[2],
@@ -92,7 +92,7 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 3/4'
+		'primitiveDef 3/4',
 	);
 	t.deepEqual(
 		primitiveDefs[3],
@@ -107,7 +107,7 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 4/4'
+		'primitiveDef 4/4',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['KHR_draco_mesh_compression'], 'included in extensionsUsed');
 
@@ -118,12 +118,12 @@ test('encoding complete', async (t) => {
 	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[0, -1, -1],
-		'round trip (min)'
+		'round trip (min)',
 	);
 	t.deepEqual(
 		bbox.max.map((v) => +v.toFixed(3)),
 		[1, 1, 1],
-		'round trip (max)'
+		'round trip (max)',
 	);
 });
 
@@ -155,7 +155,7 @@ test('encoding skipped', async (t) => {
 			mode: Primitive.Mode.TRIANGLES,
 			attributes: { POSITION: 0 },
 		},
-		'primitiveDef 1/2'
+		'primitiveDef 1/2',
 	);
 	t.deepEqual(
 		primitiveDefs[1],
@@ -164,7 +164,7 @@ test('encoding skipped', async (t) => {
 			indices: 2,
 			attributes: { POSITION: 1 },
 		},
-		'primitiveDef 2/2'
+		'primitiveDef 2/2',
 	);
 	t.falsy(jsonDoc.json.extensionsUsed, 'omitted from extensionsUsed');
 });
@@ -200,7 +200,7 @@ test('encoding sparse', async (t) => {
 				},
 			},
 		},
-		'primitiveDef'
+		'primitiveDef',
 	);
 	t.is(accessorDefs[1].count, 6, 'POSITION count');
 	t.is(accessorDefs[2].count, 6, '_SPARSE count');
@@ -220,7 +220,7 @@ test('mixed indices', async (t) => {
 		document
 			.createAccessor()
 			.setArray(new Uint32Array([0, 1, 2, 3, 4, 5]))
-			.setBuffer(buffer)
+			.setBuffer(buffer),
 	);
 
 	document.createMesh().addPrimitive(prim1).addPrimitive(prim2);
@@ -244,7 +244,7 @@ test('mixed indices', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 1/2'
+		'primitiveDef 1/2',
 	);
 	t.deepEqual(
 		primitiveDefs[1],
@@ -259,7 +259,7 @@ test('mixed indices', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 2/2'
+		'primitiveDef 2/2',
 	);
 });
 
@@ -279,9 +279,9 @@ test('mixed attributes', async (t) => {
 			.setArray(
 				new Float32Array([
 					0, 0, 0, 0.15, 0.15, 0.15, 0.3, 0.3, 0.3, 0.45, 0.45, 0.45, 0.6, 0.6, 0.6, 0.75, 0.75, 0.75,
-				])
+				]),
 			)
-			.setBuffer(buffer)
+			.setBuffer(buffer),
 	);
 
 	document.createMesh().addPrimitive(prim1).addPrimitive(prim2);
@@ -305,7 +305,7 @@ test('mixed attributes', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 1/2'
+		'primitiveDef 1/2',
 	);
 	// Order of attributes reverses, because shared POSITION is cloned.
 	t.deepEqual(
@@ -321,7 +321,7 @@ test('mixed attributes', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 2/2'
+		'primitiveDef 2/2',
 	);
 });
 
@@ -337,7 +337,7 @@ test('non-primitive parent', async (t) => {
 	await t.throwsAsync(
 		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /indices or vertex attributes/ },
-		'invalid accessor reuse'
+		'invalid accessor reuse',
 	);
 });
 

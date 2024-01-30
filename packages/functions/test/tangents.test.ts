@@ -36,7 +36,7 @@ test('basic', async (t) => {
 				c = _c;
 				return resultArray;
 			},
-		})
+		}),
 	);
 
 	t.deepEqual(Array.from(a), Array.from(positionArray), 'provides position');

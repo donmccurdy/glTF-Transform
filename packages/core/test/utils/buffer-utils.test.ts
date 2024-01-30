@@ -10,7 +10,7 @@ test('web', (t) => {
 	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',
-		'createBufferFromDataURI'
+		'createBufferFromDataURI',
 	);
 	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 });
@@ -20,7 +20,7 @@ test('node.js', (t) => {
 	t.is(
 		BufferUtils.decodeText(BufferUtils.createBufferFromDataURI(HELLO_WORLD)),
 		'hello world',
-		'createBufferFromDataURI'
+		'createBufferFromDataURI',
 	);
 	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 

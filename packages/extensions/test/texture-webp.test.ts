@@ -29,7 +29,7 @@ test('basic', async (t) => {
 	t.is(
 		(jsonDoc.json.textures[0].extensions['EXT_texture_webp'] as GLTF.ITexture).source,
 		0,
-		'includes .source on WebP extension'
+		'includes .source on WebP extension',
 	);
 
 	// Read (roundtrip) from file.

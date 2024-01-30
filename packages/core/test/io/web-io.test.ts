@@ -58,7 +58,7 @@ test.serial('read glb + resources', async (t) => {
 	const binaryChunk = BufferUtils.concat([binaryChunkHeader, binaryChunkData]);
 
 	const header = BufferUtils.toView(
-		new Uint32Array([0x46546c67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength])
+		new Uint32Array([0x46546c67, 2, 12 + jsonChunk.byteLength + binaryChunk.byteLength]),
 	);
 
 	const responses = [
@@ -93,7 +93,7 @@ test.serial('read glb + resources', async (t) => {
 			'model/dir/rel/path/image3.png',
 			'model/dir/rel/path/image3.png',
 		],
-		'reads all linked resources'
+		'reads all linked resources',
 	);
 	t.is(document.getRoot().listScenes().length, 1, 'reads GLB + resources with Fetch API');
 });
@@ -134,7 +134,7 @@ test.serial('read gltf', async (t) => {
 			'model/dir/rel/path/image3.png',
 			'model/dir/rel/path/image3.png',
 		],
-		'reads all linked resources'
+		'reads all linked resources',
 	);
 	t.is(document.getRoot().listScenes().length, 1, 'reads a glTF with Fetch API');
 });
@@ -153,8 +153,8 @@ test.serial('read + data URIs', async (t) => {
 					JSON.stringify({
 						asset: { version: '2.0' },
 						images: uris.map((uri) => ({ uri })),
-					})
-				)
+					}),
+				),
 			);
 		},
 		text: () => {

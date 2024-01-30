@@ -65,7 +65,7 @@ test('default scene', async (t) => {
 	t.is(
 		(await io.readJSON(await io.writeJSON(document, {}))).getRoot().getDefaultScene().getName(),
 		'B',
-		'read / write persistence'
+		'read / write persistence',
 	);
 });
 

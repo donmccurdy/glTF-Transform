@@ -133,7 +133,7 @@ test('padding', async (t) => {
 			{ bufferView: 1, mimeType: 'image/png' },
 			{ bufferView: 2, mimeType: 'image/png' },
 		],
-		'images'
+		'images',
 	);
 	t.deepEqual(
 		jsonDoc.json.bufferViews,
@@ -142,7 +142,7 @@ test('padding', async (t) => {
 			{ buffer: 0, byteOffset: 24, byteLength: 21 },
 			{ buffer: 0, byteOffset: 48, byteLength: 20 },
 		],
-		'bufferViews'
+		'bufferViews',
 	);
 	t.deepEqual(jsonDoc.json.buffers, [{ byteLength: 72 }], 'buffers');
 });

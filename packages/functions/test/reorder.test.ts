@@ -57,12 +57,12 @@ test('shared indices', async (t) => {
 	t.deepEqual(
 		Array.from(prim1.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
-		'positions #1 reordered'
+		'positions #1 reordered',
 	);
 	t.deepEqual(
 		Array.from(prim2.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
-		'positions #2 reordered'
+		'positions #2 reordered',
 	);
 });
 
@@ -102,7 +102,7 @@ test('morph targets', async (t) => {
 		doc,
 		'_TMP',
 		Accessor.Type.VEC3,
-		new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 4.0, 0.0, 0.0, 5.0, 0.0, 0.0, 6.0])
+		new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 3.0, 0.0, 0.0, 4.0, 0.0, 0.0, 5.0, 0.0, 0.0, 6.0]),
 	);
 	const target = doc.createPrimitiveTarget().setAttribute('POSITION', position2.detach());
 	const prim = root.listMeshes()[0].listPrimitives()[0].setIndices(indices);
@@ -118,13 +118,13 @@ test('morph targets', async (t) => {
 	t.deepEqual(
 		Array.from(prim.getAttribute('POSITION').getArray()),
 		Array.from(CUBE_POSITIONS_EXPECTED),
-		'positions reordered'
+		'positions reordered',
 	);
 
 	t.deepEqual(
 		Array.from(target.getAttribute('POSITION').getArray()),
 		[0, 0, 5.0, 0, 0, 3.0, 0, 0, 6.0, 0, 0, 2.0, 0, 0, 4.0, 0, 0, 1.0],
-		'morph positions reordered'
+		'morph positions reordered',
 	);
 });
 

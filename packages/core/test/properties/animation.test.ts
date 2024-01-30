@@ -57,7 +57,7 @@ test('basic', async (t) => {
 				},
 			],
 		},
-		'animation samplers and channels'
+		'animation samplers and channels',
 	);
 
 	const finalDoc = await io.readJSON(jsonDoc);

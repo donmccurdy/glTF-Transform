@@ -18,12 +18,12 @@ test('decoding', async (t) => {
 		t.deepEqual(
 			bbox.min.map((v) => +v.toFixed(3)),
 			[-0.5, -0.5, -0.5],
-			`decompress (min) - "${input}"`
+			`decompress (min) - "${input}"`,
 		);
 		t.deepEqual(
 			bbox.max.map((v) => +v.toFixed(3)),
 			[0.5, 0.5, 0.5],
-			`decompress (max) - "${input}"`
+			`decompress (max) - "${input}"`,
 		);
 	}
 });
@@ -45,12 +45,12 @@ test('encoding', async (t) => {
 	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
-		'round trip (min)'
+		'round trip (min)',
 	);
 	t.deepEqual(
 		bbox.max.map((v) => +v.toFixed(3)),
 		[0.5, 0.5, 0.5],
-		'round trip (max)'
+		'round trip (max)',
 	);
 });
 
@@ -88,7 +88,7 @@ test('encoding sparse', async (t) => {
 			mode: Primitive.Mode.TRIANGLES,
 			attributes: { POSITION: 0, _SPARSE: 1 },
 		},
-		'primitiveDef'
+		'primitiveDef',
 	);
 	t.is(accessorDefs[0].count, 6, 'POSITION count');
 	t.is(accessorDefs[1].count, 6, '_SPARSE count');

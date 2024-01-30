@@ -28,7 +28,7 @@ test('basic', async (t) => {
 	t.is(
 		(jsonDoc.json.textures[0].extensions['KHR_texture_basisu'] as GLTF.ITexture).source,
 		0,
-		'includes .source on KTX2 extension'
+		'includes .source on KTX2 extension',
 	);
 
 	// Read (roundtrip) from file.

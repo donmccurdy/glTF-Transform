@@ -51,7 +51,7 @@ test('getComponentType', (t) => {
 	t.throws(
 		() => accessor.setArray(new Int32Array() as unknown as TypedArray).getComponentType(),
 		undefined,
-		'int32 (throws)'
+		'int32 (throws)',
 	);
 });
 
@@ -67,7 +67,7 @@ test('getComponentSize', (t) => {
 	t.throws(
 		() => accessor.setArray(new Int32Array() as unknown as TypedArray).getComponentSize(),
 		undefined,
-		'int32 (throws)'
+		'int32 (throws)',
 	);
 });
 
@@ -108,7 +108,7 @@ test('interleaved', async (t) => {
 				500,
 
 				0, // pad
-			]).buffer
+			]).buffer,
 		),
 	};
 
@@ -256,7 +256,7 @@ test('write sparse', async (t) => {
 				byteOffset: 0,
 			},
 		},
-		'sparseAccessor json'
+		'sparseAccessor json',
 	);
 
 	const rtDocument = await io.readJSON({ json, resources });

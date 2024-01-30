@@ -30,12 +30,12 @@ test('basic', async (t) => {
 	t.deepEqual(
 		prim1.getAttribute('POSITION').getArray(),
 		new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0]),
-		'subset of vertices in prim1'
+		'subset of vertices in prim1',
 	);
 	t.deepEqual(
 		prim2.getAttribute('POSITION').getArray(),
 		new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 0]),
-		'subset of vertices in prim2'
+		'subset of vertices in prim2',
 	);
 	t.deepEqual(prim3.getAttribute('POSITION').getArray(), positionArray, 'original vertices in prim3');
 	t.is(doc.getRoot().listAccessors().length, 3, 'keeps only needed accessors');

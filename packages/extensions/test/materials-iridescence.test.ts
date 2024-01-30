@@ -40,7 +40,7 @@ test('basic', async (t) => {
 				iridescenceThicknessTexture: { index: 1 },
 			},
 		},
-		'writes iridescence extension'
+		'writes iridescence extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsIridescence.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -84,6 +84,6 @@ test('copy', (t) => {
 	t.is(
 		iridescence2.getIridescenceThicknessTexture().getName(),
 		'iridescenceThickness',
-		'copy iridescenceThicknessTexture'
+		'copy iridescenceThicknessTexture',
 	);
 });

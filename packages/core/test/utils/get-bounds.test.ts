@@ -19,6 +19,6 @@ test('@gltf-transform/functions::getBounds', (t) => {
 			min: [100, 100, 100],
 			max: [105, 105, 105],
 		},
-		'computes world bounds'
+		'computes world bounds',
 	);
 });

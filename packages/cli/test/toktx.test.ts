@@ -16,25 +16,25 @@ test('compress and resize', async (t) => {
 	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [508, 508]),
 		'--genmipmap --bcmp --resize 512x512',
-		'508x508+powerOfTwo → 512x512'
+		'508x508+powerOfTwo → 512x512',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [5, 3]),
 		'--genmipmap --bcmp --resize 4x4',
-		'5x3+powerOfTwo → 4x4'
+		'5x3+powerOfTwo → 4x4',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], R),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type R',
-		'channels → R'
+		'channels → R',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], G),
 		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type RG',
-		'channels → RG'
+		'channels → RG',
 	);
 });
 

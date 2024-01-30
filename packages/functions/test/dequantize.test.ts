@@ -52,21 +52,21 @@ function createScene(doc: Document): Scene {
 			doc
 				.createAccessor('POSITION')
 				.setType('VEC3')
-				.setArray(new Uint16Array([0, 0, 0, 10, 15, 8, 50, 50, 50, 15, 15, 0, 10, 10, 0]))
+				.setArray(new Uint16Array([0, 0, 0, 10, 15, 8, 50, 50, 50, 15, 15, 0, 10, 10, 0])),
 		)
 		.setAttribute(
 			'JOINTS_0',
 			doc
 				.createAccessor('JOINTS_0')
 				.setType('VEC4')
-				.setArray(new Uint8Array([0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0]))
+				.setArray(new Uint8Array([0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0])),
 		)
 		.setAttribute(
 			'WEIGHTS_0',
 			doc
 				.createAccessor('WEIGHTS_0')
 				.setType('VEC4')
-				.setArray(new Uint8Array([255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0]))
+				.setArray(new Uint8Array([255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0])),
 		);
 
 	const scene = doc.createScene();

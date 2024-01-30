@@ -57,7 +57,7 @@ test('basic', async (t) => {
 			'test:Foo': true,
 			'dc:Creator': { '@list': ['Acme, Inc.'] },
 		},
-		'serialize to JSON LD'
+		'serialize to JSON LD',
 	);
 
 	// Deserialize.
@@ -140,56 +140,56 @@ test('i/o', async (t) => {
 		{
 			KHR_xmp_json_ld: { packets: [MOCK_JSONLD_PACKET, MOCK_JSONLD_PACKET] },
 		},
-		'writes packets'
+		'writes packets',
 	);
 	t.deepEqual(
 		jsonDocument.json.asset.extensions,
 		{
 			KHR_xmp_json_ld: { packet: 0 },
 		},
-		'writes to asset'
+		'writes to asset',
 	);
 	t.deepEqual(
 		jsonDocument.json.nodes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to node'
+		'writes to node',
 	);
 	t.deepEqual(
 		jsonDocument.json.scenes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to scene'
+		'writes to scene',
 	);
 	t.deepEqual(
 		jsonDocument.json.meshes[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to mesh'
+		'writes to mesh',
 	);
 	t.deepEqual(
 		jsonDocument.json.materials[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to material'
+		'writes to material',
 	);
 	t.deepEqual(
 		jsonDocument.json.images[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to image'
+		'writes to image',
 	);
 	t.deepEqual(
 		jsonDocument.json.animations[0].extensions,
 		{
 			KHR_xmp_json_ld: { packet: 1 },
 		},
-		'writes to animation'
+		'writes to animation',
 	);
 
 	// Deserialize.

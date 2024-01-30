@@ -40,7 +40,7 @@ test('basic', async (t) => {
 				attributes: { TRANSLATION: 0, _CUSTOM: 1 },
 			},
 		},
-		'attaches batch'
+		'attaches batch',
 	);
 	t.is(jsonDoc.json.accessors[0].bufferView, 0, 'buffer view assignment (1/4)');
 	t.is(jsonDoc.json.accessors[1].bufferView, 0, 'buffer view assignment (2/4)');

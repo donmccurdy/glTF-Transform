@@ -32,7 +32,7 @@ test('basic', async (t) => {
 				aspectRatio: 0.5,
 			},
 		},
-		'perspective camera'
+		'perspective camera',
 	);
 
 	t.deepEqual(
@@ -47,7 +47,7 @@ test('basic', async (t) => {
 				ymag: 25,
 			},
 		},
-		'orthographic camera'
+		'orthographic camera',
 	);
 });
 

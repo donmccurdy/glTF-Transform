@@ -64,7 +64,7 @@ test('textures', async (t) => {
 	t.deepEqual(
 		extensionsUsed,
 		[KHRMaterialsIOR.EXTENSION_NAME, KHRMaterialsSpecular.EXTENSION_NAME],
-		'uses KHR_materials_ior and KHR_materials_specular'
+		'uses KHR_materials_ior and KHR_materials_specular',
 	);
 	t.truthy(specGloss.isDisposed(), 'disposes PBRSpecularGlossiness');
 	t.truthy(baseColorTex.isDisposed(), 'disposes baseColorTexture');
@@ -73,19 +73,19 @@ test('textures', async (t) => {
 	t.deepEqual(
 		Array.from((await getPixels(mat.getBaseColorTexture().getImage(), 'image/png')).data as Uint8Array),
 		Array.from(DIFFUSE.data),
-		'diffuse -> baseColor'
+		'diffuse -> baseColor',
 	);
 	t.deepEqual(
 		Array.from((await getPixels(mat.getMetallicRoughnessTexture().getImage(), 'image/png')).data as Uint8Array),
 		Array.from(ROUGH.data),
-		'spec -> rough'
+		'spec -> rough',
 	);
 	t.deepEqual(
 		Array.from(
-			(await getPixels(specularExtension.getSpecularTexture().getImage(), 'image/png')).data as Uint8Array
+			(await getPixels(specularExtension.getSpecularTexture().getImage(), 'image/png')).data as Uint8Array,
 		),
 		Array.from(SPEC.data),
-		'spec -> spec'
+		'spec -> spec',
 	);
 	t.is(mat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1000, 'ior = 1000');
 	t.is(mat.getRoughnessFactor(), 1, 'roughnessFactor = 1');
@@ -119,14 +119,14 @@ test('factors', async (t) => {
 	t.deepEqual(
 		extensionsUsed,
 		[KHRMaterialsIOR.EXTENSION_NAME, KHRMaterialsSpecular.EXTENSION_NAME],
-		'uses KHR_materials_ior and KHR_materials_specular'
+		'uses KHR_materials_ior and KHR_materials_specular',
 	);
 	t.deepEqual(mat.getBaseColorFactor(), [0, 1, 0, 0.5], 'baseColorFactor = diffuseFactor');
 	t.is(mat.getExtension<Specular>('KHR_materials_specular').getSpecularFactor(), 1, 'specularFactor = 1');
 	t.deepEqual(
 		mat.getExtension<Specular>('KHR_materials_specular').getSpecularColorFactor(),
 		[1, 0.5, 0.5],
-		'specularColorFactor = specularFactor'
+		'specularColorFactor = specularFactor',
 	);
 	t.is(mat.getExtension<IOR>('KHR_materials_ior').getIOR(), 1000, 'ior = 1000');
 	t.is(mat.getRoughnessFactor().toFixed(3), '0.100', 'roughnessFactor = 1 - glossFactor');

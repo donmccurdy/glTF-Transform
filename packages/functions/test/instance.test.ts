@@ -30,7 +30,7 @@ test('translation', async (t) => {
 	t.deepEqual(
 		batch.getAttribute('TRANSLATION').getArray(),
 		new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, 2]),
-		'sets batch translation'
+		'sets batch translation',
 	);
 	t.is(batch.getAttribute('TRANSLATION').getBuffer(), buffer, 'sets batch buffer');
 	t.falsy(batch.getAttribute('ROTATION'), 'skips batch rotation');
@@ -64,7 +64,7 @@ test('rotation', async (t) => {
 	t.deepEqual(
 		batch.getAttribute('ROTATION').getArray(),
 		new Float32Array([0, 0, 0, 1, x, 0, 0, x, 0, x, 0, x]),
-		'sets batch rotation'
+		'sets batch rotation',
 	);
 	t.is(batch.getAttribute('ROTATION').getBuffer(), buffer, 'sets batch buffer');
 	t.falsy(batch.getAttribute('TRANSLATION'), 'skips batch translation');
@@ -97,7 +97,7 @@ test('scale', async (t) => {
 	t.deepEqual(
 		batch.getAttribute('SCALE').getArray(),
 		new Float32Array([1, 1, 1, 2, 2, 2, 1, 1, 5]),
-		'sets batch scale'
+		'sets batch scale',
 	);
 	t.is(batch.getAttribute('SCALE').getBuffer(), buffer, 'sets batch buffer');
 	t.falsy(batch.getAttribute('TRANSLATION'), 'skips batch translation');

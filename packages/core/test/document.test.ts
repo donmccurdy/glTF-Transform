@@ -6,7 +6,7 @@ test('transform', async (t) => {
 
 	await document.transform(
 		(c) => c.createTexture(''),
-		(c) => c.createBuffer('')
+		(c) => c.createBuffer(''),
 	);
 
 	t.is(document.getRoot().listTextures().length, 1, 'transform 1');
@@ -32,7 +32,7 @@ test('clone', (t) => {
 	t.not(
 		document2.getRoot().listMaterials()[0],
 		document1.getRoot().listMaterials()[0],
-		'does not reference old material'
+		'does not reference old material',
 	);
 });
 

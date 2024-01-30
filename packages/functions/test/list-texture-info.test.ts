@@ -19,14 +19,14 @@ test('listTextureInfo', (t) => {
 			.map((info) => info.getName())
 			.sort(),
 		['baseColorTextureInfo', 'sheenRoughnessTextureInfo'],
-		'texture A'
+		'texture A',
 	);
 	t.deepEqual(
 		listTextureInfo(textureB)
 			.map((info) => info.getName())
 			.sort(),
 		['metallicRoughnessTextureInfo', 'occlusionTextureInfo'],
-		'texture B'
+		'texture B',
 	);
 });
 

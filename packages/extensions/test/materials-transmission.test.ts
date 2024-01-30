@@ -32,7 +32,7 @@ test('basic', async (t) => {
 				transmissionTexture: { index: 0 },
 			},
 		},
-		'writes transmission extension'
+		'writes transmission extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsTransmission.EXTENSION_NAME], 'writes extensionsUsed');
 

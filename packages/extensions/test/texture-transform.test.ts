@@ -18,13 +18,13 @@ test('basic', async (t) => {
 		.getBaseColorTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
-			transformExtension.createTransform().setTexCoord(2).setScale([100, 100])
+			transformExtension.createTransform().setTexCoord(2).setScale([100, 100]),
 		);
 	mat.setEmissiveTexture(tex2)
 		.getEmissiveTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
-			transformExtension.createTransform().setTexCoord(1).setOffset([0.5, 0.5]).setRotation(Math.PI)
+			transformExtension.createTransform().setTexCoord(1).setOffset([0.5, 0.5]).setRotation(Math.PI),
 		);
 	mat.setOcclusionTexture(tex3);
 
@@ -54,7 +54,7 @@ test('basic', async (t) => {
 	t.falsy(mat.getBaseColorTextureInfo().getExtension('KHR_texture_transform'), 'clears baseColorTexture transform');
 	t.falsy(
 		mat.getEmissiveTextureInfo().getExtension('KHR_texture_transform'),
-		'clears emissiveColorTexture transform'
+		'clears emissiveColorTexture transform',
 	);
 });
 
@@ -71,14 +71,14 @@ test('clone', (t) => {
 		.getBaseColorTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
-			transformExtension.createTransform().setTexCoord(2).setScale([100, 100])
+			transformExtension.createTransform().setTexCoord(2).setScale([100, 100]),
 		);
 	srcMat
 		.setEmissiveTexture(tex2)
 		.getEmissiveTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
-			transformExtension.createTransform().setTexCoord(1).setOffset([0.5, 0.5]).setRotation(Math.PI)
+			transformExtension.createTransform().setTexCoord(1).setOffset([0.5, 0.5]).setRotation(Math.PI),
 		);
 	srcMat.setOcclusionTexture(tex3);
 
@@ -130,7 +130,7 @@ test('i/o', async (t) => {
 		.getEmissiveTextureInfo()
 		.setExtension(
 			'KHR_texture_transform',
-			transformExtension.createTransform().setTexCoord(0).setOffset([0.5, 0.5]).setRotation(Math.PI)
+			transformExtension.createTransform().setTexCoord(0).setOffset([0.5, 0.5]).setRotation(Math.PI),
 		);
 
 	const jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
@@ -141,11 +141,11 @@ test('i/o', async (t) => {
 	t.deepEqual(
 		baseColorTextureInfoDef.extensions,
 		{ KHR_texture_transform: { scale: [100, 100] } }, // omit texCoord!
-		'base color texture info'
+		'base color texture info',
 	);
 	t.deepEqual(
 		emissiveTextureInfoDef.extensions,
 		{ KHR_texture_transform: { texCoord: 0, offset: [0.5, 0.5], rotation: Math.PI } },
-		'emissive texture info'
+		'emissive texture info',
 	);
 });

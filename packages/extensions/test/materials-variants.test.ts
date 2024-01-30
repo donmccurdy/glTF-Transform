@@ -18,7 +18,7 @@ test('basic', async (t) => {
 		.addMapping(variantsExtension.createMapping().setMaterial(mat3).addVariant(var3));
 
 	doc.createMesh('Varies').addPrimitive(
-		doc.createPrimitive().setMaterial(mat1).setExtension('KHR_materials_variants', mappingList)
+		doc.createPrimitive().setMaterial(mat1).setExtension('KHR_materials_variants', mappingList),
 	);
 	doc.createMesh('Static').addPrimitive(doc.createPrimitive().setMaterial(mat1));
 
@@ -38,7 +38,7 @@ test('basic', async (t) => {
 			.listExtensionsUsed()
 			.map((e) => e.extensionName),
 		['KHR_materials_variants'],
-		'has extension'
+		'has extension',
 	);
 	t.truthy(rtPrim1.getExtension('KHR_materials_variants'));
 	t.falsy(rtPrim2.getExtension('KHR_materials_variants'));
@@ -47,12 +47,12 @@ test('basic', async (t) => {
 	t.deepEqual(
 		rtMappingList.listMappings().map((mapping) => mapping.getMaterial().getName()),
 		['Damaged1', 'Damaged2'],
-		'mapping materials'
+		'mapping materials',
 	);
 	t.deepEqual(
 		rtMappingList.listMappings().map((mapping) => mapping.listVariants().map((variant) => variant.getName())),
 		[['Damaged1'], ['Damaged2']],
-		'mapping variants'
+		'mapping variants',
 	);
 
 	//

@@ -29,7 +29,7 @@ test('basic', async (t) => {
 	t.is(
 		(jsonDoc.json.textures[0].extensions['EXT_texture_avif'] as GLTF.ITexture).source,
 		0,
-		'includes .source on AVIF extension'
+		'includes .source on AVIF extension',
 	);
 
 	// Read (roundtrip) from file.

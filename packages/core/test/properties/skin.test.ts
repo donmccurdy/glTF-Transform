@@ -19,7 +19,7 @@ test('basic', async (t) => {
 				2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1,
 
 				3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1,
-			])
+			]),
 		);
 
 	const skin = document
@@ -53,7 +53,7 @@ test('basic', async (t) => {
 			skin: 0,
 			children: [0, 1, 2],
 		},
-		'attaches skin to node'
+		'attaches skin to node',
 	);
 
 	t.deepEqual(
@@ -64,7 +64,7 @@ test('basic', async (t) => {
 			joints: [0, 1, 2],
 			skeleton: 0,
 		},
-		'defines skin'
+		'defines skin',
 	);
 
 	const ibmAccessor = jsonDoc.json.accessors[jsonDoc.json.skins[0].inverseBindMatrices];

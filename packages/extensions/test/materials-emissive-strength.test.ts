@@ -25,7 +25,7 @@ test('basic', async (t) => {
 	t.deepEqual(
 		materialDef.extensions,
 		{ KHR_materials_emissive_strength: { emissiveStrength: 5.0 } },
-		'writes emissive strength extension'
+		'writes emissive strength extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsEmissiveStrength.EXTENSION_NAME], 'writes extensionsUsed');
 
@@ -38,7 +38,7 @@ test('basic', async (t) => {
 	t.is(
 		roundtripMat.getExtension<EmissiveStrength>('KHR_materials_emissive_strength').getEmissiveStrength(),
 		5.0,
-		'reads emissive strength'
+		'reads emissive strength',
 	);
 });
 

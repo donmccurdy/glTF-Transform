@@ -56,7 +56,7 @@ test('textures', async (t) => {
 				anisotropyTexture: { index: 0 },
 			},
 		},
-		'writes anisotropy extension'
+		'writes anisotropy extension',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMaterialsAnisotropy.EXTENSION_NAME], 'writes extensionsUsed');
 
