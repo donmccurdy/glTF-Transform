@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRTextureTransform, Transform } from '@gltf-transform/extensions';
+import { KHRMaterialsClearcoat, KHRTextureTransform, Transform } from '@gltf-transform/extensions';
+import { logger } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -148,4 +149,44 @@ test('i/o', async (t) => {
 		{ KHR_texture_transform: { texCoord: 0, offset: [0.5, 0.5], rotation: Math.PI } },
 		'emissive texture info',
 	);
+});
+
+test('order independence', async (t) => {
+	const documentA = new Document().setLogger(logger);
+	const documentB = new Document().setLogger(logger);
+
+	documentA.createBuffer();
+	documentB.createBuffer();
+
+	// KHR_texture_transform before KHR_materials_clearcoat
+	const ioA = new NodeIO().setLogger(logger).registerExtensions([KHRTextureTransform, KHRMaterialsClearcoat]);
+	const transformExtensionA = documentA.createExtension(KHRTextureTransform);
+	const clearcoatExtensionA = documentA.createExtension(KHRMaterialsClearcoat);
+
+	// KHR_materials_clearcoat before KHR_texture_transform
+	const ioB = new NodeIO().setLogger(logger).registerExtensions([KHRMaterialsClearcoat, KHRTextureTransform]);
+	const clearcoatExtensionB = documentB.createExtension(KHRMaterialsClearcoat);
+	const transformExtensionB = documentB.createExtension(KHRTextureTransform);
+
+	const fixtures = [
+		[documentA, transformExtensionA, clearcoatExtensionA],
+		[documentB, transformExtensionB, clearcoatExtensionB],
+	] as [Document, KHRTextureTransform, KHRMaterialsClearcoat][];
+
+	for (const [document, transformExtension, clearcoatExtension] of fixtures) {
+		const texture = document.createTexture().setMimeType('image/png').setImage(new Uint8Array(10));
+		const transform = transformExtension.createTransform().setScale([100, 100]);
+		const material = document.createMaterial().setBaseColorTexture(texture);
+		material.getBaseColorTextureInfo()!.setExtension('KHR_texture_transform', transform);
+
+		const clearcoat = clearcoatExtension.createClearcoat().setClearcoatTexture(texture);
+		clearcoat.getClearcoatTextureInfo()!.setExtension('KHR_texture_transform', transform);
+		material.setExtension('KHR_materials_clearcoat', clearcoat);
+	}
+
+	const { json: jsonA } = await ioA.writeJSON(documentA);
+	const { json: jsonB } = await ioB.writeJSON(documentB);
+
+	t.deepEqual(jsonA.materials, jsonB.materials, 'jsonA.materials == jsonB.materials');
+	t.deepEqual(jsonA.textures, jsonB.textures, 'jsonA.textures == jsonB.textures');
 });
