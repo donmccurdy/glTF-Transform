@@ -77,7 +77,7 @@ export class WriterContext {
 	constructor(
 		private readonly _doc: Document,
 		public readonly jsonDoc: JSONDocument,
-		public readonly options: Required<WriterOptions>
+		public readonly options: Required<WriterOptions>,
 	) {
 		const root = _doc.getRoot();
 		const numBuffers = root.listBuffers().length;
@@ -85,7 +85,7 @@ export class WriterContext {
 		this.bufferURIGenerator = new UniqueURIGenerator(numBuffers > 1, () => options.basename || 'buffer');
 		this.imageURIGenerator = new UniqueURIGenerator(
 			numImages > 1,
-			(texture) => getSlot(_doc, texture) || options.basename || 'texture'
+			(texture) => getSlot(_doc, texture) || options.basename || 'texture',
 		);
 		this.logger = _doc.getLogger();
 	}
@@ -158,7 +158,7 @@ export class WriterContext {
 			.some(
 				(edge) =>
 					(edge.getName() === 'attributes' && edge.getAttributes().key === 'POSITION') ||
-					edge.getName() === 'input'
+					edge.getName() === 'input',
 			);
 		if (needsBounds) {
 			accessorDef.max = accessor.getMax([]).map(Math.fround);
@@ -243,7 +243,10 @@ export class WriterContext {
 export class UniqueURIGenerator<T extends Texture | Buffer> {
 	private counter = {} as Record<string, number>;
 
-	constructor(private readonly multiple: boolean, private readonly basename: (t: T) => string) {}
+	constructor(
+		private readonly multiple: boolean,
+		private readonly basename: (t: T) => string,
+	) {}
 
 	public createURI(object: T, extension: string): string {
 		if (object.getURI()) {

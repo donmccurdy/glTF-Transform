@@ -55,7 +55,7 @@ function partitionMeshes(doc: Document, logger: ILogger, options: PartitionOptio
 		doc
 			.getRoot()
 			.listBuffers()
-			.map((b) => b.getURI())
+			.map((b) => b.getURI()),
 	);
 
 	doc.getRoot()
@@ -88,7 +88,7 @@ function partitionAnimations(doc: Document, logger: ILogger, options: PartitionO
 		doc
 			.getRoot()
 			.listBuffers()
-			.map((b) => b.getURI())
+			.map((b) => b.getURI()),
 	);
 
 	doc.getRoot()

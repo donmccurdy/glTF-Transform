@@ -22,7 +22,7 @@ export async function inspect(
 	jsonDoc: JSONDocument,
 	io: NodeIO | WebIO,
 	logger: ILogger,
-	format: TableFormat
+	format: TableFormat,
 ): Promise<void> {
 	// Summary (does not require parsing).
 	const extensionsUsed = jsonDoc.json.extensionsUsed || [];
@@ -37,8 +37,8 @@ export async function inspect(
 				['generator', jsonDoc.json.asset.generator || ''],
 				['extensionsUsed', extensionsUsed.join(', ') || 'none'],
 				['extensionsRequired', extensionsRequired.join(', ') || 'none'],
-			]
-		)) + '\n\n'
+			],
+		)) + '\n\n',
 	);
 
 	// Parse.
@@ -58,8 +58,8 @@ export async function inspect(
 			(await formatTable(
 				format,
 				['key', 'value'],
-				rootPacket.listProperties().map((name) => [name, formatXMP(rootPacket.getProperty(name)) as string])
-			)) + '\n\n'
+				rootPacket.listProperties().map((name) => [name, formatXMP(rootPacket.getProperty(name)) as string]),
+			)) + '\n\n',
 		);
 	}
 
@@ -76,7 +76,7 @@ async function reportSection(
 	type: string,
 	format: TableFormat,
 	logger: ILogger,
-	section: InspectPropertyReport<AnyPropertyReport>
+	section: InspectPropertyReport<AnyPropertyReport>,
 ) {
 	const properties = section.properties;
 
@@ -128,7 +128,7 @@ function getFootnotes(type: string, rows: string[][], header: string[]): string[
 		footnotes.push(
 			'¹ size estimates GPU memory required by a mesh, in isolation. If accessors are\n' +
 				'  shared by other mesh primitives, but the meshes themselves are not reused, then\n' +
-				'  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".'
+				'  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".',
 		);
 	}
 	if (type === 'textures') {
@@ -137,7 +137,7 @@ function getFootnotes(type: string, rows: string[][], header: string[]): string[
 		}
 		footnotes.push(
 			'¹ gpuSize estimates minimum VRAM memory allocation. Older devices may require\n' +
-				'  additional memory for GPU compression formats.'
+				'  additional memory for GPU compression formats.',
 		);
 	}
 	return footnotes;

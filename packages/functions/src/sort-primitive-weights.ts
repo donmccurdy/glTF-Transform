@@ -145,7 +145,7 @@ function getVertexArray(
 	vertexIndex: number,
 	prefix: string,
 	target: TypedArray,
-	normalizedComponentType?: GLTF.AccessorComponentType
+	normalizedComponentType?: GLTF.AccessorComponentType,
 ): TypedArray {
 	let weights: Accessor | null;
 	const el = [0, 0, 0, 0] as vec4;
@@ -168,7 +168,7 @@ function setVertexArray(
 	vertexIndex: number,
 	prefix: string,
 	values: TypedArray,
-	normalizedComponentType?: GLTF.AccessorComponentType
+	normalizedComponentType?: GLTF.AccessorComponentType,
 ): void {
 	let weights: Accessor | null;
 	const el = [0, 0, 0, 0] as vec4;

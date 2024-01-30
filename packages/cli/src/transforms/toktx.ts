@@ -235,7 +235,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				const outBytes = texture.getImage()!.byteLength;
 				logger.debug(`${prefix}: ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes`);
-			})
+			}),
 		);
 
 		await Promise.all(promises);
@@ -268,7 +268,7 @@ function createParams(
 	logger: ILogger,
 	numTextures: number,
 	options: ETC1SOptions | UASTCOptions,
-	version: string
+	version: string,
 ): (string | number)[] {
 	const params: (string | number)[] = [];
 	params.push('--genmipmap');
@@ -348,7 +348,7 @@ function createParams(
 		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
 			logger.warn(
 				`toktx: Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
-					' fail in older APIs (including WebGL 1.0) on certain devices.'
+					' fail in older APIs (including WebGL 1.0) on certain devices.',
 			);
 		}
 		width = isMultipleOfFour(size[0]) ? size[0] : ceilMultipleOfFour(size[0]);
@@ -360,7 +360,7 @@ function createParams(
 			logger.warn(
 				`toktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
 					' greater than 4096px may not render on some mobile devices.' +
-					' Resize to a lower resolution before compressing, if needed.'
+					' Resize to a lower resolution before compressing, if needed.',
 			);
 		}
 		params.push('--resize', `${width}x${height}`);
@@ -378,7 +378,7 @@ function createParams(
 async function checkKTXSoftware(logger: ILogger): Promise<string> {
 	if (!(await commandExists('toktx')) && !process.env.CI) {
 		throw new Error(
-			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software'
+			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software',
 		);
 	}
 

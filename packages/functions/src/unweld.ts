@@ -68,7 +68,7 @@ function unweldAttribute(
 	srcAttribute: Accessor,
 	indices: Accessor,
 	logger: ILogger,
-	visited: Map<Accessor, Map<Accessor, Accessor>>
+	visited: Map<Accessor, Map<Accessor, Accessor>>,
 ): Accessor {
 	if (visited.has(srcAttribute) && visited.get(srcAttribute)!.has(indices)) {
 		logger.debug(`${NAME}: Cache hit for reused attribute, "${srcAttribute.getName()}".`);

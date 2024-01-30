@@ -351,7 +351,7 @@ function checkTTY(error: unknown, logger: ILogger) {
 	if ((error as { isTtyError?: boolean }).isTtyError) {
 		logger.warn(
 			'Unable to run "inquirer" session in this terminal environment.' +
-				' Try another terminal or provide a --packet JSON-LD input.'
+				' Try another terminal or provide a --packet JSON-LD input.',
 		);
 	}
 }

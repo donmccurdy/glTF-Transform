@@ -89,7 +89,7 @@ export class GLTFWriter {
 			accessors: Accessor[],
 			bufferIndex: number,
 			bufferByteOffset: number,
-			bufferViewTarget?: number
+			bufferViewTarget?: number,
 		): BufferViewResult {
 			const buffers: Uint8Array[] = [];
 			let byteLength = 0;
@@ -137,7 +137,7 @@ export class GLTFWriter {
 		function interleaveAccessors(
 			accessors: Accessor[],
 			bufferIndex: number,
-			bufferByteOffset: number
+			bufferByteOffset: number,
 		): BufferViewResult {
 			const vertexCount = accessors[0].getCount();
 			let byteStride = 0;
@@ -223,7 +223,7 @@ export class GLTFWriter {
 		function concatSparseAccessors(
 			accessors: Accessor[],
 			bufferIndex: number,
-			bufferByteOffset: number
+			bufferByteOffset: number,
 		): BufferViewResult {
 			const buffers: Uint8Array[] = [];
 			let byteLength = 0;
@@ -617,7 +617,7 @@ export class GLTFWriter {
 				const textureInfo = material.getNormalTextureInfo()!;
 				const textureInfoDef = context.createTextureInfoDef(
 					texture,
-					textureInfo
+					textureInfo,
 				) as GLTF.IMaterialNormalTextureInfo;
 				if (material.getNormalScale() !== 1) {
 					textureInfoDef.scale = material.getNormalScale();
@@ -630,7 +630,7 @@ export class GLTFWriter {
 				const textureInfo = material.getOcclusionTextureInfo()!;
 				const textureInfoDef = context.createTextureInfoDef(
 					texture,
-					textureInfo
+					textureInfo,
 				) as GLTF.IMaterialOcclusionTextureInfo;
 				if (material.getOcclusionStrength() !== 1) {
 					textureInfoDef.strength = material.getOcclusionStrength();
@@ -643,7 +643,7 @@ export class GLTFWriter {
 				const textureInfo = material.getMetallicRoughnessTextureInfo()!;
 				materialDef.pbrMetallicRoughness.metallicRoughnessTexture = context.createTextureInfoDef(
 					texture,
-					textureInfo
+					textureInfo,
 				);
 			}
 
@@ -679,7 +679,7 @@ export class GLTFWriter {
 
 				for (const semantic of primitive.listSemantics()) {
 					primitiveDef.attributes[semantic] = context.accessorIndexMap.get(
-						primitive.getAttribute(semantic)!
+						primitive.getAttribute(semantic)!,
 					)!;
 				}
 

@@ -61,7 +61,7 @@ export function decodeAttribute(
 	decoder: Decoder,
 	mesh: Mesh,
 	attribute: Attribute,
-	accessorDef: GLTF.IAccessor
+	accessorDef: GLTF.IAccessor,
 ): TypedArray {
 	const dataType = DATA_TYPE[accessorDef.componentType];
 	const ArrayCtor = COMPONENT_ARRAY[accessorDef.componentType];
