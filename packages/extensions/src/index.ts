@@ -6,6 +6,7 @@ import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
 import { KHRLightsPunctual } from './khr-lights-punctual/index.js';
 import { KHRMaterialsAnisotropy } from './khr-materials-anisotropy/index.js';
 import { KHRMaterialsClearcoat } from './khr-materials-clearcoat/index.js';
+import { KHRMaterialsDispersion } from './khr-materials-dispersion/index.js';
 import { KHRMaterialsEmissiveStrength } from './khr-materials-emissive-strength/index.js';
 import { KHRMaterialsIOR } from './khr-materials-ior/index.js';
 import { KHRMaterialsIridescence } from './khr-materials-iridescence/index.js';
@@ -26,6 +27,7 @@ export const KHRONOS_EXTENSIONS = [
 	KHRLightsPunctual,
 	KHRMaterialsAnisotropy,
 	KHRMaterialsClearcoat,
+	KHRMaterialsDispersion,
 	KHRMaterialsEmissiveStrength,
 	KHRMaterialsIOR,
 	KHRMaterialsIridescence,
@@ -58,6 +60,7 @@ export * from './khr-draco-mesh-compression/index.js';
 export * from './khr-lights-punctual/index.js';
 export * from './khr-materials-anisotropy/index.js';
 export * from './khr-materials-clearcoat/index.js';
+export * from './khr-materials-dispersion/index.js';
 export * from './khr-materials-emissive-strength/index.js';
 export * from './khr-materials-ior/index.js';
 export * from './khr-materials-iridescence/index.js';
