@@ -1,7 +1,8 @@
 import { Document } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
+import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import { Task } from '../constants';
-import { LOGGER, createTorusKnotPrimitive } from '../utils';
+import { LOGGER } from '../utils';
 
 let _document: Document;
 
