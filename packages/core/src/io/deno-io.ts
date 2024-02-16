@@ -45,16 +45,10 @@ export class DenoIO extends PlatformIO {
 	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
 	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
-		// TODO(cleanup): The @ts-ignore rules below are necessary for typedoc, but not for normal
-		// compilation with microbundle. Clean this up when possible.
 		switch (type) {
 			case 'view':
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				return Deno.readFile(uri);
 			case 'text':
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				return Deno.readTextFile(uri);
 		}
 	}

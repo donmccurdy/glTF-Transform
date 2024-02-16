@@ -44,7 +44,8 @@ export interface PruneOptions {
 	/** Whether to keep single-color textures that can be converted to material factors. */
 	keepSolidTextures?: boolean;
 }
-const PRUNE_DEFAULTS: Required<PruneOptions> = {
+
+export const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	propertyTypes: [
 		PropertyType.NODE,
 		PropertyType.SKIN,
@@ -59,9 +60,9 @@ const PRUNE_DEFAULTS: Required<PruneOptions> = {
 		PropertyType.BUFFER,
 	],
 	keepLeaves: false,
-	keepAttributes: true,
-	keepIndices: true,
-	keepSolidTextures: true,
+	keepAttributes: false,
+	keepIndices: false,
+	keepSolidTextures: false,
 };
 
 /**

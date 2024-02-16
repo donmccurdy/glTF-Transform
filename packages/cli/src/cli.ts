@@ -54,6 +54,7 @@ import {
 	PALETTE_DEFAULTS,
 	MESHOPT_DEFAULTS,
 	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
+	PRUNE_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -520,22 +521,22 @@ that are children of a scene.
 	.argument('<output>', OUTPUT_DESC)
 	.option('--keep-attributes <keepAttributes>', 'Whether to keep unused vertex attributes', {
 		validator: Validator.BOOLEAN,
-		default: true, // TODO(v4): Default false.
+		default: PRUNE_DEFAULTS.keepAttributes,
 	})
 	.option('--keep-indices <keepIndices>', 'Whether to keep unused mesh indices', {
 		validator: Validator.BOOLEAN,
-		default: true, // TODO(v4): Default false.
+		default: PRUNE_DEFAULTS.keepIndices,
 	})
 	.option('--keep-leaves <keepLeaves>', 'Whether to keep empty leaf nodes', {
 		validator: Validator.BOOLEAN,
-		default: false,
+		default: PRUNE_DEFAULTS.keepLeaves,
 	})
 	.option(
 		'--keep-solid-textures <keepSolidTextures>',
 		'Whether to keep solid (single-color) textures, or convert to material factors',
 		{
 			validator: Validator.BOOLEAN,
-			default: true, // TODO(v4): Default false.
+			default: PRUNE_DEFAULTS.keepSolidTextures,
 		},
 	)
 	.action(({ args, options, logger }) =>
