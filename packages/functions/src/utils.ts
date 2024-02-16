@@ -15,7 +15,7 @@ import {
 import { cleanPrimitive } from './clean-primitive.js';
 
 /**
- * Prepares a function used in an {@link Document.transform} pipeline. Use of this wrapper is
+ * Prepares a function used in an {@link Document#transform} pipeline. Use of this wrapper is
  * optional, and plain functions may be used in transform pipelines just as well. The wrapper is
  * used internally so earlier pipeline stages can detect and optimize based on later stages.
  * @hidden

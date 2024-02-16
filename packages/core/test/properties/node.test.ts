@@ -141,3 +141,22 @@ test('identity transforms', async (t) => {
 		'has transform info',
 	);
 });
+
+test('getParentNode', (t) => {
+	const srcDocument = new Document();
+	const srcNodeA = srcDocument.createNode('A');
+	const srcNodeB = srcDocument.createNode('B');
+	const srcNodeC = srcDocument.createNode('C');
+	srcNodeA.addChild(srcNodeB).addChild(srcNodeC);
+
+	t.deepEqual(srcNodeA.listChildren(), [srcNodeB, srcNodeC], 'a.listChildren()');
+	t.is(srcNodeB.getParentNode(), srcNodeA, 'b.getParentNode()');
+	t.is(srcNodeC.getParentNode(), srcNodeA, 'c.getParentNode()');
+
+	const dstDocument = srcDocument.clone();
+	const [dstNodeA, dstNodeB, dstNodeC] = dstDocument.getRoot().listNodes();
+
+	t.deepEqual(dstNodeA.listChildren(), [dstNodeB, dstNodeC], 'a.listChildren()');
+	t.is(dstNodeB.getParentNode(), dstNodeA, 'b.getParentNode()');
+	t.is(dstNodeC.getParentNode(), dstNodeA, 'c.getParentNode()');
+});

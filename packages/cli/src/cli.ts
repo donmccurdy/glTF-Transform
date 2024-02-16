@@ -10,6 +10,7 @@ import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gl
 import {
 	CenterOptions,
 	InstanceOptions,
+	INSTANCE_DEFAULTS,
 	PartitionOptions,
 	PruneOptions,
 	QUANTIZE_DEFAULTS,
@@ -250,7 +251,7 @@ commands or using the scripting API.
 	})
 	.option('--instance-min <min>', 'Number of instances required for instancing.', {
 		validator: Validator.NUMBER,
-		default: 5,
+		default: INSTANCE_DEFAULTS.min,
 	})
 	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
 		validator: Validator.BOOLEAN,
@@ -262,7 +263,7 @@ commands or using the scripting API.
 			'material values are found, no palettes will be generated.',
 		{
 			validator: Validator.NUMBER,
-			default: 5,
+			default: PALETTE_DEFAULTS.min,
 		},
 	)
 	.option('--simplify <bool>', 'Simplify mesh geometry with meshoptimizer.', {
@@ -647,6 +648,15 @@ https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/EXT_mesh_
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
+	.option(
+		'--min <count>',
+		'Minimum number of meshes in a batch. If fewer compatible meshes ' +
+			'are found, no instanced batches will be generated.',
+		{
+			validator: Validator.NUMBER,
+			default: INSTANCE_DEFAULTS.min,
+		},
+	)
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(instance({ ...options } as InstanceOptions)),
 	);

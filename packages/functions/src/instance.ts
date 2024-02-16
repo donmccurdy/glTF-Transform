@@ -5,12 +5,12 @@ import { createTransform } from './utils.js';
 const NAME = 'instance';
 
 export interface InstanceOptions {
-	/** Minimum number of meshes considered eligible for instancing. Default: 2. */
+	/** Minimum number of meshes considered eligible for instancing. Default: 5. */
 	min?: number;
 }
 
-const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
-	min: 2,
+export const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
+	min: 5,
 };
 
 /**
@@ -26,7 +26,7 @@ const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
  *
  * await document.transform(
  * 	dedup(),
- * 	instance({min: 2}),
+ * 	instance({min: 5}),
  * );
  * ```
  *
@@ -94,21 +94,29 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 					if (!MathUtils.eq(t, [0, 0, 0])) needsTranslation = true;
 					if (!MathUtils.eq(r, [0, 0, 0, 1])) needsRotation = true;
 					if (!MathUtils.eq(s, [1, 1, 1])) needsScale = true;
-
-					// Mark the node for cleanup.
-					node.setMesh(null);
-					modifiedNodes.push(node);
 				}
 
 				if (!needsTranslation) batchTranslation.dispose();
 				if (!needsRotation) batchRotation.dispose();
 				if (!needsScale) batchScale.dispose();
 
-				pruneUnusedNodes(modifiedNodes, logger);
+				if (!needsTranslation && !needsRotation && !needsScale) {
+					batchNode.dispose();
+					batch.dispose();
+					continue;
+				}
+
+				// Mark nodes for cleanup.
+				for (const node of nodes) {
+					node.setMesh(null);
+					modifiedNodes.push(node);
+				}
 
 				numBatches++;
 				numInstances += nodes.length;
 			}
+
+			pruneUnusedNodes(modifiedNodes, logger);
 		}
 
 		if (numBatches > 0) {
