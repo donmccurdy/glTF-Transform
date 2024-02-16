@@ -3,7 +3,7 @@ import path, { dirname } from 'path';
 import { getBounds, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { weld, unweld, simplify } from '@gltf-transform/functions';
-import { logger, roundBbox } from '@gltf-transform/test-utils';
+import { logger, roundBbox, createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'url';
@@ -34,7 +34,7 @@ test('welded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
+	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
 	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
@@ -52,7 +52,7 @@ test('unwelded', async (t) => {
 	const dstCount = getVertexCount(document);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
-	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
+	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
 	t.truthy(srcCount > dstCount, 'src.count > dst.count');
 	t.deepEqual(srcBounds, dstBounds, 'src.bounds = dst.bounds');
 });
@@ -110,6 +110,35 @@ test('degenerate', async (t) => {
 	t.true(node.isDisposed(), 'node disposed');
 	t.false(scene.isDisposed(), 'scene kept');
 	t.is(getVertexCount(document), 0, '0 vertices');
+});
+
+test('torus', async (t) => {
+	const document = new Document().setLogger(logger);
+	const prim = createTorusKnotPrimitive(document);
+	const srcIndices = prim.getIndices()!;
+	document.createMesh().addPrimitive(prim);
+
+	t.true(srcIndices.getCount() / 3 > 1000, '>1000 triangles (before)');
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.01 }));
+
+	const dstIndices = prim.getIndices()!;
+	t.true(dstIndices.getCount() / 3 < 750, '<750 triangles (after)');
+});
+
+test('torus submesh', async (t) => {
+	const document = new Document().setLogger(logger);
+	const prim = createTorusKnotPrimitive(document);
+	const srcIndices = prim.getIndices()!;
+	srcIndices.setArray(srcIndices.getArray().slice(0, 90));
+	document.createMesh().addPrimitive(prim);
+
+	t.true(srcIndices.getCount() / 3 === 30, '30 triangles (before)');
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.01 }));
+
+	const dstIndices = prim.getIndices()!;
+	t.true(dstIndices.getCount() / 3 < 20, '<20 triangles (after)');
 });
 
 /* UTILITIES */

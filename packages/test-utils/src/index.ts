@@ -1,5 +1,7 @@
 import { PlatformIO, WebIO, NodeIO, Logger, bbox, vec3 as _vec3 } from '@gltf-transform/core';
 
+export { createTorusKnotPrimitive } from './create-torus-primitive.js';
+
 export enum Environment {
 	WEB,
 	DENO,

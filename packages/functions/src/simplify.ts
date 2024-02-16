@@ -128,6 +128,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	const logger = document.getLogger();
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
+	const srcIndexCount = srcIndices.getCount();
 	const srcVertexCount = position.getCount();
 
 	let positionArray = position.getArray()!;
@@ -158,7 +159,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 
 	// (2) Run simplification.
 
-	const targetCount = Math.floor((options.ratio * srcVertexCount) / 3) * 3;
+	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
 	const [dstIndicesArray, error] = simplifier.simplify(
 		indicesArray as Uint32Array,
 		positionArray as Float32Array,
