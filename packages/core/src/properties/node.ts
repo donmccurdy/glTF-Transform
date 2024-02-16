@@ -48,13 +48,6 @@ interface INode extends IExtensibleProperty {
 export class Node extends ExtensibleProperty<INode> {
 	public declare propertyType: PropertyType.NODE;
 
-	/**
-	 * Internal reference to N parent scenes, omitted from {@link Graph}.
-	 * @internal
-	 * @privateRemarks Requires non-graph state.
-	 */
-	public _parentScenes = new Set<Scene>();
-
 	protected init(): void {
 		this.propertyType = PropertyType.NODE;
 	}
@@ -191,16 +184,14 @@ export class Node extends ExtensibleProperty<INode> {
 	 * The `addChild` method enforces these restrictions automatically, and will
 	 * remove the new child from previous parents where needed. This behavior
 	 * may change in future major releases of the library.
-	 *
-	 * @privateRemarks Requires non-graph state.
 	 */
 	public addChild(child: Node): this {
 		// Remove existing parents.
 		const parentNode = child.getParentNode();
 		if (parentNode) parentNode.removeChild(child);
-		if (child._parentScenes.size) {
-			for (const scene of child._parentScenes) {
-				scene.removeChild(child);
+		for (const parent of child.listParents()) {
+			if (parent.propertyType === PropertyType.SCENE) {
+				(parent as Scene).removeChild(child);
 			}
 		}
 
@@ -226,7 +217,7 @@ export class Node extends ExtensibleProperty<INode> {
 	 * references from properties of any type ({@link Skin}, {@link Root}, ...).
 	 */
 	public getParentNode(): Node | null {
-		for (const parent of this.getGraph().listParents(this)) {
+		for (const parent of this.listParents()) {
 			if (parent.propertyType === PropertyType.NODE) {
 				return parent as Node;
 			}
