@@ -23,14 +23,14 @@ export interface PaletteOptions {
 	blockSize?: number;
 	/**
 	 * Minimum number of blocks in the palette texture. If fewer unique
-	 * material values are found, no palettes will be generated. Default: 2.
+	 * material values are found, no palettes will be generated. Default: 5.
 	 */
 	min?: number;
 }
 
 export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
-	min: 2,
+	min: 5,
 };
 
 /**
