@@ -53,6 +53,32 @@ certain situations. To accomplish that, some platform-specific resources (like i
 [HTMLCanvasElement](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)) are passed into
 API functions by the user, rather than being created by the API directly.
 
+### Testing
+
+Unit tests use [Ava](https://github.com/avajs/ava).
+
+```bash
+# run all tests
+yarn test
+
+# run all tests, watching for source file changes to re-run
+yarn test --watch
+
+# run one test
+npx ava packages/functions/test/palette.test.ts --no-worker-threads
+
+# run one test, watching for source file changes to re-run
+npx ava packages/functions/test/palette.test.ts --no-worker-threads --watch
+```
+
+As of Node.js v20, the `--no-worker-threads` flag is required to run tests. This is a combined limitation of Ava, tsx, and the current Node.js ESM loader API.
+
+To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
+
+```bash
+npx ava debug packages/functions/test/palette.test.ts --break --no-worker-threads
+```
+
 ### Dependencies
 
 I recommend compiling with Node.js v12.x, which is the latest version with a prebuilt binary for
