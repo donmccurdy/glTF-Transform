@@ -55,7 +55,7 @@ test('options.blockSize', async (t) => {
 		new Array(5).fill('OPAQUE'),
 	);
 
-	await document.transform(palette({ blockSize: 10 }));
+	await document.transform(palette({ min: 2, blockSize: 10 }));
 
 	t.is(document.getRoot().listMaterials().length, 1, 'only palette material remains');
 
@@ -118,7 +118,7 @@ test('preserve extensions', async (t) => {
 		.setSpecularColorFactor([0.5, 0.5, 0.5]);
 	material.setExtension('KHR_materials_specular', specular);
 
-	await document.transform(palette());
+	await document.transform(palette({min: 2}));
 
 	t.is(document.getRoot().listMaterials().length, 2, 'specular + non-specular palette materials');
 
@@ -144,7 +144,7 @@ test('pixel values', async (t) => {
 		new Array(3).fill('OPAQUE'),
 	);
 
-	await document.transform(palette({ blockSize: 2 }));
+	await document.transform(palette({ min: 2, blockSize: 2 }));
 
 	const material = document.getRoot().listMaterials()[0];
 	const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');

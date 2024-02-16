@@ -57,7 +57,8 @@ export class Scene extends ExtensibleProperty<IScene> {
 	 */
 	public addChild(node: Node): this {
 		// Remove existing parent.
-		if (node._parentNode) node._parentNode.removeChild(node);
+		const parentNode = node.getParentNode();
+		if (parentNode) parentNode.removeChild(node);
 
 		// Edge in graph.
 		this.addRef('children', node);
