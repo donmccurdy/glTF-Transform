@@ -192,7 +192,7 @@ test('attributes - texcoords', async (t) => {
 		.setAttribute('TEXCOORD_5', (uvs[5] = document.createAccessor())); // unused
 	document.createMesh().addPrimitive(primA).addPrimitive(primB);
 
-	await document.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
+	await document.transform(prune({ keepAttributes: true, propertyTypes: [PropertyType.ACCESSOR] }));
 
 	t.deepEqual(
 		uvs.map((a) => a.isDisposed()),
@@ -200,7 +200,7 @@ test('attributes - texcoords', async (t) => {
 		'keeps all texcoords',
 	);
 
-	await document.transform(prune({ propertyTypes: [PropertyType.ACCESSOR], keepAttributes: false }));
+	await document.transform(prune({ keepAttributes: false, propertyTypes: [PropertyType.ACCESSOR] }));
 
 	t.deepEqual(
 		uvs.map((a) => a.isDisposed()),
