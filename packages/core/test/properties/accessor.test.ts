@@ -1,6 +1,6 @@
 import test from 'ava';
 import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
-import { createPlatformIO } from '@gltf-transform/test-utils';
+import { createPlatformIO, round } from '@gltf-transform/test-utils';
 
 const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT } = Accessor.ComponentType;
 
@@ -267,7 +267,7 @@ test('write sparse', async (t) => {
 	t.is(rtSparseAccessor.getSparse(), true, 'sparseAccessor.sparse (round trip)');
 
 	t.deepEqual(Array.from(rtEmptyAccessor.getArray()), emptyArray, 'emptyAccessor.array (round trip)');
-	t.deepEqual(Array.from(rtSparseAccessor.getArray()), sparseArray, 'emptyAccessor.array (round trip)');
+	t.deepEqual(Array.from(rtSparseAccessor.getArray()), sparseArray, 'sparseAccessor.array (round trip)');
 });
 
 test('minmax', (t) => {
@@ -294,4 +294,20 @@ test('extras', async (t) => {
 
 	t.deepEqual(document.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'storage');
 	t.deepEqual(doc2.getRoot().listAccessors()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrip');
+});
+
+// See: https://github.com/donmccurdy/glTF-Transform/issues/1271
+test('clone', async (t) => {
+	const srcDocument = new Document();
+	const srcAccessor = srcDocument
+		.createAccessor()
+		.setType('VEC3')
+		.setNormalized(true)
+		.setArray(new Uint8Array([0, 64, 255]));
+	t.deepEqual(srcAccessor.getElement(0, []).map(round(2)), [0, 0.25, 1]);
+
+	const dstAccessor = srcAccessor.clone();
+	srcAccessor.setArray(new Float32Array([0, 0, 0]));
+
+	t.deepEqual(dstAccessor.getElement(0, []).map(round(2)), [0, 0.25, 1]);
 });
