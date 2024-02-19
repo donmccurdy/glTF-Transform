@@ -3,7 +3,6 @@ import type { GLTF } from '../types/gltf.js';
 import { MathUtils } from '../utils/index.js';
 import type { Buffer } from './buffer.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
-import { COPY_IDENTITY } from './property.js';
 
 interface IAccessor extends IExtensibleProperty {
 	array: TypedArray | null;
@@ -146,19 +145,6 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		});
 	}
 
-	/** @internal Inbound transform to normalized representation, if applicable. */
-	private _in = MathUtils.identity;
-
-	/** @internal Outbound transform from normalized representation, if applicable. */
-	private _out = MathUtils.identity;
-
-	public copy(other: this, resolve = COPY_IDENTITY): this {
-		super.copy(other, resolve);
-		this._in = other._in;
-		this._out = other._out;
-		return this;
-	}
-
 	/**********************************************************************************************
 	 * Static.
 	 */
@@ -215,11 +201,17 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * state.
 	 */
 	public getMinNormalized(target: number[]): number[] {
+		const normalized = this.getNormalized();
 		const elementSize = this.getElementSize();
+		const componentType = this.getComponentType();
 
 		this.getMin(target);
 
-		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
+		if (normalized) {
+			for (let j = 0; j < elementSize; j++) {
+				target[j] = MathUtils.decodeNormalizedInt(target[j], componentType);
+			}
+		}
 
 		return target;
 	}
@@ -229,7 +221,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * reflect normalization: use {@link .getMinNormalized} in that case.
 	 */
 	public getMin(target: number[]): number[] {
-		const array = this.get('array');
+		const array = this.getArray()!;
 		const count = this.getCount();
 		const elementSize = this.getElementSize();
 
@@ -237,7 +229,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 
 		for (let i = 0; i < count * elementSize; i += elementSize) {
 			for (let j = 0; j < elementSize; j++) {
-				const value = array![i + j];
+				const value = array[i + j];
 				if (Number.isFinite(value)) {
 					target[j] = Math.min(target[j], value);
 				}
@@ -253,11 +245,17 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * state.
 	 */
 	public getMaxNormalized(target: number[]): number[] {
+		const normalized = this.getNormalized();
 		const elementSize = this.getElementSize();
+		const componentType = this.getComponentType();
 
 		this.getMax(target);
 
-		for (let j = 0; j < elementSize; j++) target[j] = this._out(target[j]);
+		if (normalized) {
+			for (let j = 0; j < elementSize; j++) {
+				target[j] = MathUtils.decodeNormalizedInt(target[j], componentType);
+			}
+		}
 
 		return target;
 	}
@@ -357,17 +355,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * output data.
 	 */
 	public setNormalized(normalized: boolean): this {
-		this.set('normalized', normalized);
-
-		if (normalized) {
-			this._out = (i: number): number => MathUtils.decodeNormalizedInt(i, this.get('componentType'));
-			this._in = (f: number): number => MathUtils.encodeNormalizedInt(f, this.get('componentType'));
-		} else {
-			this._out = MathUtils.identity;
-			this._in = MathUtils.identity;
-		}
-
-		return this;
+		return this.set('normalized', normalized);
 	}
 
 	/**********************************************************************************************
@@ -380,7 +368,14 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 */
 	public getScalar(index: number): number {
 		const elementSize = this.getElementSize();
-		return this._out(this.get('array')![index * elementSize]);
+		const componentType = this.getComponentType();
+		const array = this.getArray()!;
+
+		if (this.getNormalized()) {
+			return MathUtils.decodeNormalizedInt(array[index * elementSize], componentType);
+		}
+
+		return array[index * elementSize];
 	}
 
 	/**
@@ -388,7 +383,16 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * applicable.
 	 */
 	public setScalar(index: number, x: number): this {
-		this.get('array')![index * this.getElementSize()] = this._in(x);
+		const elementSize = this.getElementSize();
+		const componentType = this.getComponentType();
+		const array = this.getArray()!;
+
+		if (this.getNormalized()) {
+			array[index * elementSize] = MathUtils.encodeNormalizedInt(x, componentType);
+		} else {
+			array[index * elementSize] = x;
+		}
+
 		return this;
 	}
 
@@ -397,11 +401,19 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * if applicable.
 	 */
 	public getElement(index: number, target: number[]): number[] {
+		const normalized = this.getNormalized();
 		const elementSize = this.getElementSize();
-		const array = this.get('array')!;
+		const componentType = this.getComponentType();
+		const array = this.getArray()!;
+
 		for (let i = 0; i < elementSize; i++) {
-			target[i] = this._out(array[index * elementSize + i]);
+			if (normalized) {
+				target[i] = MathUtils.decodeNormalizedInt(array[index * elementSize + i], componentType);
+			} else {
+				target[i] = array[index * elementSize + i];
+			}
 		}
+
 		return target;
 	}
 
@@ -410,11 +422,19 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * if applicable.
 	 */
 	public setElement(index: number, value: number[]): this {
+		const normalized = this.getNormalized();
 		const elementSize = this.getElementSize();
-		const array = this.get('array')!;
+		const componentType = this.getComponentType();
+		const array = this.getArray()!;
+
 		for (let i = 0; i < elementSize; i++) {
-			array![index * elementSize + i] = this._in(value[i]);
+			if (normalized) {
+				array[index * elementSize + i] = MathUtils.encodeNormalizedInt(value[i], componentType);
+			} else {
+				array[index * elementSize + i] = value[i];
+			}
 		}
+
 		return this;
 	}
 
