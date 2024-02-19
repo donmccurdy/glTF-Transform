@@ -7,6 +7,7 @@ import { createTransform, fitPowerOfTwo, fitWithin, formatBytes } from './utils.
 import { getPixels, savePixels } from 'ndarray-pixels';
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
+import { getTextureColorSpace } from './get-texture-color-space.js';
 
 const NAME = 'textureCompress';
 
@@ -247,11 +248,12 @@ export async function compressTexture(texture: Texture, _options: CompressTextur
 	const dstFormat = options.targetFormat || srcFormat;
 	const srcMimeType = texture.getMimeType();
 	const dstMimeType = `image/${dstFormat}`;
+	const dstColorSpace = getTextureColorSpace(texture);
 
 	const srcImage = texture.getImage()!;
 	const dstImage = encoder
-		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, options)
-		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, options);
+		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, dstColorSpace, options)
+		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, dstColorSpace, options);
 
 	const srcByteLength = srcImage.byteLength;
 	const dstByteLength = dstImage.byteLength;
@@ -275,6 +277,7 @@ async function _encodeWithSharp(
 	srcImage: Uint8Array,
 	_srcMimeType: string,
 	dstMimeType: string,
+	dstColorSpace: string | null,
 	options: Required<CompressTextureOptions>,
 ): Promise<Uint8Array> {
 	const encoder = options.encoder as typeof sharp;
@@ -309,7 +312,10 @@ async function _encodeWithSharp(
 			break;
 	}
 
-	const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
+
+	const instance = encoder(srcImage, {ignoreIcc: true})
+		.toColorspace(dstColorSpace || 'rgb')
+		.toFormat(dstFormat, encoderOptions);
 
 	if (options.resize) {
 		const srcSize = ImageUtils.getSize(srcImage, _srcMimeType)!;
@@ -330,6 +336,7 @@ async function _encodeWithNdarrayPixels(
 	srcImage: Uint8Array,
 	srcMimeType: string,
 	dstMimeType: string,
+	_dstColorSpace: string | null,
 	options: Required<CompressTextureOptions>,
 ): Promise<Uint8Array> {
 	const srcPixels = (await getPixels(srcImage, srcMimeType)) as ndarray.NdArray<Uint8Array>;
@@ -346,6 +353,8 @@ async function _encodeWithNdarrayPixels(
 		return savePixels(dstPixels, dstMimeType);
 	}
 
+	// HTMLCanvasElement accepts only 'srgb' and 'display-p3' for the Canvas 2D API. Not much we
+	// can do with `dstColorSpace` here today.
 	return savePixels(srcPixels, dstMimeType);
 }
 
