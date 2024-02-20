@@ -345,7 +345,7 @@ function createParams(
 		params.push('--assign-oetf', 'srgb', '--assign-primaries', 'bt709');
 	} else if (colorSpace === 'srgb-linear') {
 		params.push('--assign-oetf', 'linear', '--assign-primaries', 'bt709');
-	}  else if (slots.length && !colorSpace) {
+	} else if (slots.length && !colorSpace) {
 		params.push('--assign-oetf', 'linear', '--assign-primaries', 'none');
 	}
 
