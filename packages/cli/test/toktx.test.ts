@@ -9,31 +9,39 @@ import type { ChildProcess } from 'child_process';
 const { R, G } = TextureChannel;
 
 test('compress and resize', async (t) => {
-	t.is(await getParams({ mode: Mode.ETC1S }, [508, 508]), '--genmipmap --bcmp', '508x508 → no change');
+	t.is(
+		await getParams({ mode: Mode.ETC1S }, [508, 508]),
+		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM',
+		'508x508 → no change',
+	);
 
-	t.is(await getParams({ mode: Mode.ETC1S }, [507, 509]), '--genmipmap --bcmp --resize 508x512', '507x509 → 508x512');
+	t.is(
+		await getParams({ mode: Mode.ETC1S }, [507, 509]),
+		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 508 --height 512',
+		'507x509 → 508x512',
+	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [508, 508]),
-		'--genmipmap --bcmp --resize 512x512',
+		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 512 --height 512',
 		'508x508+powerOfTwo → 512x512',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [5, 3]),
-		'--genmipmap --bcmp --resize 4x4',
+		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 4 --height 4',
 		'5x3+powerOfTwo → 4x4',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], R),
-		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type R',
+		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8_UNORM',
 		'channels → R',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, [508, 508], G),
-		'--genmipmap --bcmp --assign_oetf linear --assign_primaries none --target_type RG',
+		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8G8_UNORM',
 		'channels → RG',
 	);
 });
@@ -56,14 +64,14 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 
 	let actualParams: string[];
 	mockSpawn(async (_, params: string[]): Promise<ChildProcess> => {
-		// Mock `toktx` version check.
+		// Mock `ktx` version check.
 		if (params.join() === '--version') {
 			return { status: 0, stdout: 'v4.0.0', stderr: '' } as unknown as ChildProcess;
 		}
 
-		// Mock `toktx` compression.
+		// Mock `ktx` compression.
 		actualParams = params;
-		await fs.writeFile(params[params.length - 2], new Uint8Array(8));
+		await fs.writeFile(params[params.length - 1], new Uint8Array(8));
 		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
 	});
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
