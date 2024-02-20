@@ -326,17 +326,19 @@ function createParams(
 		if (_options.compression !== ETC1S_DEFAULTS.compression) {
 			params.push('--clevel', _options.compression!);
 		}
-		if (_options.maxEndpoints !== ETC1S_DEFAULTS.maxEndpoints) {
-			params.push('--max-endpoints', _options.maxEndpoints!);
-		}
-		if (_options.maxSelectors !== ETC1S_DEFAULTS.maxSelectors) {
-			params.push('--max-selectors', _options.maxSelectors!);
-		}
-		if (!_options.rdo || isNormalMap) {
+		if (_options.rdo && !isNormalMap) {
+			if (_options.maxEndpoints !== ETC1S_DEFAULTS.maxEndpoints) {
+				params.push('--max-endpoints', _options.maxEndpoints!);
+			}
+			if (_options.maxSelectors !== ETC1S_DEFAULTS.maxSelectors) {
+				params.push('--max-selectors', _options.maxSelectors!);
+			}
+			if (_options.rdoThreshold !== ETC1S_DEFAULTS.rdoThreshold) {
+				params.push('--endpoint-rdo-threshold', _options.rdoThreshold!);
+				params.push('--selector-rdo-threshold', _options.rdoThreshold!);
+			}
+		} else {
 			params.push('--no-endpoint-rdo', '--no-selector-rdo');
-		} else if (_options.rdoThreshold !== ETC1S_DEFAULTS.rdoThreshold) {
-			params.push('--endpoint-rdo-threshold', _options.rdoThreshold!);
-			params.push('--selector-rdo-threshold', _options.rdoThreshold!);
 		}
 	}
 
