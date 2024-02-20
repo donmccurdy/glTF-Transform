@@ -30,10 +30,9 @@ import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from 
 tmp.setGracefulCleanup();
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
-const KTX_SOFTWARE_VERSION_MIN = '4.0.0-rc1';
-const KTX_SOFTWARE_VERSION_ACTIVE = '4.1.0-rc1';
+const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
 
-const { R, G } = TextureChannel;
+const { R, G, A } = TextureChannel;
 
 /**********************************************************************************************
  * Interfaces.
@@ -71,7 +70,7 @@ interface GlobalOptions {
 	 * Pattern matching the material texture slot(s) to be compressed or converted.
 	 * Passing a string (glob) is deprecated; use a RegExp instead.
 	 */
-	slots?: RegExp | string | null;
+	slots?: RegExp | null;
 	filter?: string;
 	filterScale?: number;
 	resize?: vec2;
@@ -84,13 +83,14 @@ export interface ETC1SOptions extends GlobalOptions {
 	compression?: number;
 	maxEndpoints?: number;
 	maxSelectors?: number;
-	rdoOff?: boolean;
+	rdo?: boolean;
 	rdoThreshold?: number;
 }
 
 export interface UASTCOptions extends GlobalOptions {
 	level?: number;
-	rdo?: number;
+	rdo?: boolean;
+	rdoLambda?: number;
 	rdoDictionarySize?: number;
 	rdoBlockScale?: number;
 	rdoStdDev?: number;
@@ -111,12 +111,17 @@ const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'mode'> = {
 export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'mode'> = {
 	quality: 128,
 	compression: 1,
+	rdo: true,
+	rdoThreshold: 1.25,
+	maxSelectors: 0,
+	maxEndpoints: 0,
 	...GLOBAL_DEFAULTS,
 };
 
 export const UASTC_DEFAULTS: Omit<UASTCOptions, 'mode'> = {
 	level: 2,
-	rdo: 0,
+	rdo: false,
+	rdoLambda: 1.0,
 	rdoDictionarySize: 32768,
 	rdoBlockScale: 10.0,
 	rdoStdDev: 18.0,
@@ -139,7 +144,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		const logger = doc.getLogger();
 
 		// Confirm recent version of KTX-Software is installed.
-		const version = await checkKTXSoftware(logger);
+		await checkKTXSoftware(logger);
 
 		// Create workspace.
 		const batchPrefix = uuid();
@@ -161,14 +166,14 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					texture.getURI() ||
 					texture.getName() ||
 					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
-				const prefix = `toktx:texture(${textureLabel})`;
+				const prefix = `ktx:texture(${textureLabel})`;
 				logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
 				if (typeof options.slots === 'string') {
 					options.slots = micromatch.makeRe(options.slots, MICROMATCH_OPTIONS);
-					logger.warn('toktx: Argument "slots" should be of type `RegExp | null`.');
+					logger.warn('ktx: Argument "slots" should be of type `RegExp | null`.');
 				}
 
 				const patternRe = options.pattern as RegExp | null;
@@ -195,7 +200,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				}
 
-				// PREPARE: Create temporary in/out paths for the 'toktx' CLI tool, and determine
+				// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
 				// necessary command-line flags.
 
 				const extension = texture.getURI()
@@ -209,15 +214,16 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				await fs.writeFile(inPath, Buffer.from(image));
 
 				const params = [
-					...createParams(texture, slots, channels, size, logger, numTextures, options, version),
-					outPath,
+					'create',
+					...createParams(texture, slots, channels, size, logger, numTextures, options),
 					inPath,
+					outPath,
 				];
-				logger.debug(`${prefix}: Spawning → toktx ${params.join(' ')}`);
+				logger.debug(`${prefix}: Spawning → ktx ${params.join(' ')}`);
 
-				// COMPRESS: Run `toktx` CLI tool.
+				// COMPRESS: Run `ktx create` CLI tool.
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const [status, stdout, stderr] = await waitExit(spawn('toktx', params as string[]));
+				const [status, stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
 
 				if (status !== 0) {
 					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
@@ -241,7 +247,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		await Promise.all(promises);
 
 		if (numCompressed === 0) {
-			logger.warn('toktx: No textures were found, or none were selected for compression.');
+			logger.warn('ktx: No textures were found, or none were selected for compression.');
 		}
 
 		const usesKTX2 = doc
@@ -268,72 +274,89 @@ function createParams(
 	logger: ILogger,
 	numTextures: number,
 	options: ETC1SOptions | UASTCOptions,
-	version: string,
 ): (string | number)[] {
-	const params: (string | number)[] = [];
-	params.push('--genmipmap');
-	if (options.filter !== GLOBAL_DEFAULTS.filter) params.push('--filter', options.filter!);
-	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
-		params.push('--fscale', options.filterScale!);
+	const colorSpace = getTextureColorSpace(texture);
+	const params: (string | number)[] = ['--generate-mipmap'];
+
+	if (options.filter !== GLOBAL_DEFAULTS.filter) {
+		params.push('--mipmap-filter', options.filter!);
 	}
+
+	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
+		params.push('--mipmap-filter-scale', options.filterScale!);
+	}
+
+	// See: https://github.com/KhronosGroup/KTX-Software/issues/600
+	const isNormalMap = slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS));
 
 	if (options.mode === Mode.UASTC) {
 		const _options = options as UASTCOptions;
-		params.push('--uastc', _options.level!);
-		if (_options.rdo !== UASTC_DEFAULTS.rdo) {
-			params.push('--uastc_rdo_l', _options.rdo!);
+		params.push('--encode', 'uastc');
+		params.push('--uastc-quality', _options.level!);
+
+		if (_options.rdo && !isNormalMap) {
+			params.push('--uastc-rdo');
+			if (_options.rdoLambda !== UASTC_DEFAULTS.rdoLambda) {
+				params.push('--uastc-rdo-l', _options.rdoLambda!);
+			}
+			if (_options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
+				params.push('--uastc-rdo-d', _options.rdoDictionarySize!);
+			}
+			if (_options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
+				params.push('--uastc-rdo-b', _options.rdoBlockScale!);
+			}
+			if (_options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
+				params.push('--uastc-rdo-s', _options.rdoStdDev!);
+			}
+			if (!_options.rdoMultithreading) {
+				params.push('--uastc-rdo-m');
+			}
 		}
-		if (_options.rdoDictionarySize !== UASTC_DEFAULTS.rdoDictionarySize) {
-			params.push('--uastc_rdo_d', _options.rdoDictionarySize!);
+
+		if (_options.zstd && _options.zstd > 0) {
+			params.push('--zstd', _options.zstd);
 		}
-		if (_options.rdoBlockScale !== UASTC_DEFAULTS.rdoBlockScale) {
-			params.push('--uastc_rdo_b', _options.rdoBlockScale!);
-		}
-		if (_options.rdoStdDev !== UASTC_DEFAULTS.rdoStdDev) {
-			params.push('--uastc_rdo_s', _options.rdoStdDev!);
-		}
-		if (!_options.rdoMultithreading) {
-			params.push('--uastc_rdo_m');
-		}
-		if (_options.zstd && _options.zstd > 0) params.push('--zcmp', _options.zstd);
 	} else {
 		const _options = options as ETC1SOptions;
-		params.push('--bcmp');
+		params.push('--encode', 'basis-lz');
+
 		if (_options.quality !== ETC1S_DEFAULTS.quality) {
 			params.push('--qlevel', _options.quality!);
 		}
 		if (_options.compression !== ETC1S_DEFAULTS.compression) {
 			params.push('--clevel', _options.compression!);
 		}
-		if (_options.maxEndpoints) params.push('--max_endpoints', _options.maxEndpoints);
-		if (_options.maxSelectors) params.push('--max_selectors', _options.maxSelectors);
-
-		if (_options.rdoOff) {
-			params.push('--no_endpoint_rdo', '--no_selector_rdo');
-		} else if (_options.rdoThreshold) {
-			params.push('--endpoint_rdo_threshold', _options.rdoThreshold);
-			params.push('--selector_rdo_threshold', _options.rdoThreshold);
+		if (_options.maxEndpoints !== ETC1S_DEFAULTS.maxEndpoints) {
+			params.push('--max-endpoints', _options.maxEndpoints!);
+		}
+		if (_options.maxSelectors !== ETC1S_DEFAULTS.maxSelectors) {
+			params.push('--max-selectors', _options.maxSelectors!);
+		}
+		if (!_options.rdo || isNormalMap) {
+			params.push('--no-endpoint-rdo', '--no-selector-rdo');
+		} else if (_options.rdoThreshold !== ETC1S_DEFAULTS.rdoThreshold) {
+			params.push('--endpoint-rdo-threshold', _options.rdoThreshold!);
+			params.push('--selector-rdo-threshold', _options.rdoThreshold!);
 		}
 	}
 
-	if (slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS))) {
-		// See: https://github.com/KhronosGroup/KTX-Software/issues/600
-		if (semver.gte(version, KTX_SOFTWARE_VERSION_ACTIVE)) {
-			params.push('--normal_mode', '--input_swizzle', 'rgb1');
-		} else if (options.mode === Mode.ETC1S) {
-			params.push('--normal_map');
-		}
-	}
-
-	if (slots.length && getTextureColorSpace(texture) !== 'srgb') {
-		// See: https://github.com/donmccurdy/glTF-Transform/issues/215
-		params.push('--assign_oetf', 'linear', '--assign_primaries', 'none');
+	// See: https://github.com/donmccurdy/glTF-Transform/issues/215
+	if (colorSpace === 'srgb') {
+		params.push('--assign-oetf', 'srgb', '--assign-primaries', 'bt709');
+	} else if (colorSpace === 'srgb-linear') {
+		params.push('--assign-oetf', 'linear', '--assign-primaries', 'bt709');
+	}  else if (slots.length && !colorSpace) {
+		params.push('--assign-oetf', 'linear', '--assign-primaries', 'none');
 	}
 
 	if (channels === R) {
-		params.push('--target_type', 'R');
+		params.push('--format', 'R8_UNORM');
 	} else if (channels === G || channels === (R | G)) {
-		params.push('--target_type', 'RG');
+		params.push('--format', 'R8G8_UNORM');
+	} else if (!(channels & A)) {
+		params.push('--format', colorSpace === 'srgb' ? 'R8G8B8_SRGB' : 'R8G8B8_UNORM');
+	} else {
+		params.push('--format', colorSpace === 'srgb' ? 'R8G8B8A8_SRGB' : 'R8G8B8A8_UNORM');
 	}
 
 	// Minimum size on any dimension is 4px.
@@ -347,7 +370,7 @@ function createParams(
 	} else {
 		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
 			logger.warn(
-				`toktx: Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
+				`ktx: Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
 					' fail in older APIs (including WebGL 1.0) on certain devices.',
 			);
 		}
@@ -358,17 +381,17 @@ function createParams(
 	if (width !== size[0] || height !== size[1] || options.resize) {
 		if (width > 4096 || height > 4096) {
 			logger.warn(
-				`toktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
+				`ktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
 					' greater than 4096px may not render on some mobile devices.' +
 					' Resize to a lower resolution before compressing, if needed.',
 			);
 		}
-		params.push('--resize', `${width}x${height}`);
+		params.push('--width', width, '--height', height);
 	}
 
 	if (options.jobs && options.jobs > 1 && numTextures > 1) {
 		// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
-		const threads = Math.max(2, Math.min(NUM_CPUS, (3 * NUM_CPUS) / numTextures));
+		const threads = Math.max(2, Math.min(NUM_CPUS, Math.round((3 * NUM_CPUS) / numTextures)));
 		params.push('--threads', threads);
 	}
 
@@ -376,25 +399,28 @@ function createParams(
 }
 
 async function checkKTXSoftware(logger: ILogger): Promise<string> {
-	if (!(await commandExists('toktx')) && !process.env.CI) {
+	if (!(await commandExists('ktx')) && !process.env.CI) {
 		throw new Error(
-			'Command "toktx" not found. Please install KTX-Software, from:\n\nhttps://github.com/KhronosGroup/KTX-Software',
+			`Command "ktx" not found. Please install KTX-Software ${KTX_SOFTWARE_VERSION_MIN}+, ` +
+				'from:\n\nhttps://github.com/KhronosGroup/KTX-Software',
 		);
 	}
 
-	const [status, stdout, stderr] = await waitExit(spawn('toktx', ['--version']));
+	const [status, stdout, stderr] = await waitExit(spawn('ktx', ['--version']));
 
 	const version = ((stdout || stderr) as string)
-		.replace(/toktx\s+/, '')
+		.replace(/ktx version:\s+/, '')
 		.replace(/~\d+/, '')
 		.trim();
 
 	if (status !== 0 || !semver.valid(semver.clean(version))) {
-		throw new Error('Unable to find "toktx" version. Confirm KTX-Software is installed.');
+		throw new Error(
+			`Unable to find "ktx" version. Confirm KTX-Software ${KTX_SOFTWARE_VERSION_MIN}+ is installed.`,
+		);
 	} else if (semver.lt(semver.clean(version)!, KTX_SOFTWARE_VERSION_MIN)) {
-		logger.warn(`toktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
+		logger.warn(`ktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
-		logger.debug(`toktx: Found KTX-Software ${version}.`);
+		logger.debug(`ktx: Found KTX-Software ${version}.`);
 	}
 
 	return semver.clean(version)!;

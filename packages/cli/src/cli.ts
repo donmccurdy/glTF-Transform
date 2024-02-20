@@ -374,7 +374,7 @@ commands or using the scripting API.
 				MICROMATCH_OPTIONS,
 			);
 			transforms.push(
-				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: 4, zstd: 18 }),
+				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: true, rdoLambda: 4, zstd: 18 }),
 				toktx({ mode: Mode.ETC1S, quality: 255 }),
 			);
 		} else if (opts.textureCompress !== false) {
@@ -1290,12 +1290,12 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 	.option(
 		'--max-endpoints <max_endpoints>',
 		'Manually set the maximum number of color endpoint clusters from' + ' 1-16128.',
-		{ validator: Validator.NUMBER },
+		{ validator: Validator.NUMBER, default: ETC1S_DEFAULTS.maxEndpoints },
 	)
 	.option(
 		'--max-selectors <max_selectors>',
 		'Manually set the maximum number of color selector clusters from' + ' 1-16128.',
-		{ validator: Validator.NUMBER },
+		{ validator: Validator.NUMBER, default: ETC1S_DEFAULTS.maxSelectors },
 	)
 	.option(
 		'--power-of-two',
@@ -1303,20 +1303,19 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 			' dimensions, not exceeding 2048x2048px. Required for ' +
 			' compatibility on some older devices and APIs, particularly ' +
 			' WebGL 1.0.',
-		{ validator: Validator.BOOLEAN },
+		{ validator: Validator.BOOLEAN, default: ETC1S_DEFAULTS.powerOfTwo },
 	)
 	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower' +
 			' is higher quality but less quality per output bit (try 1.0-3.0).' +
 			' Overrides --quality.',
-		{ validator: Validator.NUMBER },
+		{ validator: Validator.NUMBER, default: ETC1S_DEFAULTS.rdoThreshold },
 	)
 	.option(
-		'--rdo-off',
-		'Disable endpoint and selector RDO (slightly' +
-			' faster, less noisy output, but lower quality per output bit).',
-		{ validator: Validator.BOOLEAN },
+		'--rdo',
+		'Enable endpoint and selector RDO (slightly' + ' faster, less noisy output, but lower quality per output bit).',
+		{ validator: Validator.BOOLEAN, default: ETC1S_DEFAULTS.rdo },
 	)
 	.option('--jobs <num_jobs>', 'Spawns up to num_jobs instances of toktx', {
 		validator: Validator.NUMBER,
@@ -1325,7 +1324,10 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 	.action(({ args, options, logger }) => {
 		const mode = Mode.ETC1S;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		return Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern }));
+		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		return Session.create(io, logger, args.input, args.output).transform(
+			toktx({ ...options, mode, pattern, slots }),
+		);
 	});
 
 // UASTC
@@ -1378,14 +1380,14 @@ for textures where the quality is sufficient.`.trim(),
 			' WebGL 1.0.',
 		{ validator: Validator.BOOLEAN },
 	)
+	.option('--rdo', 'Enable UASTC RDO post-processing.', { validator: Validator.BOOLEAN, default: UASTC_DEFAULTS.rdo })
 	.option(
-		'--rdo <uastc_rdo_l>',
-		'Enable UASTC RDO post-processing and optionally set UASTC RDO' +
-			' quality scalar (lambda).  Lower values yield higher' +
+		'--rdo-lambda <uastc_rdo_l>',
+		'Set UASTC RDO quality scalar (lambda). Lower values yield higher' +
 			' quality/larger LZ compressed files, higher values yield lower' +
 			' quality/smaller LZ compressed files. A good range to try is [.25, 10].' +
 			' For normal maps, try [.25, .75]. Full range is [.001, 10.0].',
-		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdo },
+		{ validator: Validator.NUMBER, default: UASTC_DEFAULTS.rdoLambda },
 	)
 	.option(
 		'--rdo-dictionary-size <uastc_rdo_d>',
@@ -1442,7 +1444,8 @@ for textures where the quality is sufficient.`.trim(),
 	.action(({ args, options, logger }) => {
 		const mode = Mode.UASTC;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern }));
+		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern, slots }));
 	});
 
 // KTXFIX
