@@ -47,12 +47,13 @@ export interface JoinOptions {
 	/**
 	 * Prevents the final {@link prune} step from being triggered.
 	 */
-	suppressCleanup?:boolean;
+	suppressCleanup?: boolean;
 }
 
 export const JOIN_DEFAULTS: Required<JoinOptions> = {
 	keepMeshes: false,
 	keepNamed: false,
+	suppressCleanup: false,
 };
 
 /**
@@ -95,7 +96,7 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 			scene.traverse((node) => _joinLevel(document, node, options));
 		}
 
-		if(!options.suppressCleanup){
+		if (!options.suppressCleanup) {
 			// Clean up.
 			await document.transform(
 				prune({
