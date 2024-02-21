@@ -44,6 +44,10 @@ export interface JoinOptions {
 	 * have no effect. Default: false.
 	 */
 	keepNamed: boolean;
+	/**
+	 * Prevents the final {@link prune} step from being triggered.
+	 */
+	suppressCleanup?:boolean;
 }
 
 export const JOIN_DEFAULTS: Required<JoinOptions> = {
@@ -91,15 +95,17 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 			scene.traverse((node) => _joinLevel(document, node, options));
 		}
 
-		// Clean up.
-		await document.transform(
-			prune({
-				propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-		);
+		if(!options.suppressCleanup){
+			// Clean up.
+			await document.transform(
+				prune({
+					propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+			);
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});
