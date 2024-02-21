@@ -73,6 +73,10 @@ export interface WeldOptions {
 	overwrite?: boolean;
 	/** Enables a more thorough, but slower, search for vertices to weld. */
 	exhaustive?: boolean;
+	/**
+	 * Prevents the final {@link prune} step from being triggered.
+	 */
+	suppressCleanup?: boolean;
 }
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
@@ -80,6 +84,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 	toleranceNormal: Tolerance.NORMAL,
 	overwrite: true,
 	exhaustive: false, // donmccurdy/glTF-Transform#886
+	suppressCleanup: false,
 };
 
 /**
@@ -131,7 +136,7 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-		if (options.tolerance > 0) {
+		if (options.tolerance > 0 && !options.suppressCleanup) {
 			// If tolerance is greater than 0, welding may remove a mesh, so we prune
 			await doc.transform(
 				prune({

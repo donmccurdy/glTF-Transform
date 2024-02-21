@@ -29,12 +29,17 @@ export interface SimplifyOptions {
 	 * to ensure no seams appear.
 	 */
 	lockBorder?: boolean;
+	/**
+	 * Prevents the final {@link prune} step from being triggered.
+	 */
+	suppressCleanup?: boolean;
 }
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
 	ratio: 0.0,
 	error: 0.0001,
 	lockBorder: false,
+	suppressCleanup: false,
 };
 
 /**
@@ -102,15 +107,17 @@ export function simplify(_options: SimplifyOptions): Transform {
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-		// Where simplification removes meshes, we may need to prune leaf nodes.
-		await document.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-		);
+		if (!options.suppressCleanup) {
+			// Where simplification removes meshes, we may need to prune leaf nodes.
+			await document.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+			);
+		}
 
 		// Where multiple primitive indices point into the same vertex streams, simplification
 		// may write duplicate streams. Find and remove the duplicates after processing.
