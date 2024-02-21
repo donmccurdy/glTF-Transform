@@ -115,16 +115,76 @@ export abstract class PlatformIO {
 	public async binaryToJSON(glb: Uint8Array): Promise<JSONDocument> {
 		const jsonDoc = this._binaryToJSON(BufferUtils.assertView(glb));
 		this._readResourcesInternal(jsonDoc);
-		const json = jsonDoc.json;
+		this._assertResources(jsonDoc);
+		return jsonDoc;
+	}
 
-		// Check for external references, which can't be resolved by this method.
-		if (json.buffers && json.buffers.some((bufferDef) => isExternalBuffer(jsonDoc, bufferDef))) {
-			throw new Error('Cannot resolve external buffers with binaryToJSON().');
-		} else if (json.images && json.images.some((imageDef) => isExternalImage(jsonDoc, imageDef))) {
-			throw new Error('Cannot resolve external images with binaryToJSON().');
+	/** Converts glTF-formatted JSON and a resource map to a GLB-formatted Uint8Array. */
+	public async jsonToBinary(jsonDoc: JSONDocument): Promise<Uint8Array> {
+		jsonDoc = this._copyJSON(jsonDoc);
+		this._readResourcesInternal(jsonDoc);
+		this._assertResources(jsonDoc);
+		const { json, resources } = jsonDoc;
+
+		if (!json.buffers || json.buffers.length <= 1) {
+			return this._jsonToBinary(jsonDoc);
 		}
 
-		return jsonDoc;
+		const buffers = json.buffers || [];
+		const bufferViews = json.bufferViews || [];
+		const bufferByteOffsets = new Uint32Array(buffers.length);
+
+		const defaultBufferIndex = buffers.findIndex(({ uri }) => !!uri);
+		const defaultBufferResources = [] as Uint8Array[];
+
+		let nextByteOffset = 0;
+
+		for (let bufferIndex = 0; bufferIndex < buffers.length; bufferIndex++) {
+			const buffer = buffers[bufferIndex];
+			if (!buffer.uri) continue; // fallback
+
+			bufferByteOffsets[bufferIndex] = nextByteOffset;
+			defaultBufferResources.push(resources[buffer.uri!]);
+			delete resources[buffer.uri!];
+
+			nextByteOffset += buffer.byteLength;
+		}
+
+		for (const bufferView of json.bufferViews || []) {
+			if (bufferView.byteOffset === undefined) continue;
+			bufferView.byteOffset += bufferByteOffsets[bufferView.buffer];
+			bufferView.buffer = defaultBufferIndex;
+		}
+
+		for (const image of json.images || []) {
+			if (image.uri) {
+				const resource = resources[image.uri];
+				const paddedResource = BufferUtils.pad(resource);
+
+				bufferViews.push({
+					buffer: defaultBufferIndex,
+					byteOffset: nextByteOffset,
+					byteLength: resource.byteLength,
+				});
+
+				defaultBufferResources.push(paddedResource);
+
+				image.bufferView = bufferViews.length - 1;
+
+				delete resources[image.uri];
+				delete image.uri;
+
+				nextByteOffset += paddedResource.byteLength;
+			}
+		}
+
+		json.buffers = buffers.filter((buffer, index) => !buffer.uri || index === defaultBufferIndex);
+		json.bufferViews = bufferViews.length ? bufferViews : undefined;
+
+		delete json.buffers[defaultBufferIndex].uri;
+		resources[GLB_BUFFER] = BufferUtils.concat(defaultBufferResources);
+
+		return this._jsonToBinary({ json, resources });
 	}
 
 	/** Converts a GLB-formatted Uint8Array to a {@link Document}. */
@@ -138,6 +198,8 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
 	public async writeJSON(doc: Document, _options: PublicWriterOptions = {}): Promise<JSONDocument> {
+		// TODO(feat): Relax this requirement with post-processing?
+		// See: https://github.com/donmccurdy/glTF-Transform/issues/1171
 		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
 			throw new Error('GLB must have 0–1 buffers.');
 		}
@@ -153,32 +215,22 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to a GLB-formatted Uint8Array. */
 	public async writeBinary(doc: Document): Promise<Uint8Array> {
-		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
-
-		const header = new Uint32Array([0x46546c67, 2, 12]);
-
-		const jsonText = JSON.stringify(json);
-		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
-		const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
-		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
-		header[header.length - 1] += jsonChunk.byteLength;
-
-		const binBuffer = Object.values(resources)[0];
-		if (!binBuffer || !binBuffer.byteLength) {
-			return BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
-		}
-
-		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
-		const binChunkHeader = BufferUtils.toView(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
-		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
-		header[header.length - 1] += binChunk.byteLength;
-
-		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
+		return this._jsonToBinary(await this.writeJSON(doc, { format: Format.GLB }));
 	}
 
 	/**********************************************************************************************
 	 * Internal.
 	 */
+
+	/** Check for external references, which can't be resolved by some API surfaces. */
+	private _assertResources(jsonDoc: JSONDocument) {
+		const { buffers, images } = jsonDoc.json;
+		const hasExternalBuffer = buffers && buffers.some((bufferDef) => isExternalBuffer(jsonDoc, bufferDef));
+		const hasExternalImage = images && images.some((imageDef) => isExternalImage(jsonDoc, imageDef));
+		if (hasExternalBuffer || hasExternalImage) {
+			throw new Error('Cannot resolve external buffers and images.');
+		}
+	}
 
 	private async _readResourcesExternal(jsonDoc: JSONDocument, base: string): Promise<void> {
 		const images = jsonDoc.json.images || [];
@@ -290,6 +342,30 @@ export abstract class PlatformIO {
 		const binBuffer = BufferUtils.toView(glb, binByteOffset + 8, binByteLength);
 
 		return { json, resources: { [GLB_BUFFER]: binBuffer } };
+	}
+
+	/** Internal implementation of jsonToBinary; expects 0–1 buffers. */
+	public async _jsonToBinary(jsonDoc: JSONDocument): Promise<Uint8Array> {
+		const { json, resources } = jsonDoc;
+		const header = new Uint32Array([0x46546c67, 2, 12]);
+
+		const jsonText = JSON.stringify(json);
+		const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonText), 0x20);
+		const jsonChunkHeader = BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a]));
+		const jsonChunk = BufferUtils.concat([jsonChunkHeader, jsonChunkData]);
+		header[header.length - 1] += jsonChunk.byteLength;
+
+		const binBuffer = Object.values(resources)[0];
+		if (!binBuffer || !binBuffer.byteLength) {
+			return BufferUtils.concat([BufferUtils.toView(header), jsonChunk]);
+		}
+
+		const binChunkData = BufferUtils.pad(binBuffer, 0x00);
+		const binChunkHeader = BufferUtils.toView(new Uint32Array([binChunkData.byteLength, 0x004e4942]));
+		const binChunk = BufferUtils.concat([binChunkHeader, binChunkData]);
+		header[header.length - 1] += binChunk.byteLength;
+
+		return BufferUtils.concat([BufferUtils.toView(header), jsonChunk, binChunk]);
 	}
 }
 

@@ -1,6 +1,6 @@
 import test from 'ava';
 import fs from 'fs';
-import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
+import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument, PlatformIO } from '@gltf-transform/core';
 import { createPlatformIO, resolve } from '@gltf-transform/test-utils';
 
 test('common', async (t) => {
@@ -152,4 +152,36 @@ test('gltf embedded', async (t) => {
 
 	t.truthy(await io.readJSON(jsonDoc), 'reads document');
 	t.deepEqual(jsonDoc, jsonDocCopy, 'original unchanged');
+});
+
+test('jsonToBinary', async (t) => {
+	const io = (await createPlatformIO()) as PlatformIO;
+	const srcDocument = new Document();
+	const arrayA = new Uint8Array(3).fill(1);
+	const arrayB = new Uint8Array(5).fill(2);
+	const imageA = new Uint8Array(10).fill(3);
+	const imageB = new Uint8Array(15).fill(4);
+	const bufferA = srcDocument.createBuffer();
+	const bufferB = srcDocument.createBuffer();
+	srcDocument.createAccessor('AccessorA').setArray(arrayA).setBuffer(bufferA);
+	srcDocument.createAccessor('AccessorB').setArray(arrayB).setBuffer(bufferB);
+	srcDocument.createTexture('TextureA').setImage(imageA);
+	srcDocument.createTexture('TextureB').setImage(imageB);
+
+	const srcJSONDocument = await io.writeJSON(srcDocument);
+	t.is(srcJSONDocument.json.buffers.length, 2, 'src.buffers.length === 2');
+	t.is(srcJSONDocument.json.accessors.length, 2, 'src.accessors.length === 2');
+	t.is(srcJSONDocument.json.images.length, 2, 'src.images.length === 2');
+
+	const dstJSONDocument = await io.binaryToJSON(await io.jsonToBinary(srcJSONDocument));
+	t.is(dstJSONDocument.json.buffers.length, 1, 'dst.buffers.length === 1');
+	t.is(dstJSONDocument.json.accessors.length, 2, 'dst.accessors.length === 2');
+	t.is(dstJSONDocument.json.images.length, 2, 'dst.images.length === 2');
+
+	const dstDocument = await io.readJSON(dstJSONDocument);
+	const dstRoot = dstDocument.getRoot();
+	const dstArrays = dstRoot.listAccessors().map((a) => a.getArray());
+	const dstImages = dstRoot.listTextures().map((t) => t.getImage());
+	t.deepEqual(dstArrays, [arrayA, arrayB], 'dst.accessors');
+	t.deepEqual(dstImages, [imageA, imageB], 'dst.images');
 });
