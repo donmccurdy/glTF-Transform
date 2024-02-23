@@ -316,10 +316,24 @@ function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
 
 function pruneIndices(prim: Primitive) {
 	const indices = prim.getIndices();
+	const indicesArray = indices && indices.getArray();
 	const attribute = prim.listAttributes()[0];
-	if (indices && attribute && indices.getCount() === attribute.getCount()) {
-		prim.setIndices(null);
+
+	if (!indicesArray || !attribute) {
+		return;
 	}
+
+	if (indices.getCount() !== attribute.getCount()) {
+		return;
+	}
+
+	for (let i = 0, il = indicesArray.length; i < il; i++) {
+		if (i !== indicesArray[i]) {
+			return;
+		}
+	}
+
+	prim.setIndices(null);
 }
 
 /**
