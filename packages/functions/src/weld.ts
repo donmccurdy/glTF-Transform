@@ -131,19 +131,16 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
 		}
 
-		if (options.tolerance > 0) {
-			// If tolerance is greater than 0, welding may remove a mesh, so we prune
-			await doc.transform(
-				prune({
-					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-					keepAttributes: true,
-					keepIndices: true,
-					keepLeaves: false,
-				}),
-			);
-		}
-
-		await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
+		// Welding removes degenerate meshes; prune leaf nodes afterward.
+		await doc.transform(
+			prune({
+				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+				keepAttributes: true,
+				keepIndices: true,
+				keepLeaves: false,
+			}),
+			dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
+		);
 
 		logger.debug(`${NAME}: Complete.`);
 	});

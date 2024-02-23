@@ -225,6 +225,7 @@ test('modes', async (t) => {
 		const prim = document.createPrimitive().setMode(primDef.mode).setAttribute('POSITION', position);
 		const mesh = document.createMesh().addPrimitive(prim);
 		const node = document.createNode().setMesh(mesh);
+		document.createScene().addChild(node);
 
 		const bboxBefore = getBounds(node);
 		await document.transform(weld({ tolerance: 0 }));
