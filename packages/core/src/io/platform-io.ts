@@ -139,6 +139,7 @@ export abstract class PlatformIO {
 
 		let byteOffset = 0;
 		const bufferByteOffsets = new Uint32Array(buffers.length);
+		const bufferHasContent = new Uint8Array(buffers.length); // 1 = content , 0 = fallback
 
 		// Iterate over buffers, adding everything with a URI to the GLB buffer,
 		// and ignoring fallback buffers without URIs.
@@ -150,6 +151,7 @@ export abstract class PlatformIO {
 			}
 
 			bufferByteOffsets[bufferIndex] = byteOffset;
+			bufferHasContent[bufferIndex] = 1;
 			glbBufferResources.push(resources[buffer.uri]);
 			delete resources[buffer.uri];
 
@@ -159,6 +161,7 @@ export abstract class PlatformIO {
 		// Update buffer view byte offsets.
 		for (const bufferView of bufferViews) {
 			if (bufferView.byteOffset === undefined) continue;
+			if (!bufferHasContent[bufferView.buffer]) continue;
 			bufferView.byteOffset += bufferByteOffsets[bufferView.buffer];
 			bufferView.buffer = glbBufferIndex;
 		}
