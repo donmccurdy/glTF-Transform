@@ -172,7 +172,7 @@ export class NodeIO extends PlatformIO {
 
 	/** @internal */
 	private async _writeGLB(uri: string, doc: Document): Promise<void> {
-		const buffer = Buffer.from(await this.writeBinary(doc));
+		const buffer = await this.writeBinary(doc);
 		await this._fs.writeFile(uri, buffer);
 		this.lastWriteBytes = buffer.byteLength;
 	}
