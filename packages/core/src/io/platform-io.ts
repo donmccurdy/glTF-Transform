@@ -124,65 +124,75 @@ export abstract class PlatformIO {
 		jsonDoc = this._copyJSON(jsonDoc);
 		this._readResourcesInternal(jsonDoc);
 		this._assertResources(jsonDoc);
+
 		const { json, resources } = jsonDoc;
 
 		if (!json.buffers || json.buffers.length <= 1) {
 			return this._jsonToBinary(jsonDoc);
 		}
 
-		const buffers = json.buffers || [];
+		const buffers = json.buffers;
 		const bufferViews = json.bufferViews || [];
+
+		const glbBufferIndex = buffers.findIndex(({ uri }) => !!uri);
+		const glbBufferResources: Uint8Array[] = [];
+
+		let byteOffset = 0;
 		const bufferByteOffsets = new Uint32Array(buffers.length);
 
-		const defaultBufferIndex = buffers.findIndex(({ uri }) => !!uri);
-		const defaultBufferResources = [] as Uint8Array[];
-
-		let nextByteOffset = 0;
-
+		// Iterate over buffers, adding everything with a URI to the GLB buffer,
+		// and ignoring fallback buffers without URIs.
 		for (let bufferIndex = 0; bufferIndex < buffers.length; bufferIndex++) {
 			const buffer = buffers[bufferIndex];
-			if (!buffer.uri) continue; // fallback
 
-			bufferByteOffsets[bufferIndex] = nextByteOffset;
-			defaultBufferResources.push(resources[buffer.uri!]);
-			delete resources[buffer.uri!];
+			if (!buffer.uri) {
+				continue; // fallback buffer
+			}
 
-			nextByteOffset += buffer.byteLength;
+			bufferByteOffsets[bufferIndex] = byteOffset;
+			glbBufferResources.push(resources[buffer.uri]);
+			delete resources[buffer.uri];
+
+			byteOffset += buffer.byteLength;
 		}
 
-		for (const bufferView of json.bufferViews || []) {
+		// Update buffer view byte offsets.
+		for (const bufferView of bufferViews) {
 			if (bufferView.byteOffset === undefined) continue;
 			bufferView.byteOffset += bufferByteOffsets[bufferView.buffer];
-			bufferView.buffer = defaultBufferIndex;
+			bufferView.buffer = glbBufferIndex;
 		}
 
+		// Add all images to GLB buffer.
 		for (const image of json.images || []) {
-			if (image.uri) {
-				const resource = resources[image.uri];
-				const paddedResource = BufferUtils.pad(resource);
-
-				bufferViews.push({
-					buffer: defaultBufferIndex,
-					byteOffset: nextByteOffset,
-					byteLength: resource.byteLength,
-				});
-
-				defaultBufferResources.push(paddedResource);
-
-				image.bufferView = bufferViews.length - 1;
-
-				delete resources[image.uri];
-				delete image.uri;
-
-				nextByteOffset += paddedResource.byteLength;
+			if (!image.uri) {
+				continue;
 			}
+
+			const resource = resources[image.uri];
+			const paddedResource = BufferUtils.pad(resource);
+
+			bufferViews.push({
+				buffer: glbBufferIndex,
+				byteOffset: byteOffset,
+				byteLength: resource.byteLength,
+			});
+
+			image.bufferView = bufferViews.length - 1;
+
+			delete resources[image.uri];
+			delete image.uri;
+
+			glbBufferResources.push(paddedResource);
+			byteOffset += paddedResource.byteLength;
 		}
 
-		json.buffers = buffers.filter((buffer, index) => !buffer.uri || index === defaultBufferIndex);
+		// Remove non-fallback buffers.
+		json.buffers = buffers.filter((buffer, index) => !buffer.uri || index === glbBufferIndex);
 		json.bufferViews = bufferViews.length ? bufferViews : undefined;
 
-		delete json.buffers[defaultBufferIndex].uri;
-		resources[GLB_BUFFER] = BufferUtils.concat(defaultBufferResources);
+		delete json.buffers[glbBufferIndex].uri;
+		resources[GLB_BUFFER] = BufferUtils.concat(glbBufferResources);
 
 		return this._jsonToBinary({ json, resources });
 	}
@@ -198,8 +208,6 @@ export abstract class PlatformIO {
 
 	/** Converts a {@link Document} to glTF-formatted JSON and a resource map. */
 	public async writeJSON(doc: Document, _options: PublicWriterOptions = {}): Promise<JSONDocument> {
-		// TODO(feat): Relax this requirement with post-processing?
-		// See: https://github.com/donmccurdy/glTF-Transform/issues/1171
 		if (_options.format === Format.GLB && doc.getRoot().listBuffers().length > 1) {
 			throw new Error('GLB must have 0–1 buffers.');
 		}
@@ -345,7 +353,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Internal implementation of jsonToBinary; expects 0–1 buffers. */
-	public async _jsonToBinary(jsonDoc: JSONDocument): Promise<Uint8Array> {
+	private _jsonToBinary(jsonDoc: JSONDocument): Uint8Array {
 		const { json, resources } = jsonDoc;
 		const header = new Uint32Array([0x46546c67, 2, 12]);
 
