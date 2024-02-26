@@ -5816,11 +5816,6 @@ jsonparse@^1.2.0, jsonparse@^1.3.1:
   resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
   integrity sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==
 
-keyframe-resample@^0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.0.16.tgz#4d2b5c330d033996e682f1bd3ed97742aea64730"
-  integrity sha512-w/7dRZuD4xxkcwxGHz413qtp8wIZG1V4pbftAMa4IjukJClriLJUqYcRIIaWJx+8CIl6f2LB5wgQTAzH+GhGiw==
-
 keyframe-resample@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/keyframe-resample/-/keyframe-resample-0.1.0.tgz#e9366cce62ba7c9f0c79b3f7fec3bb9336a16e9b"
