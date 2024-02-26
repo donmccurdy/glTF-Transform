@@ -159,8 +159,7 @@ export class NodeIO extends PlatformIO {
 				}
 				return;
 			}
-			// TODO(v4): Consider storing decoded URIs in memory, and avoid decoding here. However,
-			// we'll need to think through implications for absolute URLs.
+
 			const resource = Buffer.from(resources[resourceURI]);
 			const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
 			await fs.mkdir(path.dirname(resourcePath), { recursive: true });
