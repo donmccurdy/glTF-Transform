@@ -97,6 +97,11 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 
 		const counter = new DisposeCounter();
 
+		const onDispose = (event: { target: Property }) => counter.dispose(event.target);
+		// TODO(cleanup): Publish GraphEvent / GraphEventListener types from 'property-graph'.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		graph.addEventListener('node:dispose', onDispose as any);
+
 		// Prune top-down, so that low-level properties like accessors can be removed if the
 		// properties referencing them are removed.
 
@@ -104,46 +109,46 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		if (propertyTypes.has(PropertyType.MESH)) {
 			for (const mesh of root.listMeshes()) {
 				if (mesh.listPrimitives().length > 0) continue;
-				counter.dispose(mesh);
+				mesh.dispose();
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.NODE)) {
 			if (!options.keepLeaves) {
 				for (const scene of root.listScenes()) {
-					nodeTreeShake(graph, scene, counter);
+					nodeTreeShake(graph, scene);
 				}
 			}
 
 			for (const node of root.listNodes()) {
-				treeShake(node, counter);
+				treeShake(node);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.SKIN)) {
 			for (const skin of root.listSkins()) {
-				treeShake(skin, counter);
+				treeShake(skin);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.MESH)) {
 			for (const mesh of root.listMeshes()) {
-				treeShake(mesh, counter);
+				treeShake(mesh);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.CAMERA)) {
 			for (const camera of root.listCameras()) {
-				treeShake(camera, counter);
+				treeShake(camera);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.PRIMITIVE)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE, counter);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE);
 		}
 
 		if (propertyTypes.has(PropertyType.PRIMITIVE_TARGET)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET, counter);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
 		}
 
 		// Prune unused vertex attributes.
@@ -185,42 +190,46 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			for (const anim of root.listAnimations()) {
 				for (const channel of anim.listChannels()) {
 					if (!channel.getTargetNode()) {
-						counter.dispose(channel);
+						channel.dispose();
 					}
 				}
 				if (!anim.listChannels().length) {
 					const samplers = anim.listSamplers();
-					treeShake(anim, counter);
-					samplers.forEach((sampler) => treeShake(sampler, counter));
+					treeShake(anim);
+					samplers.forEach((sampler) => treeShake(sampler));
 				} else {
-					anim.listSamplers().forEach((sampler) => treeShake(sampler, counter));
+					anim.listSamplers().forEach((sampler) => treeShake(sampler));
 				}
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.MATERIAL)) {
-			root.listMaterials().forEach((material) => treeShake(material, counter));
+			root.listMaterials().forEach((material) => treeShake(material));
 		}
 
 		if (propertyTypes.has(PropertyType.TEXTURE)) {
-			root.listTextures().forEach((texture) => treeShake(texture, counter));
+			root.listTextures().forEach((texture) => treeShake(texture));
 			if (!options.keepSolidTextures) {
-				await pruneSolidTextures(document, counter);
+				await pruneSolidTextures(document);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) {
-			root.listAccessors().forEach((accessor) => treeShake(accessor, counter));
+			root.listAccessors().forEach((accessor) => treeShake(accessor));
 		}
 
 		if (propertyTypes.has(PropertyType.BUFFER)) {
-			root.listBuffers().forEach((buffer) => treeShake(buffer, counter));
+			root.listBuffers().forEach((buffer) => treeShake(buffer));
 		}
 
 		// TODO(bug): This process does not identify unused ExtensionProperty instances. That could
 		// be a future enhancement, either tracking unlinked properties as if they were connected
 		// to the Graph, or iterating over a property list provided by the Extension. Properties in
 		// use by an Extension are correctly preserved, in the meantime.
+
+		// TODO(cleanup): Publish GraphEvent / GraphEventListener types from 'property-graph'.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		graph.removeEventListener('node:dispose', onDispose as any);
 
 		if (!counter.empty()) {
 			const str = counter
@@ -256,7 +265,6 @@ class DisposeCounter {
 	dispose(prop: Property): void {
 		this.disposed[prop.propertyType] = this.disposed[prop.propertyType] || 0;
 		this.disposed[prop.propertyType]++;
-		prop.dispose();
 	}
 }
 
@@ -269,12 +277,12 @@ class DisposeCounter {
  */
 
 /** Disposes of the given property if it is unused. */
-function treeShake(prop: Property, counter: DisposeCounter): void {
+function treeShake(prop: Property): void {
 	// Consider a property unused if it has no references from another property, excluding
 	// types Root and AnimationChannel.
 	const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
 	if (!parents.length) {
-		counter.dispose(prop);
+		prop.dispose();
 	}
 }
 
@@ -283,18 +291,18 @@ function treeShake(prop: Property, counter: DisposeCounter): void {
  * graph. It's possible that objects may have been constructed without any outbound links,
  * but since they're not on the graph they don't need to be tree-shaken.
  */
-function indirectTreeShake(graph: Graph<Property>, propertyType: string, counter: DisposeCounter): void {
+function indirectTreeShake(graph: Graph<Property>, propertyType: string): void {
 	for (const edge of graph.listEdges()) {
 		const parent = edge.getParent();
 		if (parent.propertyType === propertyType) {
-			treeShake(parent, counter);
+			treeShake(parent);
 		}
 	}
 }
 
 /** Iteratively prunes leaf Nodes without contents. */
-function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene, counter: DisposeCounter): void {
-	prop.listChildren().forEach((child) => nodeTreeShake(graph, child, counter));
+function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene): void {
+	prop.listChildren().forEach((child) => nodeTreeShake(graph, child));
 
 	if (prop instanceof Scene) return;
 
@@ -304,7 +312,7 @@ function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene, counter: Disp
 	});
 	const isEmpty = graph.listChildren(prop).length === 0;
 	if (isEmpty && !isUsed) {
-		counter.dispose(prop);
+		prop.dispose();
 	}
 }
 
@@ -458,7 +466,7 @@ function shiftTexCoords(material: Material, prims: Primitive[]) {
  * Prune solid (single-color) textures.
  */
 
-async function pruneSolidTextures(document: Document, counter: DisposeCounter): Promise<void> {
+async function pruneSolidTextures(document: Document): Promise<void> {
 	const root = document.getRoot();
 	const graph = document.getGraph();
 	const logger = document.getLogger();
@@ -484,7 +492,7 @@ async function pruneSolidTextures(document: Document, counter: DisposeCounter): 
 		}
 
 		if (texture.listParents().length === 1) {
-			counter.dispose(texture);
+			texture.dispose();
 			logger.debug(`${NAME}: Removed solid-color texture "${name}" (${size}px ${slots.join(', ')})`);
 		}
 	});
