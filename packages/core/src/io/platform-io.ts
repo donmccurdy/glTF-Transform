@@ -188,9 +188,6 @@ export abstract class PlatformIO {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
-				// TODO(v4): Perhaps the resources dictionary could have been keyed by decoded URIs
-				// like "my image.png" instead of "my%20image.png". But for now, we use the URIs
-				// verbatim as found in resource definition. Consider revisiting in v4.
 				jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
 				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
 			},

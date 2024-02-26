@@ -19,6 +19,12 @@ export class MathUtils {
 		return true;
 	}
 
+	public static clamp(value: number, min: number, max: number): number {
+		if (value < min) return min;
+		if (value > max) return max;
+		return value;
+	}
+
 	// TODO(v4): Compare performance if we replace the switch with individual functions.
 	public static decodeNormalizedInt(i: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
@@ -39,20 +45,19 @@ export class MathUtils {
 	}
 
 	// TODO(v4): Compare performance if we replace the switch with individual functions.
-	// TODO(v4): Consider clamping to [0, 1] or [-1, 1] here.
 	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
 			case 5126: // FLOAT
 				return f;
 			case 5123: // UNSIGNED_SHORT
-				return Math.round(f * 65535.0);
+				return Math.round(MathUtils.clamp(f, 0, 1) * 65535.0);
 			case 5121: // UNSIGNED_BYTE
-				return Math.round(f * 255.0);
+				return Math.round(MathUtils.clamp(f, 0, 1) * 255.0);
 			case 5122: // SHORT
-				return Math.round(f * 32767.0);
+				return Math.round(MathUtils.clamp(f, -1, 1) * 32767.0);
 			case 5120: // BYTE
-				return Math.round(f * 127.0);
+				return Math.round(MathUtils.clamp(f, -1, 1) * 127.0);
 			default:
 				throw new Error('Invalid component type.');
 		}
