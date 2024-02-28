@@ -141,6 +141,20 @@ test('torus submesh', async (t) => {
 	t.true(dstIndices.getCount() / 3 < 20, '<20 triangles (after)');
 });
 
+test('points - unwelded', async (t) => {
+	const document = new Document().setLogger(logger);
+	const prim = createTorusKnotPrimitive(document, { tubularSegments: 12, radialSegments: 4 })
+		.setMode(Primitive.Mode.POINTS)
+		.setIndices(null);
+	document.createMesh().addPrimitive(prim);
+
+	t.is(prim.getAttribute('POSITION').getCount(), 65, '65 vertices (before)');
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+
+	t.true(prim.getAttribute('POSITION').getCount() < 40, '<40 vertices (after)');
+});
+
 /* UTILITIES */
 
 function getVertexCount(document: Document): number {
