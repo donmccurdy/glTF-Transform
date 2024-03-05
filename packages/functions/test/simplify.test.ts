@@ -155,6 +155,23 @@ test('points - unwelded', async (t) => {
 	t.true(prim.getAttribute('POSITION').getCount() < 40, '<40 vertices (after)');
 });
 
+test('points - welded', async (t) => {
+	const document = new Document().setLogger(logger);
+	const prim = createTorusKnotPrimitive(document, { tubularSegments: 12, radialSegments: 4 }).setMode(
+		Primitive.Mode.POINTS,
+	);
+	prim.getIndices().setArray(new Uint16Array(65).map((_, i) => i));
+	document.createMesh().addPrimitive(prim);
+
+	t.is(prim.getAttribute('POSITION').getCount(), 65, '65 vertices (before)');
+	t.truthy(prim.getIndices(), 'welded (before)');
+
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
+
+	t.true(prim.getAttribute('POSITION').getCount() < 40, '<40 vertices (after)');
+	t.is(prim.getIndices(), null, 'unwelded (after)');
+});
+
 /* UTILITIES */
 
 function getVertexCount(document: Document): number {

@@ -13,6 +13,7 @@ import type { MeshoptSimplifier } from 'meshoptimizer';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { dequantizeAttributeArray } from './dequantize.js';
+import { unweldPrimitive } from './unweld.js';
 
 const NAME = 'simplify';
 
@@ -189,12 +190,14 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 function _simplifyPoints(document: Document, prim: Primitive, options: Required<SimplifyOptions>): Primitive {
 	const simplifier = options.simplifier as typeof MeshoptSimplifier;
 	const logger = document.getLogger();
+
 	const indices = prim.getIndices();
+	if (indices) unweldPrimitive(prim);
+
 	const position = prim.getAttribute('POSITION')!;
 	const color = prim.getAttribute('COLOR_0');
 	const srcVertexCount = position.getCount();
 
-	const indicesArray = indices ? indices.getArray()! : undefined;
 	let positionArray = position.getArray()!;
 	let colorArray = color ? color.getArray()! : undefined;
 	const colorStride = color ? color.getComponentSize() : undefined;
@@ -206,11 +209,6 @@ function _simplifyPoints(document: Document, prim: Primitive, options: Required<
 	}
 	if (colorArray && !(colorArray instanceof Float32Array)) {
 		colorArray = dequantizeAttributeArray(colorArray, position.getComponentType(), position.getNormalized());
-	}
-
-	// DO NOT SUBMIT
-	if (indices || indicesArray) {
-		throw new Error('Point cloud simplification with indices not implemented');
 	}
 
 	// (2) Run simplification.
