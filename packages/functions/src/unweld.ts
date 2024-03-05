@@ -1,4 +1,4 @@
-import type { Accessor, Document, ILogger, Transform, TypedArray } from '@gltf-transform/core';
+import { Accessor, Document, ILogger, Primitive, Transform, TypedArray } from '@gltf-transform/core';
 import { createTransform, formatDeltaOp } from './utils.js';
 
 const NAME = 'unweld';
@@ -28,40 +28,52 @@ export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
 
 		for (const mesh of doc.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				const indices = prim.getIndices();
-				if (!indices) continue;
-
-				const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
-
-				// Vertex attributes.
-				for (const srcAttribute of prim.listAttributes()) {
-					prim.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
-
-					// Clean up.
-					if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-				}
-
-				// Morph target vertex attributes.
-				for (const target of prim.listTargets()) {
-					for (const srcAttribute of target.listAttributes()) {
-						target.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
-
-						// Clean up.
-						if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-					}
-				}
-
-				const dstVertexCount = prim.getAttribute('POSITION')!.getCount();
-				logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
-
-				// Clean up.
-				prim.setIndices(null);
-				if (indices.listParents().length === 1) indices.dispose();
+				unweldPrimitive(prim, visited);
 			}
 		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});
+}
+
+/**
+ * @hidden
+ * @internal
+ */
+export function unweldPrimitive(prim: Primitive, visited = new Map<Accessor, Map<Accessor, Accessor>>()): void {
+	const indices = prim.getIndices();
+	if (!indices) return;
+
+	const graph = prim.getGraph();
+	const document = Document.fromGraph(graph)!;
+	const logger = document.getLogger();
+
+	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
+
+	// Vertex attributes.
+	for (const srcAttribute of prim.listAttributes()) {
+		prim.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
+
+		// Clean up.
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
+
+	// Morph target vertex attributes.
+	for (const target of prim.listTargets()) {
+		for (const srcAttribute of target.listAttributes()) {
+			target.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
+
+			// Clean up.
+			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+		}
+	}
+
+	const dstVertexCount = prim.getAttribute('POSITION')!.getCount();
+	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
+
+	// Clean up.
+	prim.setIndices(null);
+	if (indices.listParents().length === 1) indices.dispose();
 }
 
 function unweldAttribute(

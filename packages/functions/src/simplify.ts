@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, PropertyType, Transform, TransformContext } from '@gltf-transform/core';
+import { Document, Primitive, PropertyType, Transform, TransformContext } from '@gltf-transform/core';
 import {
 	createTransform,
 	formatDeltaOp,
@@ -12,6 +12,8 @@ import { weld } from './weld.js';
 import type { MeshoptSimplifier } from 'meshoptimizer';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
+import { dequantizeAttributeArray } from './dequantize.js';
+import { unweldPrimitive } from './unweld.js';
 
 const NAME = 'simplify';
 
@@ -88,15 +90,15 @@ export function simplify(_options: SimplifyOptions): Transform {
 		// Simplify mesh primitives.
 		for (const mesh of document.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
-					logger.warn(
-						`${NAME}: Skipping primitive of mesh "${mesh.getName()}": Requires TRIANGLES draw mode.`,
-					);
-					continue;
+				if (prim.getMode() === Primitive.Mode.TRIANGLES) {
+					simplifyPrimitive(document, prim, options);
+					if (prim.getIndices()!.getCount() === 0) prim.dispose();
+				} else if (prim.getMode() === Primitive.Mode.POINTS && !!simplifier.simplifyPoints) {
+					simplifyPrimitive(document, prim, options);
+					if (prim.getAttribute('POSITION')!.getCount() === 0) prim.dispose();
+				} else {
+					logger.warn(`${NAME}: Skipping primitive of mesh "${mesh.getName()}": Unsupported draw mode.`);
 				}
-				simplifyPrimitive(document, prim, options);
-
-				if (prim.getIndices()!.getCount() === 0) prim.dispose();
 			}
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
@@ -126,6 +128,10 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 	const simplifier = options.simplifier as typeof MeshoptSimplifier;
 
+	if (prim.getMode() === Primitive.Mode.POINTS) {
+		return _simplifyPoints(document, prim, options);
+	}
+
 	const logger = document.getLogger();
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
@@ -137,37 +143,25 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 
 	// (1) Gather attributes and indices in Meshopt-compatible format.
 
-	if (position.getComponentType() !== Accessor.ComponentType.FLOAT) {
-		if (position.getNormalized()) {
-			const src = positionArray;
-			const dst = new Float32Array(src.length);
-
-			// Dequantize.
-			for (let i = 0, il = position.getCount(), el = [] as number[]; i < il; i++) {
-				el = position.getElement(i, el);
-				position.setArray(dst).setElement(i, el).setArray(src);
-			}
-
-			positionArray = dst;
-		} else {
-			positionArray = new Float32Array(positionArray);
-		}
+	if (!(positionArray instanceof Float32Array)) {
+		positionArray = dequantizeAttributeArray(positionArray, position.getComponentType(), position.getNormalized());
 	}
-
-	if (srcIndices.getComponentType() !== Accessor.ComponentType.UNSIGNED_INT) {
+	if (!(indicesArray instanceof Uint32Array)) {
 		indicesArray = new Uint32Array(indicesArray);
 	}
 
 	// (2) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
+	const flags = options.lockBorder ? ['LockBorder'] : [];
+
 	const [dstIndicesArray, error] = simplifier.simplify(
-		indicesArray as Uint32Array,
-		positionArray as Float32Array,
+		indicesArray,
+		positionArray,
 		3,
 		targetCount,
 		options.error,
-		options.lockBorder ? ['LockBorder'] : [],
+		flags as 'LockBorder'[],
 	);
 
 	const [remap, unique] = simplifier.compactMesh(dstIndicesArray);
@@ -189,6 +183,53 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	dstIndices.setArray(srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : dstIndicesArray);
 	prim.setIndices(dstIndices);
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
+
+	return prim;
+}
+
+function _simplifyPoints(document: Document, prim: Primitive, options: Required<SimplifyOptions>): Primitive {
+	const simplifier = options.simplifier as typeof MeshoptSimplifier;
+	const logger = document.getLogger();
+
+	const indices = prim.getIndices();
+	if (indices) unweldPrimitive(prim);
+
+	const position = prim.getAttribute('POSITION')!;
+	const color = prim.getAttribute('COLOR_0');
+	const srcVertexCount = position.getCount();
+
+	let positionArray = position.getArray()!;
+	let colorArray = color ? color.getArray()! : undefined;
+	const colorStride = color ? color.getComponentSize() : undefined;
+
+	// (1) Gather attributes in Meshopt-compatible format.
+
+	if (!(positionArray instanceof Float32Array)) {
+		positionArray = dequantizeAttributeArray(positionArray, position.getComponentType(), position.getNormalized());
+	}
+	if (colorArray && !(colorArray instanceof Float32Array)) {
+		colorArray = dequantizeAttributeArray(colorArray, position.getComponentType(), position.getNormalized());
+	}
+
+	// (2) Run simplification.
+
+	simplifier.useExperimentalFeatures = true;
+	const targetCount = Math.floor(options.ratio * srcVertexCount);
+	const dstIndicesArray = simplifier.simplifyPoints(positionArray, 3, targetCount, colorArray, colorStride);
+	simplifier.useExperimentalFeatures = false;
+
+	// (3) Write vertex attributes.
+
+	const [remap, unique] = simplifier.compactMesh(dstIndicesArray);
+
+	logger.debug(`${NAME}: ${formatDeltaOp(position.getCount(), unique)} vertices.`);
+
+	for (const srcAttribute of deepListAttributes(prim)) {
+		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
+		remapAttribute(dstAttribute, remap, unique);
+		deepSwapAttribute(prim, srcAttribute, dstAttribute);
+		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	}
 
 	return prim;
 }

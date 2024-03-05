@@ -1,4 +1,12 @@
-import type { Accessor, Document, Primitive, Transform } from '@gltf-transform/core';
+import {
+	MathUtils,
+	type Accessor,
+	type Document,
+	type GLTF,
+	type Primitive,
+	type Transform,
+	TypedArray,
+} from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
 
@@ -66,27 +74,43 @@ export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): T
  */
 export function dequantizePrimitive(prim: Primitive, options: Required<DequantizeOptions>): void {
 	for (const semantic of prim.listSemantics()) {
-		dequantizeAttribute(semantic, prim.getAttribute(semantic)!, options);
+		if (options.pattern.test(semantic)) {
+			dequantizeAttribute(prim.getAttribute(semantic)!);
+		}
 	}
+
 	for (const target of prim.listTargets()) {
 		for (const semantic of target.listSemantics()) {
-			dequantizeAttribute(semantic, target.getAttribute(semantic)!, options);
+			if (options.pattern.test(semantic)) {
+				dequantizeAttribute(target.getAttribute(semantic)!);
+			}
 		}
 	}
 }
 
-export function dequantizeAttribute(semantic: string, attribute: Accessor, options: Required<DequantizeOptions>): void {
-	if (!attribute.getArray()) return;
-	if (!options.pattern.test(semantic)) return;
-	if (attribute.getComponentSize() >= 4) return;
+export function dequantizeAttribute(attribute: Accessor): void {
+	const srcArray = attribute.getArray();
+	if (!srcArray) return;
 
-	const srcArray = attribute.getArray()!;
-	const dstArray = new Float32Array(srcArray.length);
-
-	for (let i = 0, il = attribute.getCount(), el = [] as number[]; i < il; i++) {
-		el = attribute.getElement(i, el);
-		attribute.setArray(dstArray).setElement(i, el).setArray(srcArray);
-	}
+	const dstArray = dequantizeAttributeArray(srcArray, attribute.getComponentType(), attribute.getNormalized());
 
 	attribute.setArray(dstArray).setNormalized(false);
+}
+
+export function dequantizeAttributeArray(
+	srcArray: TypedArray,
+	componentType: GLTF.AccessorComponentType,
+	normalized: boolean,
+): Float32Array {
+	const dstArray = new Float32Array(srcArray.length);
+
+	for (let i = 0, il = srcArray.length; i < il; i++) {
+		if (normalized) {
+			dstArray[i] = MathUtils.decodeNormalizedInt(srcArray[i], componentType);
+		} else {
+			dstArray[i] = srcArray[i];
+		}
+	}
+
+	return dstArray;
 }

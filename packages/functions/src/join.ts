@@ -258,8 +258,6 @@ function hasSharedAttributes(prim: Primitive): boolean {
 function dequantizeTransformableAttributes(prim: Primitive) {
 	for (const semantic of ['POSITION', 'NORMAL', 'TANGENT']) {
 		const attribute = prim.getAttribute(semantic);
-		if (attribute && attribute.getComponentSize() < 4) {
-			dequantizeAttribute(semantic, attribute, { pattern: /.*/ });
-		}
+		if (attribute) dequantizeAttribute(attribute);
 	}
 }
