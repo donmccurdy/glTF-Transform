@@ -275,6 +275,31 @@ commands or using the scripting API.
 		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
+	.option('--prune <bool>', 'Removes properties from the file if they are not referenced by a Scene.', {
+		validator: Validator.BOOLEAN,
+		default: true,
+	})
+	.option('--prune-attributes', 'Whether to prune unused vertex attributes.', {
+		validator: Validator.BOOLEAN,
+		default: true,
+	})
+	.option('--prune-indices', 'Whether to prune unused mesh indices.', {
+		validator: Validator.BOOLEAN,
+		default: true,
+	})
+	.option('--prune-leaves', 'Whether to prune empty leaf nodes.', {
+		validator: Validator.BOOLEAN,
+		default: true,
+	})
+	.option(
+		'--prune-solid-textures',
+		'Whether to prune solid (single-color) textures, ' +
+			'or convert to material factors.',
+		{
+			validator: Validator.BOOLEAN,
+			default: true,
+		}
+	)
 	.option(
 		'--compress <method>',
 		'Floating point compression method. Draco compresses geometry; Meshopt ' +
@@ -326,6 +351,11 @@ commands or using the scripting API.
 			paletteMin: number;
 			simplify: boolean;
 			simplifyError: number;
+			prune: boolean;
+			pruneAttributes: boolean;
+			pruneIndices: boolean;
+			pruneLeaves: boolean;
+			pruneSolidTextures: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
 			textureSize: number;
@@ -356,16 +386,20 @@ commands or using the scripting API.
 			transforms.push(simplify({ simplifier: MeshoptSimplifier, error: opts.simplifyError }));
 		}
 
-		transforms.push(
-			resample({ ready: resampleReady, resample: resampleWASM }),
-			prune({
-				keepAttributes: false,
-				keepIndices: false,
-				keepLeaves: false,
-				keepSolidTextures: false,
-			}),
-			sparse(),
-		);
+		transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
+
+		if (opts.prune) {
+			transforms.push(
+				prune({
+					keepAttributes: !opts.pruneAttributes,
+					keepIndices: !opts.pruneIndices,
+					keepLeaves: !opts.pruneLeaves,
+					keepSolidTextures: !opts.pruneSolidTextures,
+				}),
+			);
+		}
+
+		transforms.push(sparse());
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
