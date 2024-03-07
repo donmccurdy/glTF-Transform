@@ -283,22 +283,17 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-indices', 'Whether to prune unused mesh indices.', {
-		validator: Validator.BOOLEAN,
-		default: true,
-	})
 	.option('--prune-leaves', 'Whether to prune empty leaf nodes.', {
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option(
 		'--prune-solid-textures',
-		'Whether to prune solid (single-color) textures, ' +
-			'or convert to material factors.',
+		'Whether to prune solid (single-color) textures, converting them to material factors.',
 		{
 			validator: Validator.BOOLEAN,
 			default: true,
-		}
+		},
 	)
 	.option(
 		'--compress <method>',
@@ -353,7 +348,6 @@ commands or using the scripting API.
 			simplifyError: number;
 			prune: boolean;
 			pruneAttributes: boolean;
-			pruneIndices: boolean;
 			pruneLeaves: boolean;
 			pruneSolidTextures: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
@@ -392,7 +386,7 @@ commands or using the scripting API.
 			transforms.push(
 				prune({
 					keepAttributes: !opts.pruneAttributes,
-					keepIndices: !opts.pruneIndices,
+					keepIndices: false,
 					keepLeaves: !opts.pruneLeaves,
 					keepSolidTextures: !opts.pruneSolidTextures,
 				}),
