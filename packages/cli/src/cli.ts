@@ -279,16 +279,16 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-attributes', 'Whether to prune unused vertex attributes.', {
+	.option('--prune-attributes <bool>', 'Whether to prune unused vertex attributes.', {
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-leaves', 'Whether to prune empty leaf nodes.', {
+	.option('--prune-leaves <bool>', 'Whether to prune empty leaf nodes.', {
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
 	.option(
-		'--prune-solid-textures',
+		'--prune-solid-textures <bool>',
 		'Whether to prune solid (single-color) textures, converting them to material factors.',
 		{
 			validator: Validator.BOOLEAN,
