@@ -1,11 +1,10 @@
-import { Document, Primitive, PropertyType, Transform, TransformContext } from '@gltf-transform/core';
+import { Document, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import {
 	createTransform,
 	formatDeltaOp,
 	deepListAttributes,
 	remapAttribute,
 	deepSwapAttribute,
-	isTransformPending,
 	shallowCloneAccessor,
 } from './utils.js';
 import { weld } from './weld.js';
@@ -90,7 +89,7 @@ export function simplify(_options: SimplifyOptions): Transform {
 		throw new Error(`${NAME}: simplifier dependency required — install "meshoptimizer".`);
 	}
 
-	return createTransform(NAME, async (document: Document, context?: TransformContext): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 
 		await simplifier.ready;

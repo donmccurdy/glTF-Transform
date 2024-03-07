@@ -8,7 +8,6 @@ import {
 	PropertyType,
 	Root,
 	Transform,
-	TransformContext,
 	TypedArray,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
@@ -71,7 +70,7 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
 export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
 	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
 
-	return createTransform(NAME, async (document: Document, context?: TransformContext): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const accessorsVisited = new Set<Accessor>();
 		const srcAccessorCount = document.getRoot().listAccessors().length;
 		const logger = document.getLogger();
