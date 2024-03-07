@@ -1,5 +1,5 @@
 import test from 'ava';
-import { getBounds } from '@gltf-transform/core';
+import { getBounds, Document } from '@gltf-transform/core';
 import { join, quantize } from '@gltf-transform/functions';
 import { createPlatformIO, roundBbox } from '@gltf-transform/test-utils';
 import path, { dirname } from 'path';
@@ -31,4 +31,14 @@ test('quantization', async (t) => {
 
 	t.is(document.getRoot().listMeshes().length, 1, '1 mesh');
 	t.deepEqual(bboxAfter, bboxBefore, 'same bbox');
+});
+
+test('no side effects', async (t) => {
+	const document = new Document();
+	document.createNode('A');
+	document.createNode('B');
+
+	await document.transform(join({ cleanup: false }));
+
+	t.is(document.getRoot().listNodes().length, 2, 'skips cleanup');
 });

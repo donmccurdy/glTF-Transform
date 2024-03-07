@@ -31,12 +31,21 @@ export interface SimplifyOptions {
 	 * to ensure no seams appear.
 	 */
 	lockBorder?: boolean;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
 	ratio: 0.0,
 	error: 0.0001,
 	lockBorder: false,
+	cleanup: true,
 };
 
 /**
@@ -105,19 +114,16 @@ export function simplify(_options: SimplifyOptions): Transform {
 		}
 
 		// Where simplification removes meshes, we may need to prune leaf nodes.
-		await document.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-		);
-
-		// Where multiple primitive indices point into the same vertex streams, simplification
-		// may write duplicate streams. Find and remove the duplicates after processing.
-		if (!isTransformPending(context, NAME, 'dedup')) {
-			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
+		if (options.cleanup) {
+			await document.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+				dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
+			);
 		}
 
 		logger.debug(`${NAME}: Complete.`);

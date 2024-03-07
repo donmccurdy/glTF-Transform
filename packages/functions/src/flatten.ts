@@ -6,10 +6,20 @@ import { createTransform } from './utils.js';
 const NAME = 'flatten';
 
 /** Options for the {@link flatten} function. */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FlattenOptions {}
+export interface FlattenOptions {
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
+}
 
-export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
+export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {
+	cleanup: true,
+};
 
 /**
  * Flattens the scene graph, leaving {@link Node Nodes} with
@@ -31,7 +41,6 @@ export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {};
  * @category Transforms
  */
 export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...FLATTEN_DEFAULTS, ..._options } as Required<FlattenOptions>;
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
@@ -90,7 +99,9 @@ export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform 
 		}
 
 		// (5) Clean up leaf nodes.
-		await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false }));
+		if (options.cleanup) {
+			await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false }));
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});

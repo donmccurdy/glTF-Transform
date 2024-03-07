@@ -12,7 +12,7 @@ import {
 	TypedArray,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
-import { createTransform, isTransformPending } from './utils.js';
+import { createTransform } from './utils.js';
 import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
@@ -23,12 +23,21 @@ export interface ResampleOptions {
 	ready?: Promise<void>;
 	resample?: unknown; // glTF-Transform/issues/996
 	tolerance?: number;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
 	ready: Promise.resolve(),
 	resample: resampleDebug,
 	tolerance: 1e-4,
+	cleanup: true,
 };
 
 /**
@@ -150,7 +159,7 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		// Resampling may result in duplicate input or output sampler
 		// accessors. Find and remove the duplicates after processing.
 		const dstAccessorCount = document.getRoot().listAccessors().length;
-		if (dstAccessorCount > srcAccessorCount && !isTransformPending(context, NAME, 'dedup')) {
+		if (dstAccessorCount > srcAccessorCount && options.cleanup) {
 			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
 		}
 
