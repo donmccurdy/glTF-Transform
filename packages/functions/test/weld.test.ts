@@ -332,6 +332,16 @@ test('degenerate', async (t) => {
 	);
 });
 
+test('no side effects', async (t) => {
+	const document = new Document().setLogger(logger);
+	const attributeA = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+	attributeA.clone();
+
+	await document.transform(weld({ cleanup: false }));
+
+	t.is(document.getRoot().listAccessors().length, 2, 'skips prune and dedup');
+});
+
 /* UTILITIES */
 
 function createUniqueAttribute(document: Document, type: GLTF.AccessorType, count: number): Accessor {

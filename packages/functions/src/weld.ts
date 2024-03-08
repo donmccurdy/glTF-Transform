@@ -73,6 +73,14 @@ export interface WeldOptions {
 	overwrite?: boolean;
 	/** Enables a more thorough, but slower, search for vertices to weld. */
 	exhaustive?: boolean;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
@@ -80,6 +88,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 	toleranceNormal: Tolerance.NORMAL,
 	overwrite: true,
 	exhaustive: false, // donmccurdy/glTF-Transform#886
+	cleanup: true,
 };
 
 /**
@@ -132,15 +141,17 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 		}
 
 		// Welding removes degenerate meshes; prune leaf nodes afterward.
-		await doc.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-			dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
-		);
+		if (options.cleanup) {
+			await doc.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+				dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
+			);
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});

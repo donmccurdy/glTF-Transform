@@ -14,10 +14,19 @@ export interface ReorderOptions {
 	 * or for GPU rendering performance. Default is 'size'.
 	 */
 	target?: 'size' | 'performance';
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
 	target: 'size',
+	cleanup: true,
 };
 
 /**
@@ -92,13 +101,15 @@ export function reorder(_options: ReorderOptions): Transform {
 		}
 
 		// Clean up any attributes left unused by earlier cloning.
-		await document.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR],
-				keepAttributes: true,
-				keepIndices: true,
-			}),
-		);
+		if (options.cleanup) {
+			await document.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR],
+					keepAttributes: true,
+					keepIndices: true,
+				}),
+			);
+		}
 
 		if (!plan.indicesToAttributes.size) {
 			logger.warn(`${NAME}: No qualifying primitives found; may need to weld first.`);

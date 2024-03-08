@@ -1,11 +1,10 @@
-import { Document, Primitive, PropertyType, Transform, TransformContext } from '@gltf-transform/core';
+import { Document, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import {
 	createTransform,
 	formatDeltaOp,
 	deepListAttributes,
 	remapAttribute,
 	deepSwapAttribute,
-	isTransformPending,
 	shallowCloneAccessor,
 } from './utils.js';
 import { weld } from './weld.js';
@@ -31,12 +30,21 @@ export interface SimplifyOptions {
 	 * to ensure no seams appear.
 	 */
 	lockBorder?: boolean;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
 	ratio: 0.0,
 	error: 0.0001,
 	lockBorder: false,
+	cleanup: true,
 };
 
 /**
@@ -81,11 +89,11 @@ export function simplify(_options: SimplifyOptions): Transform {
 		throw new Error(`${NAME}: simplifier dependency required — install "meshoptimizer".`);
 	}
 
-	return createTransform(NAME, async (document: Document, context?: TransformContext): Promise<void> => {
+	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 
 		await simplifier.ready;
-		await document.transform(weld({ overwrite: false }));
+		await document.transform(weld({ overwrite: false, cleanup: options.cleanup }));
 
 		// Simplify mesh primitives.
 		for (const mesh of document.getRoot().listMeshes()) {
@@ -105,19 +113,16 @@ export function simplify(_options: SimplifyOptions): Transform {
 		}
 
 		// Where simplification removes meshes, we may need to prune leaf nodes.
-		await document.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-		);
-
-		// Where multiple primitive indices point into the same vertex streams, simplification
-		// may write duplicate streams. Find and remove the duplicates after processing.
-		if (!isTransformPending(context, NAME, 'dedup')) {
-			await document.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR] }));
+		if (options.cleanup) {
+			await document.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+				dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
+			);
 		}
 
 		logger.debug(`${NAME}: Complete.`);

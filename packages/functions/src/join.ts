@@ -29,7 +29,6 @@ const _matrix = [
 ] as mat4;
 
 /** Options for the {@link join} function. */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JoinOptions {
 	/**
 	 * Prevents joining distinct {@link Mesh Meshes} and {@link Node Nodes}.
@@ -37,18 +36,27 @@ export interface JoinOptions {
 	 * only _named_ Nodes and Meshes, use
 	 * {@link JoinOptions.keepNamed keepNamed} instead. Default: false.
 	 */
-	keepMeshes: boolean;
+	keepMeshes?: boolean;
 	/**
 	 * Prevents joining _named_ {@link Mesh Meshes} and {@link Node Nodes}.
 	 * If {@link JoinOptions.keepMeshes keepMeshes} is enabled, keepNamed will
 	 * have no effect. Default: false.
 	 */
-	keepNamed: boolean;
+	keepNamed?: boolean;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const JOIN_DEFAULTS: Required<JoinOptions> = {
 	keepMeshes: false,
 	keepNamed: false,
+	cleanup: true,
 };
 
 /**
@@ -92,14 +100,16 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 		}
 
 		// Clean up.
-		await document.transform(
-			prune({
-				propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: false,
-			}),
-		);
+		if (options.cleanup) {
+			await document.transform(
+				prune({
+					propertyTypes: [NODE, MESH, PRIMITIVE, ACCESSOR],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: false,
+				}),
+			);
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});

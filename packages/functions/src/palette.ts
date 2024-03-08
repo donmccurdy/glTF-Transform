@@ -26,11 +26,20 @@ export interface PaletteOptions {
 	 * material values are found, no palettes will be generated. Default: 5.
 	 */
 	min?: number;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
 	min: 5,
+	cleanup: true,
 };
 
 /**
@@ -291,7 +300,9 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			prim.setMaterial(dstMaterial).setAttribute('TEXCOORD_0', uv);
 		}
 
-		await document.transform(prune({ propertyTypes: [PropertyType.MATERIAL] }));
+		if (options.cleanup) {
+			await document.transform(prune({ propertyTypes: [PropertyType.MATERIAL] }));
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});

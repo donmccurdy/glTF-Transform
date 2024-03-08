@@ -60,6 +60,14 @@ export interface QuantizeOptions {
 	quantizeGeneric?: number;
 	/** Normalize weight attributes. */
 	normalizeWeights?: boolean;
+	/**
+	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
+	 * default. Cleanup removes temporary resources created during the operation, but may also remove
+	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
+	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
+	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 */
+	cleanup?: boolean;
 }
 
 export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>> = {
@@ -72,6 +80,7 @@ export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>
 	quantizeWeight: 8,
 	quantizeGeneric: 12,
 	normalizeWeights: true,
+	cleanup: true,
 };
 
 /**
@@ -124,19 +133,21 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 			}
 		}
 
-		await doc.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
-				keepAttributes: true,
-				keepIndices: true,
-				keepLeaves: true,
-				keepSolidTextures: true,
-			}),
-			dedup({
-				propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN],
-				keepUniqueNames: true,
-			}),
-		);
+		if (options.cleanup) {
+			await doc.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
+					keepAttributes: true,
+					keepIndices: true,
+					keepLeaves: true,
+					keepSolidTextures: true,
+				}),
+				dedup({
+					propertyTypes: [PropertyType.ACCESSOR, PropertyType.MATERIAL, PropertyType.SKIN],
+					keepUniqueNames: true,
+				}),
+			);
+		}
 
 		logger.debug(`${NAME}: Complete.`);
 	});
