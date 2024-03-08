@@ -7,20 +7,11 @@ const NAME = 'partition';
 export interface PartitionOptions {
 	animations?: boolean | Array<string>;
 	meshes?: boolean | Array<string>;
-	/**
-	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
-	 * default. Cleanup removes temporary resources created during the operation, but may also remove
-	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
-	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
-	 * {@link prune} manually (with customized options) later in the processing pipeline.
-	 */
-	cleanup?: boolean;
 }
 
 const PARTITION_DEFAULTS: Required<PartitionOptions> = {
 	animations: true,
 	meshes: true,
-	cleanup: true,
 };
 
 /**
@@ -53,9 +44,7 @@ export function partition(_options: PartitionOptions = PARTITION_DEFAULTS): Tran
 			logger.warn(`${NAME}: Select animations or meshes to create a partition.`);
 		}
 
-		if (options.cleanup) {
-			await doc.transform(prune({ propertyTypes: [PropertyType.BUFFER] }));
-		}
+		await doc.transform(prune({ propertyTypes: [PropertyType.BUFFER] }));
 
 		logger.debug(`${NAME}: Complete.`);
 	});
