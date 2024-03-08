@@ -15,7 +15,7 @@ test('translation', async (t) => {
 	const node3 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 2]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform(instance({min: 2}));
+	await doc.transform(instance({ min: 2 }));
 
 	t.is(root.listNodes().length, 1, 'creates batch node');
 	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
@@ -49,7 +49,7 @@ test('rotation', async (t) => {
 	const node3 = doc.createNode().setMesh(mesh).setRotation([0, x, 0, x]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform(instance({min: 2}));
+	await doc.transform(instance({ min: 2 }));
 
 	t.is(root.listNodes().length, 1, 'creates batch node');
 	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
@@ -82,7 +82,7 @@ test('scale', async (t) => {
 	const node3 = doc.createNode().setMesh(mesh).setScale([1, 1, 5]);
 	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
 
-	await doc.transform(instance({min: 2}));
+	await doc.transform(instance({ min: 2 }));
 
 	t.is(root.listNodes().length, 1, 'creates batch node');
 	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');

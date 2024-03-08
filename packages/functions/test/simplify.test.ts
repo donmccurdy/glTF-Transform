@@ -172,6 +172,16 @@ test('points - welded', async (t) => {
 	t.is(prim.getIndices(), null, 'unwelded (after)');
 });
 
+test('no side effects', async (t) => {
+	const document = new Document().setLogger(logger);
+	const attributeA = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+	attributeA.clone();
+
+	await document.transform(simplify({ cleanup: false, simplifier: MeshoptSimplifier }));
+
+	t.is(document.getRoot().listAccessors().length, 2, 'skips prune and dedup');
+});
+
 /* UTILITIES */
 
 function getVertexCount(document: Document): number {

@@ -118,7 +118,7 @@ test('preserve extensions', async (t) => {
 		.setSpecularColorFactor([0.5, 0.5, 0.5]);
 	material.setExtension('KHR_materials_specular', specular);
 
-	await document.transform(palette({min: 2}));
+	await document.transform(palette({ min: 2 }));
 
 	t.is(document.getRoot().listMaterials().length, 2, 'specular + non-specular palette materials');
 
@@ -175,6 +175,20 @@ test('pixel values', async (t) => {
 		],
 		'pixel values',
 	);
+});
+
+test('no side effects', async (t) => {
+	const document = new Document().setLogger(logger);
+	const position = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+	const materialA = document.createMaterial('A').setBaseColorFactor([1, 0, 0, 1]);
+	const materialB = document.createMaterial('B').setBaseColorFactor([0, 1, 0, 1]);
+	const primA = document.createPrimitive().setMaterial(materialA).setAttribute('POSITION', position);
+	const primB = document.createPrimitive().setMaterial(materialB).setAttribute('POSITION', position);
+	document.createMesh().addPrimitive(primA).addPrimitive(primB);
+
+	await document.transform(palette({ cleanup: false, min: 2 }));
+
+	t.true(document.getRoot().listMaterials().length >= 2, 'skips prune and dedup');
 });
 
 /* UTILITIES */

@@ -73,3 +73,22 @@ test('trs animation', async (t) => {
 	t.truthy(nodeB.getParentNode() === null, 'Scene → B');
 	t.deepEqual(scene.listChildren(), [nodeC, nodeB], 'Scene → [Group, B]');
 });
+
+test('no side effects', async (t) => {
+	const document = new Document().setLogger(logger);
+	const attributeA = document
+		.createAccessor()
+		.setType('VEC3')
+		.setArray(new Float32Array([1, 2, 3]));
+	const attributeB = attributeA.clone();
+	const prim = document.createPrimitive().setAttribute('POSITION', attributeA).setAttribute('NORMAL', attributeB);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const nodeA = document.createNode('A').setMesh(mesh);
+	const nodeB = document.createNode('B');
+	document.createScene().addChild(nodeA).addChild(nodeB);
+
+	await document.transform(flatten({ cleanup: false }));
+
+	t.is(document.getRoot().listNodes().length, 2, 'skips prune');
+	t.is(document.getRoot().listAccessors().length, 2, 'skips dedup');
+});

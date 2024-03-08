@@ -5,7 +5,6 @@ import {
 	bbox,
 	getBounds,
 	Document,
-	Logger,
 	Mesh,
 	Node,
 	Primitive,
@@ -15,9 +14,7 @@ import {
 } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '@gltf-transform/functions';
-import { round, roundBbox } from '@gltf-transform/test-utils';
-
-const logger = new Logger(Logger.Verbosity.WARN);
+import { logger, round, roundBbox } from '@gltf-transform/test-utils';
 
 test('exclusions', async (t) => {
 	const doc = new Document().setLogger(logger);
@@ -398,6 +395,16 @@ test('volumetric materials', async (t) => {
 	const volumeB = primB.getMaterial().getExtension<Volume>('KHR_materials_volume');
 	t.is(volumeA.getThicknessFactor(), 1 / 2.5, 'volumeA.thickness');
 	t.is(volumeB.getThicknessFactor(), 1 / 50, 'volumeB.thickness');
+});
+
+test('no side effects', async (t) => {
+	const document = new Document();
+	const attributeA = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+	attributeA.clone();
+
+	await document.transform(quantize({ cleanup: false }));
+
+	t.is(document.getRoot().listAccessors().length, 2, 'skips prune and dedup');
 });
 
 /* UTILITIES */

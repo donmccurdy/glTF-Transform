@@ -93,7 +93,7 @@ export function simplify(_options: SimplifyOptions): Transform {
 		const logger = document.getLogger();
 
 		await simplifier.ready;
-		await document.transform(weld({ overwrite: false }));
+		await document.transform(weld({ overwrite: false, cleanup: options.cleanup }));
 
 		// Simplify mesh primitives.
 		for (const mesh of document.getRoot().listMeshes()) {
