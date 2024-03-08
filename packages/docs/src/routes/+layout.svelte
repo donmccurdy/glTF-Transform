@@ -25,7 +25,7 @@
 	<meta property="og:site_name" content="glTF Transform" />
 	<meta property="og:title" content={$page.data.metadata.title} />
 	<meta property="og:description" content={$page.data.metadata.snippet} />
-	<meta property="og:url" content={$page.url.href} />
+	<meta property="og:url" content={'https://gltf-transform.dev' + $page.url.pathname} />
 	<meta name="og:image" content="/media/hero.jpg" />
 	<meta name="og:image:alt" content="Function symbol, where the argument and output are a box labeled 'glTF'." />
 	<meta name="og:image:width" content="2000" />
@@ -33,7 +33,7 @@
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={$page.data.metadata.title} />
 	<meta name="twitter:description" content={$page.data.metadata.snippet} />
-	<meta name="twitter:url" content={$page.url.href} />
+	<meta name="twitter:url" content={'https://gltf-transform.dev' + $page.url.pathname} />
 	<meta name="twitter:image" content="/media/hero.jpg" />
 	<meta name="twitter:image:alt" content="Function symbol, where the argument and output are a box labeled 'glTF'." />
 	<meta name="twitter:label1" content="Written by" />
