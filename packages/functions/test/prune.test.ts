@@ -90,6 +90,21 @@ test('leaf nodes', async (t) => {
 	t.truthy(nodeA.isDisposed(), 'nodeA disposed');
 });
 
+test('leaf nodes - extras', async (t) => {
+	const document = new Document().setLogger(logger);
+	const node = document.createNode('CustomNode');
+	node.setExtras({ customData: 'test' });
+	document.createScene().addChild(node);
+
+	await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false, keepExtras: true }));
+
+	t.is(document.getRoot().listNodes().length, 1, '1 nodes');
+
+	await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false, keepExtras: false }));
+
+	t.is(document.getRoot().listNodes().length, 0, '0 nodes');
+});
+
 test('attributes', async (t) => {
 	const document = new Document().setLogger(logger);
 

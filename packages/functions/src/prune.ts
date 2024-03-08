@@ -26,7 +26,7 @@ import { getPixels } from 'ndarray-pixels';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';
 import { listTextureSlots } from './list-texture-slots.js';
-import { createTransform } from './utils.js';
+import { createTransform, isEmptyObject } from './utils.js';
 
 const NAME = 'prune';
 
@@ -43,6 +43,8 @@ export interface PruneOptions {
 	keepIndices?: boolean;
 	/** Whether to keep single-color textures that can be converted to material factors. */
 	keepSolidTextures?: boolean;
+	/** Whether custom extras should prevent pruning a property. */
+	keepExtras?: boolean;
 }
 
 export const PRUNE_DEFAULTS: Required<PruneOptions> = {
@@ -63,6 +65,7 @@ export const PRUNE_DEFAULTS: Required<PruneOptions> = {
 	keepAttributes: false,
 	keepIndices: false,
 	keepSolidTextures: false,
+	keepExtras: false,
 };
 
 /**
@@ -89,6 +92,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
 	const propertyTypes = new Set(options.propertyTypes);
+	const keepExtras = options.keepExtras;
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
@@ -116,39 +120,39 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		if (propertyTypes.has(PropertyType.NODE)) {
 			if (!options.keepLeaves) {
 				for (const scene of root.listScenes()) {
-					nodeTreeShake(graph, scene);
+					nodeTreeShake(graph, scene, keepExtras);
 				}
 			}
 
 			for (const node of root.listNodes()) {
-				treeShake(node);
+				treeShake(node, keepExtras);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.SKIN)) {
 			for (const skin of root.listSkins()) {
-				treeShake(skin);
+				treeShake(skin, keepExtras);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.MESH)) {
 			for (const mesh of root.listMeshes()) {
-				treeShake(mesh);
+				treeShake(mesh, keepExtras);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.CAMERA)) {
 			for (const camera of root.listCameras()) {
-				treeShake(camera);
+				treeShake(camera, keepExtras);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.PRIMITIVE)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE, keepExtras);
 		}
 
 		if (propertyTypes.has(PropertyType.PRIMITIVE_TARGET)) {
-			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET);
+			indirectTreeShake(graph, PropertyType.PRIMITIVE_TARGET, keepExtras);
 		}
 
 		// Prune unused vertex attributes.
@@ -195,31 +199,31 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 				}
 				if (!anim.listChannels().length) {
 					const samplers = anim.listSamplers();
-					treeShake(anim);
-					samplers.forEach((sampler) => treeShake(sampler));
+					treeShake(anim, keepExtras);
+					samplers.forEach((sampler) => treeShake(sampler, keepExtras));
 				} else {
-					anim.listSamplers().forEach((sampler) => treeShake(sampler));
+					anim.listSamplers().forEach((sampler) => treeShake(sampler, keepExtras));
 				}
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.MATERIAL)) {
-			root.listMaterials().forEach((material) => treeShake(material));
+			root.listMaterials().forEach((material) => treeShake(material, keepExtras));
 		}
 
 		if (propertyTypes.has(PropertyType.TEXTURE)) {
-			root.listTextures().forEach((texture) => treeShake(texture));
+			root.listTextures().forEach((texture) => treeShake(texture, keepExtras));
 			if (!options.keepSolidTextures) {
 				await pruneSolidTextures(document);
 			}
 		}
 
 		if (propertyTypes.has(PropertyType.ACCESSOR)) {
-			root.listAccessors().forEach((accessor) => treeShake(accessor));
+			root.listAccessors().forEach((accessor) => treeShake(accessor, keepExtras));
 		}
 
 		if (propertyTypes.has(PropertyType.BUFFER)) {
-			root.listBuffers().forEach((buffer) => treeShake(buffer));
+			root.listBuffers().forEach((buffer) => treeShake(buffer, keepExtras));
 		}
 
 		// TODO(bug): This process does not identify unused ExtensionProperty instances. That could
@@ -277,11 +281,12 @@ class DisposeCounter {
  */
 
 /** Disposes of the given property if it is unused. */
-function treeShake(prop: Property): void {
+function treeShake(prop: Property, keepExtras: boolean): void {
 	// Consider a property unused if it has no references from another property, excluding
 	// types Root and AnimationChannel.
 	const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
-	if (!parents.length) {
+	const needsExtras = keepExtras && !isEmptyObject(prop.getExtras());
+	if (!parents.length && !needsExtras) {
 		prop.dispose();
 	}
 }
@@ -291,18 +296,18 @@ function treeShake(prop: Property): void {
  * graph. It's possible that objects may have been constructed without any outbound links,
  * but since they're not on the graph they don't need to be tree-shaken.
  */
-function indirectTreeShake(graph: Graph<Property>, propertyType: string): void {
+function indirectTreeShake(graph: Graph<Property>, propertyType: string, keepExtras: boolean): void {
 	for (const edge of graph.listEdges()) {
 		const parent = edge.getParent();
 		if (parent.propertyType === propertyType) {
-			treeShake(parent);
+			treeShake(parent, keepExtras);
 		}
 	}
 }
 
 /** Iteratively prunes leaf Nodes without contents. */
-function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene): void {
-	prop.listChildren().forEach((child) => nodeTreeShake(graph, child));
+function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene, keepExtras: boolean): void {
+	prop.listChildren().forEach((child) => nodeTreeShake(graph, child, keepExtras));
 
 	if (prop instanceof Scene) return;
 
@@ -311,7 +316,8 @@ function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene): void {
 		return ptype !== PropertyType.ROOT && ptype !== PropertyType.SCENE && ptype !== PropertyType.NODE;
 	});
 	const isEmpty = graph.listChildren(prop).length === 0;
-	if (isEmpty && !isUsed) {
+	const needsExtras = keepExtras && !isEmptyObject(prop.getExtras());
+	if (isEmpty && !isUsed && !needsExtras) {
 		prop.dispose();
 	}
 }
