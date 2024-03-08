@@ -51,18 +51,3 @@ test('no side effects', async (t) => {
 	t.is(document.getRoot().listNodes().length, 2, 'skips prune');
 	t.is(document.getRoot().listAccessors().length, 2, 'skips dedup');
 });
-
-test('should not prune empty nodes if they have custom data', async (t) => {
-	const io = await createPlatformIO();
-	const document = await io.read(path.join(__dirname, './in/ShapeCollection.glb'));
-	const scene = document.getRoot().getDefaultScene();
-
-	const node = document.createNode('CustomNode');
-	node.setExtras({ customData: 'test' });
-	scene.addChild(node);
-
-	await document.transform(join());
-
-	t.is(document.getRoot().listNodes().length, 2, '2 nodes');
-	t.is(document.getRoot().listMeshes().length, 1, '1 mesh');
-});

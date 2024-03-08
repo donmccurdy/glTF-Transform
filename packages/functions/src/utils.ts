@@ -297,6 +297,12 @@ export function isUsed(prop: Property): boolean {
 	return prop.listParents().some((parent) => parent.propertyType !== PropertyType.ROOT);
 }
 
+/** @hidden */
+export function isEmptyObject(object: Record<string, unknown>): boolean {
+	for (const key in object) return false;
+	return true;
+}
+
 /**
  * Creates a unique key associated with the structure and draw call characteristics of
  * a {@link Primitive}, independent of its vertex content. Helper method, used to

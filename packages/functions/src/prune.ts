@@ -26,7 +26,7 @@ import { getPixels } from 'ndarray-pixels';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';
 import { listTextureSlots } from './list-texture-slots.js';
-import { createTransform } from './utils.js';
+import { createTransform, isEmptyObject } from './utils.js';
 
 const NAME = 'prune';
 
@@ -281,7 +281,7 @@ function treeShake(prop: Property): void {
 	// Consider a property unused if it has no references from another property, excluding
 	// types Root and AnimationChannel.
 	const parents = prop.listParents().filter((p) => !(p instanceof Root || p instanceof AnimationChannel));
-	if (!parents.length) {
+	if (!parents.length && isEmptyObject(prop.getExtras())) {
 		prop.dispose();
 	}
 }
@@ -311,7 +311,7 @@ function nodeTreeShake(graph: Graph<Property>, prop: Node | Scene): void {
 		return ptype !== PropertyType.ROOT && ptype !== PropertyType.SCENE && ptype !== PropertyType.NODE;
 	});
 	const isEmpty = graph.listChildren(prop).length === 0;
-	if (isEmpty && !isUsed) {
+	if (isEmpty && !isUsed && isEmptyObject(prop.getExtras())) {
 		prop.dispose();
 	}
 }
