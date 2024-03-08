@@ -96,9 +96,13 @@ test('leaf nodes - extras', async (t) => {
 	node.setExtras({ customData: 'test' });
 	document.createScene().addChild(node);
 
-	await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false }));
+	await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false, keepExtras: true }));
 
 	t.is(document.getRoot().listNodes().length, 1, '1 nodes');
+
+	await document.transform(prune({ propertyTypes: [PropertyType.NODE], keepLeaves: false, keepExtras: false }));
+
+	t.is(document.getRoot().listNodes().length, 0, '0 nodes');
 });
 
 test('attributes', async (t) => {
