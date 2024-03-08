@@ -58,7 +58,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 4.0.0-alpha.8 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 4.0.0-alpha.9 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
