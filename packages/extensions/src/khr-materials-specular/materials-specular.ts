@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 import { Specular } from './specular.js';
 
@@ -43,8 +43,10 @@ interface SpecularDef {
  * ```
  */
 export class KHRMaterialsSpecular extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Specular property for use on a {@link Material}. */
 	public createSpecular(): Specular {
@@ -52,7 +54,17 @@ export class KHRMaterialsSpecular extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
@@ -93,7 +105,7 @@ export class KHRMaterialsSpecular extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document

@@ -167,6 +167,12 @@ export class GLTFReader {
 
 		/** Materials. */
 
+		document
+			.getRoot()
+			.listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.MATERIAL))
+			.forEach((extension) => extension.preread(context, PropertyType.MATERIAL));
+
 		const materialDefs = json.materials || [];
 		context.materials = materialDefs.map((materialDef) => {
 			const material = document.createMaterial(materialDef.name);
@@ -254,6 +260,12 @@ export class GLTFReader {
 		});
 
 		/** Meshes. */
+
+		document
+			.getRoot()
+			.listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.MESH))
+			.forEach((extension) => extension.preread(context, PropertyType.MESH));
 
 		const meshDefs = json.meshes || [];
 		document

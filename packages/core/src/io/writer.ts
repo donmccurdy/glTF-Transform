@@ -570,6 +570,10 @@ export class GLTFWriter {
 
 		/* Materials. */
 
+		extensionsUsed
+			.filter((extension) => extension.prewriteTypes.includes(PropertyType.MATERIAL))
+			.forEach((extension) => extension.prewrite(context, PropertyType.MATERIAL));
+
 		json.materials = root.listMaterials().map((material, index) => {
 			const materialDef = context.createPropertyDef(material) as GLTF.IMaterial;
 
@@ -653,6 +657,10 @@ export class GLTFWriter {
 		});
 
 		/* Meshes. */
+
+		extensionsUsed
+			.filter((extension) => extension.prewriteTypes.includes(PropertyType.MESH))
+			.forEach((extension) => extension.prewrite(context, PropertyType.MESH));
 
 		json.meshes = root.listMeshes().map((mesh, index) => {
 			const meshDef = context.createPropertyDef(mesh) as GLTF.IMesh;

@@ -1,4 +1,4 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_UNLIT } from '../constants.js';
 import { Unlit } from './unlit.js';
 
@@ -41,8 +41,10 @@ const NAME = KHR_MATERIALS_UNLIT;
  * ```
  */
 export class KHRMaterialsUnlit extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Unlit property for use on a {@link Material}. */
 	public createUnlit(): Unlit {
@@ -50,7 +52,17 @@ export class KHRMaterialsUnlit extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const materialDefs = context.jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
 			if (materialDef.extensions && materialDef.extensions[NAME]) {
@@ -62,7 +74,7 @@ export class KHRMaterialsUnlit extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document

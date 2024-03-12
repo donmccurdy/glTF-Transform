@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants.js';
 import { Transmission } from './transmission.js';
 
@@ -42,8 +42,10 @@ interface TransmissionDef {
  * ```
  */
 export class KHRMaterialsTransmission extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Transmission property for use on a {@link Material}. */
 	public createTransmission(): Transmission {
@@ -51,7 +53,17 @@ export class KHRMaterialsTransmission extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
@@ -83,7 +95,7 @@ export class KHRMaterialsTransmission extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document

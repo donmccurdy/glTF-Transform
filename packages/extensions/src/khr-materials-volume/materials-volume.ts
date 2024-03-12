@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils } from '@gltf-transform/core';
+import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 import { Volume } from './volume.js';
 
@@ -64,8 +64,10 @@ interface VolumeDef {
  * Blender or Substance Painter. When `thicknessFactor = 0`, all volumetric effects are disabled.
  */
 export class KHRMaterialsVolume extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Volume property for use on a {@link Material}. */
 	public createVolume(): Volume {
@@ -73,7 +75,17 @@ export class KHRMaterialsVolume extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
@@ -111,7 +123,7 @@ export class KHRMaterialsVolume extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document
