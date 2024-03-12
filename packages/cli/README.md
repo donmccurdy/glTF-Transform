@@ -53,7 +53,7 @@ gltf-transform webp input.glb output.glb --slots "baseColor"
 # Compress textures with KTX2 + Basis Universal codecs, UASTC and ETC1S.
 gltf-transform uastc input.glb output1.glb \
     --slots "{normalTexture,occlusionTexture,metallicRoughnessTexture}" \
-    --level 4 --rdo 4 --zstd 18 --verbose
+    --level 4 --rdo --rdo-lambda 4 --zstd 18 --verbose
 gltf-transform etc1s output1.glb output2.glb --quality 255 --verbose
 ```
 
