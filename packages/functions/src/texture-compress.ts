@@ -1,4 +1,13 @@
-import { BufferUtils, Document, ImageUtils, Texture, TextureChannel, Transform, vec2 } from '@gltf-transform/core';
+import {
+	BufferUtils,
+	Document,
+	FileUtils,
+	ImageUtils,
+	Texture,
+	TextureChannel,
+	Transform,
+	vec2,
+} from '@gltf-transform/core';
 import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
@@ -243,6 +252,7 @@ export async function compressTexture(texture: Texture, _options: CompressTextur
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<CompressTextureOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 
+	const srcURI = texture.getURI();
 	const srcFormat = getFormat(texture);
 	const dstFormat = options.targetFormat || srcFormat;
 	const srcMimeType = texture.getMimeType();
@@ -264,7 +274,7 @@ export async function compressTexture(texture: Texture, _options: CompressTextur
 		texture.setImage(dstImage);
 	} else {
 		// Overwrite, then update path and MIME type if src/dst formats differ.
-		const srcExtension = ImageUtils.mimeTypeToExtension(srcMimeType);
+		const srcExtension = srcURI ? FileUtils.extension(srcURI) : ImageUtils.mimeTypeToExtension(srcMimeType);
 		const dstExtension = ImageUtils.mimeTypeToExtension(dstMimeType);
 		const dstURI = texture.getURI().replace(new RegExp(`\\.${srcExtension}$`), `.${dstExtension}`);
 		texture.setImage(dstImage).setMimeType(dstMimeType).setURI(dstURI);
