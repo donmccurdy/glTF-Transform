@@ -159,3 +159,89 @@ test('clone', (t) => {
 	t.truthy((docClone = document.clone()), 'clones document');
 	t.truthy(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
 });
+
+test('stable execution order', async (t) => {
+	const readOrder: string[] = [];
+	const writeOrder: string[] = [];
+
+	abstract class MockExtension extends Extension {
+		prewrite(): this {
+			writeOrder.push(this.extensionName);
+			return this;
+		}
+		write(): this {
+			writeOrder.push(this.extensionName);
+			return this;
+		}
+		preread() {
+			readOrder.push(this.extensionName);
+			return this;
+		}
+		read() {
+			readOrder.push(this.extensionName);
+			return this;
+		}
+	}
+
+	class ExtensionA extends MockExtension {
+		static EXTENSION_NAME = 'A';
+		extensionName = 'A';
+	}
+
+	class ExtensionB extends MockExtension {
+		static EXTENSION_NAME = 'B';
+		extensionName = 'B';
+		prereadTypes = [PropertyType.MATERIAL];
+		prewriteTypes = [PropertyType.MATERIAL];
+	}
+
+	class ExtensionC extends MockExtension {
+		static EXTENSION_NAME = 'C';
+		extensionName = 'C';
+		prereadTypes = [PropertyType.MESH];
+		prewriteTypes = [PropertyType.MESH];
+	}
+
+	// Execution order must be stable regardless of the order in which
+	// extensions are registered.
+	const expectedOrder = ['B', 'C', 'A', 'B', 'C'];
+
+	// Alphabetical.
+
+	const extensions = [ExtensionA, ExtensionB, ExtensionC];
+	const io = (await createPlatformIO()).registerExtensions(extensions);
+	const document = new Document();
+	extensions.forEach((Ext) => document.createExtension(Ext));
+	const glb = await io.writeBinary(document);
+	const rtDocument = await io.readBinary(glb);
+	const extensionNames = rtDocument
+		.getRoot()
+		.listExtensionsUsed()
+		.map((ext) => ext.extensionName);
+
+	t.deepEqual(writeOrder, expectedOrder, 'write order');
+	t.deepEqual(readOrder, expectedOrder, 'read order');
+	t.deepEqual(extensionNames, ['A', 'B', 'C'], 'extension order');
+
+	// Reset.
+
+	writeOrder.length = 0;
+	readOrder.length = 0;
+
+	// Reverse alphabetical.
+
+	const extensionsReversed = extensions.slice().reverse();
+	const ioReversed = (await createPlatformIO()).registerExtensions(extensionsReversed);
+	const documentReversed = new Document();
+	extensionsReversed.forEach((Ext) => documentReversed.createExtension(Ext));
+	const glbReversed = await ioReversed.writeBinary(documentReversed);
+	const rtDocumentReversed = await ioReversed.readBinary(glbReversed);
+	const extensionNamesReversed = rtDocumentReversed
+		.getRoot()
+		.listExtensionsUsed()
+		.map((ext) => ext.extensionName);
+
+	t.deepEqual(writeOrder, expectedOrder, 'write order (reversed)');
+	t.deepEqual(readOrder, expectedOrder, 'read order (reversed)');
+	t.deepEqual(extensionNamesReversed, ['A', 'B', 'C'], 'extension order (reversed)');
+});
