@@ -1,4 +1,4 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, GLTF, PropertyType, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 import { Sheen } from './sheen.js';
 
@@ -47,8 +47,10 @@ interface SheenDef {
  * ```
  */
 export class KHRMaterialsSheen extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Sheen property for use on a {@link Material}. */
 	public createSheen(): Sheen {
@@ -56,7 +58,17 @@ export class KHRMaterialsSheen extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
@@ -97,7 +109,7 @@ export class KHRMaterialsSheen extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document

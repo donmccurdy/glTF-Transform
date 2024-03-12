@@ -48,6 +48,9 @@ export class GLTFReader {
 
 		const extensionsUsed = json.extensionsUsed || [];
 		const extensionsRequired = json.extensionsRequired || [];
+
+		options.extensions.sort((a, b) => (a.EXTENSION_NAME > b.EXTENSION_NAME ? 1 : -1));
+
 		for (const Extension of options.extensions) {
 			if (extensionsUsed.includes(Extension.EXTENSION_NAME)) {
 				const extension = document
@@ -164,6 +167,12 @@ export class GLTFReader {
 
 		/** Materials. */
 
+		document
+			.getRoot()
+			.listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.MATERIAL))
+			.forEach((extension) => extension.preread(context, PropertyType.MATERIAL));
+
 		const materialDefs = json.materials || [];
 		context.materials = materialDefs.map((materialDef) => {
 			const material = document.createMaterial(materialDef.name);
@@ -251,6 +260,12 @@ export class GLTFReader {
 		});
 
 		/** Meshes. */
+
+		document
+			.getRoot()
+			.listExtensionsUsed()
+			.filter((extension) => extension.prereadTypes.includes(PropertyType.MESH))
+			.forEach((extension) => extension.preread(context, PropertyType.MESH));
 
 		const meshDefs = json.meshes || [];
 		document

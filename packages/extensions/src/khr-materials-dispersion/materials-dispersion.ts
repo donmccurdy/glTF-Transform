@@ -1,4 +1,4 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_DISPERSION } from '../constants.js';
 import { Dispersion } from './dispersion.js';
 
@@ -40,8 +40,10 @@ interface DispersionDef {
  * ```
  */
 export class KHRMaterialsDispersion extends Extension {
-	public readonly extensionName = NAME;
 	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName = NAME;
+	public readonly prereadTypes = [PropertyType.MESH];
+	public readonly prewriteTypes = [PropertyType.MESH];
 
 	/** Creates a new Dispersion property for use on a {@link Material}. */
 	public createDispersion(): Dispersion {
@@ -49,7 +51,17 @@ export class KHRMaterialsDispersion extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public write(_context: WriterContext): this {
+		return this;
+	}
+
+	/** @hidden */
+	public preread(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
@@ -71,7 +83,7 @@ export class KHRMaterialsDispersion extends Extension {
 	}
 
 	/** @hidden */
-	public write(context: WriterContext): this {
+	public prewrite(context: WriterContext): this {
 		const jsonDoc = context.jsonDoc;
 
 		this.document
