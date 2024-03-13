@@ -125,6 +125,28 @@ test('jpeg', async (t) => {
 	t.deepEqual(texturePNG.getImage(), EXPECTED_JPEG, 'png optimized');
 });
 
+test('jpeg / jpg', async (t) => {
+	const { encoder } = createMockEncoder();
+
+	const document = new Document().setLogger(logger);
+	const textureJPEG = document.createTexture().setImage(ORIGINAL_JPEG).setMimeType('image/jpeg').setURI('a.jpeg');
+	const textureJPG = document.createTexture().setImage(ORIGINAL_JPEG).setMimeType('image/jpeg').setURI('b.jpg');
+
+	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i }));
+
+	t.is(textureJPEG.getMimeType(), 'image/jpeg', 'jpeg → image/jpeg');
+	t.is(textureJPG.getMimeType(), 'image/jpeg', 'jpg → image/jpeg');
+	t.is(textureJPEG.getURI(), 'a.jpeg', '.jpeg → .jpeg');
+	t.is(textureJPG.getURI(), 'b.jpg', '.jpg → .jpg');
+
+	await document.transform(textureCompress({ encoder, targetFormat: 'webp', formats: /.*/i, slots: /.*/i }));
+
+	t.is(textureJPEG.getMimeType(), 'image/webp', 'jpeg → image/webp');
+	t.is(textureJPG.getMimeType(), 'image/webp', 'jpg → image/webp');
+	t.is(textureJPEG.getURI(), 'a.webp', '.jpeg → .webp');
+	t.is(textureJPG.getURI(), 'b.webp', '.jpg → .webp');
+});
+
 test('png', async (t) => {
 	const { encoder, calls } = createMockEncoder();
 	const document = new Document().setLogger(logger);
