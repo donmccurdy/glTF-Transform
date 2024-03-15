@@ -381,13 +381,6 @@ function createParams(
 	}
 
 	if (width !== size[0] || height !== size[1] || options.resize) {
-		if (width > 4096 || height > 4096) {
-			logger.warn(
-				`ktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
-					' greater than 4096px may not render on some mobile devices.' +
-					' Resize to a lower resolution before compressing, if needed.',
-			);
-		}
 		params.push('--width', width, '--height', height);
 	}
 
