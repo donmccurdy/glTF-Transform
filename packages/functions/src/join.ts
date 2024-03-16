@@ -9,11 +9,11 @@ import {
 	Scene,
 	Transform,
 } from '@gltf-transform/core';
-import { invert, multiply } from 'gl-matrix/mat4';
+import { identity as identityMat4, invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives.js';
 import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
-import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
+import { createPrimGroupKey, createTransform, formatLong } from './utils.js';
 import { dequantizeAttribute } from './dequantize.js';
 
 const NAME = 'join';
@@ -127,6 +127,7 @@ interface IJoinGroup {
 function _joinLevel(document: Document, parent: Node | Scene, options: Required<JoinOptions>) {
 	const logger = document.getLogger();
 	const groups = {} as Record<string, IJoinGroup>;
+	const identity = identityMat4([] as unknown as mat4);
 
 	// Scan for compatible Primitives.
 	const children = parent.listChildren();
@@ -148,7 +149,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		if (node.getSkin()) continue;
 
 		for (const prim of mesh.listPrimitives()) {
-			// Skip prims with morph targets; unsupported.
+			// TODO(feat): Support joining morph targets.
 			if (prim.listTargets().length > 0) continue;
 
 			// Skip prims with volumetric materials; unsupported.
@@ -204,8 +205,10 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 	// Join Primitives.
 	for (const group of joinGroups) {
+		console.time('joinGroup');
 		const { prims, primNodes, primMeshes, dstNode, dstMesh } = group as Required<IJoinGroup>;
-		const dstMatrix = dstNode.getMatrix();
+		const primMatrices: (null | mat4)[] = new Array(prims.length).fill(null);
+		const dstNodeMatrix = dstNode.getMatrix();
 
 		for (let i = 0; i < prims.length; i++) {
 			const primNode = primNodes[i];
@@ -214,20 +217,17 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			let prim = prims[i];
 			primMesh.removePrimitive(prim);
 
-			// Primitives may be reused directly, or their attributes may be
-			// used in another Primitive with a different Material.
-			if (isUsed(prim) || hasSharedAttributes(prim)) {
-				prim = prims[i] = _deepClonePrimitive(prims[i]);
-			}
+			// TODO(perf): Previously we would have deep-cloned the primitive here. We cloned its entire
+			// vertex stream, so that was definitely bad. But maybe guaranteeing an isolated vertex
+			// stream here would still be a good idea — just use the indices!
 
 			// Transform Primitive into new local coordinate space.
 			if (primNode !== dstNode) {
-				multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
-				transformPrimitive(prim, _matrix);
+				primMatrices[i] = multiply(_matrix, invert(_matrix, dstNodeMatrix), primNode.getMatrix()) as mat4;
 			}
 		}
 
-		const dstPrim = joinPrimitives(prims);
+		const dstPrim = joinPrimitives(prims, primMatrices);
 		const dstVertexCount = dstPrim.listAttributes()[0].getCount();
 		dstMesh.addPrimitive(dstPrim);
 
@@ -235,28 +235,8 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			`${NAME}: Joined Primitives (${prims.length}) containing ` +
 				`${formatLong(dstVertexCount)} vertices under Node "${dstNode.getName()}".`,
 		);
+		console.timeEnd('joinGroup');
 	}
-}
-
-function _deepClonePrimitive(src: Primitive): Primitive {
-	const dst = src.clone();
-	for (const semantic of dst.listSemantics()) {
-		dst.setAttribute(semantic, dst.getAttribute(semantic)!.clone());
-	}
-	const indices = dst.getIndices();
-	if (indices) dst.setIndices(indices.clone());
-	return dst;
-}
-
-function hasSharedAttributes(prim: Primitive): boolean {
-	for (const attribute of prim.listAttributes()) {
-		for (const parent of attribute.listParents()) {
-			if (parent !== prim && parent.propertyType !== ROOT) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 /**

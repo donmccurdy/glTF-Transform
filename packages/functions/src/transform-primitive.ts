@@ -1,8 +1,8 @@
-import { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
+import { vec3, vec4, mat3, mat4, Accessor, Primitive } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
-import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
+import { create as createVec3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
-import { createIndices } from './utils.js';
+import { applyNormalMatrixToNormalVector, applyTangentMatrixToTangentVector, createIndices } from './utils.js';
 import { weldPrimitive } from './weld.js';
 import { determinant } from 'gl-matrix/mat4';
 
@@ -30,6 +30,9 @@ import { determinant } from 'gl-matrix/mat4';
 export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = new Set<number>()): void {
 	const position = prim.getAttribute('POSITION')!;
 	const indices = (prim.getIndices()?.getArray() || createIndices(position!.getCount())) as Uint32Array;
+
+	// TODO(perf): Instead of Set<number>, use a Uint8Array mask, or a BitSet,
+	// or make efforts to guarantee isolated vertex streams. Benchmark and choose.
 
 	// Apply transform to base attributes.
 	if (position) {
@@ -111,8 +114,7 @@ function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Arr
 		if (skipIndices.has(index)) continue;
 
 		attribute.getElement(index, vector);
-		transformMat3(vector, vector, normalMatrix);
-		normalizeVec3(vector, vector);
+		applyNormalMatrixToNormalVector(normalMatrix as mat3, vector);
 		attribute.setElement(index, vector);
 
 		skipIndices.add(index);
@@ -120,25 +122,14 @@ function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Arr
 }
 
 function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
-	const v3 = createVec3() as vec3;
-	const v4 = createVec4() as vec4;
+	const tangent = createVec4() as vec4;
 	for (let i = 0; i < indices.length; i++) {
 		const index = indices[i];
 		if (skipIndices.has(index)) continue;
 
-		attribute.getElement(index, v4);
-
-		// mat4 affine matrix applied to vector, vector interpreted as a direction.
-		// Reference: https://github.com/mrdoob/three.js/blob/9f4de99828c05e71c47e6de0beb4c6e7652e486a/src/math/Vector3.js#L286-L300
-		const [x, y, z] = v4;
-		v3[0] = matrix[0] * x + matrix[4] * y + matrix[8] * z;
-		v3[1] = matrix[1] * x + matrix[5] * y + matrix[9] * z;
-		v3[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
-		normalizeVec3(v3, v3);
-
-		(v4[0] = v3[0]), (v4[1] = v3[1]), (v4[2] = v3[2]);
-
-		attribute.setElement(index, v4);
+		attribute.getElement(index, tangent);
+		applyTangentMatrixToTangentVector(matrix, tangent);
+		attribute.setElement(index, tangent);
 
 		skipIndices.add(index);
 	}

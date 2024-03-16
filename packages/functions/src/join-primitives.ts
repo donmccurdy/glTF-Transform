@@ -1,5 +1,6 @@
-import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
+import { Document, Primitive, ComponentTypeToTypedArray, mat4 } from '@gltf-transform/core';
 import { createIndices, createPrimGroupKey, remapAttribute, remapIndices, shallowCloneAccessor } from './utils.js';
+import { transformMat4 } from 'gl-matrix/vec3';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -32,7 +33,11 @@ const EMPTY_U32 = 2 ** 32 - 1;
  * mesh.addPrimitive(result);
  * ```
  */
-export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions = {}): Primitive {
+export function joinPrimitives(
+	prims: Primitive[],
+	primMatrices = [] as (mat4 | null)[],
+	options: JoinPrimitiveOptions = {},
+): Primitive {
 	options = { ...JOIN_PRIMITIVE_DEFAULTS, ...options };
 	const templatePrim = prims[0]!;
 	const document = Document.fromGraph(templatePrim.getGraph())!;
@@ -109,11 +114,17 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
-			remapAttribute(srcAttribute, remap, srcVertexCount, dstAttribute);
+			remapAttribute(srcAttribute, srcIndices, remap, srcVertexCount, dstAttribute);
 		}
 
 		dstIndicesOffset += srcIndicesCount;
 	}
+
+	// (6) Apply prim matrices.
+	// for (let primIndex = 0; primIndex < primRemaps.length; primIndex++) {
+	// 	for (const semantic of ['POSITION', 'NORMAL', 'TANGENT']) {
+	// 	}
+	// }
 
 	return dstPrim;
 }
