@@ -1,7 +1,7 @@
 import { Accessor, Document, Primitive, PropertyType, Transform, vec3 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
-import { EMPTY_U32, HashTable, hashLookup } from './hash-table.js';
+import { EMPTY_U32, VertexHasher, hashLookup } from './vertex-hasher.js';
 import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp, remapPrimitive } from './utils.js';
 
 /**
@@ -196,7 +196,7 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 	const srcIndicesArray = srcIndices?.getArray();
 	const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
 
-	const hash = new HashTable(prim);
+	const hash = new VertexHasher(prim);
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
 	const table = new Uint32Array(tableSize).fill(EMPTY_U32);
 	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY_U32); // oldIndex → newIndex
