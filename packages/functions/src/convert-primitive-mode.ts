@@ -1,4 +1,4 @@
-import { ComponentTypeToTypedArray, Document, GLTF, Primitive } from '@gltf-transform/core';
+import { ComponentTypeToTypedArray, Document, Primitive } from '@gltf-transform/core';
 import { BASIC_MODE_MAPPING, getGLPrimitiveCount, shallowCloneAccessor } from './utils.js';
 import { weldPrimitive } from './weld.js';
 
@@ -36,6 +36,7 @@ export function convertPrimitiveToBasicMode(prim: Primitive): void {
 	} else if (srcMode === LINE_LOOP) {
 		throw new Error('not implemented');
 	} else if (srcMode === TRIANGLE_STRIP) {
+		// TODO(test)
 		for (let i = 0, il = srcIndicesArray.length; i < il - 2; i++) {
 			if (i % 2) {
 				dstIndicesArray[i * 3] = srcIndicesArray[i * 3];
@@ -48,6 +49,7 @@ export function convertPrimitiveToBasicMode(prim: Primitive): void {
 			}
 		}
 	} else if (srcMode === TRIANGLE_FAN) {
+		// TODO(test)
 		for (let i = 1; i < dstGLPrimitiveCount - 1; i++) {
 			dstIndicesArray[i * 3] = srcIndicesArray[0];
 			dstIndicesArray[i * 3 + 1] = srcIndicesArray[i];
@@ -59,9 +61,7 @@ export function convertPrimitiveToBasicMode(prim: Primitive): void {
 	prim.setMode(dstMode);
 	const root = document.getRoot();
 	if (srcIndices.listParents().some((parent) => parent !== root && parent !== prim)) {
-		const dstIndices = shallowCloneAccessor(document, srcIndices);
-		dstIndices.setArray(dstIndicesArray);
-		prim.setIndices(dstIndices);
+		prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray));
 	} else {
 		srcIndices.setArray(dstIndicesArray);
 	}
