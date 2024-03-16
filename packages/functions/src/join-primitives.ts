@@ -1,5 +1,13 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, remapAttribute, remapIndices, shallowCloneAccessor } from './utils.js';
+import {
+	BASIC_MODES,
+	createIndices,
+	createPrimGroupKey,
+	remapAttribute,
+	remapIndices,
+	shallowCloneAccessor,
+} from './utils.js';
+import { convertPrimitiveToBasicMode } from './convert-primitive-mode.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -46,13 +54,20 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		);
 	}
 
+	// (2) Convert all prims to POINTS, LINES, or TRIANGLES.
+	for (const prim of prims) {
+		if (!BASIC_MODES.includes(prim.getMode())) {
+			convertPrimitiveToBasicMode(prim);
+		}
+	}
+
 	const primRemaps = [] as Uint32Array[]; // remap[srcIndex] → dstIndex, by prim
 	const primVertexCounts = new Uint32Array(prims.length); // vertex count, by prim
 
 	let dstVertexCount = 0;
 	let dstIndicesCount = 0;
 
-	// (2) Build remap lists.
+	// (3) Build remap lists.
 	for (let primIndex = 0; primIndex < prims.length; primIndex++) {
 		const srcPrim = prims[primIndex];
 		const srcIndices = srcPrim.getIndices();
@@ -74,7 +89,7 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		dstIndicesCount += srcIndicesCount;
 	}
 
-	// (3) Allocate joined attributes.
+	// (4) Allocate joined attributes.
 	const dstPrim = document.createPrimitive().setMode(templatePrim.getMode()).setMaterial(templatePrim.getMaterial());
 	for (const semantic of templatePrim.listSemantics()) {
 		const tplAttribute = templatePrim.getAttribute(semantic)!;
@@ -85,14 +100,14 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 		dstPrim.setAttribute(semantic, dstAttribute);
 	}
 
-	// (4) Allocate joined indices.
+	// (5) Allocate joined indices.
 	const srcIndices = templatePrim.getIndices();
 	const dstIndices = srcIndices
 		? shallowCloneAccessor(document, srcIndices).setArray(createIndices(dstIndicesCount, dstVertexCount))
 		: null;
 	dstPrim.setIndices(dstIndices);
 
-	// (5) Remap attributes into joined Primitive.
+	// (6) Remap attributes into joined Primitive.
 	let dstIndicesOffset = 0;
 	for (let primIndex = 0; primIndex < primRemaps.length; primIndex++) {
 		const srcPrim = prims[primIndex];
