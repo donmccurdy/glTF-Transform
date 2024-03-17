@@ -36,9 +36,9 @@ export enum VertexCountMethod {
 
 	/**
 	 * Expected number of vertices uploaded to the GPU, assuming that a client
-	 * uploads each unique {@link Primitive} individually, potentially duplicating
-	 * reused vertex attributes {@link Accessor Accessors}, but never duplicating
-	 * reused {@link Mesh Meshes} or {@link Primitive Primitives} in GPU memory.
+	 * uploads each unique {@link Primitive} individually, duplicating vertex
+	 * attribute {@link Accessor Accessors} shared by multiple primitives, but
+	 * never uploading the same mesh or primitive to GPU memory more than once.
 	 */
 	UPLOAD = 'upload',
 
