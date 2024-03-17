@@ -106,6 +106,7 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 	const prims = meshes.flatMap((mesh) => mesh.listPrimitives());
 	const positions = prims.map((prim) => prim.getAttribute('POSITION')!);
 	const uniquePositions = Array.from(new Set(positions));
+	const uniqueMeshes = Array.from(new Set(meshes));
 
 	switch (method) {
 		case VertexCountMethod.RENDER:
@@ -115,7 +116,7 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 				_sum(instancedMeshes.map(([batch, mesh]) => batch * getMeshVertexCount(mesh, method)))
 			);
 		case VertexCountMethod.UPLOAD:
-			return _sum(meshes.map((mesh) => getMeshVertexCount(mesh, method)));
+			return _sum(uniqueMeshes.map((mesh) => getMeshVertexCount(mesh, method)));
 		case VertexCountMethod.UPLOAD_OPTIMISTIC:
 			return _sum(uniquePositions.map((attribute) => attribute.getCount()));
 		case VertexCountMethod.DISTINCT:
