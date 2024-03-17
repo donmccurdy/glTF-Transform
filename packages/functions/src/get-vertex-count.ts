@@ -1,4 +1,4 @@
-import { Scene, Node, Mesh, Primitive } from '@gltf-transform/core';
+import { Scene, Node, Mesh, Primitive, Accessor } from '@gltf-transform/core';
 import { InstancedMesh } from '@gltf-transform/extensions';
 
 /**
@@ -68,12 +68,11 @@ export enum VertexCountMethod {
 	 */
 	DISTINCT_POSITION = 'distinct-position',
 	/**
-	 * Number of vertex positions never used by any mesh primitive.
+	 * Number of vertex positions never used by any mesh primitive. If all
+	 * vertices are unused, this total will match {@link UPLOAD_OPTIMISTIC}.
 	 *
 	 * NOTE: Has no direct relationship to runtime characteristics, but may be
 	 * helpful in identifying asset optimization opportunities.
-	 *
-	 * @hidden Not yet implemented.
 	 */
 	UNUSED = 'unused',
 }
@@ -107,6 +106,7 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 	const positions = prims.map((prim) => prim.getAttribute('POSITION')!);
 	const uniquePositions = Array.from(new Set(positions));
 	const uniqueMeshes = Array.from(new Set(meshes));
+	const uniquePrims = Array.from(new Set(uniqueMeshes.flatMap((mesh) => mesh.listPrimitives())));
 
 	switch (method) {
 		case VertexCountMethod.RENDER:
@@ -121,8 +121,9 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 			return _sum(uniquePositions.map((attribute) => attribute.getCount()));
 		case VertexCountMethod.DISTINCT:
 		case VertexCountMethod.DISTINCT_POSITION:
-		case VertexCountMethod.UNUSED:
 			return _assertNotImplemented(method);
+		case VertexCountMethod.UNUSED:
+			return _sumUnused(uniquePrims);
 		default:
 			return _assertUnreachable(method);
 	}
@@ -142,8 +143,9 @@ export function getMeshVertexCount(mesh: Mesh, method: VertexCountMethod): numbe
 			return _sum(uniquePositions.map((attribute) => attribute.getCount()));
 		case VertexCountMethod.DISTINCT:
 		case VertexCountMethod.DISTINCT_POSITION:
-		case VertexCountMethod.UNUSED:
 			return _assertNotImplemented(method);
+		case VertexCountMethod.UNUSED:
+			return _sumUnused(uniquePrims);
 		default:
 			return _assertUnreachable(method);
 	}
@@ -165,7 +167,7 @@ export function getPrimitiveVertexCount(prim: Primitive, method: VertexCountMeth
 		case VertexCountMethod.DISTINCT_POSITION:
 			return _assertNotImplemented(method);
 		case VertexCountMethod.UNUSED:
-			return position.getCount() - (indices ? new Set(indices.getArray()).size : position.getCount());
+			return indices ? position.getCount() - new Set(indices.getArray()).size : 0;
 		default:
 			return _assertUnreachable(method);
 	}
@@ -177,6 +179,36 @@ function _sum(values: number[]): number {
 		total += values[i];
 	}
 	return total;
+}
+
+function _sumUnused(prims: Primitive[]) {
+	const attributeIndexMap = new Map<Accessor, Set<Accessor | null>>();
+	for (const prim of prims) {
+		const position = prim.getAttribute('POSITION')!;
+		const indices = prim.getIndices();
+		const indicesSet = attributeIndexMap.get(position) || new Set();
+		indicesSet.add(indices);
+		attributeIndexMap.set(position, indicesSet);
+	}
+
+	let unused = 0;
+	for (const [position, indicesSet] of attributeIndexMap) {
+		if (indicesSet.has(null)) continue;
+
+		const usedIndices = new Uint8Array(position.getCount());
+		for (const indices of indicesSet as Set<Accessor>) {
+			const indicesArray = indices.getArray()!;
+			for (let i = 0, il = indicesArray.length; i < il; i++) {
+				usedIndices[indicesArray[i]] = 1;
+			}
+		}
+
+		for (let i = 0, il = usedIndices.length; i < il; i++) {
+			if (usedIndices[i] === 0) unused++;
+		}
+	}
+
+	return unused;
 }
 
 function _assertNotImplemented<T>(x: unknown): T {

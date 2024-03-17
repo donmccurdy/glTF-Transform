@@ -50,7 +50,7 @@ test.skip('distinct-position', async (t) => {
 	t.fail('not implemented');
 });
 
-test.skip('unused', async (t) => {
+test('unused', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), UNUSED), 0, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), UNUSED), 0, 'indexed');
