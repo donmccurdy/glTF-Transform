@@ -69,7 +69,7 @@ export enum VertexCountMethod {
 	DISTINCT_POSITION = 'distinct-position',
 	/**
 	 * Number of vertex positions never used by any mesh primitive. If all
-	 * vertices are unused, this total will match {@link UPLOAD_OPTIMISTIC}.
+	 * vertices are unused, this total will match `'upload-optimistic'`.
 	 *
 	 * NOTE: Has no direct relationship to runtime characteristics, but may be
 	 * helpful in identifying asset optimization opportunities.
