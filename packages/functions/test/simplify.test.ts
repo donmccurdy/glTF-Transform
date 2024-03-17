@@ -2,7 +2,7 @@ import test from 'ava';
 import path, { dirname } from 'path';
 import { getBounds, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
-import { weld, unweld, simplify } from '@gltf-transform/functions';
+import { weld, unweld, simplify, getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
 import { logger, roundBbox, createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
@@ -26,12 +26,12 @@ test('welded', async (t) => {
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
 
-	const srcCount = getVertexCount(document);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
-	const dstCount = getVertexCount(document);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
@@ -44,12 +44,12 @@ test('unwelded', async (t) => {
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
 
-	const srcCount = getVertexCount(document);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
-	const dstCount = getVertexCount(document);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
@@ -79,12 +79,12 @@ test('shared accessors', async (t) => {
 	const nodeB = document.createNode('B').setTranslation([-5, 0, 0]).setMesh(meshB);
 	scene.addChild(nodeA).addChild(nodeB);
 
-	const srcCount = getVertexCount(document);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
-	const dstCount = getVertexCount(document);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
@@ -109,7 +109,7 @@ test('degenerate', async (t) => {
 	t.true(mesh.isDisposed(), 'mesh disposed');
 	t.true(node.isDisposed(), 'node disposed');
 	t.false(scene.isDisposed(), 'scene kept');
-	t.is(getVertexCount(document), 0, '0 vertices');
+	t.is(getSceneVertexCount(scene, VertexCountMethod.UPLOAD), 0, '0 vertices');
 });
 
 test('torus', async (t) => {
@@ -183,16 +183,6 @@ test('no side effects', async (t) => {
 });
 
 /* UTILITIES */
-
-function getVertexCount(document: Document): number {
-	let count = 0;
-	for (const mesh of document.getRoot().listMeshes()) {
-		for (const prim of mesh.listPrimitives()) {
-			count += prim.getAttribute('POSITION')!.getCount();
-		}
-	}
-	return count;
-}
 
 function splitPrim(prim: Primitive, start: number, end: number) {
 	const indices = prim.getIndices()!.clone();

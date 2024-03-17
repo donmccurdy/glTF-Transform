@@ -4,9 +4,12 @@
 	"version": "4.0.0-alpha.10",
 	"type": "module",
 	"sideEffects": false,
-	"exports": "./dist/test-utils.modern.js",
 	"source": "./src/index.ts",
 	"types": "./dist/index.d.ts",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"default": "./dist/test-utils.modern.js"
+	},
 	"scripts": {
 		"dist": "microbundle --format modern --no-compress",
 		"watch": "microbundle watch --format modern --no-compress"
