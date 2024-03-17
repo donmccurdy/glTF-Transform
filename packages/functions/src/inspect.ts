@@ -10,6 +10,7 @@ import {
 } from '@gltf-transform/core';
 import { getGLPrimitiveCount } from './utils.js';
 import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
+import { VertexCountMethod, getSceneVertexCount } from './get-vertex-count.js';
 
 /** Inspects the contents of a glTF file and returns a JSON report. */
 export function inspect(doc: Document): InspectReport {
@@ -35,6 +36,10 @@ function listScenes(doc: Document): InspectPropertyReport<InspectSceneReport> {
 				rootName: root ? root.getName() : '',
 				bboxMin: toPrecision(sceneBounds.min),
 				bboxMax: toPrecision(sceneBounds.max),
+				renderVertexCount: getSceneVertexCount(scene, VertexCountMethod.RENDER),
+				renderOptimisticVertexCount: getSceneVertexCount(scene, VertexCountMethod.RENDER_OPTIMISTIC),
+				uploadVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD),
+				uploadOptimisticVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD_OPTIMISTIC),
 			};
 		});
 	return { properties: scenes };
@@ -240,6 +245,10 @@ export interface InspectSceneReport {
 	rootName: string;
 	bboxMin: number[];
 	bboxMax: number[];
+	renderVertexCount: number;
+	renderOptimisticVertexCount: number;
+	uploadVertexCount: number;
+	uploadOptimisticVertexCount: number;
 }
 
 export interface InspectMeshReport {
