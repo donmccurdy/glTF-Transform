@@ -5,10 +5,9 @@ import { InstancedMesh } from '@gltf-transform/extensions';
  * Various methods of estimating a vertex count. For some background on why
  * multiple definitions of a vertex count should exist, see [_Vertex Count
  * Higher in Engine than in 3D Software_](https://shahriyarshahrabi.medium.com/vertex-count-higher-in-engine-than-in-3d-software-badc348ada66).
- *
- * Counts for a {@link Scene}, {@link Node}, or {@link Mesh} will not
- * necessarily match the sum of the counts for each {@link Primitive}. Choose
- * the appropriate method for a correct total or estimate:
+ * Totals for a {@link Scene}, {@link Node}, or {@link Mesh} will not
+ * necessarily match the sum of the totals for each {@link Primitive}. Choose
+ * the appropriate method for a relevant total or estimate:
  *
  * - {@link getSceneVertexCount}
  * - {@link getNodeVertexCount}
@@ -25,6 +24,7 @@ export enum VertexCountMethod {
 	 * pass, without considering the vertex cache.
 	 */
 	RENDER = 'render',
+
 	/**
 	 * Expected number of vertices proceessed by the vertex shader for one render
 	 * pass, assuming a 100% hit ratio on the vertex cache. Assumes vertex attributes
@@ -33,6 +33,7 @@ export enum VertexCountMethod {
 	 * achieve 100% hit ratios in practice.
 	 */
 	RENDER_OPTIMISTIC = 'render-optimistic',
+
 	/**
 	 * Expected number of vertices uploaded to the GPU, assuming that a client
 	 * uploads each unique {@link Primitive} individually, potentially duplicating
@@ -40,6 +41,7 @@ export enum VertexCountMethod {
 	 * reused {@link Mesh Meshes} or {@link Primitive Primitives} in GPU memory.
 	 */
 	UPLOAD = 'upload',
+
 	/**
 	 * Expected number of vertices uploaded to the GPU, assuming that a client
 	 * uploads each unique {@link Accessor} only once. Unless glTF vertex
@@ -47,40 +49,50 @@ export enum VertexCountMethod {
 	 * optimized for that buffer layout, this total will be optimistic.
 	 */
 	UPLOAD_OPTIMISTIC = 'upload-optimistic',
+
 	/**
 	 * Total number of unique vertices represented, considering all attributes of
-	 * each vertex, and removing any duplicates.
-	 *
-	 * NOTE: Has no direct relationship to runtime characteristics, but may be
-	 * helpful in identifying asset optimization opportunities.
+	 * each vertex, and removing any duplicates. Has no direct relationship to
+	 * runtime characteristics, but may be helpful in identifying asset
+	 * optimization opportunities.
 	 *
 	 * @hidden Not yet implemented.
 	 */
 	DISTINCT = 'distinct',
+
 	/**
 	 * Total number of unique vertices represented, considering aonly vertex
-	 * positions, and removing any duplicates.
-	 *
-	 * NOTE: Has no direct relationship to runtime characteristics, but may be
-	 * helpful in identifying asset optimization opportunities.
+	 * positions, and removing any duplicates. Has no direct relationship to
+	 * runtime characteristics, but may be helpful in identifying asset
+	 * optimization opportunities.
 	 *
 	 * @hidden Not yet implemented.
 	 */
 	DISTINCT_POSITION = 'distinct-position',
+
 	/**
 	 * Number of vertex positions never used by any mesh primitive. If all
 	 * vertices are unused, this total will match `'upload-optimistic'`.
-	 *
-	 * NOTE: Has no direct relationship to runtime characteristics, but may be
-	 * helpful in identifying asset optimization opportunities.
 	 */
 	UNUSED = 'unused',
 }
 
+/**
+ * Computes total number of vertices in a {@link Scene}, calculated by the
+ * specified method. Totals for the scene will not necessarily match the sum
+ * of the totals for each {@link Mesh} or {@link Primitive} within it. See
+ * {@link VertexCountMethod} for further information.
+ */
 export function getSceneVertexCount(scene: Scene, method: VertexCountMethod): number {
 	return _getSubtreeVertexCount(scene, method);
 }
 
+/**
+ * Computes total number of vertices in a {@link Node}, calculated by the
+ * specified method. Totals for the node will not necessarily match the sum
+ * of the totals for each {@link Mesh} or {@link Primitive} within it. See
+ * {@link VertexCountMethod} for further information.
+ */
 export function getNodeVertexCount(node: Node | Scene, method: VertexCountMethod): number {
 	return _getSubtreeVertexCount(node, method);
 }
@@ -129,6 +141,12 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 	}
 }
 
+/**
+ * Computes total number of vertices in a {@link Mesh}, calculated by the
+ * specified method. Totals for the mesh will not necessarily match the sum
+ * of the totals for each {@link Primitive} within it. See
+ * {@link VertexCountMethod} for further information.
+ */
 export function getMeshVertexCount(mesh: Mesh, method: VertexCountMethod): number {
 	const prims = mesh.listPrimitives();
 	const uniquePrims = Array.from(new Set(prims));
@@ -151,6 +169,10 @@ export function getMeshVertexCount(mesh: Mesh, method: VertexCountMethod): numbe
 	}
 }
 
+/**
+ * Computes total number of vertices in a {@link Primitive}, calculated by the
+ * specified method. See {@link VertexCountMethod} for further information.
+ */
 export function getPrimitiveVertexCount(prim: Primitive, method: VertexCountMethod): number {
 	const position = prim.getAttribute('POSITION')!;
 	const indices = prim.getIndices();
@@ -203,7 +225,7 @@ function _sumUnused(prims: Primitive[]) {
 			}
 		}
 
-		for (let i = 0, il = usedIndices.length; i < il; i++) {
+		for (let i = 0, il = position.getCount(); i < il; i++) {
 			if (usedIndices[i] === 0) unused++;
 		}
 	}
