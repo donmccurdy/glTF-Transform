@@ -38,12 +38,14 @@ function getMeshBounds(mesh: Mesh, worldMatrix: mat4): bbox {
 	// so we need to compute the world AABB vertex by vertex here.
 	for (const prim of mesh.listPrimitives()) {
 		const position = prim.getAttribute('POSITION');
+		const indices = prim.getIndices();
 		if (!position) continue;
 
 		let localPos: vec3 = [0, 0, 0];
 		let worldPos: vec3 = [0, 0, 0];
-		for (let i = 0; i < position.getCount(); i++) {
-			localPos = position.getElement(i, localPos) as vec3;
+		for (let i = 0, il = indices ? indices.getCount() : position.getCount(); i < il; i++) {
+			const index = indices ? indices.getScalar(i) : i;
+			localPos = position.getElement(index, localPos) as vec3;
 			worldPos = transformMat4(worldPos, localPos, worldMatrix) as vec3;
 			expandBounds(worldPos, meshBounds);
 		}
