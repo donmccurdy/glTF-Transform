@@ -67,18 +67,18 @@ export function getGLPrimitiveCount(prim: Primitive): number {
 	// Reference: https://www.khronos.org/opengl/wiki/Primitive
 	switch (prim.getMode()) {
 		case Primitive.Mode.POINTS:
-			return position.getCount();
+			return indices ? indices.getCount() : position.getCount();
 		case Primitive.Mode.LINES:
 			return indices ? indices.getCount() / 2 : position.getCount() / 2;
 		case Primitive.Mode.LINE_LOOP:
-			return position.getCount();
+			return indices ? indices.getCount() : position.getCount();
 		case Primitive.Mode.LINE_STRIP:
-			return position.getCount() - 1;
+			return indices ? indices.getCount() - 1 : position.getCount() - 1;
 		case Primitive.Mode.TRIANGLES:
 			return indices ? indices.getCount() / 3 : position.getCount() / 3;
 		case Primitive.Mode.TRIANGLE_STRIP:
 		case Primitive.Mode.TRIANGLE_FAN:
-			return position.getCount() - 2;
+			return indices ? indices.getCount() - 2 : position.getCount() - 2;
 		default:
 			throw new Error('Unexpected mode: ' + prim.getMode());
 	}
