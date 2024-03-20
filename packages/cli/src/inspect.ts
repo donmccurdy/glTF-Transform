@@ -121,12 +121,32 @@ function formatPropertyReport(property: AnyPropertyReport, index: number, format
 
 function getFootnotes(type: string, rows: string[][], header: string[]): string[] {
 	const footnotes = [];
+	if (type === 'scenes') {
+		for (let i = 0; i < header.length; i++) {
+			if (header[i] === 'renderVertexCount') header[i] += '¹';
+			if (header[i] === 'gpuVertexCount') header[i] += '²';
+			if (header[i] === 'gpuNaiveVertexCount') header[i] += '³';
+		}
+		footnotes.push(
+			'¹ Expected number of vertices processed by the vertex shader for one render\n' +
+				'  pass, without considering the vertex cache.\n',
+		);
+		footnotes.push(
+			'² Expected number of vertices uploaded to GPU, assuming each Accessor\n' +
+				'  is uploaded only once. Actual number uploaded may be higher, \n' +
+				'  dependent on the implementation and vertex buffer layout.\n',
+		);
+		footnotes.push(
+			'³ Expected number of vertices uploaded to GPU, assuming each Primitive\n' +
+				'  is uploaded once, duplicating vertex attributes shared among Primitives.',
+		);
+	}
 	if (type === 'meshes') {
 		for (let i = 0; i < header.length; i++) {
 			if (header[i] === 'size') header[i] += '¹';
 		}
 		footnotes.push(
-			'¹ size estimates GPU memory required by a mesh, in isolation. If accessors are\n' +
+			'⁴ size estimates GPU memory required by a mesh, in isolation. If accessors are\n' +
 				'  shared by other mesh primitives, but the meshes themselves are not reused, then\n' +
 				'  the sum of all mesh sizes will overestimate the asset\'s total size. See "dedup".',
 		);

@@ -4,7 +4,7 @@ import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-const { RENDER, RENDER_OPTIMISTIC, UPLOAD, UPLOAD_OPTIMISTIC, UNUSED } = VertexCountMethod;
+const { RENDER, RENDER_CACHED, GPU, GPU_NAIVE, UNUSED } = VertexCountMethod;
 
 test('render', async (t) => {
 	const document = new Document().setLogger(logger);
@@ -15,31 +15,31 @@ test('render', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), RENDER), 15, 'unused');
 });
 
-test('render-optimistic', async (t) => {
+test('render-cached', async (t) => {
 	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), RENDER_OPTIMISTIC), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER_OPTIMISTIC), 32 + 5, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), RENDER_OPTIMISTIC), 32 * 5, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), RENDER_OPTIMISTIC), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), RENDER_OPTIMISTIC), 11, 'unused');
+	t.is(getSceneVertexCount(createSceneBasic(document), RENDER_CACHED), 32 * 4, 'basic');
+	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER_CACHED), 32 + 5, 'indexed');
+	t.is(getSceneVertexCount(createSceneInstanced(document), RENDER_CACHED), 32 * 5, 'instanced');
+	t.is(getSceneVertexCount(createSceneMixedAttributes(document), RENDER_CACHED), 32 * 2, 'mixed attributes');
+	t.is(getSceneVertexCount(createSceneUnused(document), RENDER_CACHED), 11, 'unused');
 });
 
-test('upload', async (t) => {
+test('gpu-naive', async (t) => {
 	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD), 32 * 2, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD), 32 * 2, 'unused');
+	t.is(getSceneVertexCount(createSceneBasic(document), GPU_NAIVE), 32 * 4, 'basic');
+	t.is(getSceneVertexCount(createSceneIndexed(document), GPU_NAIVE), 32 * 2, 'indexed');
+	t.is(getSceneVertexCount(createSceneInstanced(document), GPU_NAIVE), 32, 'instanced');
+	t.is(getSceneVertexCount(createSceneMixedAttributes(document), GPU_NAIVE), 32 * 2, 'mixed attributes');
+	t.is(getSceneVertexCount(createSceneUnused(document), GPU_NAIVE), 32 * 2, 'unused');
 });
 
-test('upload-optimistic', async (t) => {
+test('gpu', async (t) => {
 	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD_OPTIMISTIC), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD_OPTIMISTIC), 32, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD_OPTIMISTIC), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD_OPTIMISTIC), 32, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD_OPTIMISTIC), 32, 'unused');
+	t.is(getSceneVertexCount(createSceneBasic(document), GPU), 32 * 4, 'basic');
+	t.is(getSceneVertexCount(createSceneIndexed(document), GPU), 32, 'indexed');
+	t.is(getSceneVertexCount(createSceneInstanced(document), GPU), 32, 'instanced');
+	t.is(getSceneVertexCount(createSceneMixedAttributes(document), GPU), 32, 'mixed attributes');
+	t.is(getSceneVertexCount(createSceneUnused(document), GPU), 32, 'unused');
 });
 
 test.skip('distinct', async (t) => {
