@@ -10,11 +10,10 @@ test('getGLPrimitiveCount', async (t) => {
 	const prim = doc.createPrimitive().setMode(Primitive.Mode.TRIANGLES).setAttribute('POSITION', position);
 	const indexedPrim = prim.clone().setIndices(indices);
 
-	t.is(getGLPrimitiveCount(prim), 11, 'triangles');
-	t.is(getGLPrimitiveCount(indexedPrim), 2, 'triangles (indexed)');
-
 	prim.setMode(Primitive.Mode.POINTS);
+	indexedPrim.setMode(Primitive.Mode.POINTS);
 	t.is(getGLPrimitiveCount(prim), 33, 'points');
+	t.is(getGLPrimitiveCount(indexedPrim), 6, 'points (indexed)');
 
 	prim.setMode(Primitive.Mode.LINES);
 	indexedPrim.setMode(Primitive.Mode.LINES);
@@ -22,16 +21,29 @@ test('getGLPrimitiveCount', async (t) => {
 	t.is(getGLPrimitiveCount(indexedPrim), 3, 'lines (indexed)');
 
 	prim.setMode(Primitive.Mode.LINE_STRIP);
+	indexedPrim.setMode(Primitive.Mode.LINE_STRIP);
 	t.is(getGLPrimitiveCount(prim), 32, 'line strip');
+	t.is(getGLPrimitiveCount(indexedPrim), 5, 'line strip (indexed)');
 
 	prim.setMode(Primitive.Mode.LINE_LOOP);
+	indexedPrim.setMode(Primitive.Mode.LINE_LOOP);
 	t.is(getGLPrimitiveCount(prim), 33, 'line loop');
+	t.is(getGLPrimitiveCount(indexedPrim), 6, 'line loop (indexed)');
+
+	prim.setMode(Primitive.Mode.TRIANGLES);
+	indexedPrim.setMode(Primitive.Mode.TRIANGLES);
+	t.is(getGLPrimitiveCount(prim), 11, 'triangles');
+	t.is(getGLPrimitiveCount(indexedPrim), 2, 'triangles (indexed)');
 
 	prim.setMode(Primitive.Mode.TRIANGLE_FAN);
+	indexedPrim.setMode(Primitive.Mode.TRIANGLE_FAN);
 	t.is(getGLPrimitiveCount(prim), 31, 'triangle strip');
+	t.is(getGLPrimitiveCount(indexedPrim), 4, 'triangle strip (indexed)');
 
 	prim.setMode(Primitive.Mode.TRIANGLE_STRIP);
+	indexedPrim.setMode(Primitive.Mode.TRIANGLE_STRIP);
 	t.is(getGLPrimitiveCount(prim), 31, 'triangle fan');
+	t.is(getGLPrimitiveCount(indexedPrim), 4, 'triangle fan (indexed)');
 
 	prim.setMode('TEST' as unknown as GLTF.MeshPrimitiveMode);
 	t.throws(() => getGLPrimitiveCount(prim), { message: /mode/i }, 'invalid');
