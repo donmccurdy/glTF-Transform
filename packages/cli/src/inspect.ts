@@ -153,10 +153,10 @@ function getFootnotes(type: string, rows: string[][], header: string[]): string[
 	}
 	if (type === 'textures') {
 		for (let i = 0; i < header.length; i++) {
-			if (header[i] === 'gpuSize') header[i] += '¹';
+			if (header[i] === 'gpuSize') header[i] += '⁵';
 		}
 		footnotes.push(
-			'¹ gpuSize estimates minimum VRAM memory allocation. Older devices may require\n' +
+			'⁵ gpuSize estimates minimum VRAM memory allocation. Older devices may require\n' +
 				'  additional memory for GPU compression formats.',
 		);
 	}
