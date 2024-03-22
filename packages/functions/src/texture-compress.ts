@@ -85,6 +85,13 @@ export interface TextureCompressOptions {
 	 * Sharp encoder is provided. Default: false.
 	 */
 	nearLossless?: boolean;
+
+	/**
+	 * Attempts to avoid processing images that could exceed memory or other other
+	 * limits, throwing an error instead. Default: true.
+	 * @experimental
+	 */
+	limitInputPixels?: boolean;
 }
 
 export type CompressTextureOptions = Omit<TextureCompressOptions, 'pattern' | 'formats' | 'slots'>;
@@ -99,6 +106,7 @@ export const TEXTURE_COMPRESS_DEFAULTS: Omit<TextureCompressOptions, 'resize' | 
 	effort: undefined,
 	lossless: false,
 	nearLossless: false,
+	limitInputPixels: true,
 };
 
 /**
@@ -319,7 +327,8 @@ async function _encodeWithSharp(
 			break;
 	}
 
-	const instance = encoder(srcImage).toFormat(dstFormat, encoderOptions);
+	const limitInputPixels = options.limitInputPixels;
+	const instance = encoder(srcImage, { limitInputPixels }).toFormat(dstFormat, encoderOptions);
 
 	if (options.resize) {
 		const srcSize = ImageUtils.getSize(srcImage, _srcMimeType)!;

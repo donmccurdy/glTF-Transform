@@ -1,4 +1,10 @@
-import { program as _program, Command, Logger as WinstonLogger } from '@donmccurdy/caporal';
+import {
+	program as _program,
+	Command,
+	ParsedOption,
+	Validator as CaporalValidator,
+	Logger as WinstonLogger,
+} from '@donmccurdy/caporal';
 import { ILogger, Verbosity } from '@gltf-transform/core';
 
 const PAD_EMOJI = new Set(['🫖', '🖼', '⏯️']);
@@ -27,8 +33,9 @@ interface IInternalProgram extends IProgram {
 
 export interface IProgramOptions<T = unknown> {
 	default?: T;
-	validator?: ValidatorFn | T[];
+	validator?: CaporalValidator;
 	action?: IActionFn;
+	hidden?: boolean;
 }
 
 export type IActionFn = (params: {
@@ -95,7 +102,12 @@ export interface ICommand {
 	alias: (name: string) => this;
 }
 
-export interface ICommandOptions {}
+export interface ICommandOptions {
+	required?: boolean;
+	default?: ParsedOption;
+	validator?: CaporalValidator;
+	hidden?: boolean;
+}
 
 class CommandImpl implements ICommand {
 	_ctx: Command;
@@ -135,10 +147,7 @@ export const program = new ProgramImpl();
  * Validator.
  */
 
-type ValidatorFn = unknown;
-type ValidatorType = 'NUMBER' | 'ARRAY' | 'BOOLEAN' | 'STRING';
-
-export const Validator: Record<ValidatorType, ValidatorFn> = {
+export const Validator: Record<'NUMBER' | 'ARRAY' | 'BOOLEAN' | 'STRING', CaporalValidator> = {
 	NUMBER: _program.NUMBER,
 	ARRAY: _program.ARRAY,
 	BOOLEAN: _program.BOOLEAN,
