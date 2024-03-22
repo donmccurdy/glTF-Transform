@@ -160,6 +160,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
 	const flags = options.lockBorder ? ['LockBorder'] : [];
 
+	// TODO(bug): This almost certainly doesn't support all primitive modes!
 	const [dstIndicesArray, error] = simplifier.simplify(
 		indicesArray,
 		positionArray,
