@@ -412,6 +412,7 @@ commands or using the scripting API.
 					encoder,
 					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					resize: [opts.textureSize, opts.textureSize],
+					limitInputPixels: options.limitInputPixels as boolean,
 				}),
 			);
 		}
@@ -1535,6 +1536,7 @@ program
 				quality: options.quality as number,
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
+				limitInputPixels: options.limitInputPixels as boolean,
 			}),
 		);
 	});
@@ -1577,6 +1579,7 @@ program
 				effort: options.effort as number,
 				lossless: options.lossless as boolean,
 				nearLossless: options.nearLossless as boolean,
+				limitInputPixels: options.limitInputPixels as boolean,
 			}),
 		);
 	});
@@ -1612,6 +1615,7 @@ program
 				slots,
 				quality: options.quality as number,
 				effort: options.effort as number,
+				limitInputPixels: options.limitInputPixels as boolean,
 			}),
 		);
 	});
@@ -1645,6 +1649,7 @@ program
 				formats,
 				slots,
 				quality: options.quality as number,
+				limitInputPixels: options.limitInputPixels as boolean,
 			}),
 		);
 	});
@@ -1758,6 +1763,16 @@ program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
 program.option('--config <path>', 'Installs custom commands or extensions. (EXPERIMENTAL)', {
 	validator: Validator.STRING,
 });
+program.option(
+	'--limit-input-pixels',
+	'Attempts to avoid processing very high resolution images, where memory or ' +
+		'other limits may be exceeded. (EXPERIMENTAL)',
+	{
+		validator: Validator.BOOLEAN,
+		default: true,
+		hidden: true,
+	},
+);
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
