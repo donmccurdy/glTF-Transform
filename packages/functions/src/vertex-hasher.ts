@@ -4,7 +4,7 @@ import { deepListAttributes } from './utils.js';
 /** Flags 'empty' values in a Uint32Array index. */
 export const EMPTY_U32 = 2 ** 32 - 1;
 
-export class HashTable {
+export class VertexHasher {
 	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
 
 	/** Temporary vertex views in 4-byte-aligned memory. */
@@ -86,7 +86,7 @@ function murmurHash2(h: number, key: Uint32Array): number {
 export function hashLookup(
 	table: Uint32Array,
 	buckets: number,
-	hash: HashTable,
+	hash: VertexHasher,
 	key: number,
 	empty = EMPTY_U32,
 ): number {

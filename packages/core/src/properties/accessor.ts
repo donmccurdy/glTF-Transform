@@ -418,8 +418,25 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	}
 
 	/**
-	 * Assigns the vector or matrix element value at the given index, accounting for normalization
-	 * if applicable.
+	 * Assigns the vector or matrix element value at the given index. For
+	 * {@link Accessor.getNormalized normalized} integer accessors, "value" should be
+	 * given in floating-point form — it will be integer-encoded before writing
+	 * to the underlying array.
+	 *
+	 * Example:
+	 *
+	 * ```javascript
+	 * import { add } from 'gl-matrix/add';
+	 *
+	 * const element = [];
+	 * const offset = [1, 1, 1];
+	 *
+	 * for (let i = 0; i < accessor.getCount(); i++) {
+	 * 	accessor.getElement(i, element);
+	 *  add(element, element, offset);
+	 * 	accessor.setElement(i, element);
+	 * }
+	 * ```
 	 */
 	public setElement(index: number, value: number[]): this {
 		const normalized = this.getNormalized();

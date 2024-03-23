@@ -177,7 +177,7 @@ export function simplifyPrimitive(document: Document, prim: Primitive, _options:
 
 	for (const srcAttribute of deepListAttributes(prim)) {
 		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		remapAttribute(dstAttribute, remap, unique);
+		remapAttribute(dstAttribute, null, remap, unique);
 		deepSwapAttribute(prim, srcAttribute, dstAttribute);
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}
@@ -231,7 +231,7 @@ function _simplifyPoints(document: Document, prim: Primitive, options: Required<
 
 	for (const srcAttribute of deepListAttributes(prim)) {
 		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		remapAttribute(dstAttribute, remap, unique);
+		remapAttribute(dstAttribute, null, remap, unique);
 		deepSwapAttribute(prim, srcAttribute, dstAttribute);
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}

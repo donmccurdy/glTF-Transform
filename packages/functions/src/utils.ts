@@ -11,8 +11,14 @@ import {
 	TransformContext,
 	TypedArray,
 	vec2,
+	mat4,
+	vec4,
+	vec3,
+	mat3,
 } from '@gltf-transform/core';
 import { cleanPrimitive } from './clean-primitive.js';
+import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
+import { create as createVec3, normalize as normalizeVec3, transformMat3 } from 'gl-matrix/vec3';
 
 /**
  * Prepares a function used in an {@link Document#transform} pipeline. Use of this wrapper is
@@ -211,13 +217,13 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 	const srcAttributes = deepListAttributes(prim);
 	for (const srcAttribute of prim.listAttributes()) {
 		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		prim.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
+		prim.swap(srcAttribute, remapAttribute(dstAttribute, null, remap, dstVertexCount));
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}
 	for (const target of prim.listTargets()) {
 		for (const srcAttribute of target.listAttributes()) {
 			const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-			target.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
+			target.swap(srcAttribute, remapAttribute(dstAttribute, null, remap, dstVertexCount));
 			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 		}
 	}
@@ -239,10 +245,12 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 /** @hidden */
 export function remapAttribute(
 	srcAttribute: Accessor,
+	srcIndices: Accessor | null,
 	remap: TypedArray,
 	dstCount: number,
 	dstAttribute = srcAttribute,
 ): Accessor {
+	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
 	const elementSize = srcAttribute.getElementSize();
 	const srcCount = srcAttribute.getCount();
 	const srcArray = srcAttribute.getArray()!;
@@ -250,14 +258,27 @@ export function remapAttribute(
 	const dstArray = dstAttribute === srcAttribute
 		? srcArray.slice(0, dstCount * elementSize)
 		: dstAttribute.getArray()!;
+
+	// TODO(perf,bug): We're allocating up to `dstCount`, but that doesn't
+	// guarantee `dstIndex` couldn't be much higher. Alternatively, we could
+	// `srcCount` could be huge (shared vertex stream), and join() passes
+	// `srcCount` into the `dstCount` parameter, copying the whole attribute.
+
+	// TODO(perf): Really should just guarantee this vertex stream is isolated.
+
+	// TODO(perf): Or do a pass over all the vertex stream operations, and
+	// make these behaviors consistent.
 	const done = new Uint8Array(dstCount);
 
-	for (let srcIndex = 0; srcIndex < srcCount; srcIndex++) {
+	for (let i = 0, il = srcIndicesArray ? srcIndicesArray.length : srcCount; i < il; i++) {
+		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
 		const dstIndex = remap[srcIndex];
 		if (done[dstIndex]) continue;
+
 		for (let j = 0; j < elementSize; j++) {
 			dstArray[dstIndex * elementSize + j] = srcArray[srcIndex * elementSize + j];
 		}
+
 		done[dstIndex] = 1;
 	}
 
@@ -408,4 +429,35 @@ export function floorPowerOfTwo(value: number): number {
 
 export function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
+}
+
+/** @hidden */
+export function createNormalMatrix(matrix: mat4, targetNormalMatrix = createMat3()): mat3 {
+	fromMat4(targetNormalMatrix, matrix);
+	invert(targetNormalMatrix, targetNormalMatrix);
+	transpose(targetNormalMatrix, targetNormalMatrix);
+	return targetNormalMatrix as mat3;
+}
+
+/** @hidden */
+export function applyNormalMatrixToNormalVector(normalMatrix: mat3, targetNormal: vec3): vec3 {
+	transformMat3(targetNormal, targetNormal, normalMatrix);
+	return normalizeVec3(targetNormal, targetNormal) as vec3;
+}
+
+const _v3 = createVec3();
+
+/**
+ * mat4 affine matrix applied to vector, vector interpreted as a direction.
+ * Reference: https://github.com/mrdoob/three.js/blob/9f4de99828c05e71c47e6de0beb4c6e7652e486a/src/math/Vector3.js#L286-L300
+ * @hidden
+ */
+export function applyTangentMatrixToTangentVector(matrix: mat4, targetTangent: vec4): vec4 {
+	const [x, y, z] = targetTangent;
+	_v3[0] = matrix[0] * x + matrix[4] * y + matrix[8] * z;
+	_v3[1] = matrix[1] * x + matrix[5] * y + matrix[9] * z;
+	_v3[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
+	normalizeVec3(_v3, _v3);
+	(targetTangent[0] = _v3[0]), (targetTangent[1] = _v3[1]), (targetTangent[2] = _v3[2]);
+	return targetTangent;
 }

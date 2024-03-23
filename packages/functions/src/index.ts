@@ -7,6 +7,7 @@ export * from './draco.js';
 export * from './flatten.js';
 export * from './get-vertex-count.js';
 export * from './get-texture-color-space.js';
+export * from './index-primitive.js';
 export * from './inspect.js';
 export * from './instance.js';
 export * from './join-primitives.js';
