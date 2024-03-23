@@ -12,7 +12,6 @@ import {
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
-// TODO(impl)
 test.skip('line-strip to lines', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createLineStripPrim(document);
@@ -93,5 +92,57 @@ test('triangle-fan to triangles', async (t) => {
 			0, 8, 9
 		],
 		'indices',
+	);
+});
+
+test('unsupported', async (t) => {
+	const document = new Document().setLogger(logger);
+	const prim = createTriangleFanPrim(document);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode().setMesh(mesh);
+	document.createScene().addChild(node);
+
+	// ?? → TRIANGLES
+	t.throws(
+		() => convertPrimitiveToTriangles(prim.setMode(POINTS)),
+		{ message: /Only TRIANGLE_STRIP and TRIANGLE_FAN/i },
+		'points to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToTriangles(prim.setMode(LINES)),
+		{ message: /Only TRIANGLE_STRIP and TRIANGLE_FAN/i },
+		'lines to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToTriangles(prim.setMode(LINE_STRIP)),
+		{ message: /Only TRIANGLE_STRIP and TRIANGLE_FAN/i },
+		'line-strip to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToTriangles(prim.setMode(LINE_LOOP)),
+		{ message: /Only TRIANGLE_STRIP and TRIANGLE_FAN/i },
+		'line-loop to triangles',
+	);
+
+	// ?? → LINES
+	t.throws(
+		() => convertPrimitiveToLines(prim.setMode(POINTS)),
+		{ message: /Only LINE_STRIP and LINE_LOOP/i },
+		'points to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToLines(prim.setMode(TRIANGLES)),
+		{ message: /Only LINE_STRIP and LINE_LOOP/i },
+		'lines to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToLines(prim.setMode(TRIANGLE_STRIP)),
+		{ message: /Only LINE_STRIP and LINE_LOOP/i },
+		'line-strip to triangles',
+	);
+	t.throws(
+		() => convertPrimitiveToLines(prim.setMode(TRIANGLE_FAN)),
+		{ message: /Only LINE_STRIP and LINE_LOOP/i },
+		'line-loop to triangles',
 	);
 });
