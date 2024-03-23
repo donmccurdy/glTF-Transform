@@ -414,13 +414,6 @@ export function ceilPowerOfTwo(value: number): number {
 }
 
 /**
- * Basic GLTF primitive modes, intended to be supported in all operations. Other modes can be
- * converted to basic modes with {@link convertPrimitiveMode}.
- * @hidden
- */
-export const BASIC_MODES = [POINTS, LINES, TRIANGLES];
-
-/**
  * Mapping from any glTF primitive mode to its equivalent basic mode, as returned by
  * {@link convertPrimitiveMode}.
  * @hidden

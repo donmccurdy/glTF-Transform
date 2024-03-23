@@ -13,15 +13,16 @@ export function createLineLoopPrim(document: Document): Primitive {
 /**
  * Creates an position vertex attribute array, containing `primCount` triangles,
  * arranged as a 1xN grid in the XZ plane.
+ *
+ * Reference: https://en.wikipedia.org/wiki/Triangle_strip
  */
 export function createTriangleStripPrim(document: Document, primCount = 8): Primitive {
 	const vertexCount = primCount + 2;
 	const positionArray = new Float32Array(vertexCount * 3);
-	for (let i = 0; i < positionArray.length; i += 3) {
-		// TODO(test)
-		positionArray[i] = i % 2;
-		positionArray[i + 1] = 0;
-		positionArray[i + 2] = Math.floor(i / 2);
+	for (let i = 0; i < positionArray.length / 3; i++) {
+		positionArray[i * 3] = i % 2;
+		positionArray[i * 3 + 1] = Math.floor(i / 2);
+		positionArray[i * 3 + 2] = 0;
 	}
 
 	const buffer = document.getRoot().listBuffers()[0] || document.createBuffer();
@@ -37,15 +38,16 @@ export function createTriangleStripPrim(document: Document, primCount = 8): Prim
 /**
  * Creates a position vertex attribute array, containing `primCount` triangles,
  * arranged as a circular fan in the XZ plane.
+ *
+ * Reference: https://en.wikipedia.org/wiki/Triangle_fan
  */
 export function createTriangleFanPrim(document: Document, primCount = 8): Primitive {
 	const vertexCount = primCount + 2;
 	const positionArray = new Float32Array(vertexCount * 3);
-	for (let i = 0; i < positionArray.length; i += 3) {
-		// TODO(test)
-		positionArray[i] = Math.cos((i / vertexCount) * 2 * Math.PI);
-		positionArray[i + 1] = 0;
-		positionArray[i + 2] = Math.sin((i / vertexCount) * 2 * Math.PI);
+	for (let i = 0; i < positionArray.length / 3; i++) {
+		positionArray[i * 3] = Math.cos((i / vertexCount) * 2 * Math.PI);
+		positionArray[i * 3 + 1] = Math.sin((i / vertexCount) * 2 * Math.PI);
+		positionArray[i * 3 + 2] = 0;
 	}
 
 	const buffer = document.getRoot().listBuffers()[0] || document.createBuffer();

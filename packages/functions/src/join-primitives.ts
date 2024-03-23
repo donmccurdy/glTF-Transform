@@ -1,13 +1,6 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import {
-	BASIC_MODES,
-	createIndices,
-	createPrimGroupKey,
-	remapAttribute,
-	remapIndices,
-	shallowCloneAccessor,
-} from './utils.js';
-import { convertPrimitiveToBasicMode } from './convert-primitive-mode.js';
+import { createIndices, createPrimGroupKey, remapAttribute, remapIndices, shallowCloneAccessor } from './utils.js';
+import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -18,6 +11,8 @@ const JOIN_PRIMITIVE_DEFAULTS: Required<JoinPrimitiveOptions> = {
 };
 
 const EMPTY_U32 = 2 ** 32 - 1;
+
+const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 /**
  * Given a list of compatible Mesh {@link Primitive Primitives}, returns new Primitive
@@ -56,8 +51,15 @@ export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions
 
 	// (2) Convert all prims to POINTS, LINES, or TRIANGLES.
 	for (const prim of prims) {
-		if (!BASIC_MODES.includes(prim.getMode())) {
-			convertPrimitiveToBasicMode(prim);
+		switch (prim.getMode()) {
+			case LINE_STRIP:
+			case LINE_LOOP:
+				convertPrimitiveToLines(prim);
+				break;
+			case TRIANGLE_STRIP:
+			case TRIANGLE_FAN:
+				convertPrimitiveToTriangles(prim);
+				break;
 		}
 	}
 
