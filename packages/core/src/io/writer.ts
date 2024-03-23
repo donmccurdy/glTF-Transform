@@ -239,6 +239,7 @@ export class GLTFWriter {
 			}
 			const sparseData = new Map<Accessor, SparseData>();
 			let maxIndex = -Infinity;
+			let needSparseWarning = false;
 
 			// (1) Write accessor definitions, gathering indices and values.
 
@@ -268,10 +269,8 @@ export class GLTFWriter {
 
 				if (count === 0) continue;
 
-				if (count > accessor.getCount() / 3) {
-					// Too late to write non-sparse values in the proper buffer views here.
-					const pct = ((100 * indices.length) / accessor.getCount()).toFixed(1);
-					logger.warn(`Sparse accessor with many non-zero elements (${pct}%) may increase file size.`);
+				if (count > accessor.getCount() / 2) {
+					needSparseWarning = true;
 				}
 
 				const ValueArray = ComponentTypeToTypedArray[accessor.getComponentType()];
@@ -283,6 +282,10 @@ export class GLTFWriter {
 
 			if (!Number.isFinite(maxIndex)) {
 				return { buffers, byteLength };
+			}
+
+			if (needSparseWarning) {
+				logger.warn(`Some sparse accessors have >50% non-zero elements, which may increase file size.`);
 			}
 
 			// (3) Write index buffer view.
