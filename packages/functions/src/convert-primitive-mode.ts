@@ -23,9 +23,22 @@ export function convertPrimitiveToLines(prim: Primitive): void {
 	// Generate GL primitives.
 	const srcMode = prim.getMode();
 	if (srcMode === LINE_STRIP) {
-		throw new Error('not implemented');
+		// https://glasnost.itcarlow.ie/~powerk/opengl/primitives/primitives.htm
+		for (let i = 0; i < dstGLPrimitiveCount; i++) {
+			dstIndicesArray[i * 2] = srcIndicesArray[i];
+			dstIndicesArray[i * 2 + 1] = srcIndicesArray[i + 1];
+		}
 	} else if (srcMode === LINE_LOOP) {
-		throw new Error('not implemented');
+		// https://glasnost.itcarlow.ie/~powerk/opengl/primitives/primitives.htm
+		for (let i = 0; i < dstGLPrimitiveCount; i++) {
+			if (i < dstGLPrimitiveCount - 1) {
+				dstIndicesArray[i * 2] = srcIndicesArray[i];
+				dstIndicesArray[i * 2 + 1] = srcIndicesArray[i + 1];
+			} else {
+				dstIndicesArray[i * 2] = srcIndicesArray[i];
+				dstIndicesArray[i * 2 + 1] = srcIndicesArray[0];
+			}
+		}
 	} else {
 		throw new Error('Only LINE_STRIP and LINE_LOOP may be converted to LINES.');
 	}

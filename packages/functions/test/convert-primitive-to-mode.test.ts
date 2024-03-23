@@ -12,33 +12,59 @@ import {
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
-test.skip('line-strip to lines', async (t) => {
+test('line-strip to lines', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createLineStripPrim(document);
-
-	const io = (await createPlatformIO()) as NodeIO;
-	await io.write('line-strip.glb', document);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode().setMesh(mesh);
+	document.createScene().addChild(node);
 
 	convertPrimitiveToLines(prim);
 
 	t.is(prim.getMode(), LINES, 'mode');
-
-	await io.write('line-loop+strip.glb', document);
+	t.deepEqual(
+		Array.from(prim.getIndices().getArray()),
+		// prettier-ignore
+		[
+			0, 1,
+			1, 2,
+			2, 3,
+			3, 4,
+			4, 5,
+			5, 6,
+			6, 7,
+			7, 8,
+		],
+		'indices',
+	);
 });
 
-// TODO(impl)
-test.skip('line-loop to lines', async (t) => {
+test('line-loop to lines', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createLineLoopPrim(document);
-
-	const io = (await createPlatformIO()) as NodeIO;
-	await io.write('line-loop.glb', document);
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node = document.createNode().setMesh(mesh);
+	document.createScene().addChild(node);
 
 	convertPrimitiveToLines(prim);
 
 	t.is(prim.getMode(), LINES, 'mode');
-
-	await io.write('line-loop+converted.glb', document);
+	t.deepEqual(
+		Array.from(prim.getIndices().getArray()),
+		// prettier-ignore
+		[
+			0, 1,
+			1, 2,
+			2, 3,
+			3, 4,
+			4, 5,
+			5, 6,
+			6, 7,
+			7, 8,
+			8, 0
+		],
+		'indices',
+	);
 });
 
 test('triangle-strip to triangles', async (t) => {
