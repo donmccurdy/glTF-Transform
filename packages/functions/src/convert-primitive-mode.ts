@@ -4,6 +4,21 @@ import { weldPrimitive } from './weld.js';
 
 const { LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
+/**
+ * Converts LINE_STRIP and LINE_LOOP primitives to LINES, which are more widely
+ * supported. Any other topology given as input (points or triangles) will throw an
+ * error.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { convertPrimitiveToLines } from '@gltf-transform/functions';
+ *
+ * console.log(prim.getMode()); // 2 (LINE_LOOP)
+ * convertPrimitiveToLines(prim.getMode());
+ * console.log(prim.getMode()); // 1 (LINES)
+ * ```
+ */
 export function convertPrimitiveToLines(prim: Primitive): void {
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
@@ -53,6 +68,21 @@ export function convertPrimitiveToLines(prim: Primitive): void {
 	}
 }
 
+/**
+ * Converts TRIANGLE_STRIP and TRIANGLE_LOOP primitives to TRIANGLES, which are
+ * more widely supported. Any other topology given as input (points or lines)
+ * will throw an error.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { convertPrimitiveToTriangles } from '@gltf-transform/functions';
+ *
+ * console.log(prim.getMode()); // 5 (TRIANGLE_STRIP)
+ * convertPrimitiveToTriangles(prim.getMode());
+ * console.log(prim.getMode()); // 4 (TRIANGLES)
+ * ```
+ */
 export function convertPrimitiveToTriangles(prim: Primitive): void {
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
