@@ -3,6 +3,7 @@ import { getPixels, savePixels } from 'ndarray-pixels';
 import {
 	Accessor,
 	Document,
+	GLTF,
 	Primitive,
 	Property,
 	PropertyType,
@@ -13,6 +14,8 @@ import {
 	vec2,
 } from '@gltf-transform/core';
 import { cleanPrimitive } from './clean-primitive.js';
+
+const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 /**
  * Prepares a function used in an {@link Document#transform} pipeline. Use of this wrapper is
@@ -313,7 +316,7 @@ export function createPrimGroupKey(prim: Primitive): string {
 	const document = Document.fromGraph(prim.getGraph())!;
 	const material = prim.getMaterial();
 	const materialIndex = document.getRoot().listMaterials().indexOf(material!);
-	const mode = prim.getMode();
+	const mode = BASIC_MODE_MAPPING[prim.getMode()];
 	const indices = !!prim.getIndices();
 
 	const attributes = prim
@@ -409,3 +412,18 @@ export function floorPowerOfTwo(value: number): number {
 export function ceilPowerOfTwo(value: number): number {
 	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }
+
+/**
+ * Mapping from any glTF primitive mode to its equivalent basic mode, as returned by
+ * {@link convertPrimitiveMode}.
+ * @hidden
+ */
+export const BASIC_MODE_MAPPING = {
+	[POINTS]: POINTS,
+	[LINES]: LINES,
+	[LINE_STRIP]: LINES,
+	[LINE_LOOP]: LINES,
+	[TRIANGLES]: TRIANGLES,
+	[TRIANGLE_STRIP]: TRIANGLES,
+	[TRIANGLE_FAN]: TRIANGLES,
+} as Record<GLTF.MeshPrimitiveMode, GLTF.MeshPrimitiveMode>;

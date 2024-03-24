@@ -13,8 +13,11 @@ import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { dequantizeAttributeArray } from './dequantize.js';
 import { unweldPrimitive } from './unweld.js';
+import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 
 const NAME = 'simplify';
+
+const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 /** Options for the {@link simplify} function. */
 export interface SimplifyOptions {
@@ -95,21 +98,28 @@ export function simplify(_options: SimplifyOptions): Transform {
 		await simplifier.ready;
 		await document.transform(weld({ overwrite: false, cleanup: options.cleanup }));
 
+		let numUnsupported = 0;
+
 		// Simplify mesh primitives.
 		for (const mesh of document.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
-				if (prim.getMode() === Primitive.Mode.TRIANGLES) {
-					simplifyPrimitive(document, prim, options);
+				const mode = prim.getMode();
+				if (mode === TRIANGLES || mode === TRIANGLE_STRIP || mode === TRIANGLE_FAN) {
+					simplifyPrimitive(prim, options);
 					if (prim.getIndices()!.getCount() === 0) prim.dispose();
-				} else if (prim.getMode() === Primitive.Mode.POINTS && !!simplifier.simplifyPoints) {
-					simplifyPrimitive(document, prim, options);
+				} else if (prim.getMode() === POINTS && !!simplifier.simplifyPoints) {
+					simplifyPrimitive(prim, options);
 					if (prim.getAttribute('POSITION')!.getCount() === 0) prim.dispose();
 				} else {
-					logger.warn(`${NAME}: Skipping primitive of mesh "${mesh.getName()}": Unsupported draw mode.`);
+					numUnsupported++;
 				}
 			}
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
+		}
+
+		if (numUnsupported > 0) {
+			logger.warn(`${NAME}: Skipping simplification of ${numUnsupported} primitives: Unsupported draw mode.`);
 		}
 
 		// Where simplification removes meshes, we may need to prune leaf nodes.
@@ -129,15 +139,28 @@ export function simplify(_options: SimplifyOptions): Transform {
 	});
 }
 
-export function simplifyPrimitive(document: Document, prim: Primitive, _options: SimplifyOptions): Primitive {
+/** @hidden */
+export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 	const simplifier = options.simplifier as typeof MeshoptSimplifier;
+	const graph = prim.getGraph();
+	const document = Document.fromGraph(graph)!;
+	const logger = document.getLogger();
 
-	if (prim.getMode() === Primitive.Mode.POINTS) {
-		return _simplifyPoints(document, prim, options);
+	switch (prim.getMode()) {
+		case POINTS:
+			return _simplifyPoints(document, prim, options);
+		case LINES:
+		case LINE_STRIP:
+		case LINE_LOOP:
+			logger.warn(`${NAME}: Skipping primitive simplification: Unsupported draw mode.`);
+			return prim;
+		case TRIANGLE_STRIP:
+		case TRIANGLE_FAN:
+			convertPrimitiveToTriangles(prim);
+			break;
 	}
 
-	const logger = document.getLogger();
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
 	const srcIndexCount = srcIndices.getCount();

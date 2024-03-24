@@ -350,19 +350,29 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	const included = new Set<Primitive>();
 	const excluded = new Set<Primitive>();
 
+	let nonIndexed = 0;
+	let nonTriangles = 0;
+
 	// Support compressing only indexed, mode=TRIANGLES primitives.
 	for (const mesh of doc.getRoot().listMeshes()) {
 		for (const prim of mesh.listPrimitives()) {
 			if (!prim.getIndices()) {
 				excluded.add(prim);
-				logger.warn(`[${NAME}] Skipping Draco compression on non-indexed primitive.`);
+				nonIndexed++;
 			} else if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
 				excluded.add(prim);
-				logger.warn(`[${NAME}] Skipping Draco compression on non-TRIANGLES primitive.`);
+				nonTriangles++;
 			} else {
 				included.add(prim);
 			}
 		}
+	}
+
+	if (nonIndexed > 0) {
+		logger.warn(`[${NAME}] Skipping Draco compression of ${nonIndexed} non-indexed primitives.`);
+	}
+	if (nonTriangles > 0) {
+		logger.warn(`[${NAME}] Skipping Draco compression of ${nonTriangles} non-TRIANGLES primitives.`);
 	}
 
 	// Create an Accessor->index mapping.
