@@ -109,6 +109,10 @@ test('indexed', async (t) => {
 	t.deepEqual(Array.from(primAB.getIndices().getArray()), [0, 1, 2, 3, 4, 5], 'indices data');
 });
 
+/******************************************************************************
+ * UTILITIES
+ */
+
 function createPrimA(document: Document): [Primitive, Accessor, Accessor] {
 	// prettier-ignore
 	const positionA = document.createAccessor()

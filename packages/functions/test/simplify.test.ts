@@ -2,13 +2,30 @@ import test from 'ava';
 import path, { dirname } from 'path';
 import { getBounds, Document, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
-import { weld, unweld, simplify, getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
-import { logger, roundBbox, createTorusKnotPrimitive } from '@gltf-transform/test-utils';
+import {
+	weld,
+	unweld,
+	simplify,
+	getSceneVertexCount,
+	VertexCountMethod,
+	simplifyPrimitive,
+	getGLPrimitiveCount,
+} from '@gltf-transform/functions';
+import {
+	logger,
+	roundBbox,
+	createTorusKnotPrimitive,
+	createLineLoopPrim,
+	createTriangleFanPrim,
+	createTriangleStripPrim,
+} from '@gltf-transform/test-utils';
 import { MeshoptSimplifier } from 'meshoptimizer';
 import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES } = Primitive.Mode;
 
 async function createIO(): Promise<NodeIO> {
 	const io = new NodeIO()
@@ -144,7 +161,7 @@ test('torus submesh', async (t) => {
 test('points - unwelded', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createTorusKnotPrimitive(document, { tubularSegments: 12, radialSegments: 4 })
-		.setMode(Primitive.Mode.POINTS)
+		.setMode(POINTS)
 		.setIndices(null);
 	document.createMesh().addPrimitive(prim);
 
@@ -157,9 +174,7 @@ test('points - unwelded', async (t) => {
 
 test('points - welded', async (t) => {
 	const document = new Document().setLogger(logger);
-	const prim = createTorusKnotPrimitive(document, { tubularSegments: 12, radialSegments: 4 }).setMode(
-		Primitive.Mode.POINTS,
-	);
+	const prim = createTorusKnotPrimitive(document, { tubularSegments: 12, radialSegments: 4 }).setMode(POINTS);
 	prim.getIndices().setArray(new Uint16Array(65).map((_, i) => i));
 	document.createMesh().addPrimitive(prim);
 
@@ -170,6 +185,43 @@ test('points - welded', async (t) => {
 
 	t.true(prim.getAttribute('POSITION').getCount() < 40, '<40 vertices (after)');
 	t.is(prim.getIndices(), null, 'unwelded (after)');
+});
+
+test('lines', async (t) => {
+	const document = new Document().setLogger(logger);
+	const primBase = createLineLoopPrim(document).setMode(LINES);
+	const primLines = createLineLoopPrim(document).setMode(LINES);
+	const primLineStrip = createLineLoopPrim(document).setMode(LINE_STRIP);
+	const primLineLoop = createLineLoopPrim(document).setMode(LINE_LOOP);
+
+	await MeshoptSimplifier.ready;
+	simplifyPrimitive(primLines, { simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.25 });
+	simplifyPrimitive(primLineStrip, { simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.25 });
+
+	t.is(primBase.equals(primLines), true, 'LINES unchanged');
+	t.is(primBase.equals(primLineStrip, new Set(['mode'])), true, 'LINE_STRIP unchanged');
+	t.is(primBase.equals(primLineLoop, new Set(['mode'])), true, 'LINE_LOOP unchanged');
+});
+
+test('triangle-strip and triangle-mode', async (t) => {
+	const document = new Document().setLogger(logger);
+	const primTriangleStripBase = createTriangleStripPrim(document, 32);
+	const primTriangleStrip = createTriangleStripPrim(document, 32);
+	const primTriangleFanBase = createTriangleFanPrim(document, 32);
+	const primTriangleFan = createTriangleFanPrim(document, 32);
+
+	await MeshoptSimplifier.ready;
+	simplifyPrimitive(primTriangleStrip, { simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.25 });
+	simplifyPrimitive(primTriangleFan, { simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.25 });
+
+	t.is(primTriangleStrip.getMode(), TRIANGLES, 'triangle-strip → triangles');
+	t.is(primTriangleFan.getMode(), TRIANGLES, 'triangle-fan → triangles');
+
+	const triangleStripRatio = getGLPrimitiveCount(primTriangleStrip) / getGLPrimitiveCount(primTriangleStripBase);
+	const triangleFanRatio = getGLPrimitiveCount(primTriangleFan) / getGLPrimitiveCount(primTriangleFanBase);
+
+	t.true(Math.abs(triangleStripRatio - 0.5) < 0.01, 'triangle strip reduced ~ 50%');
+	t.true(Math.abs(triangleFanRatio - 0.5) < 0.01, 'triangle fan reduced ~ 50%');
 });
 
 test('no side effects', async (t) => {

@@ -105,10 +105,10 @@ export function simplify(_options: SimplifyOptions): Transform {
 			for (const prim of mesh.listPrimitives()) {
 				const mode = prim.getMode();
 				if (mode === TRIANGLES || mode === TRIANGLE_STRIP || mode === TRIANGLE_FAN) {
-					simplifyPrimitive(document, prim, options);
+					simplifyPrimitive(prim, options);
 					if (prim.getIndices()!.getCount() === 0) prim.dispose();
 				} else if (prim.getMode() === POINTS && !!simplifier.simplifyPoints) {
-					simplifyPrimitive(document, prim, options);
+					simplifyPrimitive(prim, options);
 					if (prim.getAttribute('POSITION')!.getCount() === 0) prim.dispose();
 				} else {
 					numUnsupported++;
@@ -139,9 +139,12 @@ export function simplify(_options: SimplifyOptions): Transform {
 	});
 }
 
-export function simplifyPrimitive(document: Document, prim: Primitive, _options: SimplifyOptions): Primitive {
+/** @hidden */
+export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 	const simplifier = options.simplifier as typeof MeshoptSimplifier;
+	const graph = prim.getGraph();
+	const document = Document.fromGraph(graph)!;
 	const logger = document.getLogger();
 
 	switch (prim.getMode()) {
