@@ -402,8 +402,16 @@ commands or using the scripting API.
 				MICROMATCH_OPTIONS,
 			);
 			transforms.push(
-				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: true, rdoLambda: 4, zstd: 18 }),
-				toktx({ mode: Mode.ETC1S, quality: 255 }),
+				toktx({
+					mode: Mode.UASTC,
+					slots: slotsUASTC,
+					level: 4,
+					rdo: true,
+					rdoLambda: 4,
+					zstd: 18,
+					resize: [opts.textureSize, opts.textureSize],
+				}),
+				toktx({ mode: Mode.ETC1S, resize: [opts.textureSize, opts.textureSize] }),
 			);
 		} else if (opts.textureCompress !== false) {
 			const { default: encoder } = await import('sharp');
