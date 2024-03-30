@@ -8,18 +8,11 @@ let _document: Document;
 
 export const tasks: Task[] = [
 	[
-		'join::sm',
+		'join',
 		async () => {
 			await _document.transform(join());
 		},
 		{ beforeEach: () => void (_document = createDocument(10, 64, 64)) }, // ~4000 vertices / prim
-	],
-	[
-		'join::md',
-		async () => {
-			await _document.transform(join());
-		},
-		{ beforeEach: () => void (_document = createDocument(4, 512, 512)) }, // ~250,000 vertices / prim
 	],
 ];
 

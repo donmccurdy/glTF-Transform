@@ -33,3 +33,33 @@ export function createMesh(document: Document): Mesh {
 		.setMaterial(material);
 	return document.createMesh().addPrimitive(prim);
 }
+
+/******************************************************************************
+ * REPORTING
+ */
+
+export function max(values: number[]): number {
+	let max = -Infinity;
+	for (const value of values) max = Math.max(max, value);
+	return max;
+}
+
+export function formatTime(ms: number): string {
+	return `${formatLong(ms)} ms`;
+}
+
+export function formatLong(x: number): string {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export function underline(str: string): string {
+	return `\x1b[4m${str}\x1b[0m`;
+}
+
+export function dim(str: string): string {
+	return `\x1b[2m${str}\x1b[0m`;
+}
+
+export function bright(str: string): string {
+	return `\x1b[1m${str}\x1b[0m`;
+}

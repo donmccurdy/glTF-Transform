@@ -1,5 +1,6 @@
 import { Bench } from 'tinybench';
 import { tasks } from './tasks/index.js';
+import { printBench, reportBench } from './report.js';
 
 /**
  * DEVELOPER NOTES:
@@ -9,10 +10,11 @@ import { tasks } from './tasks/index.js';
  * Options on the Suite appear to do nothing. Switched to tinybench.
  */
 
-const filter = process.argv[2];
+const filterIndex = process.argv.indexOf('--filter');
+const filter = filterIndex === -1 ? null : process.argv[filterIndex + 1];
 
 /******************************************************************************
- * BENCHMARK SUITE
+ * CREATE BENCHMARK SUITE
  */
 
 const bench = new Bench({ time: 1000 });
@@ -23,26 +25,15 @@ for (const [title, fn, options] of tasks) {
 }
 
 /******************************************************************************
- * EXECUTE
+ * RUN BENCHMARK
  */
 
 await bench.run();
 
-console.table(bench.table());
+/******************************************************************************
+ * REPORT
+ */
 
-// interface IResult {
-// 	name: string;
-// 	value: number;
-// 	unit: string;
-// }
-
-// const results: IResult[] = [];
-// for (const task of bench.tasks) {
-// 	results.push({
-// 		name: task.name,
-// 		value: Number(task.result!.mean.toFixed(4)),
-// 		unit: 'ms',
-// 	});
-// }
-
-// console.log(JSON.stringify(results, null, 2));
+if (process.argv.includes('--table')) console.table(bench.table());
+if (process.argv.includes('--report')) await reportBench(bench);
+if (process.argv.includes('--print')) await printBench();
