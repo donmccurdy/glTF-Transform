@@ -21,7 +21,7 @@
 		"validate": "scripts/validate.js",
 		"bench": "tsx benchmarks/benchmark.ts",
 		"preversion": "yarn test",
-		"version": "yarn clean:dist && lerna run dist && yarn run docs:cli && git add -u packages/docs",
+		"version": "yarn clean:dist && lerna run dist && yarn bench --report --print && yarn run docs:cli && git add -u bench/results packages/docs",
 		"postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
 		"docs:cli": "export CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
 		"docs:deploy:prod": "if [[ $(git describe --tags --abbrev=0) =~ ^v[0-9]+.[0-9]+.[0-9]+$ ]]; then yarn docs:deploy --prod; else echo '⚠️  Not a stable release, skipping website deployment.'; fi",
