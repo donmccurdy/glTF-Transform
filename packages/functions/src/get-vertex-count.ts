@@ -56,7 +56,7 @@ export enum VertexCountMethod {
 	 * runtime characteristics, but may be helpful in identifying asset
 	 * optimization opportunities.
 	 *
-	 * @hidden Not yet implemented.
+	 * @hidden TODO(feat): Not yet implemented.
 	 */
 	DISTINCT = 'distinct',
 
@@ -66,7 +66,7 @@ export enum VertexCountMethod {
 	 * runtime characteristics, but may be helpful in identifying asset
 	 * optimization opportunities.
 	 *
-	 * @hidden Not yet implemented.
+	 * @hidden TODO(feat): Not yet implemented.
 	 */
 	DISTINCT_POSITION = 'distinct-position',
 

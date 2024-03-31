@@ -42,14 +42,6 @@ test('gpu', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), GPU), 32, 'unused');
 });
 
-test.skip('distinct', async (t) => {
-	t.fail('not implemented');
-});
-
-test.skip('distinct-position', async (t) => {
-	t.fail('not implemented');
-});
-
 test('unused', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), UNUSED), 0, 'basic');
