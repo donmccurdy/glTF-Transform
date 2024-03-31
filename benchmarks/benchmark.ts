@@ -49,7 +49,7 @@ if (flags.past === false) {
 
 if (flags.table && flags.past === false) {
 	console.table(bench.table());
-} else {
+} else if (flags.table) {
 	console.warn('Skipping table, bench did not run');
 }
 
