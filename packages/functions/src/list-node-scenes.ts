@@ -1,4 +1,4 @@
-import { Node, PropertyType, Scene } from '@gltf-transform/core';
+import { Node, Scene } from '@gltf-transform/core';
 
 /**
  * Finds the parent {@link Scene Scenes} associated with the given {@link Node}.
@@ -7,19 +7,19 @@ import { Node, PropertyType, Scene } from '@gltf-transform/core';
  *
  * Example:
  *
- * ```javascript
+ * ```typescript
  * import { listNodeScenes } from '@gltf-transform/functions';
  *
  * const node = document.getRoot().listNodes()
- * 	.find((node) => node.getName() === 'MyNode');
+ *  .find((node) => node.getName() === 'MyNode');
  *
- * const scenes = listNodeScenes(node); // → [Scene, Scene, ...]
+ * const scenes = listNodeScenes(node);
  * ```
  */
 export function listNodeScenes(node: Node): Scene[] {
 	const visited = new Set<Node>();
 
-	let child = node as Node;
+	let child = node;
 	let parent: Node | null;
 
 	while ((parent = child.getParentNode() as Node | null)) {
@@ -30,5 +30,5 @@ export function listNodeScenes(node: Node): Scene[] {
 		child = parent;
 	}
 
-	return child.listParents().filter((parent) => parent.propertyType === PropertyType.SCENE) as Scene[];
+	return child.listParents().filter((parent) => parent instanceof Scene) as Scene[];
 }
