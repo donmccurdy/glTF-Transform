@@ -1,4 +1,5 @@
 import type { Node } from '@gltf-transform/core';
+import { listNodeScenes } from './list-node-scenes.js';
 
 /**
  * Clears the parent of the given {@link Node}, leaving it attached
@@ -22,7 +23,7 @@ import type { Node } from '@gltf-transform/core';
  * {@link clearNodeParent}, then clear the local transform with {@link clearNodeTransform}.
  */
 export function clearNodeParent(node: Node): Node {
-	const scenes = node.listParentScenes();
+	const scenes = listNodeScenes(node);
 	const parent = node.getParentNode();
 
 	if (!parent) return node;
