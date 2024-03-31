@@ -5,6 +5,5 @@ import { createLargeDocument } from '../utils';
 let _document: Document;
 
 export const tasks: Task[] = [
-	['clone::sm', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.SM)) }],
-	['clone::md', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.MD)) }],
+	['clone', () => _document.clone(), { beforeAll: () => void (_document = createLargeDocument(Size.SM)) }],
 ];

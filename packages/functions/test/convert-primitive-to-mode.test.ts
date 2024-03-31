@@ -1,9 +1,8 @@
 import test from 'ava';
-import { Document, NodeIO, Primitive } from '@gltf-transform/core';
+import { Document, Primitive } from '@gltf-transform/core';
 import { convertPrimitiveToLines, convertPrimitiveToTriangles } from '@gltf-transform/functions';
 import {
 	logger,
-	createPlatformIO,
 	createLineStripPrim,
 	createLineLoopPrim,
 	createTriangleStripPrim,

@@ -8,7 +8,7 @@ let _document: Document;
 
 export const tasks: Task[] = [
 	[
-		'quantize::md',
+		'quantize',
 		async () => {
 			await _document.transform(quantize());
 		},

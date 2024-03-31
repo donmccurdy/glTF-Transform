@@ -8,14 +8,7 @@ let _document: Document;
 
 export const tasks: Task[] = [
 	[
-		'weld::sm',
-		async () => {
-			await _document.transform(weld());
-		},
-		{ beforeEach: () => void (_document = createTorusKnotDocument(64, 64)) }, // ~4000 vertices
-	],
-	[
-		'weld::md',
+		'weld',
 		async () => {
 			await _document.transform(weld());
 		},
