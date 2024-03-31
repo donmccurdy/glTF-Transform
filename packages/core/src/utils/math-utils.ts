@@ -25,7 +25,7 @@ export class MathUtils {
 		return value;
 	}
 
-	// TODO(v4): Compare performance if we replace the switch with individual functions.
+	// TODO(perf): Compare performance if we replace the switch with individual functions.
 	public static decodeNormalizedInt(i: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
@@ -44,7 +44,7 @@ export class MathUtils {
 		}
 	}
 
-	// TODO(v4): Compare performance if we replace the switch with individual functions.
+	// TODO(perf): Compare performance if we replace the switch with individual functions.
 	public static encodeNormalizedInt(f: number, componentType: GLTF.AccessorComponentType): number {
 		// Hardcode enums from accessor.ts to avoid a circular dependency.
 		switch (componentType) {
