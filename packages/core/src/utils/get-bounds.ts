@@ -2,15 +2,7 @@ import { transformMat4 } from 'gl-matrix/vec3';
 import { PropertyType, bbox, mat4, vec3 } from '../constants.js';
 import type { Mesh, Node, Scene } from '../properties/index.js';
 
-/**
- * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.
- *
- * Example:
- *
- * ```ts
- * const {min, max} = getBounds(scene);
- * ```
- */
+/** @hidden Implemented in /core for use by /extensions, publicly exported from /functions. */
 export function getBounds(node: Node | Scene): bbox {
 	const resultBounds = createBounds();
 	const parents = node.propertyType === PropertyType.NODE ? [node] : node.listChildren();
