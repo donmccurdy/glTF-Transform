@@ -6055,9 +6055,9 @@ lines-and-columns@~2.0.3:
   integrity sha512-wM1+Z03eypVAVUCE7QdSqpVIvelbOakn1M0bPDoA4SGWPx3sNDVUiMo3L6To6WWGClB7VyXnhQ4Sn7gxiJbE6A==
 
 listr2@^8.0.0:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/listr2/-/listr2-8.0.2.tgz#07649d1f93ee28c9922c0fca64eaf348b7e4a6b7"
-  integrity sha512-v5jEMOeEJUpRjSXSB4U3w5A3YPmURYMUO/86f1PA4GGYcdbUQYpkbvKYT7Xaq1iu4Zjn51Rv1UeD1zsBXRijiQ==
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/listr2/-/listr2-8.2.0.tgz#0498076dcc071a0dbfc7b8e7fe30cd922503d5e7"
+  integrity sha512-49CNmAWchwLCpAmZ7icaY83IcP2YugzUSubFtPwjlnRl4hIerEmIDkoqAnMXPCeMn01CVK2orQWfJcPpEoKQeQ==
   dependencies:
     cli-truncate "^4.0.0"
     colorette "^2.0.20"
