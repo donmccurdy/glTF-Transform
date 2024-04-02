@@ -6,6 +6,7 @@ export * from './dedup.js';
 export { dequantize, dequantizePrimitive, DequantizeOptions } from './dequantize.js';
 export * from './draco.js';
 export * from './flatten.js';
+export * from './get-bounds.js';
 export * from './get-vertex-count.js';
 export * from './get-texture-color-space.js';
 export * from './inspect.js';
