@@ -1,11 +1,12 @@
+import { RefSet } from 'property-graph';
 import { Nullable, PropertyType } from '../constants.js';
 import type { AnimationChannel } from './animation-channel.js';
 import type { AnimationSampler } from './animation-sampler.js';
 import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
 
 interface IAnimation extends IExtensibleProperty {
-	channels: AnimationChannel[];
-	samplers: AnimationSampler[];
+	channels: RefSet<AnimationChannel>;
+	samplers: RefSet<AnimationSampler>;
 }
 
 /**
@@ -52,7 +53,10 @@ export class Animation extends ExtensibleProperty<IAnimation> {
 	}
 
 	protected getDefaults(): Nullable<IAnimation> {
-		return Object.assign(super.getDefaults() as IExtensibleProperty, { channels: [], samplers: [] });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			channels: new RefSet<AnimationChannel>(),
+			samplers: new RefSet<AnimationSampler>(),
+		});
 	}
 
 	/** Adds an {@link AnimationChannel} to this Animation. */

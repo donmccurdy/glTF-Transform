@@ -39,7 +39,6 @@ test('encoding complete', async (t) => {
 	const mesh = document
 		.createMesh()
 		.addPrimitive(prim1)
-		.addPrimitive(prim1) // x2
 		.addPrimitive(prim2)
 		.addPrimitive(prim2.clone());
 	document.createNode().setMesh(mesh);
@@ -68,21 +67,6 @@ test('encoding complete', async (t) => {
 		primitiveDefs[1],
 		{
 			mode: Primitive.Mode.TRIANGLES,
-			indices: 0,
-			attributes: { POSITION: 1 },
-			extensions: {
-				KHR_draco_mesh_compression: {
-					bufferView: 0,
-					attributes: { POSITION: 0 },
-				},
-			},
-		},
-		'primitiveDef 2/4',
-	);
-	t.deepEqual(
-		primitiveDefs[2],
-		{
-			mode: Primitive.Mode.TRIANGLES,
 			indices: 2,
 			attributes: { POSITION: 3 },
 			extensions: {
@@ -92,10 +76,10 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 3/4',
+		'primitiveDef 2/3',
 	);
 	t.deepEqual(
-		primitiveDefs[3],
+		primitiveDefs[2],
 		{
 			mode: Primitive.Mode.TRIANGLES,
 			indices: 2, // shared.
@@ -107,7 +91,7 @@ test('encoding complete', async (t) => {
 				},
 			},
 		},
-		'primitiveDef 4/4',
+		'primitiveDef 3/3',
 	);
 	t.deepEqual(jsonDoc.json.extensionsUsed, ['KHR_draco_mesh_compression'], 'included in extensionsUsed');
 
