@@ -12,8 +12,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const formatTime = (ms: number) => Number(ms.toFixed(4));
 const getCPUIdentifier = () => os.cpus()[0].model.toLowerCase().replace(/\W+/g, '-');
 const semverSort = (a: { version: string }, b: { version: string }): number => {
-	if (a.version === 'dev') return 1;
-	if (b.version === 'dev') return -1;
+	if (!semver.valid(a.version)) return 1;
+	if (!semver.valid(b.version)) return -1;
 	return semver.gt(a.version, b.version) ? 1 : -1;
 };
 

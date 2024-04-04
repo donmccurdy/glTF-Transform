@@ -12,11 +12,18 @@ import { VERSION } from '@gltf-transform/core';
  */
 
 const argv = process.argv;
+const parseFlag = (flag: string, value: string): string => {
+	if (!value || value.startsWith('-')) {
+		throw new Error(`Usage: ${flag} <value>`);
+	}
+	return value;
+};
 const flags = {
-	filter: argv.includes('--filter') ? argv[argv.indexOf('--filter') + 1] : false,
+	filter: argv.includes('--filter') ? parseFlag('--filter', argv[argv.indexOf('--filter') + 1]) : false,
 	past: argv.includes('--past'),
 	table: argv.includes('--table'),
-	report: argv.includes('--report'),
+	report: argv.includes('--report') ? parseFlag('--report', argv[argv.indexOf('--report') + 1]) : false,
+	reportVersion: argv.includes('--report-version'),
 	print: argv.includes('--print'),
 };
 
@@ -35,7 +42,7 @@ for (const [title, fn, options] of tasks) {
  * EXECUTE
  */
 
-const version = flags.report ? VERSION : 'dev';
+const version = flags.reportVersion ? VERSION : flags.report || 'dev';
 const report = await readReport();
 
 if (flags.past === false) {
@@ -57,6 +64,6 @@ if (flags.print) {
 	await printReport(report);
 }
 
-if (flags.report) {
+if (flags.report || flags.reportVersion) {
 	await writeReport(report);
 }
