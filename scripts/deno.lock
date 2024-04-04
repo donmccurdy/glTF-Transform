@@ -1,30 +1,36 @@
 {
-  "version": "2",
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:@types/node": "npm:@types/node@18.14.6",
+      "npm:ktx-parse": "npm:ktx-parse@0.7.0",
+      "npm:property-graph": "npm:property-graph@2.0.0"
+    },
+    "npm": {
+      "@types/node@18.14.6": {
+        "integrity": "sha512-93+VvleD3mXwlLI/xASjw0FzKcwzl3OdTCzm1LaRfqgS21gfFtK3zDXM5Op9TeeMsJVOaJ2VRDpT9q4Y3d0AvA==",
+        "dependencies": {}
+      },
+      "ktx-parse@0.7.0": {
+        "integrity": "sha512-naezun/2iiWrantwoRI9mw6E4iN41ggYzJSR9XAZzf6+rv+2Tb1yYN8VJhGsA0uptBexE0m4GDh+iiQhYpW+Qw==",
+        "dependencies": {}
+      },
+      "property-graph@2.0.0": {
+        "integrity": "sha512-peDswWfLn7Lx+iPIxefhEUbLC7cs1KbfyKqOl5C5TF5F6urnyAORxzQ7JY21yjRzH7CpLa6+d1G+BemBr/lKyw==",
+        "dependencies": {}
+      }
+    }
+  },
   "remote": {
     "https://deno.land/std@0.178.0/fmt/colors.ts": "938c5d44d889fb82eff6c358bea8baa7e85950a16c9f6dae3ec3a7a729164471",
     "https://deno.land/std@0.178.0/testing/_diff.ts": "1a3c044aedf77647d6cac86b798c6417603361b66b54c53331b312caeb447aea",
     "https://deno.land/std@0.178.0/testing/_format.ts": "a69126e8a469009adf4cf2a50af889aca364c349797e63174884a52ff75cf4c7",
     "https://deno.land/std@0.178.0/testing/asserts.ts": "984ab0bfb3faeed92ffaa3a6b06536c66811185328c5dd146257c702c41b01ab"
   },
-  "npm": {
-    "specifiers": {
-      "@types/node": "@types/node@18.11.18",
-      "ktx-parse": "ktx-parse@0.5.0",
-      "property-graph": "property-graph@1.1.0"
-    },
-    "packages": {
-      "@types/node@18.11.18": {
-        "integrity": "sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==",
-        "dependencies": {}
-      },
-      "ktx-parse@0.5.0": {
-        "integrity": "sha512-5IZrv5s1byUeDTIee1jjJQBiD5LPDB0w9pJJ0oT9BCKKJf16Tuj123vm1Ps0GOHSHmeWPgKM0zuViCVuTRpqaA==",
-        "dependencies": {}
-      },
-      "property-graph@1.1.0": {
-        "integrity": "sha512-zaS0ktlJ4TDS0fnlQyFw+YgRzhhvjJISq4OjS7glBuB5FtSIpqvzrr5E2yz7QcuiEfLO/OLgDvxCpwOEV78k7Q==",
-        "dependencies": {}
-      }
-    }
+  "workspace": {
+    "dependencies": [
+      "npm:ktx-parse",
+      "npm:property-graph"
+    ]
   }
 }
