@@ -24,7 +24,7 @@
 		"svelte-check": "^3.6.9",
 		"ts-morph": "^19.0.0",
 		"tslib": "^2.6.2",
-		"vite": "^5.2.3"
+		"vite": "^5.2.8"
 	},
 	"type": "module"
 }

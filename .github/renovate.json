@@ -10,11 +10,6 @@
 			"description": "Waiting for https://github.com/lovell/sharp/issues?q=is%3Aissue+is%3Aopen+label%3Ainstallation+ to settle",
 			"matchPackageNames": ["sharp"],
 			"enabled": false
-		},
-		{
-			"description": "https://github.com/listr2/listr2/issues/712",
-			"matchPackageNames": ["listr2"],
-			"enabled": false
 		}
 	]
 }
