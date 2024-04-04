@@ -7894,10 +7894,10 @@ promzard@^1.0.0:
   dependencies:
     read "^2.0.0"
 
-property-graph@^2.0.0-alpha.1:
-  version "2.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-2.0.0-alpha.1.tgz#98487ee5e6a52c71b57316517a084fee2b6733c0"
-  integrity sha512-nxwOKgVmUDp2WFjBKwY+Hh9WQZkbM19HsG96W6pN+ew8ss0F2dR5UxEg+6m8+zVwz3NDEMuPRTCE4rli8SjQnQ==
+property-graph@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/property-graph/-/property-graph-2.0.0.tgz#aaf79cdd5fd05171c1d34c41367acdaac3cbac61"
+  integrity sha512-peDswWfLn7Lx+iPIxefhEUbLC7cs1KbfyKqOl5C5TF5F6urnyAORxzQ7JY21yjRzH7CpLa6+d1G+BemBr/lKyw==
 
 protocols@^2.0.0, protocols@^2.0.1:
   version "2.0.1"
