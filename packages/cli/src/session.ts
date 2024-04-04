@@ -67,7 +67,7 @@ export class Session {
 
 			// Disable signal listeners so Ctrl+C works. Note that 'simple' and 'default'
 			// renderers have different capability to display errors and warnings.
-			await new Listr(tasks, { renderer: 'default', registerSignalListeners: true }).run();
+			await new Listr(tasks, { renderer: 'default', registerSignalListeners: false }).run();
 			console.log('');
 
 			logger.setVerbosity(prevLevel);
