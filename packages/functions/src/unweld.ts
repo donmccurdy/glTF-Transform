@@ -1,5 +1,5 @@
-import { Accessor, Document, ILogger, Primitive, Transform, TypedArray } from '@gltf-transform/core';
-import { createTransform, formatDeltaOp } from './utils.js';
+import { Accessor, Document, Primitive, Transform, TypedArrayConstructor } from '@gltf-transform/core';
+import { createTransform, formatDeltaOp, shallowCloneAccessor } from './utils.js';
 
 const NAME = 'unweld';
 
@@ -52,7 +52,7 @@ export function unweldPrimitive(prim: Primitive, visited = new Map<Accessor, Map
 
 	// Vertex attributes.
 	for (const srcAttribute of prim.listAttributes()) {
-		prim.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
+		prim.swap(srcAttribute, unweldAttribute(document, srcAttribute, indices, visited));
 
 		// Clean up.
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
@@ -61,7 +61,7 @@ export function unweldPrimitive(prim: Primitive, visited = new Map<Accessor, Map
 	// Morph target vertex attributes.
 	for (const target of prim.listTargets()) {
 		for (const srcAttribute of target.listAttributes()) {
-			target.swap(srcAttribute, unweldAttribute(srcAttribute, indices, logger, visited));
+			target.swap(srcAttribute, unweldAttribute(document, srcAttribute, indices, visited));
 
 			// Clean up.
 			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
@@ -77,26 +77,29 @@ export function unweldPrimitive(prim: Primitive, visited = new Map<Accessor, Map
 }
 
 function unweldAttribute(
+	document: Document,
 	srcAttribute: Accessor,
 	indices: Accessor,
-	logger: ILogger,
 	visited: Map<Accessor, Map<Accessor, Accessor>>,
 ): Accessor {
 	if (visited.has(srcAttribute) && visited.get(srcAttribute)!.has(indices)) {
-		logger.debug(`${NAME}: Cache hit for reused attribute, "${srcAttribute.getName()}".`);
 		return visited.get(srcAttribute)!.get(indices)!;
 	}
 
-	const dstAttribute = srcAttribute.clone();
-	const ArrayCtor = srcAttribute.getArray()!.constructor as new (len: number) => TypedArray;
-	dstAttribute.setArray(new ArrayCtor(indices.getCount() * srcAttribute.getElementSize()));
+	const srcArray = srcAttribute.getArray()!;
+	const TypedArray = srcArray.constructor as TypedArrayConstructor;
+	const dstArray = new TypedArray(indices.getCount() * srcAttribute.getElementSize());
 
-	const el: number[] = [];
-	for (let i = 0; i < indices.getCount(); i++) {
-		dstAttribute.setElement(i, srcAttribute.getElement(indices.getScalar(i), el));
+	const indicesArray = indices.getArray()!;
+	const elementSize = srcAttribute.getElementSize();
+	for (let i = 0, il = indices.getCount(); i < il; i++) {
+		for (let j = 0; j < elementSize; j++) {
+			dstArray[i * elementSize + j] = srcArray[indicesArray[i] * elementSize + j];
+		}
 	}
 
 	if (!visited.has(srcAttribute)) visited.set(srcAttribute, new Map());
+	const dstAttribute = shallowCloneAccessor(document, srcAttribute).setArray(dstArray);
 	visited.get(srcAttribute)!.set(indices, dstAttribute);
 
 	return dstAttribute;
