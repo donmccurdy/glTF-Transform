@@ -47,7 +47,7 @@ const report = await readReport();
 
 if (flags.past === false) {
 	await bench.run();
-	await updateReport(report, bench, version);
+	await updateReport(report, bench, version as string);
 }
 
 /******************************************************************************
