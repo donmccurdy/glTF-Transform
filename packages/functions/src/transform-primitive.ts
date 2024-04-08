@@ -1,10 +1,11 @@
-import { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
+import { vec3, vec4, mat4, Accessor, Primitive, MathUtils } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
 import { createIndices } from './utils.js';
 import { weldPrimitive } from './weld.js';
 import { determinant } from 'gl-matrix/mat4';
+import { dequantizeAttributeArray } from './dequantize.js';
 
 /**
  * Applies a transform matrix to a {@link Primitive}.
@@ -77,12 +78,9 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
 	// An arbitrary transform may not keep vertex positions in the required
 	// range of a normalized attribute. Replace the array, instead.
-	const dstArray = new Float32Array(attribute.getCount() * 3);
+	const srcArray = attribute.getArray()!;
+	const dstArray = dequantizeAttributeArray(srcArray, attribute.getComponentType(), attribute.getNormalized());
 	const elementSize = attribute.getElementSize();
-
-	for (let i = 0, el: number[] = [], il = attribute.getCount(); i < il; i++) {
-		dstArray.set(attribute.getElement(i, el), i * elementSize);
-	}
 
 	const vector = createVec3() as vec3;
 	for (let i = 0; i < indices.length; i++) {
@@ -91,7 +89,7 @@ function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, sk
 
 		attribute.getElement(index, vector);
 		transformMat4(vector, vector, matrix);
-		dstArray.set(vector, index * 3);
+		dstArray.set(vector, index * elementSize);
 
 		skipIndices.add(index);
 	}
