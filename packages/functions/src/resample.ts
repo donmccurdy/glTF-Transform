@@ -28,6 +28,7 @@ export interface ResampleOptions {
 	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
 	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
 	 * {@link prune} manually (with customized options) later in the processing pipeline.
+	 * @experimental
 	 */
 	cleanup?: boolean;
 }
