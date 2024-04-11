@@ -2,7 +2,9 @@ import { Accessor, Document, Primitive, PropertyType, Transform, vec3 } from '@g
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { EMPTY_U32, HashTable, hashLookup } from './hash-table.js';
-import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp, remapPrimitive } from './utils.js';
+import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp } from './utils.js';
+import { compactPrimitive } from './compact-primitive.js';
+import { remapPrimitive } from './remap-primitive.js';
 
 /**
  * CONTRIBUTOR NOTES
@@ -56,13 +58,22 @@ const Tolerance = {
 
 /** Options for the {@link weld} function. */
 export interface WeldOptions {
-	/** Tolerance for vertex positions, as a fraction of primitive AABB. */
+	/**
+	 * Tolerance for vertex positions, as a fraction of primitive AABB.
+	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
+	 */
 	tolerance?: number;
-	/** Tolerance for vertex normals, in radians. */
+	/**
+	 * Tolerance for vertex normals, in radians.
+	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
+	 */
 	toleranceNormal?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
-	/** Enables a more thorough, but slower, search for vertices to weld. */
+	/**
+	 * Enables a more thorough, but slower, search for vertices to weld.
+	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
+	 */
 	exhaustive?: boolean;
 	/**
 	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
@@ -223,7 +234,7 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	remapPrimitive(prim, writeMap, dstVertexCount);
+	compactPrimitive(prim, writeMap, dstVertexCount);
 }
 
 /** @internal Weld and merge, combining vertices within tolerance. */

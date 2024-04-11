@@ -12,6 +12,7 @@ export function cleanPrimitive(prim: Primitive): void {
 	const indices = prim.getIndices();
 	if (!indices || prim.getMode() !== Primitive.Mode.TRIANGLES) return;
 
+	// TODO(perf): untyped array allocation
 	const srcIndicesArray = indices.getArray()!;
 	const dstIndicesArray = [];
 	let maxIndex = -Infinity;

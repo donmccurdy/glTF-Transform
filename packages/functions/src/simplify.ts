@@ -3,7 +3,6 @@ import {
 	createTransform,
 	formatDeltaOp,
 	deepListAttributes,
-	remapAttribute,
 	deepSwapAttribute,
 	shallowCloneAccessor,
 } from './utils.js';
@@ -14,6 +13,7 @@ import { prune } from './prune.js';
 import { dequantizeAttributeArray } from './dequantize.js';
 import { unweldPrimitive } from './unweld.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
+import { remapAttribute } from './remap-primitive.js';
 
 const NAME = 'simplify';
 

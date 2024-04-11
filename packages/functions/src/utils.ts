@@ -11,6 +11,7 @@ import {
 	Transform,
 	TransformContext,
 	TypedArray,
+	TypedArrayConstructor,
 	vec2,
 } from '@gltf-transform/core';
 import { cleanPrimitive } from './clean-primitive.js';
@@ -193,106 +194,16 @@ export function shallowCloneAccessor(document: Document, accessor: Accessor): Ac
 		.setSparse(accessor.getSparse());
 }
 
-export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
-	const document = Document.fromGraph(prim.getGraph())!;
-
-	// Remap indices.
-
-	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
-	const srcIndices = prim.getIndices();
-	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
-	const dstIndices = document.createAccessor();
-	const dstIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount; // primitive count does not change.
-	const dstIndicesArray = createIndices(dstIndicesCount, dstVertexCount);
-	for (let i = 0; i < dstIndicesCount; i++) {
-		dstIndicesArray[i] = remap[srcIndicesArray ? srcIndicesArray[i] : i];
-	}
-	prim.setIndices(dstIndices.setArray(dstIndicesArray));
-
-	// Remap vertices.
-
-	const srcAttributes = deepListAttributes(prim);
-	for (const srcAttribute of prim.listAttributes()) {
-		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		prim.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
-		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-	}
-	for (const target of prim.listTargets()) {
-		for (const srcAttribute of target.listAttributes()) {
-			const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-			target.swap(srcAttribute, remapAttribute(dstAttribute, remap, dstVertexCount));
-			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-		}
-	}
-
-	// Clean up accessors.
-
-	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
-	for (const srcAttribute of srcAttributes) {
-		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-	}
-
-	// Clean up degenerate topology.
-
-	cleanPrimitive(prim);
-
-	return prim;
-}
-
-/** @hidden */
-export function remapAttribute(
-	srcAttribute: Accessor,
-	remap: TypedArray,
-	dstCount: number,
-	dstAttribute = srcAttribute,
-): Accessor {
-	const elementSize = srcAttribute.getElementSize();
-	const srcCount = srcAttribute.getCount();
-	const srcArray = srcAttribute.getArray()!;
-	// prettier-ignore
-	const dstArray = dstAttribute === srcAttribute
-		? srcArray.slice(0, dstCount * elementSize)
-		: dstAttribute.getArray()!;
-	const done = new Uint8Array(dstCount);
-
-	for (let srcIndex = 0; srcIndex < srcCount; srcIndex++) {
-		const dstIndex = remap[srcIndex];
-		if (done[dstIndex]) continue;
-		for (let j = 0; j < elementSize; j++) {
-			dstArray[dstIndex * elementSize + j] = srcArray[srcIndex * elementSize + j];
-		}
-		done[dstIndex] = 1;
-	}
-
-	return dstAttribute.setArray(dstArray);
-}
-
-/** @hidden */
-export function remapIndices(
-	srcIndices: Accessor,
-	remap: TypedArray,
-	dstOffset: number,
-	dstCount: number,
-	dstIndices = srcIndices,
-): Accessor {
-	const srcCount = srcIndices.getCount();
-	const srcArray = srcIndices.getArray()!;
-	const dstArray = dstIndices === srcIndices ? srcArray.slice(0, dstCount) : dstIndices.getArray()!;
-
-	for (let i = 0; i < srcCount; i++) {
-		const srcIndex = srcArray[i];
-		const dstIndex = remap[srcIndex];
-		dstArray[dstOffset + i] = dstIndex;
-	}
-
-	return dstIndices.setArray(dstArray);
-}
-
 /** @hidden */
 export function createIndices(count: number, maxIndex = count): Uint16Array | Uint32Array {
-	const array = maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
+	const array = createIndicesEmpty(count, maxIndex);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
+}
+
+/** @hidden */
+export function createIndicesEmpty(count: number, maxIndex = count): Uint16Array | Uint32Array {
+	return maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 }
 
 /** @hidden */
