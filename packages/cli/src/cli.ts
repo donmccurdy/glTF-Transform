@@ -275,6 +275,14 @@ commands or using the scripting API.
 		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
+	.option('--simplify-ratio <ratio>', 'Simplification target ratio (0–1) of vertices to keep.', {
+		validator: Validator.NUMBER,
+		default: SIMPLIFY_DEFAULTS.ratio,
+	})
+	.option('--simplify-lock-border <bool>', 'Whether to lock topological borders of the mesh, helping no seams appear at border.', {
+		validator: Validator.BOOLEAN,
+		default: SIMPLIFY_DEFAULTS.lockBorder,
+	})
 	.option('--prune <bool>', 'Removes properties from the file if they are not referenced by a Scene.', {
 		validator: Validator.BOOLEAN,
 		default: true,
@@ -346,6 +354,8 @@ commands or using the scripting API.
 			paletteMin: number;
 			simplify: boolean;
 			simplifyError: number;
+			simplifyRatio: number;
+			simplifyLockBorder: boolean;
 			prune: boolean;
 			pruneAttributes: boolean;
 			pruneLeaves: boolean;
@@ -377,7 +387,12 @@ commands or using the scripting API.
 		}
 
 		if (opts.simplify) {
-			transforms.push(simplify({ simplifier: MeshoptSimplifier, error: opts.simplifyError }));
+			transforms.push(simplify({
+				simplifier: MeshoptSimplifier,
+				error: opts.simplifyError,
+				ratio: opts.simplifyRatio,
+				lockBorder: opts.simplifyLockBorder
+			}));
 		}
 
 		transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
