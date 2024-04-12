@@ -275,11 +275,11 @@ commands or using the scripting API.
 		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
-	.option('--simplify-ratio <ratio>', 'Simplification target ratio (0–1) of vertices to keep.', {
+	.option('--simplify-ratio <ratio>', 'Target ratio (0–1) of vertices to keep.', {
 		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.ratio,
 	})
-	.option('--simplify-lock-border <bool>', 'Whether to lock topological borders of the mesh, helping no seams appear at border.', {
+	.option('--simplify-lock-border <bool>', 'Whether to lock topological borders of the mesh.', {
 		validator: Validator.BOOLEAN,
 		default: SIMPLIFY_DEFAULTS.lockBorder,
 	})
@@ -387,12 +387,14 @@ commands or using the scripting API.
 		}
 
 		if (opts.simplify) {
-			transforms.push(simplify({
-				simplifier: MeshoptSimplifier,
-				error: opts.simplifyError,
-				ratio: opts.simplifyRatio,
-				lockBorder: opts.simplifyLockBorder
-			}));
+			transforms.push(
+				simplify({
+					simplifier: MeshoptSimplifier,
+					error: opts.simplifyError,
+					ratio: opts.simplifyRatio,
+					lockBorder: opts.simplifyLockBorder,
+				}),
+			);
 		}
 
 		transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
@@ -1120,7 +1122,7 @@ Based on the meshoptimizer library (https://github.com/zeux/meshoptimizer).
 		validator: Validator.NUMBER,
 		default: SIMPLIFY_DEFAULTS.error,
 	})
-	.option('--lock-border <lockBorder>', 'Whether to lock topological borders of the mesh', {
+	.option('--lock-border <bool>', 'Whether to lock topological borders of the mesh', {
 		validator: Validator.BOOLEAN,
 		default: SIMPLIFY_DEFAULTS.lockBorder,
 	})
