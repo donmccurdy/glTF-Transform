@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/prefer-namespace-keyword */
 /**
  * Module for glTF 2.0 Interface
  */
