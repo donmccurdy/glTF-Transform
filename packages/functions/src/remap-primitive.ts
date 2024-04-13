@@ -2,6 +2,8 @@ import { Accessor, Document, Primitive, TypedArray, TypedArrayConstructor } from
 import { createIndicesEmpty, deepListAttributes, shallowCloneAccessor } from './utils.js';
 import { cleanPrimitive } from './clean-primitive.js';
 
+// TODO(v4): This file is going through some things. Consider compactPrimitive instead.
+
 /** @hidden */
 export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
@@ -25,8 +27,8 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 
 	// 🛑 lots of accessor churn... could we have compacted the mesh first?
 	// skip compacting and weld by vertex stream?
-	console.time('remapAttributes');
-	console.log(`srcVertexCount=${srcVertexCount} -> dstVertexCount=${dstVertexCount}, remapCount=${remap.length}`);
+	// console.time('remapAttributes');
+	// console.log(`srcVertexCount=${srcVertexCount} -> dstVertexCount=${dstVertexCount}, remapCount=${remap.length}`);
 
 	// 🛑 so we need the source array as input ... but we're using it as dstArray ...
 	// ... really need to rethink this API.
@@ -46,7 +48,7 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 			target.swap(srcAttribute, remapAttribute(srcAttribute, remap, dstVertexCount, dstAttribute));
 		}
 	}
-	console.timeEnd('remapAttributes');
+	// console.timeEnd('remapAttributes');
 
 	// Clean up accessors.
 
