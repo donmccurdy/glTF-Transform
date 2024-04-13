@@ -2,7 +2,9 @@ import { Accessor, Document, Primitive, PropertyType, Transform, vec3 } from '@g
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { EMPTY_U32, HashTable, hashLookup } from './hash-table.js';
-import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp, remapPrimitive } from './utils.js';
+import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp } from './utils.js';
+import { compactPrimitive } from './compact-primitive.js';
+import { remapPrimitive } from './remap-primitive.js';
 
 /**
  * CONTRIBUTOR NOTES
@@ -223,7 +225,7 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 
 	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 
-	remapPrimitive(prim, writeMap, dstVertexCount);
+	compactPrimitive(prim, writeMap, dstVertexCount);
 }
 
 /** @internal Weld and merge, combining vertices within tolerance. */

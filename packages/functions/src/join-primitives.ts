@@ -1,6 +1,7 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, remapAttribute, remapIndices, shallowCloneAccessor } from './utils.js';
+import { createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
 import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
+import { remapIndices, remapAttribute } from './remap-primitive.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
