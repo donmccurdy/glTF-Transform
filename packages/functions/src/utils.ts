@@ -10,11 +10,8 @@ import {
 	Texture,
 	Transform,
 	TransformContext,
-	TypedArray,
-	TypedArrayConstructor,
 	vec2,
 } from '@gltf-transform/core';
-import { cleanPrimitive } from './clean-primitive.js';
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
