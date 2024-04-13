@@ -193,14 +193,14 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 	const srcIndicesArray = srcIndices?.getArray();
 	const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
 
-	let hash: VertexStream;
+	let stream: VertexStream;
 	if (options.tolerance === 0 && options.toleranceNormal === 0) {
-		hash = new VertexStream(prim).init();
+		stream = new VertexStream(prim).init();
 	} else {
 		const toleranceEntries = prim
 			.listSemantics()
 			.map((semantic) => [semantic, getAttributeTolerance(prim, semantic, options)]);
-		hash = new QuantizedVertexStream(prim, Object.fromEntries(toleranceEntries)).init();
+		stream = new QuantizedVertexStream(prim, Object.fromEntries(toleranceEntries)).init();
 	}
 
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
@@ -215,7 +215,7 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
 		if (writeMap[srcIndex] !== EMPTY_U32) continue;
 
-		const hashIndex = hashLookup(table, tableSize, hash, srcIndex, EMPTY_U32);
+		const hashIndex = hashLookup(table, tableSize, stream, srcIndex, EMPTY_U32);
 		const dstIndex = table[hashIndex];
 
 		if (dstIndex === EMPTY_U32) {

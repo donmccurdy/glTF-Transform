@@ -28,7 +28,7 @@ export class VertexStream {
 		}
 		for (const target of prim.listTargets()) {
 			for (const semantic of target.listSemantics()) {
-				const attribute = prim.getAttribute(semantic)!;
+				const attribute = target.getAttribute(semantic)!;
 				vertexByteLength += this._initAttribute(semantic, attribute);
 			}
 		}
