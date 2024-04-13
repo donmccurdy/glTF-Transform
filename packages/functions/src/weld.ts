@@ -1,7 +1,7 @@
 import { Accessor, Document, Primitive, PropertyType, Transform, vec3 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
-import { EMPTY_U32, HashTable, hashLookup } from './hash-table.js';
+import { EMPTY_U32, QuantizedVertexStream, VertexStream, hashLookup } from './hash-table.js';
 import { ceilPowerOfTwo, createIndices, createTransform, formatDeltaOp } from './utils.js';
 import { compactPrimitive } from './compact-primitive.js';
 import { remapPrimitive } from './remap-primitive.js';
@@ -34,6 +34,12 @@ import { remapPrimitive } from './remap-primitive.js';
  * use a hashtable to find bitwise-equal vertices quickly. Vastly faster than
  * previous approaches, but without tolerance options.
  *
+ * (Approach #6) Keep #5 for lossless weld, but add an alterative stream,
+ * QuantizedVertexStream, which provides a quantized view into the vertex
+ * data and allows custom tolerance. Cannot guarantee that two vertices
+ * within distance X will be joined given tolerance X, but much faster and
+ * more memory-efficient than previous lossy implementations.
+ *
  * RESULTS: For the "Lovecraftian" sample model linked below, after joining,
  * a primitive with 873,000 vertices can be welded down to 230,000 vertices.
  * https://sketchfab.com/3d-models/sculpt-january-day-19-lovecraftian-34ad2501108e4fceb9394f5b816b9f42
@@ -48,10 +54,10 @@ import { remapPrimitive } from './remap-primitive.js';
 const NAME = 'weld';
 
 const Tolerance = {
-	DEFAULT: 0,
+	DEFAULT: 0.0,
 	TEXCOORD: 0.0001, // [0, 1]
 	COLOR: 0.01, // [0, 1]
-	NORMAL: 0.05, // [-1, 1], ±3º
+	NORMAL: 0.0, // [-1, 1], 0.05 ~= ±3º
 	JOINTS: 0.0, // [0, ∞]
 	WEIGHTS: 0.01, // [0, ∞]
 };
@@ -64,8 +70,6 @@ export interface WeldOptions {
 	toleranceNormal?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
-	/** Enables a more thorough, but slower, search for vertices to weld. */
-	exhaustive?: boolean;
 	/**
 	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
 	 * default. Cleanup removes temporary resources created during the operation, but may also remove
@@ -81,7 +85,6 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 	tolerance: Tolerance.DEFAULT,
 	toleranceNormal: Tolerance.NORMAL,
 	overwrite: true,
-	exhaustive: false, // donmccurdy/glTF-Transform#886
 	cleanup: true,
 };
 
@@ -95,7 +98,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * bounding box (AABB). For example, tolerance=0.01 welds vertices within +/-1%
  * of the AABB's longest dimension. Other vertex attributes are also compared
  * during welding, with attribute-specific thresholds. For `tolerance=0`, welding
- * requires bitwise-equality and completes much faster.
+ * requires bitwise equality and completes more quickly.
  *
  * To preserve visual appearance consistently with non-zero `tolerance`, use low
  * `toleranceNormal` thresholds around 0.1 (±3º). To pre-processing a scene
@@ -184,22 +187,22 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 	if (prim.getIndices() && !_options.overwrite) return;
 	if (prim.getMode() === Primitive.Mode.POINTS) return;
 
-	if (_options.tolerance === 0) {
-		_weldPrimitiveStrict(document, prim);
-	} else {
-		_weldPrimitive(document, prim, options);
-	}
-}
-
-/** @internal Weld and merge, combining vertices that are bitwise-equal. */
-function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 	const logger = document.getLogger();
 	const srcVertexCount = prim.getAttribute('POSITION')!.getCount();
 	const srcIndices = prim.getIndices();
 	const srcIndicesArray = srcIndices?.getArray();
 	const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
 
-	const hash = new HashTable(prim);
+	let hash: VertexStream;
+	if (options.tolerance === 0 && options.toleranceNormal === 0) {
+		hash = new VertexStream(prim).init();
+	} else {
+		const toleranceEntries = prim
+			.listSemantics()
+			.map((semantic) => [semantic, getAttributeTolerance(prim, semantic, options)]);
+		hash = new QuantizedVertexStream(prim, Object.fromEntries(toleranceEntries)).init();
+	}
+
 	const tableSize = ceilPowerOfTwo(srcVertexCount + srcVertexCount / 4);
 	const table = new Uint32Array(tableSize).fill(EMPTY_U32);
 	const writeMap = new Uint32Array(srcVertexCount).fill(EMPTY_U32); // oldIndex → newIndex
@@ -228,106 +231,11 @@ function _weldPrimitiveStrict(document: Document, prim: Primitive): void {
 	compactPrimitive(prim, writeMap, dstVertexCount);
 }
 
-/** @internal Weld and merge, combining vertices within tolerance. */
-function _weldPrimitive(document: Document, prim: Primitive, options: Required<WeldOptions>): void {
-	const logger = document.getLogger();
-
-	const srcPosition = prim.getAttribute('POSITION')!;
-	const srcIndices = prim.getIndices() || document.createAccessor().setArray(createIndices(srcPosition.getCount()));
-	const uniqueIndices = new Uint32Array(new Set(srcIndices.getArray()!)).sort();
-
-	// (1) Compute per-attribute tolerance and spatial grid for vertices.
-
-	const attributeTolerance: Record<string, number> = {};
-	for (const semantic of prim.listSemantics()) {
-		const attribute = prim.getAttribute(semantic)!;
-		attributeTolerance[semantic] = getAttributeTolerance(semantic, attribute, options);
-	}
-
-	logger.debug(`${NAME}: Tolerance thresholds: ${formatKV(attributeTolerance)}`);
-
-	// (2) Build the lookup grid.
-
-	const posA: vec3 = [0, 0, 0];
-	const posB: vec3 = [0, 0, 0];
-
-	const grid = {} as Record<string, number[]>;
-	const cellSize = attributeTolerance.POSITION;
-
-	for (let i = 0; i < uniqueIndices.length; i++) {
-		srcPosition.getElement(uniqueIndices[i], posA);
-		const key = getGridKey(posA, cellSize);
-		grid[key] = grid[key] || [];
-		grid[key].push(uniqueIndices[i]);
-	}
-
-	// (3) Compare and identify vertices to weld.
-
-	const srcMaxIndex = uniqueIndices[uniqueIndices.length - 1];
-	const weldMap = createIndices(srcMaxIndex + 1); // oldIndex → oldCommonIndex
-	const writeMap = new Uint32Array(uniqueIndices.length).fill(EMPTY_U32); // oldIndex → newIndex
-
-	const srcVertexCount = srcPosition.getCount();
-	let dstVertexCount = 0;
-
-	for (let i = 0; i < uniqueIndices.length; i++) {
-		const a = uniqueIndices[i];
-		srcPosition.getElement(a, posA);
-
-		const cellKeys = options.exhaustive ? getGridNeighborhoodKeys(posA, cellSize) : [getGridKey(posA, cellSize)];
-
-		cells: for (const cellKey of cellKeys) {
-			if (!grid[cellKey]) continue cells; // May occur in exhaustive search.
-
-			neighbors: for (const j of grid[cellKey]) {
-				const b = weldMap[j];
-
-				// Only weld to lower indices, preventing two-way match.
-				if (a <= b) continue neighbors;
-
-				srcPosition.getElement(b, posB);
-
-				// Weld if base attributes and morph target attributes match.
-				const isBaseMatch = prim.listSemantics().every((semantic) => {
-					const attribute = prim.getAttribute(semantic)!;
-					const tolerance = attributeTolerance[semantic];
-					return compareAttributes(attribute, a, b, tolerance, semantic);
-				});
-				const isTargetMatch = prim.listTargets().every((target) => {
-					return target.listSemantics().every((semantic) => {
-						const attribute = target.getAttribute(semantic)!;
-						const tolerance = attributeTolerance[semantic];
-						return compareAttributes(attribute, a, b, tolerance, semantic);
-					});
-				});
-
-				if (isBaseMatch && isTargetMatch) {
-					weldMap[a] = b;
-					break cells;
-				}
-			}
-		}
-
-		// Output the vertex if we didn't find a match, else record the index of the match. Because
-		// we iterate vertices in ascending order, and only match to lower indices, we're
-		// guaranteed the source vertex for a weld has already been marked for output.
-		if (weldMap[a] === a) {
-			writeMap[a] = dstVertexCount++;
-		} else {
-			writeMap[a] = writeMap[weldMap[a]];
-		}
-	}
-
-	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
-
-	remapPrimitive(prim, writeMap, dstVertexCount);
-}
-
 const _a = [] as number[];
 const _b = [] as number[];
 
 /** Computes a per-attribute tolerance, based on domain and usage of the attribute. */
-function getAttributeTolerance(semantic: string, attribute: Accessor, options: Required<WeldOptions>): number {
+function getAttributeTolerance(prim: Primitive, semantic: string, options: Required<WeldOptions>): number {
 	// Attributes like NORMAL and COLOR_# do not vary in range like POSITION,
 	// so do not apply the given tolerance factor to these attributes.
 	if (semantic === 'NORMAL' || semantic === 'TANGENT') return options.toleranceNormal;
@@ -336,56 +244,14 @@ function getAttributeTolerance(semantic: string, attribute: Accessor, options: R
 	if (semantic.startsWith('JOINTS_')) return Tolerance.JOINTS;
 	if (semantic.startsWith('WEIGHTS_')) return Tolerance.WEIGHTS;
 
+	const attribute = prim.getAttribute(semantic)!;
+
 	_a.length = _b.length = 0;
 	attribute.getMinNormalized(_a);
 	attribute.getMaxNormalized(_b);
 	const diff = _b.map((bi, i) => bi - _a[i]);
 	const range = Math.max(...diff);
 	return options.tolerance * range;
-}
-
-/** Compares two vertex attributes against a tolerance threshold. */
-function compareAttributes(attribute: Accessor, a: number, b: number, tolerance: number, _semantic: string): boolean {
-	attribute.getElement(a, _a);
-	attribute.getElement(b, _b);
-	for (let i = 0, il = attribute.getElementSize(); i < il; i++) {
-		if (Math.abs(_a[i] - _b[i]) > tolerance) {
-			return false;
-		}
-	}
-	return true;
-}
-
-function formatKV(kv: Record<string, unknown>): string {
-	return Object.entries(kv)
-		.map(([k, v]) => `${k}=${v}`)
-		.join(', ');
-}
-
-// Order to search nearer cells first.
-const CELL_OFFSETS = [0, -1, 1];
-
-function getGridNeighborhoodKeys(p: vec3, cellSize: number): string[] {
-	const keys = [] as string[];
-	const _p = [0, 0, 0] as vec3;
-	for (const i of CELL_OFFSETS) {
-		for (const j of CELL_OFFSETS) {
-			for (const k of CELL_OFFSETS) {
-				_p[0] = p[0] + i * cellSize;
-				_p[1] = p[1] + j * cellSize;
-				_p[2] = p[2] + k * cellSize;
-				keys.push(getGridKey(_p, cellSize));
-			}
-		}
-	}
-	return keys;
-}
-
-function getGridKey(p: vec3, cellSize: number): string {
-	const cellX = Math.round(p[0] / cellSize);
-	const cellY = Math.round(p[1] / cellSize);
-	const cellZ = Math.round(p[2] / cellSize);
-	return cellX + ':' + cellY + ':' + cellZ;
 }
 
 function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {

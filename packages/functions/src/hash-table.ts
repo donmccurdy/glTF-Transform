@@ -1,26 +1,45 @@
 import { Accessor, BufferUtils, Primitive } from '@gltf-transform/core';
-import { deepListAttributes } from './utils.js';
+import { dequantizeAttributeArray } from './dequantize.js';
 
 /** Flags 'empty' values in a Uint32Array index. */
 export const EMPTY_U32 = 2 ** 32 - 1;
 
-export class HashTable {
-	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
+export class VertexStream {
+	protected prim: Primitive;
+	protected vertexByteLength = -1;
+	protected attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
 
 	/** Temporary vertex views in 4-byte-aligned memory. */
-	private u8: Uint8Array;
-	private u32: Uint32Array;
+	protected u8: Uint8Array = null!;
+	protected u32: Uint32Array = null!;
 
 	constructor(prim: Primitive) {
-		let byteStride = 0;
-		for (const attribute of deepListAttributes(prim)) {
-			byteStride += this._initAttribute(attribute);
-		}
-		this.u8 = new Uint8Array(byteStride);
-		this.u32 = new Uint32Array(this.u8.buffer);
+		this.prim = prim;
 	}
 
-	private _initAttribute(attribute: Accessor): number {
+	public init(): this {
+		const prim = this.prim;
+
+		let vertexByteLength = 0;
+
+		for (const semantic of prim.listSemantics()) {
+			const attribute = prim.getAttribute(semantic)!;
+			vertexByteLength += this._initAttribute(semantic, attribute);
+		}
+		for (const target of prim.listTargets()) {
+			for (const semantic of target.listSemantics()) {
+				const attribute = prim.getAttribute(semantic)!;
+				vertexByteLength += this._initAttribute(semantic, attribute);
+			}
+		}
+
+		this.vertexByteLength = vertexByteLength;
+		this.u8 = new Uint8Array(vertexByteLength);
+		this.u32 = new Uint32Array(this.u8.buffer);
+		return this;
+	}
+
+	protected _initAttribute(_semantic: string, attribute: Accessor): number {
 		const array = attribute.getArray()!;
 		const u8 = new Uint8Array(array.buffer, array.byteOffset, array.byteLength);
 		const byteStride = attribute.getElementSize() * attribute.getComponentSize();
@@ -59,6 +78,32 @@ export class HashTable {
 	}
 }
 
+export class QuantizedVertexStream extends VertexStream {
+	protected attributeTolerances: Record<string, number>;
+
+	constructor(prim: Primitive, attributeTolerances: Record<string, number>) {
+		super(prim);
+		this.attributeTolerances = attributeTolerances;
+	}
+
+	protected _initAttribute(semantic: string, attribute: Accessor): number {
+		const tolerance = this.attributeTolerances[semantic];
+		const array = dequantizeAttributeArray(
+			attribute.getArray()!,
+			attribute.getComponentType(),
+			attribute.getNormalized(),
+		);
+		for (let i = 0, il = array.length; i < il; i++) {
+			array[i] = Math.round(array[i] / tolerance) * tolerance;
+		}
+		const u8 = new Uint8Array(array.buffer, array.byteOffset, array.byteLength);
+		const byteStride = attribute.getElementSize() * attribute.getComponentSize();
+		const paddedByteStride = BufferUtils.padNumber(byteStride);
+		this.attributes.push({ u8, byteStride, paddedByteStride });
+		return paddedByteStride;
+	}
+}
+
 /**
  * References:
  * - https://github.com/mikolalysenko/murmurhash-js/blob/f19136e9f9c17f8cddc216ca3d44ec7c5c502f60/murmurhash2_gc.js#L14
@@ -86,18 +131,18 @@ function murmurHash2(h: number, key: Uint32Array): number {
 export function hashLookup(
 	table: Uint32Array,
 	buckets: number,
-	hash: HashTable,
+	stream: VertexStream,
 	key: number,
 	empty = EMPTY_U32,
 ): number {
 	const hashmod = buckets - 1;
-	const hashval = hash.hash(key);
+	const hashval = stream.hash(key);
 	let bucket = hashval & hashmod;
 
 	for (let probe = 0; probe <= hashmod; probe++) {
 		const item = table[bucket];
 
-		if (item === empty || hash.equal(item, key)) {
+		if (item === empty || stream.equal(item, key)) {
 			return bucket;
 		}
 

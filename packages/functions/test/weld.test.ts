@@ -80,12 +80,20 @@ test('tolerance>0', async (t) => {
 		.setAttribute('NORMAL', normal);
 	doc.createMesh().addPrimitive(prim1).addPrimitive(prim2);
 
-	await doc.transform(weld({ tolerance: 0.0001 }));
+	await doc.transform(weld({ tolerance: 0.0001, toleranceNormal: 0.05 }));
 
-	t.deepEqual(prim1.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim1');
-	t.deepEqual(prim2.getIndices().getArray(), new Uint16Array([0, 1, 2, 0, 1, 2]), 'indices on prim2');
-	t.deepEqual(prim1.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim1');
-	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray.slice(0, 9), 'vertices on prim2');
+	t.deepEqual(Array.from(prim1.getIndices().getArray()), [0, 1, 2, 0, 1, 2], 'indices on prim1');
+	t.deepEqual(Array.from(prim2.getIndices().getArray()), [0, 1, 2, 0, 1, 2], 'indices on prim2');
+	t.deepEqual(
+		Array.from(prim1.getAttribute('POSITION').getArray()),
+		Array.from(positionArray.slice(0, 9)),
+		'vertices on prim1',
+	);
+	t.deepEqual(
+		Array.from(prim2.getAttribute('POSITION').getArray()),
+		Array.from(positionArray.slice(0, 9)),
+		'vertices on prim2',
+	);
 	t.is(doc.getRoot().listAccessors().length, 3, 'accessor count');
 });
 
