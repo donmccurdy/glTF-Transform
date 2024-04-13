@@ -3,7 +3,6 @@ import { createTransform } from './utils.js';
 
 const NAME = 'unpartition';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnpartitionOptions {}
 const UNPARTITION_DEFAULTS: Required<UnpartitionOptions> = {};
 

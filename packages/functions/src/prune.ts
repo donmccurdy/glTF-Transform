@@ -89,7 +89,6 @@ export const PRUNE_DEFAULTS: Required<PruneOptions> = {
  * @category Transforms
  */
 export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
 	const propertyTypes = new Set(options.propertyTypes);
 	const keepExtras = options.keepExtras;

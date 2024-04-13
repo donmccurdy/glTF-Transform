@@ -4,7 +4,6 @@ import { createTransform, formatDeltaOp, shallowCloneAccessor } from './utils.js
 const NAME = 'unweld';
 
 /** Options for the {@link unweld} function. */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnweldOptions {}
 
 const UNWELD_DEFAULTS: UnweldOptions = {};

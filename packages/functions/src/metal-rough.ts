@@ -9,7 +9,6 @@ import { createTransform, rewriteTexture } from './utils.js';
 
 const NAME = 'metalRough';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface MetalRoughOptions {}
 
 const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};

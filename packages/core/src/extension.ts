@@ -91,7 +91,6 @@ export abstract class Extension {
 	}
 
 	/** @hidden Performs first-time setup for the extension. Must be idempotent. */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	public static register(): void {}
 
 	/**
