@@ -58,22 +58,13 @@ const Tolerance = {
 
 /** Options for the {@link weld} function. */
 export interface WeldOptions {
-	/**
-	 * Tolerance for vertex positions, as a fraction of primitive AABB.
-	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
-	 */
+	/** Tolerance for vertex positions, as a fraction of primitive AABB. */
 	tolerance?: number;
-	/**
-	 * Tolerance for vertex normals, in radians.
-	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
-	 */
+	/** Tolerance for vertex normals, in radians. */
 	toleranceNormal?: number;
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
-	/**
-	 * Enables a more thorough, but slower, search for vertices to weld.
-	 * @deprecated Use default tolerance for lossless welding, or simplification for lossy welding.
-	 */
+	/** Enables a more thorough, but slower, search for vertices to weld. */
 	exhaustive?: boolean;
 	/**
 	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
