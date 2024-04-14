@@ -25,7 +25,7 @@ export function convertPrimitiveToLines(prim: Primitive): void {
 
 	// Ensure indexed primitive.
 	if (!prim.getIndices()) {
-		weldPrimitive(prim, { tolerance: 0 });
+		weldPrimitive(prim);
 	}
 
 	// Allocate indices new GL primitives.
@@ -89,7 +89,7 @@ export function convertPrimitiveToTriangles(prim: Primitive): void {
 
 	// Ensure indexed primitive.
 	if (!prim.getIndices()) {
-		weldPrimitive(prim, { tolerance: 0 });
+		weldPrimitive(prim);
 	}
 
 	// Allocate indices new GL primitives.

@@ -144,7 +144,7 @@ function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Ar
 
 function reversePrimitiveWindingOrder(prim: Primitive) {
 	if (prim.getMode() !== Primitive.Mode.TRIANGLES) return;
-	if (!prim.getIndices()) weldPrimitive(prim, { tolerance: 0 });
+	if (!prim.getIndices()) weldPrimitive(prim);
 
 	const indices = prim.getIndices()!;
 	for (let i = 0, il = indices.getCount(); i < il; i += 3) {
