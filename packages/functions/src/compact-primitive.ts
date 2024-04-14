@@ -1,6 +1,5 @@
 import { Accessor, Document, Primitive, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 import { createIndicesEmpty, deepListAttributes, shallowCloneAccessor } from './utils.js';
-import { cleanPrimitive } from './clean-primitive.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 
 /** @hidden */
@@ -46,10 +45,6 @@ export function compactPrimitive(prim: Primitive, remap: TypedArray, dstVertexCo
 	for (const srcAttribute of srcAttributesPrev) {
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}
-
-	// Clean up degenerate topology.
-
-	cleanPrimitive(prim);
 
 	return prim;
 }
