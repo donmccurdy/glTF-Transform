@@ -64,7 +64,9 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 
 	// Clean up degenerate topology.
 
-	cleanPrimitive(prim); // 🛑 untyped array allocation
+	// 🛑 untyped array allocation
+	// 🛑 remap should not do this, at the end of all places, caller can
+	cleanPrimitive(prim);
 
 	return prim;
 }

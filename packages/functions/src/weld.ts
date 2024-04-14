@@ -1,4 +1,13 @@
-import { Accessor, Document, Primitive, PropertyType, Transform, vec3 } from '@gltf-transform/core';
+import {
+	Accessor,
+	Document,
+	Primitive,
+	PropertyType,
+	Transform,
+	TypedArray,
+	TypedArrayConstructor,
+	vec3,
+} from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { EMPTY_U32, QuantizedVertexStream, VertexStream, hashLookup } from './hash-table.js';
@@ -209,7 +218,7 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 
 	// (1) Compare and identify indices to weld.
 
-	let dstVertexCount = 0;
+	let vertexCount = 0;
 
 	for (let i = 0; i < srcIndicesCount; i++) {
 		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
@@ -220,15 +229,33 @@ export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFA
 
 		if (dstIndex === EMPTY_U32) {
 			table[hashIndex] = srcIndex;
-			writeMap[srcIndex] = dstVertexCount++;
+			writeMap[srcIndex] = vertexCount++;
 		} else {
 			writeMap[srcIndex] = writeMap[dstIndex];
 		}
 	}
 
-	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
+	// TODO(bug): weld attributes test fails, writeMap is not welded!
+	//
+	// ⛳️ TODO(design): consider making this easier, just choose which semantics to consider.
+	// ... we still have to deal with degenerate primitives though.
+	// ... or just support lossless weld?
+	console.log({ writeMap });
 
-	compactPrimitive(prim, writeMap, dstVertexCount);
+	// TODO(docs): Explain this thing.
+	const [remap, tmpIndicesArray, dstVertexCount] = cleanRemap(prim, writeMap, vertexCount);
+
+	// TODO(docs): Explain this thing.
+	if (tmpIndicesArray) {
+		const tmpIndices = prim.getIndices() || document.createAccessor();
+		prim.setIndices(tmpIndices.setArray(tmpIndicesArray));
+	}
+
+	console.log({ remap, tmpIndicesArray, vertexCount, dstVertexCount });
+
+	compactPrimitive(prim, remap, dstVertexCount);
+
+	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices.`);
 }
 
 const _a = [] as number[];
@@ -281,4 +308,71 @@ function expandWeldOptions(_options: WeldOptions): Required<WeldOptions> {
 function isPrimEmpty(prim: Primitive): boolean {
 	const indices = prim.getIndices();
 	return !!indices && indices.getCount() === 0;
+}
+
+const { TRIANGLES, LINES } = Primitive.Mode;
+
+function cleanRemap(
+	prim: Primitive,
+	srcRemap: Uint32Array,
+	srcVertexCount: number,
+): [Uint32Array, TypedArray | null, number] {
+	const mode = prim.getMode();
+	if (mode !== TRIANGLES && mode !== LINES) {
+		return [srcRemap, null, srcVertexCount];
+	}
+
+	const srcIndices = prim.getIndices();
+	const srcIndicesArray = srcIndices ? srcIndices.getArray()! : null;
+
+	const tmpRemap = new Uint32Array(srcRemap.length).fill(EMPTY_U32);
+	const dstRemap = new Uint32Array(srcRemap.length).fill(EMPTY_U32);
+
+	const dstIndicesArray = [];
+	let dstVertexCount = 0;
+
+	if (mode === TRIANGLES) {
+		// TRIANGLES
+		for (let i = 0, il = srcIndicesArray ? srcIndicesArray.length : srcRemap.length; i < il; i += 3) {
+			const srcA = srcIndicesArray ? srcIndicesArray[i] : i;
+			const srcB = srcIndicesArray ? srcIndicesArray[i + 1] : i + 1;
+			const srcC = srcIndicesArray ? srcIndicesArray[i + 2] : i + 2;
+
+			const dstA = srcRemap[srcA];
+			const dstB = srcRemap[srcB];
+			const dstC = srcRemap[srcC];
+
+			if (dstA === dstB || dstA === dstC || dstB === dstC) continue;
+
+			if (tmpRemap[dstA] === EMPTY_U32) tmpRemap[dstA] = dstVertexCount++;
+			if (tmpRemap[dstB] === EMPTY_U32) tmpRemap[dstB] = dstVertexCount++;
+			if (tmpRemap[dstC] === EMPTY_U32) tmpRemap[dstC] = dstVertexCount++;
+
+			dstIndicesArray.push(srcA, srcB, srcC);
+		}
+	} else {
+		// LINES
+		for (let i = 0, il = srcIndicesArray ? srcIndicesArray.length : srcRemap.length; i < il; i += 2) {
+			const srcA = srcIndicesArray ? srcIndicesArray[i] : i;
+			const srcB = srcIndicesArray ? srcIndicesArray[i + 1] : i + 1;
+
+			const dstA = srcRemap[srcA];
+			const dstB = srcRemap[srcB];
+
+			if (dstA === dstB) continue;
+
+			if (tmpRemap[dstA] === EMPTY_U32) tmpRemap[dstA] = dstVertexCount++;
+			if (tmpRemap[dstB] === EMPTY_U32) tmpRemap[dstB] = dstVertexCount++;
+
+			dstIndicesArray.push(srcA, srcB);
+		}
+	}
+
+	for (let i = 0, il = srcRemap.length; i < il; i++) {
+		dstRemap[i] = tmpRemap[srcRemap[i]];
+	}
+
+	console.log({ srcRemap, tmpRemap, dstRemap, srcVertexCount, dstVertexCount });
+
+	return [dstRemap, new Uint32Array(dstIndicesArray), dstVertexCount];
 }

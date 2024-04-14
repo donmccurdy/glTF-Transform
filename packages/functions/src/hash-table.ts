@@ -87,6 +87,8 @@ export class QuantizedVertexStream extends VertexStream {
 	}
 
 	protected _initAttribute(semantic: string, attribute: Accessor): number {
+		// TODO - we're making a complete copy of the attribute just to copy a much smaller
+		// number of vertices here, this won't work...
 		const tolerance = this.attributeTolerances[semantic];
 		const array = dequantizeAttributeArray(
 			attribute.getArray()!,
