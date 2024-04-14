@@ -1,8 +1,8 @@
 import { Accessor, Document, GLTF, Primitive, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune.js';
 import { createTransform, deepListAttributes, SetMap, shallowCloneAccessor } from './utils.js';
-import { remapAttribute } from './remap-primitive.js';
 import type { MeshoptEncoder } from 'meshoptimizer';
+import { compactAttribute } from './compact-primitive.js';
 
 const NAME = 'reorder';
 
@@ -87,16 +87,16 @@ export function reorder(_options: ReorderOptions): Transform {
 			// Update affected primitives.
 			for (const srcAttribute of plan.indicesToAttributes.get(srcIndices)) {
 				const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-				remapAttribute(dstAttribute, remap, unique);
-				for (const prim of plan.attributesToPrimitives.get(srcAttribute)) {
+				compactAttribute(srcAttribute, srcIndices, remap, dstAttribute, unique);
+
+				for (const prim of plan.indicesToPrimitives.get(srcIndices)) {
 					if (prim.getIndices() === srcIndices) {
 						prim.swap(srcIndices, dstIndices);
 					}
-					if (prim.getIndices() === dstIndices) {
-						prim.swap(srcAttribute, dstAttribute);
-						for (const target of prim.listTargets()) {
-							target.swap(srcAttribute, dstAttribute);
-						}
+
+					prim.swap(srcAttribute, dstAttribute);
+					for (const target of prim.listTargets()) {
+						target.swap(srcAttribute, dstAttribute);
 					}
 				}
 			}
@@ -124,6 +124,7 @@ export function reorder(_options: ReorderOptions): Transform {
 /** @hidden */
 interface LayoutPlan {
 	indicesToMode: Map<Accessor, GLTF.MeshPrimitiveMode>;
+	indicesToPrimitives: SetMap<Accessor, Primitive>;
 	indicesToAttributes: SetMap<Accessor, Accessor>;
 	attributesToPrimitives: SetMap<Accessor, Primitive>;
 }
@@ -137,8 +138,9 @@ interface LayoutPlan {
  * @hidden
  */
 function createLayoutPlan(document: Document): LayoutPlan {
-	const indicesToAttributes = new SetMap<Accessor, Accessor>();
 	const indicesToMode = new Map<Accessor, GLTF.MeshPrimitiveMode>();
+	const indicesToPrimitives = new SetMap<Accessor, Primitive>();
+	const indicesToAttributes = new SetMap<Accessor, Accessor>();
 	const attributesToPrimitives = new SetMap<Accessor, Primitive>();
 
 	for (const mesh of document.getRoot().listMeshes()) {
@@ -147,6 +149,7 @@ function createLayoutPlan(document: Document): LayoutPlan {
 			if (!indices) continue;
 
 			indicesToMode.set(indices, prim.getMode());
+			indicesToPrimitives.add(indices, prim);
 
 			for (const attribute of deepListAttributes(prim)) {
 				indicesToAttributes.add(indices, attribute);
@@ -155,5 +158,5 @@ function createLayoutPlan(document: Document): LayoutPlan {
 		}
 	}
 
-	return { indicesToAttributes, indicesToMode, attributesToPrimitives };
+	return { indicesToPrimitives, indicesToAttributes, indicesToMode, attributesToPrimitives };
 }
