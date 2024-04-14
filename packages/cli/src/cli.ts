@@ -40,7 +40,6 @@ import {
 	DracoOptions,
 	simplify,
 	SIMPLIFY_DEFAULTS,
-	WELD_DEFAULTS,
 	textureCompress,
 	FlattenOptions,
 	flatten,
@@ -333,19 +332,10 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--weld <bool>', 'Index geometry and merge similar vertices. Often required when simplifying geometry.', {
+	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option(
-		'--weld-tolerance <tolerance>',
-		'Tolerance for welding vertex positions, as a fraction of primitive AABB. ' +
-			'When set to zero, welds run much faster and require bitwise equality.',
-		{
-			validator: Validator.NUMBER,
-			default: WELD_DEFAULTS.tolerance,
-		},
-	)
 	.action(async ({ args, options, logger }) => {
 		const opts = options as {
 			instance: boolean;
@@ -366,7 +356,6 @@ commands or using the scripting API.
 			flatten: boolean;
 			join: boolean;
 			weld: boolean;
-			weldTolerance: number;
 		};
 
 		// Baseline transforms.
@@ -376,15 +365,7 @@ commands or using the scripting API.
 		if (opts.palette) transforms.push(palette({ min: opts.paletteMin }));
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(join());
-
-		if (opts.weld) {
-			transforms.push(
-				weld({
-					tolerance: opts.weldTolerance,
-					toleranceNormal: opts.simplify ? 0.5 : WELD_DEFAULTS.toleranceNormal,
-				}),
-			);
-		}
+		if (opts.weld) transforms.push(weld());
 
 		if (opts.simplify) {
 			transforms.push(
@@ -967,45 +948,16 @@ Removes KHR_mesh_quantization, if present.`.trim(),
 
 // WELD
 program
-	.command('weld', 'Index geometry and optionally merge similar vertices')
+	.command('weld', 'Merge equivalent vertices to optimize geometry')
 	.help(
 		`
-Index geometry and optionally merge similar vertices. When merged and indexed,
-data is shared more efficiently between vertices. File size can be reduced, and
-the GPU can sometimes use the vertex cache more efficiently.
-
-When welding, the --tolerance threshold determines which vertices qualify for
-welding based on distance between the vertices as a fraction of the primitive's
-bounding box (AABB). For example, --tolerance=0.01 welds vertices within +/-1%
-of the AABB's longest dimension. Other vertex attributes are also compared
-during welding, with attribute-specific thresholds. For --tolerance=0, geometry
-is indexed in place, without merging.
-
-To preserve visual appearance consistently, use low --tolerance-normal thresholds
-around 0.1 (±3º). To pre-processing a scene before simplification or LOD creation,
-use higher thresholds around 0.5 (±30º).
+Welds mesh geometry, merging bitwise identical vertices. When merged and
+indexed, data is shared more efficiently between vertices. File size
+can be reduced, and the GPU uses the vertex cache more efficiently.
 	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option(
-		'--tolerance',
-		'Tolerance for welding vertex positions, as a fraction of primitive AABB. ' +
-			'When set to zero, welds run much faster and require bitwise equality.',
-		{
-			validator: Validator.NUMBER,
-			default: WELD_DEFAULTS.tolerance,
-		},
-	)
-	.option(
-		'--tolerance-normal',
-		'Tolerance for vertex normals, in radians. If --tolerance is zero, ' +
-			'--tolerance-normal is ignored and welds require bitwise equality.',
-		{
-			validator: Validator.NUMBER,
-			default: WELD_DEFAULTS.toleranceNormal,
-		},
-	)
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(weld(options as unknown as WeldOptions)),
 	);
@@ -1058,7 +1010,7 @@ compute MikkTSpace tangents at runtime.
 		Session.create(io, logger, args.input, args.output).transform(
 			unweld(),
 			tangents({ generateTangents: mikktspace.generateTangents, ...options }),
-			weld({ tolerance: 0 }),
+			weld(),
 		),
 	);
 

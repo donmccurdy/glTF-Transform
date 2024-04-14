@@ -40,7 +40,7 @@ export const DRACO_DEFAULTS: DracoOptions = {
 export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
 	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
 	return createTransform(NAME, async (document: Document): Promise<void> => {
-		await document.transform(weld({ tolerance: 0 }));
+		await document.transform(weld());
 		document
 			.createExtension(KHRDracoMeshCompression)
 			.setRequired(true)
