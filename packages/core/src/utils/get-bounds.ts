@@ -14,8 +14,10 @@ export function getBounds(node: Node | Scene): bbox {
 
 			// Compute mesh bounds and update result.
 			const meshBounds = getMeshBounds(mesh, node.getWorldMatrix());
-			expandBounds(meshBounds.min, resultBounds);
-			expandBounds(meshBounds.max, resultBounds);
+			if (meshBounds.min.every(isFinite) && meshBounds.max.every(isFinite)) {
+				expandBounds(meshBounds.min, resultBounds);
+				expandBounds(meshBounds.max, resultBounds);
+			}
 		});
 	}
 
