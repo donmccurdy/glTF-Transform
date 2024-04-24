@@ -8,9 +8,12 @@
 	"license": "MIT",
 	"funding": "https://github.com/sponsors/donmccurdy",
 	"type": "module",
-	"exports": "./dist/cli.esm.js",
 	"source": "./src/cli.ts",
 	"types": "./dist/cli.d.ts",
+	"exports": {
+		"types": "./dist/cli.d.ts",
+		"default": "./dist/cli.esm.js"
+	},
 	"browserslist": [
 		"node >= 18"
 	],

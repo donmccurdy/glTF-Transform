@@ -1,5 +1,4 @@
-import fs from 'fs/promises';
-import { existsSync, mkdirSync } from 'fs';
+import fs, { rm } from 'fs/promises';
 import { join } from 'path';
 import micromatch from 'micromatch';
 import os from 'os';
@@ -26,8 +25,6 @@ import {
 	listTextureSlots,
 } from '@gltf-transform/functions';
 import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util.js';
-
-tmp.setGracefulCleanup();
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
@@ -76,6 +73,11 @@ interface GlobalOptions {
 	resize?: vec2;
 	powerOfTwo?: boolean;
 	jobs?: number;
+	/**
+	 * Whether to clean up temporary files created during texture compression. See
+	 * verbose log output for temporary file paths. Default: true.
+	 */
+	cleanup?: boolean;
 }
 
 export interface ETC1SOptions extends GlobalOptions {
@@ -106,6 +108,7 @@ const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'mode'> = {
 	slots: null,
 	// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
 	jobs: 2 * NUM_CPUS,
+	cleanup: true,
 };
 
 export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'mode'> = {
@@ -146,10 +149,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		// Confirm recent version of KTX-Software is installed.
 		await checkKTXSoftware(logger);
 
-		// Create workspace.
+		// Create workspace. Avoid 'unsafeCleanup' and 'setGracefulCleanup', which
+		// are not working as expected and are slated for removal:
+		// https://github.com/raszi/node-tmp/pull/281
 		const batchPrefix = uuid();
-		const batchDir = join(tmp.tmpdir, 'gltf-transform');
-		if (!existsSync(batchDir)) mkdirSync(batchDir);
+		const batchDir = tmp.dirSync({ prefix: 'gltf-transform-' });
 
 		const basisuExtension = doc.createExtension(KHRTextureBasisu).setRequired(true);
 
@@ -207,8 +211,8 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					? FileUtils.extension(texture.getURI())
 					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
 
-				const inPath = join(batchDir, `${batchPrefix}_${textureIndex}.${extension}`);
-				const outPath = join(batchDir, `${batchPrefix}_${textureIndex}.ktx2`);
+				const inPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${extension}`);
+				const outPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
 
 				const inBytes = image.byteLength;
 				await fs.writeFile(inPath, Buffer.from(image));
@@ -245,6 +249,10 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		);
 
 		await Promise.all(promises);
+
+		if (options.cleanup) {
+			await rm(batchDir.name, { recursive: true });
+		}
 
 		if (numCompressed === 0) {
 			logger.warn('ktx: No textures were found, or none were selected for compression.');
