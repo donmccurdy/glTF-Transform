@@ -149,9 +149,11 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 		// Confirm recent version of KTX-Software is installed.
 		await checkKTXSoftware(logger);
 
-		// Create workspace.
+		// Create workspace. Avoid 'unsafeCleanup' and 'setGracefulCleanup', which
+		// are not working as expected and are slated for removal:
+		// https://github.com/raszi/node-tmp/pull/281
 		const batchPrefix = uuid();
-		const batchDir = tmp.dirSync({ prefix: 'gltf-transform-', unsafeCleanup: options.cleanup });
+		const batchDir = tmp.dirSync({ prefix: 'gltf-transform-' });
 
 		const basisuExtension = doc.createExtension(KHRTextureBasisu).setRequired(true);
 
