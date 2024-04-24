@@ -27,9 +27,9 @@ as prescribed by the extension itself.
 
 - [KHR_draco_mesh_compression](/modules/extensions/classes/KHRDracoMeshCompression)
 - [KHR_lights_punctual](/modules/extensions/classes/KHRLightsPunctual)
-- [KHR_materials_anisotropy](/modules/extensions/classes/KHRMaterialsAnisotropy) *(🧪 experimental)*
+- [KHR_materials_anisotropy](/modules/extensions/classes/KHRMaterialsAnisotropy)
 - [KHR_materials_clearcoat](/modules/extensions/classes/KHRMaterialsClearcoat)
-- [KHR_materials_dispersion](/modules/extensions/classes/KHRMaterialsDispersion) *(🧪 experimental)*
+- [KHR_materials_dispersion](/modules/extensions/classes/KHRMaterialsDispersion)
 - [KHR_materials_emissive_strength](/modules/extensions/classes/KHRMaterialsEmissiveStrength)
 - [KHR_materials_ior](/modules/extensions/classes/KHRMaterialsIOR)
 - [KHR_materials_iridescence](/modules/extensions/classes/KHRMaterialsIridescence)
@@ -212,4 +212,3 @@ const emitterExtension = document.createExtension(ParticleEmitter);
 const emitter = emitterExtension.createEmitter('MyEmitter');
 node.setExtension('ACME_particle_emitter', emitter);
 ```
-
