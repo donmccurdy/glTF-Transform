@@ -36,11 +36,7 @@ test('encoding complete', async (t) => {
 	const prim1 = createMeshPrimitive(document, buffer);
 	const prim2 = createMeshPrimitive(document, buffer);
 
-	const mesh = document
-		.createMesh()
-		.addPrimitive(prim1)
-		.addPrimitive(prim2)
-		.addPrimitive(prim2.clone());
+	const mesh = document.createMesh().addPrimitive(prim1).addPrimitive(prim2).addPrimitive(prim2.clone());
 	document.createNode().setMesh(mesh);
 
 	let io = await createEncoderIO();
@@ -145,8 +141,8 @@ test('encoding skipped', async (t) => {
 		primitiveDefs[1],
 		{
 			mode: Primitive.Mode.TRIANGLE_FAN,
-			indices: 2,
-			attributes: { POSITION: 1 },
+			indices: 1,
+			attributes: { POSITION: 2 },
 		},
 		'primitiveDef 2/2',
 	);

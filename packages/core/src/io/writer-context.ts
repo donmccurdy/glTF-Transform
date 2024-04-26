@@ -72,7 +72,7 @@ export class WriterContext {
 
 	private readonly _accessorUsageMap = new Map<Accessor, BufferViewUsage | string>();
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
-	public readonly accessorParents = new Map<Property, Set<Accessor>>();
+	public readonly accessorParents = new Map<Accessor, Property>();
 
 	constructor(
 		private readonly _doc: Document,
@@ -227,16 +227,6 @@ export class WriterContext {
 		}
 		this._accessorUsageMap.set(accessor, usage);
 		return this;
-	}
-
-	/** Lists accessors grouped by usage. Accessors with unspecified usage are not included. */
-	public listAccessorUsageGroups(): { [key: string]: Accessor[] } {
-		const result = {} as { [key: string]: Accessor[] };
-		for (const [accessor, usage] of Array.from(this._accessorUsageMap.entries())) {
-			result[usage] = result[usage] || [];
-			result[usage].push(accessor);
-		}
-		return result;
 	}
 }
 
