@@ -114,9 +114,13 @@ function partitionAnimations(doc: Document, logger: ILogger, options: PartitionO
 		});
 }
 
+const SANITIZE_BASENAME_RE = /[^\w0–9-]+/g;
+
 function createBufferURI(basename: string, existing: Set<string>): string {
+	basename = basename.replace(SANITIZE_BASENAME_RE, '');
 	let uri = `${basename}.bin`;
 	let i = 1;
 	while (existing.has(uri)) uri = `${basename}_${i++}.bin`;
+	existing.add(uri);
 	return uri;
 }
