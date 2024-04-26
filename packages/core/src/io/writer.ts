@@ -453,7 +453,8 @@ export class GLTFWriter {
 			const parentToIndex = new Map(Array.from(uniqueParents).map((parent, index) => [parent, index]));
 
 			// Group by usage and (first) parent, including vertex and instance attributes.
-			const accessorGroups: Record<string, [string, Accessor[]]> = {};
+			type AccessorGroup = { usage: string; accessors: Accessor[] };
+			const accessorGroups: Record<string, AccessorGroup> = {};
 			for (const accessor of accessors) {
 				// Skip if already written by an extension.
 				if (context.accessorIndexMap.has(accessor)) continue;
@@ -465,8 +466,8 @@ export class GLTFWriter {
 					key += `:${parentToIndex.get(parent)}`;
 				}
 
-				accessorGroups[key] ||= [usage, []];
-				accessorGroups[key][1].push(accessor);
+				accessorGroups[key] ||= { usage, accessors: [] };
+				accessorGroups[key].accessors.push(accessor);
 			}
 
 			// Write accessor groups to buffer views.
@@ -475,7 +476,7 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
-			for (const [usage, groupAccessors] of Object.values(accessorGroups)) {
+			for (const { usage, accessors: groupAccessors } of Object.values(accessorGroups)) {
 				if (usage === BufferViewUsage.ARRAY_BUFFER && options.vertexLayout === VertexLayout.INTERLEAVED) {
 					// (1) Interleaved vertex attributes.
 					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
