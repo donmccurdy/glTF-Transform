@@ -427,10 +427,7 @@ export class GLTFWriter {
 			// For accessor usage that requires grouping by parent (vertex and instance
 			// attributes) organize buffer views accordingly.
 			if (groupByParent.has(usage)) {
-				const parent = accessorEdges[0].getParent();
-				const parentAccessors = accessorParents.get(parent) || new Set<Accessor>();
-				parentAccessors.add(accessor);
-				accessorParents.set(parent, parentAccessors);
+				accessorParents.set(accessor, accessorEdges[0].getParent());
 			}
 		});
 
@@ -450,12 +447,27 @@ export class GLTFWriter {
 		root.listBuffers().forEach((buffer, index) => {
 			const bufferDef = context.createPropertyDef(buffer) as GLTF.IBuffer;
 			const groupByParent = context.accessorUsageGroupedByParent;
-			const accessorParents = context.accessorParents;
 
-			const bufferAccessors = buffer
-				.listParents()
-				.filter((property) => property instanceof Accessor) as Accessor[];
-			const bufferAccessorsSet = new Set(bufferAccessors);
+			const accessors = buffer.listParents().filter((property) => property instanceof Accessor) as Accessor[];
+			const uniqueParents = new Set(accessors.map((accessor) => context.accessorParents.get(accessor)));
+			const parentToIndex = new Map(Array.from(uniqueParents).map((parent, index) => [parent, index]));
+
+			// Group by usage and (first) parent, including vertex and instance attributes.
+			const accessorGroups: Record<string, [string, Accessor[]]> = {};
+			for (const accessor of accessors) {
+				// Skip if already written by an extension.
+				if (context.accessorIndexMap.has(accessor)) continue;
+
+				const usage = context.getAccessorUsage(accessor);
+				let key = usage;
+				if (groupByParent.has(usage)) {
+					const parent = context.accessorParents.get(accessor);
+					key += `:${parentToIndex.get(parent)}`;
+				}
+
+				accessorGroups[key] ||= [usage, []];
+				accessorGroups[key][1].push(accessor);
+			}
 
 			// Write accessor groups to buffer views.
 
@@ -463,56 +475,35 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
-			const usageGroups = context.listAccessorUsageGroups();
-
-			for (const usage in usageGroups) {
-				if (groupByParent.has(usage)) {
-					// Accessors grouped by (first) parent, including vertex and instance attributes.
-					for (const parentAccessors of Array.from(accessorParents.values())) {
-						const accessors = Array.from(parentAccessors)
-							.filter((a) => bufferAccessorsSet.has(a))
-							.filter((a) => context.getAccessorUsage(a) === usage);
-						if (!accessors.length) continue;
-
-						if (
-							usage !== BufferViewUsage.ARRAY_BUFFER ||
-							options.vertexLayout === VertexLayout.INTERLEAVED
-						) {
-							// Case 1: Non-vertex data OR interleaved vertex data.
-
-							// Instanced data is not interleaved, see:
-							// https://github.com/KhronosGroup/glTF/pull/1888
-							const result =
-								usage === BufferViewUsage.ARRAY_BUFFER
-									? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
-									: concatAccessors(accessors, bufferIndex, bufferByteLength);
-							bufferByteLength += result.byteLength;
-							buffers.push(...result.buffers);
-						} else {
-							// Case 2: Non-interleaved vertex data.
-
-							for (const accessor of accessors) {
-								// We 'interleave' a single accessor because the method pads to
-								// 4-byte boundaries, which concatAccessors() does not.
-								const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
-								bufferByteLength += result.byteLength;
-								buffers.push(...result.buffers);
-							}
-						}
+			for (const [usage, groupAccessors] of Object.values(accessorGroups)) {
+				if (usage === BufferViewUsage.ARRAY_BUFFER && options.vertexLayout === VertexLayout.INTERLEAVED) {
+					// (1) Interleaved vertex attributes.
+					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
+					bufferByteLength += result.byteLength;
+					buffers.push(...result.buffers);
+				} else if (usage === BufferViewUsage.ARRAY_BUFFER) {
+					// (2) Non-interleaved vertex attributes.
+					for (const accessor of groupAccessors) {
+						// We 'interleave' a single accessor because the method pads to
+						// 4-byte boundaries, which concatAccessors() does not.
+						const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
+						bufferByteLength += result.byteLength;
+						buffers.push(...result.buffers);
 					}
+				} else if (usage === BufferViewUsage.SPARSE) {
+					// (3) Sparse accessors.
+					const result = concatSparseAccessors(groupAccessors, bufferIndex, bufferByteLength);
+					bufferByteLength += result.byteLength;
+					buffers.push(...result.buffers);
+				} else if (usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER) {
+					// (4) Indices.
+					const target = WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER;
+					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength, target);
+					bufferByteLength += result.byteLength;
+					buffers.push(...result.buffers);
 				} else {
-					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
-					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
-					if (!accessors.length) continue;
-
-					const target =
-						usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
-							? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
-							: undefined;
-					const result =
-						usage === BufferViewUsage.SPARSE
-							? concatSparseAccessors(accessors, bufferIndex, bufferByteLength)
-							: concatAccessors(accessors, bufferIndex, bufferByteLength, target);
+					// (5) Other.
+					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
 					buffers.push(...result.buffers);
 				}
