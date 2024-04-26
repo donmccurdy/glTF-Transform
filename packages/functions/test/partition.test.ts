@@ -50,6 +50,6 @@ test('valid and unique URIs', async (t) => {
 			{ uri: 'mesh-002.bin', byteLength: 6048, name: '../%$mesh-002!' },
 			{ uri: 'mesh-002_1.bin', byteLength: 6048, name: '../%$mesh-002!' },
 		],
-		'partitions into two buffers',
+		'partitions into three buffers',
 	);
 });
