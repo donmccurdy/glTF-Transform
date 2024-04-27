@@ -22,8 +22,12 @@ export function cloneDocument(source: Document): Document {
 	const target = new Document().setLogger(source.getLogger());
 	const resolve = createDefaultPropertyResolver(target, source);
 	mergeDocuments(target, source, resolve);
+
+	// Root properties (name, asset, default scene, extras) are not overwritten by
+	// mergeDocuments(), and should be explicitly copied when cloning.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	target.getRoot().copy(source.getRoot(), resolve as any);
+
 	return target;
 }
 
@@ -60,7 +64,8 @@ export function mergeDocuments(
 		if (sourceExtension.isRequired()) targetExtension.setRequired(true);
 	}
 
-	return _copyToDocument(target, source, listProperties(source), resolve);
+	// Root properties (name, asset, default scene, extras) are not overwritten.
+	return _copyToDocument(target, source, listNonRootProperties(source), resolve);
 }
 
 /**
@@ -191,7 +196,6 @@ export function copyToDocument(
 		if (NO_TRANSFER_TYPES.has(property.propertyType)) {
 			throw new Error(`Type "${property.propertyType}" cannot be transferred.`);
 		}
-
 		listPropertyDependencies(property, sourcePropertyDependencies);
 	}
 	return _copyToDocument(target, source, Array.from(sourcePropertyDependencies), resolve);
@@ -207,44 +211,46 @@ function _copyToDocument(
 	resolve ||= createDefaultPropertyResolver(target, source);
 
 	// Create stub classes for every Property in other Document.
-	const propertyMap = new Map<Property, Property>([[source.getRoot(), target.getRoot()]]);
+	const propertyMap = new Map<Property, Property>();
 	for (const sourceProp of sourceProperties) {
-		if (!propertyMap.has(sourceProp)) {
+		// TextureInfo copy handled by Material or ExtensionProperty.
+		if (!propertyMap.has(sourceProp) && sourceProp.propertyType !== TEXTURE_INFO) {
 			propertyMap.set(sourceProp, resolve(sourceProp));
 		}
 	}
 
 	// Assemble relationships between Properties.
-	for (const [otherProp, targetProp] of propertyMap.entries()) {
-		// TextureInfo copy handled by Material or ExtensionProperty. Remaining Root properties
-		// (name, asset, default scene, extras) are not overwritten in a merge.
-		if (targetProp.propertyType !== TEXTURE_INFO && targetProp.propertyType !== ROOT) {
-			targetProp.copy(otherProp, resolve);
-		}
+	for (const [sourceProp, targetProp] of propertyMap.entries()) {
+		targetProp.copy(sourceProp, resolve);
 	}
 
 	return propertyMap;
 }
 
 /**
+ * Creates a default `resolve` implementation. May be used when moving
+ * properties between {@link Document Documents} with {@link mergeDocuments},
+ * {@link copyToDocument}, and {@link moveToDocument}. When the same resolver
+ * is passed to multiple invocations, these functions will reuse previously-
+ * transferred resources.
  *
+ * @experimental
  */
 export function createDefaultPropertyResolver(target: Document, source: Document): PropertyResolver<Property> {
 	const propertyMap = new Map<Property, Property>([[source.getRoot(), target.getRoot()]]);
 
 	return (sourceProp: Property): Property => {
+		// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
+		if (sourceProp.propertyType === TEXTURE_INFO) return sourceProp;
+
 		let targetProp = propertyMap.get(sourceProp);
 		if (!targetProp) {
-			if (sourceProp.propertyType === TEXTURE_INFO) {
-				// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-				targetProp = sourceProp;
-			} else {
-				// For other property types, create stub classes.
-				const PropertyClass = sourceProp.constructor as PropertyConstructor;
-				targetProp = new PropertyClass(target.getGraph());
-			}
+			// Create stub class, defer copying properties.
+			const PropertyClass = sourceProp.constructor as PropertyConstructor;
+			targetProp = new PropertyClass(target.getGraph());
 			propertyMap.set(sourceProp, targetProp);
 		}
+
 		return targetProp;
 	};
 }
@@ -268,7 +274,7 @@ function listPropertyDependencies(parent: Property, visited: Set<Property>): Set
 }
 
 /** @internal */
-function listProperties(document: Document): Property[] {
+function listNonRootProperties(document: Document): Property[] {
 	const visited = new Set<Property>();
 	for (const edge of document.getGraph().listEdges()) {
 		visited.add(edge.getChild());
