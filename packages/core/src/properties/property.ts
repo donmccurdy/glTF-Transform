@@ -24,7 +24,7 @@ import {
 import type { UnknownRef } from '../utils/index.js';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
-export const COPY_IDENTITY: PropertyResolver<Property> = <T extends Property = Property>(t: T): T => t;
+export const COPY_IDENTITY = <T extends Property>(t: T): T => t;
 
 export interface IProperty {
 	name: string;
