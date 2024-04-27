@@ -1,0 +1,279 @@
+import { Document, Extension, Graph, Property, PropertyResolver, PropertyType } from '@gltf-transform/core';
+
+const { TEXTURE_INFO, ROOT } = PropertyType;
+type PropertyConstructor = new (g: Graph<Property>) => Property;
+
+const NO_TRANSFER_TYPES = new Set<string>([TEXTURE_INFO, ROOT]);
+
+/**
+ * Clones source {@link Document}, copying all properties and extensions within
+ * it. Source document remains unchanged, and the two may be modified
+ * independently after cloning.
+ *
+ * Example:
+ *
+ * ```javascript
+ *	import { cloneDocument } from '@gltf-transform/functions';
+ *
+ *	const targetDocument = cloneDocument(sourceDocument);
+ * ```
+ */
+export function cloneDocument(source: Document): Document {
+	const target = new Document().setLogger(source.getLogger());
+	const resolve = createDefaultPropertyResolver(target, source);
+	mergeDocuments(target, source, resolve);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	target.getRoot().copy(source.getRoot(), resolve as any);
+	return target;
+}
+
+/**
+ * Merges contents of source {@link Document} into target Document, without
+ * modifying the source. Any extensions missing from the target document will
+ * be added. {@link Scene Scenes} and {@link Buffer Buffers} are not combined —
+ * the target Document may contain multiple scenes and buffers after this
+ * operation. These may be cleaned up manually (see {@link unpartition}),
+ * or document contents may be merged more granularly using
+ * {@link copyToDocument}.
+ *
+ * Example:
+ *
+ * ```javascript
+ *	import { mergeDocuments, unpartition } from '@gltf-transform/functions';
+ *
+ *	// Merge contents of sourceDocument into targetDocument.
+ *	mergeDocuments(targetDocument, sourceDocument);
+ *
+ *	// (Optional) Remove all but one Buffer from the target Document.
+ *	await targetDocument.transform(unpartition());
+ * ```
+ */
+export function mergeDocuments(
+	target: Document,
+	source: Document,
+	resolve?: PropertyResolver<Property>,
+): Map<Property, Property> {
+	resolve ||= createDefaultPropertyResolver(target, source);
+
+	for (const sourceExtension of source.getRoot().listExtensionsUsed()) {
+		const targetExtension = target.createExtension(sourceExtension.constructor as new (doc: Document) => Extension);
+		if (sourceExtension.isRequired()) targetExtension.setRequired(true);
+	}
+
+	return _copyToDocument(target, source, listProperties(source), resolve);
+}
+
+/**
+ * Moves the specified {@link Property Properties} from the source
+ * {@link Document} to the target Document, and removes them from the source
+ * Document. Dependencies of the source properties will be copied into the
+ * target Document, but not removed from the source Document. Returns a Map
+ * from source properties to their counterparts in the target Document.
+ * {@link Root} properties cannot be copied. {@link TextureInfo} properties
+ * cannot be given in the property list, but are handled automatically when
+ * copying a {@link Material}.
+ *
+ * Example:
+ *
+ * ```javascript
+ *	import { moveToDocument, prune } from '@gltf-transform/functions';
+ *
+ *	// Move all materials from sourceDocument to targetDocument.
+ *	const map = moveToDocument(targetDocument, sourceDocument, sourceDocument.listMaterials());
+ *
+ *	// Find the new counterpart of `sourceMaterial` in the target Document.
+ *	const targetMaterial = map.get(sourceMaterial);
+ *
+ *	// (Optional) Remove any resources (like Textures) that may now be unused
+ *	// in the source Document after their parent Materials have been moved.
+ *	await sourceDocument.transform(prune());
+ * ```
+ *
+ * Moving a {@link Mesh}, {@link Animation}, or another resource depending on
+ * a {@link Buffer} will create a copy of the source Buffer in the target
+ * Document. If the target Document should contain only one Buffer, call
+ * {@link unpartition} after moving properties.
+ *
+ * Repeated use of `moveToDocument` may create multiple copies of some
+ * resources, particularly shared dependencies like {@link Texture Textures} or
+ * {@link Accessor Accessors}. While duplicates can be cleaned up with
+ * {@link dedup}, it is also possible to prevent duplicates by creating and
+ * reusing the same resolver for all calls to `moveToDocument`:
+ *
+ * ```javascript
+ *	import { moveToDocument, createDefaultPropertyResolver } from '@gltf-transform/functions';
+ *
+ *	const resolve = createDefaultPropertyResolver(targetDocument, sourceDocument);
+ *
+ *	// Move materials individually, without creating duplicates of shared textures.
+ *	moveToDocument(targetDocument, sourceDocument, materialA, resolve);
+ *	moveToDocument(targetDocument, sourceDocument, materialB, resolve);
+ *	moveToDocument(targetDocument, sourceDocument, materialC, resolve);
+ * ```
+ *
+ * To copy properties without removing them from the source Document, see
+ * {@link copyToDocument}.
+ *
+ * @experimental
+ */
+export function moveToDocument(
+	target: Document,
+	source: Document,
+	sourceProperties: Property[],
+	resolve?: PropertyResolver<Property>,
+): Map<Property, Property> {
+	const targetProperties = copyToDocument(target, source, sourceProperties, resolve);
+
+	for (const property of sourceProperties) {
+		property.dispose();
+	}
+
+	return targetProperties;
+}
+
+/**
+ * Copies the specified {@link Property Properties} from the source
+ * {@link Document} to the target Document, leaving originals in the source
+ * Document. Dependencies of the source properties will also be copied into the
+ * target Document. Returns a Map from source properties to their counterparts
+ * in the target Document. {@link Root} properties cannot be copied.
+ * {@link TextureInfo} properties cannot be given in the property list, but are
+ * handled automatically when copying a {@link Material}.
+ *
+ * Example:
+ *
+ * ```javascript
+ *	import { copyToDocument } from '@gltf-transform/functions';
+ *
+ *	// Copy all materials from sourceDocument to targetDocument.
+ *	const map = copyToDocument(targetDocument, sourceDocument, sourceDocument.listMaterials());
+ *
+ *	// Find the new counterpart of `sourceMaterial` in the target Document.
+ *	const targetMaterial = map.get(sourceMaterial);
+ * ```
+ *
+ * Copying a {@link Mesh}, {@link Animation}, or another resource depending on
+ * a {@link Buffer} will create a copy of the source Buffer in the target
+ * Document. If the target Document should contain only one Buffer, call
+ * {@link unpartition} after copying properties.
+ *
+ * Repeated use of `copyToDocument` may create multiple copies of some
+ * resources, particularly shared dependencies like {@link Texture Textures} or
+ * {@link Accessor Accessors}. While duplicates can be cleaned up with
+ * {@link dedup}, it is also possible to prevent duplicates by creating and
+ * reusing the same resolver for all calls to `copyToDocument`:
+ *
+ * ```javascript
+ *	import { copyToDocument, createDefaultPropertyResolver } from '@gltf-transform/functions';
+ *
+ *	const resolve = createDefaultPropertyResolver(targetDocument, sourceDocument);
+ *
+ *	// Copy materials individually, without creating duplicates of shared textures.
+ *	copyToDocument(targetDocument, sourceDocument, materialA, resolve);
+ *	copyToDocument(targetDocument, sourceDocument, materialB, resolve);
+ *	copyToDocument(targetDocument, sourceDocument, materialC, resolve);
+ * ```
+ *
+ * To move properties to the target Document without leaving copies behind in
+ * the source Document, use {@link moveToDocument} or dispose the properties
+ * after copying.
+ *
+ * @experimental
+ */
+export function copyToDocument(
+	target: Document,
+	source: Document,
+	sourceProperties: Property[],
+	resolve?: PropertyResolver<Property>,
+): Map<Property, Property> {
+	const sourcePropertyDependencies = new Set<Property>();
+	for (const property of sourceProperties) {
+		if (NO_TRANSFER_TYPES.has(property.propertyType)) {
+			throw new Error(`Type "${property.propertyType}" cannot be transferred.`);
+		}
+
+		listPropertyDependencies(property, sourcePropertyDependencies);
+	}
+	return _copyToDocument(target, source, Array.from(sourcePropertyDependencies), resolve);
+}
+
+/** @internal */
+function _copyToDocument(
+	target: Document,
+	source: Document,
+	sourceProperties: Property[],
+	resolve?: PropertyResolver<Property>,
+): Map<Property, Property> {
+	resolve ||= createDefaultPropertyResolver(target, source);
+
+	// Create stub classes for every Property in other Document.
+	const propertyMap = new Map<Property, Property>([[source.getRoot(), target.getRoot()]]);
+	for (const sourceProp of sourceProperties) {
+		if (!propertyMap.has(sourceProp)) {
+			propertyMap.set(sourceProp, resolve(sourceProp));
+		}
+	}
+
+	// Assemble relationships between Properties.
+	for (const [otherProp, targetProp] of propertyMap.entries()) {
+		// TextureInfo copy handled by Material or ExtensionProperty. Remaining Root properties
+		// (name, asset, default scene, extras) are not overwritten in a merge.
+		if (targetProp.propertyType !== TEXTURE_INFO && targetProp.propertyType !== ROOT) {
+			targetProp.copy(otherProp, resolve);
+		}
+	}
+
+	return propertyMap;
+}
+
+/**
+ *
+ */
+export function createDefaultPropertyResolver(target: Document, source: Document): PropertyResolver<Property> {
+	const propertyMap = new Map<Property, Property>([[source.getRoot(), target.getRoot()]]);
+
+	return (sourceProp: Property): Property => {
+		let targetProp = propertyMap.get(sourceProp);
+		if (!targetProp) {
+			if (sourceProp.propertyType === TEXTURE_INFO) {
+				// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
+				// TODO(bug): TextureInfo in this mapping will be unhelpful to end-users! 🛑
+				// TODO(bug): How are TextureInfo extensions copied, moved, or merged? 🛑
+				targetProp = sourceProp;
+			} else {
+				// For other property types, create stub classes.
+				const PropertyClass = sourceProp.constructor as PropertyConstructor;
+				targetProp = new PropertyClass(target.getGraph());
+			}
+			propertyMap.set(sourceProp, targetProp);
+		}
+		return targetProp;
+	};
+}
+
+/** @internal */
+function listPropertyDependencies(parent: Property, visited: Set<Property>): Set<Property> {
+	const graph = parent.getGraph();
+	const queue: Property[] = [parent];
+
+	let next: Property | undefined = undefined;
+	while ((next = queue.pop())) {
+		visited.add(next);
+		for (const child of graph.listChildren(next)) {
+			if (!visited.has(child)) {
+				queue.push(child);
+			}
+		}
+	}
+
+	return visited;
+}
+
+/** @internal */
+function listProperties(document: Document): Property[] {
+	const visited = new Set<Property>();
+	for (const edge of document.getGraph().listEdges()) {
+		visited.add(edge.getChild());
+	}
+	return Array.from(visited);
+}

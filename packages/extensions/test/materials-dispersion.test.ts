@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Dispersion, KHRMaterialsDispersion } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -42,7 +43,7 @@ test('copy', (t) => {
 	const dispersion = dispersionExtension.createDispersion().setDispersion(1.2);
 	document.createMaterial().setExtension('KHR_materials_dispersion', dispersion);
 
-	const document2 = document.clone();
+	const document2 = cloneDocument(document);
 	const dispersion2 = document2.getRoot().listMaterials()[0].getExtension<Dispersion>('KHR_materials_dispersion');
 	t.is(document2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsDispersion');
 	t.truthy(dispersion2, 'copy dispersion');

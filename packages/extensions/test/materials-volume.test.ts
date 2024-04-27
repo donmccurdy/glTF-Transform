@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -64,7 +65,7 @@ test('copy', (t) => {
 		.setAttenuationColor([1, 0, 0]);
 	doc.createMaterial().setExtension('KHR_materials_volume', volume);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const volume2 = doc2.getRoot().listMaterials()[0].getExtension<Volume>('KHR_materials_volume');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsVolume');
 	t.truthy(volume2, 'copy Volume');

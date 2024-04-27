@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Clearcoat, KHRMaterialsClearcoat, KHRTextureTransform, Transform } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
@@ -84,7 +85,7 @@ test('clone', (t) => {
 	srcMat.setOcclusionTexture(tex3);
 
 	// Clone the Document.
-	const dstDoc = srcDoc.clone();
+	const dstDoc = cloneDocument(srcDoc);
 
 	// Ensure source Document is unchanged.
 

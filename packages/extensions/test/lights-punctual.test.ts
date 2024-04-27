@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Light, KHRLightsPunctual } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -69,7 +70,7 @@ test('copy', (t) => {
 		.setOuterConeAngle(0.75);
 	document.createNode().setExtension('KHR_lights_punctual', light);
 
-	const doc2 = document.clone();
+	const doc2 = cloneDocument(document);
 	const light2 = doc2.getRoot().listNodes()[0].getExtension<Light>('KHR_lights_punctual');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRLightsPunctual');
 	t.truthy(light2, 'copy light');

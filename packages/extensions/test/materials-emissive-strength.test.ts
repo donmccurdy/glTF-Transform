@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { EmissiveStrength, KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -48,7 +49,7 @@ test('copy', (t) => {
 	const emissiveStrength = emissiveStrengthExtension.createEmissiveStrength().setEmissiveStrength(5.0);
 	doc.createMaterial().setExtension('KHR_materials_emissive_strength', emissiveStrength);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const emissiveStrength2 = doc2
 		.getRoot()
 		.listMaterials()[0]

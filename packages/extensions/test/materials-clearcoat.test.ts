@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Clearcoat, KHRMaterialsClearcoat } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -100,7 +101,7 @@ test('copy', (t) => {
 		.setClearcoatNormalTexture(doc.createTexture('ccnormal'));
 	doc.createMaterial().setExtension('KHR_materials_clearcoat', clearcoat);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const clearcoat2 = doc2.getRoot().listMaterials()[0].getExtension<Clearcoat>('KHR_materials_clearcoat');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsClearcoat');
 	t.truthy(clearcoat2, 'copy Clearcoat');

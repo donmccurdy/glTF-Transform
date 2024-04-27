@@ -1,5 +1,6 @@
 import test from 'ava';
 import { Document, Extension, ExtensionProperty, PropertyType, WriterContext } from '@gltf-transform/core';
+import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const EXTENSION_NAME = 'TEST_node_gizmo';
@@ -156,7 +157,7 @@ test('clone', (t) => {
 
 	let docClone: Document;
 	t.truthy(gizmo.clone(), 'clones gizmo');
-	t.truthy((docClone = document.clone()), 'clones document');
+	t.truthy((docClone = cloneDocument(document)), 'clones document');
 	t.truthy(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
 });
 

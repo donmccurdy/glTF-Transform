@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsIridescence, Iridescence } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -72,7 +73,7 @@ test('copy', (t) => {
 		.setIridescenceThicknessTexture(doc.createTexture('iridescenceThickness'));
 	doc.createMaterial().setExtension('KHR_materials_iridescence', iridescence);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const iridescence2 = doc2.getRoot().listMaterials()[0].getExtension<Iridescence>('KHR_materials_iridescence');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsIridescence');
 	t.truthy(iridescence2, 'copy Iridescence');

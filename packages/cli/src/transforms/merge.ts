@@ -9,7 +9,7 @@ import {
 	Buffer,
 	PropertyType,
 } from '@gltf-transform/core';
-import { dedup, unpartition } from '@gltf-transform/functions';
+import { dedup, mergeDocuments, unpartition } from '@gltf-transform/functions';
 
 const NAME = 'merge';
 
@@ -41,7 +41,7 @@ const merge = (options: MergeOptions): Transform => {
 					.setMimeType(ImageUtils.extensionToMimeType(extension))
 					.setURI(basename + '.' + extension);
 			} else if (['gltf', 'glb'].includes(extension)) {
-				document.merge(renameScenes(basename, await io.read(path)));
+				mergeDocuments(document, renameScenes(basename, await io.read(path)));
 			} else {
 				throw new Error(`Unknown file extension: "${extension}".`);
 			}

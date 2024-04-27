@@ -1,5 +1,6 @@
 import test from 'ava';
 import { Document, JSONDocument } from '@gltf-transform/core';
+import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('basic', (t) => {
@@ -26,7 +27,7 @@ test('basic', (t) => {
 	t.deepEqual(document.getRoot().listSkins(), [skin], 'listSkins()');
 	t.deepEqual(document.getRoot().listTextures(), [texture], 'listTextures()');
 
-	const root2 = document.clone().getRoot();
+	const root2 = cloneDocument(document).getRoot();
 	t.deepEqual(root2.listAccessors().length, 1, 'listAccessors()');
 	t.deepEqual(root2.listAnimations().length, 1, 'listAnimations()');
 	t.deepEqual(root2.listBuffers().length, 1, 'listBuffers()');
@@ -60,7 +61,7 @@ test('default scene', async (t) => {
 	root.setDefaultScene(sceneB);
 	t.is(root.getDefaultScene(), sceneB, 'default scene = B');
 
-	t.is(document.clone().getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
+	t.is(cloneDocument(document).getRoot().getDefaultScene().getName(), 'B', 'clone / copy persistence');
 
 	t.is(
 		(await io.readJSON(await io.writeJSON(document, {}))).getRoot().getDefaultScene().getName(),
