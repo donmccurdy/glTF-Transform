@@ -237,8 +237,6 @@ export function createDefaultPropertyResolver(target: Document, source: Document
 		if (!targetProp) {
 			if (sourceProp.propertyType === TEXTURE_INFO) {
 				// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-				// TODO(bug): TextureInfo in this mapping will be unhelpful to end-users! 🛑
-				// TODO(bug): How are TextureInfo extensions copied, moved, or merged? 🛑
 				targetProp = sourceProp;
 			} else {
 				// For other property types, create stub classes.
