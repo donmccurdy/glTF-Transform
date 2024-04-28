@@ -12,7 +12,41 @@ interface DiffuseTransmissionDef {
 }
 
 /**
- * TODO
+ * [KHR_materials_diffuse_transmission](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_diffuse_transmission/)
+ * defines diffuse transmission on a glTF PBR material.
+ *
+ * ![Illustration](/media/extensions/khr-materials-diffuse-transmission.png)
+ *
+ * > _**Figure:** Sphere using `KHR_materials_diffuse_transmission` with varying roughness (0.0, 0.2, 0.4).
+ * > Source: Khronos Group._
+ *
+ * Adds a Lambertian diffuse transmission BSDF to the metallic-roughness
+ * material. Thin, dielectric objects like leaves or paper diffusely transmit
+ * incoming light to the opposite side of the surface. For optically thick
+ * media (volumes) with short scattering distances and therefore dense
+ * scattering behavior, a diffuse transmission lobe is a phenomenological
+ * plausible and cheap approximation.
+ *
+ * Properties:
+ * - {@link DiffuseTransmission}
+ *
+ * ### Example
+ *
+ * ```typescript
+ * import { KHRMaterialsDiffuseTransmission, DiffuseTransmission } from '@gltf-transform/extensions';
+ *
+ * // Create an Extension attached to the Document.
+ * const diffuseTransmissionExtension = document.createExtension(KHRMaterialsDiffuseTransmission);
+ *
+ * // Create DiffuseTransmission property.
+ * const diffuseTransmission = diffuseTransmission.createDiffuseTransmission()
+ *	.setDiffuseTransmissionFactor(1.0);
+ *
+ * // Assign to a Material.
+ * material.setExtension('KHR_materials_diffuse_transmission', diffuseTransmission);
+ * ```
+ *
+ * @experimental KHR_materials_diffuse_transmission is not yet ratified by the Khronos Group.
  */
 export class KHRMaterialsDiffuseTransmission extends Extension {
 	public readonly extensionName = NAME;

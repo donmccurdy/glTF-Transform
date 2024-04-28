@@ -1,5 +1,4 @@
 import {
-	ColorUtils,
 	ExtensionProperty,
 	IProperty,
 	Nullable,
@@ -23,7 +22,9 @@ interface IDiffuseTransmission extends IProperty {
 const { R, G, B, A } = TextureChannel;
 
 /**
- * Defines $TODO on a PBR {@link Material}. See {@link KHRMaterialsDiffuseTransmission}.
+ * Defines diffuse transmission on a PBR {@link Material}. See {@link KHRMaterialsDiffuseTransmission}.
+ *
+ * @experimental KHR_materials_diffuse_transmission is not yet ratified by the Khronos Group.
  */
 export class DiffuseTransmission extends ExtensionProperty<IDiffuseTransmission> {
 	public static EXTENSION_NAME = KHR_MATERIALS_DIFFUSE_TRANSMISSION;
@@ -106,17 +107,6 @@ export class DiffuseTransmission extends ExtensionProperty<IDiffuseTransmission>
 	/** Color of the transmitted light; Linear-sRGB components. */
 	public setDiffuseTransmissionColorFactor(factor: vec3): this {
 		return this.set('diffuseTransmissionColorFactor', factor);
-	}
-
-	/** Color of the transmitted light; sRGB hexadecimal color. */
-	public getDiffuseTransmissionColorHex(): number {
-		return ColorUtils.factorToHex(this.getDiffuseTransmissionColorFactor());
-	}
-
-	/** Color of the transmitted light; sRGB hexadecimal color. */
-	public setDiffuseTransmissionColorHex(hex: number): this {
-		const factor = this.getDiffuseTransmissionColorFactor().slice() as vec3;
-		return this.set('diffuseTransmissionColorFactor', ColorUtils.hexToFactor(hex, factor));
 	}
 
 	/**
