@@ -14,6 +14,11 @@ interface TransmissionDef {
  * provides a common type of optical transparency: infinitely-thin materials with no refraction,
  * scattering, or dispersion.
  *
+ * ![Illustration](/media/extensions/khr-materials-transmission.png)
+ *
+ * > _**Figure:** Sphere using `KHR_materials_transmission` with varying roughness (0.0, 0.2, 0.4).
+ * > Source: Khronos Group._
+ *
  * While default PBR materials using alpha blending become invisible as their opacity approaches
  * zero, a transmissive material continues to reflect light in a glass-like manner, even at low
  * transmission values. When combined with {@link KHRMaterialsVolume}, transmission may be used for

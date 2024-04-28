@@ -6,6 +6,7 @@ export const KHR_DRACO_MESH_COMPRESSION = 'KHR_draco_mesh_compression';
 export const KHR_LIGHTS_PUNCTUAL = 'KHR_lights_punctual';
 export const KHR_MATERIALS_ANISOTROPY = 'KHR_materials_anisotropy';
 export const KHR_MATERIALS_CLEARCOAT = 'KHR_materials_clearcoat';
+export const KHR_MATERIALS_DIFFUSE_TRANSMISSION = 'KHR_materials_diffuse_transmission';
 export const KHR_MATERIALS_DISPERSION = 'KHR_materials_dispersion';
 export const KHR_MATERIALS_EMISSIVE_STRENGTH = 'KHR_materials_emissive_strength';
 export const KHR_MATERIALS_IOR = 'KHR_materials_ior';

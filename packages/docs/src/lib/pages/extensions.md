@@ -29,6 +29,7 @@ as prescribed by the extension itself.
 - [KHR_lights_punctual](/modules/extensions/classes/KHRLightsPunctual)
 - [KHR_materials_anisotropy](/modules/extensions/classes/KHRMaterialsAnisotropy)
 - [KHR_materials_clearcoat](/modules/extensions/classes/KHRMaterialsClearcoat)
+- [KHR_materials_diffuse_transmission](/modules/extensions/classes/KHRMaterialsDiffuseTransmission) *(🧪 experimental)*
 - [KHR_materials_dispersion](/modules/extensions/classes/KHRMaterialsDispersion)
 - [KHR_materials_emissive_strength](/modules/extensions/classes/KHRMaterialsEmissiveStrength)
 - [KHR_materials_ior](/modules/extensions/classes/KHRMaterialsIOR)

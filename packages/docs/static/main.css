@@ -521,6 +521,10 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
  * TAGS
  ******************************************************************************/
 
+.greendoc-panel > .tags {
+	margin-bottom: 1em;
+}
+
 .tags {
 	list-style: none;
 	margin: 0;
