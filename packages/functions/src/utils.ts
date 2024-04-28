@@ -257,7 +257,11 @@ export function createPrimGroupKey(prim: Primitive): string {
 	return `${materialIndex}|${mode}|${indices}|${attributes}|${targets}`;
 }
 
-/** @hidden */
+/**
+ * Scales `size` NxN dimensions to fit within `limit` NxN dimensions, without
+ * changing aspect ratio. If `size` <= `limit` in all dimensions, returns `size`.
+ * @hidden
+ */
 export function fitWithin(size: vec2, limit: vec2): vec2 {
 	const [maxWidth, maxHeight] = limit;
 	const [srcWidth, srcHeight] = size;
@@ -282,7 +286,10 @@ export function fitWithin(size: vec2, limit: vec2): vec2 {
 
 type ResizePreset = 'nearest-pot' | 'ceil-pot' | 'floor-pot';
 
-/** @hidden */
+/**
+ * Scales `size` NxN dimensions to the specified power of two.
+ * @hidden
+ */
 export function fitPowerOfTwo(size: vec2, method: ResizePreset): vec2 {
 	if (isPowerOfTwo(size[0]) && isPowerOfTwo(size[1])) {
 		return size;

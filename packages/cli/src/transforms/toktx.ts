@@ -237,21 +237,17 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					const encoder = options.encoder as typeof sharp;
 					const instance = encoder(srcImage, { limitInputPixels }).toFormat('png');
 					const srcSize = ImageUtils.getSize(srcImage, srcMimeType)!;
+
 					const dstSize = options.resize
 						? Array.isArray(options.resize)
 							? fitWithin(srcSize, options.resize)
 							: fitPowerOfTwo(srcSize, options.resize)
-						: srcSize.slice();
-
-					dstSize[0] = isMultipleOfFour(dstSize[0]) ? dstSize[0] : ceilMultipleOfFour(dstSize[0]);
-					dstSize[1] = isMultipleOfFour(dstSize[1]) ? dstSize[1] : ceilMultipleOfFour(dstSize[1]);
+						: srcSize;
+					dstSize[0] = ceilMultipleOfFour(dstSize[0]);
+					dstSize[1] = ceilMultipleOfFour(dstSize[1]);
 
 					logger.debug(`${prefix}: Resizing ${srcSize.join('x')} → ${dstSize.join('x')}px`);
-					instance.resize(dstSize[0], dstSize[1], {
-						withoutEnlargement: Array.isArray(options.resize),
-						fit: Array.isArray(options.resize) ? 'inside' : 'fill',
-						kernel: options.resizeFilter,
-					});
+					instance.resize(dstSize[0], dstSize[1], { fit: 'fill', kernel: options.resizeFilter });
 
 					srcImage = BufferUtils.toView(await instance.toBuffer());
 					srcExtension = 'png';
