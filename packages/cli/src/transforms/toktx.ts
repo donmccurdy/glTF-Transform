@@ -5,6 +5,7 @@ import os from 'os';
 import semver from 'semver';
 import tmp from 'tmp';
 import pLimit from 'p-limit';
+import type sharp from 'sharp';
 
 import {
 	Document,
@@ -16,10 +17,14 @@ import {
 	vec2,
 	uuid,
 	Texture,
+	BufferUtils,
 } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import {
+	TextureResizeFilter,
 	createTransform,
+	fitPowerOfTwo,
+	fitWithin,
 	getTextureChannelMask,
 	getTextureColorSpace,
 	listTextureSlots,
@@ -60,6 +65,8 @@ export const Filter = {
 };
 
 interface GlobalOptions {
+	/** Instance of the Sharp encoder, required if resizing textures. */
+	encoder: unknown;
 	mode: string;
 	/** Pattern identifying textures to compress, matched to name or URI. */
 	pattern?: RegExp | null;
@@ -68,16 +75,24 @@ interface GlobalOptions {
 	 * Passing a string (glob) is deprecated; use a RegExp instead.
 	 */
 	slots?: RegExp | null;
+	/** Interpolation used for generating mipmaps. Default: 'lanczos4'. */
 	filter?: string;
 	filterScale?: number;
-	resize?: vec2;
-	powerOfTwo?: boolean;
+	resize?: vec2 | 'nearest-pot' | 'ceil-pot' | 'floor-pot';
+	/** Interpolation used if resizing. Default: TextureResizeFilter.LANCZOS3. */
+	resizeFilter?: TextureResizeFilter;
 	jobs?: number;
 	/**
 	 * Whether to clean up temporary files created during texture compression. See
 	 * verbose log output for temporary file paths. Default: true.
 	 */
 	cleanup?: boolean;
+	/**
+	 * Attempts to avoid processing images that could exceed memory or other other
+	 * limits, throwing an error instead. Default: true.
+	 * @experimental
+	 */
+	limitInputPixels?: boolean;
 }
 
 export interface ETC1SOptions extends GlobalOptions {
@@ -100,18 +115,19 @@ export interface UASTCOptions extends GlobalOptions {
 	zstd?: number;
 }
 
-const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'mode'> = {
+const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'encoder' | 'mode'> = {
+	resizeFilter: TextureResizeFilter.LANCZOS3,
 	filter: Filter.LANCZOS4,
 	filterScale: 1,
-	powerOfTwo: false,
 	pattern: null,
 	slots: null,
 	// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
 	jobs: 2 * NUM_CPUS,
 	cleanup: true,
+	limitInputPixels: true,
 };
 
-export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'mode'> = {
+export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'encoder' | 'mode'> = {
 	quality: 128,
 	compression: 1,
 	rdo: true,
@@ -121,7 +137,7 @@ export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'mode'> = {
 	...GLOBAL_DEFAULTS,
 };
 
-export const UASTC_DEFAULTS: Omit<UASTCOptions, 'mode'> = {
+export const UASTC_DEFAULTS: Omit<UASTCOptions, 'encoder' | 'mode'> = {
 	level: 2,
 	rdo: false,
 	rdoLambda: 1.0,
@@ -157,8 +173,6 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 		const basisuExtension = doc.createExtension(KHRTextureBasisu).setRequired(true);
 
-		let numCompressed = 0;
-
 		const limit = pLimit(options.jobs!);
 		const textures = doc.getRoot().listTextures();
 		const numTextures = textures.length;
@@ -183,10 +197,12 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const patternRe = options.pattern as RegExp | null;
 				const slotsRe = options.slots as RegExp | null;
 
-				if (texture.getMimeType() === 'image/ktx2') {
+				let srcMimeType = texture.getMimeType();
+
+				if (srcMimeType === 'image/ktx2') {
 					logger.debug(`${prefix}: Skipping, already KTX.`);
 					return;
-				} else if (texture.getMimeType() !== 'image/png' && texture.getMimeType() !== 'image/jpeg') {
+				} else if (srcMimeType !== 'image/png' && srcMimeType !== 'image/jpeg') {
 					logger.warn(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
 					return;
 				} else if (slotsRe && !slots.find((slot) => slot.match(slotsRe))) {
@@ -197,54 +213,83 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					return;
 				}
 
-				const image = texture.getImage();
-				const size = options.resize || texture.getSize();
-				if (!image || !size) {
+				let srcImage = texture.getImage()!;
+				let srcExtension = texture.getURI()
+					? FileUtils.extension(texture.getURI())
+					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
+				const srcSize = texture.getSize();
+				const srcBytes = srcImage ? srcImage.byteLength : null;
+
+				if (!srcImage || !srcSize || !srcBytes) {
 					logger.warn(`${prefix}: Skipping, unreadable texture.`);
 					return;
+				}
+
+				// RESIZE: Resize textures using Sharp. KTX Software --width and --height
+				// flags apply only for raw texture creation.
+				// https://github.com/donmccurdy/glTF-Transform/issues/1348
+				//
+				// Minimum size on any dimension is 4px.
+				// https://github.com/donmccurdy/glTF-Transform/issues/502
+
+				if (options.resize || !isMultipleOfFour(srcSize[0]) || !isMultipleOfFour(srcSize[1])) {
+					const limitInputPixels = options.limitInputPixels;
+					const encoder = options.encoder as typeof sharp;
+					const instance = encoder(srcImage, { limitInputPixels }).toFormat('png');
+					const srcSize = ImageUtils.getSize(srcImage, srcMimeType)!;
+					const dstSize = options.resize
+						? Array.isArray(options.resize)
+							? fitWithin(srcSize, options.resize)
+							: fitPowerOfTwo(srcSize, options.resize)
+						: srcSize.slice();
+
+					dstSize[0] = isMultipleOfFour(dstSize[0]) ? dstSize[0] : ceilMultipleOfFour(dstSize[0]);
+					dstSize[1] = isMultipleOfFour(dstSize[1]) ? dstSize[1] : ceilMultipleOfFour(dstSize[1]);
+
+					logger.debug(`${prefix}: Resizing ${srcSize.join('x')} → ${dstSize.join('x')}px`);
+					instance.resize(dstSize[0], dstSize[1], {
+						withoutEnlargement: Array.isArray(options.resize),
+						fit: Array.isArray(options.resize) ? 'inside' : 'fill',
+						kernel: options.resizeFilter,
+					});
+
+					srcImage = BufferUtils.toView(await instance.toBuffer());
+					srcExtension = 'png';
+					srcMimeType = 'image/png';
 				}
 
 				// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
 				// necessary command-line flags.
 
-				const extension = texture.getURI()
-					? FileUtils.extension(texture.getURI())
-					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
+				const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
+				const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
 
-				const inPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${extension}`);
-				const outPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
-
-				const inBytes = image.byteLength;
-				await fs.writeFile(inPath, Buffer.from(image));
+				await fs.writeFile(srcPath, Buffer.from(srcImage));
 
 				const params = [
 					'create',
-					...createParams(texture, slots, channels, size, logger, numTextures, options),
-					inPath,
-					outPath,
+					...createParams(texture, slots, channels, srcSize, logger, numTextures, options),
+					srcPath,
+					dstPath,
 				];
 				logger.debug(`${prefix}: Spawning → ktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `ktx create` CLI tool.
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const [status, stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
+				const [status, _stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
 
 				if (status !== 0) {
 					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
 				} else {
 					// PACK: Replace image data in the glTF asset.
-
-					texture.setImage(await fs.readFile(outPath)).setMimeType('image/ktx2');
-
+					texture.setImage(await fs.readFile(dstPath)).setMimeType('image/ktx2');
 					if (texture.getURI()) {
 						texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
 					}
-
-					numCompressed++;
 				}
 
-				const outBytes = texture.getImage()!.byteLength;
-				logger.debug(`${prefix}: ${formatBytes(inBytes)} → ${formatBytes(outBytes)} bytes`);
+				const dstBytes = texture.getImage()!.byteLength;
+				logger.debug(`${prefix}: ${formatBytes(srcBytes)} → ${formatBytes(dstBytes)} bytes`);
 			}),
 		);
 
@@ -252,10 +297,6 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 		if (options.cleanup) {
 			await rm(batchDir.name, { recursive: true });
-		}
-
-		if (numCompressed === 0) {
-			logger.warn('ktx: No textures were found, or none were selected for compression.');
 		}
 
 		const usesKTX2 = doc
@@ -369,36 +410,6 @@ function createParams(
 		params.push('--format', colorSpace === 'srgb' ? 'R8G8B8A8_SRGB' : 'R8G8B8A8_UNORM');
 	}
 
-	// Minimum size on any dimension is 4px.
-	// See: https://github.com/donmccurdy/glTF-Transform/issues/502
-
-	let width: number;
-	let height: number;
-	if (options.powerOfTwo) {
-		width = preferredPowerOfTwo(size[0]);
-		height = preferredPowerOfTwo(size[1]);
-	} else {
-		if (!isPowerOfTwo(size[0]) || !isPowerOfTwo(size[1])) {
-			logger.warn(
-				`ktx: Texture dimensions ${size[0]}x${size[1]} are NPOT, and may` +
-					' fail in older APIs (including WebGL 1.0) on certain devices.',
-			);
-		}
-		width = isMultipleOfFour(size[0]) ? size[0] : ceilMultipleOfFour(size[0]);
-		height = isMultipleOfFour(size[1]) ? size[1] : ceilMultipleOfFour(size[1]);
-	}
-
-	if (width !== size[0] || height !== size[1] || options.resize) {
-		if (width > 4096 || height > 4096) {
-			logger.warn(
-				`ktx: Resizing to nearest power of two, ${width}x${height}px. Texture dimensions` +
-					' greater than 4096px may not render on some mobile devices.' +
-					' Resize to a lower resolution before compressing, if needed.',
-			);
-		}
-		params.push('--width', width, '--height', height);
-	}
-
 	if (options.jobs && options.jobs > 1 && numTextures > 1) {
 		// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
 		const threads = Math.max(2, Math.min(NUM_CPUS, Math.round((3 * NUM_CPUS) / numTextures)));
@@ -434,29 +445,6 @@ async function checkKTXSoftware(logger: ILogger): Promise<string> {
 	}
 
 	return semver.clean(version)!;
-}
-
-function isPowerOfTwo(value: number): boolean {
-	if (value <= 2) return true;
-	return (value & (value - 1)) === 0 && value !== 0;
-}
-
-function preferredPowerOfTwo(value: number): number {
-	if (value <= 4) return 4;
-
-	const lo = floorPowerOfTwo(value);
-	const hi = ceilPowerOfTwo(value);
-
-	if (hi - value > value - lo) return lo;
-	return hi;
-}
-
-function floorPowerOfTwo(value: number): number {
-	return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
-}
-
-function ceilPowerOfTwo(value: number): number {
-	return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
 }
 
 function isMultipleOfFour(value: number): boolean {

@@ -5,51 +5,57 @@ import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { Mode, mockCommandExists, mockSpawn, toktx, mockWaitExit } from '@gltf-transform/cli';
 import { logger } from '@gltf-transform/test-utils';
 import type { ChildProcess } from 'child_process';
+import ndarray from 'ndarray';
+import { savePixels } from 'ndarray-pixels';
 
 const { R, G } = TextureChannel;
 
+const createImage = (size: vec2): Promise<Uint8Array> => {
+	const pixels = ndarray(new Uint8Array(size[0] * size[1] * 4), [size[0], size[1], 4]);
+	return savePixels(pixels, 'image/png');
+};
+
 test('compress and resize', async (t) => {
 	t.is(
-		await getParams({ mode: Mode.ETC1S }, [508, 508]),
+		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508])),
 		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM',
 		'508x508 → no change',
 	);
 
 	t.is(
-		await getParams({ mode: Mode.ETC1S }, [507, 509]),
+		await getParams({ mode: Mode.ETC1S }, await createImage([507, 509])),
 		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 508 --height 512',
 		'507x509 → 508x512',
 	);
 
 	t.is(
-		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [508, 508]),
-		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 512 --height 512',
-		'508x508+powerOfTwo → 512x512',
+		await getParams({ mode: Mode.ETC1S, resize: [504, 504] }, await createImage([508, 508])),
+		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 504 --height 504',
+		'508x508 → 504x504',
 	);
 
 	t.is(
-		await getParams({ mode: Mode.ETC1S, powerOfTwo: true }, [5, 3]),
+		await getParams({ mode: Mode.ETC1S, resize: [4, 4] }, await createImage([5, 3])),
 		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 4 --height 4',
-		'5x3+powerOfTwo → 4x4',
+		'5x3 → 4x4',
 	);
 
 	t.is(
-		await getParams({ mode: Mode.ETC1S }, [508, 508], R),
+		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), R),
 		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8_UNORM',
 		'channels → R',
 	);
 
 	t.is(
-		await getParams({ mode: Mode.ETC1S }, [508, 508], G),
+		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), G),
 		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8G8_UNORM',
 		'channels → RG',
 	);
 });
 
-async function getParams(options: Record<string, unknown>, size: vec2, channels = 0): Promise<string> {
+async function getParams(options: Record<string, unknown>, image: Uint8Array, channels = 0): Promise<string> {
 	const document = new Document().setLogger(logger);
-	const tex = document.createTexture().setImage(new Uint8Array(10)).setMimeType('image/png');
-	tex.getSize = (): vec2 => size;
+	const tex = document.createTexture().setImage(image).setMimeType('image/png');
 
 	// Assign texture to materials so that the given channels are in use.
 	if (channels === R) {
@@ -81,8 +87,32 @@ async function getParams(options: Record<string, unknown>, size: vec2, channels 
 	});
 	mockCommandExists(() => Promise.resolve(true));
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	await document.transform(toktx(options as any));
+	let width: number | null = null;
+	let height: number | null = null;
 
-	return actualParams.slice(0, -2).join(' ');
+	const mockEncoder = (image: Uint8Array) => {
+		const self = { toFormat, resize, toBuffer };
+		function toFormat(_format: string) {
+			return self;
+		}
+		function resize(_width, _height, _options) {
+			width = _width;
+			height = _height;
+			return self;
+		}
+		function toBuffer() {
+			return Promise.resolve(image);
+		}
+		return self;
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	await document.transform(toktx({ ...options, encoder: mockEncoder } as any));
+
+	// No longer using the --width and --height params, but we'll keep the mock API.
+	let formattedParams = actualParams.slice(0, -2).join(' ');
+	if (width || height) {
+		formattedParams += ` --width ${width} --height ${height}`;
+	}
+	return formattedParams;
 }

@@ -395,21 +395,37 @@ commands or using the scripting API.
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
+			const { default: encoder } = await import('sharp');
 			const slotsUASTC = micromatch.makeRe(
 				'{normalTexture,occlusionTexture,metallicRoughnessTexture}',
 				MICROMATCH_OPTIONS,
 			);
 			transforms.push(
-				toktx({ mode: Mode.UASTC, slots: slotsUASTC, level: 4, rdo: true, rdoLambda: 4, zstd: 18 }),
-				toktx({ mode: Mode.ETC1S, quality: 255 }),
+				toktx({
+					encoder,
+					resize: [opts.textureSize, opts.textureSize],
+					mode: Mode.UASTC,
+					slots: slotsUASTC,
+					level: 4,
+					rdo: true,
+					rdoLambda: 4,
+					limitInputPixels: options.limitInputPixels as boolean,
+				}),
+				toktx({
+					encoder,
+					resize: [opts.textureSize, opts.textureSize],
+					mode: Mode.ETC1S,
+					quality: 255,
+					limitInputPixels: options.limitInputPixels as boolean,
+				}),
 			);
 		} else if (opts.textureCompress !== false) {
 			const { default: encoder } = await import('sharp');
 			transforms.push(
 				textureCompress({
 					encoder,
-					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					resize: [opts.textureSize, opts.textureSize],
+					targetFormat: opts.textureCompress === 'auto' ? undefined : opts.textureCompress,
 					limitInputPixels: options.limitInputPixels as boolean,
 				}),
 			);
@@ -1296,14 +1312,6 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		{ validator: Validator.NUMBER, default: ETC1S_DEFAULTS.maxSelectors },
 	)
 	.option(
-		'--power-of-two',
-		'Resizes any non-power-of-two textures to the closest power-of-two' +
-			' dimensions, not exceeding 2048x2048px. Required for ' +
-			' compatibility on some older devices and APIs, particularly ' +
-			' WebGL 1.0.',
-		{ validator: Validator.BOOLEAN, default: ETC1S_DEFAULTS.powerOfTwo },
-	)
-	.option(
 		'--rdo-threshold <rdo_threshold>',
 		'Set endpoint and selector RDO quality threshold. Lower' +
 			' is higher quality but less quality per output bit (try 1.0-3.0).' +
@@ -1319,12 +1327,13 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		validator: Validator.NUMBER,
 		default: ETC1S_DEFAULTS.jobs,
 	})
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
+		const { default: encoder } = await import('sharp');
 		const mode = Mode.ETC1S;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
 		return Session.create(io, logger, args.input, args.output).transform(
-			toktx({ ...options, mode, pattern, slots }),
+			toktx({ ...options, encoder, mode, pattern, slots }),
 		);
 	});
 
@@ -1369,14 +1378,6 @@ for textures where the quality is sufficient.`.trim(),
 			'\n3     | Slower    | 48.01dB' +
 			'\n4     | Very slow | 48.24dB',
 		{ validator: [0, 1, 2, 3, 4], default: UASTC_DEFAULTS.level },
-	)
-	.option(
-		'--power-of-two',
-		'Resizes any non-power-of-two textures to the closest power-of-two' +
-			' dimensions, not exceeding 2048x2048px. Required for ' +
-			' compatibility on some older devices and APIs, particularly ' +
-			' WebGL 1.0.',
-		{ validator: Validator.BOOLEAN },
 	)
 	.option('--rdo', 'Enable UASTC RDO post-processing.', { validator: Validator.BOOLEAN, default: UASTC_DEFAULTS.rdo })
 	.option(
@@ -1439,11 +1440,14 @@ for textures where the quality is sufficient.`.trim(),
 		validator: Validator.NUMBER,
 		default: UASTC_DEFAULTS.jobs,
 	})
-	.action(({ args, options, logger }) => {
+	.action(async ({ args, options, logger }) => {
+		const { default: encoder } = await import('sharp');
 		const mode = Mode.UASTC;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
-		Session.create(io, logger, args.input, args.output).transform(toktx({ ...options, mode, pattern, slots }));
+		Session.create(io, logger, args.input, args.output).transform(
+			toktx({ ...options, encoder, mode, pattern, slots }),
+		);
 	});
 
 // KTXFIX
