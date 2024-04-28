@@ -308,7 +308,7 @@ commands or using the scripting API.
 			'and quantization compress geometry and animation.',
 		{
 			validator: ['draco', 'meshopt', 'quantize', false],
-			default: 'draco',
+			default: 'meshopt',
 		},
 	)
 	.option(
