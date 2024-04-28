@@ -84,3 +84,23 @@ jobs:
     - uses: codecov/codecov-action@v4
       with:
         files: coverage/coverage.lcov
+
+  #############################################################################
+  # WINDOWS LOCAL BUILDS
+  windows:
+    runs-on: windows-latest
+    env:
+      CI: true
+      NODE_VERSION: 18.x
+    steps:
+    # Setup.
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: yarn
+
+    # Build.
+    - run: yarn install --frozen-lockfile
+    - run: yarn dist
