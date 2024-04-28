@@ -1,86 +1,107 @@
 name: build
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 jobs:
-  #############################################################################
-  # NODE
-  node:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # See: https://github.com/privatenumber/tsx/issues/354
-        node-version: [v18, v20]
-    env:
-      CI: true
-    steps:
-    # Setup.
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: yarn
+    #############################################################################
+    # NODE
+    node:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                # See: https://github.com/privatenumber/tsx/issues/354
+                node-version: [v18, v20]
+        env:
+            CI: true
+        steps:
+            # Setup.
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: yarn
 
-    # Build.
-    - run: yarn install --frozen-lockfile
-    - run: yarn dist
+            # Build.
+            - run: yarn install --frozen-lockfile
+            - run: yarn dist
 
-    # Test.
-    - run: yarn test
-    - run: yarn lint
+            # Test.
+            - run: yarn test
+            - run: yarn lint
 
-  #############################################################################
-  # DENO
-  deno:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-      NODE_VERSION: v18
-    steps:
-    # Setup.
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-    - uses: denoland/setup-deno@v1
-      with:
-        deno-version: v1.x
-    - name: Use Node.js ${{ env.NODE_VERSION }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: yarn
+    #############################################################################
+    # DENO
+    deno:
+        runs-on: ubuntu-latest
+        env:
+            CI: true
+            NODE_VERSION: v18
+        steps:
+            # Setup.
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: denoland/setup-deno@v1
+              with:
+                  deno-version: v1.x
+            - name: Use Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: yarn
 
-    # Build.
-    - run: yarn install --frozen-lockfile
-    - run: yarn dist
+            # Build.
+            - run: yarn install --frozen-lockfile
+            - run: yarn dist
 
-    # Test.
-    - run: deno test --allow-read --config scripts/deno.json scripts/deno.test.ts
+            # Test.
+            - run: deno test --allow-read --config scripts/deno.json scripts/deno.test.ts
 
-  #############################################################################
-  # COVERAGE
-  coverage:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-      NODE_VERSION: v18
-    steps:
-    # Setup.
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-    - name: Use Node.js ${{ env.NODE_VERSION }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: yarn
+    #############################################################################
+    # COVERAGE
+    coverage:
+        runs-on: ubuntu-latest
+        env:
+            CI: true
+            NODE_VERSION: v18
+        steps:
+            # Setup.
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - name: Use Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: yarn
 
-    # Build.
-    - run: yarn install --frozen-lockfile
-    - run: yarn dist
+            # Build.
+            - run: yarn install --frozen-lockfile
+            - run: yarn dist
 
-    # Coverage.
-    - run: yarn coverage
-    - run: yarn coverage:report
-    - uses: codecov/codecov-action@v4
-      with:
-        files: coverage/coverage.lcov
+            # Coverage.
+            - run: yarn coverage
+            - run: yarn coverage:report
+            - uses: codecov/codecov-action@v4
+              with:
+                  files: coverage/coverage.lcov
+
+    #############################################################################
+    # WINDOWS LOCAL BUILDS
+    windows:
+        runs-on: windows-latest
+        env:
+            CI: true
+            NODE_VERSION: 18.x
+        steps:
+            # Setup.
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - name: Use Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: yarn
+
+            # Build.
+            # See: https://github.com/yarnpkg/yarn/issues/4890
+            - run: yarn install --frozen-lockfile --network-timeout 100000
+            - run: yarn dist
