@@ -7,7 +7,14 @@ html {
 }
 
 body {
-	font-family: Iowan Old Style, Apple Garamond, Palatino Linotype, Times New Roman, 'Droid Serif', Times, serif;
+	font-family:
+		Iowan Old Style,
+		Apple Garamond,
+		Palatino Linotype,
+		Times New Roman,
+		'Droid Serif',
+		Times,
+		serif;
 	background: #fdfdfd;
 	font-size: 16px;
 	color: #222;
@@ -60,7 +67,8 @@ a:focus {
 	outline: thin dotted;
 }
 
-a:active, a:hover {
+a:active,
+a:hover {
 	outline: 0;
 	text-decoration: underline;
 }
@@ -71,7 +79,9 @@ ul {
 	margin: 0;
 }
 
-p, ul, ol {
+p,
+ul,
+ol {
 	margin: 1em 0;
 }
 
@@ -97,12 +107,16 @@ mark {
 	color: #000;
 }
 
-pre, code, kbd, samp {
+pre,
+code,
+kbd,
+samp {
 	font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
-	font-size: .875em;
+	font-size: 0.875em;
 }
 
-pre, code {
+pre,
+code {
 	margin: 0;
 	line-height: 1.5em;
 	background-color: rgba(0, 0, 0, 0.04);
@@ -129,7 +143,8 @@ small {
 }
 
 /* Prevent `sub` and `sup` affecting `line-height`. */
-sup, sub {
+sup,
+sub {
 	font-size: 75%;
 	line-height: 0;
 	position: relative;
@@ -143,7 +158,6 @@ sup {
 sub {
 	bottom: -0.25em;
 }
-
 
 details[open] {
 	padding-left: 1em;
@@ -504,6 +518,48 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 }
 
 /******************************************************************************
+ * TAGS
+ ******************************************************************************/
+
+.tags {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.tag {
+	display: inline-block;
+	padding: 0.2em 0.5em;
+	background: rgba(0, 0, 0, 0.08);
+	height: 14px;
+	line-height: 14px;
+	font-size: 0.8em;
+	font-family: monospace;
+	border-radius: 4px;
+	margin-right: 0.2em;
+}
+.tag[data-gd-tag='alpha'] {
+	background-color: #f28705;
+	color: #fff;
+}
+.tag[data-gd-tag='beta'] {
+	background-color: #f2cb05;
+	color: #fff;
+}
+.tag[data-gd-tag='experimental'] {
+	background-color: #267365;
+	color: #fff;
+}
+.tag[data-gd-tag='experimental']::before {
+	content: '🧪';
+	display: inline-block;
+	padding-right: 0.5em;
+}
+.tag[data-gd-tag='deprecated'] {
+	background-color: #f23030;
+	color: #fff;
+}
+
+/******************************************************************************
  * SOURCES
  ******************************************************************************/
 
@@ -576,7 +632,7 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 }
 
 .greendoc-toolbar .greendoc-toolbar-pro-btn {
-	background-image: linear-gradient(to right, #177bbb 0%, #514A9D  51%, #177bbb  100%);
+	background-image: linear-gradient(to right, #177bbb 0%, #514a9d 51%, #177bbb 100%);
 	background-size: 200% auto;
 	transition: 0.5s;
 	color: #ffffff;
@@ -592,7 +648,7 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 	background-position: right center; /* reverse direction */
 	text-decoration: none;
 	transform: translate(-0.15rem, -0.15rem);
-	box-shadow: .15rem .15rem 0 #333;
+	box-shadow: 0.15rem 0.15rem 0 #333;
 }
 
 @media (max-width: 900px) {
@@ -617,7 +673,9 @@ ul.greendoc-descriptions .greendoc-index-panel h3,
 	height: 40px;
 	overflow: hidden;
 	opacity: 0.8;
-	transition: opacity 0.1s, background-color 0.2s;
+	transition:
+		opacity 0.1s,
+		background-color 0.2s;
 	vertical-align: bottom;
 	cursor: pointer;
 }
