@@ -64,9 +64,9 @@ test('draco', async (t) => {
 
 test('optimize', async (t) => {
 	await programReady;
+	await MeshoptDecoder.ready;
 	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
-		'draco3d.decoder': await draco3d.createDecoderModule(),
-		'draco3d.encoder': await draco3d.createEncoderModule(),
+		'meshopt.decoder': MeshoptDecoder,
 	});
 	const input = path.join(__dirname, 'in', 'chr_knight.glb');
 	const output = tmp.tmpNameSync({ postfix: '.glb' });
