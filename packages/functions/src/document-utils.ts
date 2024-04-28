@@ -116,6 +116,17 @@ export function mergeDocuments(
  *	moveToDocument(targetDocument, sourceDocument, materialC, resolve);
  * ```
  *
+ * If the transferred properties include {@link ExtensionProperty ExtensionProperties},
+ * the associated {@link Extension Extensions} must be added to the target
+ * Document first:
+ *
+ * ```javascript
+ *	for (const sourceExtension of source.getRoot().listExtensionsUsed()) {
+ *		const targetExtension = target.createExtension(sourceExtension.constructor);
+ *		if (sourceExtension.isRequired()) targetExtension.setRequired(true);
+ *	}
+ * ```
+ *
  * To copy properties without removing them from the source Document, see
  * {@link copyToDocument}.
  *
@@ -177,6 +188,17 @@ export function moveToDocument(
  *	copyToDocument(targetDocument, sourceDocument, materialA, resolve);
  *	copyToDocument(targetDocument, sourceDocument, materialB, resolve);
  *	copyToDocument(targetDocument, sourceDocument, materialC, resolve);
+ * ```
+ *
+ * If the transferred properties include {@link ExtensionProperty ExtensionProperties},
+ * the associated {@link Extension Extensions} must be added to the target
+ * Document first:
+ *
+ * ```javascript
+ *	for (const sourceExtension of source.getRoot().listExtensionsUsed()) {
+ *		const targetExtension = target.createExtension(sourceExtension.constructor);
+ *		if (sourceExtension.isRequired()) targetExtension.setRequired(true);
+ *	}
  * ```
  *
  * To move properties to the target Document without leaving copies behind in
