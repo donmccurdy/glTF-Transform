@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Accessor, Document, NodeIO } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -69,7 +70,7 @@ test('copy', (t) => {
 
 	doc.createNode().setExtension('EXT_mesh_gpu_instancing', batch);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const batch2 = doc2.getRoot().listNodes()[0].getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy EXTMeshGPUInstancing');
 	t.truthy(batch2, 'copy batch');

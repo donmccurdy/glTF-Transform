@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const MOCK_CONTEXT_URL = 'https://test.example/1.0/';
 
@@ -214,7 +215,7 @@ test('clone', async (t) => {
 	const packet1 = xmpExtension.createPacket().fromJSONLD(MOCK_JSONLD_PACKET);
 	document1.getRoot().setExtension('KHR_xmp_json_ld', packet1);
 	t.is(document1.getRoot().getExtension('KHR_xmp_json_ld'), packet1, 'sets packet');
-	const document2 = document1.clone();
+	const document2 = cloneDocument(document1);
 	const packet2 = document2.getRoot().getExtension('KHR_xmp_json_ld') as Packet;
 	t.truthy(packet2, 'clones packet');
 	t.deepEqual(packet1.toJSONLD(), packet2.toJSONLD(), 'equal packet');

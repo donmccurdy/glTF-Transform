@@ -22,6 +22,7 @@ export {
 	Skin,
 	Texture,
 	TextureInfo,
+	PropertyResolver,
 	COPY_IDENTITY,
 } from './properties/index.js';
 export { Graph, GraphEdge, Ref, RefList, RefSet, RefMap } from 'property-graph';

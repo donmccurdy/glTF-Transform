@@ -4,6 +4,13 @@ export * from './clear-node-transform.js';
 export * from './convert-primitive-mode.js';
 export * from './dedup.js';
 export { dequantize, dequantizePrimitive, DequantizeOptions } from './dequantize.js';
+export {
+	cloneDocument,
+	mergeDocuments,
+	copyToDocument,
+	moveToDocument,
+	createDefaultPropertyResolver,
+} from './document-utils.js';
 export * from './draco.js';
 export * from './flatten.js';
 export * from './get-bounds.js';

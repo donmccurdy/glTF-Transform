@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -66,7 +67,7 @@ test('copy', (t) => {
 		.setSpecularGlossinessTexture(doc.createTexture('specGloss'));
 	doc.createMaterial().setExtension('KHR_materials_pbrSpecularGlossiness', specGloss);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const specGloss2 = doc2
 		.getRoot()
 		.listMaterials()[0]

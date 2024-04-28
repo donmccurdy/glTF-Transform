@@ -1,5 +1,6 @@
 import test from 'ava';
 import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
+import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
 test('parent', (t) => {
@@ -153,7 +154,7 @@ test('getParentNode', (t) => {
 	t.is(srcNodeB.getParentNode(), srcNodeA, 'b.getParentNode()');
 	t.is(srcNodeC.getParentNode(), srcNodeA, 'c.getParentNode()');
 
-	const dstDocument = srcDocument.clone();
+	const dstDocument = cloneDocument(srcDocument);
 	const [dstNodeA, dstNodeB, dstNodeC] = dstDocument.getRoot().listNodes();
 
 	t.deepEqual(dstNodeA.listChildren(), [dstNodeB, dstNodeC], 'a.listChildren()');

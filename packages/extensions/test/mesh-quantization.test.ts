@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -22,5 +23,5 @@ test('copy', (t) => {
 	const doc = new Document();
 	doc.createExtension(KHRMeshQuantization);
 
-	t.is(doc.clone().getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
+	t.is(cloneDocument(doc).getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
 });

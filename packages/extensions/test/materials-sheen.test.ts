@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsSheen, Sheen } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -57,7 +58,7 @@ test('copy', (t) => {
 		.setSheenColorTexture(doc.createTexture('sheen'));
 	doc.createMaterial().setExtension('KHR_materials_sheen', sheen);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const sheen2 = doc2.getRoot().listMaterials()[0].getExtension<Sheen>('KHR_materials_sheen');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsSheen');
 	t.truthy(sheen2, 'copy Sheen');

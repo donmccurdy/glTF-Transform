@@ -133,63 +133,24 @@ export class Document {
 		return this;
 	}
 
-	/** Clones this Document, copying all resources within it. */
+	/**
+	 * Clones this Document, copying all resources within it.
+	 * @deprecated Use 'cloneDocument(document)' from '@gltf-transform/functions'.
+	 * @hidden
+	 * @internal
+	 */
 	public clone(): Document {
-		return new Document().setLogger(this._logger).merge(this);
+		throw new Error(`Use 'cloneDocument(source)' from '@gltf-transform/functions'.`);
 	}
 
-	/** Merges the content of another Document into this one, without affecting the original. */
-	public merge(other: Document): this {
-		// 1. Attach extensions.
-		const thisExtensions: { [key: string]: Extension } = {};
-		for (const otherExtension of other.getRoot().listExtensionsUsed()) {
-			const thisExtension = this.createExtension(otherExtension.constructor as new (doc: Document) => Extension);
-			if (otherExtension.isRequired()) thisExtension.setRequired(true);
-			thisExtensions[thisExtension.extensionName] = thisExtension;
-		}
-
-		// 2. Preconfigure the Root and merge history.
-		const visited = new Set<Property>();
-		const propertyMap = new Map<Property, Property>();
-		visited.add(other._root);
-		propertyMap.set(other._root, this._root);
-
-		// 3. Create stub classes for every Property in other Document.
-		for (const edge of other._graph.listEdges()) {
-			for (const otherProp of [edge.getParent() as Property, edge.getChild() as Property]) {
-				if (visited.has(otherProp)) continue;
-
-				let thisProp: Property;
-				if (otherProp.propertyType === PropertyType.TEXTURE_INFO) {
-					// TextureInfo lifecycle is bound to a Material or ExtensionProperty.
-					thisProp = otherProp as Property;
-				} else {
-					// For other property types, create stub classes.
-					const PropertyClass = otherProp.constructor as new (g: Graph<Property>) => Property;
-					thisProp = new PropertyClass(this._graph);
-				}
-
-				propertyMap.set(otherProp as Property, thisProp);
-				visited.add(otherProp);
-			}
-		}
-
-		// 4. Assemble the edges between Properties.
-		const resolve = (p: Property): Property => {
-			const resolved = propertyMap.get(p);
-			if (!resolved) throw new Error('Could resolve property.');
-			return resolved;
-		};
-		for (const otherProp of visited) {
-			const thisProp = propertyMap.get(otherProp);
-			if (!thisProp) throw new Error('Could resolve property.');
-			// TextureInfo copy handled by Material or ExtensionProperty.
-			if (thisProp.propertyType !== PropertyType.TEXTURE_INFO) {
-				thisProp.copy(otherProp, resolve);
-			}
-		}
-
-		return this;
+	/**
+	 * Merges the content of another Document into this one, without affecting the original.
+	 * @deprecated Use 'mergeDocuments(target, source)' from '@gltf-transform/functions'.
+	 * @hidden
+	 * @internal
+	 */
+	public merge(_other: Document): this {
+		throw new Error(`Use 'mergeDocuments(target, source)' from '@gltf-transform/functions'.`);
 	}
 
 	/**

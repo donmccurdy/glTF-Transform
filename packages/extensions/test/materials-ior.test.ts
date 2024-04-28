@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { IOR, KHRMaterialsIOR } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -38,7 +39,7 @@ test('copy', (t) => {
 	const ior = iorExtension.createIOR().setIOR(1.2);
 	doc.createMaterial().setExtension('KHR_materials_ior', ior);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const ior2 = doc2.getRoot().listMaterials()[0].getExtension<IOR>('KHR_materials_ior');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsIOR');
 	t.truthy(ior2, 'copy IOR');

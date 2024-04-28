@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -39,7 +40,7 @@ test('copy', (t) => {
 	const unlitExtension = doc.createExtension(KHRMaterialsUnlit);
 	doc.createMaterial().setExtension('KHR_materials_unlit', unlitExtension.createUnlit());
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsUnlit');
 	t.truthy(doc2.getRoot().listMaterials()[0].getExtension('KHR_materials_unlit'), 'copy Unlit');
 });

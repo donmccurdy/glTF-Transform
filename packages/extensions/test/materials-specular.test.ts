@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsSpecular, Specular } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -63,7 +64,7 @@ test('copy', (t) => {
 		.setSpecularColorTexture(doc.createTexture('specColor'));
 	doc.createMaterial().setExtension('KHR_materials_specular', specular);
 
-	const doc2 = doc.clone();
+	const doc2 = cloneDocument(doc);
 	const specular2 = doc2.getRoot().listMaterials()[0].getExtension<Specular>('KHR_materials_specular');
 	t.is(doc2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsSpecular');
 	t.truthy(specular2, 'copy Specular');

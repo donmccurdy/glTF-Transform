@@ -1,6 +1,7 @@
 import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Anisotropy, KHRMaterialsAnisotropy } from '@gltf-transform/extensions';
+import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
@@ -93,7 +94,7 @@ test('copy', (t) => {
 		.setAnisotropyTexture(document.createTexture('ABC'));
 	document.createMaterial().setExtension('KHR_materials_anisotropy', anisotropy);
 
-	const document2 = document.clone();
+	const document2 = cloneDocument(document);
 	const anisotropy2 = document2.getRoot().listMaterials()[0].getExtension<Anisotropy>('KHR_materials_anisotropy');
 	t.is(document2.getRoot().listExtensionsUsed().length, 1, 'copy KHRMaterialsAnisotropy');
 	t.truthy(anisotropy2, 'copy Anisotropy');
