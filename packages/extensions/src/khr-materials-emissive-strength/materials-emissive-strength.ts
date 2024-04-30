@@ -12,6 +12,13 @@ interface EmissiveStrengthDef {
  * [KHR_materials_emissive_strength](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_emissive_strength/)
  * defines emissive strength and enables high-dynamic-range (HDR) emissive materials.
  *
+ * ![Illustration](/media/extensions/khr-materials-emissive-strength.jpg)
+ *
+ * > _**Figure:** Cubes with emissive color #59BCF3 and emissive strength
+ * > increasing from 1 to 256 nits, left to right. Rendered in [three.js](https://threejs.org/),
+ * > with independent point lighting and a bloom effect.
+ * > Source: [Don McCurdy](https://www.donmccurdy.com/2024/04/27/emission-and-bloom/)._
+ *
  * The core glTF 2.0 material model includes {@link Material.setEmissiveFactor `emissiveFactor`}
  * and {@link Material.setEmissiveTexture `emissiveTexture`} to control the color and intensity
  * of the light being emitted by the material, clamped to the range [0.0, 1.0]. However, in
