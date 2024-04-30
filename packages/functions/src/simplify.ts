@@ -163,10 +163,10 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 			break;
 	}
 
+	// (1) If primitive contains more vertices than it needs, compact before simplification.
+
 	const attributeVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.GPU);
 	const indexedVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER_CACHED);
-
-	// (1) If primitive contains more vertices than it needs, compact before simplification.
 	if (attributeVertexCount / indexedVertexCount > 5) {
 		const indices = prim.getIndices()!.getArray()!;
 		const [remap, unique] = simplifier.compactMesh(new Uint32Array(indices)); // overwrites indices!
