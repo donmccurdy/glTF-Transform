@@ -17,6 +17,11 @@ interface IridescenceDef {
  * [`KHR_materials_iridescence`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_iridescence/)
  * defines iridescence (thin film interference) on a PBR material.
  *
+ * ![Illustration](/media/extensions/khr-materials-iridescence.png)
+ *
+ * > _**Figure:** Varying levels of iridescence IOR values.
+ * > Source: [Khronos Group](https://github.com/KhronosGroup/gltf/tree/main/extensions/2.0/Khronos/KHR_materials_iridescence)._
+ *
  * Iridescence describes an effect where hue varies depending on the viewing
  * angle and illumination angle: A thin-film of a semi-transparent layer
  * results in inter-reflections and due to thin-film interference, certain

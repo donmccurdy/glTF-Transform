@@ -14,6 +14,13 @@ interface AnisotropyDef {
  * [`KHR_materials_anisotropy`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_anisotropy/)
  * defines anisotropy (directionally-dependent reflections) on a PBR material.
  *
+ * ![Illustration](/media/extensions/khr-materials-anisotropy.jpg)
+ *
+ * > _**Figure:** Effect of each color channel in the anisotropyTexture. Left
+ * > to right: the full anisotropy texture, filling the red channel with black,
+ * > filling the green channel with black, filling the blue channel with black.
+ * > Source: [Khronos Group & Wayfair](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/AnisotropyBarnLamp)._
+ *
  * This extension defines the anisotropic property of a material as observable with brushed metals
  * for instance. An asymmetric specular lobe model is introduced to allow for such phenomena. The
  * visually distinct feature of that lobe is the elongated appearance of the specular reflection.
