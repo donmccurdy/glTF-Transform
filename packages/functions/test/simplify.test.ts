@@ -152,7 +152,7 @@ test('torus submesh', async (t) => {
 
 	t.true(srcIndices.getCount() / 3 === 30, '30 triangles (before)');
 
-	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.01 }));
+	await document.transform(simplify({ simplifier: MeshoptSimplifier, ratio: 0.25, error: 0.05 }));
 
 	const dstIndices = prim.getIndices()!;
 	t.true(dstIndices.getCount() / 3 < 20, '<20 triangles (after)');

@@ -13,7 +13,8 @@ import { prune } from './prune.js';
 import { dequantizeAttributeArray } from './dequantize.js';
 import { unweldPrimitive } from './unweld.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
-import { remapAttribute } from './remap-primitive.js';
+import { compactAttribute, compactPrimitive } from './compact-primitive.js';
+import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 
 const NAME = 'simplify';
 
@@ -162,6 +163,16 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 			break;
 	}
 
+	// (1) If primitive contains more vertices than it needs, compact before simplification.
+
+	const attributeVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.GPU);
+	const indexedVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER_CACHED);
+	if (attributeVertexCount / indexedVertexCount > 5) {
+		const indices = prim.getIndices()!.getArray()!;
+		const [remap, unique] = simplifier.compactMesh(new Uint32Array(indices)); // overwrites indices!
+		compactPrimitive(prim, remap, unique);
+	}
+
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
 	const srcIndexCount = srcIndices.getCount();
@@ -170,7 +181,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 	let positionArray = position.getArray()!;
 	let indicesArray = srcIndices.getArray()!;
 
-	// (1) Gather attributes and indices in Meshopt-compatible format.
+	// (2) Gather attributes and indices in Meshopt-compatible format.
 
 	if (!(positionArray instanceof Float32Array)) {
 		positionArray = dequantizeAttributeArray(positionArray, position.getComponentType(), position.getNormalized());
@@ -179,7 +190,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		indicesArray = new Uint32Array(indicesArray);
 	}
 
-	// (2) Run simplification.
+	// (3) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
 	const flags = options.lockBorder ? ['LockBorder'] : [];
@@ -193,25 +204,21 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		flags as 'LockBorder'[],
 	);
 
-	const [remap, unique] = simplifier.compactMesh(dstIndicesArray);
+	// (4) Assign thinned indices.
 
-	logger.debug(`${NAME}: ${formatDeltaOp(position.getCount(), unique)} vertices, error: ${error.toFixed(4)}.`);
+	prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray));
+	if (srcIndices.listParents().length === 1) srcIndices.dispose();
 
-	// (3) Write vertex attributes.
+	// (5) Compact primitive.
 
-	for (const srcAttribute of deepListAttributes(prim)) {
-		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		remapAttribute(dstAttribute, remap, unique);
-		deepSwapAttribute(prim, srcAttribute, dstAttribute);
-		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+	const [remap, unique] = simplifier.compactMesh(new Uint32Array(dstIndicesArray)); // overwrites indices!
+	compactPrimitive(prim, remap, unique);
+
+	if (srcVertexCount <= 65534) {
+		prim.getIndices()!.setArray(new Uint16Array(prim.getIndices()!.getArray()!));
 	}
 
-	// (4) Write indices.
-
-	const dstIndices = shallowCloneAccessor(document, srcIndices);
-	dstIndices.setArray(srcVertexCount <= 65534 ? new Uint16Array(dstIndicesArray) : dstIndicesArray);
-	prim.setIndices(dstIndices);
-	if (srcIndices.listParents().length === 1) srcIndices.dispose();
+	logger.debug(`${NAME}: ${formatDeltaOp(position.getCount(), unique)} vertices, error: ${error.toFixed(4)}.`);
 
 	return prim;
 }
@@ -255,7 +262,7 @@ function _simplifyPoints(document: Document, prim: Primitive, options: Required<
 
 	for (const srcAttribute of deepListAttributes(prim)) {
 		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		remapAttribute(dstAttribute, remap, unique);
+		compactAttribute(srcAttribute, null, remap, dstAttribute, unique);
 		deepSwapAttribute(prim, srcAttribute, dstAttribute);
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}
