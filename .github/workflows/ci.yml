@@ -17,7 +17,7 @@ jobs:
             CI: true
         steps:
             # Setup.
-            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v4
               with:
@@ -41,7 +41,7 @@ jobs:
             NODE_VERSION: v18
         steps:
             # Setup.
-            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
             - uses: denoland/setup-deno@v1
               with:
                   deno-version: v1.x
@@ -67,7 +67,7 @@ jobs:
             NODE_VERSION: v18
         steps:
             # Setup.
-            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
             - name: Use Node.js ${{ env.NODE_VERSION }}
               uses: actions/setup-node@v4
               with:
@@ -94,7 +94,7 @@ jobs:
             NODE_VERSION: 18.x
         steps:
             # Setup.
-            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
             - name: Use Node.js ${{ env.NODE_VERSION }}
               uses: actions/setup-node@v4
               with:
