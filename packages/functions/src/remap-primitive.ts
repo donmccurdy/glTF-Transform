@@ -4,7 +4,10 @@ import { cleanPrimitive } from './clean-primitive.js';
 
 // TODO(v4): This file is going through some things. Consider compactPrimitive instead.
 
-/** @hidden */
+/**
+ * @hidden
+ * @deprecated
+ */
 export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
 
@@ -69,7 +72,10 @@ export function remapPrimitive(prim: Primitive, remap: TypedArray, dstVertexCoun
 	return prim;
 }
 
-/** @hidden */
+/**
+ * @hidden
+ * @deprecated
+ */
 export function remapAttribute(
 	srcAttribute: Accessor,
 	remap: TypedArray,
@@ -97,7 +103,10 @@ export function remapAttribute(
 	return dstAttribute.setArray(dstArray);
 }
 
-/** @hidden */
+/**
+ * @hidden
+ * @deprecated
+ */
 export function remapIndices(
 	srcIndices: Accessor,
 	remap: TypedArray,
