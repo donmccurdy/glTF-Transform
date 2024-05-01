@@ -1,6 +1,6 @@
 import { Document, ILogger, MathUtils, Mesh, Node, Primitive, Transform, vec3, vec4 } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'instance';
 
@@ -33,7 +33,7 @@ export const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
  * @category Transforms
  */
 export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transform {
-	const options = { ...INSTANCE_DEFAULTS, ..._options } as Required<InstanceOptions>;
+	const options = assignDefaults(INSTANCE_DEFAULTS, _options);
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();

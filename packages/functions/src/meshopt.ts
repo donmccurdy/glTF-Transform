@@ -3,7 +3,7 @@ import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { reorder } from './reorder.js';
 import { QUANTIZE_DEFAULTS, QuantizeOptions, quantize } from './quantize.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern' | 'patternTargets'> {
 	encoder: unknown;
@@ -43,7 +43,7 @@ const NAME = 'meshopt';
  * @category Transforms
  */
 export function meshopt(_options: MeshoptOptions): Transform {
-	const options = { ...MESHOPT_DEFAULTS, ..._options } as Required<MeshoptOptions>;
+	const options = assignDefaults(MESHOPT_DEFAULTS, _options);
 	const encoder = options.encoder as typeof MeshoptEncoder | undefined;
 
 	if (!encoder) {

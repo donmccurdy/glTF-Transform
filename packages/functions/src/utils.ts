@@ -35,6 +35,24 @@ export function isTransformPending(context: TransformContext | undefined, initia
 }
 
 /**
+ * Performs a shallow merge on an 'options' object and a 'defaults' object.
+ * Equivalent to `{...defaults, ...options}` _except_ that `undefined` values
+ * in the 'options' object are ignored.
+ *
+ * @hidden
+ */
+export function assignDefaults<Defaults, Options>(defaults: Defaults, options: Options): Defaults & Options {
+	const result = { ...defaults } as Defaults & Partial<Options>;
+	for (const key in options) {
+		if (options[key] !== undefined) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			result[key] = options[key] as any;
+		}
+	}
+	return result as Defaults & Options;
+}
+
+/**
  * Maps pixels from source to target textures, with a per-pixel callback.
  * @hidden
  */

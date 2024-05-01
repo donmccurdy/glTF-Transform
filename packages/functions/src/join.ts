@@ -13,7 +13,7 @@ import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives.js';
 import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
-import { createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
+import { assignDefaults, createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
 import { dequantizeAttribute } from './dequantize.js';
 
 const NAME = 'join';
@@ -88,7 +88,7 @@ export const JOIN_DEFAULTS: Required<JoinOptions> = {
  * @category Transforms
  */
 export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
-	const options = { ...JOIN_DEFAULTS, ..._options } as Required<JoinOptions>;
+	const options = assignDefaults(JOIN_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const root = document.getRoot();

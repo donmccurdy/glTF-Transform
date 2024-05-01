@@ -13,7 +13,7 @@ import {
 	Texture,
 	Transform,
 } from '@gltf-transform/core';
-import { createTransform, shallowEqualsArray } from './utils.js';
+import { assignDefaults, createTransform, shallowEqualsArray } from './utils.js';
 
 const NAME = 'dedup';
 
@@ -54,7 +54,7 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
  * @category Transforms
  */
 export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
-	const options = { ...DEDUP_DEFAULTS, ..._options } as Required<DedupOptions>;
+	const options = assignDefaults(DEDUP_DEFAULTS, _options);
 
 	const propertyTypes = new Set(options.propertyTypes);
 	for (const propertyType of options.propertyTypes) {

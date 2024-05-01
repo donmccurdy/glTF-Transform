@@ -1,6 +1,16 @@
 import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
-import { getGLPrimitiveCount, createTransform, isTransformPending } from '@gltf-transform/functions';
+import { getGLPrimitiveCount, createTransform, isTransformPending, assignDefaults } from '@gltf-transform/functions';
+
+test('assignDefaults', (t) => {
+	t.deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: 4 }), { a: 1, b: 4, c: 3 }, 'number ← number');
+	t.deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: null }), { a: 1, b: null, c: 3 }, 'number ← null');
+	t.deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: undefined }), { a: 1, b: 2, c: 3 }, 'number ← undefined');
+	t.deepEqual(assignDefaults({ a: 1, b: null, c: 3 }, { b: 2 }), { a: 1, b: 2, c: 3 }, 'null ← number');
+	t.deepEqual(assignDefaults({ a: 1, b: undefined, c: 3 }, { b: 2 }), { a: 1, b: 2, c: 3 }, 'undefined ← number');
+	t.deepEqual(assignDefaults({ a: { ok: false } }, { a: { ok: true } }), { a: { ok: true } }, 'object ← object');
+	t.deepEqual(assignDefaults({ a: 'hello' }, {}), { a: 'hello' }, 'string ← empty');
+});
 
 test('getGLPrimitiveCount', async (t) => {
 	const doc = new Document();

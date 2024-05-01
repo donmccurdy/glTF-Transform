@@ -1,7 +1,7 @@
 import { Document, Node, PropertyType, Transform } from '@gltf-transform/core';
 import { clearNodeParent } from './clear-node-parent.js';
 import { prune } from './prune.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'flatten';
 
@@ -42,7 +42,7 @@ export const FLATTEN_DEFAULTS: Required<FlattenOptions> = {
  * @category Transforms
  */
 export function flatten(_options: FlattenOptions = FLATTEN_DEFAULTS): Transform {
-	const options = { ...FLATTEN_DEFAULTS, ..._options } as Required<FlattenOptions>;
+	const options = assignDefaults(FLATTEN_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const root = document.getRoot();
