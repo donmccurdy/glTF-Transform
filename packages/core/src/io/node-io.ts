@@ -156,7 +156,7 @@ export class NodeIO extends PlatformIO {
 		this.lastWriteBytes += jsonContent.length;
 
 		// write resources
-		for (const batch of listChunks(Object.keys(resources), 10)) {
+		for (const batch of listBatches(Object.keys(resources), 10)) {
 			await Promise.all(
 				batch.map(async (resourceURI) => {
 					if (HTTPUtils.isAbsoluteURL(resourceURI)) {
@@ -183,14 +183,17 @@ export class NodeIO extends PlatformIO {
 	}
 }
 
-function listChunks<T>(array: T[], stride: number): T[][] {
-	const chunks: T[][] = [];
-	for (let i = 0, il = array.length; i < il; i += stride) {
-		const chunk: T[] = [];
-		for (let j = 0; j < stride && i + j < il; j++) {
-			chunk.push(array[i + j]);
+/** Divides a flat input array into batches of size `batchSize`. */
+function listBatches<T>(array: T[], batchSize: number): T[][] {
+	const batches: T[][] = [];
+
+	for (let i = 0, il = array.length; i < il; i += batchSize) {
+		const batch: T[] = [];
+		for (let j = 0; j < batchSize && i + j < il; j++) {
+			batch.push(array[i + j]);
 		}
-		chunks.push(chunk);
+		batches.push(batch);
 	}
-	return chunks;
+
+	return batches;
 }
