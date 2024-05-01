@@ -2,7 +2,7 @@ import { Document, Primitive, PropertyType, Transform } from '@gltf-transform/co
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { EMPTY_U32, VertexStream, hashLookup } from './hash-table.js';
-import { ceilPowerOfTwo, createTransform, formatDeltaOp } from './utils.js';
+import { assignDefaults, ceilPowerOfTwo, createTransform, formatDeltaOp } from './utils.js';
 import { compactPrimitive } from './compact-primitive.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 
@@ -92,7 +92,7 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * @category Transforms
  */
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
-	const options = { ...WELD_DEFAULTS, ..._options };
+	const options = assignDefaults(WELD_DEFAULTS, _options);
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();

@@ -11,7 +11,7 @@ import {
 	TypedArray,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
@@ -69,7 +69,7 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
  * @category Transforms
  */
 export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transform {
-	const options = { ...RESAMPLE_DEFAULTS, ..._options } as Required<ResampleOptions>;
+	const options = assignDefaults(RESAMPLE_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const accessorsVisited = new Set<Accessor>();

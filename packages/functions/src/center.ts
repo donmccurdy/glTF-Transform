@@ -1,6 +1,6 @@
 import type { Document, Transform, vec3 } from '@gltf-transform/core';
 import { getBounds } from '@gltf-transform/core';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'center';
 
@@ -25,7 +25,7 @@ const CENTER_DEFAULTS: Required<CenterOptions> = { pivot: 'center' };
  * @category Transforms
  */
 export function center(_options: CenterOptions = CENTER_DEFAULTS): Transform {
-	const options = { ...CENTER_DEFAULTS, ..._options } as Required<CenterOptions>;
+	const options = assignDefaults(CENTER_DEFAULTS, _options);
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();

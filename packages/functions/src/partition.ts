@@ -1,6 +1,6 @@
 import { Document, ILogger, PropertyType, Transform } from '@gltf-transform/core';
 import { prune } from './prune.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'partition';
 
@@ -32,7 +32,7 @@ const PARTITION_DEFAULTS: Required<PartitionOptions> = {
  * @category Transforms
  */
 export function partition(_options: PartitionOptions = PARTITION_DEFAULTS): Transform {
-	const options = { ...PARTITION_DEFAULTS, ..._options } as Required<PartitionOptions>;
+	const options = assignDefaults(PARTITION_DEFAULTS, _options);
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
@@ -50,7 +50,7 @@ export function partition(_options: PartitionOptions = PARTITION_DEFAULTS): Tran
 	});
 }
 
-function partitionMeshes(doc: Document, logger: ILogger, options: PartitionOptions): void {
+function partitionMeshes(doc: Document, logger: ILogger, options: Required<PartitionOptions>): void {
 	const existingURIs = new Set<string>(
 		doc
 			.getRoot()
@@ -83,7 +83,7 @@ function partitionMeshes(doc: Document, logger: ILogger, options: PartitionOptio
 		});
 }
 
-function partitionAnimations(doc: Document, logger: ILogger, options: PartitionOptions): void {
+function partitionAnimations(doc: Document, logger: ILogger, options: Required<PartitionOptions>): void {
 	const existingURIs = new Set<string>(
 		doc
 			.getRoot()

@@ -1,5 +1,5 @@
 import { Accessor, Document, ILogger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'tangents';
 
@@ -39,11 +39,11 @@ const TANGENTS_DEFAULTS: Required<Omit<TangentsOptions, 'generateTangents'>> = {
  * @category Transforms
  */
 export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transform {
-	if (!_options.generateTangents) {
+	const options = assignDefaults(TANGENTS_DEFAULTS, _options);
+
+	if (!options.generateTangents) {
 		throw new Error(`${NAME}: generateTangents callback required — install "mikktspace".`);
 	}
-
-	const options = { ...TANGENTS_DEFAULTS, ..._options } as Required<TangentsOptions>;
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -95,7 +95,7 @@ export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transfo
 				// Otherwise, generate tangents with the 'mikktspace' WASM library.
 				logger.debug(`${NAME}: Generating for primitive ${i} of mesh "${meshName}".`);
 				const tangentBuffer = prim.getAttribute('POSITION')!.getBuffer();
-				const tangentArray = options.generateTangents(
+				const tangentArray = options.generateTangents!(
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
 					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord),

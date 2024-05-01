@@ -23,7 +23,7 @@ import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 
 const NAME = 'quantize';
@@ -99,9 +99,10 @@ export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>
  * @category Transforms
  */
 export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transform {
-	const options = { ...QUANTIZE_DEFAULTS, ..._options } as Required<QuantizeOptions>;
-
-	options.patternTargets = options.patternTargets || options.pattern;
+	const options = assignDefaults(QUANTIZE_DEFAULTS, {
+		patternTargets: _options.pattern || QUANTIZE_DEFAULTS.pattern,
+		..._options,
+	});
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();

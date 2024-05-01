@@ -43,7 +43,14 @@ export * from './transform-mesh.js';
 export * from './transform-primitive.js';
 export * from './unlit.js';
 export * from './unpartition.js';
-export { getGLPrimitiveCount, isTransformPending, createTransform, fitWithin, fitPowerOfTwo } from './utils.js';
+export {
+	assignDefaults,
+	getGLPrimitiveCount,
+	isTransformPending,
+	createTransform,
+	fitWithin,
+	fitPowerOfTwo,
+} from './utils.js';
 export * from './unweld.js';
 export * from './vertex-color-space.js';
 export * from './weld.js';

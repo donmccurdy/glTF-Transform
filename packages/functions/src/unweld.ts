@@ -18,9 +18,6 @@ const UNWELD_DEFAULTS: UnweldOptions = {};
  * @category Transforms
  */
 export function unweld(_options: UnweldOptions = UNWELD_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = { ...UNWELD_DEFAULTS, ..._options } as Required<UnweldOptions>;
-
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
 		const visited = new Map<Accessor, Map<Accessor, Accessor>>();

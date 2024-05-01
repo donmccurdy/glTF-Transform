@@ -1,6 +1,6 @@
 import type { Document, Transform, vec3 } from '@gltf-transform/core';
 import { unweld } from './unweld.js';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 import { normalize } from 'gl-matrix/vec3';
 
 const NAME = 'normals';
@@ -29,7 +29,7 @@ const NORMALS_DEFAULTS: Required<NormalsOptions> = {
  * @category Transforms
  */
 export function normals(_options: NormalsOptions = NORMALS_DEFAULTS): Transform {
-	const options = { ...NORMALS_DEFAULTS, ..._options } as Required<NormalsOptions>;
+	const options = assignDefaults(NORMALS_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();

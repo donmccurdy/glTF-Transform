@@ -24,9 +24,6 @@ const METALROUGH_DEFAULTS: Required<MetalRoughOptions> = {};
  * @category Transforms
  */
 export function metalRough(_options: MetalRoughOptions = METALROUGH_DEFAULTS): Transform {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const options = { ...METALROUGH_DEFAULTS, ..._options } as Required<MetalRoughOptions>;
-
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		const logger = doc.getLogger();
 

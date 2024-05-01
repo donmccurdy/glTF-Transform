@@ -9,7 +9,7 @@ import {
 	Transform,
 	vec4,
 } from '@gltf-transform/core';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 import { prune } from './prune.js';
 import ndarray, { NdArray, TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
@@ -79,7 +79,7 @@ export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
  * @category Transforms
  */
 export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform {
-	const options = { ...PALETTE_DEFAULTS, ..._options } as Required<PaletteOptions>;
+	const options = assignDefaults(PALETTE_DEFAULTS, _options);
 	const blockSize = Math.max(options.blockSize, 1);
 	const min = Math.max(options.min, 1);
 

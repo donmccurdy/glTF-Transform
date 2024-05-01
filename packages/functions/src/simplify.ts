@@ -5,6 +5,7 @@ import {
 	deepListAttributes,
 	deepSwapAttribute,
 	shallowCloneAccessor,
+	assignDefaults,
 } from './utils.js';
 import { weld } from './weld.js';
 import type { MeshoptSimplifier } from 'meshoptimizer';
@@ -86,7 +87,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * @category Transforms
  */
 export function simplify(_options: SimplifyOptions): Transform {
-	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
+	const options = assignDefaults(SIMPLIFY_DEFAULTS, _options);
 
 	const simplifier = options.simplifier as typeof MeshoptSimplifier | undefined;
 

@@ -26,7 +26,7 @@ import { getPixels } from 'ndarray-pixels';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';
 import { listTextureSlots } from './list-texture-slots.js';
-import { createTransform, isEmptyObject } from './utils.js';
+import { assignDefaults, createTransform, isEmptyObject } from './utils.js';
 
 const NAME = 'prune';
 
@@ -89,7 +89,7 @@ export const PRUNE_DEFAULTS: Required<PruneOptions> = {
  * @category Transforms
  */
 export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
-	const options = { ...PRUNE_DEFAULTS, ..._options } as Required<PruneOptions>;
+	const options = assignDefaults(PRUNE_DEFAULTS, _options);
 	const propertyTypes = new Set(options.propertyTypes);
 	const keepExtras = options.keepExtras;
 

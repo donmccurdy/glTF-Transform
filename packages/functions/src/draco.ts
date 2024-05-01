@@ -1,6 +1,6 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 import { weld } from './weld.js';
 
 const NAME = 'draco';
@@ -17,7 +17,7 @@ export interface DracoOptions {
 	quantizationVolume?: 'mesh' | 'scene';
 }
 
-export const DRACO_DEFAULTS: DracoOptions = {
+export const DRACO_DEFAULTS: Required<DracoOptions> = {
 	method: 'edgebreaker',
 	encodeSpeed: 5,
 	decodeSpeed: 5,
@@ -38,7 +38,8 @@ export const DRACO_DEFAULTS: DracoOptions = {
  * @category Transforms
  */
 export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
-	const options = { ...DRACO_DEFAULTS, ..._options } as Required<DracoOptions>;
+	const options = assignDefaults(DRACO_DEFAULTS, _options);
+
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		await document.transform(weld());
 		document

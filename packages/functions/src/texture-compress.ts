@@ -12,7 +12,7 @@ import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
 import type sharp from 'sharp';
-import { createTransform, fitPowerOfTwo, fitWithin, formatBytes } from './utils.js';
+import { assignDefaults, createTransform, fitPowerOfTwo, fitWithin, formatBytes } from './utils.js';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
@@ -147,7 +147,7 @@ export const TEXTURE_COMPRESS_DEFAULTS: Omit<TextureCompressOptions, 'resize' | 
  * @category Transforms
  */
 export function textureCompress(_options: TextureCompressOptions): Transform {
-	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<TextureCompressOptions>;
+	const options = assignDefaults(TEXTURE_COMPRESS_DEFAULTS, _options);
 	const targetFormat = options.targetFormat as Format | undefined;
 	const patternRe = options.pattern;
 	const formatsRe = options.formats;

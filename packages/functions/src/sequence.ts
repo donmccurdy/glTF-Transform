@@ -1,5 +1,5 @@
 import { Accessor, AnimationChannel, AnimationSampler, Document, Transform } from '@gltf-transform/core';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'sequence';
 
@@ -27,7 +27,7 @@ const SEQUENCE_DEFAULTS: Required<SequenceOptions> = {
  * @category Transforms
  */
 export function sequence(_options: SequenceOptions = SEQUENCE_DEFAULTS): Transform {
-	const options = { ...SEQUENCE_DEFAULTS, ..._options } as Required<SequenceOptions>;
+	const options = assignDefaults(SEQUENCE_DEFAULTS, _options);
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();

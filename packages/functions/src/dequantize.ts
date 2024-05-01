@@ -8,7 +8,7 @@ import {
 	TypedArray,
 } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
-import { createTransform } from './utils.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'dequantize';
 
@@ -21,7 +21,7 @@ export interface DequantizeOptions {
 	pattern?: RegExp;
 }
 
-const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
+const DEQUANTIZE_DEFAULTS: Required<DequantizeOptions> = {
 	pattern: /^((?!JOINTS_).)*$/,
 };
 
@@ -41,7 +41,7 @@ const DEQUANTIZE_DEFAULTS: DequantizeOptions = {
  * @category Transforms
  */
 export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): Transform {
-	const options = { ...DEQUANTIZE_DEFAULTS, ..._options } as Required<DequantizeOptions>;
+	const options = assignDefaults(DEQUANTIZE_DEFAULTS, _options);
 
 	return createTransform(NAME, (doc: Document): void => {
 		const logger = doc.getLogger();
@@ -72,7 +72,9 @@ export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): T
  * }
  * ```
  */
-export function dequantizePrimitive(prim: Primitive, options: Required<DequantizeOptions>): void {
+export function dequantizePrimitive(prim: Primitive, _options = DEQUANTIZE_DEFAULTS): void {
+	const options = assignDefaults(DEQUANTIZE_DEFAULTS, _options);
+
 	for (const semantic of prim.listSemantics()) {
 		if (options.pattern.test(semantic)) {
 			dequantizeAttribute(prim.getAttribute(semantic)!);

@@ -1,5 +1,5 @@
 import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
+import { assignDefaults, createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
 import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { remapIndices, remapAttribute } from './remap-primitive.js';
 
@@ -36,8 +36,8 @@ const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
  * mesh.addPrimitive(result);
  * ```
  */
-export function joinPrimitives(prims: Primitive[], options: JoinPrimitiveOptions = {}): Primitive {
-	options = { ...JOIN_PRIMITIVE_DEFAULTS, ...options };
+export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOptions = {}): Primitive {
+	const options = assignDefaults(JOIN_PRIMITIVE_DEFAULTS, _options);
 	const templatePrim = prims[0]!;
 	const document = Document.fromGraph(templatePrim.getGraph())!;
 
