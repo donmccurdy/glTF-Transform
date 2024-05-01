@@ -149,24 +149,30 @@ export class NodeIO extends PlatformIO {
 		});
 		const { _fs: fs, _path: path } = this;
 		const dir = path.dirname(uri);
-		const jsonContent = JSON.stringify(json, null, 2);
-		this.lastWriteBytes += jsonContent.length;
-		await fs.writeFile(uri, jsonContent);
-		const pending = Object.keys(resources).map(async (resourceURI) => {
-			if (HTTPUtils.isAbsoluteURL(resourceURI)) {
-				if (HTTPUtils.extension(resourceURI) === 'bin') {
-					throw new Error(`Cannot write buffer to path "${resourceURI}".`);
-				}
-				return;
-			}
 
-			const resource = Buffer.from(resources[resourceURI]);
-			const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
-			await fs.mkdir(path.dirname(resourcePath), { recursive: true });
-			await fs.writeFile(resourcePath, resource);
-			this.lastWriteBytes += resource.byteLength;
-		});
-		await Promise.all(pending);
+		// write json
+		const jsonContent = JSON.stringify(json, null, 2);
+		await fs.writeFile(uri, jsonContent);
+		this.lastWriteBytes += jsonContent.length;
+
+		// write resources
+		for (const batch of listChunks(Object.keys(resources), 10)) {
+			await Promise.all(
+				batch.map(async (resourceURI) => {
+					if (HTTPUtils.isAbsoluteURL(resourceURI)) {
+						if (HTTPUtils.extension(resourceURI) === 'bin') {
+							throw new Error(`Cannot write buffer to path "${resourceURI}".`);
+						}
+						return;
+					}
+
+					const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
+					await fs.mkdir(path.dirname(resourcePath), { recursive: true });
+					await fs.writeFile(resourcePath, resources[resourceURI]);
+					this.lastWriteBytes += resources[resourceURI].byteLength;
+				}),
+			);
+		}
 	}
 
 	/** @internal */
@@ -175,4 +181,16 @@ export class NodeIO extends PlatformIO {
 		await this._fs.writeFile(uri, buffer);
 		this.lastWriteBytes = buffer.byteLength;
 	}
+}
+
+function listChunks<T>(array: T[], stride: number): T[][] {
+	const chunks: T[][] = [];
+	for (let i = 0, il = array.length; i < il; i += stride) {
+		const chunk: T[] = [];
+		for (let j = 0; j < stride && i + j < il; j++) {
+			chunk.push(array[i + j]);
+		}
+		chunks.push(chunk);
+	}
+	return chunks;
 }
