@@ -1,4 +1,3 @@
-import { PropertyType } from './constants.js';
 import type { Extension } from './extension.js';
 import { Graph } from 'property-graph';
 import {
