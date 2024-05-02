@@ -31,6 +31,7 @@ jobs:
             # Test.
             - run: yarn test
             - run: yarn lint
+              if: ${{ matrix.node-version == 'v18' }}
 
     #############################################################################
     # DENO
