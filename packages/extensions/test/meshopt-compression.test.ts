@@ -1,6 +1,6 @@
 import path, { dirname } from 'path';
 import test from 'ava';
-import { Document, NodeIO, getBounds, Format, Primitive, VertexLayout } from '@gltf-transform/core';
+import { Document, NodeIO, getBounds, Format, Primitive } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import { fileURLToPath } from 'url';
