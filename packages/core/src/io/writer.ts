@@ -34,6 +34,7 @@ export interface WriterOptions {
  */
 export class GLTFWriter {
 	public static write(doc: Document, options: Required<WriterOptions>): JSONDocument {
+		const graph = doc.getGraph();
 		const root = doc.getRoot();
 		const json = {
 			asset: { generator: `glTF-Transform ${VERSION}`, ...root.getAsset() },
@@ -357,23 +358,6 @@ export class GLTFWriter {
 			return { buffers, byteLength };
 		}
 
-		/* Data use pre-processing. */
-
-		const accessorRefs = new Map<Accessor, GraphEdge<Property, Accessor>[]>();
-
-		// Gather all accessors, creating a map to look up their uses.
-		for (const ref of doc.getGraph().listEdges()) {
-			if (ref.getParent() === root) continue;
-
-			const child = ref.getChild();
-
-			if (child instanceof Accessor) {
-				const uses = accessorRefs.get(child) || [];
-				uses.push(ref as GraphEdge<Property, Accessor>);
-				accessorRefs.set(child, uses);
-			}
-		}
-
 		json.accessors = [];
 		json.bufferViews = [];
 
@@ -420,14 +404,14 @@ export class GLTFWriter {
 			if (context.accessorIndexMap.has(accessor)) return;
 
 			// Assign usage for core accessor usage types (explicit targets and implicit usage).
-			const accessorEdges = accessorRefs.get(accessor) || [];
 			const usage = context.getAccessorUsage(accessor);
 			context.addAccessorToUsageGroup(accessor, usage);
 
 			// For accessor usage that requires grouping by parent (vertex and instance
 			// attributes) organize buffer views accordingly.
 			if (groupByParent.has(usage)) {
-				accessorParents.set(accessor, accessorEdges[0].getParent());
+				const parent = graph.listParents(accessor).find((parent) => parent.propertyType !== PropertyType.ROOT)!;
+				accessorParents.set(accessor, parent);
 			}
 		});
 
