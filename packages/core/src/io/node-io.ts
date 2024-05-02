@@ -149,24 +149,30 @@ export class NodeIO extends PlatformIO {
 		});
 		const { _fs: fs, _path: path } = this;
 		const dir = path.dirname(uri);
-		const jsonContent = JSON.stringify(json, null, 2);
-		this.lastWriteBytes += jsonContent.length;
-		await fs.writeFile(uri, jsonContent);
-		const pending = Object.keys(resources).map(async (resourceURI) => {
-			if (HTTPUtils.isAbsoluteURL(resourceURI)) {
-				if (HTTPUtils.extension(resourceURI) === 'bin') {
-					throw new Error(`Cannot write buffer to path "${resourceURI}".`);
-				}
-				return;
-			}
 
-			const resource = Buffer.from(resources[resourceURI]);
-			const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
-			await fs.mkdir(path.dirname(resourcePath), { recursive: true });
-			await fs.writeFile(resourcePath, resource);
-			this.lastWriteBytes += resource.byteLength;
-		});
-		await Promise.all(pending);
+		// write json
+		const jsonContent = JSON.stringify(json, null, 2);
+		await fs.writeFile(uri, jsonContent);
+		this.lastWriteBytes += jsonContent.length;
+
+		// write resources
+		for (const batch of listBatches(Object.keys(resources), 10)) {
+			await Promise.all(
+				batch.map(async (resourceURI) => {
+					if (HTTPUtils.isAbsoluteURL(resourceURI)) {
+						if (HTTPUtils.extension(resourceURI) === 'bin') {
+							throw new Error(`Cannot write buffer to path "${resourceURI}".`);
+						}
+						return;
+					}
+
+					const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
+					await fs.mkdir(path.dirname(resourcePath), { recursive: true });
+					await fs.writeFile(resourcePath, resources[resourceURI]);
+					this.lastWriteBytes += resources[resourceURI].byteLength;
+				}),
+			);
+		}
 	}
 
 	/** @internal */
@@ -175,4 +181,19 @@ export class NodeIO extends PlatformIO {
 		await this._fs.writeFile(uri, buffer);
 		this.lastWriteBytes = buffer.byteLength;
 	}
+}
+
+/** Divides a flat input array into batches of size `batchSize`. */
+function listBatches<T>(array: T[], batchSize: number): T[][] {
+	const batches: T[][] = [];
+
+	for (let i = 0, il = array.length; i < il; i += batchSize) {
+		const batch: T[] = [];
+		for (let j = 0; j < batchSize && i + j < il; j++) {
+			batch.push(array[i + j]);
+		}
+		batches.push(batch);
+	}
+
+	return batches;
 }
