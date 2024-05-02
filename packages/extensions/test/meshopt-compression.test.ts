@@ -105,6 +105,99 @@ test('encoding sparse', async (t) => {
 	t.deepEqual(Array.from(rtMarker.getArray()), sparseArray, '_SPARSE array');
 });
 
+test('encoding grouped buffer views', async (t) => {
+	const io = await createEncoderIO();
+
+	const document = new Document();
+	const buffer = document.createBuffer();
+	const positionA = document.createAccessor().setType('VEC3').setArray(new Uint16Array(12)).setBuffer(buffer);
+	const positionB = document.createAccessor().setType('VEC3').setArray(new Uint16Array(12)).setBuffer(buffer);
+	const primA = document.createPrimitive().setAttribute('POSITION', positionA);
+	const primB = document.createPrimitive().setAttribute('POSITION', positionB);
+	const mesh = document.createMesh().addPrimitive(primA).addPrimitive(primB);
+	const node = document.createNode().setMesh(mesh);
+	const scene = document.createScene().addChild(node);
+	document.getRoot().setDefaultScene(scene);
+	document.createExtension(EXTMeshoptCompression).setRequired(true);
+
+	const { json } = await io.writeJSON(document);
+
+	t.deepEqual(
+		json.meshes,
+		[
+			{
+				primitives: [
+					{ attributes: { POSITION: 0 }, mode: 4 },
+					{ attributes: { POSITION: 1 }, mode: 4 },
+				],
+			},
+		],
+		'primitives',
+	);
+
+	t.deepEqual(
+		json.buffers,
+		[
+			{
+				uri: 'buffer.bin',
+				byteLength: 88,
+			},
+			{
+				byteLength: 64,
+				extensions: {
+					EXT_meshopt_compression: {
+						fallback: true,
+					},
+				},
+			},
+		],
+		'buffers',
+	);
+
+	t.deepEqual(
+		json.bufferViews,
+		[
+			{
+				buffer: 1,
+				byteLength: 32,
+				byteOffset: 0,
+				byteStride: 8,
+				extensions: {
+					EXT_meshopt_compression: {
+						buffer: 0,
+						byteLength: 41,
+						byteOffset: 0,
+						byteStride: 8,
+						count: 4,
+						filter: undefined,
+						mode: 'ATTRIBUTES',
+					},
+				},
+				target: 34962,
+			},
+			{
+				buffer: 1,
+				byteLength: 32,
+				byteOffset: 32,
+				byteStride: 8,
+				extensions: {
+					EXT_meshopt_compression: {
+						buffer: 0,
+						byteLength: 41,
+						byteOffset: 44,
+						byteStride: 8,
+						count: 4,
+						filter: undefined,
+						mode: 'ATTRIBUTES',
+					},
+				},
+				target: 34962,
+			},
+		],
+		'buffer views',
+	);
+});
+
 async function createEncoderIO(): Promise<NodeIO> {
 	await Promise.all([MeshoptDecoder.ready, MeshoptEncoder.ready]);
 	return new NodeIO().registerExtensions([EXTMeshoptCompression, KHRMeshQuantization]).registerDependencies({
