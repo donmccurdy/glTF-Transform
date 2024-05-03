@@ -15,7 +15,6 @@
 		"module": "nodenext",
 		"declaration": true,
 		"stripInternal": true,
-		"typeRoots": ["node_modules/@types"],
 
 		// Components of "strict" mode.
 		"alwaysStrict": true,
