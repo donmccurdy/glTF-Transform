@@ -9,9 +9,8 @@ import {
 } from '../constants.js';
 import type { Document } from '../document.js';
 import type { Extension } from '../extension.js';
-import type { GraphEdge } from 'property-graph';
 import type { JSONDocument } from '../json-document.js';
-import { Accessor, AnimationSampler, Camera, Material, Property } from '../properties/index.js';
+import { Accessor, AnimationSampler, Camera, Material } from '../properties/index.js';
 import type { GLTF } from '../types/gltf.js';
 import { BufferUtils, Logger, MathUtils } from '../utils/index.js';
 import { WriterContext } from './writer-context.js';
