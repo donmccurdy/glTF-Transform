@@ -279,6 +279,12 @@ export class KHRDracoMeshCompression extends Extension {
 			context.accessorIndexMap.set(indices, accessorDefs.length);
 			accessorDefs.push(indicesDef);
 
+			// In rare cases Draco increases vertex count, requiring a larger index component type.
+			// https://github.com/donmccurdy/glTF-Transform/issues/1370
+			if (encodedPrim.numVertices > 65534 && indicesDef.componentType !== Accessor.ComponentType.UNSIGNED_INT) {
+				indicesDef.componentType = Accessor.ComponentType.UNSIGNED_INT;
+			}
+
 			// Create attribute definitions, update count.
 			for (const semantic of prim.listSemantics()) {
 				const attribute = prim.getAttribute(semantic)!;
