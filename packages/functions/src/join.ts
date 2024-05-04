@@ -158,12 +158,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			const material = prim.getMaterial();
 			if (material && material.getExtension('KHR_materials_volume')) continue;
 
-			const renderVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER);
-			const uploadVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
-			if (renderVertexCount < uploadVertexCount / 2) {
-				compactPrimitive(prim);
-			}
-
+			compactPrimitive(prim);
 			dequantizeTransformableAttributes(prim);
 
 			let key = createPrimGroupKey(prim);
@@ -225,7 +220,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 			// Primitives may be reused directly, or their attributes may be
 			// used in another Primitive with a different Material. Because
-			// compactPrimitive ran already, >=50% of vertices are used.
+			// compactPrimitive ran already, 100% of vertices are used.
 			if (isUsed(prim) || hasSharedAttributes(prim)) {
 				prim = prims[i] = _deepClonePrimitive(prims[i]);
 			}
@@ -233,11 +228,11 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			// Transform Primitive into new local coordinate space.
 			if (primNode !== dstNode) {
 				multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
-				transformPrimitive(prim, _matrix); // TODO(perf)
+				transformPrimitive(prim, _matrix);
 			}
 		}
 
-		const dstPrim = joinPrimitives(prims); // TODO(perf)
+		const dstPrim = joinPrimitives(prims);
 		const dstVertexCount = dstPrim.listAttributes()[0].getCount();
 		dstMesh.addPrimitive(dstPrim);
 

@@ -1,7 +1,6 @@
-import { Document, Primitive, ComponentTypeToTypedArray } from '@gltf-transform/core';
-import { assignDefaults, createIndices, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
+import { Document, Primitive, ComponentTypeToTypedArray, Accessor, TypedArray } from '@gltf-transform/core';
+import { assignDefaults, createIndicesEmpty, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
 import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
-import { remapIndices, remapAttribute } from './remap-primitive.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -78,7 +77,7 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 		const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
 		const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
 
-		const remap = new Uint32Array(getIndicesMax(srcPrim) + 1).fill(EMPTY_U32);
+		const remap = new Uint32Array(srcVertexCount).fill(EMPTY_U32);
 
 		for (let i = 0; i < srcIndicesCount; i++) {
 			const index = srcIndicesArray ? srcIndicesArray[i] : i;
@@ -88,7 +87,7 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 			}
 		}
 
-		primRemaps.push(new Uint32Array(remap));
+		primRemaps.push(remap);
 		dstIndicesCount += srcIndicesCount;
 	}
 
@@ -104,9 +103,9 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 	}
 
 	// (5) Allocate joined indices.
-	const srcIndices = templatePrim.getIndices();
-	const dstIndices = srcIndices
-		? shallowCloneAccessor(document, srcIndices).setArray(createIndices(dstIndicesCount, dstVertexCount))
+	const tplIndices = templatePrim.getIndices();
+	const dstIndices = tplIndices
+		? shallowCloneAccessor(document, tplIndices).setArray(createIndicesEmpty(dstIndicesCount, dstVertexCount))
 		: null;
 	dstPrim.setIndices(dstIndices);
 
@@ -114,39 +113,60 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 	let dstIndicesOffset = 0;
 	for (let primIndex = 0; primIndex < primRemaps.length; primIndex++) {
 		const srcPrim = prims[primIndex];
-		const srcVertexCount = srcPrim.getAttribute('POSITION')!.getCount();
 		const srcIndices = srcPrim.getIndices();
 		const srcIndicesCount = srcIndices ? srcIndices.getCount() : -1;
 
 		const remap = primRemaps[primIndex];
 
 		if (srcIndices && dstIndices) {
-			remapIndices(srcIndices, remap, dstIndicesOffset, srcIndicesCount, dstIndices);
+			remapIndices(srcIndices, remap, dstIndices, dstIndicesOffset);
+			dstIndicesOffset += srcIndicesCount;
 		}
 
 		for (const semantic of dstPrim.listSemantics()) {
 			const srcAttribute = srcPrim.getAttribute(semantic)!;
 			const dstAttribute = dstPrim.getAttribute(semantic)!;
-			remapAttribute(srcAttribute, remap, srcVertexCount, dstAttribute);
+			remapAttribute(srcAttribute, srcIndices, remap, dstAttribute);
 		}
-
-		dstIndicesOffset += srcIndicesCount;
 	}
 
 	return dstPrim;
 }
 
-function getIndicesMax(prim: Primitive): number {
-	const indices = prim.getIndices();
-	const position = prim.getAttribute('POSITION')!;
-	if (!indices) return position.getCount() - 1;
+function remapAttribute(
+	srcAttribute: Accessor,
+	srcIndices: Accessor | null,
+	remap: TypedArray,
+	dstAttribute: Accessor,
+): void {
+	const elementSize = srcAttribute.getElementSize();
+	const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
+	const srcVertexCount = srcAttribute.getCount();
+	const srcArray = srcAttribute.getArray()!;
+	const dstArray = dstAttribute.getArray()!;
+	const done = new Uint8Array(srcAttribute.getCount());
 
-	const indicesArray = indices.getArray()!;
-	const indicesCount = indices.getCount();
+	for (let i = 0, il = srcIndices ? srcIndices.getCount() : srcVertexCount; i < il; i++) {
+		const srcIndex = srcIndicesArray ? srcIndicesArray[i] : i;
+		const dstIndex = remap[srcIndex];
+		if (done[dstIndex]) continue;
 
-	let indicesMax = -1;
-	for (let i = 0; i < indicesCount; i++) {
-		indicesMax = Math.max(indicesMax, indicesArray[i]);
+		for (let j = 0; j < elementSize; j++) {
+			dstArray[dstIndex * elementSize + j] = srcArray[srcIndex * elementSize + j];
+		}
+
+		done[dstIndex] = 1;
 	}
-	return indicesMax;
+}
+
+function remapIndices(srcIndices: Accessor, remap: TypedArray, dstIndices: Accessor, dstOffset: number): void {
+	const srcCount = srcIndices.getCount();
+	const srcArray = srcIndices.getArray()!;
+	const dstArray = dstIndices.getArray()!;
+
+	for (let i = 0; i < srcCount; i++) {
+		const srcIndex = srcArray[i];
+		const dstIndex = remap[srcIndex];
+		dstArray[dstOffset + i] = dstIndex;
+	}
 }

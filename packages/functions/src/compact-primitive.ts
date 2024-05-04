@@ -3,7 +3,10 @@ import { createIndices, createIndicesEmpty, deepListAttributes, shallowCloneAcce
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 import { EMPTY_U32 } from './hash-table.js';
 
-/** @hidden */
+/**
+ * TODO - document and export this if it's needed for transformPrimitive.
+ * @hidden
+ */
 export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexCount?: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
 
