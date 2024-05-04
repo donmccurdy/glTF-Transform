@@ -15,6 +15,7 @@ jobs:
                 node-version: [v18, v20]
         env:
             CI: true
+            LINT: ${{ matrix.node-version == 'v20' && true || false }}
         steps:
             # Setup.
             - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -31,7 +32,7 @@ jobs:
             # Test.
             - run: yarn test
             - run: yarn lint
-              if: ${{ matrix.node-version == 'v18' }}
+              if: ${{ env.LINT == 'true' }}
 
     #############################################################################
     # DENO
