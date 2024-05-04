@@ -16,6 +16,7 @@ import { unweldPrimitive } from './unweld.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 
 const NAME = 'simplify';
 
@@ -170,18 +171,14 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 
 	// (1) If primitive draws <50% of its vertex stream, compact before simplification.
 
-	const uploadVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
-	const renderVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER);
-	if (renderVertexCount < uploadVertexCount / 2) {
-		const indices = prim.getIndices()!.getArray()!;
-		const [remap, unique] = simplifier.compactMesh(new Uint32Array(indices)); // overwrites indices!
-		compactPrimitive(prim, remap, unique);
+	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+	const srcIndexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER);
+	if (srcIndexCount < srcVertexCount / 2) {
+		compactPrimitive(prim);
 	}
 
 	const position = prim.getAttribute('POSITION')!;
 	const srcIndices = prim.getIndices()!;
-	const srcIndexCount = srcIndices.getCount();
-	const srcVertexCount = position.getCount();
 
 	let positionArray = position.getArray()!;
 	let indicesArray = srcIndices.getArray()!;
@@ -209,21 +206,18 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		flags as 'LockBorder'[],
 	);
 
-	// (4) Assign thinned indices.
+	// (4) Assign subset of indexes; compact primitive.
 
 	prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray));
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
+	compactPrimitive(prim);
 
-	// (5) Compact primitive.
-
-	const [remap, unique] = simplifier.compactMesh(new Uint32Array(dstIndicesArray)); // overwrites indices!
-	compactPrimitive(prim, remap, unique);
-
-	if (srcVertexCount <= 65534) {
+	const dstVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+	if (dstVertexCount <= 65534) {
 		prim.getIndices()!.setArray(new Uint16Array(prim.getIndices()!.getArray()!));
 	}
 
-	logger.debug(`${NAME}: ${formatDeltaOp(position.getCount(), unique)} vertices, error: ${error.toFixed(4)}.`);
+	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices, error: ${error.toFixed(4)}.`);
 
 	return prim;
 }
