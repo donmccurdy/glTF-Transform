@@ -1,11 +1,30 @@
-import { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
+import { vec3, vec4, mat4, Accessor, Primitive, TypedArray } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { create as createVec4 } from 'gl-matrix/vec4';
-import { createIndices } from './utils.js';
 import { weldPrimitive } from './weld.js';
 import { determinant } from 'gl-matrix/mat4';
 import { dequantizeAttributeArray } from './dequantize.js';
+import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+
+class Uint32Set {
+	private _array: Uint32Array;
+	private _false = 0;
+	private _true = 1;
+	constructor(array: Uint32Array) {
+		this._array = array;
+	}
+	add(i: number): void {
+		this._array[i] = this._true;
+	}
+	has(i: number): boolean {
+		return this._array[i] === this._true;
+	}
+	clear(): this {
+		this._array.fill(0);
+		return this;
+	}
+}
 
 /**
  * Applies a transform matrix to a {@link Primitive}.
@@ -28,40 +47,49 @@ import { dequantizeAttributeArray } from './dequantize.js';
  * @param matrix
  * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = new Set<number>()): void {
-	const position = prim.getAttribute('POSITION')!;
-	const indices = (prim.getIndices()?.getArray() || createIndices(position!.getCount())) as Uint32Array;
+export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices?: Uint32Array): void {
+	const vertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+	const indices = prim.getIndices();
+	const indicesArray = indices ? indices.getArray() || undefined : undefined;
+
+	let skipSet: Uint32Set | undefined;
+	if (skipIndices) {
+		skipSet = new Uint32Set(skipIndices.slice());
+	} else if (indicesArray) {
+		skipSet = new Uint32Set(new Uint32Array(vertexCount));
+	}
 
 	// Apply transform to base attributes.
+	const position = prim.getAttribute('POSITION');
 	if (position) {
-		applyMatrix(matrix, position, indices, new Set(skipIndices));
+		applyMatrix(matrix, position, indicesArray, skipSet);
 	}
 
 	const normal = prim.getAttribute('NORMAL');
 	if (normal) {
-		applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
+		applyNormalMatrix(matrix, normal, indicesArray, skipSet?.clear());
 	}
 
 	const tangent = prim.getAttribute('TANGENT');
 	if (tangent) {
-		applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+		applyTangentMatrix(matrix, tangent, indicesArray, skipSet?.clear());
 	}
 
 	// Apply transform to morph attributes.
 	for (const target of prim.listTargets()) {
 		const position = target.getAttribute('POSITION');
 		if (position) {
-			applyMatrix(matrix, position, indices, new Set(skipIndices));
+			applyMatrix(matrix, position, indicesArray, skipSet?.clear());
 		}
 
 		const normal = target.getAttribute('NORMAL');
 		if (normal) {
-			applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
+			applyNormalMatrix(matrix, normal, indicesArray, skipSet?.clear());
 		}
 
 		const tangent = target.getAttribute('TANGENT');
 		if (tangent) {
-			applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+			applyTangentMatrix(matrix, tangent, indicesArray, skipSet?.clear());
 		}
 	}
 
@@ -72,57 +100,64 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 	}
 
 	// Update mask.
-	for (let i = 0; i < indices.length; i++) skipIndices.add(indices[i]);
+	if (skipIndices) {
+		for (let i = 0, il = indicesArray ? indicesArray.length : vertexCount; i < il; i++) {
+			skipIndices[indicesArray ? indicesArray[i] : i] = 1;
+		}
+	}
 }
 
-function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+function applyMatrix(matrix: mat4, attribute: Accessor, indices?: TypedArray, skipIndices?: Uint32Set) {
 	// An arbitrary transform may not keep vertex positions in the required
 	// range of a normalized attribute. Replace the array, instead.
 	const srcArray = attribute.getArray()!;
 	const dstArray = dequantizeAttributeArray(srcArray, attribute.getComponentType(), attribute.getNormalized());
 	const elementSize = attribute.getElementSize();
+	const vertexCount = attribute.getCount();
 
 	const vector = createVec3() as vec3;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+	for (let i = 0, il = indices ? indices.length : vertexCount; i < il; i++) {
+		const index = indices ? indices[i] : i;
+		if (skipIndices && skipIndices.has(index)) continue;
 
 		attribute.getElement(index, vector);
 		transformMat4(vector, vector, matrix);
 		dstArray.set(vector, index * elementSize);
 
-		skipIndices.add(index);
+		if (skipIndices) skipIndices.add(index);
 	}
 
 	attribute.setArray(dstArray).setNormalized(false);
 }
 
-function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices?: TypedArray, skipIndices?: Uint32Set) {
 	const normalMatrix = createMat3();
 	fromMat4(normalMatrix, matrix);
 	invert(normalMatrix, normalMatrix);
 	transpose(normalMatrix, normalMatrix);
 
+	const vertexCount = attribute.getCount();
 	const vector = createVec3() as vec3;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+	for (let i = 0, il = indices ? indices.length : vertexCount; i < il; i++) {
+		const index = indices ? indices[i] : i;
+		if (skipIndices && skipIndices.has(index)) continue;
 
 		attribute.getElement(index, vector);
 		transformMat3(vector, vector, normalMatrix);
 		normalizeVec3(vector, vector);
 		attribute.setElement(index, vector);
 
-		skipIndices.add(index);
+		if (skipIndices) skipIndices.add(index);
 	}
 }
 
-function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices?: TypedArray, skipIndices?: Uint32Set) {
 	const v3 = createVec3() as vec3;
 	const v4 = createVec4() as vec4;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+	const vertexCount = attribute.getCount();
+	for (let i = 0, il = indices ? indices.length : vertexCount; i < il; i++) {
+		const index = indices ? indices[i] : i;
+		if (skipIndices && skipIndices.has(index)) continue;
 
 		attribute.getElement(index, v4);
 
@@ -138,7 +173,7 @@ function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Ar
 
 		attribute.setElement(index, v4);
 
-		skipIndices.add(index);
+		if (skipIndices) skipIndices.add(index);
 	}
 }
 
