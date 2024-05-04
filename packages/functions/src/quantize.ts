@@ -25,6 +25,8 @@ import type { Volume } from '@gltf-transform/extensions';
 import { prune } from './prune.js';
 import { assignDefaults, createTransform } from './utils.js';
 import { sortPrimitiveWeights } from './sort-primitive-weights.js';
+import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
+import { compactPrimitive } from './compact-primitive.js';
 
 const NAME = 'quantize';
 
@@ -128,6 +130,11 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 			}
 
 			for (const prim of mesh.listPrimitives()) {
+				const renderCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER);
+				const uploadCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+				if (renderCount < uploadCount / 2) {
+					compactPrimitive(prim);
+				}
 				quantizePrimitive(doc, prim, nodeTransform!, options);
 				for (const target of prim.listTargets()) {
 					quantizePrimitive(doc, target, nodeTransform!, options);
