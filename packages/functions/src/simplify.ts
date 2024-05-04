@@ -16,7 +16,6 @@ import { unweldPrimitive } from './unweld.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
-import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 
 const NAME = 'simplify';
 
