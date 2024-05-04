@@ -43,12 +43,12 @@ test('welded', async (t) => {
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
 
-	const srcCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(weld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
-	const dstCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
@@ -61,12 +61,12 @@ test('unwelded', async (t) => {
 	const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
 	const scene = document.getRoot().getDefaultScene()!;
 
-	const srcCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5, error: 0.001 }));
 
-	const dstCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.45, '>=45% reduction');
@@ -96,12 +96,12 @@ test('shared accessors', async (t) => {
 	const nodeB = document.createNode('B').setTranslation([-5, 0, 0]).setMesh(meshB);
 	scene.addChild(nodeA).addChild(nodeB);
 
-	const srcCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const srcBounds = roundBbox(getBounds(scene), 2);
 
 	await document.transform(unweld(), simplify({ simplifier: MeshoptSimplifier, ratio: 0.5 }));
 
-	const dstCount = getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE);
+	const dstCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
 	const dstBounds = roundBbox(getBounds(scene), 2);
 
 	t.truthy((srcCount - dstCount) / srcCount > 0.5, '>=50% reduction');
@@ -126,7 +126,7 @@ test('degenerate', async (t) => {
 	t.true(mesh.isDisposed(), 'mesh disposed');
 	t.true(node.isDisposed(), 'node disposed');
 	t.false(scene.isDisposed(), 'scene kept');
-	t.is(getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE), 0, '0 vertices');
+	t.is(getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE), 0, '0 vertices');
 });
 
 test('torus', async (t) => {

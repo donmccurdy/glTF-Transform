@@ -4,7 +4,7 @@ import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-const { RENDER, RENDER_CACHED, GPU, GPU_NAIVE, UNUSED } = VertexCountMethod;
+const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
 
 test('render', async (t) => {
 	const document = new Document().setLogger(logger);
@@ -26,20 +26,20 @@ test('render-cached', async (t) => {
 
 test('gpu-naive', async (t) => {
 	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), GPU_NAIVE), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), GPU_NAIVE), 32 * 2, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), GPU_NAIVE), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), GPU_NAIVE), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), GPU_NAIVE), 32 * 2, 'unused');
+	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD_NAIVE), 32 * 4, 'basic');
+	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD_NAIVE), 32 * 2, 'indexed');
+	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD_NAIVE), 32, 'instanced');
+	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD_NAIVE), 32 * 2, 'mixed attributes');
+	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD_NAIVE), 32 * 2, 'unused');
 });
 
 test('gpu', async (t) => {
 	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), GPU), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), GPU), 32, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), GPU), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), GPU), 32, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), GPU), 32, 'unused');
+	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD), 32 * 4, 'basic');
+	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD), 32, 'indexed');
+	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD), 32, 'instanced');
+	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD), 32, 'mixed attributes');
+	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD), 32, 'unused');
 });
 
 test('unused', async (t) => {

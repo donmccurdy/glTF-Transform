@@ -37,8 +37,8 @@ function listScenes(doc: Document): InspectPropertyReport<InspectSceneReport> {
 				bboxMin: toPrecision(sceneBounds.min),
 				bboxMax: toPrecision(sceneBounds.max),
 				renderVertexCount: getSceneVertexCount(scene, VertexCountMethod.RENDER),
-				gpuVertexCount: getSceneVertexCount(scene, VertexCountMethod.GPU),
-				gpuNaiveVertexCount: getSceneVertexCount(scene, VertexCountMethod.GPU_NAIVE),
+				uploadVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD),
+				uploadNaiveVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE),
 			};
 		});
 	return { properties: scenes };
@@ -83,7 +83,7 @@ function listMeshes(doc: Document): InspectPropertyReport<InspectMeshReport> {
 				mode: Array.from(new Set(modes)),
 				meshPrimitives: mesh.listPrimitives().length,
 				glPrimitives: glPrimitives,
-				vertices: getMeshVertexCount(mesh, VertexCountMethod.GPU),
+				vertices: getMeshVertexCount(mesh, VertexCountMethod.UPLOAD),
 				indices: Array.from(meshIndices).sort(),
 				attributes: Array.from(semantics).sort(),
 				instances: instances,
@@ -243,8 +243,8 @@ export interface InspectSceneReport {
 	bboxMin: number[];
 	bboxMax: number[];
 	renderVertexCount: number;
-	gpuVertexCount: number;
-	gpuNaiveVertexCount: number;
+	uploadVertexCount: number;
+	uploadNaiveVertexCount: number;
 }
 
 export interface InspectMeshReport {
