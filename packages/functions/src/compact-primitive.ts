@@ -1,10 +1,19 @@
 import { Accessor, Document, Primitive, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
 import { createIndicesEmpty, deepListAttributes, shallowCloneAccessor } from './utils.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { EMPTY_U32 } from './hash-table.js';
 
 /** @hidden */
-export function compactPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive {
+export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexCount?: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
+
+	// Compute remap and dstVertexCount if not provided.
+
+	if (!remap || !dstVertexCount) {
+		const compactPlan = createCompactPlan(prim);
+		if (!compactPlan) return prim; // Unindexed; skip.
+		[remap, dstVertexCount] = compactPlan;
+	}
 
 	// Remap indices.
 
@@ -82,4 +91,31 @@ export function compactAttribute(
 	}
 
 	return dstAttribute.setArray(dstArray);
+}
+
+/**
+ * Creates a 'remap' and 'dstVertexCount' plan for indexed primitives,
+ * such that they can be rewritten with {@link compactPrimitive} removing
+ * any non-rendered vertices. For unindexed primitives, returns null.
+ * @hidden
+ * @internal
+ */
+function createCompactPlan(prim: Primitive): [Uint32Array, number] | null {
+	const indices = prim.getIndices();
+	const indicesArray = indices ? indices.getArray() : null;
+	if (!indices || !indicesArray) return null;
+
+	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+	const remap = new Uint32Array(srcVertexCount).fill(EMPTY_U32);
+
+	let dstVertexCount = 0;
+
+	for (let i = 0; i < indicesArray.length; i++) {
+		const srcIndex = indicesArray[i];
+		if (remap[srcIndex] === EMPTY_U32) {
+			remap[srcIndex] = dstVertexCount++;
+		}
+	}
+
+	return [remap, dstVertexCount];
 }
