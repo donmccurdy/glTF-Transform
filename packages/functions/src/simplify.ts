@@ -109,10 +109,14 @@ export function simplify(_options: SimplifyOptions): Transform {
 				const mode = prim.getMode();
 				if (mode === TRIANGLES || mode === TRIANGLE_STRIP || mode === TRIANGLE_FAN) {
 					simplifyPrimitive(prim, options);
-					if (prim.getIndices()!.getCount() === 0) prim.dispose();
+					if (getPrimitiveVertexCount(prim, VertexCountMethod.RENDER) === 0) {
+						prim.dispose();
+					}
 				} else if (prim.getMode() === POINTS && !!simplifier.simplifyPoints) {
 					simplifyPrimitive(prim, options);
-					if (prim.getAttribute('POSITION')!.getCount() === 0) prim.dispose();
+					if (getPrimitiveVertexCount(prim, VertexCountMethod.RENDER) === 0) {
+						prim.dispose();
+					}
 				} else {
 					numUnsupported++;
 				}
