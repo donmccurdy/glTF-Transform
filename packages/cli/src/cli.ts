@@ -1719,11 +1719,11 @@ file sizes.
 		Session.create(io, logger, args.input, args.output).transform(sparse(options as unknown as SparseOptions)),
 	);
 
-program.option('--allow-http', 'Allows reads from HTTP requests.', {
+program.option('--allow-net', 'Allows reads from network requests.', {
 	default: false,
 	validator: Validator.BOOLEAN,
 	action: ({ options }) => {
-		if (options.allowHttp) io.setAllowHTTP(true);
+		if (options.allowNet) io.setAllowNetwork(true);
 	},
 });
 program.option('--vertex-layout <layout>', 'Vertex buffer layout preset.', {
