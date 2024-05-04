@@ -40,7 +40,7 @@ export enum VertexCountMethod {
 	 * attributes are pre-processed to a known buffer layout, and the client is
 	 * optimized for that buffer layout, this total will be optimistic.
 	 */
-	GPU = 'gpu',
+	UPLOAD = 'upload',
 
 	/**
 	 * Expected number of vertices uploaded to the GPU, assuming that a client
@@ -48,7 +48,7 @@ export enum VertexCountMethod {
 	 * attribute {@link Accessor Accessors} shared by multiple primitives, but
 	 * never uploading the same mesh or primitive to GPU memory more than once.
 	 */
-	GPU_NAIVE = 'gpu-naive',
+	UPLOAD_NAIVE = 'upload-naive',
 
 	/**
 	 * Total number of unique vertices represented, considering all attributes of
@@ -57,6 +57,7 @@ export enum VertexCountMethod {
 	 * optimization opportunities.
 	 *
 	 * @hidden TODO(feat): Not yet implemented.
+	 * @internal
 	 */
 	DISTINCT = 'distinct',
 
@@ -67,6 +68,7 @@ export enum VertexCountMethod {
 	 * optimization opportunities.
 	 *
 	 * @hidden TODO(feat): Not yet implemented.
+	 * @internal
 	 */
 	DISTINCT_POSITION = 'distinct-position',
 
@@ -127,9 +129,9 @@ function _getSubtreeVertexCount(node: Node | Scene, method: VertexCountMethod): 
 				_sum(nonInstancedMeshes.map((mesh) => getMeshVertexCount(mesh, method))) +
 				_sum(instancedMeshes.map(([batch, mesh]) => batch * getMeshVertexCount(mesh, method)))
 			);
-		case VertexCountMethod.GPU_NAIVE:
+		case VertexCountMethod.UPLOAD_NAIVE:
 			return _sum(uniqueMeshes.map((mesh) => getMeshVertexCount(mesh, method)));
-		case VertexCountMethod.GPU:
+		case VertexCountMethod.UPLOAD:
 			return _sum(uniquePositions.map((attribute) => attribute.getCount()));
 		case VertexCountMethod.DISTINCT:
 		case VertexCountMethod.DISTINCT_POSITION:
@@ -155,9 +157,9 @@ export function getMeshVertexCount(mesh: Mesh, method: VertexCountMethod): numbe
 	switch (method) {
 		case VertexCountMethod.RENDER:
 		case VertexCountMethod.RENDER_CACHED:
-		case VertexCountMethod.GPU_NAIVE:
+		case VertexCountMethod.UPLOAD_NAIVE:
 			return _sum(prims.map((prim) => getPrimitiveVertexCount(prim, method)));
-		case VertexCountMethod.GPU:
+		case VertexCountMethod.UPLOAD:
 			return _sum(uniquePositions.map((attribute) => attribute.getCount()));
 		case VertexCountMethod.DISTINCT:
 		case VertexCountMethod.DISTINCT_POSITION:
@@ -182,8 +184,8 @@ export function getPrimitiveVertexCount(prim: Primitive, method: VertexCountMeth
 			return indices ? indices.getCount() : position.getCount();
 		case VertexCountMethod.RENDER_CACHED:
 			return indices ? new Set(indices.getArray()).size : position.getCount();
-		case VertexCountMethod.GPU_NAIVE:
-		case VertexCountMethod.GPU:
+		case VertexCountMethod.UPLOAD_NAIVE:
+		case VertexCountMethod.UPLOAD:
 			return position.getCount();
 		case VertexCountMethod.DISTINCT:
 		case VertexCountMethod.DISTINCT_POSITION:
