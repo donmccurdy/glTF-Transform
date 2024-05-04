@@ -52,7 +52,7 @@ test('read gltf', async (t) => {
 
 test('read glb http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
-	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
+	const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 	let count = 0;
 	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.glb'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
@@ -66,7 +66,7 @@ test('read glb http', async (t) => {
 
 test('read gltf http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
-	const io = new NodeIO(fetch).setLogger(logger).setAllowHTTP(true);
+	const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 	let count = 0;
 	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.gltf'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
