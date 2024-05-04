@@ -28,15 +28,15 @@ import { HTTPUtils } from '../utils/index.js';
  * const glb = await io.writeBinary(document); // Document → Uint8Array
  * ```
  *
- * By default, NodeIO can only read/write paths on disk. To enable HTTP requests, provide a Fetch
+ * By default, NodeIO can only read/write paths on disk. To enable network requests, provide a Fetch
  * API implementation (such as [`node-fetch`](https://www.npmjs.com/package/node-fetch)) and enable
- * {@link NodeIO.setAllowHTTP setAllowHTTP}. HTTP requests may optionally be configured with
+ * {@link NodeIO.setAllowNetwork setAllowNetwork}. Network requests may optionally be configured with
  * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters.
  *
  * ```typescript
  * import fetch from 'node-fetch';
  *
- * const io = new NodeIO(fetch, {headers: {...}}).setAllowHTTP(true);
+ * const io = new NodeIO(fetch, {headers: {...}}).setAllowNetwork(true);
  *
  * const document = await io.read('https://example.com/path/to/model.glb');
  * ```
@@ -55,7 +55,7 @@ export class NodeIO extends PlatformIO {
 	/**
 	 * Constructs a new NodeIO service. Instances are reusable. By default, only NodeIO can only
 	 * read/write paths on disk. To enable HTTP requests, provide a Fetch API implementation and
-	 * enable {@link NodeIO.setAllowHTTP setAllowHTTP}.
+	 * enable {@link NodeIO.setAllowNetwork setAllowNetwork}.
 	 *
 	 * @param fetch Implementation of Fetch API.
 	 * @param fetchConfig Configuration object for Fetch API.
@@ -75,7 +75,7 @@ export class NodeIO extends PlatformIO {
 		});
 	}
 
-	public setAllowHTTP(allow: boolean): this {
+	public setAllowNetwork(allow: boolean): this {
 		if (allow && !this._fetch) {
 			throw new Error('NodeIO requires a Fetch API implementation for HTTP requests.');
 		}
