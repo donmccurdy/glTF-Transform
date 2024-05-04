@@ -37,8 +37,8 @@ function listScenes(doc: Document): InspectPropertyReport<InspectSceneReport> {
 				bboxMin: toPrecision(sceneBounds.min),
 				bboxMax: toPrecision(sceneBounds.max),
 				renderVertexCount: getSceneVertexCount(scene, VertexCountMethod.RENDER),
-				gpuVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD),
-				gpuNaiveVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE),
+				uploadVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD),
+				uploadNaiveVertexCount: getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE),
 			};
 		});
 	return { properties: scenes };
@@ -243,8 +243,8 @@ export interface InspectSceneReport {
 	bboxMin: number[];
 	bboxMax: number[];
 	renderVertexCount: number;
-	gpuVertexCount: number;
-	gpuNaiveVertexCount: number;
+	uploadVertexCount: number;
+	uploadNaiveVertexCount: number;
 }
 
 export interface InspectMeshReport {
