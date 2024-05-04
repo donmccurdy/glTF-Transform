@@ -11,7 +11,9 @@ export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexC
 
 	if (!remap || !dstVertexCount) {
 		const compactPlan = createCompactPlan(prim);
-		if (!compactPlan) return prim; // Unindexed; skip.
+		if (!compactPlan) {
+			return prim; // Unindexed; skip.
+		}
 		[remap, dstVertexCount] = compactPlan;
 	}
 
@@ -50,9 +52,13 @@ export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexC
 
 	// Clean up accessors.
 
-	if (srcIndices && srcIndices.listParents().length === 1) srcIndices.dispose();
+	if (srcIndices && srcIndices.listParents().length === 1) {
+		srcIndices.dispose();
+	}
 	for (const srcAttribute of srcAttributesPrev) {
-		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+		if (srcAttribute.listParents().length === 1) {
+			srcAttribute.dispose();
+		}
 	}
 
 	return prim;
