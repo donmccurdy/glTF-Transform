@@ -1,0 +1,64 @@
+:root {
+	--tp-plugin-thumbnail-list-thumb-size: 64px;
+	--tp-plugin-thumbnail-list-width: 325px;
+	--tp-plugin-thumbnail-list-height: 300px;
+}
+
+html, body {
+	padding: 0;
+	margin: 0;
+}
+
+.back {
+	position: fixed;
+	top: 1em;
+	left: 1em;
+	z-index: 1;
+	color: #FFFFFF;
+	text-decoration: none;
+	opacity: 0.75;
+}
+
+.back:hover {
+	opacity: 1;
+}
+
+/* Dropzone */
+
+.dropzone-placeholder {
+	width: 400px;
+	height: 200px;
+	position: absolute;
+	top: calc(50% - 100px);
+	left: calc(50% - 200px);
+	background: rgba(255, 255, 255, 0.75);
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 3em;
+	box-sizing: border-box;
+}
+
+.dropzone-placeholder p {
+	margin-top: 0;
+}
+
+/* Tweakpane */
+
+.tp-dfwv {
+	width: 350px !important;
+}
+
+.tp-colv_t .tp-txtv {
+	position: relative;
+}
+
+.tp-colv_t .tp-txtv::after {
+	content: 'sRGB';
+	position: absolute;
+	right: 0.5em;
+	top: 0.3em;
+	color: #888;
+	font-size: 1em;
+}

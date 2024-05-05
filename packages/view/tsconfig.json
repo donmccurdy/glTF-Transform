@@ -3,6 +3,7 @@
 	"include": ["src/**/*", "../global.d.ts"],
 	"compilerOptions": {
 		"outDir": "dist",
-		"strict": true
+		"strict": true,
+		"noImplicitAny": false
 	}
 }
