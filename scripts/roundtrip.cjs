@@ -7,6 +7,16 @@ const { SOURCE, TARGET, VARIANT, SKIPLIST } = require('./constants.cjs');
  * Generates a copy of each sample model using `copy` and `optimize`. Copy
  * not apply any meaningful edits to the files, and is intended to be a
  * lossless round trip test. Optimize runs a number of other commands.
+ *
+ * Known problems:
+ * - MorphPrimitivesTest (simplify)
+ *     - Work around with --no-simplify. Attribute-aware simplification might solve.
+ * - NormalTangentMirrorTest (simplify)
+ *     - Work around with --no-simplify. Attribute-aware simplification might solve.
+ * - NormalTangentTest
+ *     - Work around with --no-simplify. Attribute-aware simplification might solve.
+ * - TextureEncodingTest (webp conversion; non-issue)
+ * - TextureLinearInterpolationTest (webp conversion; non-issue)
  */
 
 const INDEX = require(path.join(SOURCE, 'model-index.json')).filter((asset) => !SKIPLIST.has(asset.name));

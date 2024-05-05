@@ -64,8 +64,8 @@ export function meshopt(_options: MeshoptOptions): Transform {
 			pattern = /.*/;
 			patternTargets = /.*/;
 		} else {
-			pattern = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/;
-			patternTargets = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS|NORMAL|TANGENT)(_\d+)?$/;
+			pattern = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS|COLOR)(_\d+)?$/;
+			patternTargets = /^(POSITION|TEXCOORD|JOINTS|WEIGHTS|COLOR|NORMAL|TANGENT)(_\d+)?$/;
 			quantizeNormal = Math.min(quantizeNormal, 8); // See meshopt::getMeshoptFilter.
 		}
 

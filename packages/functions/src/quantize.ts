@@ -201,7 +201,7 @@ function quantizePrimitive(
 
 		// Quantize the vertex attribute.
 		quantizeAttribute(dstAttribute, ctor, bits);
-		prim.swap(srcAttribute, dstAttribute);
+		prim.setAttribute(semantic, dstAttribute);
 	}
 
 	// Normalize skinning weights.
