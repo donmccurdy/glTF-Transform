@@ -1,10 +1,79 @@
 # Changelog
 
-## v4.x - 🚧 Unreleased
+## v4.x
+
+### v4.0
 
 **Breaking changes:**
 
-- Requires Node.js >=18 (non-Node.js runtimes unaffected)
+- core: Renames `NodeIO#setAllowHttp` to `setAllowNetwork` [#1392](https://github.com/donmccurdy/glTF-Transform/pull/1392)
+- core: Removes `Document#merge` and `Document#clone` methods [#1375](https://github.com/donmccurdy/glTF-Transform/pull/1375)
+	- Use `mergeDocuments` and `cloneDocument` from `/functions` package
+- core: Renames `bounds` to `getBounds` and moves from /core to /functions [#1340](https://github.com/donmccurdy/glTF-Transform/pull/1340)
+- core: Renames `Node#getParent` to `Node#getParentNode` and `Node#listNodeScenes` [#1211](https://github.com/donmccurdy/glTF-Transform/pull/1211)
+- core: Renames `MathUtils#denormalize` to `decodeNormalizedInt`, and `MathUtils#normalize` to `encodeNormalizedInt`  [#1211](https://github.com/donmccurdy/glTF-Transform/pull/1211)
+- core,extensions: Removes hexadecimal getters/setters [#1211](https://github.com/donmccurdy/glTF-Transform/pull/1211)
+	- Use [`ColorUtils`](https://gltf-transform.dev/modules/core/classes/ColorUtils) instead
+- extensions: Upgrade to `property-graph` v2 [#1141](https://github.com/donmccurdy/glTF-Transform/pull/1141)
+	- Affects implementations of custom extensions. See changes to official extensions in [#1141](https://github.com/donmccurdy/glTF-Transform/pull/1141)
+- functions: Removes 'overwrite' and 'skipIndices' options from `transformMesh()` and `transformPrimitive()` functions [#1397](https://github.com/donmccurdy/glTF-Transform/pull/1397)
+- functions: Removes lossy `weld()` options [#1357](https://github.com/donmccurdy/glTF-Transform/pull/1357)
+- functions: Merges `textureResize` into `textureCompress` function [#1211](https://github.com/donmccurdy/glTF-Transform/pull/1211)
+- cli: Update to Sharp v0.33 [#1402](https://github.com/donmccurdy/glTF-Transform/pull/1402)
+	- See [Sharp installation guide](https://sharp.pixelplumbing.com/install#cross-platform)
+- cli: Upgrade to KTX-Software v4.3 [#1277](https://github.com/donmccurdy/glTF-Transform/pull/1277), [#1369](https://github.com/donmccurdy/glTF-Transform/pull/1369), [#1376](https://github.com/donmccurdy/glTF-Transform/pull/1376), [#1378](https://github.com/donmccurdy/glTF-Transform/pull/1378)
+- cli: Renames `--allow-http` to `--allow-net` [#1392](https://github.com/donmccurdy/glTF-Transform/pull/1392)
+- cli: Change default compression of `optimize` command to Meshopt [#1377](https://github.com/donmccurdy/glTF-Transform/pull/1377)
+- core,cli: Requires Node.js >=18, non-Node.js runtimes unaffected
+
+**Features:**
+
+- extensions: Adds `KHR_materials_diffuse_transmission` [#1159](https://github.com/donmccurdy/glTF-Transform/pull/1159)
+- extensions: Adds `KHR_materials_dispersion` [#1262](https://github.com/donmccurdy/glTF-Transform/pull/1262)
+- functions: Adds `mergeDocuments(target, source)` [#1375](https://github.com/donmccurdy/glTF-Transform/pull/1375)
+- functions: Adds `cloneDocument(source)` [#1375](https://github.com/donmccurdy/glTF-Transform/pull/1375)
+- functions: Adds `copyToDocument(target, source, sourceProperties)` [#1375](https://github.com/donmccurdy/glTF-Transform/pull/1375)
+- functions: Adds `moveToDocument(target, source, sourceProperties)` [#1375](https://github.com/donmccurdy/glTF-Transform/pull/1375)
+- functions: Adds `compactPrimitive()` to remove unused vertices [#1397](https://github.com/donmccurdy/glTF-Transform/pull/1397)
+- functions: Adds `convertPrimitiveToLines` and `convertPrimitiveToTriangles`, support conversions of various primitive topologies to triangle lists and line lists [#1316](https://github.com/donmccurdy/glTF-Transform/pull/1316)
+- functions: Adds more aggressive `prune()` defaults [#1199](https://github.com/donmccurdy/glTF-Transform/pull/1199), [#1270](https://github.com/donmccurdy/glTF-Transform/pull/1270)
+- cli: Expose `--simplify-ratio` and `--simplify-lock-border` options on `optimize` command [#1354](https://github.com/donmccurdy/glTF-Transform/pull/1354) by [@jo-chemla](https://github.com/jo-chemla)
+- cli: Expose prune-related options on `optimize` command [#1298](https://github.com/donmccurdy/glTF-Transform/pull/1298) by [@subho57](https://github.com/subho57)
+- cli: MikkTSpace tangent calculation handles unwelding and welding automatically [#1241](https://github.com/donmccurdy/glTF-Transform/pull/1241)
+- functions: Add vertex count helpers, `getSceneVertexCount`, `getNodeVertexCount`, `getMeshVertexCount`, `getPrimitiveVertexCount` [#1320](https://github.com/donmccurdy/glTF-Transform/pull/1320), [#1327](https://github.com/donmccurdy/glTF-Transform/pull/1327), [#1393](https://github.com/donmccurdy/glTF-Transform/pull/1393)
+- functions: Add `keepExtras` option to `prune()` [#1302](https://github.com/donmccurdy/glTF-Transform/pull/1302) by [@Archimagus](https://github.com/Archimagus)
+- functions: Add support for point cloud simplification, via meshoptimizer v0.20 [#1291](https://github.com/donmccurdy/glTF-Transform/pull/1291)
+- functions: Add power-of-two options to `textureCompress` [#1221](https://github.com/donmccurdy/glTF-Transform/pull/1221)
+
+**Performance:**
+
+- functions: Improves `weld()` performance [#1237](https://github.com/donmccurdy/glTF-Transform/pull/1237), [#1238](https://github.com/donmccurdy/glTF-Transform/pull/1238), [#1344](https://github.com/donmccurdy/glTF-Transform/pull/1344), [#1351](https://github.com/donmccurdy/glTF-Transform/pull/1351)
+- functions: Improves `join()` and `joinPrimitives()` performance [#1242](https://github.com/donmccurdy/glTF-Transform/pull/1242), [#1397](https://github.com/donmccurdy/glTF-Transform/pull/1397)
+- functions: Improves `transformMesh()` `transformPrimitive()` performance [#1397](https://github.com/donmccurdy/glTF-Transform/pull/1397)
+- functions: Improves `quantize()` performance [#1395](https://github.com/donmccurdy/glTF-Transform/pull/1395)
+- functions: Improves `partition()` performance [#1373](https://github.com/donmccurdy/glTF-Transform/pull/1373)
+- functions: Improves `reorder()` performance [#1358](https://github.com/donmccurdy/glTF-Transform/pull/1358)
+- core: NodeIO now writes files to disk in batches [#1383](https://github.com/donmccurdy/glTF-Transform/pull/1383)
+- functions: Improves `simplify()` performance on indexed primitives [#1381](https://github.com/donmccurdy/glTF-Transform/pull/1381)
+-
+
+**Other:**
+
+- chore(repo): Update to Yarn v4 [#1401](https://github.com/donmccurdy/glTF-Transform/pull/1401)
+- chore(repo): Adds CI for local builds on windows [#959](https://github.com/donmccurdy/glTF-Transform/pull/959)
+- chore(repo): Add benchmarks
+- chore(repo): Packages are now published as unminified code [#1212](https://github.com/donmccurdy/glTF-Transform/pull/1212)
+- docs(core): Fix errors in Accessor documentation [#1235](https://github.com/donmccurdy/glTF-Transform/pull/1235) by [@harrycollin](https://github.com/harrycollin)
+- docs(extensions): Add more illustrations for extensions
+- docs(repo): Show 'experimental' tags in API documentation [`c3a693`](https://github.com/donmccurdy/glTF-Transform/commit/c3a693567157ed5c387eb5e7f6cb5a06a146d001)
+- fix(core): Clamp when encoding normalized ints [#1286](https://github.com/donmccurdy/glTF-Transform/pull/1286)
+- fix(extensions): Bug fixes for Draco compression [#1388](https://github.com/donmccurdy/glTF-Transform/pull/1388), [#1385](https://github.com/donmccurdy/glTF-Transform/pull/1385)
+- fix(extensions): Group Meshopt-compressed accessors by parent [#1384](https://github.com/donmccurdy/glTF-Transform/pull/1384)
+- fix(extensions): Improve order-independence in extension implementations [#1257](https://github.com/donmccurdy/glTF-Transform/pull/1257)
+- fix(functions): Various fixes for pruning and welding [#1284](https://github.com/donmccurdy/glTF-Transform/pull/1284)
+- fix(functions): Fixes for instancing bugs [#1269](https://github.com/donmccurdy/glTF-Transform/pull/1269)
+- fix(functions): Fixes for simplification bugs [#1268](https://github.com/donmccurdy/glTF-Transform/pull/1268)
+- fix(cli): Reformat 'validate' output as valid CSV [#1252](https://github.com/donmccurdy/glTF-Transform/pull/1252)
 
 ## v3.x
 
