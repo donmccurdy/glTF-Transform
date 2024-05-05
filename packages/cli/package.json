@@ -64,9 +64,8 @@
 		"bin/",
 		"dist/",
 		"src/",
-		"vendor/",
 		"README.md",
-		"package.json",
+		"LICENSE.md",
 		"package-lock.json"
 	],
 	"gitHead": "f2b911d41dd35f81a3e85debdfd17f5fb45df429"

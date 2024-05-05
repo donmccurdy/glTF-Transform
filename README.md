@@ -2,7 +2,7 @@
 
 [![Latest NPM release](https://img.shields.io/npm/v/@gltf-transform/core.svg)](https://www.npmjs.com/package/@gltf-transform/core)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@gltf-transform/core)](https://bundlephobia.com/package/@gltf-transform/core)
-[![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/glTF-Transform/blob/main/LICENSE.md)
 [![Build Status](https://github.com/donmccurdy/glTF-Transform/workflows/build/badge.svg?branch=main&event=push)](https://github.com/donmccurdy/glTF-Transform/actions?query=workflow%3Abuild)
 [![Coverage](https://codecov.io/gh/donmccurdy/glTF-Transform/branch/main/graph/badge.svg?token=Z91ZYFEV09)](https://codecov.io/gh/donmccurdy/glTF-Transform)
 
@@ -170,4 +170,4 @@ See [*Credits*](https://gltf-transform.dev/credits).
 
 ## License
 
-Copyright 2023, MIT License.
+Copyright 2024, MIT License.

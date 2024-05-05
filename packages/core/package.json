@@ -38,7 +38,7 @@
 		"dist/",
 		"src/",
 		"README.md",
-		"package.json",
+		"LICENSE.md",
 		"package-lock.json"
 	],
 	"browser": {

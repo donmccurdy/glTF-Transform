@@ -12,6 +12,9 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@gltf-transform/core": "^4.0.0-alpha.16",
+		"@gltf-transform/extensions": "^4.0.0-alpha.16",
+		"@gltf-transform/functions": "^4.0.0-alpha.16",
 		"@greendoc/parse": "^0.4.1",
 		"@greendoc/svelte": "^0.4.1",
 		"@sveltejs/adapter-static": "^3.0.0",
