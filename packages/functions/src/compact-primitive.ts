@@ -4,9 +4,48 @@ import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.j
 import { EMPTY_U32 } from './hash-table.js';
 
 /**
- * TODO - document and export this if it's needed for transformPrimitive.
- * @hidden
+ * Rewrites a {@link Primitive} such that all unused vertices in its vertex
+ * attributes are removed. When multiple Primitives share vertex attributes,
+ * each indexing only a few, compaction can be used to produce Primitives
+ * each having smaller, independent vertex streams instead.
+ *
+ * Regardless of whether the Primitive is indexed or contains unused vertices,
+ * compaction will clone every {@link Accessor}. The resulting Primitive will
+ * share no Accessors with other Primitives, allowing later changes to
+ * the vertex stream to be applied in isolation.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { compactPrimitive, transformMesh } from '@gltf-transform/functions';
+ * import { fromTranslation } from 'gl-matrix/mat4';
+ *
+ * const mesh = document.getRoot().listMeshes().find((mesh) => mesh.getName() === 'MyMesh');
+ *
+ * // Compact primitives, removing any unused vertices and isolating vertex
+ * // streams. Without compaction, `transformMesh` might affect other meshes
+ * // sharing vertex attributes with 'MyMesh'.
+ * for (const prim of mesh.listPrimitives()) {
+ *		compactPrimitive(prim);
+ * }
+ *
+ * // Transform mesh vertices, Y += 10.
+ * transformMesh(mesh, fromTranslation([], [0, 10, 0]));
+ * ```
+ *
+ * Parameters 'remap' and 'dstVertexCount' are optional. When either is
+ * provided, the other must be provided as well. If one or both are missing,
+ * both will be computed from the mesh indices.
+ *
+ * @param remap - Mapping. Array index represents vertex index in the source
+ *		attributes, array value represents index in the resulting compacted
+ *		primitive. When omitted, calculated from indices.
+ * @param dstVertexcount - Number of unique vertices in compacted primitive.
+ *		When omitted, calculated from indices.
  */
+// TODO(cleanup): Additional signatures currently break greendoc/parse.
+// export function compactPrimitive(prim: Primitive): Primitive;
+// export function compactPrimitive(prim: Primitive, remap: TypedArray, dstVertexCount: number): Primitive;
 export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexCount?: number): Primitive {
 	const document = Document.fromGraph(prim.getGraph())!;
 
@@ -66,6 +105,7 @@ export function compactPrimitive(prim: Primitive, remap?: TypedArray, dstVertexC
  * Any existing array in dstAttribute is replaced. Vertices not used by the index are eliminated,
  * leaving a compact attribute.
  * @hidden
+ * @internal
  */
 export function compactAttribute(
 	srcAttribute: Accessor,
