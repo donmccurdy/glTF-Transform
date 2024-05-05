@@ -1743,9 +1743,9 @@ __metadata:
   resolution: "@gltf-transform/cli@workspace:packages/cli"
   dependencies:
     "@donmccurdy/caporal": "npm:~0.0.10"
-    "@gltf-transform/core": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/extensions": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/functions": "npm:^4.0.0-alpha.17"
+    "@gltf-transform/core": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/extensions": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/functions": "npm:^4.0.0-alpha.18"
     "@types/inquirer": "npm:~9.0.3"
     "@types/language-tags": "npm:~1.0.1"
     "@types/micromatch": "npm:~4.0.2"
@@ -1778,7 +1778,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gltf-transform/core@npm:^4.0.0-alpha.17, @gltf-transform/core@workspace:packages/core":
+"@gltf-transform/core@npm:^4.0.0-alpha.18, @gltf-transform/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@gltf-transform/core@workspace:packages/core"
   dependencies:
@@ -1790,9 +1790,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gltf-transform/docs@workspace:packages/docs"
   dependencies:
-    "@gltf-transform/core": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/extensions": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/functions": "npm:^4.0.0-alpha.17"
+    "@gltf-transform/core": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/extensions": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/functions": "npm:^4.0.0-alpha.18"
     "@greendoc/parse": "npm:^0.4.1"
     "@greendoc/svelte": "npm:^0.4.1"
     "@sveltejs/adapter-static": "npm:^3.0.0"
@@ -1810,21 +1810,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gltf-transform/extensions@npm:^4.0.0-alpha.17, @gltf-transform/extensions@workspace:packages/extensions":
+"@gltf-transform/extensions@npm:^4.0.0-alpha.18, @gltf-transform/extensions@workspace:packages/extensions":
   version: 0.0.0-use.local
   resolution: "@gltf-transform/extensions@workspace:packages/extensions"
   dependencies:
-    "@gltf-transform/core": "npm:^4.0.0-alpha.17"
+    "@gltf-transform/core": "npm:^4.0.0-alpha.18"
     ktx-parse: "npm:^0.7.0"
   languageName: unknown
   linkType: soft
 
-"@gltf-transform/functions@npm:^4.0.0-alpha.17, @gltf-transform/functions@workspace:packages/functions":
+"@gltf-transform/functions@npm:^4.0.0-alpha.18, @gltf-transform/functions@workspace:packages/functions":
   version: 0.0.0-use.local
   resolution: "@gltf-transform/functions@workspace:packages/functions"
   dependencies:
-    "@gltf-transform/core": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/extensions": "npm:^4.0.0-alpha.17"
+    "@gltf-transform/core": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/extensions": "npm:^4.0.0-alpha.18"
     ktx-parse: "npm:^0.7.0"
     ndarray: "npm:^1.0.19"
     ndarray-lanczos: "npm:^0.3.0"
@@ -1836,9 +1836,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gltf-transform/test-utils@workspace:packages/test-utils"
   dependencies:
-    "@gltf-transform/core": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/extensions": "npm:^4.0.0-alpha.17"
-    "@gltf-transform/functions": "npm:^4.0.0-alpha.17"
+    "@gltf-transform/core": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/extensions": "npm:^4.0.0-alpha.18"
+    "@gltf-transform/functions": "npm:^4.0.0-alpha.18"
   languageName: unknown
   linkType: soft
 
