@@ -55,7 +55,9 @@ export interface DocumentViewSubjectAPI {
 	bind(def: PrimitiveDef): PrimitiveSubject;
 	bind(def: SceneDef): SceneSubject;
 	bind(def: SkinDef): SkinSubject;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	bind(def: PropertyDef): Subject<PropertyDef, any>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	bind(def: PropertyDef | null): Subject<PropertyDef, any> | null;
 
 	recordOutputValue(def: PropertyDef, value: THREEObject): void;
@@ -71,6 +73,7 @@ export interface DocumentViewConfig {
 /** @internal */
 export class DocumentViewImpl implements DocumentViewSubjectAPI {
 	private _disposed = false;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _subjects = new Map<PropertyDef, Subject<PropertyDef, any>>();
 	private _outputValues = new WeakMap<PropertyDef, Set<object>>();
 	private _outputValuesInverse = new WeakMap<object, PropertyDef>();
@@ -93,6 +96,7 @@ export class DocumentViewImpl implements DocumentViewSubjectAPI {
 		this.imageProvider = config.imageProvider || new DefaultImageProvider();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _addSubject(subject: Subject<PropertyDef, any>): void {
 		const def = subject.def;
 		this._subjects.set(def, subject);
@@ -111,11 +115,14 @@ export class DocumentViewImpl implements DocumentViewSubjectAPI {
 	bind(def: PrimitiveDef): PrimitiveSubject;
 	bind(def: SceneDef): SceneSubject;
 	bind(def: SkinDef): SkinSubject;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	bind(def: PropertyDef): Subject<PropertyDef, any>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	bind(def: PropertyDef | null): Subject<PropertyDef, any> | null {
 		if (!def) return null;
 		if (this._subjects.has(def)) return this._subjects.get(def)!;
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let subject: Subject<PropertyDef, any>;
 		switch (def.propertyType) {
 			case PropertyType.ACCESSOR:

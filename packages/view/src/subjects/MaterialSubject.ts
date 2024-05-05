@@ -304,7 +304,7 @@ export class MaterialSubject extends Subject<MaterialDef, Material> {
 		observer.setParamsFn(() => TexturePool.createParams(textureInfoFn()!, colorSpace));
 
 		const applyTextureFn = (texture: Texture | null) => {
-			const material = this.value as any;
+			const material = this.value as Material;
 			for (const map of maps) {
 				if (!(map in material)) continue; // Unlit ⊂ Standard ⊂ Physical (& Points, Lines)
 				if (!!material[map] !== !!texture) material.needsUpdate = true; // Recompile on add/remove.
@@ -443,18 +443,17 @@ export class MaterialSubject extends Subject<MaterialDef, Material> {
 		}
 
 		// KHR_materials_anisotropy
-		// TODO(cleanup): Remove 'any' after https://github.com/three-types/three-ts-types/pull/472.
 		const anisotropy = def.getExtension<Anisotropy>('KHR_materials_anisotropy');
 		if (anisotropy) {
-			if (anisotropy.getAnisotropyStrength() !== (target as any).anisotropy) {
-				if ((target as any).anisotropy === 0) target.needsUpdate = true;
-				(target as any).anisotropy = anisotropy.getAnisotropyStrength();
+			if (anisotropy.getAnisotropyStrength() !== target.anisotropy) {
+				if (target.anisotropy === 0) target.needsUpdate = true;
+				target.anisotropy = anisotropy.getAnisotropyStrength();
 			}
-			if (anisotropy.getAnisotropyRotation() !== (target as any).anisotropyRotation) {
-				(target as any).anisotropyRotation = anisotropy.getAnisotropyRotation();
+			if (anisotropy.getAnisotropyRotation() !== target.anisotropyRotation) {
+				target.anisotropyRotation = anisotropy.getAnisotropyRotation();
 			}
 		} else {
-			(target as any).anisotropy = 0;
+			target.anisotropy = 0;
 		}
 
 		// KHR_materials_clearcoat

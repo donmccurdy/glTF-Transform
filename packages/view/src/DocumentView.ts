@@ -64,6 +64,7 @@ export class DocumentView {
 	public listViews(source: SceneDef): Group[];
 	public listViews(source: PropertyDef): object[] {
 		assert(this._ready);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return this._impl.findValues(source as any);
 	}
 
@@ -75,6 +76,7 @@ export class DocumentView {
 	public getProperty(view: Object3D): MeshDef | NodeDef | SceneDef | null;
 	public getProperty(view: object): PropertyDef | null {
 		assert(this._ready);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return this._impl.findDef(view as any);
 	}
 
