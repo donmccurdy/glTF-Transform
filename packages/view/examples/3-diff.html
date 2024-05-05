@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8" />
+	<title>@gltf-transform/view : examples : 3-diff.html</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+	<div id="container"></div>
+	<a class="back" href="./">⏮&nbsp; &nbsp;back</a>
+	<div class="dropzone-placeholder">
+		<p><em>Select <small>.GLTF</small> or <small>.GLB</small> file.</em></p>
+		<input type="file" name="file-input[]" id="file-input" bind:this="{inputEl}" multiple>
+	</div>
+	<script type="module" src="./dropzone.ts"></script>
+	<script type="module" src="./3-diff.ts"></script>
+</body>

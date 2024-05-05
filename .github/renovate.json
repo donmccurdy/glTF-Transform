@@ -5,6 +5,16 @@
 			"description": "Waiting for https://github.com/lovell/sharp/issues?q=is%3Aissue+is%3Aopen+label%3Ainstallation+ to settle",
 			"matchPackageNames": ["sharp"],
 			"enabled": false
+		},
+		{
+			"description": "Tests failing in Ava",
+			"matchPackageNames": ["jsdom"],
+			"enabled": false
+		},
+		{
+			"description": "Requires updates to tweakpane-plugin-thumbnail-list",
+			"matchPackageNames": ["tweakpane"],
+			"enabled": false
 		}
 	]
 }

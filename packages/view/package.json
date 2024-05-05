@@ -1,0 +1,49 @@
+{
+  "name": "@gltf-transform/view",
+  "version": "4.0.0-alpha.16",
+  "repository": "github:donmccurdy/glTF-Transform-View",
+  "description": "Syncs a glTF-Transform Document with a three.js scene graph",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "BlueOak-1.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/view.modern.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/view.modern.js"
+  },
+  "peerDependencies": {
+    "@gltf-transform/core": ">=4.0.0-alpha.16",
+    "@gltf-transform/extensions": ">=4.0.0-alpha.16",
+    "@types/three": ">=0.155.0",
+    "three": ">=0.155.0"
+  },
+  "scripts": {
+    "dist": "microbundle --no-compress --format modern",
+    "watch": "microbundle watch --no-compress --format modern",
+    "dev": "concurrently \"yarn watch\" \"vite -c examples/vite.config.js\"",
+    "clean": "rimraf dist/**",
+    "test": "ava --no-worker-threads test/**/*.test.ts",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "coverage": "c8 --reporter=lcov --reporter=text yarn test --tap",
+    "coverage:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
+    "version": "yarn dist && yarn test",
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "browserslist": [
+    "last 2 and_chr versions",
+    "last 2 chrome versions",
+    "last 2 opera versions",
+    "last 2 ios_saf versions",
+    "last 2 safari versions",
+    "last 2 firefox versions"
+  ],
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "LICENSE.md"
+  ]
+}
