@@ -1,18 +1,19 @@
-import { vec3, vec4, mat4, Accessor, Primitive } from '@gltf-transform/core';
+import { vec3, mat4, Accessor, Primitive, MathUtils } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
-import { create as createVec4 } from 'gl-matrix/vec4';
-import { createIndices } from './utils.js';
 import { weldPrimitive } from './weld.js';
 import { determinant } from 'gl-matrix/mat4';
-import { dequantizeAttributeArray } from './dequantize.js';
+
+const { FLOAT } = Accessor.ComponentType;
 
 /**
  * Applies a transform matrix to a {@link Primitive}.
  *
- * When calling {@link transformPrimitive}, any un-masked vertices are overwritten
- * directly in the underlying vertex streams. If streams should be detached instead,
- * see {@link transformMesh}.
+ * All vertex attributes on the Primitive and its
+ * {@link PrimitiveTarget PrimitiveTargets} are modified in place. If vertex
+ * streams are shared with other Primitives, and overwriting the shared vertex
+ * attributes is not desired, use {@link compactPrimitive} to pre-process
+ * the Primitive or call {@link transformMesh} instead.
  *
  * Example:
  *
@@ -26,42 +27,39 @@ import { dequantizeAttributeArray } from './dequantize.js';
  *
  * @param prim
  * @param matrix
- * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = new Set<number>()): void {
-	const position = prim.getAttribute('POSITION')!;
-	const indices = (prim.getIndices()?.getArray() || createIndices(position!.getCount())) as Uint32Array;
-
+export function transformPrimitive(prim: Primitive, matrix: mat4): void {
 	// Apply transform to base attributes.
+	const position = prim.getAttribute('POSITION');
 	if (position) {
-		applyMatrix(matrix, position, indices, new Set(skipIndices));
+		applyMatrix(matrix, position);
 	}
 
 	const normal = prim.getAttribute('NORMAL');
 	if (normal) {
-		applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
+		applyNormalMatrix(matrix, normal);
 	}
 
 	const tangent = prim.getAttribute('TANGENT');
 	if (tangent) {
-		applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+		applyTangentMatrix(matrix, tangent);
 	}
 
 	// Apply transform to morph attributes.
 	for (const target of prim.listTargets()) {
 		const position = target.getAttribute('POSITION');
 		if (position) {
-			applyMatrix(matrix, position, indices, new Set(skipIndices));
+			applyMatrix(matrix, position);
 		}
 
 		const normal = target.getAttribute('NORMAL');
 		if (normal) {
-			applyNormalMatrix(matrix, normal, indices, new Set(skipIndices));
+			applyNormalMatrix(matrix, normal);
 		}
 
 		const tangent = target.getAttribute('TANGENT');
 		if (tangent) {
-			applyTangentMatrix(matrix, tangent, indices, new Set(skipIndices));
+			applyTangentMatrix(matrix, tangent);
 		}
 	}
 
@@ -70,75 +68,106 @@ export function transformPrimitive(prim: Primitive, matrix: mat4, skipIndices = 
 	if (determinant(matrix) < 0) {
 		reversePrimitiveWindingOrder(prim);
 	}
-
-	// Update mask.
-	for (let i = 0; i < indices.length; i++) skipIndices.add(indices[i]);
 }
 
-function applyMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
-	// An arbitrary transform may not keep vertex positions in the required
-	// range of a normalized attribute. Replace the array, instead.
+function applyMatrix(matrix: mat4, attribute: Accessor) {
+	const componentType = attribute.getComponentType();
+	const normalized = attribute.getNormalized();
 	const srcArray = attribute.getArray()!;
-	const dstArray = dequantizeAttributeArray(srcArray, attribute.getComponentType(), attribute.getNormalized());
-	const elementSize = attribute.getElementSize();
+	const dstArray = componentType === FLOAT ? srcArray : new Float32Array(srcArray.length);
 
 	const vector = createVec3() as vec3;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+	for (let i = 0, il = attribute.getCount(); i < il; i++) {
+		if (normalized) {
+			vector[0] = MathUtils.decodeNormalizedInt(srcArray[i * 3], componentType);
+			vector[1] = MathUtils.decodeNormalizedInt(srcArray[i * 3 + 1], componentType);
+			vector[2] = MathUtils.decodeNormalizedInt(srcArray[i * 3 + 2], componentType);
+		} else {
+			vector[0] = srcArray[i * 3];
+			vector[1] = srcArray[i * 3 + 1];
+			vector[2] = srcArray[i * 3 + 2];
+		}
 
-		attribute.getElement(index, vector);
 		transformMat4(vector, vector, matrix);
-		dstArray.set(vector, index * elementSize);
 
-		skipIndices.add(index);
+		dstArray[i * 3] = vector[0];
+		dstArray[i * 3 + 1] = vector[1];
+		dstArray[i * 3 + 2] = vector[2];
 	}
 
 	attribute.setArray(dstArray).setNormalized(false);
 }
 
-function applyNormalMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
+function applyNormalMatrix(matrix: mat4, attribute: Accessor) {
+	const array = attribute.getArray()!;
+	const normalized = attribute.getNormalized();
+	const componentType = attribute.getComponentType();
+
 	const normalMatrix = createMat3();
 	fromMat4(normalMatrix, matrix);
 	invert(normalMatrix, normalMatrix);
 	transpose(normalMatrix, normalMatrix);
 
 	const vector = createVec3() as vec3;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+	for (let i = 0, il = attribute.getCount(); i < il; i++) {
+		if (normalized) {
+			vector[0] = MathUtils.decodeNormalizedInt(array[i * 3], componentType);
+			vector[1] = MathUtils.decodeNormalizedInt(array[i * 3 + 1], componentType);
+			vector[2] = MathUtils.decodeNormalizedInt(array[i * 3 + 2], componentType);
+		} else {
+			vector[0] = array[i * 3];
+			vector[1] = array[i * 3 + 1];
+			vector[2] = array[i * 3 + 2];
+		}
 
-		attribute.getElement(index, vector);
 		transformMat3(vector, vector, normalMatrix);
 		normalizeVec3(vector, vector);
-		attribute.setElement(index, vector);
 
-		skipIndices.add(index);
+		if (normalized) {
+			array[i * 3] = MathUtils.decodeNormalizedInt(vector[0], componentType);
+			array[i * 3 + 1] = MathUtils.decodeNormalizedInt(vector[1], componentType);
+			array[i * 3 + 2] = MathUtils.decodeNormalizedInt(vector[2], componentType);
+		} else {
+			array[i * 3] = vector[0];
+			array[i * 3 + 1] = vector[1];
+			array[i * 3 + 2] = vector[2];
+		}
 	}
 }
 
-function applyTangentMatrix(matrix: mat4, attribute: Accessor, indices: Uint32Array, skipIndices: Set<number>) {
-	const v3 = createVec3() as vec3;
-	const v4 = createVec4() as vec4;
-	for (let i = 0; i < indices.length; i++) {
-		const index = indices[i];
-		if (skipIndices.has(index)) continue;
+function applyTangentMatrix(matrix: mat4, attribute: Accessor) {
+	const array = attribute.getArray()!;
+	const normalized = attribute.getNormalized();
+	const componentType = attribute.getComponentType();
 
-		attribute.getElement(index, v4);
+	const v3 = createVec3() as vec3;
+	for (let i = 0, il = attribute.getCount(); i < il; i++) {
+		if (normalized) {
+			v3[0] = MathUtils.decodeNormalizedInt(array[i * 4], componentType);
+			v3[1] = MathUtils.decodeNormalizedInt(array[i * 4 + 1], componentType);
+			v3[2] = MathUtils.decodeNormalizedInt(array[i * 4 + 2], componentType);
+		} else {
+			v3[0] = array[i * 4];
+			v3[1] = array[i * 4 + 1];
+			v3[2] = array[i * 4 + 2];
+		}
 
 		// mat4 affine matrix applied to vector, vector interpreted as a direction.
 		// Reference: https://github.com/mrdoob/three.js/blob/9f4de99828c05e71c47e6de0beb4c6e7652e486a/src/math/Vector3.js#L286-L300
-		const [x, y, z] = v4;
-		v3[0] = matrix[0] * x + matrix[4] * y + matrix[8] * z;
-		v3[1] = matrix[1] * x + matrix[5] * y + matrix[9] * z;
-		v3[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
+		v3[0] = matrix[0] * v3[0] + matrix[4] * v3[1] + matrix[8] * v3[2];
+		v3[1] = matrix[1] * v3[0] + matrix[5] * v3[1] + matrix[9] * v3[2];
+		v3[2] = matrix[2] * v3[0] + matrix[6] * v3[1] + matrix[10] * v3[2];
 		normalizeVec3(v3, v3);
 
-		(v4[0] = v3[0]), (v4[1] = v3[1]), (v4[2] = v3[2]);
-
-		attribute.setElement(index, v4);
-
-		skipIndices.add(index);
+		if (normalized) {
+			array[i * 4] = MathUtils.decodeNormalizedInt(v3[0], componentType);
+			array[i * 4 + 1] = MathUtils.decodeNormalizedInt(v3[1], componentType);
+			array[i * 4 + 2] = MathUtils.decodeNormalizedInt(v3[2], componentType);
+		} else {
+			array[i * 4] = v3[0];
+			array[i * 4 + 1] = v3[1];
+			array[i * 4 + 2] = v3[2];
+		}
 	}
 }
 

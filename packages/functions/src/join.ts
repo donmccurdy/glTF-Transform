@@ -15,6 +15,7 @@ import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
 import { assignDefaults, createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
 import { dequantizeAttribute } from './dequantize.js';
+import { compactPrimitive } from './compact-primitive.js';
 
 const NAME = 'join';
 
@@ -156,6 +157,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			const material = prim.getMaterial();
 			if (material && material.getExtension('KHR_materials_volume')) continue;
 
+			compactPrimitive(prim);
 			dequantizeTransformableAttributes(prim);
 
 			let key = createPrimGroupKey(prim);
@@ -215,9 +217,11 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 			let prim = prims[i];
 			primMesh.removePrimitive(prim);
 
-			// Primitives may be reused directly, or their attributes may be
-			// used in another Primitive with a different Material.
-			if (isUsed(prim) || hasSharedAttributes(prim)) {
+			// If Primitive is still in use after being removed from the
+			// current mesh, above, make a deep copy. Because compactPrimitive()
+			// was applied earlier in join(), we know the full vertex streams are
+			// used, and no accessors are shared.
+			if (isUsed(prim)) {
 				prim = prims[i] = _deepClonePrimitive(prims[i]);
 			}
 
@@ -240,6 +244,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 }
 
 function _deepClonePrimitive(src: Primitive): Primitive {
+	// compactPrimitive already applied; no vertices are unused.
 	const dst = src.clone();
 	for (const semantic of dst.listSemantics()) {
 		dst.setAttribute(semantic, dst.getAttribute(semantic)!.clone());
@@ -247,17 +252,6 @@ function _deepClonePrimitive(src: Primitive): Primitive {
 	const indices = dst.getIndices();
 	if (indices) dst.setIndices(indices.clone());
 	return dst;
-}
-
-function hasSharedAttributes(prim: Primitive): boolean {
-	for (const attribute of prim.listAttributes()) {
-		for (const parent of attribute.listParents()) {
-			if (parent !== prim && parent.propertyType !== ROOT) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 /**

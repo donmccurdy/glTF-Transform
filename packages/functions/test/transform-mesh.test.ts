@@ -14,11 +14,6 @@ test('basic', async (t) => {
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'identity - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'identity - tangent');
 
-	transformPrimitive(prim, mat4.fromScaling([], [100, 100, 100]), new Set([0, 1, 2, 3]));
-	t.deepEqual(primBounds(prim), { min: [-0.5, 10, -0.5], max: [0.5, 10, 0.5] }, 'mask - position');
-	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'mask - normal');
-	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'mask - tangent');
-
 	transformPrimitive(prim, mat4.fromScaling([], [2, 1, 2]));
 	t.deepEqual(primBounds(prim), { min: [-1, 10, -1], max: [1, 10, 1] }, 'scale - position');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'scale - normal');
@@ -35,7 +30,7 @@ test('basic', async (t) => {
 	t.deepEqual(tangent.getElement(0, []).map(round()), [1, 0, 0, 1], 'rotate - tangent');
 });
 
-test('detach shared prims', async (t) => {
+test('shared prims', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const meshA = document.createMesh('A').addPrimitive(prim);
@@ -43,12 +38,13 @@ test('detach shared prims', async (t) => {
 
 	t.is(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA = meshB, before');
 
-	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), true);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]));
 
-	t.not(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA ≠ meshB, after');
+	// Shared primitives must be cloned, and the copy transformed.
+	t.true(meshA.listPrimitives()[0] !== meshB.listPrimitives()[0], 'meshA !== meshB, after');
 });
 
-test('detach shared vertex streams', async (t) => {
+test('shared vertex streams', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createPrimitive(document);
 	const primA = prim.clone();
@@ -58,13 +54,14 @@ test('detach shared vertex streams', async (t) => {
 
 	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, before');
 
-	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), true);
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]));
 
-	t.is(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA = primB, after (overwrite=true)');
-
-	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), false);
-
-	t.not(primA.getAttribute('POSITION'), primB.getAttribute('POSITION'), 'primA ≠ primB, after (overwrite=false)');
+	// Option 'overwrite' option removed in v4, all primitives are now compacted
+	// and their accessors cloned.
+	t.true(
+		primA.getAttribute('POSITION') !== primB.getAttribute('POSITION'),
+		'primA !== primB, after (overwrite=true)',
+	);
 });
 
 test('update multiple vertex streams', async (t) => {
@@ -87,28 +84,13 @@ test('update multiple vertex streams', async (t) => {
 	t.deepEqual(Array.from(primB.getAttribute('POSITION').getArray()), SCALED, 'primB.POSITION');
 });
 
-test('skip indices', async (t) => {
-	const document = new Document().setLogger(logger);
-	const prim = createPrimitive(document);
-	const mesh = document.createMesh().addPrimitive(prim);
-
-	transformMesh(mesh, mat4.fromScaling([], [2, 2, 2]), false, new Set([0, 1]));
-
-	// prettier-ignore
-	t.deepEqual(
-		Array.from(mesh.listPrimitives()[0]!.getAttribute('POSITION')!.getArray()!),
-		[
-			0.5, 10, 0.5,
-			0.5, 10, -0.5,
-			-1, 20, -1,
-			-1, 20, 1,
-		],
-		'transform skips excluded indices'
-	);
-});
-
 test('morph targets', async (t) => {
 	const document = new Document().setLogger(logger);
+	const primA = createPrimitive(document);
+	const primB = primA.clone();
+	const meshA = document.createMesh().addPrimitive(primA);
+	const meshB = document.createMesh().addPrimitive(primB);
+
 	const targetPosition = document
 		.createAccessor()
 		.setType('VEC3')
@@ -122,17 +104,10 @@ test('morph targets', async (t) => {
 			]),
 		);
 	const target = document.createPrimitiveTarget().setAttribute('POSITION', targetPosition);
-	const prim = createPrimitive(document).addTarget(target);
-	const meshA = document.createMesh().addPrimitive(prim);
-	const meshB = document.createMesh().addPrimitive(prim);
+	primA.addTarget(target);
+	primB.addTarget(target.clone());
 
-	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]), false);
-
-	const primA = meshA.listPrimitives()[0];
-	const primB = meshB.listPrimitives()[0];
-
-	t.falsy(primA === primB, 'primA ≠ primB');
-	t.falsy(primA.listTargets()[0] === primB.listTargets()[0], 'primA.targets ≠ primB.targets');
+	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]));
 
 	t.deepEqual(
 		Array.from(meshA.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),

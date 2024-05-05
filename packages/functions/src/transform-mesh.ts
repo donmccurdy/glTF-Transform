@@ -1,18 +1,15 @@
-import { mat4, Accessor, Primitive, Mesh, PropertyType, PrimitiveTarget } from '@gltf-transform/core';
+import { mat4, Mesh, Primitive } from '@gltf-transform/core';
 import { transformPrimitive } from './transform-primitive.js';
-import { deepListAttributes } from './utils.js';
+import { compactPrimitive } from './compact-primitive.js';
 
 /**
  * Applies a transform matrix to every {@link Primitive} in the given {@link Mesh}.
  *
- * Method:
- * - If any primitives are shared by other meshes, they will be detached.
- * - If any vertex streams are shared by primitives of other meshes, vertex data
- *  will be overwritten unless _overwrite=false_ or the indices are masked. If
- * 	_overwrite=false_, a detached copy of the vertex stream is made before applying
- * 	the transform.
- * - Primitives within the mesh sharing vertex streams will continue to share those streams.
- * - For indexed primitives, only indexed vertices are modified.
+ * For every Primitive in the Mesh, the operation first applies
+ * {@link compactPrimitive} to isolate vertex streams, then calls
+ * {@link transformPrimitive}. Transformed Mesh will no longer share vertex
+ * attributes with any other Meshes — attributes are cloned before
+ * transformation.
  *
  * Example:
  *
@@ -26,63 +23,44 @@ import { deepListAttributes } from './utils.js';
  *
  * @param mesh
  * @param matrix
- * @param overwrite Whether to overwrite vertex streams in place. If false,
- * 		streams shared with other meshes will be detached.
- * @param skipIndices Vertices, specified by index, to be _excluded_ from the transformation.
  */
-export function transformMesh(mesh: Mesh, matrix: mat4, overwrite = false, skipIndices?: Set<number>): void {
-	// (1) Detach shared prims.
+export function transformMesh(mesh: Mesh, matrix: mat4): void {
+	// If primitives or morph targets are shared by other meshes, detach them.
 	for (const srcPrim of mesh.listPrimitives()) {
-		const isShared = srcPrim.listParents().some((p) => p.propertyType === PropertyType.MESH && p !== mesh);
-		if (isShared) {
-			const dstPrim = srcPrim.clone();
-			mesh.swap(srcPrim, dstPrim);
-
-			for (const srcTarget of dstPrim.listTargets()) {
-				const dstTarget = srcTarget.clone();
-				dstPrim.swap(srcTarget, dstTarget);
-			}
+		const dstPrim = shallowClonePrimitive(srcPrim, mesh);
+		if (srcPrim !== dstPrim) {
+			mesh.removePrimitive(srcPrim).addPrimitive(dstPrim);
 		}
 	}
 
-	// (2) Detach shared vertex streams.
-	if (!overwrite) {
-		const parents = new Set<Primitive | PrimitiveTarget>([
-			...mesh.listPrimitives(),
-			...mesh.listPrimitives().flatMap((prim) => prim.listTargets()),
-		]);
-		const attributes = new Map<Accessor, Accessor>();
-		for (const prim of mesh.listPrimitives()) {
-			for (const srcAttribute of deepListAttributes(prim)) {
-				const isShared = srcAttribute
-					.listParents()
-					.some((a) => (a instanceof Primitive || a instanceof PrimitiveTarget) && !parents.has(a));
-				if (isShared && !attributes.has(srcAttribute)) {
-					attributes.set(srcAttribute, srcAttribute.clone());
-				}
-			}
-		}
-		for (const parent of parents) {
-			for (const [srcAttribute, dstAttribute] of attributes) {
-				parent.swap(srcAttribute, dstAttribute);
-			}
-		}
-	}
-
-	// (3) Apply transform.
-	const attributeSkipIndices = new Map<Accessor, Set<number>>();
+	// Isolate vertex streams, remove unused vertices, and transform.
 	for (const prim of mesh.listPrimitives()) {
-		const position = prim.getAttribute('POSITION')!;
-
-		let primSkipIndices;
-		if (skipIndices) {
-			primSkipIndices = skipIndices;
-		} else if (attributeSkipIndices.has(position)) {
-			primSkipIndices = attributeSkipIndices.get(position)!;
-		} else {
-			attributeSkipIndices.set(position, (primSkipIndices = new Set<number>()));
-		}
-
-		transformPrimitive(prim, matrix, primSkipIndices);
+		compactPrimitive(prim);
+		transformPrimitive(prim, matrix);
 	}
+}
+
+/**
+ * Conditionally clones a {@link Primitive} and its
+ * {@link PrimitiveTarget PrimitiveTargets}, if any are shared with other
+ * parents. If nothing is shared, nothing is cloned. Accessors and materials
+ * are not cloned.
+ *
+ * @hidden
+ * @internal
+ */
+function shallowClonePrimitive(prim: Primitive, parentMesh: Mesh): Primitive {
+	const isSharedPrimitive = prim.listParents().some((parent) => parent instanceof Mesh && parent !== parentMesh);
+	if (isSharedPrimitive) {
+		prim = prim.clone();
+	}
+
+	for (const target of prim.listTargets()) {
+		const isSharedTarget = target.listParents().some((parent) => parent instanceof Primitive && parent !== prim);
+		if (isSharedTarget) {
+			prim.removeTarget(target).addTarget(target.clone());
+		}
+	}
+
+	return prim;
 }
