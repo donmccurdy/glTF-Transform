@@ -58,7 +58,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 4.0.0-alpha.15 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 4.0.0-alpha.16 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
@@ -131,7 +131,7 @@ Full command list:
     -h, --help                           Display global help or command-related help.           
     -V, --version                        Display version.                                       
     -v, --verbose                        Verbose mode: will also output debug messages.         
-    --allow-http                         Allows reads from HTTP requests.                       
+    --allow-net                          Allows reads from network requests.                    
                                          boolean                                                
     --vertex-layout <layout>             Vertex buffer layout preset.                           
                                          one of "interleaved","separate", default: "interleaved"
