@@ -55,7 +55,6 @@
 - functions: Improves `reorder()` performance [#1358](https://github.com/donmccurdy/glTF-Transform/pull/1358)
 - core: NodeIO now writes files to disk in batches [#1383](https://github.com/donmccurdy/glTF-Transform/pull/1383)
 - functions: Improves `simplify()` performance on indexed primitives [#1381](https://github.com/donmccurdy/glTF-Transform/pull/1381)
--
 
 **Other:**
 
