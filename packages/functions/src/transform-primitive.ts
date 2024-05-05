@@ -9,9 +9,11 @@ const { FLOAT } = Accessor.ComponentType;
 /**
  * Applies a transform matrix to a {@link Primitive}.
  *
- * When calling {@link transformPrimitive}, any un-masked vertices are overwritten
- * directly in the underlying vertex streams. If streams should be detached instead,
- * see {@link transformMesh}.
+ * All vertex attributes on the Primitive and its
+ * {@link PrimitiveTarget PrimitiveTargets} are modified in place. If vertex
+ * streams are shared with other Primitives, and overwriting the shared vertex
+ * attributes is not desired, use {@link compactPrimitive} to pre-process
+ * the Primitive or call {@link transformMesh} instead.
  *
  * Example:
  *

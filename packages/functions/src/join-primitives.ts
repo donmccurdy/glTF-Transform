@@ -133,6 +133,12 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 	return dstPrim;
 }
 
+/**
+ * Internal variant of {@link compactAttribute}. Unlike compactAttribute,
+ * assumes the vertex count cannot change, and avoids cloning attributes.
+ * @hidden
+ * @internal
+ */
 function remapAttribute(
 	srcAttribute: Accessor,
 	srcIndices: Accessor | null,
@@ -159,6 +165,12 @@ function remapAttribute(
 	}
 }
 
+/**
+ * Internal variant of {@link compactAttribute}'s index remapping. Avoids
+ * cloning indices; writes directly to `dstIndices`.
+ * @hidden
+ * @internal
+ */
 function remapIndices(srcIndices: Accessor, remap: TypedArray, dstIndices: Accessor, dstOffset: number): void {
 	const srcCount = srcIndices.getCount();
 	const srcArray = srcIndices.getArray()!;

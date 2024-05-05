@@ -21,16 +21,15 @@ import { EMPTY_U32 } from './hash-table.js';
  * import { fromTranslation } from 'gl-matrix/mat4';
  *
  * const mesh = document.getRoot().listMeshes().find((mesh) => mesh.getName() === 'MyMesh');
+ * const prim = mesh.listPrimitives().find((prim) => { ... });
  *
- * // Compact primitives, removing any unused vertices and isolating vertex
- * // streams. Without compaction, `transformMesh` might affect other meshes
- * // sharing vertex attributes with 'MyMesh'.
- * for (const prim of mesh.listPrimitives()) {
- *		compactPrimitive(prim);
- * }
+ * // Compact primitive, removing unused vertices and detaching shared vertex
+ * // attributes. Without compaction, `transformPrimitive` might affect other
+ * // primitives sharing the same vertex attributes.
+ * compactPrimitive(prim);
  *
- * // Transform mesh vertices, Y += 10.
- * transformMesh(mesh, fromTranslation([], [0, 10, 0]));
+ * // Transform primitive vertices, y += 10.
+ * transformPrimitive(prim, fromTranslation([], [0, 10, 0]));
  * ```
  *
  * Parameters 'remap' and 'dstVertexCount' are optional. When either is
