@@ -23,10 +23,12 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
-            - run: yarn install --frozen-lockfile
+            - run: corepack enable
+            - run: yarn install --immutable
             - run: yarn dist
 
             # Test.
@@ -51,10 +53,12 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
-            - run: yarn install --frozen-lockfile
+            - run: corepack enable
+            - run: yarn install --immutable
             - run: yarn dist
 
             # Test.
@@ -74,10 +78,12 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
-            - run: yarn install --frozen-lockfile
+            - run: corepack enable
+            - run: yarn install --immutable
             - run: yarn dist
 
             # Coverage.
@@ -101,9 +107,11 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
+            - run: corepack enable
             # See: https://github.com/yarnpkg/yarn/issues/4890
-            - run: yarn install --frozen-lockfile --network-timeout 100000
+            - run: yarn install --immutable --network-timeout 100000
             - run: yarn dist
