@@ -80,7 +80,6 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 type PrimLike = Primitive | PrimitiveTarget;
 
 function normalizePrimitiveWeights(prim: PrimLike): void {
-	// Would prefer to warn if unsafe, but no logger accessible in this scope.
 	if (!isNormalizeSafe(prim)) return;
 
 	const vertexCount = prim.getAttribute('POSITION')!.getCount();

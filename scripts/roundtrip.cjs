@@ -19,14 +19,6 @@ const { SOURCE, TARGET, VARIANT, SKIPLIST } = require('./constants.cjs');
  * - TextureLinearInterpolationTest (webp conversion; non-issue)
  */
 
-/**
-NEW
-
-🛑 CesiumMan
-	- quantization creates 'spikes' in geometry, unnormalized weights, validation errors
-
-*/
-
 const INDEX = require(path.join(SOURCE, 'model-index.json')).filter((asset) => !SKIPLIST.has(asset.name));
 
 execSync(`rm -r ${TARGET}/**`);
