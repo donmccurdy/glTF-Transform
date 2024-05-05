@@ -23,7 +23,8 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
             - run: yarn install --immutable
@@ -51,7 +52,8 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
             - run: yarn install --immutable
@@ -74,7 +76,8 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
             - run: yarn install --immutable
@@ -101,7 +104,8 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: yarn
+                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+                  # cache: yarn
 
             # Build.
             # See: https://github.com/yarnpkg/yarn/issues/4890
