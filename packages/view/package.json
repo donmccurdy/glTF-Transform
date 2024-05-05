@@ -27,14 +27,7 @@
   "scripts": {
     "dist": "microbundle --no-compress --format modern",
     "watch": "microbundle watch --no-compress --format modern",
-    "dev": "concurrently \"yarn watch\" \"vite -c examples/vite.config.js\"",
-    "clean": "rimraf dist/**",
-    "test": "ava --no-worker-threads test/**/*.test.ts",
-    "lint": "eslint \"{src,test}/**/*.ts\"",
-    "coverage": "c8 --reporter=lcov --reporter=text yarn test --tap",
-    "coverage:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
-    "version": "yarn dist && yarn test",
-    "postversion": "git push && git push --tags && npm publish"
+    "dev": "concurrently \"yarn watch\" \"vite -c examples/vite.config.js\""
   },
   "files": [
     "dist/",
