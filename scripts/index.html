@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
 <style>
+	:root {
+		color-scheme: light dark;
+	}
 	html,
 	body {
 		margin: 0;
+		color: light-dark(#333b3c, #efefec);
+		background-color: light-dark(#efedea, #223a2c);
+		font-family: 'Courier New', Courier, monospace;
 	}
 	header {
 		width: 630px;
@@ -44,6 +50,9 @@
 </header>
 <main class="container"></main>
 <script>
+	self.ModelViewerElement = self.ModelViewerElement || {};
+	self.ModelViewerElement.meshoptDecoderLocation = 'https://cdn.jsdelivr.net/npm/meshoptimizer/meshopt_decoder.js';
+
 	/**
 	 * Generates side-by-side <model-viewer/> comparisons for each of the
 	 * supported sample models.

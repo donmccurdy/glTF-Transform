@@ -253,6 +253,10 @@ commands or using the scripting API.
 		validator: Validator.NUMBER,
 		default: INSTANCE_DEFAULTS.min,
 	})
+	.option('--meshopt-level <level>', 'Meshopt compression level.', {
+		validator: ['medium', 'high'],
+		default: 'high',
+	})
 	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
 		validator: Validator.BOOLEAN,
 		default: true,
@@ -340,6 +344,7 @@ commands or using the scripting API.
 		const opts = options as {
 			instance: boolean;
 			instanceMin: number;
+			meshoptLevel: 'medium' | 'high';
 			palette: boolean;
 			paletteMin: number;
 			simplify: boolean;
@@ -436,7 +441,7 @@ commands or using the scripting API.
 		if (opts.compress === 'draco') {
 			transforms.push(draco());
 		} else if (opts.compress === 'meshopt') {
-			transforms.push(meshopt({ encoder: MeshoptEncoder }));
+			transforms.push(meshopt({ encoder: MeshoptEncoder, level: opts.meshoptLevel }));
 		} else if (opts.compress === 'quantize') {
 			transforms.push(quantize());
 		}
