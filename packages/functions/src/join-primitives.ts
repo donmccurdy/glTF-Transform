@@ -166,7 +166,7 @@ function remapAttribute(
 }
 
 /**
- * Internal variant of {@link compactAttribute}'s index remapping. Avoids
+ * Internal variant of {@link compactPrimitive}'s index remapping. Avoids
  * cloning indices; writes directly to `dstIndices`.
  * @hidden
  * @internal

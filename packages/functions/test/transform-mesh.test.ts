@@ -40,10 +40,8 @@ test('shared prims', async (t) => {
 
 	transformMesh(meshA, mat4.fromScaling([], [2, 2, 2]));
 
-	// In v3, shared primitives were cloned, and the copy transposed. In v4 that
-	// behavior was changed, transforming primitives in place, simplifying the
-	// implementation and improving performance.
-	t.is(meshA.listPrimitives()[0], meshB.listPrimitives()[0], 'meshA == meshB, after');
+	// Shared primitives must be cloned, and the copy transformed.
+	t.true(meshA.listPrimitives()[0] !== meshB.listPrimitives()[0], 'meshA !== meshB, after');
 });
 
 test('shared vertex streams', async (t) => {

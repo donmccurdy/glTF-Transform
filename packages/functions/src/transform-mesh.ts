@@ -25,8 +25,16 @@ import { compactPrimitive } from './compact-primitive.js';
  * @param matrix
  */
 export function transformMesh(mesh: Mesh, matrix: mat4): void {
+	// If primitives or morph targets are shared by other meshes, detach them.
+	for (const srcPrim of mesh.listPrimitives()) {
+		const dstPrim = shallowClonePrimitive(srcPrim, mesh);
+		if (srcPrim !== dstPrim) {
+			mesh.removePrimitive(srcPrim).addPrimitive(dstPrim);
+		}
+	}
+
+	// Isolate vertex streams, remove unused vertices, and transform.
 	for (const prim of mesh.listPrimitives()) {
-		shallowClonePrimitive(prim, mesh);
 		compactPrimitive(prim);
 		transformPrimitive(prim, matrix);
 	}
@@ -41,19 +49,18 @@ export function transformMesh(mesh: Mesh, matrix: mat4): void {
  * @hidden
  * @internal
  */
-function shallowClonePrimitive(prim: Primitive, parentMesh: Mesh): void {
-	for (const parent of prim.listParents()) {
-		if (parent instanceof Mesh && parent !== parentMesh) {
-			prim = prim.clone();
-			break;
-		}
+function shallowClonePrimitive(prim: Primitive, parentMesh: Mesh): Primitive {
+	const isSharedPrimitive = prim.listParents().some((parent) => parent instanceof Mesh && parent !== parentMesh);
+	if (isSharedPrimitive) {
+		prim = prim.clone();
 	}
 
 	for (const target of prim.listTargets()) {
-		for (const parent of target.listParents()) {
-			if (parent instanceof Primitive && parent !== prim) {
-				prim.swap(target, target.clone());
-			}
+		const isSharedTarget = target.listParents().some((parent) => parent instanceof Primitive && parent !== prim);
+		if (isSharedTarget) {
+			prim.removeTarget(target).addTarget(target.clone());
 		}
 	}
+
+	return prim;
 }
