@@ -36,5 +36,5 @@ test('basic', async (t) => {
 	t.deepEqual(childNode.getScale(), [4, 4, 4], 'child.children[0].scale');
 
 	t.truthy(parentNode.getCamera(), 'parent.camera');
-	t.deepEqual(position.getElement(0, []), [6, 0, 4], 'parent.mesh');
+	t.deepEqual(prim.getAttribute('POSITION')!.getElement(0, []), [6, 0, 4], 'parent.mesh');
 });
