@@ -33,9 +33,9 @@ export function cloneDocument(source: Document): Document {
 
 /**
  * Merges contents of source {@link Document} into target Document, without
- * modifying the source. Any extensions missing from the target document will
- * be added. {@link Scene Scenes} and {@link Buffer Buffers} are not combined —
- * the target Document may contain multiple scenes and buffers after this
+ * modifying the source. Any extensions missing from the target will be added
+ * {@link Scene Scenes} and {@link Buffer Buffers} are not combined —
+ * the target Document may contain multiple Scenes and Buffers after this
  * operation. These may be cleaned up manually (see {@link unpartition}),
  * or document contents may be merged more granularly using
  * {@link copyToDocument}.
@@ -50,6 +50,32 @@ export function cloneDocument(source: Document): Document {
  *
  *	// (Optional) Remove all but one Buffer from the target Document.
  *	await targetDocument.transform(unpartition());
+ * ```
+ *
+ * To merge several Scenes into one:
+ *
+ * ```javascript
+ * import { mergeDocuments } from '@gltf-transform/functions';
+ *
+ * const map = mergeDocuments(targetDocument, sourceDocument);
+ *
+ * // Find original Scene.
+ * const sceneA = targetDocument.getRoot().listScenes()[0];
+ *
+ * // Find counterpart of the source Scene in the target Document.
+ * const sceneB = map.get(sourceDocument.getRoot().listScenes()[0]);
+ *
+ * // Create a Node, and append source Scene's direct children.
+ * const rootNode = targetDocument.createNode()
+ *		.setName('SceneB')
+ *		.setPosition([10, 0, 0]);
+ * for (const node of sceneB.listChildren()) {
+ *		rootNode.addChild(node);
+ * }
+ *
+ * // Append Node to original Scene, and dispose the empty Scene.
+ * sceneA.addChild(rootNode);
+ * sceneB.dispose();
  * ```
  */
 export function mergeDocuments(
@@ -70,13 +96,10 @@ export function mergeDocuments(
 
 /**
  * Moves the specified {@link Property Properties} from the source
- * {@link Document} to the target Document, and removes them from the source
- * Document. Dependencies of the source properties will be copied into the
- * target Document, but not removed from the source Document. Returns a Map
- * from source properties to their counterparts in the target Document.
- * {@link Root} properties cannot be copied. {@link TextureInfo} properties
- * cannot be given in the property list, but are handled automatically when
- * copying a {@link Material}.
+ * {@link Document} to the target Document, and removes them from the source.
+ * Dependencies of the source properties will be copied into the
+ * target, but not removed from the source. Returns a Map from source
+ * properties to their counterparts in the target Document.
  *
  * Example:
  *
@@ -127,6 +150,11 @@ export function mergeDocuments(
  *	}
  * ```
  *
+ * {@link Root} properties cannot be moved.
+ *
+ * {@link TextureInfo} properties cannot be given in the property list, but
+ * are handled automatically when moving a {@link Material}.
+ *
  * To copy properties without removing them from the source Document, see
  * {@link copyToDocument}.
  *
@@ -149,12 +177,10 @@ export function moveToDocument(
 
 /**
  * Copies the specified {@link Property Properties} from the source
- * {@link Document} to the target Document, leaving originals in the source
- * Document. Dependencies of the source properties will also be copied into the
- * target Document. Returns a Map from source properties to their counterparts
- * in the target Document. {@link Root} properties cannot be copied.
- * {@link TextureInfo} properties cannot be given in the property list, but are
- * handled automatically when copying a {@link Material}.
+ * {@link Document} to the target Document, leaving originals in the source.
+ * Dependencies of the source properties will also be copied into the
+ * target. Returns a Map from source properties to their counterparts in the
+ * target Document.
  *
  * Example:
  *
@@ -200,6 +226,11 @@ export function moveToDocument(
  *		if (sourceExtension.isRequired()) targetExtension.setRequired(true);
  *	}
  * ```
+ *
+ * {@link Root} properties cannot be copied.
+ *
+ * {@link TextureInfo} properties cannot be given in the property list, but
+ * are handled automatically when copying a {@link Material}.
  *
  * To move properties to the target Document without leaving copies behind in
  * the source Document, use {@link moveToDocument} or dispose the properties
