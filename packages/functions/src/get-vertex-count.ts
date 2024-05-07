@@ -74,7 +74,7 @@ export enum VertexCountMethod {
 
 	/**
 	 * Number of vertex positions never used by any mesh primitive. If all
-	 * vertices are unused, this total will match `'gpu'`.
+	 * vertices are unused, this total will match `UPLOAD`.
 	 */
 	UNUSED = 'unused',
 }
