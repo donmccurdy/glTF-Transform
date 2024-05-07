@@ -10,9 +10,13 @@ This project consists of multiple NPM packages, managed in one repository with
 I recommend using VSCode for linting and type information, which becomes especially helpful
 when dealing with glTF schema objects.
 
-After cloning the repository, run:
+After cloning the repository, install project dependencies. If you haven't worked with Yarn v2+ before, you will need to enable [Corepack](https://yarnpkg.com/corepack) first.
 
 ```bash
+# First-time Yarn v2+ setup.
+corepack enable
+
+# Install dependencies.
 yarn install
 ```
 
@@ -20,20 +24,17 @@ The project relies on [Yarn workspaces](https://classic.yarnpkg.com/docs/workspa
 run:
 
 ```bash
-# Build on MacOS or Linux
+# Build
 yarn run dist
-
-# Build on Windows, see https://github.com/donmccurdy/glTF-Transform/pull/959
-yarn run dist --ignore "@gltf-transform/docs"
 
 # Test
 yarn test
 ```
 
-To run an arbitrary command across all packages:
+To run these or other commands on a subset of packages, use the `--ignore` flag.
 
 ```bash
-lerna exec -- <command>
+yarn run dist --ignore "@gltf-transform/view"
 ```
 
 While working, use `yarn run watch` to watch and rebuild code after changes. To use a local
@@ -65,28 +66,23 @@ yarn test
 yarn test --watch
 
 # run one test
-npx ava packages/functions/test/palette.test.ts --no-worker-threads
+yarn test:filter packages/functions/test/palette.test.ts
 
 # run one test, watching for source file changes to re-run
-npx ava packages/functions/test/palette.test.ts --no-worker-threads --watch
+yarn test:filter packages/functions/test/palette.test.ts --watch
 ```
-
-As of Node.js v20, the `--no-worker-threads` flag is required to run tests. This is a combined limitation of Ava, tsx, and the current Node.js ESM loader API.
 
 To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
 
 ```bash
-npx ava debug packages/functions/test/palette.test.ts --break --no-worker-threads
+yarn test:debug packages/functions/test/palette.test.ts --break
 ```
 
 ### Dependencies
 
-I recommend compiling with Node.js v12.x, which is the latest version with a prebuilt binary for
-`gl` as of April 2020.
-
 Runtime dependencies should be installed only to the sub-package in which they are needed. Any
 devDependencies are shared across all packages, and should be installed in the project root. Pull
-requests should omit any changes to `dist/*` artifacts.
+requests should omit any changes to `dist/*` and `yarn.lock` artifacts.
 
 ### Documentation
 
@@ -101,6 +97,7 @@ Certain JSDoc tags have notable meanings within this project:
 - `@hidden` methods and classes are hidden from documentation, but still included in TypeScript
   definitions for the package. This code is not intended for wide use, but may be necessary for
   other packages in the glTF Transform monorepo.
+- `@experimental` tags indicate unstable APIs that do not yet follow SemVer conventions.
 
 ### Roadmap
 
@@ -115,13 +112,13 @@ Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 All packages are published together. To create a standard release:
 
 ```bash
-lerna publish [ patch | minor | major ] --force-publish "*"
+yarn dlx lerna publish [ patch | minor | major ] --force-publish "*"
 ```
 
 To create an alpha release:
 
 ```bash
-lerna publish prerelease --dist-tag next --force-publish "*"
+yarn dlx lerna publish prerelease --dist-tag next --force-publish "*"
 ```
 
-If a release contains a new package, `-- --access public` must be appended. Lerna can be [finicky with 2FA OTPs](https://github.com/lerna/lerna/issues/1091).
+If a release contains a new package, `-- --access public` must be appended.

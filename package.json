@@ -15,6 +15,8 @@
 		"clean:deps": "rimraf packages/*/node_modules/**",
 		"clean:test": "rimraf packages/*/test/out/**",
 		"test": "ava --no-worker-threads 'packages/{core,extensions,functions,cli,view}/test/**/*.test.ts'",
+		"test:filter": "ava --no-worker-threads",
+		"test:debug": "ava debug --no-worker-threads",
 		"coverage": "c8 --config .github/.c8rc --reporter=lcov --reporter=text yarn test --tap",
 		"coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
 		"lint": "eslint \"packages/*/{src,test}/**/*.ts\"",
