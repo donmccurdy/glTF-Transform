@@ -37,6 +37,12 @@ To run these or other commands on a subset of packages, use the `--ignore` flag.
 yarn run dist --ignore "@gltf-transform/view"
 ```
 
+To run an arbitrary command across all packages:
+
+```bash
+yarn lerna exec -- <command>
+```
+
 While working, use `yarn run watch` to watch and rebuild code after changes. To use a local
 version of the CLI, run `yarn link` within the `packages/cli` directory. Then
 `gltf-transform -h` will use local code instead of any global installation.
@@ -112,13 +118,13 @@ Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 All packages are published together. To create a standard release:
 
 ```bash
-yarn dlx lerna publish [ patch | minor | major ] --force-publish "*"
+yarn lerna publish [ patch | minor | major ] --force-publish "*"
 ```
 
 To create an alpha release:
 
 ```bash
-yarn dlx lerna publish prerelease --dist-tag next --force-publish "*"
+yarn lerna publish prerelease --dist-tag next --force-publish "*"
 ```
 
 If a release contains a new package, `-- --access public` must be appended.

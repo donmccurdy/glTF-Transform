@@ -11,6 +11,8 @@
 	"scripts": {
 		"dist": "lerna run dist",
 		"watch": "lerna run watch --parallel --stream",
+		"lerna": "lerna",
+		"tsx": "tsx",
 		"clean:dist": "rimraf packages/*/dist/**",
 		"clean:deps": "rimraf packages/*/node_modules/**",
 		"clean:test": "rimraf packages/*/test/out/**",
@@ -26,7 +28,7 @@
 		"version": "yarn clean:dist && yarn dist && yarn bench --report-version --print && yarn run docs:cli && git add -u benchmarks/results packages/docs",
 		"postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
 		"docs:cli": "CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
-		"docs:deploy:prod": "if [[ $(git describe --tags --abbrev=0) =~ ^v[0-9]+.[0-9]+.[0-9]+$ ]]; then yarn docs:deploy --prod; else echo '⚠️  Not a stable release, skipping website deployment.'; fi",
+		"docs:deploy:prod": "tsx scripts/check-release.ts && yarn docs:deploy --prod || echo \"⚠️  Skipping website deployment.\"",
 		"docs:deploy": "yarn dist && vercel"
 	},
 	"devDependencies": {
@@ -62,7 +64,7 @@
 		"simple-dropzone": "^0.8.3",
 		"three": "^0.164.1",
 		"tinybench": "^2.5.1",
-		"tsx": "^4.9.1",
+		"tsx": "^4.9.3",
 		"tweakpane": "^4.0.3",
 		"tweakpane-plugin-thumbnail-list": "^0.3.0",
 		"typescript": "5.4.5",

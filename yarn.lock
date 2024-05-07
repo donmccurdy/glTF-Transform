@@ -7064,7 +7064,7 @@ __metadata:
     simple-dropzone: "npm:^0.8.3"
     three: "npm:^0.164.1"
     tinybench: "npm:^2.5.1"
-    tsx: "npm:^4.9.1"
+    tsx: "npm:^4.9.3"
     tweakpane: "npm:^4.0.3"
     tweakpane-plugin-thumbnail-list: "npm:^0.3.0"
     typescript: "npm:5.4.5"
@@ -13133,7 +13133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.9.1":
+"tsx@npm:^4.9.3":
   version: 4.9.3
   resolution: "tsx@npm:4.9.3"
   dependencies:
