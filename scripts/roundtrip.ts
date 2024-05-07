@@ -1,7 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const { SOURCE, TARGET, VARIANT, SKIPLIST } = require('./constants.cjs');
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'node:url';
+import FULL_INDEX from '../../glTF-Sample-Models/2.0/model-index.json';
 
 /**
  * Generates a copy of each sample model using `copy` and `optimize`. Copy
@@ -19,11 +20,20 @@ const { SOURCE, TARGET, VARIANT, SKIPLIST } = require('./constants.cjs');
  * - TextureLinearInterpolationTest (webp conversion; non-issue)
  */
 
-const INDEX = require(path.join(SOURCE, 'model-index.json')).filter((asset) => !SKIPLIST.has(asset.name));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/** Source directory, referencing glTF-Sample-Models. */
+const SOURCE = path.resolve(__dirname, '../../glTF-Sample-Models/2.0/');
+/** Output directory for generated roundtrip assets. */
+const TARGET = path.resolve(__dirname, './out');
+const VARIANT = 'glTF-Binary';
+/** Assets to skip. */
+const SKIPLIST = new Set<string>([]);
+const INDEX = FULL_INDEX.filter((asset) => !SKIPLIST.has(asset.name));
 
 execSync(`rm -r ${TARGET}/**`);
 
-INDEX.forEach((asset, assetIndex) => {
+INDEX.forEach((asset, assetIndex: number) => {
 	console.info(`📦 ${asset.name} (${assetIndex + 1} / ${INDEX.length})`);
 
 	Object.entries(asset.variants).forEach(([variant, filename]) => {
