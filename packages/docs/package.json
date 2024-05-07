@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/docs",
-	"version": "4.0.0-alpha.18",
+	"version": "4.0.0-alpha.19",
 	"private": true,
 	"scripts": {
 		"watch": "vite dev",
@@ -12,9 +12,9 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@gltf-transform/core": "^4.0.0-alpha.18",
-		"@gltf-transform/extensions": "^4.0.0-alpha.18",
-		"@gltf-transform/functions": "^4.0.0-alpha.18",
+		"@gltf-transform/core": "^4.0.0-alpha.19",
+		"@gltf-transform/extensions": "^4.0.0-alpha.19",
+		"@gltf-transform/functions": "^4.0.0-alpha.19",
 		"@greendoc/parse": "^0.4.1",
 		"@greendoc/svelte": "^0.4.1",
 		"@sveltejs/adapter-static": "^3.0.0",
