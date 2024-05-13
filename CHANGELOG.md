@@ -24,7 +24,7 @@
 - cli: Upgrade to KTX-Software v4.3 [#1277](https://github.com/donmccurdy/glTF-Transform/pull/1277), [#1369](https://github.com/donmccurdy/glTF-Transform/pull/1369), [#1376](https://github.com/donmccurdy/glTF-Transform/pull/1376), [#1378](https://github.com/donmccurdy/glTF-Transform/pull/1378)
 - cli: Renames `--allow-http` to `--allow-net` [#1392](https://github.com/donmccurdy/glTF-Transform/pull/1392)
 - cli: Change default compression of `optimize` command to Meshopt [#1377](https://github.com/donmccurdy/glTF-Transform/pull/1377)
-- core,cli: Requires Node.js >=18, non-Node.js runtimes unaffected
+- core,cli: Requires Node.js >=18; other runtimes (Web and Deno) unaffected
 
 **Features:**
 
