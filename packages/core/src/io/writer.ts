@@ -27,6 +27,13 @@ export interface WriterOptions {
 	extensions?: (typeof Extension)[];
 }
 
+const SUPPORTED_PREWRITE_TYPES = new Set<string>([
+	PropertyType.ACCESSOR,
+	PropertyType.BUFFER,
+	PropertyType.MATERIAL,
+	PropertyType.MESH,
+]);
+
 /**
  * @internal
  * @hidden
@@ -65,6 +72,16 @@ export class GLTFWriter {
 		}
 
 		for (const extension of extensionsUsed) {
+			// Warn on unsupported prewrite hooks.
+			const unsupportedHooks = extension.prewriteTypes.filter((type) => !SUPPORTED_PREWRITE_TYPES.has(type));
+			if (unsupportedHooks.length) {
+				logger.warn(
+					`Prewrite hooks for some types (${unsupportedHooks.join()}), requested by extension ` +
+						`${extension.extensionName}, are unsupported. Please file an issue or a PR.`,
+				);
+			}
+
+			// Install dependencies.
 			for (const key of extension.writeDependencies) {
 				extension.install(key, options.dependencies[key]);
 			}
