@@ -27,7 +27,7 @@ export interface WriterOptions {
 	extensions?: (typeof Extension)[];
 }
 
-const SUPPORTED_PREWRITE_TYPES = new Set<string>([
+const SUPPORTED_PREWRITE_TYPES = new Set<PropertyType>([
 	PropertyType.ACCESSOR,
 	PropertyType.BUFFER,
 	PropertyType.MATERIAL,

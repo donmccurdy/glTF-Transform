@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS: ReaderOptions = {
 	dependencies: {},
 };
 
-const SUPPORTED_PREREAD_TYPES = new Set<string>([
+const SUPPORTED_PREREAD_TYPES = new Set<PropertyType>([
 	PropertyType.BUFFER,
 	PropertyType.TEXTURE,
 	PropertyType.MATERIAL,
