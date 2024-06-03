@@ -8,6 +8,7 @@ import {
 	Mesh,
 	Points,
 	SkinnedMesh,
+	TypedArray,
 } from 'three';
 import { Accessor as AccessorDef, Material as MaterialDef, Primitive as PrimitiveDef } from '@gltf-transform/core';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
@@ -27,10 +28,46 @@ export class PrimitiveSubject extends Subject<PrimitiveDef, MeshLike> {
 	protected attributes = new RefMapObserver<AccessorDef, BufferAttribute>('attributes', this._documentView);
 
 	constructor(documentView: DocumentViewSubjectAPI, def: PrimitiveDef) {
+		// Add Morph Targets
+		const geometry = new BufferGeometry();
+
+		// Convert geometry attributes
+		for (const accessor of def.listAttributes()) {
+			const array = accessor.getArray() as TypedArray;
+			geometry.setAttribute(accessor.getName(), new BufferAttribute(array, accessor.getElementSize()));
+		}
+
+		// Convert indices if available
+		if (def.getIndices()) {
+			const accessor = def.getIndices() as AccessorDef;
+			const array = accessor.getArray() as TypedArray;
+			geometry.setIndex(new BufferAttribute(array, 1));
+		}
+
+		// Convert morph targets
+		const targets = def.listTargets();
+		if (targets.length > 0) {
+			geometry.morphAttributes = {};
+
+			for (const [index, target] of targets.entries()) {
+				for (const semantic of target.listSemantics()) {
+					const attriName = semantic.toLowerCase();
+					if (!geometry.morphAttributes[attriName]) {
+						geometry.morphAttributes[attriName] = [];
+					}
+					const accessor = target.getAttribute(semantic) as AccessorDef;
+					const array = accessor.getArray() as TypedArray;
+					geometry.morphAttributes[attriName][index] = new BufferAttribute(array, accessor.getElementSize());
+				}
+			}
+
+			geometry.morphTargetsRelative = true;
+		}
+
 		super(
 			documentView,
 			def,
-			PrimitiveSubject.createValue(def, new BufferGeometry(), DEFAULT_MATERIAL, documentView.primitivePool),
+			PrimitiveSubject.createValue(def, geometry, DEFAULT_MATERIAL, documentView.primitivePool),
 			documentView.primitivePool,
 		);
 

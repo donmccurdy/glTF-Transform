@@ -123,6 +123,12 @@ export class NodeSubject extends Subject<NodeDef, Object3D> {
 		this.skin.update(def.getSkin());
 		this.light.update(def.getExtension('KHR_lights_punctual'));
 		this.instancedMesh.update(def.getExtension('EXT_mesh_gpu_instancing'));
+
+		const meshValue = this.mesh.value as Group;
+
+		if (meshValue && !(this.value as Mesh).morphTargetInfluences) {
+			(this.value as Mesh).morphTargetInfluences = (meshValue.children?.[0] as Mesh)?.morphTargetInfluences;
+		}
 	}
 
 	dispose() {
