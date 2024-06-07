@@ -241,7 +241,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 				.join(', ');
 			logger.info(`${NAME}: Removed types... ${str}`);
 		} else {
-			logger.info(`${NAME}: No unused properties found.`);
+			logger.debug(`${NAME}: No unused properties found.`);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
