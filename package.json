@@ -58,7 +58,7 @@
 		"meshoptimizer": "0.20.0",
 		"microbundle": "0.15.1",
 		"mikktspace": "1.1.1",
-		"prettier": "3.3.1",
+		"prettier": "3.3.2",
 		"prettier-plugin-svelte": "^3.2.3",
 		"rimraf": "^5.0.7",
 		"simple-dropzone": "^0.8.3",
