@@ -16,6 +16,19 @@ import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transfor
 import { quantize } from '@gltf-transform/functions';
 import { logger, round, roundBbox } from '@gltf-transform/test-utils';
 
+test('noop', async (t) => {
+	const document = new Document().setLogger(logger);
+	await document.transform(quantize());
+
+	t.false(
+		document
+			.getRoot()
+			.listExtensionsUsed()
+			.some((ext) => ext.extensionName === 'KHR_mesh_quantization'),
+		'skips extension',
+	);
+});
+
 test('exclusions', async (t) => {
 	const doc = new Document().setLogger(logger);
 	const prim = createPrimitive(doc);
