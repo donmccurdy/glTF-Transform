@@ -80,6 +80,7 @@ export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = 
 type PrimLike = Primitive | PrimitiveTarget;
 
 function normalizePrimitiveWeights(prim: PrimLike): void {
+	// TODO(feat): Convert attributes to same component types when necessary.
 	if (!isNormalizeSafe(prim)) return;
 
 	const vertexCount = prim.getAttribute('POSITION')!.getCount();
@@ -99,14 +100,14 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		getVertexArray(prim, i, 'WEIGHTS', weights, normalizedComponentType);
 
 		let weightsSum = sum(weights, normalizedComponentType);
-		if (weightsSum === 0) continue;
+		if (weightsSum === 0 || weightsSum === 1) continue;
 
 		// (1) If sum of weights not within δ of 1, renormalize all weights.
 		if (Math.abs(1 - weightsSum) > delta) {
 			for (let j = 0; j < weights.length; j++) {
 				if (normalized) {
-					const intValue = MathUtils.encodeNormalizedInt(weights[j] / weightsSum, componentType);
-					weights[j] = MathUtils.decodeNormalizedInt(intValue, componentType);
+					const floatValue = MathUtils.decodeNormalizedInt(weights[j], componentType);
+					weights[j] = MathUtils.encodeNormalizedInt(floatValue / weightsSum, componentType);
 				} else {
 					weights[j] /= weightsSum;
 				}
@@ -120,7 +121,9 @@ function normalizePrimitiveWeights(prim: PrimLike): void {
 		if (normalized && weightsSum !== 1) {
 			for (let j = weights.length - 1; j >= 0; j--) {
 				if (weights[j] > 0) {
-					weights[j] += MathUtils.encodeNormalizedInt(1 - weightsSum, componentType);
+					// Normalized integer encoding will clamp negative values, so separate the sign.
+					const delta = 1 - weightsSum;
+					weights[j] += Math.sign(delta) * MathUtils.encodeNormalizedInt(Math.abs(delta), componentType);
 					break;
 				}
 			}
