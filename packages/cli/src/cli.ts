@@ -367,7 +367,16 @@ commands or using the scripting API.
 		const transforms: Transform[] = [dedup()];
 
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
-		if (opts.palette) transforms.push(palette({ min: opts.paletteMin }));
+
+		if (opts.palette) {
+			transforms.push(
+				palette({
+					min: opts.paletteMin,
+					keepAttributes: !opts.pruneAttributes
+				})
+			);
+		}
+
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) transforms.push(join());
 		if (opts.weld) transforms.push(weld());
