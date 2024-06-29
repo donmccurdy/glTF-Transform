@@ -372,8 +372,8 @@ commands or using the scripting API.
 			transforms.push(
 				palette({
 					min: opts.paletteMin,
-					keepAttributes: !opts.pruneAttributes
-				})
+					keepAttributes: !opts.prune || !opts.pruneAttributes,
+				}),
 			);
 		}
 
