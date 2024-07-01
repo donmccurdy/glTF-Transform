@@ -3081,8 +3081,8 @@ __metadata:
   linkType: hard
 
 "@sveltejs/kit@npm:^2.5.8":
-  version: 2.5.17
-  resolution: "@sveltejs/kit@npm:2.5.17"
+  version: 2.5.18
+  resolution: "@sveltejs/kit@npm:2.5.18"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.6.0"
@@ -3102,7 +3102,7 @@ __metadata:
     vite: ^5.0.3
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/e408eb14828a88dd2bcfd610784ed4b3973b5e32fac8dc22ea5e05582d2d86fdd33a21d43b291ef0a8b8d135d52ed0a6190a17800ecd9b3c1007736714c05ed5
+  checksum: 10c0/a7896d69686b9c46de6af30d920183ccf1dc9284a52e8ef37d266258f51456a02f70a19a61add03de1bc9f58c99f432a19c046252daf6ee9d730198235c877cc
   languageName: node
   linkType: hard
 
@@ -3174,16 +3174,16 @@ __metadata:
   linkType: hard
 
 "@tweakpane/core@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@tweakpane/core@npm:2.0.3"
-  checksum: 10c0/f8dcdf607afd9d0efa3d774e20f2572f65a155b96c99d9982083759c076e495ea1fec64b67f20db071dea26c88b44a5a16a1bbe4a0868ed46796fd381d2859fb
+  version: 2.0.4
+  resolution: "@tweakpane/core@npm:2.0.4"
+  checksum: 10c0/9a371612bdc67167c908815974b94eeee27adb85ebbb204473be77d35bac33776ad3d7930b3102cff71ec1b9c7fef12a25c8deb2bdfa89369a2c231150915081
   languageName: node
   linkType: hard
 
-"@tweenjs/tween.js@npm:~23.1.1":
-  version: 23.1.1
-  resolution: "@tweenjs/tween.js@npm:23.1.1"
-  checksum: 10c0/7c214cc82be3af3fed42d1405ee266a08441c106be7f3dd566f092d6162d8529633a54dfa28b90343c20f29c718ed1303bc132839badad5d498bcc6853658cbd
+"@tweenjs/tween.js@npm:~23.1.2":
+  version: 23.1.2
+  resolution: "@tweenjs/tween.js@npm:23.1.2"
+  checksum: 10c0/8fa754b5fd548750e8cc26a4094b46578ee376bf15e1942e042fb532f469dca31f41c48b4d582f1fabceafa705be31b83d11dd79401a518fbabd97d1472c87df
   languageName: node
   linkType: hard
 
@@ -3369,12 +3369,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.14.8":
-  version: 20.14.8
-  resolution: "@types/node@npm:20.14.8"
+"@types/node@npm:20.14.9":
+  version: 20.14.9
+  resolution: "@types/node@npm:20.14.9"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/06d4643fa3b179b41fe19f9c75c240278ca1f7a313b3b837bc36ea119499c7ad77f06bbe72694ac04aa91ec77fe747baa09b889f4c435450c1724a26bd55f160
+  checksum: 10c0/911ffa444dc032897f4a23ed580c67903bd38ea1c5ec99b1d00fa10b83537a3adddef8e1f29710cbdd8e556a61407ed008e06537d834e48caf449ce59f87d387
   languageName: node
   linkType: hard
 
@@ -3443,16 +3443,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/three@npm:^0.165.0":
-  version: 0.165.0
-  resolution: "@types/three@npm:0.165.0"
+"@types/three@npm:^0.166.0":
+  version: 0.166.0
+  resolution: "@types/three@npm:0.166.0"
   dependencies:
-    "@tweenjs/tween.js": "npm:~23.1.1"
+    "@tweenjs/tween.js": "npm:~23.1.2"
     "@types/stats.js": "npm:*"
     "@types/webxr": "npm:*"
     fflate: "npm:~0.8.2"
     meshoptimizer: "npm:~0.18.1"
-  checksum: 10c0/a7d922c5d50610047b55443e3e7ac91cebb424a4fb09294f34ee1d9fc24c3cb5261739ae41ef7fa5ce88584045c7ee885ca28a5b741bd45f93d9da8278ed2473
+  checksum: 10c0/e79d3280bcd802b3bcb283455eb0d3d5790053d1921345bf27ff4258a17c5f3839870781d0e979de73398735ded85a51c4c5c1139a9e8d306d47f30d05e1c3b3
   languageName: node
   linkType: hard
 
@@ -5931,7 +5931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.21.3, esbuild@npm:~0.21.4":
+"esbuild@npm:^0.21.3, esbuild@npm:~0.21.5":
   version: 0.21.5
   resolution: "esbuild@npm:0.21.5"
   dependencies:
@@ -7040,9 +7040,9 @@ __metadata:
     "@types/draco3dgltf": "npm:1.4.3"
     "@types/jsdom": "npm:^21.1.6"
     "@types/ndarray": "npm:1.0.14"
-    "@types/node": "npm:20.14.8"
+    "@types/node": "npm:20.14.9"
     "@types/node-gzip": "npm:1.1.3"
-    "@types/three": "npm:^0.165.0"
+    "@types/three": "npm:^0.166.0"
     "@types/wrap-ansi": "npm:^8.1.0"
     ava: "npm:^6.1.3"
     c8: "npm:^9.1.0"
@@ -7056,14 +7056,14 @@ __metadata:
     jsdom: "npm:^24.0.0"
     keyframe-resample: "npm:^0.1.0"
     lerna: "npm:8.1.5"
-    meshoptimizer: "npm:0.20.0"
+    meshoptimizer: "npm:0.21.0"
     microbundle: "npm:0.15.1"
     mikktspace: "npm:1.1.1"
     prettier: "npm:3.3.2"
     prettier-plugin-svelte: "npm:^3.2.3"
     rimraf: "npm:^5.0.7"
     simple-dropzone: "npm:^0.8.3"
-    three: "npm:^0.165.0"
+    three: "npm:^0.166.0"
     tinybench: "npm:^2.8.0"
     tsx: "npm:^4.10.3"
     tweakpane: "npm:^4.0.3"
@@ -8931,10 +8931,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meshoptimizer@npm:0.20.0, meshoptimizer@npm:~0.20.0":
-  version: 0.20.0
-  resolution: "meshoptimizer@npm:0.20.0"
-  checksum: 10c0/a4ef1a0e6c0454c2faf69602ba45f8aa87102c53de987c711348a73b2faed6627732704bc21c0791ab99494d9fd07b2038abd68754d4e5805c5b2b3f481f8bc3
+"meshoptimizer@npm:0.21.0":
+  version: 0.21.0
+  resolution: "meshoptimizer@npm:0.21.0"
+  checksum: 10c0/3d55799c2f49c8b6dc0f73fb0a0e0c815b32cfe2e66d7433e1197c032aa172d379d37b45682fe713526dbfd1df68a3cddc283cd55bca620efc8eeccff58b0184
   languageName: node
   linkType: hard
 
@@ -8942,6 +8942,13 @@ __metadata:
   version: 0.18.1
   resolution: "meshoptimizer@npm:0.18.1"
   checksum: 10c0/8a825c58b20b65585e8d00788843929b60c66ba4297e89afaa49f7c51ab9a0f7b9130f90cc9ad1b9b48b3d1bee3beb1bc93608acba0d73e78995c3e6e5ca436b
+  languageName: node
+  linkType: hard
+
+"meshoptimizer@npm:~0.20.0":
+  version: 0.20.0
+  resolution: "meshoptimizer@npm:0.20.0"
+  checksum: 10c0/a4ef1a0e6c0454c2faf69602ba45f8aa87102c53de987c711348a73b2faed6627732704bc21c0791ab99494d9fd07b2038abd68754d4e5805c5b2b3f481f8bc3
   languageName: node
   linkType: hard
 
@@ -12470,8 +12477,8 @@ __metadata:
   linkType: hard
 
 "svelte-check@npm:^3.7.1":
-  version: 3.8.2
-  resolution: "svelte-check@npm:3.8.2"
+  version: 3.8.4
+  resolution: "svelte-check@npm:3.8.4"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.17"
     chokidar: "npm:^3.4.1"
@@ -12483,7 +12490,7 @@ __metadata:
     svelte: ^3.55.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0
   bin:
     svelte-check: bin/svelte-check
-  checksum: 10c0/18e3fd58992eaa56afab9af3dfb3cfc6f666647ad8c7d897daf805a19145eb7fa54bbe05cc39fdb70b498e72fa36a75fac5ed8bd29b8660c7d044eaddac5bcaa
+  checksum: 10c0/26e6bf9fa9c53c989562a1e51b52cf1ddc95ba76a7040030cecf7d6cefed1a7f0b06badf225da55ebc0ded1c407a9a8b38bbfe5b80bdae4ad6e1bad6ceb22824
   languageName: node
   linkType: hard
 
@@ -12719,10 +12726,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"three@npm:^0.165.0":
-  version: 0.165.0
-  resolution: "three@npm:0.165.0"
-  checksum: 10c0/235e52d4634c4fc400de7850af466fdcfaf70c621463a8d886b332faccfbc1c4f697cd67bf848da21e1b6e2fb3e7a153aafc217238ee50923b1a5ce7d47d3973
+"three@npm:^0.166.0":
+  version: 0.166.0
+  resolution: "three@npm:0.166.0"
+  checksum: 10c0/02c50d1c7c51c6a4ca2b29bc43086b49def4c2fd2a406abedb333c091b2e14be31cca98db2f629f19b796c5728e710a26c2bc3e139b770e6963d2c082b0b1d0f
   languageName: node
   linkType: hard
 
@@ -12893,10 +12900,10 @@ __metadata:
   linkType: hard
 
 "tsx@npm:^4.10.3":
-  version: 4.15.7
-  resolution: "tsx@npm:4.15.7"
+  version: 4.16.0
+  resolution: "tsx@npm:4.16.0"
   dependencies:
-    esbuild: "npm:~0.21.4"
+    esbuild: "npm:~0.21.5"
     fsevents: "npm:~2.3.3"
     get-tsconfig: "npm:^4.7.5"
   dependenciesMeta:
@@ -12904,7 +12911,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10c0/e960f4ee084b48cd3183e65946725fd9b0de4afae32a0fd9cd47416a41259fb2c72838b7aeba26adaecc2d89d70e976add9722e72ea5c876b3b493f137cbbf12
+  checksum: 10c0/b9afc19d40d60d13bab408800be79e3279862ead2b17dc47fadddd41cca06f25be55fcd3a033c6205fa190bb52c8485ed842593a4292246d2501a9ee3d7b0ae3
   languageName: node
   linkType: hard
 
@@ -13346,8 +13353,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^5.2.11":
-  version: 5.3.1
-  resolution: "vite@npm:5.3.1"
+  version: 5.3.2
+  resolution: "vite@npm:5.3.2"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -13381,7 +13388,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/9317262c02ea2dc324dfdbc20c3c450cd89cc9a16399a41a4bf820a3a1f31cf400878c015135e355ee034853cc2399b5499899d5b1bc462d57642d71083e74b6
+  checksum: 10c0/3ed576d18c6c008ae92be68f9c79bf7556dae10978a3e8b4c4b42199424755e5c99836e6d4f81fb8b533b957d7f4e351abc60b8a93f4c4b5eb9890b5b6450926
   languageName: node
   linkType: hard
 
