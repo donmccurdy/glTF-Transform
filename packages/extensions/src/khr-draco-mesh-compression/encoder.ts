@@ -174,17 +174,17 @@ function addAttribute(
 ): number {
 	switch (componentType) {
 		case Accessor.ComponentType.UNSIGNED_BYTE:
-			return builder.AddUInt8Attribute(mesh, attribute, count, itemSize, array);
+			return builder.AddUInt8Attribute(mesh, attribute, count, itemSize, array as Uint8Array);
 		case Accessor.ComponentType.BYTE:
-			return builder.AddInt8Attribute(mesh, attribute, count, itemSize, array);
+			return builder.AddInt8Attribute(mesh, attribute, count, itemSize, array as Int8Array);
 		case Accessor.ComponentType.UNSIGNED_SHORT:
-			return builder.AddUInt16Attribute(mesh, attribute, count, itemSize, array);
+			return builder.AddUInt16Attribute(mesh, attribute, count, itemSize, array as Uint16Array);
 		case Accessor.ComponentType.SHORT:
-			return builder.AddInt16Attribute(mesh, attribute, count, itemSize, array);
+			return builder.AddInt16Attribute(mesh, attribute, count, itemSize, array as Int16Array);
 		case Accessor.ComponentType.UNSIGNED_INT:
-			return builder.AddUInt32Attribute(mesh, attribute, count, itemSize, array);
+			return builder.AddUInt32Attribute(mesh, attribute, count, itemSize, array as Uint32Array);
 		case Accessor.ComponentType.FLOAT:
-			return builder.AddFloatAttribute(mesh, attribute, count, itemSize, array);
+			return builder.AddFloatAttribute(mesh, attribute, count, itemSize, array as Float32Array);
 		default:
 			throw new Error(`Unexpected component type, "${componentType}".`);
 	}
