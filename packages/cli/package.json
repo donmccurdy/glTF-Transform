@@ -44,7 +44,7 @@
 		"csv-stringify": "~6.5.0",
 		"draco3dgltf": "~1.5.7",
 		"gltf-validator": "~2.0.0-dev.3.9",
-		"inquirer": "~9.2.21",
+		"inquirer": "~9.3.0",
 		"keyframe-resample": "~0.1.0",
 		"ktx-parse": "~0.7.0",
 		"language-tags": "~1.0.9",
