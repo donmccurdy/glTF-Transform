@@ -49,7 +49,7 @@
 		"ktx-parse": "~0.7.0",
 		"language-tags": "~1.0.9",
 		"listr2": "~8.2.1",
-		"meshoptimizer": "~0.20.0",
+		"meshoptimizer": "~0.21.0",
 		"micromatch": "~4.0.5",
 		"mikktspace": "~1.1.1",
 		"node-fetch": "~3.3.2",
