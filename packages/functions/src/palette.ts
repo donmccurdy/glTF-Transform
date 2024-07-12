@@ -27,6 +27,12 @@ export interface PaletteOptions {
 	 */
 	min?: number;
 	/**
+	 * Whether to keep unused vertex attributes, such as UVs without an assigned
+	 * texture. If kept, unused UV coordinates may prevent palette texture
+	 * creation. Default: false.
+	 */
+	keepAttributes?: boolean;
+	/**
 	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
 	 * default. Cleanup removes temporary resources created during the operation, but may also remove
 	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
@@ -40,6 +46,7 @@ export interface PaletteOptions {
 export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
 	min: 5,
+	keepAttributes: false,
 	cleanup: true,
 };
 
@@ -88,14 +95,16 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		const root = document.getRoot();
 
 		// Find and remove unused TEXCOORD_n attributes.
-		await document.transform(
-			prune({
-				propertyTypes: [PropertyType.ACCESSOR],
-				keepAttributes: false,
-				keepIndices: true,
-				keepLeaves: true,
-			}),
-		);
+		if (!options.keepAttributes) {
+			await document.transform(
+				prune({
+					propertyTypes: [PropertyType.ACCESSOR],
+					keepAttributes: false,
+					keepIndices: true,
+					keepLeaves: true,
+				}),
+			);
+		}
 
 		const prims = new Set<Primitive>();
 		const materials = new Set<Material>();

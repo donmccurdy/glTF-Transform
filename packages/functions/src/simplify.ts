@@ -76,7 +76,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  * import { MeshoptSimplifier } from 'meshoptimizer';
  *
  * await document.transform(
- *   weld({ tolerance: 0.0001 }),
+ *   weld({}),
  *   simplify({ simplifier: MeshoptSimplifier, ratio: 0.75, error: 0.001 })
  * );
  * ```

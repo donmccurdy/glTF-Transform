@@ -76,15 +76,23 @@ export const PRUNE_DEFAULTS: Required<PruneOptions> = {
  * Example:
  *
  * ```javascript
+ * import { PropertyType } from '@gltf-transform/core';
+ * import { prune } from '@gltf-transform/functions';
+ *
  * document.getRoot().listMaterials(); // → [Material, Material]
  *
- * await document.transform(prune());
+ * await document.transform(
+ * 	prune({
+ * 		propertyTypes: [PropertyType.MATERIAL],
+ * 		keepExtras: true
+ * 	})
+ * );
  *
  * document.getRoot().listMaterials(); // → [Material]
  * ```
  *
- * Use {@link PruneOptions} to control what content should be pruned. For example, you can preserve
- * empty objects in the scene hierarchy using the option `keepLeaves`.
+ * By default, pruning will aggressively remove most unused resources. Use
+ * {@link PruneOptions} to limit what is considered for pruning.
  *
  * @category Transforms
  */
@@ -241,7 +249,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 				.join(', ');
 			logger.info(`${NAME}: Removed types... ${str}`);
 		} else {
-			logger.info(`${NAME}: No unused properties found.`);
+			logger.debug(`${NAME}: No unused properties found.`);
 		}
 
 		logger.debug(`${NAME}: Complete.`);

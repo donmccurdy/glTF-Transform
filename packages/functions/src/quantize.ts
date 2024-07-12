@@ -106,11 +106,9 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 		..._options,
 	});
 
-	return createTransform(NAME, async (doc: Document): Promise<void> => {
-		const logger = doc.getLogger();
-		const root = doc.getRoot();
-
-		doc.createExtension(KHRMeshQuantization).setRequired(true);
+	return createTransform(NAME, async (document: Document): Promise<void> => {
+		const logger = document.getLogger();
+		const root = document.getRoot();
 
 		// Compute vertex position quantization volume.
 		let nodeTransform: VectorTransform<vec3> | undefined = undefined;
@@ -119,13 +117,13 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 		}
 
 		// Quantize mesh primitives.
-		for (const mesh of doc.getRoot().listMeshes()) {
+		for (const mesh of document.getRoot().listMeshes()) {
 			if (options.quantizationVolume === 'mesh') {
 				nodeTransform = getNodeTransform(getPositionQuantizationVolume(mesh));
 			}
 
 			if (nodeTransform && options.pattern.test('POSITION')) {
-				transformMeshParents(doc, mesh, nodeTransform);
+				transformMeshParents(document, mesh, nodeTransform);
 				transformMeshMaterials(mesh, 1 / nodeTransform.scale);
 			}
 
@@ -135,15 +133,23 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 				if (renderCount < uploadCount / 2) {
 					compactPrimitive(prim);
 				}
-				quantizePrimitive(doc, prim, nodeTransform!, options);
+				quantizePrimitive(document, prim, nodeTransform!, options);
 				for (const target of prim.listTargets()) {
-					quantizePrimitive(doc, target, nodeTransform!, options);
+					quantizePrimitive(document, target, nodeTransform!, options);
 				}
 			}
 		}
 
+		const needsExtension = root
+			.listMeshes()
+			.flatMap((mesh) => mesh.listPrimitives())
+			.some(isQuantizedPrimitive);
+		if (needsExtension) {
+			document.createExtension(KHRMeshQuantization).setRequired(true);
+		}
+
 		if (options.cleanup) {
-			await doc.transform(
+			await document.transform(
 				prune({
 					propertyTypes: [PropertyType.ACCESSOR, PropertyType.SKIN, PropertyType.MATERIAL],
 					keepAttributes: true,
@@ -493,6 +499,37 @@ function getPositionQuantizationVolume(mesh: Mesh): bbox {
 	}
 
 	return bbox;
+}
+
+function isQuantizedAttribute(semantic: string, attribute: Accessor): boolean {
+	// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
+	const componentSize = attribute.getComponentSize();
+	if (semantic === 'POSITION') return componentSize < 4;
+	if (semantic === 'NORMAL') return componentSize < 4;
+	if (semantic === 'TANGENT') return componentSize < 4;
+	if (semantic.startsWith('TEXCOORD_')) {
+		const componentType = attribute.getComponentType();
+		const normalized = attribute.getNormalized();
+		return (
+			componentSize < 4 &&
+			!(normalized && componentType === Accessor.ComponentType.UNSIGNED_BYTE) &&
+			!(normalized && componentType === Accessor.ComponentType.UNSIGNED_SHORT)
+		);
+	}
+	return false;
+}
+
+function isQuantizedPrimitive(prim: Primitive | PrimitiveTarget): boolean {
+	for (const semantic of prim.listSemantics()) {
+		const attribute = prim.getAttribute('POSITION')!;
+		if (isQuantizedAttribute(semantic, attribute)) {
+			return true;
+		}
+	}
+	if (prim.propertyType === PropertyType.PRIMITIVE) {
+		return prim.listTargets().some(isQuantizedPrimitive);
+	}
+	return false;
 }
 
 /** Computes total min and max of all Accessors in a list. */
