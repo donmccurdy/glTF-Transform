@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/view",
-	"version": "4.0.6",
+	"version": "4.0.7",
 	"repository": "github:donmccurdy/glTF-Transform-View",
 	"homepage": "https://gltf-transform.dev/",
 	"description": "Syncs a glTF-Transform Document with a three.js scene graph",
@@ -40,5 +40,6 @@
 		"@gltf-transform/extensions": ">=4.0.0",
 		"@types/three": ">=0.155.0",
 		"three": ">=0.155.0"
-	}
+	},
+	"gitHead": "d437c8e492bc55615bc5ef7fd04c72ac9160f547"
 }
