@@ -60,7 +60,7 @@
 		"mikktspace": "1.1.1",
 		"prettier": "3.3.3",
 		"prettier-plugin-svelte": "^3.2.3",
-		"rimraf": "^5.0.7",
+		"rimraf": "^6.0.0",
 		"simple-dropzone": "^0.8.3",
 		"three": "^0.166.0",
 		"tinybench": "^2.8.0",
