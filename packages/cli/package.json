@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/cli",
-	"version": "4.0.7",
+	"version": "4.0.8",
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.dev/cli.html",
 	"description": "CLI interface to glTF Transform",
@@ -29,9 +29,9 @@
 	},
 	"dependencies": {
 		"@donmccurdy/caporal": "~0.0.10",
-		"@gltf-transform/core": "^4.0.7",
-		"@gltf-transform/extensions": "^4.0.7",
-		"@gltf-transform/functions": "^4.0.7",
+		"@gltf-transform/core": "^4.0.8",
+		"@gltf-transform/extensions": "^4.0.8",
+		"@gltf-transform/functions": "^4.0.8",
 		"@types/inquirer": "~9.0.7",
 		"@types/language-tags": "~1.0.4",
 		"@types/micromatch": "~4.0.7",
@@ -69,5 +69,5 @@
 		"LICENSE.md",
 		"package-lock.json"
 	],
-	"gitHead": "d437c8e492bc55615bc5ef7fd04c72ac9160f547"
+	"gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
 }
