@@ -1,6 +1,6 @@
 import test from 'ava';
 import fs from 'fs';
-import { BufferUtils, Document, Format, GLB_BUFFER, JSONDocument } from '@gltf-transform/core';
+import { BufferUtils, Document, Format, GLB_BUFFER, GLTF, JSONDocument } from '@gltf-transform/core';
 import { createPlatformIO, resolve } from '@gltf-transform/test-utils';
 
 test('common', async (t) => {
@@ -152,4 +152,30 @@ test('gltf embedded', async (t) => {
 
 	t.truthy(await io.readJSON(jsonDoc), 'reads document');
 	t.deepEqual(jsonDoc, jsonDocCopy, 'original unchanged');
+});
+
+test('glb with unknown chunk', async (t) => {
+	const io = await createPlatformIO();
+
+	const jsonChunkText = JSON.stringify({
+		asset: { version: '2.0' },
+		scenes: [{ nodes: [0] }],
+		nodes: [{ name: 'RootNode' }],
+	} as GLTF.IGLTF);
+	const jsonChunkData = BufferUtils.pad(BufferUtils.encodeText(jsonChunkText), 0x20);
+	const totalByteLength = 12 + 8 + jsonChunkData.byteLength + 8 + 80;
+
+	const glb = BufferUtils.concat([
+		BufferUtils.toView(new Uint32Array([0x46546c67, 2, totalByteLength])),
+		BufferUtils.toView(new Uint32Array([jsonChunkData.byteLength, 0x4e4f534a])),
+		jsonChunkData,
+		BufferUtils.toView(new Uint32Array([80, 0x12345678])),
+		new Uint8Array(80).fill(0),
+	]);
+
+	const document = await io.readBinary(glb);
+	t.truthy(document, 'parses GLB with unknown chunk');
+
+	const node = document.getRoot().listNodes()[0];
+	t.is(node.getName(), 'RootNode', 'parses nodes');
 });
