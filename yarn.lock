@@ -2186,9 +2186,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lerna/create@npm:8.1.6":
-  version: 8.1.6
-  resolution: "@lerna/create@npm:8.1.6"
+"@lerna/create@npm:8.1.7":
+  version: 8.1.7
+  resolution: "@lerna/create@npm:8.1.7"
   dependencies:
     "@npmcli/arborist": "npm:7.5.3"
     "@npmcli/package-json": "npm:5.2.0"
@@ -2248,6 +2248,7 @@ __metadata:
     slash: "npm:^3.0.0"
     ssri: "npm:^10.0.6"
     string-width: "npm:^4.2.3"
+    strip-ansi: "npm:^6.0.1"
     strong-log-transformer: "npm:2.1.0"
     tar: "npm:6.2.1"
     temp-dir: "npm:1.0.0"
@@ -2260,7 +2261,7 @@ __metadata:
     write-pkg: "npm:4.0.0"
     yargs: "npm:17.7.2"
     yargs-parser: "npm:21.1.1"
-  checksum: 10c0/833920656c3254444db7d7ea3e22331773c87c635d899ef3cd785a599fe07e2a40ceec49ad46e1962d354d96877de341615ef49e12b50ed70011df6d9dda46e6
+  checksum: 10c0/9f44f4bf7741b0b594b8bd10be60c7aed8aa5335fcc9ec75bcac40744fcf4cadad40ff37b8f85445c4b9d470388df6e0bbdfcd7d5de43b681e315dc288a2fc9d
   languageName: node
   linkType: hard
 
@@ -3361,12 +3362,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.14.10":
-  version: 20.14.10
-  resolution: "@types/node@npm:20.14.10"
+"@types/node@npm:20.14.11":
+  version: 20.14.11
+  resolution: "@types/node@npm:20.14.11"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/0b06cff14365c2d0085dc16cc8cbea5c40ec09cfc1fea966be9eeecf35562760bfde8f88e86de6edfaf394501236e229d9c1084fad04fb4dec472ae245d8ae69
+  checksum: 10c0/5306becc0ff41d81b1e31524bd376e958d0741d1ce892dffd586b9ae0cb6553c62b0d62abd16da8bea6b9a2c17572d360450535d7c073794b0cef9cb4e39691e
   languageName: node
   linkType: hard
 
@@ -7016,7 +7017,7 @@ __metadata:
     "@types/draco3dgltf": "npm:1.4.3"
     "@types/jsdom": "npm:^21.1.6"
     "@types/ndarray": "npm:1.0.14"
-    "@types/node": "npm:20.14.10"
+    "@types/node": "npm:20.14.11"
     "@types/node-gzip": "npm:1.1.3"
     "@types/three": "npm:^0.166.0"
     "@types/wrap-ansi": "npm:^8.1.0"
@@ -7031,7 +7032,7 @@ __metadata:
     gltf-validator: "npm:2.0.0-dev.3.9"
     jsdom: "npm:^24.0.0"
     keyframe-resample: "npm:^0.1.0"
-    lerna: "npm:8.1.6"
+    lerna: "npm:8.1.7"
     meshoptimizer: "npm:0.21.0"
     microbundle: "npm:0.15.1"
     mikktspace: "npm:1.1.1"
@@ -7314,13 +7315,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:^7.0.4":
-  version: 7.0.4
-  resolution: "https-proxy-agent@npm:7.0.4"
+"https-proxy-agent@npm:^7.0.5":
+  version: 7.0.5
+  resolution: "https-proxy-agent@npm:7.0.5"
   dependencies:
     agent-base: "npm:^7.0.2"
     debug: "npm:4"
-  checksum: 10c0/bc4f7c38da32a5fc622450b6cb49a24ff596f9bd48dcedb52d2da3fa1c1a80e100fb506bd59b326c012f21c863c69b275c23de1a01d0b84db396822fdf25e52b
+  checksum: 10c0/2490e3acec397abeb88807db52cac59102d5ed758feee6df6112ab3ccd8325e8a1ce8bce6f4b66e5470eca102d31e425ace904242e4fa28dbe0c59c4bafa7b2c
   languageName: node
   linkType: hard
 
@@ -8142,8 +8143,8 @@ __metadata:
   linkType: hard
 
 "jsdom@npm:^24.0.0":
-  version: 24.1.0
-  resolution: "jsdom@npm:24.1.0"
+  version: 24.1.1
+  resolution: "jsdom@npm:24.1.1"
   dependencies:
     cssstyle: "npm:^4.0.1"
     data-urls: "npm:^5.0.0"
@@ -8151,11 +8152,11 @@ __metadata:
     form-data: "npm:^4.0.0"
     html-encoding-sniffer: "npm:^4.0.0"
     http-proxy-agent: "npm:^7.0.2"
-    https-proxy-agent: "npm:^7.0.4"
+    https-proxy-agent: "npm:^7.0.5"
     is-potential-custom-element-name: "npm:^1.0.1"
-    nwsapi: "npm:^2.2.10"
+    nwsapi: "npm:^2.2.12"
     parse5: "npm:^7.1.2"
-    rrweb-cssom: "npm:^0.7.0"
+    rrweb-cssom: "npm:^0.7.1"
     saxes: "npm:^6.0.0"
     symbol-tree: "npm:^3.2.4"
     tough-cookie: "npm:^4.1.4"
@@ -8164,14 +8165,14 @@ __metadata:
     whatwg-encoding: "npm:^3.1.1"
     whatwg-mimetype: "npm:^4.0.0"
     whatwg-url: "npm:^14.0.0"
-    ws: "npm:^8.17.0"
+    ws: "npm:^8.18.0"
     xml-name-validator: "npm:^5.0.0"
   peerDependencies:
     canvas: ^2.11.2
   peerDependenciesMeta:
     canvas:
       optional: true
-  checksum: 10c0/34eadd8a7ae20c1505abe7a0f3988b2f0881cce7e27d75c4f5224f440f81f8ac08f4f449695b0f4178f048ed1c1709f3594e9d3f2fe0406c28e8da6eddd44f5a
+  checksum: 10c0/02d6bfe32f09f26329c0e53ad9f9883a3c671fc1f75725167d2089ca412f5b7ca85ff8aa62327d1cc6fc70ffbb3b18dfc7642c4b2096c2c8b19aaf9a48473eb3
   languageName: node
   linkType: hard
 
@@ -8373,11 +8374,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lerna@npm:8.1.6":
-  version: 8.1.6
-  resolution: "lerna@npm:8.1.6"
+"lerna@npm:8.1.7":
+  version: 8.1.7
+  resolution: "lerna@npm:8.1.7"
   dependencies:
-    "@lerna/create": "npm:8.1.6"
+    "@lerna/create": "npm:8.1.7"
     "@npmcli/arborist": "npm:7.5.3"
     "@npmcli/package-json": "npm:5.2.0"
     "@npmcli/run-script": "npm:8.1.0"
@@ -8444,6 +8445,7 @@ __metadata:
     slash: "npm:3.0.0"
     ssri: "npm:^10.0.6"
     string-width: "npm:^4.2.3"
+    strip-ansi: "npm:^6.0.1"
     strong-log-transformer: "npm:2.1.0"
     tar: "npm:6.2.1"
     temp-dir: "npm:1.0.0"
@@ -8459,7 +8461,7 @@ __metadata:
     yargs-parser: "npm:21.1.1"
   bin:
     lerna: dist/cli.js
-  checksum: 10c0/282ec3b5fdc48a2b3ed6eeaac1575e6a35eeaf53c4fa4113ca6b4265d46a422bf5de99b701d7fb4c94e80ec22e0099f24cc5bcab0a4a0a47095538a88e953129
+  checksum: 10c0/aa3f4fb12eadafedc4736c9832a2ca7557757254b2e62f6454b4ed71cd4a92b354ced6acd92b505a8701cd948473df8bb70753fc0dd7213f8bbf4349d0b1c4d5
   languageName: node
   linkType: hard
 
@@ -9759,10 +9761,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nwsapi@npm:^2.2.10":
-  version: 2.2.10
-  resolution: "nwsapi@npm:2.2.10"
-  checksum: 10c0/43dfa150387bd2a578e37556d0ae3330d5617f99e5a7b64e3400d4c2785620762aa6169caf8f5fbce17b7ef29c372060b602594320c374fba0a39da4163d77ed
+"nwsapi@npm:^2.2.12":
+  version: 2.2.12
+  resolution: "nwsapi@npm:2.2.12"
+  checksum: 10c0/95e9623d63df111405503df8c5d800e26f71675d319e2c9c70cddfa31e5ace1d3f8b6d98d354544fc156a1506d920ec291e303fab761e4f99296868e199a466e
   languageName: node
   linkType: hard
 
@@ -10905,12 +10907,12 @@ __metadata:
   linkType: hard
 
 "prettier-plugin-svelte@npm:^3.2.3":
-  version: 3.2.5
-  resolution: "prettier-plugin-svelte@npm:3.2.5"
+  version: 3.2.6
+  resolution: "prettier-plugin-svelte@npm:3.2.6"
   peerDependencies:
     prettier: ^3.0.0
     svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
-  checksum: 10c0/fd9d44848522fbaaeb73d70cc7f90bc01ddfbb5f1f937d2e1c4f15575d2c154451d96618075a0d41b18254a63a647aaa03600767dc4e4fcce58df541bd43b748
+  checksum: 10c0/d7e89e03bf6c6c36b0062302bd8b80c345059be9d01927cfdc63ee44b6ac7bb5cf952f5f4aa087de1bd614521abcd7ee1e395509fc1236be4dd66c3b41ce5586
   languageName: node
   linkType: hard
 
@@ -11634,10 +11636,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rrweb-cssom@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "rrweb-cssom@npm:0.7.0"
-  checksum: 10c0/278350b1f383f76db20e37394361b709740bd4f5f27f924e1c3c3fdd7112b2ae37ed9bc7cee63776f7df395b9b0f644d1f8be104990e3028d276a3288cd7e564
+"rrweb-cssom@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "rrweb-cssom@npm:0.7.1"
+  checksum: 10c0/127b8ca6c8aac45e2755abbae6138d4a813b1bedc2caabf79466ae83ab3cfc84b5bfab513b7033f0aa4561c7753edf787d0dd01163ceacdee2e8eb1b6bf7237e
   languageName: node
   linkType: hard
 
@@ -13399,8 +13401,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^5.2.11":
-  version: 5.3.3
-  resolution: "vite@npm:5.3.3"
+  version: 5.3.4
+  resolution: "vite@npm:5.3.4"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -13434,7 +13436,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/a796872e1d11875d994615cd00da185c80eeb7753034d35c096050bf3c269c02004070cf623c5fe2a4a90ea2f12488e6f9d13933ec810f117f1b931e1b5e3385
+  checksum: 10c0/604a1c8698bcf09d6889533c552f20137c80cb5027e9e7ddf6215d51e3df763414f8712168c22b3c8c16383aff9447094c05f21d7cca3c115874ff9d12e1538e
   languageName: node
   linkType: hard
 
@@ -13741,9 +13743,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.17.0":
-  version: 8.17.0
-  resolution: "ws@npm:8.17.0"
+"ws@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "ws@npm:8.18.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -13752,7 +13754,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10c0/55241ec93a66fdfc4bf4f8bc66c8eb038fda2c7a4ee8f6f157f2ca7dc7aa76aea0c0da0bf3adb2af390074a70a0e45456a2eaf80e581e630b75df10a64b0a990
+  checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
   languageName: node
   linkType: hard
 
