@@ -1,11 +1,11 @@
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '@gltf-transform/extensions';
-import inquirer, { Question, QuestionCollection } from 'inquirer';
+import prompts, { PromptObject } from 'prompts';
 import languageTags from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';
 import path from 'path';
-import { formatXMP, XMPContext } from '../util.js';
+import { XMPContext } from '../util.js';
 
 const DEFAULT_LANG = 'en-US';
 
@@ -30,43 +30,37 @@ enum Prompt {
 	RIGHTS,
 }
 
-async function* generateQuestions(results: Record<string, unknown>): AsyncGenerator<Question> {
+async function* generateQuestions(results: Record<string, unknown>): AsyncGenerator<PromptObject> {
 	let lang = (results['dc:language'] as string) || DEFAULT_LANG;
 
 	yield {
-		type: 'checkbox',
+		type: 'multiselect',
 		name: '_prompts',
 		message: 'Select XMP metadata:',
-		loop: false,
-		pageSize: 15,
 		choices: [
-			{ value: Prompt.CREATOR, name: 'Creator' },
-			{ value: Prompt.TITLE, name: 'Title' },
-			{ value: Prompt.DESCRIPTION, name: 'Description' },
-			{ value: Prompt.RELATED, name: 'Related links' },
-			new inquirer.Separator(),
-			{ value: Prompt.CREATE_DATE, name: 'Date created' },
-			new inquirer.Separator(),
-			{ value: Prompt.LANGUAGE, name: 'Language' },
-			new inquirer.Separator(),
-			{ value: Prompt.RIGHTS, name: 'License and rights' },
-			new inquirer.Separator(),
-			{ value: Prompt.PREFERRED_SURFACE, name: 'Preferred surfaces (AR)' },
+			{ value: Prompt.CREATOR, title: 'Creator' },
+			{ value: Prompt.TITLE, title: 'Title' },
+			{ value: Prompt.DESCRIPTION, title: 'Description' },
+			{ value: Prompt.RELATED, title: 'Related links' },
+			{ value: Prompt.CREATE_DATE, title: 'Date created' },
+			{ value: Prompt.LANGUAGE, title: 'Language' },
+			{ value: Prompt.RIGHTS, title: 'License and rights' },
+			{ value: Prompt.PREFERRED_SURFACE, title: 'Preferred surfaces (AR)' },
 		],
-	} as Question;
+	} as PromptObject;
 
 	const prompts = new Set<Prompt>(results._prompts as Prompt[]);
 
 	// Prompt for 'dc:language' first, used as the default for Language Alternative entries.
 	if (prompts.has(Prompt.LANGUAGE)) {
 		yield {
-			type: 'input',
+			type: 'text',
 			name: 'dc:language',
 			message: 'Language?',
-			suffix: ' (dc:language)',
+			hint: ' (dc:language)',
+			initial: DEFAULT_LANG,
 			validate: (input: string) =>
 				languageTags.check(input) ? true : 'Invalid language; refer to IETF RFC 3066.',
-			default: DEFAULT_LANG,
 		};
 
 		lang = results['dc:language'] as string;
@@ -74,95 +68,88 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 
 	if (prompts.has(Prompt.CREATOR)) {
 		yield {
-			type: 'input',
+			type: 'text',
 			name: 'dc:creator',
 			message: 'Creator of the model?',
-			suffix: ' (dc:creator)',
-			filter: (input: string) => createList([input]),
-			transformer: formatXMP,
-		} as Question;
+			hint: ' (dc:creator)',
+			format: (input: string) => createList([input]),
+		} as PromptObject;
 	}
 
 	if (prompts.has(Prompt.TITLE)) {
 		yield {
-			type: 'input',
+			type: 'text',
 			name: 'dc:title',
 			message: 'Title of the model?',
-			suffix: ' (dc:title)',
-			filter: (input: string) => createLanguageAlternative(input, lang),
-			transformer: formatXMP,
-		} as Question;
+			hint: ' (dc:title)',
+			format: (input: string) => createLanguageAlternative(input, lang),
+		} as PromptObject;
 	}
 
 	if (prompts.has(Prompt.DESCRIPTION)) {
 		yield {
-			type: 'input',
+			type: 'text',
 			name: 'dc:description',
 			message: 'Description of the model?',
-			suffix: ' (dc:description)',
-			filter: (input: string) => createLanguageAlternative(input, lang),
-			transformer: formatXMP,
-		} as Question;
+			hint: ' (dc:description)',
+			format: (input: string) => createLanguageAlternative(input, lang),
+		} as PromptObject;
 	}
 
 	if (prompts.has(Prompt.RELATED)) {
 		yield {
-			type: 'input',
+			type: 'list',
 			name: 'dc:relation',
 			message: 'Related links?',
-			suffix: ' Comma-separated URLs. (dc:relation)',
-			filter: (input: string) => createList(input.split(/[,\n]/).map((url) => url.trim())),
-			transformer: formatXMP,
-		} as Question;
+			hint: ' Comma-separated URLs. (dc:relation)',
+			format: (input: string[]) => createList(input),
+		} as PromptObject;
 	}
 
 	if (prompts.has(Prompt.RIGHTS)) {
 		yield {
-			type: 'list',
+			type: 'select',
 			name: '_rights',
 			message: 'Is the model rights-managed?',
-			suffix: ' (dc:rights, xmpRights:Marked, model3d:spdxLicense)',
-			loop: false,
-			pageSize: 15,
+			hint: ' (dc:rights, xmpRights:Marked, model3d:spdxLicense)',
 			choices: [
 				// Common SPDX license identifiers applicable to creative works.
-				{ value: '', name: 'Unspecified' },
-				{ value: 'UNLICENSED', name: 'Restricted by copyright, trademark, or other marking' },
-				{ value: 'CC0-1.0', name: 'Public domain (CC0-1.0)' },
-				{ value: 'CC-BY-4.0', name: 'Creative Commons Attribution (CC-BY-4.0)' },
-				{ value: 'CC-BY-ND-4.0', name: 'Creative Commons Attribution-NoDerivs (CC-BY-ND-4.0)' },
-				{ value: 'CC-BY-SA-4.0', name: 'Creative Commons Attribution-ShareAlike (CC-BY-SA-4.0)' },
-				{ value: 'CC-BY-NC-4.0', name: 'Creative Commons Attribution-NonCommercial (CC-BY-NC-4.0)' },
+				{ value: '', title: 'Unspecified' },
+				{ value: 'UNLICENSED', title: 'Restricted by copyright, trademark, or other marking' },
+				{ value: 'CC0-1.0', title: 'Public domain (CC0-1.0)' },
+				{ value: 'CC-BY-4.0', title: 'Creative Commons Attribution (CC-BY-4.0)' },
+				{ value: 'CC-BY-ND-4.0', title: 'Creative Commons Attribution-NoDerivs (CC-BY-ND-4.0)' },
+				{ value: 'CC-BY-SA-4.0', title: 'Creative Commons Attribution-ShareAlike (CC-BY-SA-4.0)' },
+				{ value: 'CC-BY-NC-4.0', title: 'Creative Commons Attribution-NonCommercial (CC-BY-NC-4.0)' },
 				{
 					value: 'CC-BY-NC-ND-4.0',
-					name: 'Creative Commons Attribution-NonCommercial-NoDerivs (CC-BY-NC-ND-4.0)',
+					title: 'Creative Commons Attribution-NonCommercial-NoDerivs (CC-BY-NC-ND-4.0)',
 				},
 				{
 					value: 'CC-BY-NC-SA-4.0',
-					name: 'Creative Commons Attribution-NonCommercial-ShareAlike (CC-BY-NC-SA-4.0)',
+					title: 'Creative Commons Attribution-NonCommercial-ShareAlike (CC-BY-NC-SA-4.0)',
 				},
-				{ value: 'OTHER', name: 'Other license' },
+				{ value: 'OTHER', title: 'Other license' },
 			],
-		} as Question;
+		} as PromptObject;
 
 		if (results._rights === 'UNLICENSED') {
 			results['xmpRights:Marked'] = true;
 
 			yield {
-				type: 'input',
+				type: 'text',
 				name: 'xmpRights:Owner',
 				message: 'Who is the intellectual property (IP) owner?',
-				suffix: ' (xmpRights:Owner)',
-				filter: (input: string) => createList([input]),
-				transformer: formatXMP,
-			} as Question;
+				hint: ' (xmpRights:Owner)',
+				format: (input: string) => createList([input]),
+			} as PromptObject;
 
 			yield {
-				type: 'input',
+				type: 'text',
 				name: '_usage',
 				message: 'Other usage instructions?',
-				suffix: ' Plain text or URL. (xmpRights:UsageTerms, xmpRights:WebStatement)',
-			};
+				hint: ' Plain text or URL. (xmpRights:UsageTerms, xmpRights:WebStatement)',
+			} as PromptObject;
 
 			const usage = results._usage as string;
 			if (/^https?:\/\//.test(usage)) {
@@ -177,75 +164,67 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 				type: 'confirm',
 				name: '_isLicenseSPDX',
 				message: 'Does the license have an SPDX ID?',
-				suffix: ' See https://spdx.dev/.',
-			};
+				hint: ' See https://spdx.dev/.',
+			} as PromptObject;
 
 			if (results._isLicenseSPDX) {
 				yield {
-					type: 'input',
+					type: 'text',
 					name: 'model3d:spdxLicense',
 					message: 'What is the SPDX license ID?',
-					suffix: ' (model3d:spdxLicense)',
+					hint: ' (model3d:spdxLicense)',
 					validate: (input: string) =>
 						validateSPDX(input) ? true : 'Invalid SPDX ID; refer to https://spdx.dev/.',
-				};
+				} as PromptObject;
 			} else {
 				yield {
-					type: 'input',
+					type: 'text',
 					name: 'dc:rights',
 					message: 'What is the plain text license or rights statement?',
-					suffix: ' (dc:rights)',
-					filter: (input: string) => createLanguageAlternative(input, lang),
-					transformer: formatXMP,
-				} as Question;
+					hint: ' (dc:rights)',
+					format: (input: string) => createLanguageAlternative(input, lang),
+				} as PromptObject;
 			}
 		}
 	}
 
 	if (prompts.has(Prompt.CREATE_DATE)) {
 		yield {
-			type: 'input',
+			type: 'date',
 			name: 'xmp:CreateDate',
 			message: 'Date created?',
-			suffix: ' (xmp:CreateDate)',
-			default: new Date().toISOString().substring(0, 10),
-			validate: validateDate,
-		};
+			hint: ' (xmp:CreateDate)',
+			mask: 'YYYY-MM-DD',
+			format: (d) => d.toISOString().substring(0, 10)
+		} as PromptObject;
 	}
 
 	if (prompts.has(Prompt.PREFERRED_SURFACE)) {
 		yield {
-			type: 'checkbox',
+			type: 'multiselect',
 			name: 'model3d:preferredSurfaces',
 			message: 'Preferred surfaces for augmented reality (AR)? Select all that apply.',
-			suffix: ' (model3d:preferredSurfaces)',
-			loop: false,
-			pageSize: 15,
+			hint: ' (model3d:preferredSurfaces)',
 			choices: [
 				{
 					value: 'horizontal_up',
-					short: 'horizontal_up',
-					name: 'horizontal_up (rests on top of horizontal surfaces)',
+					title: 'horizontal_up (rests on top of horizontal surfaces)',
 				},
 				{
 					value: 'horizontal_down',
-					short: 'horizontal_down',
-					name: 'horizontal_down (suspended from horizonal surfaces)',
+					title: 'horizontal_down (suspended from horizonal surfaces)',
 				},
 				{
 					value: 'vertical',
-					short: 'vertical',
-					name: 'vertical (attaches to vertical surfaces)',
+					title: 'vertical (attaches to vertical surfaces)',
 				},
 				{
 					value: 'human_face',
-					short: 'human_face',
-					name: 'human_face (worn or displayed on a human face)',
+					title: 'human_face (worn or displayed on a human face)',
 				},
 			],
-			filter: (input: string[]) => createList(input),
-			transformer: formatXMP,
-		} as Question;
+			format: (input: string[]) => createList(input),
+		} as PromptObject;
 	}
 }
 
@@ -280,7 +259,7 @@ export const xmp = (_options: XMPOptions = XMP_DEFAULTS): Transform => {
 
 		try {
 			for await (const question of generateQuestions(results)) {
-				Object.assign(results, await inquirer.prompt(question as QuestionCollection));
+				Object.assign(results, await prompts(question));
 			}
 		} catch (e) {
 			checkTTY(e, logger);
@@ -373,16 +352,6 @@ function createList(list: string[]): Record<string, unknown> | null {
 	list = list.filter((value) => !!value);
 	if (!list.length) return null;
 	return { '@list': list };
-}
-
-function validateDate(input: string): boolean | string {
-	const [date] = input.split('T');
-
-	if (!/\d{4}-\d{2}-\d{2}/.test(date) || new Date(date).toISOString().substring(0, 10) !== date) {
-		return 'Invalid ISO date string.';
-	}
-
-	return true;
 }
 
 function createContext(_object: unknown, acc: Record<string, string> = {}): Record<string, string> {
