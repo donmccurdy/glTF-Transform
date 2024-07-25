@@ -135,7 +135,7 @@ test('merge', async (t) => {
 		.setBuffer(bufB);
 	await io.write(inputB, documentB);
 
-	fs.writeFileSync(inputC, Buffer.from([1, 2, 3, 4, 5]));
+	fs.writeFileSync(inputC, new Uint8Array([1, 2, 3, 4, 5]));
 
 	await program
 		// https://github.com/mattallty/Caporal.js/issues/195

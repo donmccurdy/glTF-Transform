@@ -24,7 +24,7 @@ test('node.js', (t) => {
 	);
 	t.is(BufferUtils.decodeText(BufferUtils.encodeText('hey')), 'hey', 'encode/decode');
 
-	const buffer = Buffer.from([1, 2]);
+	const buffer = new Uint8Array([1, 2]);
 	t.is(BufferUtils.equals(buffer, buffer), true, 'equals strict');
-	t.is(BufferUtils.equals(buffer, Buffer.from([1])), false, 'equals by length');
+	t.is(BufferUtils.equals(buffer, new Uint8Array([1])), false, 'equals by length');
 });
