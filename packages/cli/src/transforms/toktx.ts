@@ -260,7 +260,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
 				const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
 
-				await fs.writeFile(srcPath, Buffer.from(srcImage));
+				await fs.writeFile(srcPath, srcImage);
 
 				const params = [
 					'create',

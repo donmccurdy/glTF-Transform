@@ -280,7 +280,9 @@ export abstract class PlatformIO {
 
 		const binChunkHeader = new Uint32Array(glb.buffer, glb.byteOffset + binByteOffset, 2);
 		if (binChunkHeader[1] !== ChunkType.BIN) {
-			throw new Error('Expected GLB BIN in second chunk.');
+			// Allow GLB files without BIN chunk, but with unknown chunk
+			// Spec: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#chunks-overview
+			return { json, resources: {} };
 		}
 
 		const binByteLength = binChunkHeader[0];

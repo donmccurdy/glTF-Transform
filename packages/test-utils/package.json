@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "@gltf-transform/test-utils",
-	"version": "4.0.4",
+	"version": "4.0.8",
 	"type": "module",
 	"sideEffects": false,
 	"source": "./src/index.ts",
@@ -15,8 +15,8 @@
 		"watch": "microbundle watch --format modern --no-compress"
 	},
 	"dependencies": {
-		"@gltf-transform/core": "^4.0.4",
-		"@gltf-transform/extensions": "^4.0.4",
-		"@gltf-transform/functions": "^4.0.4"
+		"@gltf-transform/core": "^4.0.8",
+		"@gltf-transform/extensions": "^4.0.8",
+		"@gltf-transform/functions": "^4.0.8"
 	}
 }
