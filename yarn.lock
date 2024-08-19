@@ -3256,8 +3256,8 @@ __metadata:
   linkType: hard
 
 "@sveltejs/kit@npm:^2.5.18":
-  version: 2.5.22
-  resolution: "@sveltejs/kit@npm:2.5.22"
+  version: 2.5.24
+  resolution: "@sveltejs/kit@npm:2.5.24"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.6.0"
@@ -3272,12 +3272,12 @@ __metadata:
     sirv: "npm:^2.0.4"
     tiny-glob: "npm:^0.2.9"
   peerDependencies:
-    "@sveltejs/vite-plugin-svelte": ^3.0.0
+    "@sveltejs/vite-plugin-svelte": ^3.0.0 || ^4.0.0-next.1
     svelte: ^4.0.0 || ^5.0.0-next.0
     vite: ^5.0.3
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/d8b22665d2b25771b889cbd693dbdcc126dcc881c9c4205299bc14027c64141ceabb455ec4d1f8f711af8de310bbefd44c110ef1f8995b293dde1d3a34c87131
+  checksum: 10c0/704026c6b2d12360b9ba6fa2a704cd5bb03010af462a2bc278569f0fb900b515e063f308ca011ec071f8d7f9426777c7e04439be860ce8932525e6c526283b98
   languageName: node
   linkType: hard
 
