@@ -52,7 +52,7 @@
 		"eslint-plugin-svelte": "^2.43.0",
 		"gl-matrix": "^3.4.3",
 		"gltf-validator": "2.0.0-dev.3.9",
-		"jsdom": "^24.1.1",
+		"jsdom": "^25.0.0",
 		"keyframe-resample": "^0.1.0",
 		"lerna": "8.1.8",
 		"meshoptimizer": "0.21.0",
