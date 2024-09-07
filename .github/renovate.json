@@ -5,6 +5,11 @@
 			"description": "Requires updates to tweakpane-plugin-thumbnail-list",
 			"matchPackageNames": ["tweakpane"],
 			"enabled": false
+		},
+		{
+			"description": "https://github.com/lovell/sharp/issues/4095",
+			"matchPackageNames": ["sharp"],
+			"enabled": false
 		}
 	]
 }
