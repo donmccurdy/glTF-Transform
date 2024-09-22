@@ -56,6 +56,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 			scene.traverse((node) => {
 				const mesh = node.getMesh();
 				if (!mesh) return;
+				if (node.getExtension('EXT_mesh_gpu_instancing')) return;
 				meshInstances.set(mesh, (meshInstances.get(mesh) || new Set<Node>()).add(node));
 			});
 

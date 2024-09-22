@@ -2,7 +2,7 @@ import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { instance } from '@gltf-transform/functions';
-import { logger } from '@gltf-transform/test-utils';
+import { logger, createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 
 test('translation', async (t) => {
 	const doc = new Document().setLogger(logger);
@@ -126,6 +126,35 @@ test('skip distinct meshes', async (t) => {
 	const batch = batchNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
 
 	t.falsy(batch, 'does not create batch');
+});
+
+test('skip existing instances', async (t) => {
+	const document = new Document().setLogger(logger);
+	const root = document.getRoot();
+
+	const batchExtension = document.createExtension(EXTMeshGPUInstancing);
+	const batch = batchExtension.createInstancedMesh();
+
+	const prim = createTorusKnotPrimitive(document, { radialSegments: 4, tubularSegments: 6 });
+	const mesh = document.createMesh().addPrimitive(prim);
+	const node1 = document.createNode().setMesh(mesh).setExtension('EXT_mesh_gpu_instancing', batch);
+	const node2 = document.createNode().setMesh(mesh).setTranslation([0, 0, 0]);
+	const node3 = document.createNode().setMesh(mesh).setTranslation([10, 0, 0]);
+
+	document.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	await document.transform(instance({ min: 2 }));
+
+	t.is(root.listNodes().length, 2, 'keeps 2/3 nodes');
+
+	const [batch1, batch2] = root
+		.listNodes()
+		.map((node) => node.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing'));
+
+	t.is(batch, batch1, 'keeps batch 1');
+	t.truthy(batch2, 'creates batch 2');
+	t.not(batch1, batch2, 'batches are not merged');
+	t.is(batch2.getAttribute('TRANSLATION').getCount(), 2, 'batch 2 has 2 instances');
 });
 
 test('idempotence', async (t) => {
