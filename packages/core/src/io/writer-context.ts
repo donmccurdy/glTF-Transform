@@ -184,8 +184,24 @@ export class WriterContext {
 		} else {
 			const extension = ImageUtils.mimeTypeToExtension(texture.getMimeType());
 			imageDef.uri = this.imageURIGenerator.createURI(texture, extension);
-			this.jsonDoc.resources[imageDef.uri] = data;
+			this.assignResourceURI(imageDef.uri, data);
 		}
+	}
+
+	public assignResourceURI(uri: string, data: Uint8Array): void {
+		const resources = this.jsonDoc.resources;
+
+		// https://github.com/KhronosGroup/glTF/issues/2446
+		if (uri in resources && data !== resources[uri]) {
+			throw new Error(`Resource URI "${uri}" already assigned to different data.`);
+		}
+
+		if (uri in resources) {
+			this.logger.warn(`Duplicate resource URI, "${uri}".`);
+			return;
+		}
+
+		resources[uri] = data;
 	}
 
 	/**
