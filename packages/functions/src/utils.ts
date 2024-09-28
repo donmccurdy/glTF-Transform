@@ -142,9 +142,11 @@ export function formatBytes(bytes: number, decimals = 2): string {
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+const _longFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+
 /** @hidden */
 export function formatLong(x: number): string {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	return _longFormatter.format(x);
 }
 
 /** @hidden */
