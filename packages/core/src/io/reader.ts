@@ -40,7 +40,7 @@ export class GLTFReader {
 
 		/* Reader context. */
 
-		const context = new ReaderContext(document, jsonDoc);
+		const context = new ReaderContext(jsonDoc);
 
 		/** Asset. */
 
@@ -98,7 +98,7 @@ export class GLTFReader {
 			if (bufferDef.extras) buffer.setExtras(bufferDef.extras);
 
 			if (bufferDef.uri && bufferDef.uri.indexOf('__') !== 0) {
-				buffer.setURI(context.requestURI(bufferDef.uri));
+				buffer.setURI(bufferDef.uri);
 			}
 
 			return buffer;
@@ -172,7 +172,7 @@ export class GLTFReader {
 			} else if (imageDef.uri !== undefined) {
 				texture.setImage(jsonDoc.resources[imageDef.uri]);
 				if (imageDef.uri.indexOf('__') !== 0) {
-					texture.setURI(context.requestURI(imageDef.uri));
+					texture.setURI(imageDef.uri);
 				}
 			}
 
