@@ -48,8 +48,9 @@ export function formatTime(ms: number): string {
 	return `${formatLong(ms)} ms`;
 }
 
+const _longFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
 export function formatLong(x: number): string {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	return _longFormatter.format(x);
 }
 
 export function underline(str: string): string {

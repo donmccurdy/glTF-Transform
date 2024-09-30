@@ -67,8 +67,9 @@ export async function _waitExit(process: ChildProcess): Promise<[unknown, string
 
 // Formatting.
 
+const _longFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
 export function formatLong(x: number): string {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	return _longFormatter.format(x);
 }
 
 export function formatBytes(bytes: number, decimals = 2): string {
