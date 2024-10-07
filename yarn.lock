@@ -3256,11 +3256,11 @@ __metadata:
   linkType: hard
 
 "@sveltejs/kit@npm:^2.5.18":
-  version: 2.6.1
-  resolution: "@sveltejs/kit@npm:2.6.1"
+  version: 2.6.2
+  resolution: "@sveltejs/kit@npm:2.6.2"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
-    cookie: "npm:^0.6.0"
+    cookie: "npm:^0.7.0"
     devalue: "npm:^5.1.0"
     esm-env: "npm:^1.0.0"
     import-meta-resolve: "npm:^4.1.0"
@@ -3277,7 +3277,7 @@ __metadata:
     vite: ^5.0.3
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/562546a3b78ae6c943272996b084e4990c9448f91702f1590279088c45a913d9f4fe49b2d3ef155e3a3bdcc6e52e6cd626b0fe0de72b6b4260d3ca3d14573a1e
+  checksum: 10c0/c9a671826d2f3deca9fe4a4cfa188c81215c55f64b90b0c26c9008bafa1240d6f317ae10729fe35dbd8c15c04af079e5d5e14ca358d0817684933d656d593f5a
   languageName: node
   linkType: hard
 
@@ -5282,10 +5282,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "cookie@npm:0.6.0"
-  checksum: 10c0/f2318b31af7a31b4ddb4a678d024514df5e705f9be5909a192d7f116cfb6d45cbacf96a473fa733faa95050e7cff26e7832bb3ef94751592f1387b71c8956686
+"cookie@npm:^0.7.0":
+  version: 0.7.2
+  resolution: "cookie@npm:0.7.2"
+  checksum: 10c0/9596e8ccdbf1a3a88ae02cf5ee80c1c50959423e1022e4e60b91dd87c622af1da309253d8abdb258fb5e3eacb4f08e579dc58b4897b8087574eee0fd35dfa5d2
   languageName: node
   linkType: hard
 
