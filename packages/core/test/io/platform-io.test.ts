@@ -240,14 +240,15 @@ test('write duplicate buffer URIs', async (t) => {
 
 	// https://github.com/KhronosGroup/glTF/issues/2446
 	const document = new Document();
-	const buffer1 = document.createBuffer().setURI('scene.bin');
-	const buffer2 = document.createBuffer().setURI('scene.bin');
+	const buffer1 = document.createBuffer().setURI('a.bin');
+	const buffer2 = document.createBuffer().setURI('a.bin');
 	document.createAccessor().setBuffer(buffer1).setArray(new Float32Array(10).fill(1));
 	document.createAccessor().setBuffer(buffer2).setArray(new Float32Array(10).fill(2));
 
+	// Buffers with the same name and different content must throw.
 	await t.throwsAsync(() => io.writeJSON(document), { message: /Resource URI/i }, 'duplicate buffer URIs');
 
-	buffer2.setURI('aux.bin');
+	buffer2.setURI('b.bin');
 
 	t.truthy(await io.writeJSON(document), 'unique buffer URIs');
 });
@@ -257,12 +258,11 @@ test('write duplicate image URIs', async (t) => {
 
 	// https://github.com/KhronosGroup/glTF/issues/2446
 	const document = new Document();
-	const image1 = document.createTexture().setImage(new Uint8Array(2)).setURI('color.png');
+	document.createTexture().setImage(new Uint8Array(2)).setURI('color.png');
 	document.createTexture().setImage(new Uint8Array(1)).setURI('color.png');
 
-	await t.throwsAsync(() => io.writeJSON(document), { message: /Resource URI/i }, 'duplicate image URIs');
-
-	image1.setURI('normal.png');
-
-	t.truthy(await io.writeJSON(document), 'unique image URIs');
+	// Textures with the same name and different content are, for now, allowed.
+	// TODO(v5): Consider whether duplicates should be handled more strictly.
+	// See https://github.com/donmccurdy/glTF-Transform/issues/1513.
+	t.truthy(await io.writeJSON(document), 'duplicate image URIs');
 });

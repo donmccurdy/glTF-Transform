@@ -554,7 +554,7 @@ export class GLTFWriter {
 
 				// Write buffer views to buffer.
 				bufferDef.byteLength = bufferByteLength;
-				context.assignResourceURI(uri, BufferUtils.concat(buffers));
+				context.assignResourceURI(uri, BufferUtils.concat(buffers), true);
 			}
 
 			json.buffers!.push(bufferDef);
