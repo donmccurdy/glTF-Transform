@@ -188,13 +188,13 @@ export class WriterContext {
 		}
 	}
 
-	public assignResourceURI(uri: string, data: Uint8Array, isConflictFatal: boolean): void {
+	public assignResourceURI(uri: string, data: Uint8Array, throwOnConflict: boolean): void {
 		const resources = this.jsonDoc.resources;
 
 		// https://github.com/KhronosGroup/glTF/issues/2446
 		if (uri in resources && data !== resources[uri]) {
 			const msg = `Resource URI "${uri}" already assigned to different data.`;
-			if (isConflictFatal) {
+			if (throwOnConflict) {
 				throw new Error(msg);
 			} else {
 				this.logger.warn(msg);
