@@ -437,9 +437,11 @@ export class GLTFWriter {
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.BUFFER))
 			.forEach((extension) => extension.prewrite(context, PropertyType.BUFFER));
 
-		const hasBinaryResources =
-			root.listAccessors().length > 0 || root.listTextures().length > 0 || context.otherBufferViews.size > 0;
-		if (hasBinaryResources && root.listBuffers().length === 0) {
+		const needsBuffer =
+			root.listAccessors().length > 0 ||
+			context.otherBufferViews.size > 0 ||
+			(root.listTextures().length > 0 && options.format === Format.GLB);
+		if (needsBuffer && root.listBuffers().length === 0) {
 			throw new Error('Buffer required for Document resources, but none was found.');
 		}
 
@@ -552,7 +554,7 @@ export class GLTFWriter {
 
 				// Write buffer views to buffer.
 				bufferDef.byteLength = bufferByteLength;
-				jsonDoc.resources[uri] = BufferUtils.concat(buffers);
+				context.assignResourceURI(uri, BufferUtils.concat(buffers), true);
 			}
 
 			json.buffers!.push(bufferDef);
