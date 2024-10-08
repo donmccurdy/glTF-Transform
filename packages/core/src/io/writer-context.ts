@@ -192,21 +192,24 @@ export class WriterContext {
 		const resources = this.jsonDoc.resources;
 
 		// https://github.com/KhronosGroup/glTF/issues/2446
-		if (uri in resources && data !== resources[uri]) {
-			const msg = `Resource URI "${uri}" already assigned to different data.`;
-			if (throwOnConflict) {
-				throw new Error(msg);
-			} else {
-				this.logger.warn(msg);
-			}
+		if (!(uri in resources)) {
+			resources[uri] = data;
+			return;
 		}
 
-		if (uri in resources) {
+		if (data === resources[uri]) {
 			this.logger.warn(`Duplicate resource URI, "${uri}".`);
 			return;
 		}
 
-		resources[uri] = data;
+		const conflictMessage = `Resource URI "${uri}" already assigned to different data.`;
+
+		if (!throwOnConflict) {
+			this.logger.warn(conflictMessage);
+			return;
+		}
+
+		throw new Error(conflictMessage);
 	}
 
 	/**
