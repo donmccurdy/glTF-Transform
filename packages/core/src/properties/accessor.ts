@@ -419,7 +419,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * }
 	 * ```
 	 */
-	public getElement(index: number, target: number[]): number[] {
+	public getElement<T extends number[]>(index: number, target: T): T {
 		const normalized = this.getNormalized();
 		const elementSize = this.getElementSize();
 		const componentType = this.getComponentType();

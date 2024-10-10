@@ -14,7 +14,7 @@ export const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
 };
 
 /**
- * Creates GPU instances (with `EXT_mesh_gpu_instancing`) for shared {@link Mesh} references. In
+ * Creates GPU instances (with {@link EXTMeshGPUInstancing}) for shared {@link Mesh} references. In
  * engines supporting the extension, reused Meshes will be drawn with GPU instancing, greatly
  * reducing draw calls and improving performance in many cases. If you're not sure that identical
  * Meshes share vertex data and materials ("linked duplicates"), run {@link dedup} first to link them.
