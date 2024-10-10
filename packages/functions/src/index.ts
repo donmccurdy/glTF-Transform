@@ -42,6 +42,7 @@ export * from './texture-compress.js';
 export * from './tangents.js';
 export * from './transform-mesh.js';
 export * from './transform-primitive.js';
+export * from './uninstance.js';
 export * from './unlit.js';
 export * from './unpartition.js';
 export {

@@ -2,6 +2,12 @@
 
 ## v4.x
 
+### v4.1 (🚧 Unreleased)
+
+**Features:**
+
+-   functions: Adds `uninstance()` and `createInstanceNodes()` [#1525](https://github.com/donmccurdy/glTF-Transform/pull/1525)
+
 ### v4.0
 
 **Breaking changes:**
