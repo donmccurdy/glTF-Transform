@@ -60,4 +60,6 @@ test('basic', async (t) => {
 		[{ _INSTANCE_ID: 100 }, { _INSTANCE_ID: 101 }, { _INSTANCE_ID: 102 }],
 		'sets instance extras',
 	);
+	t.is(translation.isDisposed(), true, 'disposes translation attribute');
+	t.is(id.isDisposed(), true, 'disposes id attribute');
 });

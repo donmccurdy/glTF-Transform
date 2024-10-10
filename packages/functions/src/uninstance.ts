@@ -36,6 +36,9 @@ const UNINSTANCE_DEFAULTS: Required<UninstanceOptions> = {};
 export function uninstance(_options: UninstanceOptions = UNINSTANCE_DEFAULTS): Transform {
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
+		const root = document.getRoot();
+
+		const instanceAttributes = new Set<Accessor>();
 
 		for (const srcNode of document.getRoot().listNodes()) {
 			const batch = srcNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
@@ -46,8 +49,19 @@ export function uninstance(_options: UninstanceOptions = UNINSTANCE_DEFAULTS): T
 				srcNode.addChild(instanceNode);
 			}
 
-			// Remove Mesh and Extension from source Node.
-			srcNode.setMesh(null).setExtension('EXT_mesh_gpu_instancing', null);
+			for (const instanceAttribute of batch.listAttributes()) {
+				instanceAttributes.add(instanceAttribute);
+			}
+
+			srcNode.setMesh(null);
+			batch.dispose();
+		}
+
+		// Clean up unused instance attributes.
+		for (const attribute of instanceAttributes) {
+			if (attribute.listParents().every((parent) => parent === root)) {
+				attribute.dispose();
+			}
 		}
 
 		// Remove Extension from Document.
