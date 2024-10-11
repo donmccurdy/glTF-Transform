@@ -115,6 +115,8 @@ export class EXTMeshoptCompression extends Extension {
 	public readonly writeDependencies = ['meshopt.encoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
+
+	/** @deprecated Use boolean 'filter' option, instead. */
 	public static readonly EncoderMethod = EncoderMethod;
 
 	private _decoder: typeof MeshoptDecoder | null = null;
