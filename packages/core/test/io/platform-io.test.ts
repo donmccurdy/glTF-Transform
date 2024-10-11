@@ -1,7 +1,7 @@
 import test from 'ava';
 import fs from 'fs';
 import { BufferUtils, Document, Format, GLB_BUFFER, GLTF, JSONDocument } from '@gltf-transform/core';
-import { createPlatformIO, resolve } from '@gltf-transform/test-utils';
+import { createPlatformIO, resolve, logger } from '@gltf-transform/test-utils';
 
 test('common', async (t) => {
 	const io = await createPlatformIO();
@@ -17,7 +17,7 @@ test('common', async (t) => {
 });
 
 test('glb without optional buffer', async (t) => {
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	document.createScene().addChild(document.createNode('MyNode'));
 
 	const io = await createPlatformIO();
@@ -42,7 +42,7 @@ test('glb without optional buffer', async (t) => {
 test('glb without required buffer', async (t) => {
 	const io = await createPlatformIO();
 
-	let document = new Document();
+	let document = new Document().setLogger(logger);
 	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 
@@ -58,7 +58,7 @@ test('glb without required buffer', async (t) => {
 	t.truthy(io.writeJSON(document, { format: Format.GLB }), 'writeJSON suceeds');
 	t.truthy(io.writeBinary(document), 'writeBinary succeeds');
 
-	document = new Document();
+	document = new Document().setLogger(logger);
 	document.createAccessor().setArray(new Float32Array(10));
 	document.createAccessor().setArray(new Float32Array(20));
 
@@ -76,7 +76,7 @@ test('glb without required buffer', async (t) => {
 });
 
 test('glb with texture-only buffer', async (t) => {
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 	document.createBuffer();
@@ -98,7 +98,7 @@ test('glb with texture-only buffer', async (t) => {
 });
 
 test('glb with data uri', async (t) => {
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');
 	document.createTexture('TexB').setImage(new Uint8Array(2)).setMimeType('image/png');
 	document.createBuffer();
@@ -239,7 +239,7 @@ test('write duplicate buffer URIs', async (t) => {
 	const io = await createPlatformIO();
 
 	// https://github.com/KhronosGroup/glTF/issues/2446
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	const buffer1 = document.createBuffer().setURI('a.bin');
 	const buffer2 = document.createBuffer().setURI('a.bin');
 	document.createAccessor().setBuffer(buffer1).setArray(new Float32Array(10).fill(1));
@@ -257,7 +257,7 @@ test('write duplicate image URIs', async (t) => {
 	const io = await createPlatformIO();
 
 	// https://github.com/KhronosGroup/glTF/issues/2446
-	const document = new Document();
+	const document = new Document().setLogger(logger);
 	document.createTexture().setImage(new Uint8Array(2)).setURI('color.png');
 	document.createTexture().setImage(new Uint8Array(1)).setURI('color.png');
 
