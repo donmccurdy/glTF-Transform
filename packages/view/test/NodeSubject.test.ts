@@ -1,7 +1,8 @@
 import test from 'ava';
 import { JSDOM } from 'jsdom';
-import { Document } from '@gltf-transform/core';
+import { Document, Accessor } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
+import { Mesh } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
@@ -86,4 +87,36 @@ test('NodeSubject | update in place', async (t) => {
 		node2.children.some((o) => o.name === 'Mesh.v2'),
 		'node2.mesh.name',
 	);
+});
+
+test.only('NodeSubject | check morphTargetInfluences', async (t) => {
+	const document = new Document();
+
+	const AccessorDef = document
+		.createAccessor('myData')
+		.setArray(new Float32Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]))
+		.setType(Accessor.Type.VEC3)
+		.setBuffer(document.getRoot().listBuffers()[0]);
+
+	const primitiveTarget = document.createPrimitiveTarget('myTarget').setAttribute('POSITION', AccessorDef);
+
+	const primitiveDef = document.createPrimitive().setAttribute('POSITION', AccessorDef).addTarget(primitiveTarget);
+
+	const meshDef = document.createMesh().setName('Mesh.v1').addPrimitive(primitiveDef).setWeights([0.5]);
+	const nodeDef1 = document
+		.createNode('Node1')
+		.setTranslation([0, 2, 0])
+		.setRotation([0, 0, 0.707, 0.707])
+		.setScale([0.5, 0.5, 0.5])
+		.setMesh(meshDef);
+
+	const documentView = new DocumentView(document, { imageProvider });
+	const node1 = documentView.view(nodeDef1);
+
+	t.is(node1.name, 'Node1', 'node1 → name');
+	t.is(node1.children.length, 1, 'node1 → children');
+	t.deepEqual(node1.position.toArray(), [0, 2, 0], 'node1 → position');
+	t.deepEqual(node1.quaternion.toArray(), [0, 0, 0.707, 0.707], 'node1 → quaternion');
+	t.deepEqual(node1.scale.toArray(), [0.5, 0.5, 0.5], 'node1 → scale');
+	t.deepEqual((node1 as Mesh).morphTargetInfluences, [0], 'node1 → morphTargetInfluences');
 });
