@@ -124,6 +124,12 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array Float32Array}.
 		 */
 		FLOAT: 5126,
+		/**
+		 * 8-byte floating point number, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array Float64Array}.
+		 * KHR_accessor_float64
+		 */
+		FLOAT64: 5130,
 	};
 
 	/**********************************************************************************************
@@ -175,17 +181,17 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	public static getComponentSize(componentType: GLTF.AccessorComponentType): number {
 		switch (componentType) {
 			case Accessor.ComponentType.BYTE:
-				return 1;
 			case Accessor.ComponentType.UNSIGNED_BYTE:
 				return 1;
 			case Accessor.ComponentType.SHORT:
-				return 2;
 			case Accessor.ComponentType.UNSIGNED_SHORT:
 				return 2;
 			case Accessor.ComponentType.UNSIGNED_INT:
-				return 4;
 			case Accessor.ComponentType.FLOAT:
 				return 4;
+			// KHR_accessor_float64
+			case Accessor.ComponentType.FLOAT64:
+				return 8;
 			default:
 				throw new Error('Unexpected component type: ' + componentType);
 		}
@@ -548,6 +554,9 @@ function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 			return Accessor.ComponentType.SHORT;
 		case Int8Array:
 			return Accessor.ComponentType.BYTE;
+		// KHR_accessor_float64
+		case Float64Array:
+			return Accessor.ComponentType.FLOAT64;
 		default:
 			throw new Error('Unknown accessor componentType.');
 	}
