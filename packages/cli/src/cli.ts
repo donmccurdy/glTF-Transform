@@ -2,7 +2,7 @@ import { URL } from 'url';
 import { promises as fs, readFileSync } from 'fs';
 import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import mikktspace from 'mikktspace';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
