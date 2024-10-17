@@ -96,7 +96,38 @@ export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>
 
 /**
  * Quantizes vertex attributes with `KHR_mesh_quantization`, reducing the size and memory footprint
- * of the file.
+ * of the file. Conceptually, quantization refers to snapping values to regular intervals; vertex
+ * positions are snapped to a 3D grid, UVs to a 2D grid, and so on. When quantized to <= 16 bits,
+ * larger component types may be more compactly stored as 16-bit or 8-bit attributes.
+ *
+ * Often, it can be useful to quantize to precision lower than the maximum allowed by the component
+ * type. Positions quantized to 14 bits in a 16-bit accessor will occupy 16 bits in VRAM, but they
+ * can be compressed further for network compression with lossless encodings such as ZSTD.
+ *
+ * Vertex positions are shifted into [-1,1] or [0,1] range before quantization. Compensating for
+ * that shift, a transform is applied to the parent {@link Node}, or inverse bind matrices for a
+ * {@link Skin} if applicable. Materials using {@link KHRMaterialsVolume} are adjusted to maintain
+ * appearance. In future releases, UVs may also be transformed with {@link KHRTextureTransform}.
+ * Currently UVs outside of [0,1] range are not quantized.
+ *
+ * In most cases, quantization requires {@link KHRMeshQuantization}; the extension will be added
+ * automatically when `quantize()` is applied. When applying meshopt compression with
+ * {@link EXTMeshoptCompression}, quantization is usually applied before compression.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { quantize } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ *   quantize({
+ *		quantizePosition: 14,
+ *		quantizeNormal: 10,
+ *   }),
+ * );
+ * ```
+ *
+ * For the inverse operation, see {@link dequantize}.
  *
  * @category Transforms
  */
