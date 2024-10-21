@@ -3256,8 +3256,8 @@ __metadata:
   linkType: hard
 
 "@sveltejs/kit@npm:^2.5.18":
-  version: 2.7.0
-  resolution: "@sveltejs/kit@npm:2.7.0"
+  version: 2.7.2
+  resolution: "@sveltejs/kit@npm:2.7.2"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.6.0"
@@ -3269,7 +3269,7 @@ __metadata:
     mrmime: "npm:^2.0.0"
     sade: "npm:^1.8.1"
     set-cookie-parser: "npm:^2.6.0"
-    sirv: "npm:^2.0.4"
+    sirv: "npm:^3.0.0"
     tiny-glob: "npm:^0.2.9"
   peerDependencies:
     "@sveltejs/vite-plugin-svelte": ^3.0.0 || ^4.0.0-next.1
@@ -3277,7 +3277,7 @@ __metadata:
     vite: ^5.0.3
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/83b59782f48aee9b3d29e3aa6226968d5c08ecc098ad42275568366da53606f36d2bc724ed6a3530e081f5cddaa937e6253eaae7f9c7303546c85b3484b7e6c3
+  checksum: 10c0/2d640b0a5e1bae7e742f9230745fad0efffbb664c69d6e460e28f2578117621353062ee594df3d8a6938d6cc6347349a57c5831c8fa0a96b4fa5b31b2e9ee435
   languageName: node
   linkType: hard
 
@@ -3543,12 +3543,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.16.10":
-  version: 20.16.10
-  resolution: "@types/node@npm:20.16.10"
+"@types/node@npm:20.16.13":
+  version: 20.16.13
+  resolution: "@types/node@npm:20.16.13"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/c0c0c7ecb083ec638c2118e54b5242bb4c39a75608cbac9475cf15aaceb64b8bc997a87a0798e700a81d61651c8a7750ae0455be0f0996ada6e8b2bb818d90c5
+  checksum: 10c0/7f4fd7176db0802c62e11ebbf7a66d0248e2dc8ec9153d9fc8bcb164d9aed581d91c407046c823c522e60d0babfdc24a1618dba7f2c6920ef1a24e1d416c9550
   languageName: node
   linkType: hard
 
@@ -7268,7 +7268,7 @@ __metadata:
     "@types/draco3dgltf": "npm:1.4.3"
     "@types/jsdom": "npm:^21.1.7"
     "@types/ndarray": "npm:1.0.14"
-    "@types/node": "npm:20.16.10"
+    "@types/node": "npm:20.16.13"
     "@types/node-gzip": "npm:1.1.3"
     "@types/three": "npm:^0.169.0"
     "@types/wrap-ansi": "npm:^8.1.0"
@@ -7296,7 +7296,7 @@ __metadata:
     tsx: "npm:^4.16.2"
     tweakpane: "npm:^4.0.4"
     tweakpane-plugin-thumbnail-list: "npm:^0.3.0"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     typescript-eslint: "npm:^7.17.0"
     vite: "npm:^5.3.4"
   languageName: unknown
@@ -12015,14 +12015,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sirv@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "sirv@npm:2.0.4"
+"sirv@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "sirv@npm:3.0.0"
   dependencies:
     "@polka/url": "npm:^1.0.0-next.24"
     mrmime: "npm:^2.0.0"
     totalist: "npm:^3.0.0"
-  checksum: 10c0/68f8ee857f6a9415e9c07a1f31c7c561df8d5f1b1ba79bee3de583fa37da8718def5309f6b1c6e2c3ef77de45d74f5e49efc7959214443aa92d42e9c99180a4e
+  checksum: 10c0/282c52ee5a93cafa297096ad31aa6c3004a21d4c93abe728b701e51e4329acb887f6e92f07696225414fd6bb4a7782fd64a42d0b6b6467ae0f66bd3fde90b865
   languageName: node
   linkType: hard
 
@@ -12895,9 +12895,9 @@ __metadata:
   linkType: hard
 
 "tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0, tslib@npm:^2.6.3":
-  version: 2.7.0
-  resolution: "tslib@npm:2.7.0"
-  checksum: 10c0/469e1d5bf1af585742128827000711efa61010b699cb040ab1800bcd3ccdd37f63ec30642c9e07c4439c1db6e46345582614275daca3e0f4abae29b0083f04a6
+  version: 2.8.0
+  resolution: "tslib@npm:2.8.0"
+  checksum: 10c0/31e4d14dc1355e9b89e4d3c893a18abb7f90b6886b089c2da91224d0a7752c79f3ddc41bc1aa0a588ac895bd97bb99c5bc2bfdb2f86de849f31caeb3ba79bbe5
   languageName: node
   linkType: hard
 
@@ -13068,13 +13068,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.6.2":
-  version: 5.6.2
-  resolution: "typescript@npm:5.6.2"
+"typescript@npm:5.6.3":
+  version: 5.6.3
+  resolution: "typescript@npm:5.6.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/3ed8297a8c7c56b7fec282532503d1ac795239d06e7c4966b42d4330c6cf433a170b53bcf93a130a7f14ccc5235de5560df4f1045eb7f3550b46ebed16d3c5e5
+  checksum: 10c0/44f61d3fb15c35359bc60399cb8127c30bae554cd555b8e2b46d68fa79d680354b83320ad419ff1b81a0bdf324197b29affe6cc28988cd6a74d4ac60c94f9799
   languageName: node
   linkType: hard
 
@@ -13098,13 +13098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>":
-  version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=8c6c40"
+"typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>":
+  version: 5.6.3
+  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/94eb47e130d3edd964b76da85975601dcb3604b0c848a36f63ac448d0104e93819d94c8bdf6b07c00120f2ce9c05256b8b6092d23cf5cf1c6fa911159e4d572f
+  checksum: 10c0/7c9d2e07c81226d60435939618c91ec2ff0b75fbfa106eec3430f0fcf93a584bc6c73176676f532d78c3594fe28a54b36eb40b3d75593071a7ec91301533ace7
   languageName: node
   linkType: hard
 
