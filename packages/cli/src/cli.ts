@@ -254,7 +254,7 @@ commands or using the scripting API.
 		default: INSTANCE_DEFAULTS.min,
 	})
 	.option('--meshopt-level <level>', 'Meshopt compression level.', {
-		validator: ['medium', 'high'],
+		validator: ['low', 'medium', 'high'],
 		default: 'high',
 	})
 	.option('--palette <bool>', 'Creates palette textures and merges materials.', {
@@ -344,7 +344,7 @@ commands or using the scripting API.
 		const opts = options as {
 			instance: boolean;
 			instanceMin: number;
-			meshoptLevel: 'medium' | 'high';
+			meshoptLevel: 'low' | 'medium' | 'high';
 			palette: boolean;
 			paletteMin: number;
 			simplify: boolean;
@@ -859,7 +859,7 @@ ${underline('References')}
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--level <level>', 'Compression level.', {
-		validator: ['medium', 'high'],
+		validator: ['low', 'medium', 'high'],
 		default: 'high',
 	})
 	.option('--quantize-position <bits>', 'Precision for POSITION attributes.', {
