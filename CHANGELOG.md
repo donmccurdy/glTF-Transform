@@ -2,11 +2,25 @@
 
 ## v4.x
 
-### v4.1 (🚧 Unreleased)
+### v4.2 (🚧 Unreleased)
+
+- TODO
+
+### v4.1
 
 **Features:**
 
--   functions: Adds `uninstance()` and `createInstanceNodes()` [#1525](https://github.com/donmccurdy/glTF-Transform/pull/1525)
+- functions: Adds `uninstance()` and `createInstanceNodes()` [#1525](https://github.com/donmccurdy/glTF-Transform/pull/1525)
+
+**Performance:**
+
+- core: Update to property-graph v3 [#1543](https://github.com/donmccurdy/glTF-Transform/pull/1543)
+	- Removes `.dispatch`, `.addEventListener`, and other event-related behaviors from `GraphEdge` class
+
+**Other:**
+
+- fix(core): Handle duplicate URIs on read/write [#1522](https://github.com/donmccurdy/glTF-Transform/pull/1522)
+- fix(functions,cli): Locale-based numeric formatting [#1512](https://github.com/donmccurdy/glTF-Transform/pull/1512)
 
 ### v4.0
 
