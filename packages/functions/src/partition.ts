@@ -7,11 +7,13 @@ const NAME = 'partition';
 export interface PartitionOptions {
 	animations?: boolean | Array<string>;
 	meshes?: boolean | Array<string>;
+	maxPartitions?: number;
 }
 
 const PARTITION_DEFAULTS: Required<PartitionOptions> = {
 	animations: true,
 	meshes: true,
+	maxPartitions: Infinity,
 };
 
 /**
@@ -58,9 +60,18 @@ function partitionMeshes(doc: Document, logger: ILogger, options: Required<Parti
 			.map((b) => b.getURI()),
 	);
 
+	let partitionCount = 0;
+
 	doc.getRoot()
 		.listMeshes()
+		.sort((a, b) => {
+			const aSize = a.listPrimitives().reduce((sum, prim) => sum + (prim?.getAttribute('POSITION')?.getCount() ?? 0), 0);
+			const bSize = b.listPrimitives().reduce((sum, prim) => sum + (prim?.getAttribute('POSITION')?.getCount() ?? 0), 0);
+			return bSize - aSize; // Sort in descending order by size
+		})
 		.forEach((mesh, meshIndex) => {
+			if (partitionCount >= options.maxPartitions) return;
+
 			if (Array.isArray(options.meshes) && !options.meshes.includes(mesh.getName())) {
 				logger.debug(`${NAME}: Skipping mesh #${meshIndex} with name "${mesh.getName()}".`);
 				return;
@@ -80,6 +91,8 @@ function partitionMeshes(doc: Document, logger: ILogger, options: Required<Parti
 					primTarget.listAttributes().forEach((attribute) => attribute.setBuffer(buffer));
 				});
 			});
+
+			partitionCount++;
 		});
 }
 
@@ -91,9 +104,13 @@ function partitionAnimations(doc: Document, logger: ILogger, options: Required<P
 			.map((b) => b.getURI()),
 	);
 
+	let partitionCount = 0;
+
 	doc.getRoot()
 		.listAnimations()
 		.forEach((anim, animIndex) => {
+			if (partitionCount >= options.maxPartitions) return;
+
 			if (Array.isArray(options.animations) && !options.animations.includes(anim.getName())) {
 				logger.debug(`${NAME}: Skipping animation #${animIndex} with name "${anim.getName()}".`);
 				return;
@@ -111,6 +128,8 @@ function partitionAnimations(doc: Document, logger: ILogger, options: Required<P
 				if (input) input.setBuffer(buffer);
 				if (output) output.setBuffer(buffer);
 			});
+
+			partitionCount++;
 		});
 }
 

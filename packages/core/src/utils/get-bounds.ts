@@ -10,7 +10,7 @@ export function getBounds(node: Node | Scene): bbox {
 	for (const parent of parents) {
 		parent.traverse((node) => {
 			const mesh = node.getMesh();
-			if (!mesh) return;
+			if (!mesh || !node.getName()) return;
 
 			// Compute mesh bounds and update result.
 			const meshBounds = getMeshBounds(mesh, node.getWorldMatrix());
