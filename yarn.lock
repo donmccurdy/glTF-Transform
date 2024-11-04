@@ -7323,17 +7323,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"gltf-validator@npm:2.0.0-dev.3.10":
+"gltf-validator@npm:2.0.0-dev.3.10, gltf-validator@npm:~2.0.0-dev.3.9":
   version: 2.0.0-dev.3.10
   resolution: "gltf-validator@npm:2.0.0-dev.3.10"
   checksum: 10c0/6cd3ac50d27db20521e2a4ab037c991a121d3c8c39671fd0baf0aa2730b169d30e21337dbff3ade7596a97d6575bc7389c0ab6021ae9c3b0c3d2b551214abfef
-  languageName: node
-  linkType: hard
-
-"gltf-validator@npm:~2.0.0-dev.3.9":
-  version: 2.0.0-dev.3.9
-  resolution: "gltf-validator@npm:2.0.0-dev.3.9"
-  checksum: 10c0/063be1e32b7f2dd45f9053a84749c140749cd8ecd921be574551627e5ecb795e62f94be3bb883259109a57d98e1f27019e851a39a228509abcc19f470c4e51ae
   languageName: node
   linkType: hard
 
