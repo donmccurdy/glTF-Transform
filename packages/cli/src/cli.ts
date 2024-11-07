@@ -336,11 +336,11 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--join-keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--join-keep-named <bool>', 'Prevents joining named Meshes and Nodes.', {
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
-	.option('--join-keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--join-keep-meshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
