@@ -336,6 +336,14 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
+	.option('--join-keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+		validator: Validator.BOOLEAN,
+		default: false,
+	})
+	.option('--join-keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+		validator: Validator.BOOLEAN,
+		default: false,
+	})
 	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
 		validator: Validator.BOOLEAN,
 		default: true,
