@@ -336,7 +336,6 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-
 	.option('--join-keep-meshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
