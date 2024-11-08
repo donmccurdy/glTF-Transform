@@ -123,12 +123,22 @@ export function createTorusKnotPrimitive(
 
 	// build geometry
 
-	return document
+	const prim = document
 		.createPrimitive()
 		.setIndices(document.createAccessor().setArray(new Uint32Array(indices)))
 		.setAttribute('POSITION', document.createAccessor().setType('VEC3').setArray(new Float32Array(vertices)))
 		.setAttribute('NORMAL', document.createAccessor().setType('VEC3').setArray(new Float32Array(normals)))
 		.setAttribute('TEXCOORD_0', document.createAccessor().setType('VEC2').setArray(new Float32Array(uvs)));
+
+	// assign buffer
+
+	const buffer = document.getRoot().listBuffers()[0] || document.createBuffer();
+
+	for (const attribute of prim.listAttributes()) {
+		attribute.setBuffer(buffer);
+	}
+
+	return prim;
 }
 
 /** Calculates the current position on the torus curve. */
