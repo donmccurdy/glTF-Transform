@@ -281,8 +281,10 @@ export class KHRDracoMeshCompression extends Extension {
 
 			// In rare cases Draco increases vertex count, requiring a larger index component type.
 			// https://github.com/donmccurdy/glTF-Transform/issues/1370
-			if (encodedPrim.numVertices > 65534 && indicesDef.componentType !== Accessor.ComponentType.UNSIGNED_INT) {
+			if (encodedPrim.numVertices > 65534 && Accessor.getComponentSize(indicesDef.componentType) <= 2) {
 				indicesDef.componentType = Accessor.ComponentType.UNSIGNED_INT;
+			} else if (encodedPrim.numVertices > 254 && Accessor.getComponentSize(indicesDef.componentType) <= 1) {
+				indicesDef.componentType = Accessor.ComponentType.UNSIGNED_SHORT;
 			}
 
 			// Create attribute definitions, update count.
