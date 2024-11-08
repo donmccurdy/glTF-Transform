@@ -336,13 +336,14 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--join-keep-named <bool>', 'Prevents joining named Meshes and Nodes.', {
-		validator: Validator.BOOLEAN,
-		default: false,
-	})
+
 	.option('--join-keep-meshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
 		validator: Validator.BOOLEAN,
-		default: false,
+		default: JOIN_DEFAULTS.keepMeshes,
+	})
+	.option('--join-keep-named <bool>', 'Prevents joining named Meshes and Nodes.', {
+		validator: Validator.BOOLEAN,
+		default: JOIN_DEFAULTS.keepNamed,
 	})
 	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
 		validator: Validator.BOOLEAN,
@@ -368,6 +369,8 @@ commands or using the scripting API.
 			textureSize: number;
 			flatten: boolean;
 			join: boolean;
+			joinKeepNamed: boolean;
+			joinKeepMeshes: boolean;
 			weld: boolean;
 		};
 
@@ -386,7 +389,14 @@ commands or using the scripting API.
 		}
 
 		if (opts.flatten) transforms.push(flatten());
-		if (opts.join) transforms.push(join());
+		if (opts.join) {
+			transforms.push(
+				join({ 
+					keepNamed: opts.joinKeepNamed, 
+					keepMeshes: opts.joinKeepMeshes, 
+				} as unknown as JoinOptions)
+			);
+		}
 		if (opts.weld) transforms.push(weld());
 
 		if (opts.simplify) {
