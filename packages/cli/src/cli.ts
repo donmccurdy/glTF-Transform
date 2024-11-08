@@ -394,7 +394,7 @@ commands or using the scripting API.
 				join({ 
 					keepNamed: opts.joinKeepNamed, 
 					keepMeshes: opts.joinKeepMeshes, 
-				} as unknown as JoinOptions)
+				})
 			);
 		}
 		if (opts.weld) transforms.push(weld());
