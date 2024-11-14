@@ -120,7 +120,7 @@ export class KHRDracoMeshCompression extends Extension {
 
 	/**
 	 * Compression method. `EncoderMethod.EDGEBREAKER` usually provides a higher compression ratio,
-	 * while `EncoderMethod.SEQUENTIAL` better preserves original verter order.
+	 * while `EncoderMethod.SEQUENTIAL` better preserves original vertex order.
 	 */
 	public static readonly EncoderMethod = EncoderMethod;
 
