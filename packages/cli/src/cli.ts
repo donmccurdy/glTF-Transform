@@ -336,13 +336,13 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--join-keep-meshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--join-meshes <bool>', 'Join distinct meshes and nodes. Requires `--join`.', {
 		validator: Validator.BOOLEAN,
-		default: JOIN_DEFAULTS.keepMeshes,
+		default: !JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--join-keep-named <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--join-named <bool>', 'Join named meshes and nodes. Requires `--join`.', {
 		validator: Validator.BOOLEAN,
-		default: JOIN_DEFAULTS.keepNamed,
+		default: !JOIN_DEFAULTS.keepNamed,
 	})
 	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
 		validator: Validator.BOOLEAN,
@@ -368,8 +368,8 @@ commands or using the scripting API.
 			textureSize: number;
 			flatten: boolean;
 			join: boolean;
-			joinKeepNamed: boolean;
-			joinKeepMeshes: boolean;
+			joinNamed: boolean;
+			joinMeshes: boolean;
 			weld: boolean;
 		};
 
@@ -390,9 +390,9 @@ commands or using the scripting API.
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) {
 			transforms.push(
-				join({ 
-					keepNamed: opts.joinKeepNamed, 
-					keepMeshes: opts.joinKeepMeshes, 
+				join({
+					keepNamed: !opts.joinNamed,
+					keepMeshes: !opts.joinMeshes,
 				})
 			);
 		}
@@ -772,11 +772,11 @@ EXT_mesh_gpu_instancing.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--keepMeshes <bool>', 'Prevents joining distinct meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--keepNamed <bool>', 'Prevents joining named meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepNamed,
 	})
