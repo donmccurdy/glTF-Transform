@@ -294,10 +294,6 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-leaves <bool>', 'Whether to prune empty leaf nodes.', {
-		validator: Validator.BOOLEAN,
-		default: true,
-	})
 	.option(
 		'--prune-solid-textures <bool>',
 		'Whether to prune solid (single-color) textures, converting them to material factors.',
@@ -361,7 +357,6 @@ commands or using the scripting API.
 			simplifyLockBorder: boolean;
 			prune: boolean;
 			pruneAttributes: boolean;
-			pruneLeaves: boolean;
 			pruneSolidTextures: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
@@ -416,7 +411,7 @@ commands or using the scripting API.
 				prune({
 					keepAttributes: !opts.pruneAttributes,
 					keepIndices: false,
-					keepLeaves: !opts.pruneLeaves,
+					keepLeaves: false,
 					keepSolidTextures: !opts.pruneSolidTextures,
 				}),
 			);
