@@ -294,10 +294,6 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-leaves <bool>', 'Whether to prune empty leaf nodes.', {
-		validator: Validator.BOOLEAN,
-		default: true,
-	})
 	.option(
 		'--prune-solid-textures <bool>',
 		'Whether to prune solid (single-color) textures, converting them to material factors.',
@@ -336,13 +332,13 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--join-keep-meshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--join-meshes <bool>', 'Join distinct meshes and nodes. Requires `--join`.', {
 		validator: Validator.BOOLEAN,
-		default: JOIN_DEFAULTS.keepMeshes,
+		default: !JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--join-keep-named <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--join-named <bool>', 'Join named meshes and nodes. Requires `--join`.', {
 		validator: Validator.BOOLEAN,
-		default: JOIN_DEFAULTS.keepNamed,
+		default: !JOIN_DEFAULTS.keepNamed,
 	})
 	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
 		validator: Validator.BOOLEAN,
@@ -361,15 +357,14 @@ commands or using the scripting API.
 			simplifyLockBorder: boolean;
 			prune: boolean;
 			pruneAttributes: boolean;
-			pruneLeaves: boolean;
 			pruneSolidTextures: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
 			textureSize: number;
 			flatten: boolean;
 			join: boolean;
-			joinKeepNamed: boolean;
-			joinKeepMeshes: boolean;
+			joinNamed: boolean;
+			joinMeshes: boolean;
 			weld: boolean;
 		};
 
@@ -390,9 +385,9 @@ commands or using the scripting API.
 		if (opts.flatten) transforms.push(flatten());
 		if (opts.join) {
 			transforms.push(
-				join({ 
-					keepNamed: opts.joinKeepNamed, 
-					keepMeshes: opts.joinKeepMeshes, 
+				join({
+					keepNamed: !opts.joinNamed,
+					keepMeshes: !opts.joinMeshes,
 				})
 			);
 		}
@@ -416,7 +411,7 @@ commands or using the scripting API.
 				prune({
 					keepAttributes: !opts.pruneAttributes,
 					keepIndices: false,
-					keepLeaves: !opts.pruneLeaves,
+					keepLeaves: false,
 					keepSolidTextures: !opts.pruneSolidTextures,
 				}),
 			);
@@ -772,11 +767,11 @@ EXT_mesh_gpu_instancing.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--keepMeshes <bool>', 'Prevents joining distinct meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--keepNamed <bool>', 'Prevents joining named meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepNamed,
 	})
