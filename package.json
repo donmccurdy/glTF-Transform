@@ -63,7 +63,7 @@
 		"rimraf": "^6.0.1",
 		"simple-dropzone": "^0.8.3",
 		"three": "^0.170.0",
-		"tinybench": "^2.8.0",
+		"tinybench": "^3.0.0",
 		"tsx": "^4.16.2",
 		"tweakpane": "^4.0.4",
 		"tweakpane-plugin-thumbnail-list": "^0.3.0",

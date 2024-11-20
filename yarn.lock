@@ -7291,7 +7291,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     simple-dropzone: "npm:^0.8.3"
     three: "npm:^0.170.0"
-    tinybench: "npm:^2.8.0"
+    tinybench: "npm:^3.0.0"
     tsx: "npm:^4.16.2"
     tweakpane: "npm:^4.0.4"
     tweakpane-plugin-thumbnail-list: "npm:^0.3.0"
@@ -12750,10 +12750,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinybench@npm:^2.8.0":
-  version: 2.9.0
-  resolution: "tinybench@npm:2.9.0"
-  checksum: 10c0/c3500b0f60d2eb8db65250afe750b66d51623057ee88720b7f064894a6cb7eb93360ca824a60a31ab16dab30c7b1f06efe0795b352e37914a9d4bad86386a20c
+"tinybench@npm:^3.0.0":
+  version: 3.0.3
+  resolution: "tinybench@npm:3.0.3"
+  checksum: 10c0/c1f8fc05389d9fbe4fd4ae5ab2fe7e3c076813ae3f332130370f2b792f6765f873bc054eaa2925bc6c36ff8ff6af3c36a8dda901da2ff607134a730fc9843b33
   languageName: node
   linkType: hard
 
