@@ -10,7 +10,8 @@ export function getBounds(node: Node | Scene): bbox {
 	for (const parent of parents) {
 		parent.traverse((node) => {
 			const mesh = node.getMesh();
-			if (!mesh || !node.getName()) return;
+			const isInstancedMesh = !!node?.getExtension('EXT_mesh_gpu_instancing');
+			if (!mesh || !node.getName() || isInstancedMesh) return;
 
 			// Compute mesh bounds and update result.
 			const meshBounds = getMeshBounds(mesh, node.getWorldMatrix());

@@ -86,7 +86,12 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 				const batchRotation = batch.getAttribute('ROTATION')!;
 				const batchScale = batch.getAttribute('SCALE')!;
 
-				const batchNode = doc.createNode().setMesh(mesh).setExtension('EXT_mesh_gpu_instancing', batch);
+				const batchNode = doc
+					.createNode()
+					.setMesh(mesh)
+					.setExtension('EXT_mesh_gpu_instancing', batch)
+					.setName(nodes[0].getName());
+
 				scene.addChild(batchNode);
 
 				let needsTranslation = false;
