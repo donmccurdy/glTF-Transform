@@ -8,6 +8,7 @@ import {
 	Mesh,
 	Points,
 	SkinnedMesh,
+	TypedArray,
 } from 'three';
 import { Accessor as AccessorDef, Material as MaterialDef, Primitive as PrimitiveDef } from '@gltf-transform/core';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
@@ -88,6 +89,28 @@ export class PrimitiveSubject extends Subject<PrimitiveDef, MeshLike> {
 		material: Material,
 		pool: ValuePool<MeshLike>,
 	): MeshLike {
+		// Add Morph targets
+		const morphTargets = def.listTargets();
+		if (morphTargets.length) {
+			geometry.morphAttributes = {};
+
+			for (const [index, morphTarget] of morphTargets.entries()) {
+				for (const semantic of morphTarget.listSemantics()) {
+					const attributeName = semanticToAttributeName(semantic);
+					if (!geometry.morphAttributes[attributeName]) {
+						geometry.morphAttributes[attributeName] = [];
+					}
+					const accessor = morphTarget.getAttribute(semantic) as AccessorDef;
+					const array = accessor.getArray() as TypedArray;
+					geometry.morphAttributes[attributeName][index] = new BufferAttribute(
+						array,
+						accessor.getElementSize(),
+					);
+				}
+			}
+			geometry.morphTargetsRelative = true;
+		}
+
 		switch (def.getMode()) {
 			case PrimitiveDef.Mode.TRIANGLES:
 			case PrimitiveDef.Mode.TRIANGLE_FAN:
