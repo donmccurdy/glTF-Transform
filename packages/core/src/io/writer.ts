@@ -483,7 +483,9 @@ export class GLTFWriter {
 					// (1) Interleaved vertex attributes.
 					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else if (usage === BufferViewUsage.ARRAY_BUFFER) {
 					// (2) Non-interleaved vertex attributes.
 					for (const accessor of groupAccessors) {
@@ -491,24 +493,32 @@ export class GLTFWriter {
 						// 4-byte boundaries, which concatAccessors() does not.
 						const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
 						bufferByteLength += result.byteLength;
-						buffers.push(...result.buffers);
+						for (const buffer of result.buffers) {
+							buffers.push(buffer);
+						}
 					}
 				} else if (usage === BufferViewUsage.SPARSE) {
 					// (3) Sparse accessors.
 					const result = concatSparseAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else if (usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER) {
 					// (4) Indices.
 					const target = WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER;
 					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength, target);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else {
 					// (5) Other.
 					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				}
 			}
 
