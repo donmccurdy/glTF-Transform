@@ -483,8 +483,8 @@ export class GLTFWriter {
 					// (1) Interleaved vertex attributes.
 					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					for (const _buffer of result.buffers) {
-						buffers.push(_buffer);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
 					}
 				} else if (usage === BufferViewUsage.ARRAY_BUFFER) {
 					// (2) Non-interleaved vertex attributes.
