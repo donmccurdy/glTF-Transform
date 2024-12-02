@@ -2,7 +2,6 @@ import fs, { rm } from 'fs/promises';
 import { join } from 'path';
 import micromatch from 'micromatch';
 import os from 'os';
-import semver from 'semver';
 import tmp from 'tmp';
 import pLimit from 'p-limit';
 import type sharp from 'sharp';
@@ -430,17 +429,15 @@ async function checkKTXSoftware(logger: ILogger): Promise<string> {
 		.replace(/~\d+/, '')
 		.trim();
 
-	if (status !== 0 || !semver.valid(semver.clean(version))) {
+	if (status !== 0 || !version) {
 		throw new Error(
 			`Unable to find "ktx" version. Confirm KTX-Software ${KTX_SOFTWARE_VERSION_MIN}+ is installed.`,
 		);
-	} else if (semver.lt(semver.clean(version)!, KTX_SOFTWARE_VERSION_MIN)) {
-		logger.warn(`ktx: Expected KTX-Software >= v${KTX_SOFTWARE_VERSION_MIN}, found ${version}.`);
 	} else {
 		logger.debug(`ktx: Found KTX-Software ${version}.`);
 	}
 
-	return semver.clean(version)!;
+	return version;
 }
 
 function isMultipleOfFour(value: number): boolean {
