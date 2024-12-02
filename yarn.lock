@@ -12638,9 +12638,9 @@ __metadata:
   linkType: hard
 
 "tinybench@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "tinybench@npm:3.0.6"
-  checksum: 10c0/2120674997f8b943cbcc7715f1aa61cacd222002eeebe180c69a6eeb3bd60159385c341d70fcf2294f3518056472da56958e49f896df31572e82a2c5584cc807
+  version: 3.0.7
+  resolution: "tinybench@npm:3.0.7"
+  checksum: 10c0/47ffabd24fbbf6741e8c042529bb4f034f64d51ec671b12e332db0c2e64c3ebf4d09c2ccc4be338ecb7ddf716767116b668d0bed8a8378e87359a3419d417b2a
   languageName: node
   linkType: hard
 
