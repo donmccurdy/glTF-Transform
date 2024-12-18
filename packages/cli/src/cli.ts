@@ -362,6 +362,7 @@ commands or using the scripting API.
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
 			textureSize: number;
 			flatten: boolean;
+			resample: boolean;
 			join: boolean;
 			joinNamed: boolean;
 			joinMeshes: boolean;
@@ -404,7 +405,7 @@ commands or using the scripting API.
 			);
 		}
 
-		transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
+		if (opts.resample) transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
 
 		if (opts.prune) {
 			transforms.push(
