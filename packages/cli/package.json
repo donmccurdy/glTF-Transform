@@ -45,7 +45,7 @@
 		"gltf-validator": "~2.0.0-dev.3.10",
 		"keyframe-resample": "~0.1.0",
 		"ktx-parse": "~0.7.1",
-		"language-tags": "~1.0.9",
+		"language-tags": "~2.0.0",
 		"listr2": "~8.2.5",
 		"meshoptimizer": "~0.22.0",
 		"micromatch": "~4.0.8",
