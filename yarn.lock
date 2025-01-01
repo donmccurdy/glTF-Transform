@@ -1813,7 +1813,7 @@ __metadata:
     mdsvex: "npm:^0.12.3"
     svelte: "npm:^4.2.19"
     svelte-check: "npm:^4.1.0"
-    ts-morph: "npm:^22.0.0"
+    ts-morph: "npm:^25.0.0"
     tslib: "npm:^2.8.1"
     vite: "npm:^5.4.11"
   languageName: unknown
@@ -3190,6 +3190,17 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     path-browserify: "npm:^1.0.1"
   checksum: 10c0/80d8f230618b022537846b515cb928c636004f216821bec7fea289fd37533b4eaa783d276cc5838b4b6be867fec60fdee5795baac3ed98f1ab7cdd6b35a85179
+  languageName: node
+  linkType: hard
+
+"@ts-morph/common@npm:~0.26.0":
+  version: 0.26.0
+  resolution: "@ts-morph/common@npm:0.26.0"
+  dependencies:
+    fast-glob: "npm:^3.3.2"
+    minimatch: "npm:^9.0.4"
+    path-browserify: "npm:^1.0.1"
+  checksum: 10c0/c319f1bcbf6610571b3f06b46b99b6186a202bb8616473daaa8fe1b4726aedb87740a3e625fd2e423ddb0641f95af382eb7c2109bdc98ac69bb1a69d402cfb24
   languageName: node
   linkType: hard
 
@@ -4735,7 +4746,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"code-block-writer@npm:^13.0.1":
+"code-block-writer@npm:^13.0.1, code-block-writer@npm:^13.0.3":
   version: 13.0.3
   resolution: "code-block-writer@npm:13.0.3"
   checksum: 10c0/87db97b37583f71cfd7eced8bf3f0a0a0ca53af912751a734372b36c08cd27f3e8a4878ec05591c0cd9ae11bea8add1423e132d660edd86aab952656dd41fd66
@@ -12756,6 +12767,16 @@ __metadata:
     "@ts-morph/common": "npm:~0.23.0"
     code-block-writer: "npm:^13.0.1"
   checksum: 10c0/0275606effaa24f6d8ad3ee9df3bb37c0330be002682f9e9157462b38b949e00fb81e0df20f571e08a0bd06107922eb35022bad5e2fb48ca89fda4299140b5de
+  languageName: node
+  linkType: hard
+
+"ts-morph@npm:^25.0.0":
+  version: 25.0.0
+  resolution: "ts-morph@npm:25.0.0"
+  dependencies:
+    "@ts-morph/common": "npm:~0.26.0"
+    code-block-writer: "npm:^13.0.3"
+  checksum: 10c0/3b073a83a4c50400913d2bed3648aa3d686982f588524fa0a9942d3e2990ba9aea020ee39997e0ae4ec95623ee7557a3bb17e3b2e5b0f30d662249359f670192
   languageName: node
   linkType: hard
 
