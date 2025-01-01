@@ -52,7 +52,7 @@
 		"mikktspace": "~1.1.1",
 		"node-fetch": "~3.3.2",
 		"node-gzip": "~1.1.2",
-		"p-limit": "~6.1.0",
+		"p-limit": "~6.2.0",
 		"prompts": "^2.4.2",
 		"sharp": "~0.33.5",
 		"spdx-correct": "~3.2.0",

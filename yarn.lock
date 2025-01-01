@@ -1776,7 +1776,7 @@ __metadata:
     mikktspace: "npm:~1.1.1"
     node-fetch: "npm:~3.3.2"
     node-gzip: "npm:~1.1.2"
-    p-limit: "npm:~6.1.0"
+    p-limit: "npm:~6.2.0"
     prompts: "npm:^2.4.2"
     sharp: "npm:~0.33.5"
     spdx-correct: "npm:~3.2.0"
@@ -9988,12 +9988,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:~6.1.0":
-  version: 6.1.0
-  resolution: "p-limit@npm:6.1.0"
+"p-limit@npm:~6.2.0":
+  version: 6.2.0
+  resolution: "p-limit@npm:6.2.0"
   dependencies:
     yocto-queue: "npm:^1.1.1"
-  checksum: 10c0/40af29461206185a81bdc971ed499d97ceb344114fd21420db95debd9c979b6c02d66a41c321246d09245a51e68410e13df92622cc8c0130f87c6bd81a15d777
+  checksum: 10c0/448bf55a1776ca1444594d53b3c731e68cdca00d44a6c8df06a2f6e506d5bbd540ebb57b05280f8c8bff992a630ed782a69612473f769a7473495d19e2270166
   languageName: node
   linkType: hard
 
