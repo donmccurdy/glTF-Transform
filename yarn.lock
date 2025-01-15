@@ -1769,7 +1769,7 @@ __metadata:
     gltf-validator: "npm:~2.0.0-dev.3.10"
     keyframe-resample: "npm:~0.1.0"
     ktx-parse: "npm:~0.7.1"
-    language-tags: "npm:~1.0.9"
+    language-tags: "npm:~2.0.0"
     listr2: "npm:~8.2.5"
     meshoptimizer: "npm:~0.22.0"
     micromatch: "npm:~4.0.8"
@@ -8445,12 +8445,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"language-tags@npm:~1.0.9":
-  version: 1.0.9
-  resolution: "language-tags@npm:1.0.9"
+"language-tags@npm:~2.0.0":
+  version: 2.0.1
+  resolution: "language-tags@npm:2.0.1"
   dependencies:
     language-subtag-registry: "npm:^0.3.20"
-  checksum: 10c0/9ab911213c4bd8bd583c850201c17794e52cb0660d1ab6e32558aadc8324abebf6844e46f92b80a5d600d0fbba7eface2c207bfaf270a1c7fd539e4c3a880bff
+  checksum: 10c0/866ba16518fdce960859f44540ff8571a936dc57967bb6e9390c0bedcc0fbe76a13016f6d59342c3075f903da6c85004ace4a826d0a9460724647b8e335c48d7
   languageName: node
   linkType: hard
 
