@@ -1257,10 +1257,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bcoe/v8-coverage@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@bcoe/v8-coverage@npm:0.2.3"
-  checksum: 10c0/6b80ae4cb3db53f486da2dc63b6e190a74c8c3cca16bb2733f234a0b6a9382b09b146488ae08e2b22cf00f6c83e20f3e040a2f7894f05c045c946d6a090b1d52
+"@bcoe/v8-coverage@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "@bcoe/v8-coverage@npm:1.0.2"
+  checksum: 10c0/1eb1dc93cc17fb7abdcef21a6e7b867d6aa99a7ec88ec8207402b23d9083ab22a8011213f04b2cf26d535f1d22dc26139b7929e6c2134c254bd1e14ba5e678c3
   languageName: node
   linkType: hard
 
@@ -3109,22 +3109,22 @@ __metadata:
   linkType: hard
 
 "@sveltejs/adapter-static@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "@sveltejs/adapter-static@npm:3.0.6"
+  version: 3.0.8
+  resolution: "@sveltejs/adapter-static@npm:3.0.8"
   peerDependencies:
     "@sveltejs/kit": ^2.0.0
-  checksum: 10c0/39fa8be56a9acf468d25d1d7608f3b89541a471afd6021ba627bc228e929cbe1f0c1c6c75e9e1da27e0873c4cd38d189833f4966b708780dae4f3e5e2faf7833
+  checksum: 10c0/0ae958463d074c49b733059f53b685ee26e0debe9207aad5d77ea1b651a1efc743647f9c0cf78d72ae0243e23ece4b620b0600f17ec83e732791a265fea6df4f
   languageName: node
   linkType: hard
 
 "@sveltejs/kit@npm:^2.8.5":
-  version: 2.9.0
-  resolution: "@sveltejs/kit@npm:2.9.0"
+  version: 2.16.0
+  resolution: "@sveltejs/kit@npm:2.16.0"
   dependencies:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.6.0"
     devalue: "npm:^5.1.0"
-    esm-env: "npm:^1.2.1"
+    esm-env: "npm:^1.2.2"
     import-meta-resolve: "npm:^4.1.0"
     kleur: "npm:^4.1.5"
     magic-string: "npm:^0.30.5"
@@ -3132,14 +3132,13 @@ __metadata:
     sade: "npm:^1.8.1"
     set-cookie-parser: "npm:^2.6.0"
     sirv: "npm:^3.0.0"
-    tiny-glob: "npm:^0.2.9"
   peerDependencies:
     "@sveltejs/vite-plugin-svelte": ^3.0.0 || ^4.0.0-next.1 || ^5.0.0
     svelte: ^4.0.0 || ^5.0.0-next.0
     vite: ^5.0.3 || ^6.0.0
   bin:
     svelte-kit: svelte-kit.js
-  checksum: 10c0/40630b15534cb695869795533aab05fad8faff5334a25ca22e4e1bab46109d777ebee47a284e67ee1900ce2973fd5987ae5fa39dabe9a56d093b6b1460269ed7
+  checksum: 10c0/13c05896ad61a8f98d80303ee1e8906a7a81a878af02edfb2ab620d8f74fe911075c5150210af3eb842c80d03cd9b9944c07a8b3aeae7d452cb3af686ed052b6
   languageName: node
   linkType: hard
 
@@ -4393,10 +4392,10 @@ __metadata:
   linkType: hard
 
 "c8@npm:^10.1.2":
-  version: 10.1.2
-  resolution: "c8@npm:10.1.2"
+  version: 10.1.3
+  resolution: "c8@npm:10.1.3"
   dependencies:
-    "@bcoe/v8-coverage": "npm:^0.2.3"
+    "@bcoe/v8-coverage": "npm:^1.0.1"
     "@istanbuljs/schema": "npm:^0.1.3"
     find-up: "npm:^5.0.0"
     foreground-child: "npm:^3.1.1"
@@ -4414,7 +4413,7 @@ __metadata:
       optional: true
   bin:
     c8: bin/c8.js
-  checksum: 10c0/882903f22c08f9053b7b274ba31c374cf141d027c46cda57e6472798f82437c5d73fe25bd25b60d6b01c9de383615ae932e6c4d7d4acd7ea231216215f207217
+  checksum: 10c0/1265ddbcb0e624fe200978e9263faf948cb9694ce8e6b858adbb14f1186de2e6c451aa4aabb821e9eb7f1972859e14691eaf2ff12ad96be7a3fc0e39946fc569
   languageName: node
   linkType: hard
 
@@ -6226,10 +6225,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esm-env@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "esm-env@npm:1.2.1"
-  checksum: 10c0/3a7efb5943cac44c84359d0bb25a918f90f1002c0cf9fd3c24d57f27068ba3b508a9c19c8603f8c37ea5730ae4a35efad4735447fd91ae760e275cc081702e69
+"esm-env@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "esm-env@npm:1.2.2"
+  checksum: 10c0/3d25c973f2fd69c25ffff29c964399cea573fe10795ecc1d26f6f957ce0483d3254e1cceddb34bf3296a0d7b0f1d53a28992f064ba509dfe6366751e752c4166
   languageName: node
   linkType: hard
 
@@ -7305,9 +7304,9 @@ __metadata:
   linkType: hard
 
 "highlight.js@npm:^11.10.0, highlight.js@npm:^11.9.0":
-  version: 11.10.0
-  resolution: "highlight.js@npm:11.10.0"
-  checksum: 10c0/cd8bf7ef06cbd72ddb83580ecabe769f08f062be8bb82d2eb492d31c17f7480d1f8d14a66fc81deee0601645435f19f04c470510563f847242a41ccff0ab873e
+  version: 11.11.1
+  resolution: "highlight.js@npm:11.11.1"
+  checksum: 10c0/40f53ac19dac079891fcefd5bd8a21cf2e8931fd47da5bd1dca73b7e4375c1defed0636fc39120c639b9c44119b7d110f7f0c15aa899557a5a1c8910f3c0144c
   languageName: node
   linkType: hard
 
@@ -10842,12 +10841,12 @@ __metadata:
   linkType: hard
 
 "prettier-plugin-svelte@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "prettier-plugin-svelte@npm:3.3.2"
+  version: 3.3.3
+  resolution: "prettier-plugin-svelte@npm:3.3.3"
   peerDependencies:
     prettier: ^3.0.0
     svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
-  checksum: 10c0/00c428e18fcc5db84eb55969425041aa80bb82c95b9abeb5bf5354605f84e31301e104bb7c7ab3264dbe42a8b7b12c994e795effcf71c3c4b51dfd0a5ff41a9b
+  checksum: 10c0/5e0a73d7ef2385dc26bbc2c679dd3c2d6a5b73eb32b6aab5cafde816eff7de91c4d32f4fb192ef37a21345ca3dd94e6a9e31c8ad4ee34a797d78bc7da8f76216
   languageName: node
   linkType: hard
 
@@ -12414,8 +12413,8 @@ __metadata:
   linkType: hard
 
 "svelte-check@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "svelte-check@npm:4.1.0"
+  version: 4.1.4
+  resolution: "svelte-check@npm:4.1.4"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     chokidar: "npm:^4.0.1"
@@ -12427,7 +12426,7 @@ __metadata:
     typescript: ">=5.0.0"
   bin:
     svelte-check: bin/svelte-check
-  checksum: 10c0/ee04862f790703c8bb759d96cd0bb1c8b606bea0617d4e8dcab1116640e1a407d578f272d0bed870476b07edc704db0c66075956e7371e08b1460edceff9d7ea
+  checksum: 10c0/f0161214078e7b16178167daa5c82a1790759859946b8cd4a9f5ae866345c502f1f27cadc6734b36709ad75c79650fd85cae286f7a21c78e403521e35b5ebb20
   languageName: node
   linkType: hard
 
@@ -12627,7 +12626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tiny-glob@npm:^0.2.8, tiny-glob@npm:^0.2.9":
+"tiny-glob@npm:^0.2.8":
   version: 0.2.9
   resolution: "tiny-glob@npm:0.2.9"
   dependencies:
@@ -12638,9 +12637,9 @@ __metadata:
   linkType: hard
 
 "tinybench@npm:^3.0.6":
-  version: 3.0.7
-  resolution: "tinybench@npm:3.0.7"
-  checksum: 10c0/47ffabd24fbbf6741e8c042529bb4f034f64d51ec671b12e332db0c2e64c3ebf4d09c2ccc4be338ecb7ddf716767116b668d0bed8a8378e87359a3419d417b2a
+  version: 3.1.0
+  resolution: "tinybench@npm:3.1.0"
+  checksum: 10c0/0e0d683f7e6208d7a182bd171f9fd82596eee7d8047b31a29321b386998c1ff851674ec2d5f68a4666b8bfd89dcb9db19f0498aef2951dfe80108ed0cd40d2ff
   languageName: node
   linkType: hard
 
@@ -13204,8 +13203,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^5.4.11":
-  version: 5.4.11
-  resolution: "vite@npm:5.4.11"
+  version: 5.4.12
+  resolution: "vite@npm:5.4.12"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -13242,7 +13241,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/d536bb7af57dd0eca2a808f95f5ff1d7b7ffb8d86e17c6893087680a0448bd0d15e07475270c8a6de65cb5115592d037130a1dd979dc76bcef8c1dda202a1874
+  checksum: 10c0/a0f130e3e0c781f54c60ee4b7cccf92c266e4117be1f65ab55c02abc27b29fa70dc0ed05eca54a9983f76450063a47f86db06ac49f28ee96392a0dc362b17da8
   languageName: node
   linkType: hard
 
