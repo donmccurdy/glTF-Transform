@@ -90,6 +90,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 					.createNode()
 					.setMesh(mesh)
 					.setExtension('EXT_mesh_gpu_instancing', batch)
+					.setExtras({instanceNames:nodes.map((x) => x.getName())})
 					.setName(nodes[0].getName());
 
 				scene.addChild(batchNode);
