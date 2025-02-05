@@ -74,27 +74,57 @@ interface DracoWriterContext {
  * the encoder to choose the optimal method out of the available features for the
  * given --decodeSpeed.
  *
- * ### Example
+ * ### Example — Read
+ *
+ * To read glTF files using Draco compression, ensure that the extension
+ * and a decoder are registered. Geometry is decompressed while reading.
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
- *
  * import draco3d from 'draco3dgltf';
  *
- * // ...
- *
  * const io = new NodeIO()
- *	.registerExtensions([KHRDracoMeshCompression])
- *	.registerDependencies({
- *		'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
- *		'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
- *	});
+ * 	.registerExtensions([KHRDracoMeshCompression])
+ * 	.registerDependencies({
+ * 		'draco3d.decoder': await draco3d.createDecoderModule()
+ * 	});
  *
  * // Read and decode.
  * const document = await io.read('compressed.glb');
+ * ```
  *
- * // Write and encode.
+ * ### Example — Write
+ *
+ * The simplest way to apply Draco compression is with the {@link draco}
+ * transform. The extension and an encoder must be registered.
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+ * import { draco } from '@gltf-transform/functions';
+ * import draco3d from 'draco3dgltf';
+ *
+ * const io = new NodeIO()
+ * 	.registerExtensions([KHRDracoMeshCompression])
+ * 	.registerDependencies({
+ * 		'draco3d.encoder': await draco3d.createEncoderModule()
+ * 	});
+ *
+ * await document.transform(
+ *   draco({method: 'edgebreaker'})
+ * );
+ *
+ * await io.write('compressed.glb', document);
+ * ```
+ *
+ * ### Example
+ *
+ * Equivalently, the KHRDracoMeshCompression extension can be added manually to a document.
+ *
+ * ```typescript
+ * import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+ *
  * document.createExtension(KHRDracoMeshCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({
@@ -102,8 +132,12 @@ interface DracoWriterContext {
  * 		encodeSpeed: 5,
  * 		decodeSpeed: 5,
  * 	});
+ *
  * await io.write('compressed.glb', document);
  * ```
+ *
+ * In either case, Compression is deferred until generating output with an
+ * I/O class.
  */
 export class KHRDracoMeshCompression extends Extension {
 	public readonly extensionName = NAME;
