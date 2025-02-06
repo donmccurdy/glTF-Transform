@@ -40,6 +40,8 @@ const NAME = 'meshopt';
  * );
  * ```
  *
+ * Compression is deferred until generating output with an I/O class.
+ *
  * @category Transforms
  */
 export function meshopt(_options: MeshoptOptions): Transform {
