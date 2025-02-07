@@ -2,7 +2,7 @@
 /**
  * Module for glTF 2.0 Interface
  */
-export declare module GLTF {
+export declare namespace GLTF {
 	/** Data type of the values composing each element in the accessor. */
 	type AccessorComponentType = 5120 | 5121 | 5122 | 5123 | 5125 | 5126;
 	/** Element type contained by the accessor (SCALAR, VEC2, ...). */

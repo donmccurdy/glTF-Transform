@@ -573,7 +573,7 @@ async function getTextureFactor(texture: Texture): Promise<vec4 | null> {
 async function maybeGetPixels(texture: Texture): Promise<NdArray<Uint8Array> | null> {
 	try {
 		return await getPixels(texture.getImage()!, texture.getMimeType());
-	} catch (e) {
+	} catch {
 		return null;
 	}
 }

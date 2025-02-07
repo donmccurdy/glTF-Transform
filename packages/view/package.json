@@ -27,7 +27,7 @@
 	"scripts": {
 		"dist": "microbundle --no-compress --format modern",
 		"watch": "microbundle watch --no-compress --format modern",
-		"dev": "concurrently \"yarn watch\" \"vite -c examples/vite.config.js\""
+		"dev": "vite -c examples/vite.config.js"
 	},
 	"files": [
 		"dist/",
