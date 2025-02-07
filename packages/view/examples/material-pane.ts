@@ -1,4 +1,4 @@
-import { Document, Material, Texture } from '@gltf-transform/core';
+import { ColorUtils, Document, Material, Texture } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat, KHRMaterialsIOR, KHRMaterialsSheen, KHRMaterialsSpecular, KHRMaterialsTransmission, KHRMaterialsUnlit, KHRMaterialsVolume } from '@gltf-transform/extensions';
 import { FolderApi, Pane } from 'tweakpane';
 import * as TweakpanePluginThumbnailList from 'tweakpane-plugin-thumbnail-list';
@@ -46,11 +46,11 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 
 	const params = {
 		// Core.
-		baseColorFactor: material.getBaseColorHex(),
+		baseColorFactor: ColorUtils.factorToHex(material.getBaseColorFactor()),
 		baseColorTexture: textureValue(material.getBaseColorTexture(), textureOptions),
 		alpha: material.getAlpha(),
 		alphaMode: material.getAlphaMode(),
-		emissiveFactor: material.getEmissiveHex(),
+		emissiveFactor: ColorUtils.factorToHex(material.getEmissiveFactor()),
 		emissiveTexture: textureValue(material.getEmissiveTexture(), textureOptions),
 		roughnessFactor: material.getRoughnessFactor(),
 		metallicFactor: material.getMetallicFactor(),
@@ -75,7 +75,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 
 		// Sheen.
 		sheenEnabled: !!material.getExtension('KHR_materials_sheen'),
-		sheenColorFactor: sheen.getSheenColorHex(),
+		sheenColorFactor: ColorUtils.factorToHex(sheen.getSheenColorFactor()),
 		sheenColorTexture: textureValue(sheen.getSheenColorTexture(), textureOptions),
 		sheenRoughnessFactor: sheen.getSheenRoughnessFactor(),
 		sheenRoughnessTexture: textureValue(sheen.getSheenRoughnessTexture(), textureOptions),
@@ -84,7 +84,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		specularEnabled: !!material.getExtension('KHR_materials_specular'),
 		specularFactor: specular.getSpecularFactor(),
 		specularTexture: textureValue(specular.getSpecularTexture(), textureOptions),
-		specularColorFactor: specular.getSpecularColorHex(),
+		specularColorFactor: ColorUtils.factorToHex(specular.getSpecularColorFactor()),
 		specularColorTexture: textureValue(specular.getSpecularColorTexture(), textureOptions),
 
 		// Transmission.
@@ -96,7 +96,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		volumeEnabled: !!material.getExtension('KHR_materials_volume'),
 		thicknessFactor: volume.getThicknessFactor(),
 		thicknessTexture: textureValue(volume.getThicknessTexture(), textureOptions),
-		attenuationColorFactor: volume.getAttenuationColorHex(),
+		attenuationColorFactor: ColorUtils.factorToHex(volume.getAttenuationColor()),
 		attenuationDistance: Number.isFinite(volume.getAttenuationDistance())
 			? volume.getAttenuationDistance()
 			: 0,
@@ -107,7 +107,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 
 	const coreFolder = pane.addFolder({title: 'Basic'});
 	coreFolder.addInput(params, 'baseColorFactor', {view: 'color'})
-		.on('change', () => material.setBaseColorHex(params.baseColorFactor));
+		.on('change', () => material.setBaseColorFactor(ColorUtils.hexToFactor(params.baseColorFactor, [0, 0, 0, 0])));
 	coreFolder.addInput(params, 'baseColorTexture', {view: 'thumbnail-list', options: textureOptions})
 		.on('change', (ev) => material.setBaseColorTexture(textureFromEvent(ev)));
 	coreFolder.addSeparator();
@@ -117,7 +117,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		.on('change', () => material.setAlphaMode(params.alphaMode));
 	coreFolder.addSeparator();
 	coreFolder.addInput(params, 'emissiveFactor', {view: 'color'})
-		.on('change', () => material.setEmissiveHex(params.emissiveFactor));
+		.on('change', () => material.setEmissiveFactor(ColorUtils.hexToFactor(params.emissiveFactor, [0, 0, 0])));
 	coreFolder.addInput(params, 'emissiveTexture', {view: 'thumbnail-list', options: textureOptions})
 		.on('change', (ev) => material.setEmissiveTexture(textureFromEvent(ev)));
 	coreFolder.addSeparator();
@@ -181,7 +181,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 	sheenFolder.on('change', () => {
 		material.setExtension('KHR_materials_sheen', params.sheenEnabled ? sheen : null);
 		sheen
-			.setSheenColorHex(params.sheenColorFactor)
+			.setSheenColorFactor(ColorUtils.hexToFactor(params.sheenColorFactor, [0, 0, 0]))
 			.setSheenRoughnessFactor(params.sheenRoughnessFactor);
 	});
 
@@ -199,7 +199,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		material.setExtension('KHR_materials_specular', params.specularEnabled ? specular : null);
 		specular
 			.setSpecularFactor(params.specularFactor)
-			.setSpecularColorHex(params.specularColorFactor);
+			.setSpecularColorFactor(ColorUtils.hexToFactor(params.specularColorFactor, [0, 0, 0]));
 	});
 
 	const transmissionFolder = pane.addFolder({title: 'KHR_materials_transmission', expanded: false});
@@ -226,7 +226,7 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		material.setExtension('KHR_materials_volume', params.volumeEnabled ? volume : null);
 		volume
 			.setThicknessFactor(params.thicknessFactor)
-			.setAttenuationColorHex(params.attenuationColorFactor)
+			.setAttenuationColor(ColorUtils.hexToFactor(params.attenuationColorFactor, [0, 0, 0]))
 			.setAttenuationDistance(params.attenuationDistance);
 	});
 

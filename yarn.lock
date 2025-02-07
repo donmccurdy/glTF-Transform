@@ -3284,10 +3284,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tweakpane/core@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "@tweakpane/core@npm:2.0.5"
-  checksum: 10c0/c4955de0739f64ed9ef146972e38392de6a88ebb3657f05027d3184f976254b0895cba84f9adce4b80230ea33e86918ab1fe8e136f6cf5f45f23c23fd8dc3a80
+"@tweakpane/core@npm:<2.0.0":
+  version: 1.1.9
+  resolution: "@tweakpane/core@npm:1.1.9"
+  checksum: 10c0/6f5773ed9e142f5fbcc299d8cbf41cc7e540f3c2d48caa60372f04699d255424b4e0f349f6dd7915dd714f91cd66426dacfb3be08b03a7d4bc4ed5e5241b9d03
   languageName: node
   linkType: hard
 
@@ -7203,7 +7203,7 @@ __metadata:
   resolution: "gltf-transform@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.19.0"
-    "@tweakpane/core": "npm:^2.0.5"
+    "@tweakpane/core": "npm:<2.0.0"
     "@types/command-exists": "npm:1.2.3"
     "@types/d3-dsv": "npm:^3.0.7"
     "@types/draco3dgltf": "npm:1.4.3"
@@ -7237,7 +7237,7 @@ __metadata:
     three: "npm:^0.173.0"
     tinybench: "npm:^3.1.1"
     tsx: "npm:^4.19.2"
-    tweakpane: "npm:^4.0.5"
+    tweakpane: "npm:<4.0.0"
     tweakpane-plugin-thumbnail-list: "npm:^0.3.0"
     typescript: "npm:5.7.3"
     typescript-eslint: "npm:^8.23.0"
@@ -12922,10 +12922,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tweakpane@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "tweakpane@npm:4.0.5"
-  checksum: 10c0/c2058c1b1747f95db2227e274c879728fa828894af000c48f5206259ef4e5d1369ab553b82ce31cf62e396dc40707df96bed7cc0d105a89dcc1718bef2900e1f
+"tweakpane@npm:<4.0.0":
+  version: 3.1.10
+  resolution: "tweakpane@npm:3.1.10"
+  checksum: 10c0/ee7e22594f56ac12ade9ef684bd7627f09b5c46d352447905b8a38476fc61216bb07e29c434bd7f7721b1e6af25a2cdf549be92fbcfffe1bf6be3c8f392e2c76
   languageName: node
   linkType: hard
 

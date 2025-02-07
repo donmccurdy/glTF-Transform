@@ -61,7 +61,7 @@
 				</a>
 			</li>
 		{/if}
-		<li class="flex" />
+		<li class="flex"></li>
 		{#if innerWidth > LG}
 			{#each resources as resource}
 				<li>

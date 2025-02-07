@@ -3,7 +3,7 @@
 	"packageRules": [
 		{
 			"description": "Requires updates to tweakpane-plugin-thumbnail-list",
-			"matchPackageNames": ["tweakpane"],
+			"matchPackageNames": ["tweakpane", "@tweakpane/core"],
 			"enabled": false
 		},
 		{
