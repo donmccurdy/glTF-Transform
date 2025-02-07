@@ -10,6 +10,11 @@
 			"description": "https://github.com/lovell/sharp/issues/4095",
 			"matchPackageNames": ["sharp"],
 			"enabled": false
+		},
+		{
+			"description": "Requires updates to greendoc",
+			"matchPackageNames": ["ts-morph"],
+			"enabled": false
 		}
 	]
 }
