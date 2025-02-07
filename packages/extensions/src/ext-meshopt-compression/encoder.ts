@@ -139,6 +139,12 @@ export function getMeshoptFilter(accessor: Accessor, doc: Document): { filter: M
 		.listParentEdges(accessor)
 		.filter((edge) => !(edge.getParent() instanceof Root));
 
+	// If filtering is enabled but the attribute is not quantized, do not filter,
+	// which would change the attribute's component type.
+	if (accessor.getComponentSize() > 2) {
+		return { filter: MeshoptFilter.NONE };
+	}
+
 	for (const ref of refs) {
 		const refName = ref.getName();
 		const refKey = (ref.getAttributes().key || '') as string;
