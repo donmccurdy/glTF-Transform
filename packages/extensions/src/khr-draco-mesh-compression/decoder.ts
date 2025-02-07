@@ -72,6 +72,7 @@ export function decodeAttribute(
 
 	const ptr = decoderModule._malloc(byteLength);
 	decoder.GetAttributeDataArrayForAllPoints(mesh, attribute, dataType, byteLength, ptr);
+	// @ts-expect-error Incorrect types.
 	const array: TypedArray = new ArrayCtor(decoderModule.HEAPF32.buffer, ptr, numValues).slice();
 	decoderModule._free(ptr);
 
