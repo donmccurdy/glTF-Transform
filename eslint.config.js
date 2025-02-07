@@ -7,13 +7,14 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
-	// @ts-ignore
 	...sveltelint.configs['flat/recommended'],
 	prettier,
 	{
 		rules: {
+			'@typescript-eslint/no-empty-object-type': ['off'],
 			'@typescript-eslint/no-non-null-assertion': ['off'],
 			'@typescript-eslint/no-this-alias': ['off'],
+			'@typescript-eslint/no-unused-expressions': ['off'],
 			'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 			'@typescript-eslint/no-use-before-define': 'off',
 			'@typescript-eslint/no-var-requires': ['off'],

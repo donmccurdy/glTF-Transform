@@ -5,7 +5,7 @@ export const load = async ({ params }) => {
 	try {
 		const { default: Page } = await import(`../../lib/pages/${params.slug}.md`);
 		return render(Page);
-	} catch (e) {
+	} catch {
 		error(404, 'Not found');
 	}
 };
