@@ -58,10 +58,7 @@ test('shared vertex streams', async (t) => {
 
 	// Option 'overwrite' option removed in v4, all primitives are now compacted
 	// and their accessors cloned.
-	t.true(
-		primA.getAttribute('POSITION') !== primB.getAttribute('POSITION'),
-		'primA !== primB, after (overwrite=true)',
-	);
+	t.true(primA.getAttribute('POSITION') !== primB.getAttribute('POSITION'), 'primA !== primB, after (overwrite=true)');
 });
 
 test('update multiple vertex streams', async (t) => {
@@ -72,7 +69,7 @@ test('update multiple vertex streams', async (t) => {
 
 	transformMesh(mesh, mat4.fromScaling([], [2, 2, 2]));
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const SCALED = [
 		0.5, 10, 0.5,
 		0.5, 10, -0.5,
@@ -95,7 +92,7 @@ test('morph targets', async (t) => {
 		.createAccessor()
 		.setType('VEC3')
 		.setArray(
-			// prettier-ignore
+			// biome-ignore format: Readability.
 			new Float32Array([
 				0, 1, 0,
 				0, 1, 0,
@@ -111,7 +108,7 @@ test('morph targets', async (t) => {
 
 	t.deepEqual(
 		Array.from(meshA.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 2, 0,
 			0, 2, 0,
@@ -123,7 +120,7 @@ test('morph targets', async (t) => {
 
 	t.deepEqual(
 		Array.from(meshB.listPrimitives()[0].listTargets()[0].getAttribute('POSITION').getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 1, 0,
 			0, 1, 0,
@@ -149,7 +146,7 @@ function createPrimitive(document: Document): Primitive {
 		.setMode(Primitive.Mode.POINTS)
 		.setAttribute(
 			'POSITION',
-			// prettier-ignore
+			// biome-ignore format: Readability.
 			document
 				.createAccessor('POSITION')
 				.setType('VEC3')
@@ -162,7 +159,7 @@ function createPrimitive(document: Document): Primitive {
 		)
 		.setAttribute(
 			'NORMAL',
-			// prettier-ignore
+			// biome-ignore format: Readability.
 			document
 				.createAccessor('NORMAL')
 				.setType('VEC3')
@@ -177,7 +174,7 @@ function createPrimitive(document: Document): Primitive {
 		)
 		.setAttribute(
 			'TANGENT',
-			// prettier-ignore
+			// biome-ignore format: Readability.
 			document
 				.createAccessor('TANGENT')
 				.setType('VEC4')

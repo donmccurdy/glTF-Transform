@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test('tolerance=0', async (t) => {
 	const doc = new Document().setLogger(logger);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionArray = new Float32Array([
 		0, 0, 0,
 		0, 0, 1,
@@ -34,17 +34,13 @@ test('tolerance=0', async (t) => {
 	t.true(prim1.getIndices().getArray() instanceof Uint16Array, 'indices are u16');
 	t.deepEqual(Array.from(prim1.getIndices().getArray()), [0, 1, 2, 0, 1, 2], 'indices on prim1');
 	t.deepEqual(Array.from(prim2.getIndices().getArray()), [3, 4, 5, 0, 1, 2], 'indices on prim2');
-	t.deepEqual(
-		Array.from(prim1.getAttribute('POSITION').getArray()),
-		[0, 0, 0, 0, 0, 1, 0, 0, -1],
-		'vertices on prim1',
-	);
+	t.deepEqual(Array.from(prim1.getAttribute('POSITION').getArray()), [0, 0, 0, 0, 0, 1, 0, 0, -1], 'vertices on prim1');
 	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
 });
 
 test('attributes', async (t) => {
 	const doc = new Document().setLogger(logger);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionArray = new Uint8Array([
 		0, 0, 0, // A: All A's match, weld 3
 		1, 0, 0, // B: Normals differ, weld 2 B's
@@ -56,7 +52,7 @@ test('attributes', async (t) => {
 		1, 0, 0, // B: ❌
 		0, 1, 1, // C:
 	]);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const normalArray = new Int8Array([
 		63, 63, 0,
 		0, 63, 63,
@@ -68,7 +64,7 @@ test('attributes', async (t) => {
 		0, -63, 63, // ❌
 		63, 0, 63,
 	]);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const colorArray = new Uint8Array([
 		255, 0, 0, 1,
 		0, 255, 0, 1,
@@ -94,7 +90,7 @@ test('attributes', async (t) => {
 	await doc.transform(weld());
 
 	t.false(prim.isDisposed(), 'prim is not disposed');
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(
 		Array.from(prim.getIndices()!.getArray()!),
 		[
@@ -105,7 +101,7 @@ test('attributes', async (t) => {
 		'indices'
 	);
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(
 		Array.from(prim.getAttribute('POSITION')!.getArray()!),
 		[
@@ -117,7 +113,7 @@ test('attributes', async (t) => {
 		],
 		'position'
 	);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(
 		Array.from(prim.getAttribute('NORMAL')!.getArray()!),
 		[
@@ -129,7 +125,7 @@ test('attributes', async (t) => {
 		],
 		'normal'
 	);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(
 		Array.from(prim.getAttribute('COLOR_0')!.getArray()!),
 		[
@@ -171,10 +167,7 @@ test('modes', async (t) => {
 	for (let i = 0; i < dataset.length; i++) {
 		const primDef = dataset[i];
 		const document = new Document().setLogger(logger);
-		const position = document
-			.createAccessor()
-			.setArray(new Float32Array(primDef.attributes.POSITION))
-			.setType('VEC3');
+		const position = document.createAccessor().setArray(new Float32Array(primDef.attributes.POSITION)).setType('VEC3');
 		const prim = document.createPrimitive().setMode(primDef.mode).setAttribute('POSITION', position);
 		const mesh = document.createMesh().addPrimitive(prim);
 		const node = document.createNode().setMesh(mesh);
@@ -206,7 +199,7 @@ test('points', async (t) => {
 
 test('targets', async (t) => {
 	const document = new Document().setLogger(logger);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionArray = new Float32Array([
 		0, 0, 0,
 		0, 0, 1,
@@ -218,7 +211,7 @@ test('targets', async (t) => {
 		0, 0, 1,
 		0, 0, 2
 	]);
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionTargetArray = new Float32Array([
 		10, 0, 0, // ✅
 		10, 0, 0,

@@ -9,8 +9,8 @@ test('all', async (t) => {
 	const inArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6]);
 	const outArray = new Uint8Array([1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 1, 4, 1, 5]);
 	const outSplineArray = new Uint8Array([
-		0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 1, 4, 0, 0, 0,
-		0, 1, 5, 0, 0,
+		0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 1, 4, 0, 0, 0, 0, 1,
+		5, 0, 0,
 	]);
 
 	const input = doc.createAccessor('input').setType(Accessor.Type.SCALAR).setArray(inArray);
@@ -65,7 +65,7 @@ test('rotation', async (t) => {
 	t.deepEqual(toArray(sampler.getInput()), [0, 3, 6], 'input');
 	t.deepEqual(
 		toArray(sampler.getOutput()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 0, 0, 1,
 			0.9238795042037964, 0, 0, 0.3826834261417389,

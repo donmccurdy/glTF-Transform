@@ -97,17 +97,13 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					accessorsVisited.add(input);
 					accessorsVisited.add(output);
 
-					// prettier-ignore
+					// biome-ignore format: Readability.
 					const tmpTimes = toFloat32Array(
 						input.getArray()!,
 						input.getComponentType(),
 						input.getNormalized()
 					);
-					const tmpValues = toFloat32Array(
-						output.getArray()!,
-						output.getComponentType(),
-						output.getNormalized(),
-					);
+					const tmpValues = toFloat32Array(output.getArray()!, output.getComponentType(), output.getNormalized());
 
 					const elementSize = tmpValues.length / tmpTimes.length;
 					const srcCount = tmpTimes.length;

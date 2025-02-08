@@ -270,11 +270,7 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	);
 
 	// Original center of the mesh, in local space.
-	const offset: vec3 = [
-		min[0] + (max[0] - min[0]) / 2,
-		min[1] + (max[1] - min[1]) / 2,
-		min[2] + (max[2] - min[2]) / 2,
-	];
+	const offset: vec3 = [min[0] + (max[0] - min[0]) / 2, min[1] + (max[1] - min[1]) / 2, min[2] + (max[2] - min[2]) / 2];
 
 	return { offset, scale };
 }
@@ -365,7 +361,7 @@ function transformBatch(document: Document, batch: InstancedMesh, nodeTransform:
 	const r = [0, 0, 0, 1] as vec4;
 	const s = [1, 1, 1] as vec3;
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const instanceMatrix = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,

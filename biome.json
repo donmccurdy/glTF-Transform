@@ -7,7 +7,8 @@
 		"rules": {
 			"suspicious": {
 				"noApproximativeNumericConstant": "off",
-				"noAssignInExpressions": "off"
+				"noAssignInExpressions": "off",
+				"noFallthroughSwitchClause": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",
@@ -16,6 +17,7 @@
 				"useImportType": "off",
 				"useNodejsImportProtocol": "off",
 				"useNumberNamespace": "off",
+				"useSingleVarDeclarator": "off",
 				"useTemplate": "off",
 				"noUselessElse": "off"
 			},
@@ -27,6 +29,9 @@
 				"useArrowFunction": "off",
 				"useLiteralKeys": "off",
 				"useOptionalChain": "off"
+			},
+			"performance": {
+				"noDelete": "off"
 			}
 		}
 	},
@@ -39,6 +44,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["**/package.json", "coverage/**", "packages/*/dist/**"]
+		"ignore": ["**/package.json", "coverage/**", "packages/*/dist/**", "**/build", "**/.svelte-kit"]
 	}
 }
