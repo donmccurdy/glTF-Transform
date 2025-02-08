@@ -382,6 +382,11 @@ test('instancing', async (t) => {
 		[12.5, 12.5, 0, 13.5, 13.5, 1],
 		'batch translation includes quantization transform',
 	);
+	t.deepEqual(
+		Array.from(batch.getAttribute('SCALE').getArray()),
+		[2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+		'batch scale added to attributes',
+	);
 });
 
 test('volumetric materials', async (t) => {
