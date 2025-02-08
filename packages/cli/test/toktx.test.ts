@@ -80,7 +80,7 @@ async function getParams(options: Record<string, unknown>, image: Uint8Array, ch
 		await fs.writeFile(params[params.length - 1], new Uint8Array(8));
 		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
 	});
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	mockWaitExit(async (process: any) => {
 		const { status, stdout, stderr } = await process;
 		return [status, stdout, stderr];
@@ -106,7 +106,7 @@ async function getParams(options: Record<string, unknown>, image: Uint8Array, ch
 		return self;
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	await document.transform(toktx({ ...options, encoder: mockEncoder } as any));
 
 	// No longer using the --width and --height params, but we'll keep the mock API.

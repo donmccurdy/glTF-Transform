@@ -103,11 +103,7 @@ test('jpeg', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document
-		.createTexture('PNG')
-		.setImage(ORIGINAL_PNG)
-		.setMimeType('image/png')
-		.setURI('normal.png');
+	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'jpeg', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,
@@ -155,11 +151,7 @@ test('png', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document
-		.createTexture('PNG')
-		.setImage(ORIGINAL_PNG)
-		.setMimeType('image/png')
-		.setURI('normal.png');
+	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'png', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,
@@ -185,11 +177,7 @@ test('webp', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document
-		.createTexture('PNG')
-		.setImage(ORIGINAL_PNG)
-		.setMimeType('image/png')
-		.setURI('normal.png');
+	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'webp', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,
@@ -341,7 +329,7 @@ function createMockEncoder() {
 	return { encoder, calls };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: TODO
 function findLast(calls: any[], fn: (call: any) => boolean): any {
 	for (let i = calls.length - 1; i >= 0; i--) {
 		if (fn(calls[i])) return calls[i];

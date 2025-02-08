@@ -6,14 +6,32 @@
 	"linter": {
 		"rules": {
 			"suspicious": {
+				"noApproximativeNumericConstant": "off",
 				"noAssignInExpressions": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",
 				"noParameterAssign": "off",
-				"useNumberNamespace": "off"
+				"useEnumInitializers": "off",
+				"useImportType": "off",
+				"useNodejsImportProtocol": "off",
+				"useNumberNamespace": "off",
+				"useTemplate": "off",
+				"noUselessElse": "off"
+			},
+			"complexity": {
+				"noForEach": "off",
+				"noStaticOnlyClass": "off",
+				"noThisInStatic": "off",
+				"noUselessSwitchCase": "off",
+				"useArrowFunction": "off",
+				"useLiteralKeys": "off",
+				"useOptionalChain": "off"
 			}
 		}
+	},
+	"organizeImports": {
+		"enabled": false
 	},
 	"javascript": {
 		"formatter": {
@@ -21,6 +39,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["**/package.json"]
+		"ignore": ["**/package.json", "coverage/**", "packages/*/dist/**"]
 	}
 }

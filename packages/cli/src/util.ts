@@ -38,7 +38,7 @@ export function mockSpawn(_spawn: unknown): void {
 }
 
 export function mockCommandExists(_commandExists: (n: string) => Promise<boolean>): void {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	commandExists = _commandExists as any;
 }
 
