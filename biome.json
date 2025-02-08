@@ -3,9 +3,23 @@
 		"indentStyle": "tab",
 		"lineWidth": 120
 	},
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noAssignInExpressions": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "off"
+			}
+		}
+	},
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "single"
 		}
+	},
+	"files": {
+		"ignore": ["**/package.json"]
 	}
 }
