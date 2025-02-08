@@ -10,7 +10,8 @@
 			},
 			"style": {
 				"noNonNullAssertion": "off",
-				"noParameterAssign": "off"
+				"noParameterAssign": "off",
+				"useNumberNamespace": "off"
 			}
 		}
 	},
