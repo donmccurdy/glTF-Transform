@@ -1711,6 +1711,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@gltf-transform/core@npm:^4.0.9, @gltf-transform/core@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@gltf-transform/core@npm:4.1.1"
+  dependencies:
+    property-graph: "npm:^3.0.0"
+  checksum: 10c0/1b9612519e2bc893ab9c043cc91aea297510416b3ade06291d147a26022c67c2ba6a4d70086bf0f797311f88d1582e87617041b9432a58a2af9591dec7ab0f04
+  languageName: node
+  linkType: hard
+
 "@gltf-transform/docs@workspace:packages/docs":
   version: 0.0.0-use.local
   resolution: "@gltf-transform/docs@workspace:packages/docs"
@@ -1756,6 +1765,20 @@ __metadata:
     ndarray-pixels: "npm:^5.0.1"
   languageName: unknown
   linkType: soft
+
+"@gltf-transform/functions@npm:^4.0.9":
+  version: 4.1.1
+  resolution: "@gltf-transform/functions@npm:4.1.1"
+  dependencies:
+    "@gltf-transform/core": "npm:^4.1.1"
+    "@gltf-transform/extensions": "npm:^4.1.1"
+    ktx-parse: "npm:^0.7.1"
+    ndarray: "npm:^1.0.19"
+    ndarray-lanczos: "npm:^0.3.0"
+    ndarray-pixels: "npm:^4.1.0"
+  checksum: 10c0/b48ef59f21d7166aa89faa9339d8dc626cd1b847b15c750a877f256f21c8de975e71156c9e2ce14a7627b75fe8b32de4abed20f2ea6e255cc95260a680236681
+  languageName: node
+  linkType: hard
 
 "@gltf-transform/test-utils@workspace:packages/test-utils":
   version: 0.0.0-use.local
