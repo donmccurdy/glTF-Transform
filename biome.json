@@ -8,18 +8,21 @@
 			"suspicious": {
 				"noApproximativeNumericConstant": "off",
 				"noAssignInExpressions": "off",
-				"noFallthroughSwitchClause": "off"
+				"noFallthroughSwitchClause": "off",
+				"noGlobalIsFinite": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",
 				"noParameterAssign": "off",
+				"noUnusedTemplateLiteral": "off",
+				"noUselessElse": "off",
 				"useEnumInitializers": "off",
+				"useExponentiationOperator": "off",
 				"useImportType": "off",
 				"useNodejsImportProtocol": "off",
 				"useNumberNamespace": "off",
 				"useSingleVarDeclarator": "off",
-				"useTemplate": "off",
-				"noUselessElse": "off"
+				"useTemplate": "off"
 			},
 			"complexity": {
 				"noForEach": "off",
