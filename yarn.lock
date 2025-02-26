@@ -1837,7 +1837,7 @@ __metadata:
     draco3dgltf: "npm:~1.5.7"
     gltf-validator: "npm:~2.0.0-dev.3.10"
     keyframe-resample: "npm:~0.1.0"
-    ktx-parse: "npm:~0.7.1"
+    ktx-parse: "npm:^1.0.0"
     language-tags: "npm:~2.0.1"
     listr2: "npm:~8.2.5"
     meshoptimizer: "npm:~0.22.0"
@@ -1893,7 +1893,7 @@ __metadata:
   resolution: "@gltf-transform/extensions@workspace:packages/extensions"
   dependencies:
     "@gltf-transform/core": "npm:^4.1.1"
-    ktx-parse: "npm:^0.7.1"
+    ktx-parse: "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1903,7 +1903,7 @@ __metadata:
   dependencies:
     "@gltf-transform/core": "npm:^4.1.1"
     "@gltf-transform/extensions": "npm:^4.1.1"
-    ktx-parse: "npm:^0.7.1"
+    ktx-parse: "npm:^1.0.0"
     ndarray: "npm:^1.0.19"
     ndarray-lanczos: "npm:^0.3.0"
     ndarray-pixels: "npm:^4.1.0"
@@ -8530,10 +8530,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ktx-parse@npm:^0.7.1, ktx-parse@npm:~0.7.1":
-  version: 0.7.1
-  resolution: "ktx-parse@npm:0.7.1"
-  checksum: 10c0/07c0870a0d0fe0bd412b430ac58afd721136a1ca76db83a066b6d20810878822822cbe3b8c8507c15ae8680be0988675b4f5c3d1243262284f161b52c59d09e9
+"ktx-parse@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "ktx-parse@npm:1.0.0"
+  checksum: 10c0/f309dea1010827e330a0af135a620f189016f640b90e98544e20be5e2da492679403f10f3cd2ecfedac7af0c21b63dd24e13ddd5636ac53f16760f470d29f2d8
   languageName: node
   linkType: hard
 
