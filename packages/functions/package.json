@@ -37,7 +37,7 @@
 	"dependencies": {
 		"@gltf-transform/core": "^4.1.1",
 		"@gltf-transform/extensions": "^4.1.1",
-		"ktx-parse": "^1.0.0-alpha.0",
+		"ktx-parse": "^1.0.0",
 		"ndarray": "^1.0.19",
 		"ndarray-lanczos": "^0.3.0",
 		"ndarray-pixels": "^4.1.0"
