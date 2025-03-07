@@ -414,7 +414,7 @@ function createParams(
 	return params;
 }
 
-async function checkKTXSoftware(logger: ILogger): Promise<string> {
+export async function checkKTXSoftware(logger: ILogger): Promise<string> {
 	if (!(await commandExists('ktx')) && !process.env.CI) {
 		throw new Error(
 			`Command "ktx" not found. Please install KTX-Software ${KTX_SOFTWARE_VERSION_MIN}+, ` +
