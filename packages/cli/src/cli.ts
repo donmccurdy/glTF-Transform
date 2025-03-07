@@ -394,7 +394,7 @@ commands or using the scripting API.
 				join({
 					keepNamed: !opts.joinNamed,
 					keepMeshes: !opts.joinMeshes,
-				})
+				}),
 			);
 		}
 		if (opts.weld) transforms.push(weld());
@@ -1483,13 +1483,14 @@ for textures where the quality is sufficient.`.trim(),
 	});
 
 // KTXDECOMPRESS
-ktxdecompress
 program
 	.command('ktxdecompress', 'KTX + Basis texture decompression')
-	.help(`
+	.help(
+		`
 		Decompresses KTX2 textures in KTX2 format, converting to PNG.
 		Intended for debugging, or to resolve compatibility issues in
-		software that doesn't support KTX2 textures.`.trim())
+		software that doesn't support KTX2 textures.`.trim(),
+	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.action(({ args, logger }) => Session.create(io, logger, args.input, args.output).transform(ktxdecompress()));
