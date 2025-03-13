@@ -195,7 +195,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			message: 'Date created?',
 			hint: ' (xmp:CreateDate)',
 			mask: 'YYYY-MM-DD',
-			format: (d) => d.toISOString().substring(0, 10)
+			format: (d) => d.toISOString().substring(0, 10),
 		} as PromptObject;
 	}
 
