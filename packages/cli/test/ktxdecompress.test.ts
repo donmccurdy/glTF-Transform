@@ -50,4 +50,6 @@ test('decompress', async (t) => {
 
 	t.is(texture.getMimeType(), 'image/png', 'replaces MIME type');
 	t.true(BufferUtils.equals(texture.getImage(), imagePNG), 'replaces image');
+
+	t.deepEqual(document.getRoot().listExtensionsUsed(), [], 'removes KHR_texture_basisu extension');
 });
