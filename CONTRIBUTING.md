@@ -38,8 +38,8 @@ To run an arbitrary command across all packages:
 yarn lerna exec -- <command>
 ```
 
-While working, use `yarn run watch` to watch and rebuild code after changes. To use a local
-version of the CLI, run `yarn link` within the `packages/cli` directory. Then
+While working, use `yarn run build:watch` to watch and rebuild code after changes. To use a local
+version of the CLI, run `npm link` (not `yarn link`!) within the `packages/cli` directory. Then
 `gltf-transform -h` will use local code instead of any global installation.
 
 ### Pull requests
