@@ -29,7 +29,7 @@ jobs:
       # Build.
       - run: corepack enable
       - run: yarn install --immutable
-      - run: yarn dist
+      - run: yarn build
 
       # Test.
       - run: yarn test
