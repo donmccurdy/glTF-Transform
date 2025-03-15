@@ -1,0 +1,116 @@
+{
+  "asset": {
+    "generator": "glTF-Transform v4.1.2",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 306
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 62,
+      "max": [
+        -0.013482682406902313,
+        0.0891258493065834,
+        0.031650591641664505
+      ],
+      "min": [
+        -0.039651595056056976,
+        0.04958648979663849,
+        0.028698956593871117
+      ]
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 62
+    },
+    {
+      "type": "VEC4",
+      "componentType": 5126,
+      "count": 62
+    },
+    {
+      "type": "VEC2",
+      "componentType": 5126,
+      "count": 62
+    },
+    {
+      "type": "VEC4",
+      "componentType": 5126,
+      "count": 62
+    },
+    {
+      "type": "VEC4",
+      "componentType": 5123,
+      "count": 62
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 1435
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "DracoSparseMesh.bin",
+      "byteLength": 1435
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Monochord_Vibrator",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 1,
+            "NORMAL": 2,
+            "TANGENT": 3,
+            "TEXCOORD_0": 4,
+            "JOINTS_0": 6,
+            "WEIGHTS_0": 5
+          },
+          "mode": 4,
+          "indices": 0,
+          "extensions": {
+            "KHR_draco_mesh_compression": {
+              "bufferView": 0,
+              "attributes": {
+                "POSITION": 0,
+                "NORMAL": 1,
+                "TANGENT": 2,
+                "TEXCOORD_0": 3,
+                "WEIGHTS_0": 4
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Monochord_Vibrator",
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_draco_mesh_compression"
+  ],
+  "extensionsRequired": [
+    "KHR_draco_mesh_compression"
+  ]
+}

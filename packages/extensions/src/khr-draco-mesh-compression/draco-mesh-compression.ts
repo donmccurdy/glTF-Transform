@@ -231,7 +231,7 @@ export class KHRDracoMeshCompression extends Extension {
 					}
 
 					// Attributes.
-					for (const semantic in primDef.attributes) {
+					for (const semantic in dracoDef.attributes) {
 						const accessorDef = context.jsonDoc.json.accessors![primDef.attributes[semantic]];
 						const dracoAttribute = decoder.GetAttributeByUniqueId(dracoMesh, dracoDef.attributes[semantic]);
 						const attributeArray = decodeAttribute(decoder, dracoMesh, dracoAttribute, accessorDef);
