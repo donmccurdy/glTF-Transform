@@ -103,7 +103,11 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 						input.getComponentType(),
 						input.getNormalized()
 					);
-					const tmpValues = toFloat32Array(output.getArray()!, output.getComponentType(), output.getNormalized());
+					const tmpValues = toFloat32Array(
+						output.getArray()!,
+						output.getComponentType(),
+						output.getNormalized(),
+					);
 
 					const elementSize = tmpValues.length / tmpTimes.length;
 					const srcCount = tmpTimes.length;

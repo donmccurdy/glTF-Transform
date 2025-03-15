@@ -34,7 +34,11 @@ test('tolerance=0', async (t) => {
 	t.true(prim1.getIndices().getArray() instanceof Uint16Array, 'indices are u16');
 	t.deepEqual(Array.from(prim1.getIndices().getArray()), [0, 1, 2, 0, 1, 2], 'indices on prim1');
 	t.deepEqual(Array.from(prim2.getIndices().getArray()), [3, 4, 5, 0, 1, 2], 'indices on prim2');
-	t.deepEqual(Array.from(prim1.getAttribute('POSITION').getArray()), [0, 0, 0, 0, 0, 1, 0, 0, -1], 'vertices on prim1');
+	t.deepEqual(
+		Array.from(prim1.getAttribute('POSITION').getArray()),
+		[0, 0, 0, 0, 0, 1, 0, 0, -1],
+		'vertices on prim1',
+	);
 	t.deepEqual(prim2.getAttribute('POSITION').getArray(), positionArray, 'vertices on prim2');
 });
 
@@ -167,7 +171,10 @@ test('modes', async (t) => {
 	for (let i = 0; i < dataset.length; i++) {
 		const primDef = dataset[i];
 		const document = new Document().setLogger(logger);
-		const position = document.createAccessor().setArray(new Float32Array(primDef.attributes.POSITION)).setType('VEC3');
+		const position = document
+			.createAccessor()
+			.setArray(new Float32Array(primDef.attributes.POSITION))
+			.setType('VEC3');
 		const prim = document.createPrimitive().setMode(primDef.mode).setAttribute('POSITION', position);
 		const mesh = document.createMesh().addPrimitive(prim);
 		const node = document.createNode().setMesh(mesh);

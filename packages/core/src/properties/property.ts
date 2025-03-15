@@ -220,7 +220,11 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 				}
 			} else if (isPlainObject(otherValue)) {
 				this[$attributes][key] = JSON.parse(JSON.stringify(otherValue));
-			} else if (Array.isArray(otherValue) || otherValue instanceof ArrayBuffer || ArrayBuffer.isView(otherValue)) {
+			} else if (
+				Array.isArray(otherValue) ||
+				otherValue instanceof ArrayBuffer ||
+				ArrayBuffer.isView(otherValue)
+			) {
 				// biome-ignore lint/suspicious/noExplicitAny: TODO
 				this[$attributes][key] = (otherValue as unknown as Uint8Array).slice() as any;
 			} else {

@@ -103,7 +103,11 @@ test('jpeg', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
+	const texturePNG = document
+		.createTexture('PNG')
+		.setImage(ORIGINAL_PNG)
+		.setMimeType('image/png')
+		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'jpeg', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,
@@ -151,7 +155,11 @@ test('png', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
+	const texturePNG = document
+		.createTexture('PNG')
+		.setImage(ORIGINAL_PNG)
+		.setMimeType('image/png')
+		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'png', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,
@@ -177,7 +185,11 @@ test('webp', async (t) => {
 		.setImage(ORIGINAL_JPEG)
 		.setMimeType('image/jpeg')
 		.setURI('baseColor.jpg');
-	const texturePNG = document.createTexture('PNG').setImage(ORIGINAL_PNG).setMimeType('image/png').setURI('normal.png');
+	const texturePNG = document
+		.createTexture('PNG')
+		.setImage(ORIGINAL_PNG)
+		.setMimeType('image/png')
+		.setURI('normal.png');
 	await document.transform(textureCompress({ encoder, targetFormat: 'webp', formats: /.*/i, slots: /.*/i }));
 	t.deepEqual(
 		calls,

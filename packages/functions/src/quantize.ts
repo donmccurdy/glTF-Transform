@@ -270,7 +270,11 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 	);
 
 	// Original center of the mesh, in local space.
-	const offset: vec3 = [min[0] + (max[0] - min[0]) / 2, min[1] + (max[1] - min[1]) / 2, min[2] + (max[2] - min[2]) / 2];
+	const offset: vec3 = [
+		min[0] + (max[0] - min[0]) / 2,
+		min[1] + (max[1] - min[1]) / 2,
+		min[2] + (max[2] - min[2]) / 2,
+	];
 
 	return { offset, scale };
 }

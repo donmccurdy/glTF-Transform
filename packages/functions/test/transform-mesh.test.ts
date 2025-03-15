@@ -58,7 +58,10 @@ test('shared vertex streams', async (t) => {
 
 	// Option 'overwrite' option removed in v4, all primitives are now compacted
 	// and their accessors cloned.
-	t.true(primA.getAttribute('POSITION') !== primB.getAttribute('POSITION'), 'primA !== primB, after (overwrite=true)');
+	t.true(
+		primA.getAttribute('POSITION') !== primB.getAttribute('POSITION'),
+		'primA !== primB, after (overwrite=true)',
+	);
 });
 
 test('update multiple vertex streams', async (t) => {
