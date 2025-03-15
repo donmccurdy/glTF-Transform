@@ -269,7 +269,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			} else if (isPlainObject(a) || isPlainObject(b)) {
 				if (!equalsObject(a, b)) return false;
 			} else if (isArray(a) || isArray(b)) {
-				if (!equalsArray(a as [], b as [])) return false;
+				if (!equalsArray(a as unknown as [], b as unknown as [])) return false;
 			} else {
 				// Literal.
 				if (a !== b) return false;
