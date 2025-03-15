@@ -31,10 +31,10 @@ test('decompress', async (t) => {
 		return { status: 0, stdout: '', stderr: '' } as unknown as ChildProcess;
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	mockWaitExit(async (process: any) => {
 		const { status, stdout, stderr } = await process;
-		return [status, stdout, stderr];
+		return [status as number, stdout, stderr];
 	});
 
 	mockCommandExists(() => Promise.resolve(true));

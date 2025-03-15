@@ -49,6 +49,12 @@
 			"quoteStyle": "single"
 		}
 	},
+	"json": {
+		"formatter": {
+			"indentStyle": "space",
+			"indentWidth": 2
+		}
+	},
 	"files": {
 		"ignore": ["**/package.json", "coverage/**", "packages/*/dist/**", "**/build", "**/.svelte-kit"]
 	}
