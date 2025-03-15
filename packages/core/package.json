@@ -1,55 +1,39 @@
 {
-	"name": "@gltf-transform/core",
-	"version": "4.1.2",
-	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.dev/",
-	"description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
-	"author": "Don McCurdy <dm@donmccurdy.com>",
-	"license": "MIT",
-	"funding": "https://github.com/sponsors/donmccurdy",
-	"type": "module",
-	"sideEffects": false,
-	"exports": {
-		"types": "./dist/index.d.ts",
-		"require": "./dist/index.cjs",
-		"default": "./dist/index.modern.js"
-	},
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.modern.js",
-	"source": "./src/index.ts",
-	"browserslist": [
-		"defaults",
-		"not IE 11",
-		"node >= 14"
-	],
-	"scripts": {
-		"dist": "microbundle --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version",
-		"watch": "microbundle watch --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version"
-	},
-	"keywords": [
-		"gltf",
-		"3d",
-		"model",
-		"webgl",
-		"threejs"
-	],
-	"files": [
-		"dist/",
-		"src/",
-		"README.md",
-		"LICENSE.md",
-		"package-lock.json"
-	],
-	"browser": {
-		"fs": false,
-		"path": false
-	},
-	"dependencies": {
-		"property-graph": "^3.0.0"
-	},
-	"mangle": {
-		"regex": "^_"
-	},
-	"gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
+  "name": "@gltf-transform/core",
+  "version": "4.1.2",
+  "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.dev/",
+  "description": "glTF 2.0 SDK for JavaScript and TypeScript, on Web and Node.js.",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/donmccurdy",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.modern.js",
+  "source": "./src/index.ts",
+  "browserslist": ["defaults", "not IE 11", "node >= 14"],
+  "scripts": {
+    "build": "microbundle --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version",
+    "build:watch": "microbundle watch --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version"
+  },
+  "keywords": ["gltf", "3d", "model", "webgl", "threejs"],
+  "files": ["dist/", "src/", "README.md", "LICENSE.md", "package-lock.json"],
+  "browser": {
+    "fs": false,
+    "path": false
+  },
+  "dependencies": {
+    "property-graph": "^3.0.0"
+  },
+  "mangle": {
+    "regex": "^_"
+  },
+  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
 }

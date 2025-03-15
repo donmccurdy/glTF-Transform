@@ -1,48 +1,33 @@
 {
-	"name": "@gltf-transform/extensions",
-	"version": "4.1.2",
-	"repository": "github:donmccurdy/glTF-Transform",
-	"homepage": "https://gltf-transform.dev/extensions.html",
-	"description": "Adds extension support to @gltf-transform/core",
-	"author": "Don McCurdy <dm@donmccurdy.com>",
-	"license": "MIT",
-	"funding": "https://github.com/sponsors/donmccurdy",
-	"type": "module",
-	"sideEffects": false,
-	"exports": {
-		"types": "./dist/index.d.ts",
-		"require": "./dist/index.cjs",
-		"default": "./dist/index.modern.js"
-	},
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.modern.js",
-	"source": "./src/index.ts",
-	"browserslist": [
-		"defaults",
-		"not IE 11",
-		"node >= 14"
-	],
-	"scripts": {
-		"dist": "microbundle --format modern,cjs --no-compress",
-		"watch": "microbundle watch --format modern,cjs --no-compress"
-	},
-	"keywords": [
-		"gltf",
-		"3d",
-		"model",
-		"webgl",
-		"threejs"
-	],
-	"dependencies": {
-		"@gltf-transform/core": "^4.1.2",
-		"ktx-parse": "^1.0.0"
-	},
-	"files": [
-		"dist/",
-		"src/",
-		"README.md",
-		"LICENSE.md"
-	],
-	"gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
+  "name": "@gltf-transform/extensions",
+  "version": "4.1.2",
+  "repository": "github:donmccurdy/glTF-Transform",
+  "homepage": "https://gltf-transform.dev/extensions.html",
+  "description": "Adds extension support to @gltf-transform/core",
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/donmccurdy",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.modern.js",
+  "source": "./src/index.ts",
+  "browserslist": ["defaults", "not IE 11", "node >= 14"],
+  "scripts": {
+    "build": "microbundle --format modern,cjs --no-compress",
+    "build:watch": "microbundle watch --format modern,cjs --no-compress"
+  },
+  "keywords": ["gltf", "3d", "model", "webgl", "threejs"],
+  "dependencies": {
+    "@gltf-transform/core": "^4.1.2",
+    "ktx-parse": "^1.0.0"
+  },
+  "files": ["dist/", "src/", "README.md", "LICENSE.md"],
+  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
 }
