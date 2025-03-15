@@ -1,0 +1,61 @@
+{
+	"formatter": {
+		"indentStyle": "tab",
+		"indentWidth": 4,
+		"lineWidth": 120
+	},
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noApproximativeNumericConstant": "off",
+				"noAssignInExpressions": "off",
+				"noEmptyInterface": "off",
+				"noFallthroughSwitchClause": "off",
+				"noGlobalIsFinite": "off",
+				"noImplicitAnyLet": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "off",
+				"noUnusedTemplateLiteral": "off",
+				"noUselessElse": "off",
+				"useEnumInitializers": "off",
+				"useExponentiationOperator": "off",
+				"useImportType": "off",
+				"useNodejsImportProtocol": "off",
+				"useNumberNamespace": "off",
+				"useSingleVarDeclarator": "off",
+				"useTemplate": "off"
+			},
+			"complexity": {
+				"noForEach": "off",
+				"noStaticOnlyClass": "off",
+				"noThisInStatic": "off",
+				"noUselessSwitchCase": "off",
+				"useArrowFunction": "off",
+				"useLiteralKeys": "off",
+				"useOptionalChain": "off"
+			},
+			"performance": {
+				"noDelete": "off"
+			}
+		}
+	},
+	"organizeImports": {
+		"enabled": false
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"json": {
+		"formatter": {
+			"indentStyle": "space",
+			"indentWidth": 2
+		}
+	},
+	"files": {
+		"ignore": ["**/package.json", "coverage/**", "packages/*/dist/**", "**/build", "**/.svelte-kit"]
+	}
+}

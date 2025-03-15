@@ -24,10 +24,8 @@ function createTexture(name: string, uri: string): Texture {
 
 // Placeholder images.
 const NULL_IMAGE_URI =
-	// eslint-disable-next-line max-len
 	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABNJREFUGFdj/M9w9z8DEmAkXQAAyCMLcU6pckIAAAAASUVORK5CYII=';
 const LOADING_IMAGE_URI =
-	// eslint-disable-next-line max-len
 	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=';
 
 export interface ImageProvider {
@@ -84,7 +82,6 @@ export class DefaultImageProvider implements ImageProvider {
 	}
 
 	clear(): void {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const [_, texture] of this._cache) {
 			texture.dispose();
 		}

@@ -344,7 +344,6 @@ test('skinned mesh parenting', async (t) => {
 	createScene(doc);
 	node = doc.getRoot().listNodes()[0];
 	mesh = node.getMesh();
-	// eslint-disable-next-line prefer-const
 	scaleChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('scale');
 	weightsChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('weights');
 	doc.createAnimation().addChannel(weightsChannel).addChannel(scaleChannel);
@@ -452,7 +451,7 @@ function createScene(doc: Document): Scene {
 				.setType('VEC3')
 
 				.setArray(
-					// prettier-ignore
+					// biome-ignore format: Readability.
 					new Float32Array([
 						10, 10, 0,
 						10, 15, 0,
@@ -471,7 +470,7 @@ function createScene(doc: Document): Scene {
 				.createAccessor()
 				.setType('VEC3')
 				.setArray(
-					// prettier-ignore
+					// biome-ignore format: Readability.
 					new Float32Array([
 						0, 0, 100,
 						0, 100, 0,

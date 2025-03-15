@@ -60,7 +60,7 @@ test('encoding sparse', async (t) => {
 	const doc = new Document();
 	doc.createExtension(EXTMeshoptCompression).setRequired(true);
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionArray = [
 		0, 0, 1,
 		0, 1, 0,

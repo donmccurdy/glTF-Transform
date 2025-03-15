@@ -7,7 +7,7 @@ import {
 } from '@donmccurdy/caporal';
 import { ILogger, Verbosity } from '@gltf-transform/core';
 
-const PAD_EMOJI = new Set(['🫖', '🖼', '⏯️']);
+const PAD_EMOJI = new Set(['🫖', '🖼', '⏯']);
 
 /**********************************************************************************************
  * Program.
@@ -72,7 +72,7 @@ class ProgramImpl implements IInternalProgram {
 		return new CommandImpl(_program, name, desc);
 	}
 	option<T>(name: string, desc: string, options: IProgramOptions<T>) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		_program.option(name, desc, { global: true, ...options } as any);
 		return this;
 	}
@@ -85,7 +85,7 @@ class ProgramImpl implements IInternalProgram {
 		return this;
 	}
 	async exec(args: unknown[], options?: IExecOptions) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		await _program.exec(args as any, options as any);
 	}
 }
@@ -128,9 +128,9 @@ class CommandImpl implements ICommand {
 	}
 	action(fn: IActionFn) {
 		this._ctx.action(async (args) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// biome-ignore lint/suspicious/noExplicitAny: TODO
 			const logger = new Logger(args.logger as any);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// biome-ignore lint/suspicious/noExplicitAny: TODO
 			return fn({ ...args, logger } as any);
 		});
 		return this;

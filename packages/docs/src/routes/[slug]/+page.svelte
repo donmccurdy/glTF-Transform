@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let data: PageData;
+export let data: PageData;
 </script>
 
 <article>

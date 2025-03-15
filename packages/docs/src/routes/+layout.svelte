@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import type { LayoutData } from './$types';
+import { page } from '$app/stores';
+import type { LayoutData } from './$types';
 
-	export let data: LayoutData;
+export let data: LayoutData;
 
-	let innerWidth: number;
+let innerWidth: number;
 
-	const resourceSection = data.navigation.sections.find(({ title }) => title === 'Resources');
-	const resources = resourceSection.items.filter(({ external }) => external);
+const resourceSection = data.navigation.sections.find(({ title }) => title === 'Resources');
+const resources = resourceSection.items.filter(({ external }) => external);
 
-	const LG = 900;
-	const SM = 450;
+const LG = 900;
+const SM = 450;
 
-	function toggleNav() {
-		document.body.classList.toggle('toggle-nav');
-	}
+function toggleNav() {
+	document.body.classList.toggle('toggle-nav');
+}
 </script>
 
 <svelte:head>

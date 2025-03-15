@@ -365,7 +365,7 @@ function transformBatch(document: Document, batch: InstancedMesh, nodeTransform:
 	const r = [0, 0, 0, 1] as vec4;
 	const s = [1, 1, 1] as vec3;
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const instanceMatrix = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,

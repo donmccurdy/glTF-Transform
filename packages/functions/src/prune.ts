@@ -110,7 +110,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 
 		const onDispose = (event: { target: Property }) => counter.dispose(event.target);
 		// TODO(cleanup): Publish GraphEvent / GraphEventListener types from 'property-graph'.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		graph.addEventListener('node:dispose', onDispose as any);
 
 		// Prune top-down, so that low-level properties like accessors can be removed if the
@@ -239,7 +239,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		// use by an Extension are correctly preserved, in the meantime.
 
 		// TODO(cleanup): Publish GraphEvent / GraphEventListener types from 'property-graph'.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		graph.removeEventListener('node:dispose', onDispose as any);
 
 		if (!counter.empty()) {

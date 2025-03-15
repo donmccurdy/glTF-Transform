@@ -152,7 +152,7 @@ test('pixel values', async (t) => {
 	t.deepEqual(baseColorPixels.shape, [8, 2, 4], 'dimensions');
 	t.deepEqual(
 		Array.from(baseColorPixels.data as Uint8Array),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			// row 1
 			128, 128, 128, 255,

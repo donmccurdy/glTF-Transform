@@ -21,7 +21,7 @@ const NAME = 'join';
 
 const { ROOT, NODE, MESH, PRIMITIVE, ACCESSOR } = PropertyType;
 
-// prettier-ignore
+// biome-ignore format: Readability.
 const _matrix = [
 	0, 0, 0, 0,
 	0, 0, 0, 0,

@@ -45,7 +45,7 @@ export function assignDefaults<Defaults, Options>(defaults: Defaults, options: O
 	const result = { ...defaults } as Defaults & Partial<Options>;
 	for (const key in options) {
 		if (options[key] !== undefined) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// biome-ignore lint/suspicious/noExplicitAny: TODO
 			result[key] = options[key] as any;
 		}
 	}

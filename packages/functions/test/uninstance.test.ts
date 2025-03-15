@@ -8,7 +8,7 @@ test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
 	const buffer = document.createBuffer();
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const translation = document
 		.createAccessor()
 		.setType('VEC3')
