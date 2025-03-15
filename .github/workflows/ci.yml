@@ -59,7 +59,7 @@ jobs:
       # Build.
       - run: corepack enable
       - run: yarn install --immutable
-      - run: yarn dist
+      - run: yarn build
 
       # Test.
       - run: deno test --allow-read --config scripts/deno.json scripts/deno_test.ts
@@ -84,7 +84,7 @@ jobs:
       # Build.
       - run: corepack enable
       - run: yarn install --immutable
-      - run: yarn dist
+      - run: yarn build
 
       # Coverage.
       - run: yarn coverage
@@ -114,4 +114,4 @@ jobs:
       - run: corepack enable
       # See: https://github.com/yarnpkg/yarn/issues/4890
       - run: yarn install --immutable --network-timeout 100000
-      - run: yarn dist
+      - run: yarn build
