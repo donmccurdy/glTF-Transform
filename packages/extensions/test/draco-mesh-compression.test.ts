@@ -188,6 +188,35 @@ test('encoding sparse', async (t) => {
 	t.is(accessorDefs[2].sparse.count, 1, '_SPARSE sparse');
 });
 
+test('decoding sparse', async (t) => {
+	// See: https://github.com/donmccurdy/glTF-Transform/issues/1496
+
+	const io = await createDecoderIO();
+	const document = await io.read(path.join(__dirname, 'in', 'DracoSparseMesh.gltf'));
+	const root = document.getRoot();
+
+	t.is(root.listMeshes().length, 1, 'meshes.length = 1');
+	t.is(root.listMeshes()[0].listPrimitives().length, 1, 'meshes[0].primitives.length = 1');
+
+	const prim = root.listMeshes()[0].listPrimitives()[0];
+
+	const attributes = Object.fromEntries(
+		prim.listSemantics().map((semantic) => [semantic, prim.getAttribute(semantic)]),
+	);
+
+	t.is(attributes.POSITION.getType(), 'VEC3', 'prim.POSITION.type = VEC3');
+	t.is(attributes.POSITION.getCount(), 62, 'prim.POSITION.count = 62');
+
+	t.is(attributes.NORMAL.getType(), 'VEC3', 'prim.NORMAL.type = VEC3');
+	t.is(attributes.NORMAL.getCount(), 62, 'prim.NORMAL.count = 62');
+
+	t.is(attributes.JOINTS_0.getType(), 'VEC4', 'prim.JOINTS_0.type = VEC4');
+	t.is(attributes.JOINTS_0.getCount(), 62, 'prim.JOINTS_0.count = 62');
+
+	t.is(attributes.WEIGHTS_0.getType(), 'VEC4', 'prim.WEIGHTS_0.type = VEC4');
+	t.is(attributes.WEIGHTS_0.getCount(), 62, 'prim.WEIGHTS_0.count = 62');
+});
+
 test('mixed indices', async (t) => {
 	const document = new Document().setLogger(logger);
 	document.createExtension(KHRDracoMeshCompression).setRequired(true);
