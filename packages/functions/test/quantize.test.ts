@@ -344,7 +344,6 @@ test('skinned mesh parenting', async (t) => {
 	createScene(doc);
 	node = doc.getRoot().listNodes()[0];
 	mesh = node.getMesh();
-	// eslint-disable-next-line prefer-const
 	scaleChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('scale');
 	weightsChannel = doc.createAnimationChannel().setTargetNode(node).setTargetPath('weights');
 	doc.createAnimation().addChannel(weightsChannel).addChannel(scaleChannel);

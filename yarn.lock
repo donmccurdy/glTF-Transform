@@ -6581,7 +6581,6 @@ __metadata:
     meshoptimizer: "npm:0.22.0"
     microbundle: "npm:0.15.1"
     mikktspace: "npm:1.1.1"
-    prettier: "npm:3.4.2"
     semver: "npm:^7.7.1"
     simple-dropzone: "npm:^0.8.3"
     three: "npm:^0.173.0"
@@ -10167,15 +10166,6 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/b75510d7b28c3ab728c8733dd01538314a18c52af426f199a3c9177e63eb08602a3938bfb66b62dc01350b9aed62087eabbf229af97a1659eb8d3513cec823b3
-  languageName: node
-  linkType: hard
-
-"prettier@npm:3.4.2":
-  version: 3.4.2
-  resolution: "prettier@npm:3.4.2"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10c0/99e076a26ed0aba4ebc043880d0f08bbb8c59a4c6641cdee6cdadf2205bdd87aa1d7823f50c3aea41e015e99878d37c58d7b5f0e663bba0ef047f94e36b96446
   languageName: node
   linkType: hard
 

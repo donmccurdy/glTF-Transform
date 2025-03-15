@@ -116,7 +116,6 @@ export class EXTTextureAVIF extends Extension {
 	}
 
 	/** @hidden */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public read(context: ReaderContext): this {
 		return this;
 	}

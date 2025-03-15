@@ -270,7 +270,6 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				logger.debug(`${prefix}: Spawning → ktx ${params.join(' ')}`);
 
 				// COMPRESS: Run `ktx create` CLI tool.
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const [status, _stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
 
 				if (status !== 0) {

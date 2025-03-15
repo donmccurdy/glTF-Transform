@@ -249,7 +249,6 @@ export class DocumentViewImpl implements DocumentViewSubjectAPI {
 		// First, to prevent updates during disposal.
 		this._disposed = true;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const [_, subject] of this._subjects) subject.dispose();
 		this._subjects.clear();
 
