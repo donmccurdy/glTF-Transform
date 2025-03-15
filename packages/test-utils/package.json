@@ -1,22 +1,22 @@
 {
-	"private": true,
-	"name": "@gltf-transform/test-utils",
-	"version": "4.1.2",
-	"type": "module",
-	"sideEffects": false,
-	"source": "./src/index.ts",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		"types": "./dist/index.d.ts",
-		"default": "./dist/test-utils.modern.js"
-	},
-	"scripts": {
-		"dist": "microbundle --format modern --no-compress",
-		"watch": "microbundle watch --format modern --no-compress"
-	},
-	"dependencies": {
-		"@gltf-transform/core": "^4.1.2",
-		"@gltf-transform/extensions": "^4.1.2",
-		"@gltf-transform/functions": "^4.1.2"
-	}
+  "private": true,
+  "name": "@gltf-transform/test-utils",
+  "version": "4.1.2",
+  "type": "module",
+  "sideEffects": false,
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/test-utils.modern.js"
+  },
+  "scripts": {
+    "build": "microbundle --format modern --no-compress",
+    "build:watch": "microbundle watch --format modern --no-compress"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "^4.1.2",
+    "@gltf-transform/extensions": "^4.1.2",
+    "@gltf-transform/functions": "^4.1.2"
+  }
 }

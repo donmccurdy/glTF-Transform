@@ -49,7 +49,7 @@ test('decompress', async (t) => {
 	t.deepEqual(calls[1][0], 'extract', 'calls ktx extract command');
 
 	t.is(texture.getMimeType(), 'image/png', 'replaces MIME type');
-	t.true(BufferUtils.equals(texture.getImage(), imagePNG), 'replaces image');
+	t.true(BufferUtils.equals(texture.getImage()!, imagePNG), 'replaces image');
 
 	t.deepEqual(document.getRoot().listExtensionsUsed(), [], 'removes KHR_texture_basisu extension');
 });

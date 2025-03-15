@@ -1,8 +1,3 @@
----
-title: Contributing | glTF Transform
-snippet: This project consists of multiple NPM packages, managed in one repository with Lerna. All code, excluding Node.js-based tests, is written in TypeScript…
----
-
 # Contributing
 
 This project consists of multiple NPM packages, managed in one repository with
@@ -25,7 +20,7 @@ run:
 
 ```bash
 # Build
-yarn run dist
+yarn build
 
 # Test
 yarn test
@@ -34,7 +29,7 @@ yarn test
 To run these or other commands on a subset of packages, use the `--ignore` flag.
 
 ```bash
-yarn run dist --ignore "@gltf-transform/view"
+yarn run build --ignore "@gltf-transform/view"
 ```
 
 To run an arbitrary command across all packages:
@@ -72,10 +67,10 @@ yarn test
 yarn test --watch
 
 # run one test
-yarn test:filter packages/functions/test/palette.test.ts
+yarn test packages/functions/test/palette.test.ts
 
 # run one test, watching for source file changes to re-run
-yarn test:filter packages/functions/test/palette.test.ts --watch
+yarn test packages/functions/test/palette.test.ts --watch
 ```
 
 To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
@@ -93,8 +88,8 @@ requests should omit any changes to `dist/*` and `yarn.lock` artifacts.
 ### Documentation
 
 Documentation and examples are written in JSDoc comments on the relevant classes and methods,
-processed with [TypeDoc](https://typedoc.org/), and rendered to a custom TypeDoc theme. Additions
-and clarification are welcome, and examples may be added inline alongside class documentation.
+processed with [greendoc](https://github.com/donmccurdy/greendoc), and rendered to a custom static site.
+Additions and clarification are welcome, and examples may be added inline alongside class documentation.
 Certain JSDoc tags have notable meanings within this project:
 
 - `@internal` methods and classes are (1) hidden from documentation, and (2) not included in

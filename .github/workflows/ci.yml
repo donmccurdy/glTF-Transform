@@ -1,117 +1,117 @@
 name: build
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 jobs:
-    #############################################################################
-    # NODE
-    node:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                # See: https://github.com/privatenumber/tsx/issues/354
-                node-version: [v18, v20]
-        env:
-            CI: true
-            LINT: ${{ matrix.node-version == 'v20' && true || false }}
-        steps:
-            # Setup.
-            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
-                  # cache: yarn
+  #############################################################################
+  # NODE
+  node:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # See: https://github.com/privatenumber/tsx/issues/354
+        node-version: [v18, v20]
+    env:
+      CI: true
+      LINT: ${{ matrix.node-version == 'v20' && true || false }}
+    steps:
+      # Setup.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+          # cache: yarn
 
-            # Build.
-            - run: corepack enable
-            - run: yarn install --immutable
-            - run: yarn dist
+      # Build.
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn dist
 
-            # Test.
-            - run: yarn test
-            - run: yarn lint
-              if: ${{ env.LINT == 'true' }}
+      # Test.
+      - run: yarn test
+      - run: yarn lint
+        if: ${{ env.LINT == 'true' }}
 
-    #############################################################################
-    # DENO
-    deno:
-        runs-on: ubuntu-latest
-        env:
-            CI: true
-            NODE_VERSION: v18
-        steps:
-            # Setup.
-            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-            - uses: denoland/setup-deno@v1
-              with:
-                  deno-version: v1.x
-            - name: Use Node.js ${{ env.NODE_VERSION }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
-                  # cache: yarn
+  #############################################################################
+  # DENO
+  deno:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_VERSION: v18
+    steps:
+      # Setup.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+          # cache: yarn
 
-            # Build.
-            - run: corepack enable
-            - run: yarn install --immutable
-            - run: yarn dist
+      # Build.
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn dist
 
-            # Test.
-            - run: deno test --allow-read --config scripts/deno.json scripts/deno.test.ts
+      # Test.
+      - run: deno test --allow-read --config scripts/deno.json scripts/deno_test.ts
 
-    #############################################################################
-    # COVERAGE
-    coverage:
-        runs-on: ubuntu-latest
-        env:
-            CI: true
-            NODE_VERSION: v18
-        steps:
-            # Setup.
-            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-            - name: Use Node.js ${{ env.NODE_VERSION }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
-                  # cache: yarn
+  #############################################################################
+  # COVERAGE
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      NODE_VERSION: v18
+    steps:
+      # Setup.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+          # cache: yarn
 
-            # Build.
-            - run: corepack enable
-            - run: yarn install --immutable
-            - run: yarn dist
+      # Build.
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn dist
 
-            # Coverage.
-            - run: yarn coverage
-            - run: yarn coverage:report
-            - uses: codecov/codecov-action@v5
-              with:
-                  files: coverage/coverage.lcov
+      # Coverage.
+      - run: yarn coverage
+      - run: yarn coverage:report
+      - uses: codecov/codecov-action@v5
+        with:
+          files: coverage/coverage.lcov
 
-    #############################################################################
-    # WINDOWS LOCAL BUILDS
-    windows:
-        runs-on: windows-latest
-        env:
-            CI: true
-            NODE_VERSION: 18.x
-        steps:
-            # Setup.
-            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-            - name: Use Node.js ${{ env.NODE_VERSION }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
-                  # cache: yarn
+  #############################################################################
+  # WINDOWS LOCAL BUILDS
+  windows:
+    runs-on: windows-latest
+    env:
+      CI: true
+      NODE_VERSION: 18.x
+    steps:
+      # Setup.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
+          # cache: yarn
 
-            # Build.
-            - run: corepack enable
-            # See: https://github.com/yarnpkg/yarn/issues/4890
-            - run: yarn install --immutable --network-timeout 100000
-            - run: yarn dist
+      # Build.
+      - run: corepack enable
+      # See: https://github.com/yarnpkg/yarn/issues/4890
+      - run: yarn install --immutable --network-timeout 100000
+      - run: yarn dist
