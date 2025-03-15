@@ -1,6 +1,7 @@
 {
 	"formatter": {
 		"indentStyle": "tab",
+		"indentWidth": 4,
 		"lineWidth": 120
 	},
 	"linter": {
@@ -8,8 +9,10 @@
 			"suspicious": {
 				"noApproximativeNumericConstant": "off",
 				"noAssignInExpressions": "off",
+				"noEmptyInterface": "off",
 				"noFallthroughSwitchClause": "off",
-				"noGlobalIsFinite": "off"
+				"noGlobalIsFinite": "off",
+				"noImplicitAnyLet": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",
