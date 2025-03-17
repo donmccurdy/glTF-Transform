@@ -11,6 +11,7 @@
 **Features:**
 
 - functions: Adds `uninstance()` and `createInstanceNodes()` [#1525](https://github.com/donmccurdy/glTF-Transform/pull/1525)
+- cli: Add `ktxdecompress` command for decoding KTX2 textures [#1622](https://github.com/donmccurdy/glTF-Transform/pull/1622)
 
 **Performance:**
 
@@ -21,6 +22,8 @@
 
 - fix(core): Handle duplicate URIs on read/write [#1522](https://github.com/donmccurdy/glTF-Transform/pull/1522)
 - fix(functions,cli): Locale-based numeric formatting [#1512](https://github.com/donmccurdy/glTF-Transform/pull/1512)
+- fix(extensions): Fix error decoding sparse accessors in draco-compressed meshes [#1623](https://github.com/donmccurdy/glTF-Transform/pull/1623)
+- chore(repo): Replace ESLint and Prettier with Biome [#1624](https://github.com/donmccurdy/glTF-Transform/pull/1624)
 
 ### v4.0
 
