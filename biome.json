@@ -51,8 +51,7 @@
   },
   "json": {
     "formatter": {
-      "indentStyle": "space",
-      "indentWidth": 2
+      "enabled": false
     }
   },
   "files": {

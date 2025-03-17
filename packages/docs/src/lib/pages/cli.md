@@ -58,7 +58,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 4.1.2 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 4.1.3 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
@@ -114,6 +114,7 @@ Full command list:
     resize                               Resize PNG or JPEG textures                            
     etc1s                                KTX + Basis ETC1S texture compression                  
     uastc                                KTX + Basis UASTC texture compression                  
+    ktxdecompress                        KTX + Basis texture decompression                      
     ktxfix                               Fixes common issues in KTX texture metadata            
     avif                                 AVIF texture compression                               
     webp                                 WebP texture compression                               
@@ -121,7 +122,7 @@ Full command list:
     jpeg                                 JPEG texture compression                               
                                                                                                 
                                                                                                 
-                                         ⏯️  ANIMATION ──────────────────────────────────────── 
+                                         ⏯️ ANIMATION ────────────────────────────────────────  
     resample                             Resample animations, losslessly deduplicating keyframes
     sequence                             Animate node visibilities as a flipboard sequence      
     sparse                               Reduces storage for zero-filled arrays                 

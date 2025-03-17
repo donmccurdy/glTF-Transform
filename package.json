@@ -4,9 +4,7 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "repository": "github:donmccurdy/glTF-Transform",
   "license": "MIT",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "type": "module",
   "scripts": {
     "build": "lerna run build",
@@ -25,11 +23,11 @@
     "validate": "scripts/validate.js",
     "bench": "tsx benchmarks/benchmark.ts",
     "preversion": "yarn test",
-    "version": "yarn clean:dist && yarn dist && yarn bench --report-version --print && yarn run docs:cli && git add -u benchmarks/results packages/docs",
+    "version": "yarn clean:dist && yarn build && yarn bench --report-version --print && yarn run docs:cli && git add -u benchmarks/results packages/docs",
     "postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
     "docs:cli": "CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
     "docs:deploy:prod": "tsx scripts/check-release.ts && yarn docs:deploy --prod || echo \"!  Skipping website deployment.\"",
-    "docs:deploy": "yarn dist && vercel"
+    "docs:deploy": "yarn build && vercel"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -70,9 +68,7 @@
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": [
-      "--import=tsx"
-    ]
+    "nodeArguments": ["--import=tsx"]
   },
   "packageManager": "yarn@4.7.0"
 }
