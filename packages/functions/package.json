@@ -18,12 +18,22 @@
   "main": "./dist/functions.cjs",
   "module": "./dist/functions.modern.js",
   "source": "./src/index.ts",
-  "browserslist": ["defaults", "not IE 11", "node >= 14"],
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "node >= 14"
+  ],
   "scripts": {
     "build": "microbundle --format modern,cjs --no-compress",
     "build:watch": "microbundle watch --format modern,cjs --no-compress"
   },
-  "keywords": ["gltf", "3d", "model", "webgl", "threejs"],
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
   "dependencies": {
     "@gltf-transform/core": "^4.1.2",
     "@gltf-transform/extensions": "^4.1.2",
@@ -32,7 +42,14 @@
     "ndarray-lanczos": "^0.3.0",
     "ndarray-pixels": "^4.1.0"
   },
-  "files": ["dist/", "src/", "README.md", "LICENSE.md", "package.json", "package-lock.json"],
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "LICENSE.md",
+    "package.json",
+    "package-lock.json"
+  ],
   "publishConfig": {
     "access": "public"
   },

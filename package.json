@@ -4,7 +4,9 @@
   "author": "Don McCurdy <dm@donmccurdy.com>",
   "repository": "github:donmccurdy/glTF-Transform",
   "license": "MIT",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
     "build": "lerna run build",
@@ -68,7 +70,9 @@
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": ["--import=tsx"]
+    "nodeArguments": [
+      "--import=tsx"
+    ]
   },
   "packageManager": "yarn@4.7.0"
 }

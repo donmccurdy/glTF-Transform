@@ -14,7 +14,9 @@
     "types": "./dist/cli.d.ts",
     "default": "./dist/cli.esm.js"
   },
-  "browserslist": ["node >= 18"],
+  "browserslist": [
+    "node >= 18"
+  ],
   "engines": {
     "node": ">=18"
   },
@@ -57,6 +59,13 @@
     "strip-ansi": "~7.1.0",
     "tmp": "~0.2.3"
   },
-  "files": ["bin/", "dist/", "src/", "README.md", "LICENSE.md", "package-lock.json"],
+  "files": [
+    "bin/",
+    "dist/",
+    "src/",
+    "README.md",
+    "LICENSE.md",
+    "package-lock.json"
+  ],
   "gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
 }

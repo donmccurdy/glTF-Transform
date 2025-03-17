@@ -18,13 +18,29 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.modern.js",
   "source": "./src/index.ts",
-  "browserslist": ["defaults", "not IE 11", "node >= 14"],
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "node >= 14"
+  ],
   "scripts": {
     "build": "microbundle --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version",
     "build:watch": "microbundle watch --format modern,cjs --no-compress --define PACKAGE_VERSION=$npm_package_version"
   },
-  "keywords": ["gltf", "3d", "model", "webgl", "threejs"],
-  "files": ["dist/", "src/", "README.md", "LICENSE.md", "package-lock.json"],
+  "keywords": [
+    "gltf",
+    "3d",
+    "model",
+    "webgl",
+    "threejs"
+  ],
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "LICENSE.md",
+    "package-lock.json"
+  ],
   "browser": {
     "fs": false,
     "path": false
