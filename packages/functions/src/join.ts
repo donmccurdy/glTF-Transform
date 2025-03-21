@@ -53,12 +53,22 @@ export interface JoinOptions {
 	 * @experimental
 	 */
 	cleanup?: boolean;
+	/**
+	 * A predicate function used to evaluate a condition on a given `Mesh`.
+	 * This function should return a boolean indicating whether the `Mesh`
+	 * satisfies the provided condition.
+	 *
+	 * @param {Mesh} mesh - The `Mesh` instance to be evaluated.
+	 * @returns {boolean} - The result of the evaluation; `true` if the condition is met, otherwise `false`.
+	 */
+	predicate?: (mesh: Mesh) => boolean;
 }
 
 export const JOIN_DEFAULTS: Required<JoinOptions> = {
 	keepMeshes: false,
 	keepNamed: false,
 	cleanup: true,
+	predicate: () => true,
 };
 
 /**
@@ -142,6 +152,9 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 		// Skip nodes without meshes.
 		const mesh = node.getMesh();
 		if (!mesh) continue;
+
+		// Skip meshes not matching the predicate.
+		if (!options.predicate(mesh)) continue;
 
 		// Skip nodes with instancing; unsupported.
 		if (node.getExtension('EXT_mesh_gpu_instancing')) continue;
