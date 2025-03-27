@@ -248,7 +248,7 @@ export declare namespace GLTF {
 		 */
 		byteOffset?: number;
 		/**
-		 * The lenth of the bufferView in bytes
+		 * The length of the bufferView in bytes
 		 */
 		byteLength: number;
 		/**

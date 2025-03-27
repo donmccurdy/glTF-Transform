@@ -364,7 +364,7 @@ function createMeshPrimitive(doc: Document, buffer: Buffer): Primitive {
 	return doc.createPrimitive().setIndices(indices).setAttribute('POSITION', position);
 }
 
-// Helper functions to create I/O instaces initialized with Draco dependencies.
+// Helper functions to create I/O instances initialized with Draco dependencies.
 // Create separate instances for encoding and decoding, to help test that
 // they work independently.
 

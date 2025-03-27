@@ -96,6 +96,6 @@ nextArray.set(prevArray);
 accessor.setArray(nextArray);
 ```
 
-Most internal glTF properies are handled automatically when changing the array. In some cases (when setting uint- or int-typed arrays) you will need to pay attention to the glTF schema's allowed component types, and normalize your data where necessary. The KHR_mesh_quantization extension provides additional flexibility on data types.
+Most internal glTF properties are handled automatically when changing the array. In some cases (when setting uint- or int-typed arrays) you will need to pay attention to the glTF schema's allowed component types, and normalize your data where necessary. The KHR_mesh_quantization extension provides additional flexibility on data types.
 
 For a deeper look at the glTF Transform API, refer to the documentation for the [Document](/modules/core/classes/Document) class and its associated [Property](/modules/core/classes/Property) types.

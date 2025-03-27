@@ -20,7 +20,7 @@ test('basic', async (t) => {
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'scale - tangent');
 
 	transformPrimitive(prim, mat4.fromTranslation([], [0, -10, 0]));
-	t.deepEqual(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - positino');
+	t.deepEqual(primBounds(prim), { min: [-1, 0, -1], max: [1, 0, 1] }, 'translate - position');
 	t.deepEqual(normal.getElement(0, []), [0, 1, 0], 'translate - normal');
 	t.deepEqual(tangent.getElement(0, []), [1, 0, 0, 1], 'translate - tangent');
 

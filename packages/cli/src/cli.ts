@@ -1018,7 +1018,7 @@ program
 De-index geometry, disconnecting any shared vertices. This tends to increase
 the file size of the geometry and decrease efficiency, and so is not
 recommended unless disconnected vertices ("vertex soup") are required for some
-paricular software application.
+particular software application.
 	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)

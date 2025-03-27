@@ -55,7 +55,7 @@ test('glb without required buffer', async (t) => {
 
 	document.createBuffer();
 
-	t.truthy(io.writeJSON(document, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(io.writeJSON(document, { format: Format.GLB }), 'writeJSON succeeds');
 	t.truthy(io.writeBinary(document), 'writeBinary succeeds');
 
 	document = new Document().setLogger(logger);
@@ -71,7 +71,7 @@ test('glb without required buffer', async (t) => {
 
 	document.createBuffer();
 
-	t.truthy(await io.writeJSON(document, { format: Format.GLB }), 'writeJSON suceeds');
+	t.truthy(await io.writeJSON(document, { format: Format.GLB }), 'writeJSON succeeds');
 	t.truthy(await io.writeBinary(document), 'writeBinary succeeds');
 });
 
