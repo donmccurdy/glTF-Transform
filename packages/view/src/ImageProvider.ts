@@ -93,7 +93,7 @@ export class DefaultImageProvider implements ImageProvider {
 		if (this._ktx2Loader) this._ktx2Loader.dispose();
 	}
 
-	/** Load PNG, JPEG, or other browser-suppored image format. */
+	/** Load PNG, JPEG, or other browser-supported image format. */
 	private async _loadImage(image: ArrayBuffer, mimeType: string): Promise<Texture> {
 		return new Promise((resolve, reject) => {
 			const blob = new Blob([image], { type: mimeType });

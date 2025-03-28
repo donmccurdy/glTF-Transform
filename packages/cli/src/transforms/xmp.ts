@@ -212,7 +212,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 				},
 				{
 					value: 'horizontal_down',
-					title: 'horizontal_down (suspended from horizonal surfaces)',
+					title: 'horizontal_down (suspended from horizontal surfaces)',
 				},
 				{
 					value: 'vertical',
