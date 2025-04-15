@@ -1684,7 +1684,7 @@ __metadata:
     ktx-parse: "npm:^1.0.0"
     language-tags: "npm:~2.0.1"
     listr2: "npm:~8.2.5"
-    meshoptimizer: "npm:~0.22.0"
+    meshoptimizer: "npm:~0.23.0"
     micromatch: "npm:~4.0.8"
     mikktspace: "npm:~1.1.1"
     node-fetch: "npm:~3.3.2"
@@ -8389,7 +8389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meshoptimizer@npm:0.22.0, meshoptimizer@npm:~0.22.0":
+"meshoptimizer@npm:0.22.0":
   version: 0.22.0
   resolution: "meshoptimizer@npm:0.22.0"
   checksum: 10c0/df5c10c897a9eea3085cd2ae077dd4b904df3d71855eb3cbaa624d05e62eb4e893b3e2492cae070122561addb90fbfe092c53b7e68fdd391d0009f267af3f348
@@ -8400,6 +8400,13 @@ __metadata:
   version: 0.18.1
   resolution: "meshoptimizer@npm:0.18.1"
   checksum: 10c0/8a825c58b20b65585e8d00788843929b60c66ba4297e89afaa49f7c51ab9a0f7b9130f90cc9ad1b9b48b3d1bee3beb1bc93608acba0d73e78995c3e6e5ca436b
+  languageName: node
+  linkType: hard
+
+"meshoptimizer@npm:~0.23.0":
+  version: 0.23.0
+  resolution: "meshoptimizer@npm:0.23.0"
+  checksum: 10c0/3543239301f4c1f00b72d44f01178398d20af45e56a9386b9d655f520349ace0fe76acff71f993ebd1aea7bad39e639f897d31cddd3a420ed5716e3960c13cc4
   languageName: node
   linkType: hard
 
