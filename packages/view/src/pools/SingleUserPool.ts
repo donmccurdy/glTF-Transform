@@ -1,5 +1,5 @@
 import { Property as PropertyDef, Mesh as MeshDef, Node as NodeDef, uuid } from '@gltf-transform/core';
-import { Object3D } from 'three';
+import{ DirectionalLight, type Object3D, SpotLight } from 'three';
 import { LightLike } from '../constants.js';
 import { Pool } from './Pool.js';
 
@@ -27,6 +27,14 @@ export class SingleUserPool<T extends Object3D> extends Pool<T, SingleUserParams
 		// any PrimitiveDef values (e.g. Mesh, Lines, Points) within it.
 		// Record the new outputs.
 		const dstObject = srcObject.clone();
+
+		// A clone of spot lights and directional lights clones its children and target separately, which results in duplicates.
+		if(dstObject instanceof SpotLight || dstObject instanceof DirectionalLight) {
+			dstObject.children[0]?.remove();
+			// Target is cloned but its parent needs to be restored to the cloned light.
+			dstObject.add(dstObject.target);
+		}
+
 		parallelTraverse(srcObject, dstObject, (base, variant) => {
 			if (base === srcObject) return; // Skip root; recorded elsewhere.
 			if ((srcObject as unknown as LightLike).isLight) return; // Skip light target.
