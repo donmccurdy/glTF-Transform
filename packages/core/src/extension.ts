@@ -142,7 +142,6 @@ export abstract class Extension {
 	 */
 
 	/** @hidden Installs dependencies required by the extension. */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public install(key: string, dependency: unknown): this {
 		return this;
 	}

@@ -30,3 +30,36 @@ test('internal arrays', async (t) => {
 
 	t.deepEqual(node.getTranslation(), [0, 0, 0], 'unchanged by external mutation');
 });
+
+test('listParents', async (t) => {
+	const document = new Document();
+	const root = document.getRoot();
+	const nodeA = document.createNode('NodeA');
+	const nodeB = document.createNode('NodeB');
+	const sceneA = document.createScene('SceneA').addChild(nodeA).addChild(nodeB);
+	const sceneB = document.createScene('SceneB').addChild(nodeA).addChild(nodeB);
+	root.setDefaultScene(sceneA);
+
+	t.deepEqual(root.listParents(), []);
+	t.deepEqual(sceneA.listParents(), [root]);
+	t.deepEqual(nodeA.listParents(), [root, sceneA, sceneB]);
+	t.deepEqual(nodeB.listParents(), [root, sceneA, sceneB]);
+});
+
+test('listChildren', async (t) => {
+	const document = new Document();
+	const root = document.getRoot();
+	const nodeA = document.createNode('NodeA');
+	const nodeB = document.createNode('NodeB');
+	const sceneA = document.createScene('SceneA').addChild(nodeA).addChild(nodeB);
+	const sceneB = document.createScene('SceneB').addChild(nodeA).addChild(nodeB);
+	root.setDefaultScene(sceneA);
+
+	const graph = document.getGraph();
+
+	t.deepEqual(graph.listChildren(root), [nodeA, nodeB, sceneA, sceneB]);
+	t.deepEqual(graph.listChildren(sceneA), [nodeA, nodeB]);
+	t.deepEqual(graph.listChildren(sceneB), [nodeA, nodeB]);
+	t.deepEqual(graph.listChildren(nodeA), []);
+	t.deepEqual(graph.listChildren(nodeB), []);
+});

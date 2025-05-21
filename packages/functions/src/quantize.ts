@@ -96,7 +96,38 @@ export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>
 
 /**
  * Quantizes vertex attributes with `KHR_mesh_quantization`, reducing the size and memory footprint
- * of the file.
+ * of the file. Conceptually, quantization refers to snapping values to regular intervals; vertex
+ * positions are snapped to a 3D grid, UVs to a 2D grid, and so on. When quantized to <= 16 bits,
+ * larger component types may be more compactly stored as 16-bit or 8-bit attributes.
+ *
+ * Often, it can be useful to quantize to precision lower than the maximum allowed by the component
+ * type. Positions quantized to 14 bits in a 16-bit accessor will occupy 16 bits in VRAM, but they
+ * can be compressed further for network compression with lossless encodings such as ZSTD.
+ *
+ * Vertex positions are shifted into [-1,1] or [0,1] range before quantization. Compensating for
+ * that shift, a transform is applied to the parent {@link Node}, or inverse bind matrices for a
+ * {@link Skin} if applicable. Materials using {@link KHRMaterialsVolume} are adjusted to maintain
+ * appearance. In future releases, UVs may also be transformed with {@link KHRTextureTransform}.
+ * Currently UVs outside of [0,1] range are not quantized.
+ *
+ * In most cases, quantization requires {@link KHRMeshQuantization}; the extension will be added
+ * automatically when `quantize()` is applied. When applying meshopt compression with
+ * {@link EXTMeshoptCompression}, quantization is usually applied before compression.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { quantize } from '@gltf-transform/functions';
+ *
+ * await document.transform(
+ *   quantize({
+ *		quantizePosition: 14,
+ *		quantizeNormal: 10,
+ *   }),
+ * );
+ * ```
+ *
+ * For the inverse operation, see {@link dequantize}.
  *
  * @category Transforms
  */
@@ -169,13 +200,13 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 }
 
 function quantizePrimitive(
-	doc: Document,
+	document: Document,
 	prim: Primitive | PrimitiveTarget,
 	nodeTransform: VectorTransform<vec3>,
 	options: Required<QuantizeOptions>,
 ): void {
 	const isTarget = prim instanceof PrimitiveTarget;
-	const logger = doc.getLogger();
+	const logger = document.getLogger();
 
 	for (const semantic of prim.listSemantics()) {
 		if (!isTarget && !options.pattern.test(semantic)) continue;
@@ -249,7 +280,7 @@ function getNodeTransform(volume: bbox): VectorTransform<vec3> {
 }
 
 /** Applies corrective scale and offset to nodes referencing a quantized Mesh. */
-function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTransform<vec3>): void {
+function transformMeshParents(document: Document, mesh: Mesh, nodeTransform: VectorTransform<vec3>): void {
 	const transformMatrix = fromTransform(nodeTransform);
 	for (const parent of mesh.listParents()) {
 		if (!(parent instanceof Node)) continue;
@@ -266,13 +297,13 @@ function transformMeshParents(doc: Document, mesh: Mesh, nodeTransform: VectorTr
 
 		const batch = parent.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
 		if (batch) {
-			parent.setExtension('EXT_mesh_gpu_instancing', transformBatch(batch, nodeTransform));
+			parent.setExtension('EXT_mesh_gpu_instancing', transformBatch(document, batch, nodeTransform));
 			continue;
 		}
 
 		let targetNode: Node;
 		if (isParentNode || isAnimated) {
-			targetNode = doc.createNode('').setMesh(mesh);
+			targetNode = document.createNode('').setMesh(mesh);
 			parent.addChild(targetNode).setMesh(null);
 			animChannels
 				.filter((channel) => channel.getTargetPath() === WEIGHTS)
@@ -302,26 +333,39 @@ function transformSkin(skin: Skin, nodeTransform: VectorTransform<vec3>): Skin {
 }
 
 /** Applies corrective scale and offset to GPU instancing batches. */
-function transformBatch(batch: InstancedMesh, nodeTransform: VectorTransform<vec3>): InstancedMesh {
+function transformBatch(document: Document, batch: InstancedMesh, nodeTransform: VectorTransform<vec3>): InstancedMesh {
 	if (!batch.getAttribute('TRANSLATION') && !batch.getAttribute('ROTATION') && !batch.getAttribute('SCALE')) {
 		return batch;
 	}
 
 	batch = batch.clone(); // quantize() does cleanup.
-	const instanceTranslation = batch.getAttribute('TRANSLATION')?.clone();
+
+	let instanceTranslation = batch.getAttribute('TRANSLATION')?.clone();
 	const instanceRotation = batch.getAttribute('ROTATION')?.clone();
-	const instanceScale = batch.getAttribute('SCALE')?.clone();
+	let instanceScale = batch.getAttribute('SCALE')?.clone();
+
 	const tpl = (instanceTranslation || instanceRotation || instanceScale)!;
 
 	const T_IDENTITY = [0, 0, 0] as vec3;
 	const R_IDENTITY = [0, 0, 0, 1] as vec4;
 	const S_IDENTITY = [1, 1, 1] as vec3;
 
+	// Transformed batch may now require instance translation or scale.
+	// See: https://github.com/donmccurdy/glTF-Transform/issues/1584
+
+	if (!instanceTranslation && nodeTransform.offset) {
+		instanceTranslation = document.createAccessor().setType('VEC3').setArray(makeArray(tpl.getCount(), T_IDENTITY));
+	}
+
+	if (!instanceScale && nodeTransform.scale) {
+		instanceScale = document.createAccessor().setType('VEC3').setArray(makeArray(tpl.getCount(), S_IDENTITY));
+	}
+
 	const t = [0, 0, 0] as vec3;
 	const r = [0, 0, 0, 1] as vec4;
 	const s = [1, 1, 1] as vec3;
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const instanceMatrix = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -576,4 +620,15 @@ function fromTransform(transform: VectorTransform<vec3>): mat4 {
 
 function clamp(value: number, range: vec2): number {
 	return Math.min(Math.max(value, range[0]), range[1]);
+}
+
+function makeArray(elementCount: number, initialElement: vec2 | vec3 | vec4) {
+	const elementSize = initialElement.length;
+	const array = new Float32Array(elementCount * elementSize);
+
+	for (let i = 0; i < elementCount; i++) {
+		array.set(initialElement, i * elementSize);
+	}
+
+	return array;
 }

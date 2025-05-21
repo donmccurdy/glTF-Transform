@@ -1,4 +1,4 @@
-import type { JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
+import type { Document, JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
 import {
 	InspectAnimationReport,
 	InspectMaterialReport,
@@ -42,7 +42,7 @@ export async function inspect(
 	);
 
 	// Parse.
-	let document;
+	let document: Document;
 	try {
 		document = await io.readJSON(jsonDoc);
 	} catch (e) {

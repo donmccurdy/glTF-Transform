@@ -109,7 +109,6 @@ test('MaterialSubject | dispose', async (t) => {
 	t.is(disposed.size, 2, 'dispose count (2/3)');
 	t.truthy(disposed.has(pointsMaterial), 'dispose PointsMaterial');
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, lines] = scene.getObjectByName('Mesh')!.children as [unknown, LineSegments];
 	const lineMaterial = lines.material as LineBasicMaterial;
 	lineMaterial.addEventListener('dispose', () => disposed.add(lineMaterial));

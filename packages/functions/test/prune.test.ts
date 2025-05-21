@@ -283,7 +283,7 @@ test('indices', async (t) => {
 		.createAccessor()
 		.setType('SCALAR')
 		.setArray(new Uint16Array([0, 1, 2, 0, 3, 4]));
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const position = document.createAccessor()
 		.setType('VEC3')
 		.setArray(new Float32Array([

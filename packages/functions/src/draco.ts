@@ -31,9 +31,32 @@ export const DRACO_DEFAULTS: Required<DracoOptions> = {
 
 /**
  * Applies Draco compression using {@link KHRDracoMeshCompression KHR_draco_mesh_compression}.
- * This type of compression can reduce the size of triangle geometry.
+ * Draco compression can reduce the size of triangle geometry.
  *
- * This function is a thin wrapper around the {@link KHRDracoMeshCompression} extension itself.
+ * This function is a thin wrapper around the {@link KHRDracoMeshCompression} extension.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+ * import { draco } from '@gltf-transform/functions';
+ * import draco3d from 'draco3dgltf';
+ *
+ * const io = new NodeIO()
+ * 	.registerExtensions([KHRDracoMeshCompression])
+ * 	.registerDependencies({
+ * 		'draco3d.encoder': await draco3d.createEncoderModule()
+ * 	});
+ *
+ * await document.transform(
+ *   draco({method: 'edgebreaker'})
+ * );
+ *
+ * await io.write('compressed.glb', document);
+ * ```
+ *
+ * Compression is deferred until generating output with an I/O class.
  *
  * @category Transforms
  */

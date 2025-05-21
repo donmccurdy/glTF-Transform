@@ -25,7 +25,7 @@ export function cloneDocument(source: Document): Document {
 
 	// Root properties (name, asset, default scene, extras) are not overwritten by
 	// mergeDocuments(), and should be explicitly copied when cloning.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	target.getRoot().copy(source.getRoot(), resolve as any);
 
 	return target;

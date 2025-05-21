@@ -1,5 +1,5 @@
 <script lang="ts">
-	const year = new Date().getFullYear();
+const year = new Date().getFullYear();
 </script>
 
 <h2>License</h2>

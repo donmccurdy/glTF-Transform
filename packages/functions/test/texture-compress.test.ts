@@ -341,7 +341,7 @@ function createMockEncoder() {
 	return { encoder, calls };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: TODO
 function findLast(calls: any[], fn: (call: any) => boolean): any {
 	for (let i = calls.length - 1; i >= 0; i--) {
 		if (fn(calls[i])) return calls[i];

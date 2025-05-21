@@ -24,7 +24,7 @@ test('factors', async (t) => {
 	const roundtripExt = roundtripMat.getExtension<Anisotropy>('KHR_materials_anisotropy');
 
 	t.is(roundtripExt.getAnisotropyStrength(), 0.9, 'reads anisotropyStrength');
-	t.is(roundtripExt.getAnisotropyRotation(), Math.PI / 3, 'reads anisotropyRottaion');
+	t.is(roundtripExt.getAnisotropyRotation(), Math.PI / 3, 'reads anisotropyRotation');
 });
 
 test('textures', async (t) => {

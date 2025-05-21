@@ -65,7 +65,7 @@ test('rotation', async (t) => {
 	t.deepEqual(toArray(sampler.getInput()), [0, 3, 6], 'input');
 	t.deepEqual(
 		toArray(sampler.getOutput()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 0, 0, 1,
 			0.9238795042037964, 0, 0, 0.3826834261417389,

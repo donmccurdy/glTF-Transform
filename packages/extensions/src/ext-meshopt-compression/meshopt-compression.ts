@@ -57,47 +57,74 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * writing files, and must be provided by the application. Compression may alternatively be applied
  * with the [gltfpack](https://github.com/zeux/meshoptimizer/tree/master/gltf) tool.
  *
- * ### Example
+ * ### Example — Read
+ *
+ * To read glTF files using Meshopt compression, ensure that the extension
+ * and a decoder are registered. Geometry and other data are decompressed
+ * while reading the file.
  *
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
- * import { reorder, quantize } from '@gltf-transform/functions';
  * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
+ * import { MeshoptDecoder } from 'meshoptimizer';
  *
  * await MeshoptDecoder.ready;
- * await MeshoptEncoder.ready;
  *
  * const io = new NodeIO()
- *	.registerExtensions([EXTMeshoptCompression])
- *	.registerDependencies({
- *		'meshopt.decoder': MeshoptDecoder,
- *		'meshopt.encoder': MeshoptEncoder,
- *	});
+ * 	.registerExtensions([EXTMeshoptCompression])
+ * 	.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
  *
  * // Read and decode.
  * const document = await io.read('compressed.glb');
+ * ```
  *
- * // Write and encode. (Medium, -c)
+ * ### Example — Write
+ *
+ * The simplest way to apply Meshopt compression is with the {@link meshopt}
+ * transform. The extension and an encoder must be registered.
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
+ * import { meshopt } from '@gltf-transform/functions';
+ * import { MeshoptEncoder } from 'meshoptimizer';
+ *
+ * await MeshoptEncoder.ready;
+ *
+ * const io = new NodeIO()
+ * 	.registerExtensions([EXTMeshoptCompression])
+ * 	.registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+ *
+ * await document.transform(
+ *   meshopt({encoder: MeshoptEncoder, level: 'medium'})
+ * );
+ *
+ * await io.write('compressed-medium.glb', document);
+ * ```
+ *
+ * ### Example — Advanced
+ *
+ * Internally, the {@link meshopt} transform reorders and quantizes vertex data
+ * to preparate for compression. If you prefer different pre-processing, the
+ * EXTMeshoptCompression extension can be added to the document manually:
+ *
+ * ```typescript
+ * import { reorder, quantize } from '@gltf-transform/functions';
+ * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
+ * import { MeshoptEncoder } from 'meshoptimizer';
+ *
  * await document.transform(
  * 	reorder({encoder: MeshoptEncoder}),
  * 	quantize()
  * );
+ *
  * document.createExtension(EXTMeshoptCompression)
  * 	.setRequired(true)
  * 	.setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
- * await io.write('compressed-medium.glb', document);
- *
- * // Write and encode. (High, -cc)
- * await document.transform(
- * 	reorder({encoder: MeshoptEncoder}),
- * 	quantize({pattern: /^(POSITION|TEXCOORD|JOINTS|WEIGHTS)(_\d+)?$/}),
- * );
- * document.createExtension(EXTMeshoptCompression)
- * 	.setRequired(true)
- * 	.setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
- * await io.write('compressed-high.glb', document);
  * ```
+ *
+ * In either case, compression is deferred until generating output with an I/O
+ * class.
  */
 export class EXTMeshoptCompression extends Extension {
 	public readonly extensionName = NAME;

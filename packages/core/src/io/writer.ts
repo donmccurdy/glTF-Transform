@@ -437,9 +437,11 @@ export class GLTFWriter {
 			.filter((extension) => extension.prewriteTypes.includes(PropertyType.BUFFER))
 			.forEach((extension) => extension.prewrite(context, PropertyType.BUFFER));
 
-		const hasBinaryResources =
-			root.listAccessors().length > 0 || root.listTextures().length > 0 || context.otherBufferViews.size > 0;
-		if (hasBinaryResources && root.listBuffers().length === 0) {
+		const needsBuffer =
+			root.listAccessors().length > 0 ||
+			context.otherBufferViews.size > 0 ||
+			(root.listTextures().length > 0 && options.format === Format.GLB);
+		if (needsBuffer && root.listBuffers().length === 0) {
 			throw new Error('Buffer required for Document resources, but none was found.');
 		}
 
@@ -481,7 +483,9 @@ export class GLTFWriter {
 					// (1) Interleaved vertex attributes.
 					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else if (usage === BufferViewUsage.ARRAY_BUFFER) {
 					// (2) Non-interleaved vertex attributes.
 					for (const accessor of groupAccessors) {
@@ -489,24 +493,32 @@ export class GLTFWriter {
 						// 4-byte boundaries, which concatAccessors() does not.
 						const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
 						bufferByteLength += result.byteLength;
-						buffers.push(...result.buffers);
+						for (const buffer of result.buffers) {
+							buffers.push(buffer);
+						}
 					}
 				} else if (usage === BufferViewUsage.SPARSE) {
 					// (3) Sparse accessors.
 					const result = concatSparseAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else if (usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER) {
 					// (4) Indices.
 					const target = WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER;
 					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength, target);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				} else {
 					// (5) Other.
 					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+					for (const buffer of result.buffers) {
+						buffers.push(buffer);
+					}
 				}
 			}
 
@@ -552,7 +564,7 @@ export class GLTFWriter {
 
 				// Write buffer views to buffer.
 				bufferDef.byteLength = bufferByteLength;
-				jsonDoc.resources[uri] = BufferUtils.concat(buffers);
+				context.assignResourceURI(uri, BufferUtils.concat(buffers), true);
 			}
 
 			json.buffers!.push(bufferDef);

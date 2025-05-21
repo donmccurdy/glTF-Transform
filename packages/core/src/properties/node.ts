@@ -236,7 +236,7 @@ export class Node extends ExtensibleProperty<INode> {
 	}
 
 	/**
-	 * Sets a {@link Mesh} to be instantiated at this Node. A single mesh may be instatiated by
+	 * Sets a {@link Mesh} to be instantiated at this Node. A single mesh may be instantiated by
 	 * multiple Nodes; reuse of this sort is strongly encouraged.
 	 */
 	public setMesh(mesh: Mesh | null): this {

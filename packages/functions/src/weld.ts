@@ -84,9 +84,9 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
  * import { weld, getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
  *
  * const scene = document.getDefaultScene();
- * const srcVertexCount = getSceneVertexCount(scene, VertexCountMethod.GPU);
+ * const srcVertexCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
  * await document.transform(weld());
- * const dstVertexCount = getSceneVertexCount(scene, VertexCountMethod.GPU);
+ * const dstVertexCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD);
  * ```
  *
  * @category Transforms
@@ -139,13 +139,13 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
  * const mesh = document.getRoot().listMeshes()
  * 	.find((mesh) => mesh.getName() === 'Gizmo');
  *
- * const srcVertexCount = getMeshVertexCount(mesh, VertexCountMethod.GPU);
+ * const srcVertexCount = getMeshVertexCount(mesh, VertexCountMethod.UPLOAD);
  *
  * for (const prim of mesh.listPrimitives()) {
  *   weldPrimitive(prim);
  * }
  *
- * const dstVertexCount = getMeshVertexCount(mesh, VertexCountMethod.GPU);
+ * const dstVertexCount = getMeshVertexCount(mesh, VertexCountMethod.UPLOAD);
  * ```
  */
 export function weldPrimitive(prim: Primitive, _options: WeldOptions = WELD_DEFAULTS): void {

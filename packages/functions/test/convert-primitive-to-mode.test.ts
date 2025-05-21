@@ -23,7 +23,7 @@ test('line-strip to lines', async (t) => {
 	t.is(prim.getMode(), LINES, 'mode');
 	t.deepEqual(
 		Array.from(prim.getIndices().getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 1,
 			1, 2,
@@ -50,7 +50,7 @@ test('line-loop to lines', async (t) => {
 	t.is(prim.getMode(), LINES, 'mode');
 	t.deepEqual(
 		Array.from(prim.getIndices().getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 1,
 			1, 2,
@@ -78,7 +78,7 @@ test('triangle-strip to triangles', async (t) => {
 	t.is(prim.getMode(), TRIANGLES, 'mode');
 	t.deepEqual(
 		Array.from(prim.getIndices().getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 1, 2,
 			2, 1, 3,
@@ -105,7 +105,7 @@ test('triangle-fan to triangles', async (t) => {
 	t.is(prim.getMode(), TRIANGLES, 'mode');
 	t.deepEqual(
 		Array.from(prim.getIndices().getArray()),
-		// prettier-ignore
+		// biome-ignore format: Readability.
 		[
 			0, 1, 2,
 			0, 2, 3,

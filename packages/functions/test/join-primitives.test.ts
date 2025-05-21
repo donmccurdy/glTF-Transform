@@ -21,7 +21,7 @@ test('unindexed', async (t) => {
 	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
 	t.is(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(Array.from(positionAB.getArray()), [
 		// primA
 		0, 0, 0,
@@ -35,7 +35,7 @@ test('unindexed', async (t) => {
 		10, 10, 12,
 		10, 12, 10,
 	], 'position data');
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(Array.from(colorAB.getArray()), [
 		// primA
 		255, 0, 0, 255,
@@ -77,7 +77,7 @@ test('indexed', async (t) => {
 	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
 	t.is(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
 
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(Array.from(positionAB.getArray()), [
 		// primA
 		0, 0, 0,
@@ -91,7 +91,7 @@ test('indexed', async (t) => {
 		10, 10, 12,
 		10, 12, 10,
 	], 'position data');
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	t.deepEqual(Array.from(colorAB.getArray()), [
 		// primA
 		255, 0, 0, 255,
@@ -114,7 +114,7 @@ test('indexed', async (t) => {
  */
 
 function createPrimA(document: Document): [Primitive, Accessor, Accessor] {
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionA = document.createAccessor()
 		.setType('VEC3')
 		.setArray(new Uint16Array([
@@ -125,7 +125,7 @@ function createPrimA(document: Document): [Primitive, Accessor, Accessor] {
 			0, 1, 1,
 			1, 0, 1,
 		]));
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const colorA = document.createAccessor()
 		.setType('VEC4')
 		.setNormalized(true)
@@ -144,7 +144,7 @@ function createPrimA(document: Document): [Primitive, Accessor, Accessor] {
 }
 
 function createPrimB(document: Document): [Primitive, Accessor, Accessor] {
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const positionB = document.createAccessor()
 		.setType('VEC3')
 		.setArray(new Uint16Array([
@@ -152,7 +152,7 @@ function createPrimB(document: Document): [Primitive, Accessor, Accessor] {
 			10, 10, 12,
 			10, 12, 10,
 		]));
-	// prettier-ignore
+	// biome-ignore format: Readability.
 	const colorB = document.createAccessor()
 		.setType('VEC4')
 		.setNormalized(true)

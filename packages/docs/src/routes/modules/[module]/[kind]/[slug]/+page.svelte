@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import { Class, Interface, Enum, Function } from '@greendoc/svelte';
-	export let data: PageData;
+import type { PageData } from './$types';
+// biome-ignore lint/suspicious/noShadowRestrictedNames: TODO
+import { Class, Interface, Enum, Function } from '@greendoc/svelte';
+export let data: PageData;
 </script>
 
 <section class="greendoc-panel" style="padding-bottom: 0;">

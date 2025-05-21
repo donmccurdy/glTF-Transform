@@ -29,13 +29,12 @@ import { HTTPUtils } from '../utils/index.js';
  * ```
  *
  * By default, NodeIO can only read/write paths on disk. To enable network requests, provide a Fetch
- * API implementation (such as [`node-fetch`](https://www.npmjs.com/package/node-fetch)) and enable
+ * API implementation (global [`fetch()`](https://nodejs.org/api/globals.html#fetch) is stable in
+ * Node.js v21+, or [`node-fetch`](https://www.npmjs.com/package/node-fetch) may be installed) and enable
  * {@link NodeIO.setAllowNetwork setAllowNetwork}. Network requests may optionally be configured with
  * [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters) parameters.
  *
  * ```typescript
- * import fetch from 'node-fetch';
- *
  * const io = new NodeIO(fetch, {headers: {...}}).setAllowNetwork(true);
  *
  * const document = await io.read('https://example.com/path/to/model.glb');

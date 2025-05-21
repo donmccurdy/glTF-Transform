@@ -2,7 +2,7 @@ import { URL } from 'url';
 import { promises as fs, readFileSync } from 'fs';
 import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import mikktspace from 'mikktspace';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
@@ -61,6 +61,7 @@ import {
 	Filter,
 	Mode,
 	UASTC_DEFAULTS,
+	ktxdecompress,
 	ktxfix,
 	merge,
 	toktx,
@@ -294,10 +295,6 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
-	.option('--prune-leaves <bool>', 'Whether to prune empty leaf nodes.', {
-		validator: Validator.BOOLEAN,
-		default: true,
-	})
 	.option(
 		'--prune-solid-textures <bool>',
 		'Whether to prune solid (single-color) textures, converting them to material factors.',
@@ -336,7 +333,19 @@ commands or using the scripting API.
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
+	.option('--join-meshes <bool>', 'Join distinct meshes and nodes. Requires `--join`.', {
+		validator: Validator.BOOLEAN,
+		default: !JOIN_DEFAULTS.keepMeshes,
+	})
+	.option('--join-named <bool>', 'Join named meshes and nodes. Requires `--join`.', {
+		validator: Validator.BOOLEAN,
+		default: !JOIN_DEFAULTS.keepNamed,
+	})
 	.option('--weld <bool>', 'Merge equivalent vertices. Required when simplifying geometry.', {
+		validator: Validator.BOOLEAN,
+		default: true,
+	})
+	.option('--resample <bool>', 'Resample animations, losslessly deduplicating keyframes', {
 		validator: Validator.BOOLEAN,
 		default: true,
 	})
@@ -353,13 +362,15 @@ commands or using the scripting API.
 			simplifyLockBorder: boolean;
 			prune: boolean;
 			pruneAttributes: boolean;
-			pruneLeaves: boolean;
 			pruneSolidTextures: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
 			textureSize: number;
 			flatten: boolean;
+			resample: boolean;
 			join: boolean;
+			joinNamed: boolean;
+			joinMeshes: boolean;
 			weld: boolean;
 		};
 
@@ -378,7 +389,14 @@ commands or using the scripting API.
 		}
 
 		if (opts.flatten) transforms.push(flatten());
-		if (opts.join) transforms.push(join());
+		if (opts.join) {
+			transforms.push(
+				join({
+					keepNamed: !opts.joinNamed,
+					keepMeshes: !opts.joinMeshes,
+				}),
+			);
+		}
 		if (opts.weld) transforms.push(weld());
 
 		if (opts.simplify) {
@@ -392,14 +410,14 @@ commands or using the scripting API.
 			);
 		}
 
-		transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
+		if (opts.resample) transforms.push(resample({ ready: resampleReady, resample: resampleWASM }));
 
 		if (opts.prune) {
 			transforms.push(
 				prune({
 					keepAttributes: !opts.pruneAttributes,
 					keepIndices: false,
-					keepLeaves: !opts.pruneLeaves,
+					keepLeaves: false,
 					keepSolidTextures: !opts.pruneSolidTextures,
 				}),
 			);
@@ -755,11 +773,11 @@ EXT_mesh_gpu_instancing.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--keepMeshes <bool>', 'Prevents joining distinct Meshes and Nodes.', {
+	.option('--keepMeshes <bool>', 'Prevents joining distinct meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepMeshes,
 	})
-	.option('--keepNamed <bool>', 'Prevents joining named Meshes and Nodes.', {
+	.option('--keepNamed <bool>', 'Prevents joining named meshes and nodes.', {
 		validator: Validator.BOOLEAN,
 		default: JOIN_DEFAULTS.keepNamed,
 	})
@@ -1000,7 +1018,7 @@ program
 De-index geometry, disconnecting any shared vertices. This tends to increase
 the file size of the geometry and decrease efficiency, and so is not
 recommended unless disconnected vertices ("vertex soup") are required for some
-paricular software application.
+particular software application.
 	`.trim(),
 	)
 	.argument('<input>', INPUT_DESC)
@@ -1463,6 +1481,19 @@ for textures where the quality is sufficient.`.trim(),
 			toktx({ ...options, encoder, mode, pattern, slots }),
 		);
 	});
+
+// KTXDECOMPRESS
+program
+	.command('ktxdecompress', 'KTX + Basis texture decompression')
+	.help(
+		`
+		Decompresses KTX2 textures in KTX2 format, converting to PNG.
+		Intended for debugging, or to resolve compatibility issues in
+		software that doesn't support KTX2 textures.`.trim(),
+	)
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.action(({ args, logger }) => Session.create(io, logger, args.input, args.output).transform(ktxdecompress()));
 
 // KTXFIX
 program
