@@ -15,6 +15,11 @@
 			"description": "Requires updates to greendoc",
 			"matchPackageNames": ["ts-morph"],
 			"enabled": false
+		},
+		{
+			"description": "Requires Node.js v22+ from v2.0.1, and v2.0.0 is broken, see https://github.com/mattcg/language-tags/commit/efbe8c81e58fe847aa1ec922ee735edbea6c2545",
+			"matchPackageNames": ["language-tags", "@types/language-tags"],
+			"enabled": false
 		}
 	]
 }
