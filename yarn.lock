@@ -1659,7 +1659,7 @@ __metadata:
     keyframe-resample: "npm:~0.1.0"
     ktx-parse: "npm:^1.0.0"
     language-tags: "npm:<2.0.0"
-    listr2: "npm:~8.2.5"
+    listr2: "npm:~8.3.0"
     meshoptimizer: "npm:~0.22.0"
     micromatch: "npm:~4.0.8"
     mikktspace: "npm:~1.1.1"
@@ -8058,9 +8058,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"listr2@npm:~8.2.5":
-  version: 8.2.5
-  resolution: "listr2@npm:8.2.5"
+"listr2@npm:~8.3.0":
+  version: 8.3.3
+  resolution: "listr2@npm:8.3.3"
   dependencies:
     cli-truncate: "npm:^4.0.0"
     colorette: "npm:^2.0.20"
@@ -8068,7 +8068,7 @@ __metadata:
     log-update: "npm:^6.1.0"
     rfdc: "npm:^1.4.1"
     wrap-ansi: "npm:^9.0.0"
-  checksum: 10c0/f5a9599514b00c27d7eb32d1117c83c61394b2a985ec20e542c798bf91cf42b19340215701522736f5b7b42f557e544afeadec47866e35e5d4f268f552729671
+  checksum: 10c0/0792f8a7fd482fa516e21689e012e07081cab3653172ca606090622cfa0024c784a1eba8095a17948a0e9a4aa98a80f7c9c90f78a0dd35173d6802f9cc123a82
   languageName: node
   linkType: hard
 
