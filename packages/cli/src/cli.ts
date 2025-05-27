@@ -1795,5 +1795,6 @@ program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
 export { program, programReady };
+export { Validator };
 export * from './util.js';
 export * from './transforms/index.js';
