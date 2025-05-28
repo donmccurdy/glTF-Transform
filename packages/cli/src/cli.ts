@@ -54,6 +54,8 @@ import {
 	MESHOPT_DEFAULTS,
 	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
 	PRUNE_DEFAULTS,
+	unwrap,
+	UNWRAP_DEFAULTS,
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -1060,6 +1062,34 @@ compute MikkTSpace tangents at runtime.
 			tangents({ generateTangents: mikktspace.generateTangents, ...options }),
 			weld(),
 		),
+	);
+
+// UNWRAP
+program
+	.command('unwrap', 'Generate texcoords')
+	.help(`
+Generates texture coordinates for the given attribute set index.
+
+Uses xatlas (https://github.com/jpcy/xatlas) to generate unique texture
+coordinates suitable for baking lightmaps or texture painting.
+	`.trim())
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--index <index>', 'Attribute set index. (ie: 1 generates TEXCOORD_1)', {
+		validator: Validator.NUMBER,
+		default: 0,
+	})
+	.option('--overwrite', 'Overwrite existing vertex tangents', {
+		validator: Validator.BOOLEAN,
+		default: false,
+	})
+	.option('--grouping <group>', 'Bounds for quantization grid.', {
+		validator: ['primitive', 'mesh', 'scene'],
+		default: UNWRAP_DEFAULTS.grouping,
+	})
+	.action(({args, options, logger}) =>
+		Session.create(io, logger, args.input, args.output)
+			.transform(unwrap({...options}))
 	);
 
 // REORDER

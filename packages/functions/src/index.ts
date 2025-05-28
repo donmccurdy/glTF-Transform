@@ -54,5 +54,6 @@ export {
 	fitPowerOfTwo,
 } from './utils.js';
 export * from './unweld.js';
+export * from './unwrap.js';
 export * from './vertex-color-space.js';
 export * from './weld.js';
