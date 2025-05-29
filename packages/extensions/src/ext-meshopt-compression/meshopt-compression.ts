@@ -19,10 +19,14 @@ import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 const NAME = EXT_MESHOPT_COMPRESSION;
 
 interface EncoderOptions {
+	/** Whether to use meshopt filters, for more aggressive compression. Overrides 'method'. */
+	filter?: boolean;
+	/** @deprecated Use 'filter' instead. */
 	method?: EncoderMethod;
 }
 
 const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
+	filter: false,
 	method: EncoderMethod.QUANTIZE,
 };
 
@@ -138,6 +142,8 @@ export class EXTMeshoptCompression extends Extension {
 	public readonly writeDependencies = ['meshopt.encoder'];
 
 	public static readonly EXTENSION_NAME = NAME;
+
+	/** @deprecated Use boolean 'filter' option, instead. */
 	public static readonly EncoderMethod = EncoderMethod;
 
 	private _decoder: typeof MeshoptDecoder | null = null;
@@ -340,7 +346,7 @@ export class EXTMeshoptCompression extends Extension {
 			const parentID = context.accessorUsageGroupedByParent.has(usage) ? getParentID(accessor) : null;
 			const mode = getMeshoptMode(accessor, usage);
 			const filter =
-				options.method === EncoderMethod.FILTER
+				(options.filter || options.method === EncoderMethod.FILTER)
 					? getMeshoptFilter(accessor, this.document)
 					: { filter: MeshoptFilter.NONE };
 			const preparedAccessor = prepareAccessor(accessor, encoder, mode, filter);
