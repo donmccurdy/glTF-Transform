@@ -1,18 +1,18 @@
 import type { Document, Transform, TypedArray, Primitive, ILogger } from '@gltf-transform/core';
-import type { MainModule as WATLASMODULE, WAddMeshError, WMeshDecl, WAtlasResult } from './watlas/watlas';
-import { Accessor } from '@gltf-transform/core';
+import { Accessor, PropertyType } from '@gltf-transform/core';
 import { createTransform } from './utils';
-import WAtlasModule, { WChartOptions, WPackOptions } from './watlas/watlas.js';
+import { WAtlas, WChartOptions, WPackOptions, WMeshDecl } from './watlas/watlas';
+import { WMesh } from './watlas/watlas.js';
 
 const NAME = 'unwrap';
 
 /**
  * Methods of grouping texcoords with the {@link unwrap} function.
- *  - primitive: Each primitive is given it's own texcoord atlas.
- *  - mesh: All primitive in a mesh share a texcoord atlas. (Default)
- *  - scene: All primitives in the scene share a texcoord atlas.
+ *  - PRIMITIVE: Each primitive is given it's own texcoord atlas.
+ *  - MESH: All primitive in a mesh share a texcoord atlas. (Default)
+ *  - SCENE: All primitives in the scene share a texcoord atlas.
  */
-export type UnwrapGrouping = 'primitive' | 'mesh' | 'scene';
+export type UnwrapGrouping = PropertyType.PRIMITIVE | PropertyType.MESH | PropertyType.SCENE;
 
 /** Options for the {@link unwrap} function. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -25,10 +25,8 @@ export interface UnwrapOptions {
 export const UNWRAP_DEFAULTS: UnwrapOptions = {
   index: 0,
   overwrite: false,
-  grouping: 'mesh'
+  grouping: PropertyType.MESH
 };
-
-let WAtlasPromise: Promise<WATLASMODULE>;
 
 /**
  * Generate new texcoords for all {@link Primitive}s. Useful for providing a
@@ -49,34 +47,30 @@ export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
   const options = { ...UNWRAP_DEFAULTS, ..._options } as Required<UnwrapOptions>;
 
   return createTransform(NAME, async (doc: Document): Promise<void> => {
-    if (!WAtlasPromise) {
-      WAtlasPromise = WAtlasModule();
-    }
-
-    const WATLAS = await WAtlasPromise;
+    await WAtlas.Initialize();
     const logger = doc.getLogger();
 
     switch (options.grouping) {
-      case 'primitive': {
+      case PropertyType.PRIMITIVE: {
         for (const mesh of doc.getRoot().listMeshes()) {
           for (const prim of mesh.listPrimitives()) {
-            unwrapPrimitives([prim], options, logger, doc, WATLAS);
+            unwrapPrimitives([prim], options, logger, doc);
           }
         }
         break;
       }
-      case 'mesh': {
+      case PropertyType.MESH: {
         for (const mesh of doc.getRoot().listMeshes()) {
-          unwrapPrimitives(mesh.listPrimitives(), options, logger, doc, WATLAS);
+          unwrapPrimitives(mesh.listPrimitives(), options, logger, doc);
         }
         break;
       }
-      case 'scene': {
+      case PropertyType.SCENE: {
         const scenePrims = [];
         for (const mesh of doc.getRoot().listMeshes()) {
           scenePrims.push(...mesh.listPrimitives());
         }
-        unwrapPrimitives(scenePrims, options, logger, doc, WATLAS);
+        unwrapPrimitives(scenePrims, options, logger, doc);
         break;
       }
     }
@@ -85,28 +79,16 @@ export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
   });
 }
 
-function getMeshErrorString(WATLAS: WATLASMODULE, err: WAddMeshError) {
-  switch (err) {
-    case WATLAS.WAddMeshError.Success: return 'Success';
-    case WATLAS.WAddMeshError.Error: return 'Error';
-    case WATLAS.WAddMeshError.IndexOutOfRange: return 'IndexOutOfRange';
-    case WATLAS.WAddMeshError.InvalidFaceVertexCount: return 'InvalidFaceVertexCount';
-    case WATLAS.WAddMeshError.InvalidIndexCount: return 'InvalidIndexCount';
-    default: return 'Unknown';
-  }
-}
-
 function unwrapPrimitives(
   primitives: Primitive[],
   options: UnwrapOptions,
   logger: ILogger,
   doc: Document,
-  WATLAS: WATLASMODULE
 ) {
   const targetIndex = options.index ?? 0;
   const targetAttribute = `TEXCOORD_${targetIndex}`;
 
-  const atlas = new WATLAS.WAtlas();
+  const atlas = new WAtlas();
 
   let meshCount = 0;
   for (const prim of primitives) {
@@ -121,7 +103,7 @@ function unwrapPrimitives(
     const position = prim.getAttribute('POSITION')!;
     const positionData = getFloat32AttributeData(position, 3);
 
-    const meshDecl: Partial<WMeshDecl> = {
+    const meshDecl: WMeshDecl = {
       vertexCount: position.getCount(),
       vertexPositionData: positionData.array,
       vertexPositionStride: positionData.stride,
@@ -149,33 +131,25 @@ function unwrapPrimitives(
     // Pass indices if available
     const indices = prim.getIndices();
     if (indices) {
-      meshDecl.indexData = indices.getArray();
       meshDecl.indexCount = indices.getCount();
       const indexType = indices.getComponentType();
       switch (indexType) {
         case Accessor.ComponentType.UNSIGNED_SHORT:
-          meshDecl.indexFormat = WATLAS.WIndexFormat.UInt16;
-          break;
         case Accessor.ComponentType.UNSIGNED_INT:
-          meshDecl.indexFormat = WATLAS.WIndexFormat.UInt32;
+          // No change needed
+          meshDecl.indexData = indices.getArray() as Uint32Array | Uint16Array;
           break;
         case Accessor.ComponentType.UNSIGNED_BYTE:
           // Expand the Uint8 values into Uint16 for processing by xatlas
           meshDecl.indexData = new Uint16Array(indices.getCount());
           meshDecl.indexData.set(indices.getArray()!);
-          meshDecl.indexFormat = WATLAS.WIndexFormat.UInt16;
           break;
         default:
           throw new Error(`${NAME}: Unsupported index type ${indexType}`);
-          return;
       }
     }
 
-    const result = atlas.addMesh(meshDecl as WMeshDecl);
-    if (result != WATLAS.WAddMeshError.Success) {
-      throw new Error(`${NAME}: Error adding mesh to atlas ${getMeshErrorString(WATLAS, result)}`);
-    }
-
+    atlas.addMesh(meshDecl);
     meshCount++;
   }
 
@@ -189,20 +163,18 @@ function unwrapPrimitives(
     {} as WPackOptions
   );
 
-  const atlasResult: WAtlasResult = atlas.getResult();
-
   // xatlas UVs are in texels, so they need to be normalized before saving to
   // the glTF attribute.
-  const uScale = 1/atlasResult.width;
-  const vScale = 1/atlasResult.height;
+  const uScale = 1/atlas.width;
+  const vScale = 1/atlas.height;
 
-  if (atlasResult.meshCount != primitives.length) {
-    throw new Error(`${NAME}: Generated an unexpected number of atlas meshes. (got: ${atlasResult.meshCount}, expected: ${primitives.length})`);
+  if (atlas.meshCount != primitives.length) {
+    throw new Error(`${NAME}: Generated an unexpected number of atlas meshes. (got: ${atlas.meshCount}, expected: ${primitives.length})`);
   }
 
-  for (let i = 0; i < atlasResult.meshCount; ++i) {
+  for (let i = 0; i < atlas.meshCount; ++i) {
     const prim = primitives[i];
-    const atlasMesh = atlasResult.meshes.get(i)!;
+    const atlasMesh = atlas.getMesh(i);
 
     // Clean up previous TEXCOORD_* attribute, if there was any.
     const oldTexcoord = prim.getAttribute(targetAttribute);
@@ -234,7 +206,7 @@ function unwrapPrimitives(
                         .setArray(new Float32Array(atlasMesh.vertexCount * 2))
                         .setType('VEC2');
     for (let j = 0; j < atlasMesh.vertexCount; ++j) {
-      const vertex = atlasMesh.vertexArray.get(j)!;
+      const vertex = atlasMesh.getVertex(j);
       texcoord.setElement(j, [vertex.uv[0] * uScale, vertex.uv[1] * vScale]);
     }
     prim.setAttribute(targetAttribute, texcoord);
@@ -251,18 +223,16 @@ function unwrapPrimitives(
 
     // Update Indices.
     const indexArray = new Uint32Array(atlasMesh.indexCount);
-    indexArray.set(atlasMesh.indexArray);
+    atlasMesh.getIndexArray(indexArray);
 
     const newIndices = doc.createAccessor()
                           .setArray(indexArray)
                           .setType('SCALAR');
 
     const indices = prim.getIndices();
-    if (indices) {
-      prim.swap(indices, newIndices);
-      if (indices.listParents().length === 1) indices.dispose();
-    } else {
-      prim.setIndices(newIndices);
+    prim.setIndices(newIndices);
+    if (indices && indices.listParents().length === 1) {
+      indices.dispose();
     }
   }
 
@@ -274,7 +244,7 @@ function unwrapPrimitives(
 // vertex splitting.
 function remapAttribute(
   srcAttribute: Accessor,
-  atlasMesh: any,
+  atlasMesh: WMesh,
 ): Accessor {
   const dstAttribute = srcAttribute.clone();
 	const ArrayCtor = srcAttribute.getArray()!.constructor as new (len: number) => TypedArray;
@@ -282,7 +252,7 @@ function remapAttribute(
 
   const el: number[] = [];
   for (let i = 0; i < atlasMesh.vertexCount; ++i) {
-    const vertex = atlasMesh.vertexArray.get(i);
+    const vertex = atlasMesh.getVertex(i);
     dstAttribute.setElement(i, srcAttribute.getElement(vertex.xref, el));
   }
 

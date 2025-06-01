@@ -1084,7 +1084,7 @@ coordinates suitable for baking lightmaps or texture painting.
 		default: false,
 	})
 	.option('--grouping <group>', 'Bounds for quantization grid.', {
-		validator: ['primitive', 'mesh', 'scene'],
+		validator: [PropertyType.PRIMITIVE, PropertyType.MESH, PropertyType.SCENE],
 		default: UNWRAP_DEFAULTS.grouping,
 	})
 	.action(({args, options, logger}) =>
