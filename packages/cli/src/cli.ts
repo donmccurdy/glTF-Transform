@@ -4,6 +4,7 @@ import micromatch from 'micromatch';
 import { gzip } from 'node-gzip';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import mikktspace from 'mikktspace';
+import * as watlas from 'watlas';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
@@ -1089,7 +1090,7 @@ coordinates suitable for baking lightmaps or texture painting.
 	})
 	.action(({args, options, logger}) =>
 		Session.create(io, logger, args.input, args.output)
-			.transform(unwrap({...options}))
+			.transform(unwrap({watlas, ...options}))
 	);
 
 // REORDER

@@ -1,10 +1,16 @@
 import type { Document, Transform, TypedArray, Primitive, ILogger } from '@gltf-transform/core';
 import { Accessor, PropertyType } from '@gltf-transform/core';
 import { createTransform } from './utils';
-import { WAtlas, WChartOptions, WPackOptions, WMeshDecl } from './watlas/watlas';
-import { WMesh } from './watlas/watlas.js';
+import type * as watlas from 'watlas';
 
 const NAME = 'unwrap';
+
+export interface IWatlas {
+  Initialize(): Promise<void>;
+  Atlas: {
+    new (): watlas.Atlas;
+  }
+}
 
 /**
  * Methods of grouping texcoords with the {@link unwrap} function.
@@ -20,6 +26,7 @@ export interface UnwrapOptions {
   index?: number,
   overwrite?: boolean,
   grouping?: UnwrapGrouping,
+  watlas?: IWatlas,
 };
 
 export const UNWRAP_DEFAULTS: UnwrapOptions = {
@@ -46,8 +53,12 @@ export const UNWRAP_DEFAULTS: UnwrapOptions = {
 export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
   const options = { ...UNWRAP_DEFAULTS, ..._options } as Required<UnwrapOptions>;
 
+  if (!options.watlas) {
+    throw new Error('watlas not found!');
+  }
+
   return createTransform(NAME, async (doc: Document): Promise<void> => {
-    await WAtlas.Initialize();
+    await options.watlas.Initialize();
     const logger = doc.getLogger();
 
     switch (options.grouping) {
@@ -88,7 +99,7 @@ function unwrapPrimitives(
   const targetIndex = options.index ?? 0;
   const targetAttribute = `TEXCOORD_${targetIndex}`;
 
-  const atlas = new WAtlas();
+  const atlas = new options.watlas!.Atlas();
 
   let meshCount = 0;
   for (const prim of primitives) {
@@ -103,7 +114,7 @@ function unwrapPrimitives(
     const position = prim.getAttribute('POSITION')!;
     const positionData = getFloat32AttributeData(position, 3);
 
-    const meshDecl: WMeshDecl = {
+    const meshDecl: watlas.MeshDecl = {
       vertexCount: position.getCount(),
       vertexPositionData: positionData.array,
       vertexPositionStride: positionData.stride,
@@ -158,10 +169,7 @@ function unwrapPrimitives(
     return;
   }
 
-  atlas.generate(
-    {} as WChartOptions,
-    {} as WPackOptions
-  );
+  atlas.generate();
 
   // xatlas UVs are in texels, so they need to be normalized before saving to
   // the glTF attribute.
@@ -244,7 +252,7 @@ function unwrapPrimitives(
 // vertex splitting.
 function remapAttribute(
   srcAttribute: Accessor,
-  atlasMesh: WMesh,
+  atlasMesh: watlas.Mesh,
 ): Accessor {
   const dstAttribute = srcAttribute.clone();
 	const ArrayCtor = srcAttribute.getArray()!.constructor as new (len: number) => TypedArray;

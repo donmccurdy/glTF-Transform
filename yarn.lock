@@ -1671,6 +1671,7 @@ __metadata:
     spdx-correct: "npm:~3.2.0"
     strip-ansi: "npm:~7.1.0"
     tmp: "npm:~0.2.3"
+    watlas: "npm:^0.9.1"
   bin:
     gltf-transform: ./bin/cli.js
   languageName: unknown
@@ -6654,6 +6655,7 @@ __metadata:
     tweakpane-plugin-thumbnail-list: "npm:^0.3.0"
     typescript: "npm:5.7.3"
     vite: "npm:^6.1.0"
+    watlas: "npm:^0.9.1"
   languageName: unknown
   linkType: soft
 
@@ -12780,6 +12782,13 @@ __metadata:
   version: 3.0.1
   resolution: "walk-up-path@npm:3.0.1"
   checksum: 10c0/3184738e0cf33698dd58b0ee4418285b9c811e58698f52c1f025435a85c25cbc5a63fee599f1a79cb29ca7ef09a44ec9417b16bfd906b1a37c305f7aa20ee5bc
+  languageName: node
+  linkType: hard
+
+"watlas@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "watlas@npm:0.9.1"
+  checksum: 10c0/5e285e46544c5bdfc6cd34e8f54de9156597d82974a887419587cb37909b5954aae88d9308b7f203b44604671a407115fc0bdc2c65faefb516ac635876b197d3
   languageName: node
   linkType: hard
 
