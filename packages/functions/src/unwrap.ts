@@ -3,14 +3,15 @@ import { Accessor, PropertyType } from '@gltf-transform/core';
 import { createTransform } from './utils';
 import type * as watlas from 'watlas';
 import { dequantizeAttributeArray } from './dequantize.js';
+import { compactPrimitive } from './compact-primitive.js';
 
 const NAME = 'unwrap';
 
 export interface IWatlas {
-  Initialize(): Promise<void>;
-  Atlas: {
-    new (): watlas.Atlas;
-  }
+	Initialize(): Promise<void>;
+	Atlas: {
+		new (): watlas.Atlas;
+	};
 }
 
 /**
@@ -24,16 +25,16 @@ export type UnwrapGrouping = PropertyType.PRIMITIVE | PropertyType.MESH | Proper
 /** Options for the {@link unwrap} function. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UnwrapOptions {
-  index?: number,
-  overwrite?: boolean,
-  grouping?: UnwrapGrouping,
-  watlas?: IWatlas,
-};
+	index?: number;
+	overwrite?: boolean;
+	grouping?: UnwrapGrouping;
+	watlas?: IWatlas;
+}
 
 export const UNWRAP_DEFAULTS: UnwrapOptions = {
-  index: 0,
-  overwrite: false,
-  grouping: PropertyType.MESH
+	index: 0,
+	overwrite: false,
+	grouping: PropertyType.MESH,
 };
 
 /**
@@ -52,226 +53,223 @@ export const UNWRAP_DEFAULTS: UnwrapOptions = {
  * ```
  */
 export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
-  const options = { ...UNWRAP_DEFAULTS, ..._options } as Required<UnwrapOptions>;
+	const options = { ...UNWRAP_DEFAULTS, ..._options } as Required<UnwrapOptions>;
 
-  if (!options.watlas) {
-    throw new Error('watlas not found!');
-  }
+	if (!options.watlas) {
+		throw new Error('watlas not found!');
+	}
 
-  return createTransform(NAME, async (doc: Document): Promise<void> => {
-    await options.watlas.Initialize();
-    const logger = doc.getLogger();
+	return createTransform(NAME, async (doc: Document): Promise<void> => {
+		await options.watlas.Initialize();
+		const logger = doc.getLogger();
 
-    switch (options.grouping) {
-      case PropertyType.PRIMITIVE: {
-        for (const mesh of doc.getRoot().listMeshes()) {
-          for (const prim of mesh.listPrimitives()) {
-            unwrapPrimitives([prim], options, logger, doc);
-          }
-        }
-        break;
-      }
-      case PropertyType.MESH: {
-        for (const mesh of doc.getRoot().listMeshes()) {
-          unwrapPrimitives(mesh.listPrimitives(), options, logger, doc);
-        }
-        break;
-      }
-      case PropertyType.SCENE: {
-        const scenePrims = [];
-        for (const mesh of doc.getRoot().listMeshes()) {
-          scenePrims.push(...mesh.listPrimitives());
-        }
-        unwrapPrimitives(scenePrims, options, logger, doc);
-        break;
-      }
-    }
+		switch (options.grouping) {
+			case PropertyType.PRIMITIVE: {
+				for (const mesh of doc.getRoot().listMeshes()) {
+					for (const prim of mesh.listPrimitives()) {
+						unwrapPrimitives([prim], options, logger, doc);
+					}
+				}
+				break;
+			}
+			case PropertyType.MESH: {
+				for (const mesh of doc.getRoot().listMeshes()) {
+					unwrapPrimitives(mesh.listPrimitives(), options, logger, doc);
+				}
+				break;
+			}
+			case PropertyType.SCENE: {
+				const scenePrims = [];
+				for (const mesh of doc.getRoot().listMeshes()) {
+					scenePrims.push(...mesh.listPrimitives());
+				}
+				unwrapPrimitives(scenePrims, options, logger, doc);
+				break;
+			}
+		}
 
-    logger.debug(`${NAME}: Complete.`);
-  });
+		logger.debug(`${NAME}: Complete.`);
+	});
 }
 
-function unwrapPrimitives(
-  primitives: Primitive[],
-  options: UnwrapOptions,
-  logger: ILogger,
-  doc: Document,
-) {
-  const targetIndex = options.index ?? 0;
-  const targetAttribute = `TEXCOORD_${targetIndex}`;
+function unwrapPrimitives(primitives: Primitive[], options: UnwrapOptions, logger: ILogger, doc: Document) {
+	const targetIndex = options.index ?? 0;
+	const targetAttribute = `TEXCOORD_${targetIndex}`;
 
-  const atlas = new options.watlas!.Atlas();
+	const atlas = new options.watlas!.Atlas();
 
-  let meshCount = 0;
-  for (const prim of primitives) {
-    // Don't process primitives that already have the desired TEXCOORD index
-    // if overwrite is false.
-    if (!options.overwrite) {
-      const texcoord = prim.getAttribute(targetAttribute);
-      if (texcoord) continue;
-    }
+	const unwrapPrims = [];
+	for (const prim of primitives) {
+		// Don't process primitives that already have the desired TEXCOORD index
+		// if overwrite is false.
+		if (!options.overwrite) {
+			const texcoord = prim.getAttribute(targetAttribute);
+			if (texcoord) continue;
+		}
 
-    // Always pass vertex position data
-    const position = prim.getAttribute('POSITION')!;
+		const unwrapPrim = compactPrimitive(prim);
+		unwrapPrims.push(unwrapPrim);
 
-    const meshDecl: watlas.MeshDecl = {
-      vertexCount: position.getCount(),
-      vertexPositionData: getAttributeFloat32Array(position),
-      vertexPositionStride: position.getElementSize() * Float32Array.BYTES_PER_ELEMENT,
-    };
+		// Always pass vertex position data
+		const position = unwrapPrim.getAttribute('POSITION')!;
 
-    // Pass normal data if available to improve unwrapping
-    const normal = prim.getAttribute('NORMAL');
-    if (normal) {
-      meshDecl.vertexNormalData = getAttributeFloat32Array(normal);
-      meshDecl.vertexNormalStride = normal.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
-    }
+		const meshDecl: watlas.MeshDecl = {
+			vertexCount: position.getCount(),
+			vertexPositionData: getAttributeFloat32Array(position),
+			vertexPositionStride: position.getElementSize() * Float32Array.BYTES_PER_ELEMENT,
+		};
 
-    // Pass texcoord data from set 0 if it's available and not the set that
-    // is being generated.
-    if (options.index != 0) {
-      const texcoord = prim.getAttribute('TEXCOORD_0');
-      if (texcoord) {
-        meshDecl.vertexUvData = getAttributeFloat32Array(texcoord);
-        meshDecl.vertexUvStride = texcoord.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
-      }
-    }
+		// Pass normal data if available to improve unwrapping
+		const normal = unwrapPrim.getAttribute('NORMAL');
+		if (normal) {
+			meshDecl.vertexNormalData = getAttributeFloat32Array(normal);
+			meshDecl.vertexNormalStride = normal.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
+		}
 
-    // Pass indices if available
-    const indices = prim.getIndices();
-    if (indices) {
-      meshDecl.indexCount = indices.getCount();
-      const indexType = indices.getComponentType();
-      switch (indexType) {
-        case Accessor.ComponentType.UNSIGNED_SHORT:
-        case Accessor.ComponentType.UNSIGNED_INT:
-          // No change needed
-          meshDecl.indexData = indices.getArray() as Uint32Array | Uint16Array;
-          break;
-        case Accessor.ComponentType.UNSIGNED_BYTE:
-          // Expand the Uint8 values into Uint16 for processing by xatlas
-          meshDecl.indexData = new Uint16Array(indices.getCount());
-          meshDecl.indexData.set(indices.getArray()!);
-          break;
-        default:
-          throw new Error(`${NAME}: Unsupported index type ${indexType}`);
-      }
-    }
+		// Pass texcoord data from set 0 if it's available and not the set that
+		// is being generated.
+		if (options.index !== 0) {
+			const texcoord = unwrapPrim.getAttribute('TEXCOORD_0');
+			if (texcoord) {
+				meshDecl.vertexUvData = getAttributeFloat32Array(texcoord);
+				meshDecl.vertexUvStride = texcoord.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
+			}
+		}
 
-    atlas.addMesh(meshDecl);
-    meshCount++;
-  }
+		// Pass indices if available
+		const indices = unwrapPrim.getIndices();
+		if (indices) {
+			meshDecl.indexCount = indices.getCount();
+			const indexType = indices.getComponentType();
+			switch (indexType) {
+				case Accessor.ComponentType.UNSIGNED_SHORT:
+				case Accessor.ComponentType.UNSIGNED_INT:
+					// No change needed
+					meshDecl.indexData = indices.getArray() as Uint32Array | Uint16Array;
+					break;
+				case Accessor.ComponentType.UNSIGNED_BYTE:
+					// Expand the Uint8 values into Uint16 for processing by xatlas
+					meshDecl.indexData = new Uint16Array(indices.getCount());
+					meshDecl.indexData.set(indices.getArray()!);
+					break;
+				default:
+					throw new Error(`${NAME}: Unsupported index type ${indexType}`);
+			}
+		}
 
-  // Don't proceed if we skipped every primitive in this group.
-  if (meshCount == 0) {
-    return;
-  }
+		atlas.addMesh(meshDecl);
+	}
 
-  atlas.generate();
+	// Don't proceed if we skipped every primitive in this group.
+	if (unwrapPrims.length === 0) {
+		return;
+	}
 
-  // xatlas UVs are in texels, so they need to be normalized before saving to
-  // the glTF attribute.
-  const uScale = 1/atlas.width;
-  const vScale = 1/atlas.height;
+	atlas.generate();
 
-  if (atlas.meshCount != primitives.length) {
-    throw new Error(`${NAME}: Generated an unexpected number of atlas meshes. (got: ${atlas.meshCount}, expected: ${primitives.length})`);
-  }
+	if (atlas.meshCount !== unwrapPrims.length) {
+		throw new Error(
+			`${NAME}: Generated an unexpected number of atlas meshes. (got: ${atlas.meshCount}, expected: ${unwrapPrims.length})`,
+		);
+	}
 
-  for (let i = 0; i < atlas.meshCount; ++i) {
-    const prim = primitives[i];
-    const atlasMesh = atlas.getMesh(i);
+	// xatlas UVs are in texels, so they need to be normalized before saving to
+	// the glTF attribute.
+	const uScale = 1 / atlas.width;
+	const vScale = 1 / atlas.height;
 
-    // Clean up previous TEXCOORD_* attribute, if there was any.
-    const oldTexcoord = prim.getAttribute(targetAttribute);
-    if (oldTexcoord) {
-      prim.setAttribute(targetAttribute, null);
-      if (oldTexcoord.listParents().length === 1) oldTexcoord.dispose();
-    }
+	for (let i = 0; i < atlas.meshCount; ++i) {
+		const prim = unwrapPrims[i];
+		const atlasMesh = atlas.getMesh(i);
 
-    // Remap Vertex attributes.
-    for (const srcAttribute of prim.listAttributes()) {
-      prim.swap(srcAttribute, remapAttribute(srcAttribute, atlasMesh));
+		// Clean up previous TEXCOORD_* attribute, if there was any.
+		const oldTexcoord = prim.getAttribute(targetAttribute);
+		if (oldTexcoord) {
+			prim.setAttribute(targetAttribute, null);
+			if (oldTexcoord.listParents().length === 1) oldTexcoord.dispose();
+		}
 
-      // Clean up.
-      if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-    }
+		// Remap Vertex attributes.
+		for (const srcAttribute of prim.listAttributes()) {
+			prim.swap(srcAttribute, remapAttribute(srcAttribute, atlasMesh));
 
-    // Remap morph target vertex attributes.
-    for (const target of prim.listTargets()) {
-      for (const srcAttribute of target.listAttributes()) {
-        target.swap(srcAttribute, remapAttribute(srcAttribute, atlasMesh));
+			// Clean up.
+			if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+		}
 
-        // Clean up.
-        if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
-      }
-    }
+		// Remap morph target vertex attributes.
+		for (const target of prim.listTargets()) {
+			for (const srcAttribute of target.listAttributes()) {
+				target.swap(srcAttribute, remapAttribute(srcAttribute, atlasMesh));
 
-    // Add new TEXCOORD_* attribute.
-    const texcoord = doc.createAccessor()
-                        .setArray(new Float32Array(atlasMesh.vertexCount * 2))
-                        .setType('VEC2');
-    for (let j = 0; j < atlasMesh.vertexCount; ++j) {
-      const vertex = atlasMesh.getVertex(j);
-      texcoord.setElement(j, [vertex.uv[0] * uScale, vertex.uv[1] * vScale]);
-    }
-    prim.setAttribute(targetAttribute, texcoord);
+				// Clean up.
+				if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
+			}
+		}
 
-    // The glTF spec says that if TEXCOORD_N (where N > 0) exists then
-    // TEXCOORD_N-1...TEXCOORD_0 must also exist. If any prior TEXCOORD
-    // attributes are missing, copy this attribute to satisfy that requirement.
-    for (let j = targetIndex-1; j >= 0; --j) {
-      const attibName = `TEXCOORD_${j}`;
-      if (!prim.getAttribute(attibName)) {
-        prim.setAttribute(attibName, texcoord);
-      }
-    }
+		// Add new TEXCOORD_* attribute.
+		const texcoord = doc
+			.createAccessor()
+			.setArray(new Float32Array(atlasMesh.vertexCount * 2))
+			.setType('VEC2');
+		for (let j = 0; j < atlasMesh.vertexCount; ++j) {
+			const vertex = atlasMesh.getVertex(j);
+			texcoord.setElement(j, [vertex.uv[0] * uScale, vertex.uv[1] * vScale]);
+		}
+		prim.setAttribute(targetAttribute, texcoord);
 
-    // Update Indices.
-    const indexArray = new Uint32Array(atlasMesh.indexCount);
-    atlasMesh.getIndexArray(indexArray);
+		// The glTF spec says that if TEXCOORD_N (where N > 0) exists then
+		// TEXCOORD_N-1...TEXCOORD_0 must also exist. If any prior TEXCOORD
+		// attributes are missing, copy this attribute to satisfy that requirement.
+		for (let j = targetIndex - 1; j >= 0; --j) {
+			const attibName = `TEXCOORD_${j}`;
+			if (!prim.getAttribute(attibName)) {
+				prim.setAttribute(attibName, texcoord);
+			}
+		}
 
-    const newIndices = doc.createAccessor()
-                          .setArray(indexArray)
-                          .setType('SCALAR');
+		// Update Indices.
+		const indexArray = new Uint32Array(atlasMesh.indexCount);
+		atlasMesh.getIndexArray(indexArray);
 
-    const indices = prim.getIndices();
-    prim.setIndices(newIndices);
-    if (indices && indices.listParents().length === 1) {
-      indices.dispose();
-    }
-  }
+		const newIndices = doc.createAccessor().setArray(indexArray).setType('SCALAR');
 
-  atlas.delete();
+		const indices = prim.getIndices();
+		prim.setIndices(newIndices);
+		if (indices && indices.listParents().length === 1) {
+			indices.dispose();
+		}
+	}
+
+	atlas.delete();
 }
 
 // Returns a new attribute with the same values at as source attribute, but
 // re-ordered according to the vertex order output by xatlas to account for
 // vertex splitting.
-function remapAttribute(
-  srcAttribute: Accessor,
-  atlasMesh: watlas.Mesh,
-): Accessor {
-  const dstAttribute = srcAttribute.clone();
+function remapAttribute(srcAttribute: Accessor, atlasMesh: watlas.Mesh): Accessor {
+	const dstAttribute = srcAttribute.clone();
 	const ArrayCtor = srcAttribute.getArray()!.constructor as new (len: number) => TypedArray;
 	dstAttribute.setArray(new ArrayCtor(atlasMesh.vertexCount * srcAttribute.getElementSize()));
 
-  const el: number[] = [];
-  for (let i = 0; i < atlasMesh.vertexCount; ++i) {
-    const vertex = atlasMesh.getVertex(i);
-    dstAttribute.setElement(i, srcAttribute.getElement(vertex.xref, el));
-  }
+	const el: number[] = [];
+	for (let i = 0; i < atlasMesh.vertexCount; ++i) {
+		const vertex = atlasMesh.getVertex(i);
+		dstAttribute.setElement(i, srcAttribute.getElement(vertex.xref, el));
+	}
 
-  return dstAttribute;
+	return dstAttribute;
 }
 
 interface Float32AttributeData {
-  stride: number,
-  array: Float32Array,
+	stride: number;
+	array: Float32Array;
 }
 
 // Returns the values of the given attribute as a Float32Array.
 function getAttributeFloat32Array(attribute: Accessor): Float32Array {
-  if (attribute.getComponentType() == Accessor.ComponentType.FLOAT) { return attribute.getArray()! as Float32Array; }
-  return dequantizeAttributeArray(attribute.getArray()!, attribute.getComponentType(), attribute.getNormalized());
+	if (attribute.getComponentType() === Accessor.ComponentType.FLOAT) {
+		return attribute.getArray()! as Float32Array;
+	}
+	return dequantizeAttributeArray(attribute.getArray()!, attribute.getComponentType(), attribute.getNormalized());
 }

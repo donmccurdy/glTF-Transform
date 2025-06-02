@@ -1068,12 +1068,14 @@ compute MikkTSpace tangents at runtime.
 // UNWRAP
 program
 	.command('unwrap', 'Generate texcoords')
-	.help(`
+	.help(
+		`
 Generates texture coordinates for the given attribute set index.
 
 Uses xatlas (https://github.com/jpcy/xatlas) to generate unique texture
 coordinates suitable for baking lightmaps or texture painting.
-	`.trim())
+	`.trim(),
+	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
 	.option('--index <index>', 'Attribute set index. (ie: 1 generates TEXCOORD_1)', {
@@ -1088,9 +1090,8 @@ coordinates suitable for baking lightmaps or texture painting.
 		validator: [PropertyType.PRIMITIVE, PropertyType.MESH, PropertyType.SCENE],
 		default: UNWRAP_DEFAULTS.grouping,
 	})
-	.action(({args, options, logger}) =>
-		Session.create(io, logger, args.input, args.output)
-			.transform(unwrap({watlas, ...options}))
+	.action(({ args, options, logger }) =>
+		Session.create(io, logger, args.input, args.output).transform(unwrap({ watlas, ...options })),
 	);
 
 // REORDER
