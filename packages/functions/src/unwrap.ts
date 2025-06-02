@@ -2,6 +2,7 @@ import type { Document, Transform, TypedArray, Primitive, ILogger } from '@gltf-
 import { Accessor, PropertyType } from '@gltf-transform/core';
 import { createTransform } from './utils';
 import type * as watlas from 'watlas';
+import { dequantizeAttributeArray } from './dequantize.js';
 
 const NAME = 'unwrap';
 
@@ -112,20 +113,18 @@ function unwrapPrimitives(
 
     // Always pass vertex position data
     const position = prim.getAttribute('POSITION')!;
-    const positionData = getFloat32AttributeData(position, 3);
 
     const meshDecl: watlas.MeshDecl = {
       vertexCount: position.getCount(),
-      vertexPositionData: positionData.array,
-      vertexPositionStride: positionData.stride,
+      vertexPositionData: getAttributeFloat32Array(position),
+      vertexPositionStride: position.getElementSize() * Float32Array.BYTES_PER_ELEMENT,
     };
 
     // Pass normal data if available to improve unwrapping
     const normal = prim.getAttribute('NORMAL');
     if (normal) {
-      const normalData = getFloat32AttributeData(normal, 3);
-      meshDecl.vertexNormalData = normalData.array;
-      meshDecl.vertexNormalStride = normalData.stride;
+      meshDecl.vertexNormalData = getAttributeFloat32Array(normal);
+      meshDecl.vertexNormalStride = normal.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
     }
 
     // Pass texcoord data from set 0 if it's available and not the set that
@@ -133,9 +132,8 @@ function unwrapPrimitives(
     if (options.index != 0) {
       const texcoord = prim.getAttribute('TEXCOORD_0');
       if (texcoord) {
-        const texcoordData = getFloat32AttributeData(texcoord, 2);
-        meshDecl.vertexUvData = texcoordData.array;
-        meshDecl.vertexUvStride = texcoordData.stride;
+        meshDecl.vertexUvData = getAttributeFloat32Array(texcoord);
+        meshDecl.vertexUvStride = texcoord.getElementSize() * Float32Array.BYTES_PER_ELEMENT;
       }
     }
 
@@ -272,26 +270,8 @@ interface Float32AttributeData {
   array: Float32Array,
 }
 
-// Returns the values of the given attribute as a Float32Array with the given
-// number of components per element
-function getFloat32AttributeData(srcAttribute: Accessor, minComponents: number): Float32AttributeData {
-  if (srcAttribute.getElementSize() >= minComponents &&
-      srcAttribute.getComponentType() == Accessor.ComponentType.FLOAT) {
-    return {
-      stride: srcAttribute.getElementSize() * Float32Array.BYTES_PER_ELEMENT,
-      array: srcAttribute.getArray()! as Float32Array,
-    }
-  }
-
-  const elementStride = Math.max(minComponents, srcAttribute.getElementSize())
-  const dstArray = new Float32Array(srcAttribute.getCount() * elementStride);
-  const el: number[] = [];
-  for (let i = 0; i < srcAttribute.getCount(); ++i) {
-    dstArray.set(srcAttribute.getElement(i, el), i * minComponents);
-  }
-
-  return {
-    stride: elementStride  * Float32Array.BYTES_PER_ELEMENT,
-    array: dstArray,
-  };
+// Returns the values of the given attribute as a Float32Array.
+function getAttributeFloat32Array(attribute: Accessor): Float32Array {
+  if (attribute.getComponentType() == Accessor.ComponentType.FLOAT) { return attribute.getArray()! as Float32Array; }
+  return dequantizeAttributeArray(attribute.getArray()!, attribute.getComponentType(), attribute.getNormalized());
 }
