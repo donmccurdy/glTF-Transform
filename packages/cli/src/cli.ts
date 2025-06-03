@@ -1078,7 +1078,7 @@ coordinates suitable for baking lightmaps or texture painting.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--index <index>', 'Attribute set index. (ie: 1 generates TEXCOORD_1)', {
+	.option('--texCoord <index>', 'Attribute set index (ie: 1 generates TEXCOORD_1)', {
 		validator: Validator.NUMBER,
 		default: 0,
 	})
@@ -1086,7 +1086,7 @@ coordinates suitable for baking lightmaps or texture painting.
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
-	.option('--grouping <group>', 'Bounds for quantization grid.', {
+	.option('--grouping <group>', 'How geometry should be grouped into TexCoord atlases', {
 		validator: [PropertyType.PRIMITIVE, PropertyType.MESH, PropertyType.SCENE],
 		default: UNWRAP_DEFAULTS.grouping,
 	})

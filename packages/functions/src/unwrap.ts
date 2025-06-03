@@ -14,6 +14,13 @@ export interface IWatlas {
 	};
 }
 
+/** Options for the {@link unwrapPrimitives} function. */
+export interface UnwrapPrimitivesOptions {
+	texCoord?: number;
+	overwrite?: boolean;
+	watlas?: IWatlas;
+}
+
 /**
  * Methods of grouping texcoords with the {@link unwrap} function.
  *  - PRIMITIVE: Each primitive is given it's own texcoord atlas.
@@ -22,34 +29,31 @@ export interface IWatlas {
  */
 export type UnwrapGrouping = PropertyType.PRIMITIVE | PropertyType.MESH | PropertyType.SCENE;
 
-/** Options for the {@link unwrap} function. */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface UnwrapOptions {
-	index?: number;
-	overwrite?: boolean;
+/** Options for the {@link unwrap} transform. */
+export interface UnwrapOptions extends UnwrapPrimitivesOptions {
 	grouping?: UnwrapGrouping;
-	watlas?: IWatlas;
 }
 
 export const UNWRAP_DEFAULTS: UnwrapOptions = {
-	index: 0,
+	texCoord: 0,
 	overwrite: false,
 	grouping: PropertyType.MESH,
 };
 
 /**
- * Generate new texcoords for all {@link Primitive}s. Useful for providing a
- * base set of texcoords if none was included in the mesh or adding a second set
- * of texcoords for things like AO or lightmapping. This operation may increase
- * the number of vertices in a mesh.
+ * Generate new texcoords for all {@link Primitive}s in the document. Useful for
+ * providing a base set of texcoords if none was included in the mesh or adding
+ * a second set of texcoords for things like AO or lightmapping. This operation
+ * may increase the number of vertices in the document's meshes.
  *
  * Example:
  *
  * ```ts
+ * import * as watlas from 'watlas';
  * import { unwrap } from '@gltf-transform/functions';
  *
  * // Generate a TEXCOORD_1 attribute for all primitives.
- * await document.transform(unwrap({ index: 1, overwrite: true }));
+ * await document.transform(unwrap({ watlas, texCoord: 1, overwrite: true }));
  * ```
  */
 export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
@@ -61,20 +65,19 @@ export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
 
 	return createTransform(NAME, async (doc: Document): Promise<void> => {
 		await options.watlas.Initialize();
-		const logger = doc.getLogger();
 
 		switch (options.grouping) {
 			case PropertyType.PRIMITIVE: {
 				for (const mesh of doc.getRoot().listMeshes()) {
 					for (const prim of mesh.listPrimitives()) {
-						unwrapPrimitives([prim], options, logger, doc);
+						unwrapPrimitives([prim], options, doc);
 					}
 				}
 				break;
 			}
 			case PropertyType.MESH: {
 				for (const mesh of doc.getRoot().listMeshes()) {
-					unwrapPrimitives(mesh.listPrimitives(), options, logger, doc);
+					unwrapPrimitives(mesh.listPrimitives(), options, doc);
 				}
 				break;
 			}
@@ -83,18 +86,41 @@ export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
 				for (const mesh of doc.getRoot().listMeshes()) {
 					scenePrims.push(...mesh.listPrimitives());
 				}
-				unwrapPrimitives(scenePrims, options, logger, doc);
+				unwrapPrimitives(scenePrims, options, doc);
 				break;
 			}
 		}
 
+		const logger = doc.getLogger();
 		logger.debug(`${NAME}: Complete.`);
 	});
 }
 
-function unwrapPrimitives(primitives: Primitive[], options: UnwrapOptions, logger: ILogger, doc: Document) {
-	const targetIndex = options.index ?? 0;
+/**
+ * Generate new texcoords for the specified {@link Primitive}s.
+ * watlas must be initialized before calling this function.
+ *
+ * Example:
+ *
+ * ```ts
+ * import * as watlas from 'watlas';
+ * import { unwrapPrimitives } from '@gltf-transform/functions';
+ *
+ * // Initialize watlas.
+ * await watlas.Initialize();
+ *
+ * // Generate a TEXCOORD_1 attribute for the specified primitives.
+ * cosnt primitives = mesh.listPrimitives();
+ * unwrapPrimitives(primitives, { watlas, texCoord: 1, overwrite: true }, doc));
+ * ```
+ */
+export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimitivesOptions, doc: Document) {
+	const targetIndex = options.texCoord ?? 0;
 	const targetAttribute = `TEXCOORD_${targetIndex}`;
+
+	if (!options.watlas) {
+		throw new Error('watlas not found!');
+	}
 
 	const atlas = new options.watlas!.Atlas();
 
@@ -128,7 +154,7 @@ function unwrapPrimitives(primitives: Primitive[], options: UnwrapOptions, logge
 
 		// Pass texcoord data from set 0 if it's available and not the set that
 		// is being generated.
-		if (options.index !== 0) {
+		if (options.texCoord !== 0) {
 			const texcoord = unwrapPrim.getAttribute('TEXCOORD_0');
 			if (texcoord) {
 				meshDecl.vertexUvData = getAttributeFloat32Array(texcoord);
@@ -259,11 +285,6 @@ function remapAttribute(srcAttribute: Accessor, atlasMesh: watlas.Mesh): Accesso
 	}
 
 	return dstAttribute;
-}
-
-interface Float32AttributeData {
-	stride: number;
-	array: Float32Array;
 }
 
 // Returns the values of the given attribute as a Float32Array.
