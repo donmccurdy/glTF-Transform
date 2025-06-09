@@ -57,7 +57,8 @@
     "sharp": "~0.33.5",
     "spdx-correct": "~3.2.0",
     "strip-ansi": "~7.1.0",
-    "tmp": "~0.2.3"
+    "tmp": "~0.2.3",
+    "watlas": "^1.0.0"
   },
   "files": [
     "bin/",
