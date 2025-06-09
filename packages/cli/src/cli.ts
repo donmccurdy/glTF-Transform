@@ -1078,7 +1078,7 @@ coordinates suitable for baking lightmaps or texture painting.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--texCoord <index>', 'Target texture coordinate index. 0 = TEXCOORD_0, etc.', {
+	.option('--texcoord <index>', 'Target texture coordinate index. 0 = TEXCOORD_0, etc.', {
 		validator: Validator.NUMBER,
 		default: 0,
 	})

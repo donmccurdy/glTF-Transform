@@ -16,12 +16,12 @@ interface IWatlas {
 
 /** Options for the {@link unwrapPrimitives} function. */
 export interface UnwrapPrimitivesOptions {
+	/** watlas instance. */
+	watlas: unknown;
 	/** Target texture coordinate index (0, 1, 2, ...) for generated unwrapping. */
-	texCoord?: number;
+	texcoord?: number;
 	/** Whether to overwrite existing attributes at the target texCoord index, if any. */
 	overwrite?: boolean;
-	/** watlas instance. */
-	watlas?: unknown;
 }
 
 /** Options for the {@link unwrap} transform. */
@@ -36,7 +36,7 @@ export interface UnwrapOptions extends UnwrapPrimitivesOptions {
 }
 
 export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
-	texCoord: 0,
+	texcoord: 0,
 	overwrite: false,
 	groupBy: 'mesh',
 };
@@ -60,7 +60,7 @@ export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
  * @experimental
  * @category Transforms
  */
-export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
+export function unwrap(_options: UnwrapOptions): Transform {
 	const options = { ...UNWRAP_DEFAULTS, ..._options } as Required<UnwrapOptions>;
 
 	const watlas = options.watlas as IWatlas | undefined;
@@ -125,7 +125,7 @@ export function unwrap(_options: UnwrapOptions = UNWRAP_DEFAULTS): Transform {
 export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimitivesOptions) {
 	const document = Document.fromGraph(primitives[0].getGraph())!;
 	const watlas = options.watlas as IWatlas | undefined;
-	const dstTexCoordIndex = options.texCoord ?? 0;
+	const dstTexCoordIndex = options.texcoord ?? 0;
 	const dstSemantic = `TEXCOORD_${dstTexCoordIndex}`;
 
 	if (!watlas) {
@@ -162,7 +162,7 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 
 		// Pass texcoord data from set 0 if it's available and not the set that
 		// is being generated.
-		if (options.texCoord !== 0) {
+		if (options.texcoord !== 0) {
 			const texcoord = unwrapPrim.getAttribute('TEXCOORD_0');
 			if (texcoord) {
 				meshDecl.vertexUvData = getAttributeFloat32Array(texcoord);
@@ -202,7 +202,7 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 	// the glTF attribute.
 	const scale: vec2 = [1 / atlas.width, 1 / atlas.height];
 
-	for (let i = 0; i < atlas.meshCount; ++i) {
+	for (let i = 0; i < atlas.meshCount; i++) {
 		const prim = unwrapPrims[i];
 		const atlasMesh = atlas.getMesh(i);
 
@@ -236,7 +236,7 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 			.createAccessor()
 			.setArray(new Float32Array(atlasMesh.vertexCount * 2))
 			.setType('VEC2');
-		for (let j = 0; j < atlasMesh.vertexCount; ++j) {
+		for (let j = 0; j < atlasMesh.vertexCount; j++) {
 			const vertex = atlasMesh.getVertex(j);
 			dstTexCoord.setElement(j, [vertex.uv[0] * scale[0], vertex.uv[1] * scale[1]]);
 		}
@@ -245,7 +245,7 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 		// The glTF spec says that if TEXCOORD_N (where N > 0) exists then
 		// TEXCOORD_N-1...TEXCOORD_0 must also exist. If any prior TEXCOORD
 		// attributes are missing, copy this attribute to satisfy that requirement.
-		for (let j = dstTexCoordIndex - 1; j >= 0; --j) {
+		for (let j = dstTexCoordIndex - 1; j >= 0; j--) {
 			const semantic = `TEXCOORD_${j}`;
 			if (!prim.getAttribute(semantic)) {
 				prim.setAttribute(semantic, dstTexCoord);
@@ -276,7 +276,7 @@ function remapAttribute(document: Document, srcAttribute: Accessor, atlasMesh: w
 	dstAttribute.setArray(new ArrayCtor(atlasMesh.vertexCount * srcAttribute.getElementSize()));
 
 	const el: number[] = [];
-	for (let i = 0; i < atlasMesh.vertexCount; ++i) {
+	for (let i = 0; i < atlasMesh.vertexCount; i++) {
 		const vertex = atlasMesh.getVertex(i);
 		dstAttribute.setElement(i, srcAttribute.getElement(vertex.xref, el));
 	}
