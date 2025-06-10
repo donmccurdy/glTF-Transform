@@ -1078,7 +1078,7 @@ coordinates suitable for baking lightmaps or texture painting.
 	)
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--texCoord <index>', 'Attribute set index (ie: 1 generates TEXCOORD_1)', {
+	.option('--texcoord <index>', 'Target texture coordinate index. 0 = TEXCOORD_0, etc.', {
 		validator: Validator.NUMBER,
 		default: 0,
 	})
@@ -1086,9 +1086,9 @@ coordinates suitable for baking lightmaps or texture painting.
 		validator: Validator.BOOLEAN,
 		default: false,
 	})
-	.option('--grouping <group>', 'How geometry should be grouped into TexCoord atlases', {
-		validator: [PropertyType.PRIMITIVE, PropertyType.MESH, PropertyType.SCENE],
-		default: UNWRAP_DEFAULTS.grouping,
+	.option('--group-by <type>', 'Grouping of texture coordinates for generated atlases', {
+		validator: ['primitive', 'mesh', 'scene'],
+		default: UNWRAP_DEFAULTS.groupBy,
 	})
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(unwrap({ watlas, ...options })),
