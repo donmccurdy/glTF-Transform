@@ -14,23 +14,20 @@ interface IWatlas {
 	};
 }
 
-/** Options for the {@link unwrapPrimitives} function. */
+/** Options for {@link unwrapPrimitives} and {@link unwrap} functions. */
 export interface UnwrapPrimitivesOptions {
 	/** watlas instance. */
 	watlas: unknown;
-	/** Target texture coordinate index (0, 1, 2, ...) for generated unwrapping. */
+	/** Target texture coordinate index (0, 1, 2, ...) for generated unwrapping. Default: 0. */
 	texcoord?: number;
-	/** Whether to overwrite existing attributes at the target texCoord index, if any. */
+	/** Whether to overwrite existing attributes at the target texCoord index, if any. Default: false. */
 	overwrite?: boolean;
 }
 
 /** Options for the {@link unwrap} transform. */
 export interface UnwrapOptions extends UnwrapPrimitivesOptions {
 	/**
-	 * Methods of grouping texcoords with the {@link unwrap} function.
-	 *  - PRIMITIVE: Each primitive is given it's own texcoord atlas.
-	 *  - MESH: All primitive in a mesh share a texcoord atlas. (Default)
-	 *  - SCENE: All primitives in the scene share a texcoord atlas.
+	 * Methods of grouping texcoords with the {@link unwrap} function. Default: 'mesh'.
 	 */
 	groupBy?: 'primitive' | 'mesh' | 'scene';
 }
@@ -42,10 +39,18 @@ export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
 };
 
 /**
- * Generate new texcoords for all {@link Primitive}s in the document. Useful for
- * providing a base set of texcoords if none was included in the mesh or adding
- * a second set of texcoords for things like AO or lightmapping. This operation
- * may increase the number of vertices in the document's meshes.
+ * Generate new texture coordinates (“UV mappings”) for {@link Primitive Primitives}.
+ * Useful for adding texture coordinates in scenes without existing UVs, or for
+ * creating a second set of texture coordinates for baked textures such as ambient
+ * occlusion maps and lightmaps. Operation may increase vertex count to
+ * accommodate UV seams.
+ *
+ * UV layouts may be grouped, reducing the number of textures required. Available
+ * groupings:
+ *
+ * - `"primitive"`: Each primitive is given it's own texcoord atlas.
+ * - `"mesh"`: All primitives in a mesh share a texcoord atlas. (default)
+ * - `"scene"`: All primitives in the scene share a texcoord atlas.
  *
  * Example:
  *
@@ -54,8 +59,12 @@ export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
  * import { unwrap } from '@gltf-transform/functions';
  *
  * // Generate a TEXCOORD_1 attribute for all primitives.
- * await document.transform(unwrap({ watlas, texCoord: 1, overwrite: true }));
+ * await document.transform(
+ *   unwrap({ watlas, texCoord: 1, overwrite: true, groupBy: 'scene' })
+ * );
  * ```
+ *
+ * For more control and customization, see {@link unwrapPrimitives}.
  *
  * @experimental
  * @category Transforms
@@ -103,7 +112,19 @@ export function unwrap(_options: UnwrapOptions): Transform {
 }
 
 /**
- * Generate new texcoords for the specified {@link Primitive Primitives}.
+ * Generate new texture coordinates (“UV mappings”) for {@link Primitive Primitives}.
+ * Useful for adding texture coordinates in scenes without existing UVs, or for
+ * creating a second set of texture coordinates for baked textures such as ambient
+ * occlusion maps and lightmaps. Operation may increase vertex count to
+ * accommodate UV seams.
+ *
+ * UV layouts may be grouped, reducing the number of textures required. Available
+ * groupings:
+ *
+ * - `"primitive"`: Each primitive is given it's own texcoord atlas.
+ * - `"mesh"`: All primitives in a mesh share a texcoord atlas. (default)
+ * - `"scene"`: All primitives in the scene share a texcoord atlas.
+ *
  * watlas must be initialized before calling this function.
  *
  * Example:
@@ -116,9 +137,14 @@ export function unwrap(_options: UnwrapOptions): Transform {
  * await watlas.Initialize();
  *
  * // Generate a TEXCOORD_1 attribute for the specified primitives.
- * cosnt primitives = mesh.listPrimitives();
- * unwrapPrimitives(primitives, { watlas, texCoord: 1, overwrite: true }, doc));
+ * unwrapPrimitives(mesh.listPrimitives(), {
+ *   watlas,
+ *   texCoord: 1,
+ *   overwrite: true
+ * });
  * ```
+ *
+ * To create texture coordinates for an entire Document, see {@link unwrap}.
  *
  * @experimental
  */
