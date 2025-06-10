@@ -56,6 +56,10 @@ export const load: LayoutServerLoad = () => {
 					title: 'Resources',
 					items: [
 						{
+							text: 'Community ',
+							href: '/community',
+						},
+						{
 							text: 'Contributing ',
 							external: true,
 							href: 'https://github.com/donmccurdy/glTF-Transform/blob/main/CONTRIBUTING.md',
