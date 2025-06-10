@@ -34,14 +34,17 @@ test('unwrapPrimitives - vertex count', async (t) => {
 	const document = new Document().setLogger(logger);
 	const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
 
+	const srcIndexCount = prim.getIndices().getCount();
 	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
 
 	unwrapPrimitives([prim], { watlas, overwrite: true });
 
+	const dstIndexCount = prim.getIndices().getCount();
 	const dstVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
 
-	t.is(srcVertexCount, 63, 'src.count = 63');
-	t.true(dstVertexCount > 100 && dstVertexCount < 150, '100 < src.count < 150');
+	t.is(dstIndexCount, srcIndexCount, 'srcIndexCount == dst.indexCount');
+	t.is(srcVertexCount, 63, 'srcVertexCount = 63');
+	t.true(dstVertexCount > 100 && dstVertexCount < 150, '100 < dstVertexCount < 150');
 	t.is(getPrimitiveVertexCount(prim, VertexCountMethod.UNUSED), 0, 'no unused vertices');
 });
 
