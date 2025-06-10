@@ -12,12 +12,15 @@ import { VERSION } from '@gltf-transform/core';
  */
 
 const argv = process.argv;
+
 const parseFlag = (flag: string, value: string): string => {
 	if (!value || value.startsWith('-')) {
 		throw new Error(`Usage: ${flag} <value>`);
 	}
 	return value;
 };
+
+// TODO(cleanup): Document the flags!
 const flags = {
 	filter: argv.includes('--filter') ? parseFlag('--filter', argv[argv.indexOf('--filter') + 1]) : false,
 	past: argv.includes('--past'),
