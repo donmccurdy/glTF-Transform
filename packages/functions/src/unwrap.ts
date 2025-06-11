@@ -1,4 +1,4 @@
-import { Document, Transform, Primitive, TypedArrayConstructor, vec2 } from '@gltf-transform/core';
+import { Document, Transform, Primitive, TypedArrayConstructor, vec2, Mesh, Node, vec3 } from '@gltf-transform/core';
 import { Accessor } from '@gltf-transform/core';
 import { createTransform, isUsed, shallowCloneAccessor } from './utils.js';
 import type * as watlas from 'watlas';
@@ -14,22 +14,47 @@ interface IWatlas {
 	};
 }
 
-/** Options for {@link unwrapPrimitives} and {@link unwrap} functions. */
+/** Options for the {@link unwrap} transform. */
+export interface UnwrapOptions {
+	/** watlas instance. */
+	watlas: unknown;
+	/**
+	 * Target texture coordinate index (0, 1, 2, ...) for generated unwrapping.
+	 * Default: 0.
+	 */
+	texcoord?: number;
+	/**
+	 * Whether to overwrite existing attributes at the target texCoord index, if
+	 * any. Default: false.
+	 */
+	overwrite?: boolean;
+	/**
+	 * Methods of grouping texcoords with the {@link unwrap} function.
+	 * Default: 'mesh'.
+	 */
+	groupBy?: 'primitive' | 'mesh' | 'scene';
+}
+
+/** Options for the {@link unwrapPrimitives} function. */
 export interface UnwrapPrimitivesOptions {
 	/** watlas instance. */
 	watlas: unknown;
-	/** Target texture coordinate index (0, 1, 2, ...) for generated unwrapping. Default: 0. */
-	texcoord?: number;
-	/** Whether to overwrite existing attributes at the target texCoord index, if any. Default: false. */
-	overwrite?: boolean;
-}
-
-/** Options for the {@link unwrap} transform. */
-export interface UnwrapOptions extends UnwrapPrimitivesOptions {
 	/**
-	 * Methods of grouping texcoords with the {@link unwrap} function. Default: 'mesh'.
+	 * Target texture coordinate index (0, 1, 2, ...) for generated unwrapping.
+	 * Default: 0.
 	 */
-	groupBy?: 'primitive' | 'mesh' | 'scene';
+	texcoord?: number;
+	/**
+	 * Whether to overwrite existing attributes at the target texCoord index, if
+	 * any. Default: false.
+	 */
+	overwrite?: boolean;
+	/**
+	 * Per-primitive texel density weights. Texel space in the atlas is allocated
+	 * proportionally with geometry dimensions in local space. If specified,
+	 * weights scale the allocation. Default: [1, 1, 1, ...].
+	 */
+	weights?: number[];
 }
 
 export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
@@ -97,11 +122,13 @@ export function unwrap(_options: UnwrapOptions): Transform {
 				break;
 			}
 			case 'scene': {
-				const scenePrims = [];
+				const prims: Primitive[] = [];
+				const weights: number[] = [];
 				for (const mesh of document.getRoot().listMeshes()) {
-					scenePrims.push(...mesh.listPrimitives());
+					prims.push(...mesh.listPrimitives());
+					weights.push(getNodeScaleMax(mesh));
 				}
-				unwrapPrimitives(scenePrims, options);
+				unwrapPrimitives(prims, { ...options, weights });
 				break;
 			}
 		}
@@ -161,7 +188,10 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 	const atlas = new watlas.Atlas();
 
 	const unwrapPrims = [];
-	for (const prim of primitives) {
+	for (let i = 0; i < primitives.length; i++) {
+		const prim = primitives[i];
+		const primWeight = options.weights ? options.weights[i] : 1;
+
 		// Don't process primitives that already have the desired TEXCOORD index
 		// if overwrite is false.
 		if (!options.overwrite && prim.getAttribute(dstSemantic)) {
@@ -175,7 +205,7 @@ export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimiti
 
 		const meshDecl: watlas.MeshDecl = {
 			vertexCount: position.getCount(),
-			vertexPositionData: getAttributeFloat32Array(position),
+			vertexPositionData: getScaledAttributeFloat32Array(position, primWeight),
 			vertexPositionStride: position.getElementSize() * Float32Array.BYTES_PER_ELEMENT,
 		};
 
@@ -316,4 +346,34 @@ function getAttributeFloat32Array(attribute: Accessor): Float32Array {
 		return attribute.getArray() as Float32Array;
 	}
 	return dequantizeAttributeArray(attribute.getArray()!, attribute.getComponentType(), attribute.getNormalized());
+}
+
+// Returns scaled values of the given attribute as a Float32Array.
+function getScaledAttributeFloat32Array(attribute: Accessor, scale: number): Float32Array {
+	const array = dequantizeAttributeArray(
+		attribute.getArray()!,
+		attribute.getComponentType(),
+		attribute.getNormalized(),
+	);
+
+	for (let i = 0; i < array.length; i++) {
+		array[i] *= scale;
+	}
+
+	return array;
+}
+
+function getNodeScaleMax(mesh: Mesh): number {
+	let scale = -Infinity;
+
+	for (const parent of mesh.listParents()) {
+		if (parent instanceof Node) {
+			const s = parent.getWorldScale();
+			scale = Number.isFinite(s[0]) ? Math.max(scale, Math.abs(s[0])) : scale;
+			scale = Number.isFinite(s[1]) ? Math.max(scale, Math.abs(s[1])) : scale;
+			scale = Number.isFinite(s[2]) ? Math.max(scale, Math.abs(s[2])) : scale;
+		}
+	}
+
+	return Number.isFinite(scale) ? scale : 1;
 }
