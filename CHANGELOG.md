@@ -2,9 +2,15 @@
 
 ## v4.x
 
-### v4.2 (🚧 Unreleased)
+### v4.3 (🚧 Unreleased)
 
-- TODO
+### v4.2
+
+_Special thanks to [Brandon Jones](https://github.com/toji) for contributing the `unwrap()` transform, and for developing [watlas](https://github.com/toji/watlas), a WebAssembly port of [xatlas](https://github.com/jpcy/xatlas)._
+
+**Features:**
+
+- functions,cli: Adds `unwrap()` and `unwrapPrimitives()` to generate texture coordinates [#1660](https://github.com/donmccurdy/glTF-Transform/pull/1660), [#1661](https://github.com/donmccurdy/glTF-Transform/pull/1661), [#1662](https://github.com/donmccurdy/glTF-Transform/pull/1662), [#1663](https://github.com/donmccurdy/glTF-Transform/pull/1663), [#1666](https://github.com/donmccurdy/glTF-Transform/pull/1666)
 
 ### v4.1
 
