@@ -6,6 +6,7 @@ import { tasks as disposeTasks } from './dispose.bench.js';
 import { tasks as flattenTasks } from './flatten.bench.js';
 import { tasks as joinTasks } from './join.bench.js';
 import { tasks as quantizeTasks } from './quantize.bench.js';
+import { tasks as unwrapTasks } from './unwrap.bench.js';
 import { tasks as weldTasks } from './weld.bench.js';
 
 export const tasks: Task[] = [
@@ -16,5 +17,6 @@ export const tasks: Task[] = [
 	...flattenTasks,
 	...joinTasks,
 	...quantizeTasks,
+	...unwrapTasks,
 	...weldTasks,
 ];

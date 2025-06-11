@@ -12,12 +12,14 @@ import { VERSION } from '@gltf-transform/core';
  */
 
 const argv = process.argv;
+
 const parseFlag = (flag: string, value: string): string => {
 	if (!value || value.startsWith('-')) {
 		throw new Error(`Usage: ${flag} <value>`);
 	}
 	return value;
 };
+
 const flags = {
 	filter: argv.includes('--filter') ? parseFlag('--filter', argv[argv.indexOf('--filter') + 1]) : false,
 	past: argv.includes('--past'),
@@ -25,7 +27,32 @@ const flags = {
 	report: argv.includes('--report') ? parseFlag('--report', argv[argv.indexOf('--report') + 1]) : false,
 	reportVersion: argv.includes('--report-version'),
 	print: argv.includes('--print'),
+	help: argv.includes('--help') || argv.includes('-h'),
 };
+
+if (flags.help) {
+	console.log(
+		`
+Usage: yarn bench [options]
+
+Execution:
+	--filter <pattern>: runs only benchmarks matching <pattern>
+	--past: skip running benchmarks, show historical output only
+
+Display:
+	--print: show historical results for all benchmarks
+	--table: show detailed report for current benchmark run only
+
+History:
+	--report <version>: append run to history as <version>, default to 'dev'
+	--report-version: append run to history as current npm version
+
+Miscellaneous:
+	--help, -h: display help and exit
+		`.trim(),
+	);
+	process.exit(0);
+}
 
 /******************************************************************************
  * CREATE BENCHMARK SUITE
