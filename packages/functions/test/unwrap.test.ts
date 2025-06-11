@@ -199,8 +199,7 @@ test('unwrap - scene', async (t) => {
 	t.true(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
 });
 
-// TODO(test): Unskip test.
-test.skip('unwrap - scene scaled', async (t) => {
+test('unwrap - scene scaled', async (t) => {
 	const document = new Document().setLogger(logger);
 
 	const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
@@ -225,7 +224,6 @@ test.skip('unwrap - scene scaled', async (t) => {
 	const areaB = getTexCoordArea(primB, 0);
 	const areaC = getTexCoordArea(primC, 0);
 
-	// TODO: Estimates only, update when un-skipping test.
 	t.true(areaA > 0.2 && areaA < 0.3, '0.2 < areaA < 0.3');
 	t.true(areaB > 0.2 && areaB < 0.3, '0.2 < areaB < 0.3');
 	t.true(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
