@@ -125,8 +125,11 @@ export function unwrap(_options: UnwrapOptions): Transform {
 				const prims: Primitive[] = [];
 				const weights: number[] = [];
 				for (const mesh of document.getRoot().listMeshes()) {
-					prims.push(...mesh.listPrimitives());
-					weights.push(getNodeScaleMax(mesh));
+					const weight = getNodeScaleMax(mesh);
+					for (const prim of mesh.listPrimitives()) {
+						prims.push(prim);
+						weights.push(weight);
+					}
 				}
 				unwrapPrimitives(prims, { ...options, weights });
 				break;
