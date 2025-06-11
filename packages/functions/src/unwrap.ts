@@ -85,7 +85,7 @@ export const UNWRAP_DEFAULTS: Required<Omit<UnwrapOptions, 'watlas'>> = {
  *
  * // Generate a TEXCOORD_1 attribute for all primitives.
  * await document.transform(
- *   unwrap({ watlas, texCoord: 1, overwrite: true, groupBy: 'scene' })
+ *   unwrap({ watlas, texcoord: 1, overwrite: true, groupBy: 'scene' })
  * );
  * ```
  *
@@ -169,7 +169,7 @@ export function unwrap(_options: UnwrapOptions): Transform {
  * // Generate a TEXCOORD_1 attribute for the specified primitives.
  * unwrapPrimitives(mesh.listPrimitives(), {
  *   watlas,
- *   texCoord: 1,
+ *   texcoord: 1,
  *   overwrite: true
  * });
  * ```
