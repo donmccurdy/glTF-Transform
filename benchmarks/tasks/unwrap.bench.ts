@@ -15,7 +15,7 @@ export const tasks: Task[] = [
 		},
 		{
 			beforeAll: async () => watlas.Initialize(),
-			beforeEach: () => void (_document = createDocument(10, 64, 64)), // ~4000 vertices / prim
+			beforeEach: () => void (_document = createDocument(10, 10, 8)), // ~100 vertices / prim
 		},
 	],
 ];
