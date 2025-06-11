@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/docs",
-  "version": "4.1.4",
+  "version": "4.2.0",
   "private": true,
   "scripts": {
     "build": "vite build",
@@ -10,9 +10,9 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
-    "@gltf-transform/core": "^4.1.4",
-    "@gltf-transform/extensions": "^4.1.4",
-    "@gltf-transform/functions": "^4.1.4",
+    "@gltf-transform/core": "^4.2.0",
+    "@gltf-transform/extensions": "^4.2.0",
+    "@gltf-transform/functions": "^4.2.0",
     "@greendoc/parse": "^0.4.1",
     "@greendoc/svelte": "^0.4.1",
     "@sveltejs/adapter-static": "^3.0.8",

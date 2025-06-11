@@ -58,7 +58,7 @@ Full command list:
 
 <!-- begin:cli_help -->
 ```plaintext
-  gltf-transform 4.1.4 — Command-line interface (CLI) for the glTF Transform SDK.
+  gltf-transform 4.2.0 — Command-line interface (CLI) for the glTF Transform SDK.
 
   USAGE 
   
@@ -100,6 +100,7 @@ Full command list:
     weld                                 Merge equivalent vertices to optimize geometry         
     unweld                               De-index geometry, disconnecting any shared vertices   
     tangents                             Generate MikkTSpace vertex tangents                    
+    unwrap                               Generate texcoords                                     
     reorder                              Optimize vertex data for locality of reference         
     simplify                             Simplify mesh, reducing number of vertices             
                                                                                                 
