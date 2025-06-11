@@ -378,5 +378,5 @@ function getNodeScaleMax(mesh: Mesh): number {
 		}
 	}
 
-	return Number.isFinite(scale) ? scale : 1;
+	return scale > 0 && Number.isFinite(scale) ? scale : 1;
 }
