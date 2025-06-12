@@ -1,5 +1,6 @@
 import type { GLTF, TypedArray } from '@gltf-transform/core';
 
+/** @deprecated Use 'filter' boolean instead. */
 export enum EncoderMethod {
 	QUANTIZE = 'quantize',
 	FILTER = 'filter',

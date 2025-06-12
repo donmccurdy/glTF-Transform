@@ -7,7 +7,7 @@ import { assignDefaults, createTransform } from './utils.js';
 
 export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern' | 'patternTargets'> {
 	encoder: unknown;
-	level?: 'medium' | 'high';
+	level?: 'low' | 'medium' | 'high';
 }
 
 export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = {
@@ -80,22 +80,22 @@ export function meshopt(_options: MeshoptOptions): Transform {
 				encoder: encoder,
 				target: 'size',
 			}),
-			quantize({
-				...options,
-				pattern,
-				patternTargets,
-				quantizeNormal,
-			}),
 		);
+
+		if (options.level !== 'low') {
+			await document.transform(
+				quantize({
+					...options,
+					pattern,
+					patternTargets,
+					quantizeNormal,
+				}),
+			);
+		}
 
 		document
 			.createExtension(EXTMeshoptCompression)
 			.setRequired(true)
-			.setEncoderOptions({
-				method:
-					options.level === 'medium'
-						? EXTMeshoptCompression.EncoderMethod.QUANTIZE
-						: EXTMeshoptCompression.EncoderMethod.FILTER,
-			});
+			.setEncoderOptions({filter: options.level === 'high'});
 	});
 }
