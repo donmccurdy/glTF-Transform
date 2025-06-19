@@ -1,5 +1,5 @@
-import { Nullable, PropertyType } from '../constants.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { type Nullable, PropertyType } from '../constants.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 
 interface IBuffer extends IExtensibleProperty {
 	uri: string;

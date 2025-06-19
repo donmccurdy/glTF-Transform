@@ -2,8 +2,6 @@ import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-tra
 import { EXT_MESH_GPU_INSTANCING } from '../constants.js';
 import { InstancedMesh, INSTANCE_ATTRIBUTE } from './instanced-mesh.js';
 
-const NAME = EXT_MESH_GPU_INSTANCING;
-
 interface InstancedMeshDef {
 	attributes: {
 		[name: string]: number;
@@ -74,12 +72,12 @@ interface InstancedMeshDef {
  * be prefixed with an underscore (`_*`).
  */
 export class EXTMeshGPUInstancing extends Extension {
-	public readonly extensionName = NAME;
+	public readonly extensionName: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 	/** @hidden */
-	public readonly provideTypes = [PropertyType.NODE];
+	public readonly provideTypes: PropertyType[] = [PropertyType.NODE];
 	/** @hidden */
-	public readonly prewriteTypes = [PropertyType.ACCESSOR];
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.ACCESSOR];
+	public static readonly EXTENSION_NAME: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 
 	/** Creates a new InstancedMesh property for use on a {@link Node}. */
 	public createInstancedMesh(): InstancedMesh {
@@ -92,16 +90,16 @@ export class EXTMeshGPUInstancing extends Extension {
 
 		const nodeDefs = jsonDoc.json.nodes || [];
 		nodeDefs.forEach((nodeDef, nodeIndex) => {
-			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
+			if (!nodeDef.extensions || !nodeDef.extensions[EXT_MESH_GPU_INSTANCING]) return;
 
-			const instancedMeshDef = nodeDef.extensions[NAME] as InstancedMeshDef;
+			const instancedMeshDef = nodeDef.extensions[EXT_MESH_GPU_INSTANCING] as InstancedMeshDef;
 			const instancedMesh = this.createInstancedMesh();
 
 			for (const semantic in instancedMeshDef.attributes) {
 				instancedMesh.setAttribute(semantic, context.accessors[instancedMeshDef.attributes[semantic]]);
 			}
 
-			context.nodes[nodeIndex].setExtension(NAME, instancedMesh);
+			context.nodes[nodeIndex].setExtension(EXT_MESH_GPU_INSTANCING, instancedMesh);
 		});
 
 		return this;
@@ -128,7 +126,7 @@ export class EXTMeshGPUInstancing extends Extension {
 			.getRoot()
 			.listNodes()
 			.forEach((node) => {
-				const instancedMesh = node.getExtension<InstancedMesh>(NAME);
+				const instancedMesh = node.getExtension<InstancedMesh>(EXT_MESH_GPU_INSTANCING);
 				if (instancedMesh) {
 					const nodeIndex = context.nodeIndexMap.get(node)!;
 					const nodeDef = jsonDoc.json.nodes![nodeIndex];
@@ -141,7 +139,7 @@ export class EXTMeshGPUInstancing extends Extension {
 					});
 
 					nodeDef.extensions = nodeDef.extensions || {};
-					nodeDef.extensions[NAME] = instancedMeshDef;
+					nodeDef.extensions[EXT_MESH_GPU_INSTANCING] = instancedMeshDef;
 				}
 			});
 

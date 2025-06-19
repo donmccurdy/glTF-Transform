@@ -1,4 +1,4 @@
-import { Nullable, PropertyType, VERSION } from '../constants.js';
+import { type Nullable, PropertyType, VERSION } from '../constants.js';
 import type { Extension } from '../extension.js';
 import type { Graph } from 'property-graph';
 import { RefSet } from 'property-graph';
@@ -13,7 +13,7 @@ import { COPY_IDENTITY, Property } from './property.js';
 import { Scene } from './scene.js';
 import { Skin } from './skin.js';
 import { Texture } from './texture.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { ExtensionProperty } from './extension-property.js';
 
 interface IAsset {
@@ -111,7 +111,7 @@ export class Root extends ExtensibleProperty<IRoot> {
 		throw new Error('Root cannot be cloned.');
 	}
 
-	public copy(other: this, resolve = COPY_IDENTITY): this {
+	public copy(other: this, resolve: typeof COPY_IDENTITY = COPY_IDENTITY): this {
 		// Root cannot be cloned in isolation: only with its Document. Extensions are managed by
 		// the Document during cloning. The Root, and only the Root, should keep existing
 		// references while copying to avoid overwriting during a merge.

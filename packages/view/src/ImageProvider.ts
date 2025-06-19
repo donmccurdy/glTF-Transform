@@ -38,8 +38,8 @@ export interface ImageProvider {
 }
 
 export class NullImageProvider implements ImageProvider {
-	readonly nullTexture = createTexture('__NULL_TEXTURE', NULL_IMAGE_URI);
-	readonly loadingTexture = createTexture('__LOADING_TEXTURE', LOADING_IMAGE_URI);
+	readonly nullTexture: Texture = createTexture('__NULL_TEXTURE', NULL_IMAGE_URI);
+	readonly loadingTexture: Texture = createTexture('__LOADING_TEXTURE', LOADING_IMAGE_URI);
 
 	async initTexture(_textureDef: TextureDef): Promise<void> {}
 	async getTexture(_: TextureDef): Promise<Texture | CompressedTexture> {
@@ -52,8 +52,8 @@ export class NullImageProvider implements ImageProvider {
 }
 
 export class DefaultImageProvider implements ImageProvider {
-	readonly nullTexture = createTexture('__NULL_TEXTURE', NULL_IMAGE_URI);
-	readonly loadingTexture = createTexture('__LOADING_TEXTURE', LOADING_IMAGE_URI);
+	readonly nullTexture: Texture = createTexture('__NULL_TEXTURE', NULL_IMAGE_URI);
+	readonly loadingTexture: Texture = createTexture('__LOADING_TEXTURE', LOADING_IMAGE_URI);
 
 	private _cache = new Map<ArrayBuffer, Texture | CompressedTexture>();
 	private _ktx2Loader: KTX2Loader | null = null;
@@ -88,7 +88,7 @@ export class DefaultImageProvider implements ImageProvider {
 		this._cache.clear();
 	}
 
-	dispose() {
+	dispose(): void {
 		this.clear();
 		if (this._ktx2Loader) this._ktx2Loader.dispose();
 	}

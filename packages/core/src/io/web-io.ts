@@ -33,7 +33,7 @@ export class WebIO extends PlatformIO {
 	 * Constructs a new WebIO service. Instances are reusable.
 	 * @param fetchConfig Configuration object for Fetch API.
 	 */
-	constructor(fetchConfig = HTTPUtils.DEFAULT_INIT) {
+	constructor(fetchConfig: RequestInit = HTTPUtils.DEFAULT_INIT) {
 		super();
 		this._fetchConfig = fetchConfig;
 	}

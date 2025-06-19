@@ -63,7 +63,7 @@
     "tsx": "^4.19.2",
     "tweakpane": "<4.0.0",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
-    "typescript": "5.7.3",
+    "typescript": "5.8.3",
     "vite": "^6.1.0",
     "watlas": "^1.0.0"
   },

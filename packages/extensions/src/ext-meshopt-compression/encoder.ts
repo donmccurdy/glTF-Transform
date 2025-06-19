@@ -1,17 +1,17 @@
-import { PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants.js';
+import { type PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants.js';
 import {
 	Accessor,
 	AnimationChannel,
 	AnimationSampler,
 	BufferUtils,
 	Document,
-	GLTF,
+	type GLTF,
 	MathUtils,
 	Primitive,
 	PropertyType,
 	Root,
-	TypedArray,
-	TypedArrayConstructor,
+	type TypedArray,
+	type TypedArrayConstructor,
 	WriterContext,
 } from '@gltf-transform/core';
 import type { MeshoptEncoder } from 'meshoptimizer';

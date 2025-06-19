@@ -1,4 +1,4 @@
-import { vec3, Document, Primitive } from '@gltf-transform/core';
+import { type vec3, Document, Primitive } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
 
 export interface TorusKnotOptions {

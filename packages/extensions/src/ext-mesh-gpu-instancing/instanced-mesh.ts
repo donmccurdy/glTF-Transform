@@ -1,4 +1,4 @@
-import { Accessor, ExtensionProperty, IProperty, Nullable, PropertyType, RefMap } from '@gltf-transform/core';
+import { Accessor, ExtensionProperty, type IProperty, type Nullable, PropertyType, RefMap } from '@gltf-transform/core';
 import { EXT_MESH_GPU_INSTANCING } from '../constants.js';
 
 interface IInstancedMesh extends IProperty {
@@ -12,7 +12,7 @@ export const INSTANCE_ATTRIBUTE = 'INSTANCE_ATTRIBUTE';
  * Defines GPU instances of a {@link Mesh} under one {@link Node}. See {@link EXTMeshGPUInstancing}.
  */
 export class InstancedMesh extends ExtensionProperty<IInstancedMesh> {
-	public static EXTENSION_NAME = EXT_MESH_GPU_INSTANCING;
+	public static EXTENSION_NAME: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 	public declare extensionName: typeof EXT_MESH_GPU_INSTANCING;
 	public declare propertyType: 'InstancedMesh';
 	public declare parentTypes: [PropertyType.NODE];

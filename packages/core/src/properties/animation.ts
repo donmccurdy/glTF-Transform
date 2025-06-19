@@ -1,8 +1,8 @@
 import { RefSet } from 'property-graph';
-import { Nullable, PropertyType } from '../constants.js';
+import { type Nullable, PropertyType } from '../constants.js';
 import type { AnimationChannel } from './animation-channel.js';
 import type { AnimationSampler } from './animation-sampler.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 
 interface IAnimation extends IExtensibleProperty {
 	channels: RefSet<AnimationChannel>;

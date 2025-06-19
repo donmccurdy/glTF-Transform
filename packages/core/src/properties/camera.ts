@@ -1,6 +1,6 @@
-import { Nullable, PropertyType } from '../constants.js';
+import { type Nullable, PropertyType } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 
 interface ICamera extends IExtensibleProperty {
 	type: GLTF.CameraType;

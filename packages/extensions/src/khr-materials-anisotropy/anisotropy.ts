@@ -1,7 +1,7 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
@@ -23,7 +23,7 @@ const { R, G, B } = TextureChannel;
  * {@link KHRMaterialsAnisotropy}.
  */
 export class Anisotropy extends ExtensionProperty<IAnisotropy> {
-	public static EXTENSION_NAME = KHR_MATERIALS_ANISOTROPY;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_ANISOTROPY = KHR_MATERIALS_ANISOTROPY;
 	public declare extensionName: typeof KHR_MATERIALS_ANISOTROPY;
 	public declare propertyType: 'Anisotropy';
 	public declare parentTypes: [PropertyType.MATERIAL];

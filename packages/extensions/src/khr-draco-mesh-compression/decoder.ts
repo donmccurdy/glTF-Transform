@@ -1,8 +1,6 @@
-import { Accessor, GLTF, TypedArray, TypedArrayConstructor } from '@gltf-transform/core';
+import { Accessor, type GLTF, type TypedArray, type TypedArrayConstructor } from '@gltf-transform/core';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
 import type { Attribute, DataType, Decoder, DecoderModule, Mesh } from 'draco3dgltf';
-
-const NAME = KHR_DRACO_MESH_COMPRESSION;
 
 export let decoderModule: DecoderModule;
 
@@ -17,14 +15,14 @@ export function decodeGeometry(decoder: Decoder, data: Uint8Array): Mesh {
 
 		const geometryType = decoder.GetEncodedGeometryType(buffer);
 		if (geometryType !== decoderModule.TRIANGULAR_MESH) {
-			throw new Error(`[${NAME}] Unknown geometry type.`);
+			throw new Error(`[${KHR_DRACO_MESH_COMPRESSION}] Unknown geometry type.`);
 		}
 
 		const dracoMesh = new decoderModule.Mesh();
 		const status = decoder.DecodeBufferToMesh(buffer, dracoMesh);
 
 		if (!status.ok() || dracoMesh.ptr === 0) {
-			throw new Error(`[${NAME}] Decoding failure.`);
+			throw new Error(`[${KHR_DRACO_MESH_COMPRESSION}] Decoding failure.`);
 		}
 
 		return dracoMesh;
@@ -72,7 +70,6 @@ export function decodeAttribute(
 
 	const ptr = decoderModule._malloc(byteLength);
 	decoder.GetAttributeDataArrayForAllPoints(mesh, attribute, dataType, byteLength, ptr);
-	// @ts-expect-error Incorrect types.
 	const array: TypedArray = new ArrayCtor(decoderModule.HEAPF32.buffer, ptr, numValues).slice();
 	decoderModule._free(ptr);
 

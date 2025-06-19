@@ -28,10 +28,10 @@ export function regexFromArray(values: string[]): RegExp {
 
 // Mocks for tests.
 
-export let spawn = _spawn;
+export let spawn: typeof _spawn = _spawn;
 // See https://github.com/mathisonian/command-exists/issues/22
-export let commandExists = (cmd: string) => _commandExists(cmd).catch(() => false);
-export let waitExit = _waitExit;
+export let commandExists = (cmd: string): Promise<string | boolean> => _commandExists(cmd).catch(() => false);
+export let waitExit: typeof _waitExit = _waitExit;
 
 export function mockSpawn(_spawn: unknown): void {
 	spawn = _spawn as typeof spawn;

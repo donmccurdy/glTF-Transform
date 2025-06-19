@@ -4,8 +4,6 @@ import { Mapping } from './mapping.js';
 import { MappingList } from './mapping-list.js';
 import { Variant } from './variant.js';
 
-const NAME = KHR_MATERIALS_VARIANTS;
-
 interface VariantsRootDef {
 	variants: VariantDef[];
 }
@@ -88,8 +86,8 @@ interface VariantMappingDef {
  * 	 any textures for inactive Variants only when they are needed.
  */
 export class KHRMaterialsVariants extends Extension {
-	public readonly extensionName = NAME;
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName: typeof KHR_MATERIALS_VARIANTS = KHR_MATERIALS_VARIANTS;
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_VARIANTS = KHR_MATERIALS_VARIANTS;
 
 	/** Creates a new MappingList property. */
 	public createMappingList(): MappingList {
@@ -115,10 +113,10 @@ export class KHRMaterialsVariants extends Extension {
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
+		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[KHR_MATERIALS_VARIANTS]) return this;
 
 		// Read all top-level variant names.
-		const variantsRootDef = jsonDoc.json.extensions[NAME] as VariantsRootDef;
+		const variantsRootDef = jsonDoc.json.extensions[KHR_MATERIALS_VARIANTS] as VariantsRootDef;
 		const variantDefs = variantsRootDef.variants || [];
 		const variants = variantDefs.map((variantDef) => this.createVariant().setName(variantDef.name || ''));
 
@@ -129,13 +127,13 @@ export class KHRMaterialsVariants extends Extension {
 			const primDefs = meshDef.primitives || [];
 
 			primDefs.forEach((primDef, primIndex) => {
-				if (!primDef.extensions || !primDef.extensions[NAME]) {
+				if (!primDef.extensions || !primDef.extensions[KHR_MATERIALS_VARIANTS]) {
 					return;
 				}
 
 				const mappingList = this.createMappingList();
 
-				const variantPrimDef = primDef.extensions[NAME] as VariantPrimDef;
+				const variantPrimDef = primDef.extensions[KHR_MATERIALS_VARIANTS] as VariantPrimDef;
 				for (const mappingDef of variantPrimDef.mappings) {
 					const mapping = this.createMapping();
 
@@ -150,7 +148,7 @@ export class KHRMaterialsVariants extends Extension {
 					mappingList.addMapping(mapping);
 				}
 
-				mesh.listPrimitives()[primIndex].setExtension(NAME, mappingList);
+				mesh.listPrimitives()[primIndex].setExtension(KHR_MATERIALS_VARIANTS, mappingList);
 			});
 		});
 
@@ -177,7 +175,7 @@ export class KHRMaterialsVariants extends Extension {
 			const meshIndex = context.meshIndexMap.get(mesh)!;
 
 			mesh.listPrimitives().forEach((prim, primIndex) => {
-				const mappingList = prim.getExtension<MappingList>(NAME);
+				const mappingList = prim.getExtension<MappingList>(KHR_MATERIALS_VARIANTS);
 				if (!mappingList) return;
 
 				const primDef = context.jsonDoc.json.meshes![meshIndex].primitives[primIndex];
@@ -196,12 +194,12 @@ export class KHRMaterialsVariants extends Extension {
 				});
 
 				primDef.extensions = primDef.extensions || {};
-				primDef.extensions[NAME] = { mappings: mappingDefs };
+				primDef.extensions[KHR_MATERIALS_VARIANTS] = { mappings: mappingDefs };
 			});
 		}
 
 		jsonDoc.json.extensions = jsonDoc.json.extensions || {};
-		jsonDoc.json.extensions[NAME] = { variants: variantDefs };
+		jsonDoc.json.extensions[KHR_MATERIALS_VARIANTS] = { variants: variantDefs };
 
 		return this;
 	}

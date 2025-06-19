@@ -11,7 +11,7 @@ const NULL_DOMAIN = 'https://null.example';
  */
 export class HTTPUtils {
 	static readonly DEFAULT_INIT: RequestInit = {};
-	static readonly PROTOCOL_REGEXP = /^[a-zA-Z]+:\/\//;
+	static readonly PROTOCOL_REGEXP: RegExp = /^[a-zA-Z]+:\/\//;
 
 	static dirname(path: string): string {
 		const index = path.lastIndexOf('/');
@@ -35,7 +35,7 @@ export class HTTPUtils {
 		return FileUtils.extension(new URL(uri, NULL_DOMAIN).pathname);
 	}
 
-	static resolve(base: string, path: string) {
+	static resolve(base: string, path: string): string {
 		if (!this.isRelativePath(path)) return path;
 
 		const stack = base.split('/');
@@ -56,7 +56,7 @@ export class HTTPUtils {
 	 * Returns true for URLs containing a protocol, and false for both
 	 * absolute and relative paths.
 	 */
-	static isAbsoluteURL(path: string) {
+	static isAbsoluteURL(path: string): boolean {
 		return this.PROTOCOL_REGEXP.test(path);
 	}
 

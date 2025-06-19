@@ -1,4 +1,4 @@
-import { Document, Primitive, PropertyType, Transform } from '@gltf-transform/core';
+import { Document, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
 import {
 	createTransform,
 	formatDeltaOp,

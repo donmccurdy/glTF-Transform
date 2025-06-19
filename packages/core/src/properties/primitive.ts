@@ -1,8 +1,8 @@
 import { RefMap, RefSet } from 'property-graph';
-import { BufferViewUsage, Nullable, PropertyType } from '../constants.js';
+import { BufferViewUsage, type Nullable, PropertyType } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
 import { Accessor } from './accessor.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Material } from './material.js';
 import type { PrimitiveTarget } from './primitive-target.js';
 

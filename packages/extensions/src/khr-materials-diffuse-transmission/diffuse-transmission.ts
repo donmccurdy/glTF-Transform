@@ -1,12 +1,12 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_DIFFUSE_TRANSMISSION } from '../constants.js';
 
@@ -27,7 +27,7 @@ const { R, G, B, A } = TextureChannel;
  * @experimental KHR_materials_diffuse_transmission is not yet ratified by the Khronos Group.
  */
 export class DiffuseTransmission extends ExtensionProperty<IDiffuseTransmission> {
-	public static EXTENSION_NAME = KHR_MATERIALS_DIFFUSE_TRANSMISSION;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_DIFFUSE_TRANSMISSION = KHR_MATERIALS_DIFFUSE_TRANSMISSION;
 	public declare extensionName: typeof KHR_MATERIALS_DIFFUSE_TRANSMISSION;
 	public declare propertyType: 'DiffuseTransmission';
 	public declare parentTypes: [PropertyType.MATERIAL];

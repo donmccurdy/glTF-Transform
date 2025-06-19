@@ -1,8 +1,14 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils, PropertyType } from '@gltf-transform/core';
+import {
+	Extension,
+	type GLTF,
+	ReaderContext,
+	WriterContext,
+	type vec3,
+	MathUtils,
+	PropertyType,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 import { Specular } from './specular.js';
-
-const NAME = KHR_MATERIALS_SPECULAR;
 
 interface SpecularDef {
 	specularFactor?: number;
@@ -43,10 +49,10 @@ interface SpecularDef {
  * ```
  */
 export class KHRMaterialsSpecular extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_SPECULAR = KHR_MATERIALS_SPECULAR;
+	public readonly extensionName: typeof KHR_MATERIALS_SPECULAR = KHR_MATERIALS_SPECULAR;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Specular property for use on a {@link Material}. */
 	public createSpecular(): Specular {
@@ -69,11 +75,11 @@ export class KHRMaterialsSpecular extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_SPECULAR]) {
 				const specular = this.createSpecular();
-				context.materials[materialIndex].setExtension(NAME, specular);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_SPECULAR, specular);
 
-				const specularDef = materialDef.extensions[NAME] as SpecularDef;
+				const specularDef = materialDef.extensions[KHR_MATERIALS_SPECULAR] as SpecularDef;
 
 				// Factors.
 
@@ -112,7 +118,7 @@ export class KHRMaterialsSpecular extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const specular = material.getExtension<Specular>(NAME);
+				const specular = material.getExtension<Specular>(KHR_MATERIALS_SPECULAR);
 				if (specular) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -120,7 +126,7 @@ export class KHRMaterialsSpecular extends Extension {
 
 					// Factors.
 
-					const specularDef = (materialDef.extensions[NAME] = {} as SpecularDef);
+					const specularDef = (materialDef.extensions[KHR_MATERIALS_SPECULAR] = {} as SpecularDef);
 
 					if (specular.getSpecularFactor() !== 1) {
 						specularDef.specularFactor = specular.getSpecularFactor();

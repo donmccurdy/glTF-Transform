@@ -1,85 +1,85 @@
-import { URL } from 'url';
-import { promises as fs, readFileSync } from 'fs';
-import micromatch from 'micromatch';
-import { gzip } from 'node-gzip';
-import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
-import mikktspace from 'mikktspace';
-import * as watlas from 'watlas';
-import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
-import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
-import { Logger, NodeIO, PropertyType, VertexLayout, vec2, Transform } from '@gltf-transform/core';
+import { Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
-	CenterOptions,
-	InstanceOptions,
+	type CenterOptions,
+	DRACO_DEFAULTS,
+	type DracoOptions,
+	type FlattenOptions,
 	INSTANCE_DEFAULTS,
-	PartitionOptions,
-	PruneOptions,
+	type InstanceOptions,
+	JOIN_DEFAULTS,
+	type JoinOptions,
+	MESHOPT_DEFAULTS,
+	PALETTE_DEFAULTS,
+	PRUNE_DEFAULTS,
+	type PaletteOptions,
+	type PartitionOptions,
+	type PruneOptions,
 	QUANTIZE_DEFAULTS,
-	ResampleOptions,
-	SequenceOptions,
+	type ResampleOptions,
+	SIMPLIFY_DEFAULTS,
+	type SequenceOptions,
+	type SparseOptions,
+	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
 	TextureResizeFilter,
-	UnweldOptions,
-	WeldOptions,
+	UNWRAP_DEFAULTS,
+	type UnweldOptions,
+	type WeldOptions,
 	center,
 	dedup,
+	dequantize,
+	draco,
+	flatten,
 	instance,
+	join,
+	meshopt,
 	metalRough,
+	palette,
 	partition,
 	prune,
 	quantize,
+	reorder,
 	resample,
 	sequence,
-	tangents,
-	unweld,
-	weld,
-	reorder,
-	dequantize,
-	unlit,
-	meshopt,
-	DRACO_DEFAULTS,
-	draco,
-	DracoOptions,
 	simplify,
-	SIMPLIFY_DEFAULTS,
-	textureCompress,
-	FlattenOptions,
-	flatten,
-	JOIN_DEFAULTS,
-	join,
-	JoinOptions,
 	sparse,
-	SparseOptions,
-	palette,
-	PaletteOptions,
-	PALETTE_DEFAULTS,
-	MESHOPT_DEFAULTS,
-	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
-	PRUNE_DEFAULTS,
+	tangents,
+	textureCompress,
+	unlit,
+	unweld,
 	unwrap,
-	UNWRAP_DEFAULTS,
+	weld,
 } from '@gltf-transform/functions';
+import { promises as fs, readFileSync } from 'fs';
+import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
+import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import micromatch from 'micromatch';
+import mikktspace from 'mikktspace';
+import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
+import { gzip } from 'node-gzip';
+import { URL } from 'url';
+import * as watlas from 'watlas';
+import { getConfig, loadConfig } from './config.js';
 import { inspect } from './inspect.js';
+import { Validator, program } from './program.js';
+import { Session } from './session.js';
 import {
 	ETC1S_DEFAULTS,
 	Filter,
 	Mode,
 	UASTC_DEFAULTS,
+	type XMPOptions,
 	ktxdecompress,
 	ktxfix,
 	merge,
 	toktx,
-	XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { formatBytes, MICROMATCH_OPTIONS, underline, TableFormat, dim, regexFromArray } from './util.js';
-import { Session } from './session.js';
-import { ValidateOptions, validate } from './validate.js';
-import { getConfig, loadConfig } from './config.js';
-import { Validator, program } from './program.js';
+import { MICROMATCH_OPTIONS, TableFormat, dim, formatBytes, regexFromArray, underline } from './util.js';
+import { type ValidateOptions, validate } from './validate.js';
 
 let io: NodeIO;
 
-const programReady = new Promise<void>((resolve) => {
+const programReady: Promise<void> = new Promise<void>((resolve) => {
 	// Manually detect and handle --config, before program actually runs.
 	if (process.argv.includes('--config')) {
 		loadConfig(process.argv[process.argv.indexOf('--config') + 1]);
@@ -1826,7 +1826,6 @@ program.option(
 program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
-export { program, programReady };
-export { Validator };
-export * from './util.js';
 export * from './transforms/index.js';
+export * from './util.js';
+export { Validator, program, programReady };

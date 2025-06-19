@@ -1,10 +1,18 @@
-import { GLB_BUFFER, PropertyType, TypedArray, mat4, vec3, vec4, ComponentTypeToTypedArray } from '../constants.js';
+import {
+	GLB_BUFFER,
+	PropertyType,
+	type TypedArray,
+	type mat4,
+	type vec3,
+	type vec4,
+	ComponentTypeToTypedArray,
+} from '../constants.js';
 import { Document } from '../document.js';
 import type { Extension } from '../extension.js';
 import type { JSONDocument } from '../json-document.js';
 import { Accessor, AnimationSampler, Camera } from '../properties/index.js';
 import type { GLTF } from '../types/gltf.js';
-import { BufferUtils, FileUtils, ILogger, ImageUtils, Logger, MathUtils } from '../utils/index.js';
+import { BufferUtils, FileUtils, type ILogger, ImageUtils, Logger, MathUtils } from '../utils/index.js';
 import { ReaderContext } from './reader-context.js';
 
 export interface ReaderOptions {

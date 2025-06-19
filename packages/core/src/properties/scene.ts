@@ -1,6 +1,6 @@
 import { RefSet } from 'property-graph';
-import { Nullable, PropertyType } from '../constants.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { type Nullable, PropertyType } from '../constants.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Node } from './node.js';
 import { COPY_IDENTITY } from './property.js';
 
@@ -33,7 +33,7 @@ export class Scene extends ExtensibleProperty<IScene> {
 		return Object.assign(super.getDefaults() as IExtensibleProperty, { children: new RefSet<Node>() });
 	}
 
-	public copy(other: this, resolve = COPY_IDENTITY): this {
+	public copy(other: this, resolve: typeof COPY_IDENTITY = COPY_IDENTITY): this {
 		// Scene cannot be copied, only cloned. Copying is shallow, but nodes cannot have more than
 		// one parent. Rather than leaving one of the two Scenes without children, throw an error here.
 		if (resolve === COPY_IDENTITY) throw new Error('Scene cannot be copied.');

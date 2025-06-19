@@ -1,8 +1,6 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_CLEARCOAT } from '../constants.js';
 import { Clearcoat } from './clearcoat.js';
-
-const NAME = KHR_MATERIALS_CLEARCOAT;
 
 interface ClearcoatDef {
 	clearcoatFactor?: number;
@@ -45,10 +43,10 @@ interface ClearcoatDef {
  * ```
  */
 export class KHRMaterialsClearcoat extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_CLEARCOAT = KHR_MATERIALS_CLEARCOAT;
+	public readonly extensionName: typeof KHR_MATERIALS_CLEARCOAT = KHR_MATERIALS_CLEARCOAT;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Clearcoat property for use on a {@link Material}. */
 	public createClearcoat(): Clearcoat {
@@ -71,11 +69,11 @@ export class KHRMaterialsClearcoat extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_CLEARCOAT]) {
 				const clearcoat = this.createClearcoat();
-				context.materials[materialIndex].setExtension(NAME, clearcoat);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_CLEARCOAT, clearcoat);
 
-				const clearcoatDef = materialDef.extensions[NAME] as ClearcoatDef;
+				const clearcoatDef = materialDef.extensions[KHR_MATERIALS_CLEARCOAT] as ClearcoatDef;
 
 				// Factors.
 
@@ -123,7 +121,7 @@ export class KHRMaterialsClearcoat extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const clearcoat = material.getExtension<Clearcoat>(NAME);
+				const clearcoat = material.getExtension<Clearcoat>(KHR_MATERIALS_CLEARCOAT);
 				if (clearcoat) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -131,7 +129,7 @@ export class KHRMaterialsClearcoat extends Extension {
 
 					// Factors.
 
-					const clearcoatDef = (materialDef.extensions[NAME] = {
+					const clearcoatDef = (materialDef.extensions[KHR_MATERIALS_CLEARCOAT] = {
 						clearcoatFactor: clearcoat.getClearcoatFactor(),
 						clearcoatRoughnessFactor: clearcoat.getClearcoatRoughnessFactor(),
 					} as ClearcoatDef);

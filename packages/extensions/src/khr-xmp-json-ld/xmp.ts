@@ -1,7 +1,7 @@
 import {
 	Animation,
 	Extension,
-	GLTF,
+	type GLTF,
 	Material,
 	Mesh,
 	Node,
@@ -13,8 +13,6 @@ import {
 } from '@gltf-transform/core';
 import { KHR_XMP_JSON_LD } from '../constants.js';
 import { Packet } from './packet.js';
-
-const NAME = KHR_XMP_JSON_LD;
 
 type XMPPacketDef = Record<string, unknown>;
 
@@ -99,8 +97,8 @@ interface XMPRootDef {
  * ```
  */
 export class KHRXMP extends Extension {
-	public readonly extensionName = NAME;
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName: typeof KHR_XMP_JSON_LD = KHR_XMP_JSON_LD;
+	public static readonly EXTENSION_NAME: typeof KHR_XMP_JSON_LD = KHR_XMP_JSON_LD;
 
 	/** Creates a new XMP packet, to be linked with a {@link Document} or {@link Property Properties}. */
 	public createPacket(): Packet {
@@ -114,7 +112,7 @@ export class KHRXMP extends Extension {
 
 	/** @hidden */
 	public read(context: ReaderContext): this {
-		const extensionDef = context.jsonDoc.json.extensions?.[NAME] as XMPRootDef | undefined;
+		const extensionDef = context.jsonDoc.json.extensions?.[KHR_XMP_JSON_LD] as XMPRootDef | undefined;
 		if (!extensionDef || !extensionDef.packets) return this;
 
 		// Deserialize packets.
@@ -147,9 +145,9 @@ export class KHRXMP extends Extension {
 			const defs = defLists[i] || [];
 			for (let j = 0; j < defs.length; j++) {
 				const def = defs[j];
-				if (def.extensions && def.extensions[NAME]) {
-					const xmpDef = def.extensions[NAME] as XMPPropertyDef;
-					propertyLists[i][j].setExtension(NAME, packets[xmpDef.packet]);
+				if (def.extensions && def.extensions[KHR_XMP_JSON_LD]) {
+					const xmpDef = def.extensions[KHR_XMP_JSON_LD] as XMPPropertyDef;
+					propertyLists[i][j].setExtension(KHR_XMP_JSON_LD, packets[xmpDef.packet]);
 				}
 			}
 		}
@@ -198,20 +196,20 @@ export class KHRXMP extends Extension {
 						parentDef = null;
 						this.document
 							.getLogger()
-							.warn(`[${NAME}]: Unsupported parent property, "${parent.propertyType}"`);
+							.warn(`[${KHR_XMP_JSON_LD}]: Unsupported parent property, "${parent.propertyType}"`);
 						break;
 				}
 
 				if (!parentDef) continue;
 
 				parentDef.extensions = parentDef.extensions || {};
-				parentDef.extensions[NAME] = { packet: packetDefs.length - 1 };
+				parentDef.extensions[KHR_XMP_JSON_LD] = { packet: packetDefs.length - 1 };
 			}
 		}
 
 		if (packetDefs.length > 0) {
 			json.extensions = json.extensions || {};
-			json.extensions[NAME] = { packets: packetDefs };
+			json.extensions[KHR_XMP_JSON_LD] = { packets: packetDefs };
 		}
 
 		return this;

@@ -3,14 +3,14 @@ import { getPixels, savePixels } from 'ndarray-pixels';
 import {
 	Accessor,
 	Document,
-	GLTF,
+	type GLTF,
 	Primitive,
 	Property,
 	PropertyType,
 	Texture,
-	Transform,
-	TransformContext,
-	vec2,
+	type Transform,
+	type TransformContext,
+	type vec2,
 } from '@gltf-transform/core';
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
@@ -190,7 +190,7 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 }
 
 /** @hidden */
-export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null) {
+export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
 	if (a == null && b == null) return true;
 	if (a == null || b == null) return false;
 	if (a.length !== b.length) return false;
@@ -212,14 +212,14 @@ export function shallowCloneAccessor(document: Document, accessor: Accessor): Ac
 }
 
 /** @hidden */
-export function createIndices(count: number, maxIndex = count): Uint16Array | Uint32Array {
+export function createIndices(count: number, maxIndex: number = count): Uint16Array | Uint32Array {
 	const array = createIndicesEmpty(count, maxIndex);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
 }
 
 /** @hidden */
-export function createIndicesEmpty(count: number, maxIndex = count): Uint16Array | Uint32Array {
+export function createIndicesEmpty(count: number, maxIndex: number = count): Uint16Array | Uint32Array {
 	return maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 }
 

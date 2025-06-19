@@ -1,4 +1,4 @@
-import { Accessor, Document, GLTF, Primitive, PropertyType, Transform } from '@gltf-transform/core';
+import { Accessor, Document, type GLTF, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
 import { prune } from './prune.js';
 import { assignDefaults, createTransform, deepListAttributes, SetMap, shallowCloneAccessor } from './utils.js';
 import type { MeshoptEncoder } from 'meshoptimizer';

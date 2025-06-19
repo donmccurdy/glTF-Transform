@@ -1,8 +1,14 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3, MathUtils, PropertyType } from '@gltf-transform/core';
+import {
+	Extension,
+	type GLTF,
+	ReaderContext,
+	WriterContext,
+	type vec3,
+	MathUtils,
+	PropertyType,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 import { Volume } from './volume.js';
-
-const NAME = KHR_MATERIALS_VOLUME;
 
 interface VolumeDef {
 	thicknessFactor?: number;
@@ -64,10 +70,10 @@ interface VolumeDef {
  * Blender or Substance Painter. When `thicknessFactor = 0`, all volumetric effects are disabled.
  */
 export class KHRMaterialsVolume extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_VOLUME = KHR_MATERIALS_VOLUME;
+	public readonly extensionName: typeof KHR_MATERIALS_VOLUME = KHR_MATERIALS_VOLUME;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Volume property for use on a {@link Material}. */
 	public createVolume(): Volume {
@@ -90,11 +96,11 @@ export class KHRMaterialsVolume extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_VOLUME]) {
 				const volume = this.createVolume();
-				context.materials[materialIndex].setExtension(NAME, volume);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_VOLUME, volume);
 
-				const volumeDef = materialDef.extensions[NAME] as VolumeDef;
+				const volumeDef = materialDef.extensions[KHR_MATERIALS_VOLUME] as VolumeDef;
 
 				// Factors.
 
@@ -130,7 +136,7 @@ export class KHRMaterialsVolume extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const volume = material.getExtension<Volume>(NAME);
+				const volume = material.getExtension<Volume>(KHR_MATERIALS_VOLUME);
 				if (volume) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -138,7 +144,7 @@ export class KHRMaterialsVolume extends Extension {
 
 					// Factors.
 
-					const volumeDef = (materialDef.extensions[NAME] = {} as VolumeDef);
+					const volumeDef = (materialDef.extensions[KHR_MATERIALS_VOLUME] = {} as VolumeDef);
 
 					if (volume.getThicknessFactor() > 0) {
 						volumeDef.thicknessFactor = volume.getThicknessFactor();

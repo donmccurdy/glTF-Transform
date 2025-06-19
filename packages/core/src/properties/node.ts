@@ -1,9 +1,9 @@
 import { multiply } from 'gl-matrix/mat4';
 import { RefSet } from 'property-graph';
-import { PropertyType, mat4, vec3, vec4, Nullable } from '../constants.js';
+import { PropertyType, type mat4, type vec3, type vec4, type Nullable } from '../constants.js';
 import { MathUtils } from '../utils/index.js';
 import type { Camera } from './camera.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Mesh } from './mesh.js';
 import { COPY_IDENTITY } from './property.js';
 import type { Skin } from './skin.js';
@@ -66,7 +66,7 @@ export class Node extends ExtensibleProperty<INode> {
 		});
 	}
 
-	public copy(other: this, resolve = COPY_IDENTITY): this {
+	public copy(other: this, resolve: typeof COPY_IDENTITY = COPY_IDENTITY): this {
 		// Node cannot be copied, only cloned. Copying is shallow, but Nodes cannot have more than
 		// one parent. Rather than leaving one of the two Nodes without children, throw an error here.
 		if (resolve === COPY_IDENTITY) throw new Error('Node cannot be copied.');

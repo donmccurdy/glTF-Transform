@@ -1,5 +1,5 @@
-export { Document, Transform, TransformContext } from './document.js';
-export { JSONDocument } from './json-document.js';
+export { Document, type Transform, type TransformContext } from './document.js';
+export type { JSONDocument } from './json-document.js';
 export { Extension } from './extension.js';
 export {
 	Accessor,
@@ -11,7 +11,7 @@ export {
 	ExtensionProperty,
 	ExtensibleProperty,
 	Property,
-	IProperty,
+	type IProperty,
 	Material,
 	Mesh,
 	Node,
@@ -22,10 +22,10 @@ export {
 	Skin,
 	Texture,
 	TextureInfo,
-	PropertyResolver,
+	type PropertyResolver,
 	COPY_IDENTITY,
 } from './properties/index.js';
-export { Graph, GraphEdge, Ref, RefList, RefSet, RefMap } from 'property-graph';
+export { Graph, GraphEdge, type Ref, RefList, RefSet, RefMap } from 'property-graph';
 export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io/index.js';
 export {
 	BufferUtils,
@@ -33,8 +33,8 @@ export {
 	ColorUtils,
 	FileUtils,
 	ImageUtils,
-	ImageUtilsFormat,
-	ILogger,
+	type ImageUtilsFormat,
+	type ILogger,
 	Logger,
 	MathUtils,
 	Verbosity,
@@ -42,21 +42,21 @@ export {
 	uuid,
 } from './utils/index.js';
 export {
-	TypedArray,
-	TypedArrayConstructor,
+	type TypedArray,
+	type TypedArrayConstructor,
 	ComponentTypeToTypedArray,
 	PropertyType,
 	Format,
-	Nullable,
+	type Nullable,
 	TextureChannel,
 	VertexLayout,
-	vec2,
-	vec3,
-	vec4,
-	mat3,
-	mat4,
-	bbox,
+	type vec2,
+	type vec3,
+	type vec4,
+	type mat3,
+	type mat4,
+	type bbox,
 	GLB_BUFFER,
 	VERSION,
 } from './constants.js';
-export { GLTF } from './types/gltf.js';
+export type { GLTF } from './types/gltf.js';

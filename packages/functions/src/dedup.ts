@@ -11,7 +11,7 @@ import {
 	Root,
 	Skin,
 	Texture,
-	Transform,
+	type Transform,
 } from '@gltf-transform/core';
 import { assignDefaults, createTransform, shallowEqualsArray } from './utils.js';
 

@@ -1,16 +1,14 @@
 import {
 	Extension,
 	ImageUtils,
-	ImageUtilsFormat,
+	type ImageUtilsFormat,
 	PropertyType,
 	ReaderContext,
 	WriterContext,
-	vec2,
+	type vec2,
 	BufferUtils,
 } from '@gltf-transform/core';
 import { EXT_TEXTURE_AVIF } from '../constants.js';
-
-const NAME = EXT_TEXTURE_AVIF;
 
 class AVIFImageUtils implements ImageUtilsFormat {
 	match(array: Uint8Array): boolean {
@@ -94,10 +92,10 @@ class AVIFImageUtils implements ImageUtilsFormat {
  * JPEG image data.
  */
 export class EXTTextureAVIF extends Extension {
-	public readonly extensionName = NAME;
+	public readonly extensionName: typeof EXT_TEXTURE_AVIF = EXT_TEXTURE_AVIF;
 	/** @hidden */
-	public readonly prereadTypes = [PropertyType.TEXTURE];
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.TEXTURE];
+	public static readonly EXTENSION_NAME: typeof EXT_TEXTURE_AVIF = EXT_TEXTURE_AVIF;
 
 	/** @hidden */
 	public static register(): void {
@@ -108,8 +106,8 @@ export class EXTTextureAVIF extends Extension {
 	public preread(context: ReaderContext): this {
 		const textureDefs = context.jsonDoc.json.textures || [];
 		textureDefs.forEach((textureDef) => {
-			if (textureDef.extensions && textureDef.extensions[NAME]) {
-				textureDef.source = (textureDef.extensions[NAME] as { source: number }).source;
+			if (textureDef.extensions && textureDef.extensions[EXT_TEXTURE_AVIF]) {
+				textureDef.source = (textureDef.extensions[EXT_TEXTURE_AVIF] as { source: number }).source;
 			}
 		});
 		return this;
@@ -134,7 +132,7 @@ export class EXTTextureAVIF extends Extension {
 					textureDefs.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {
 							textureDef.extensions = textureDef.extensions || {};
-							textureDef.extensions[NAME] = { source: textureDef.source };
+							textureDef.extensions[EXT_TEXTURE_AVIF] = { source: textureDef.source };
 							delete textureDef.source;
 						}
 					});

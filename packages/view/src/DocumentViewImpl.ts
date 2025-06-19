@@ -27,7 +27,7 @@ import {
 	InstancedMeshSubject,
 } from './subjects/index.js';
 import type { LightLike, MeshLike, THREEObject } from './constants.js';
-import { DefaultImageProvider, ImageProvider } from './ImageProvider.js';
+import { DefaultImageProvider, type ImageProvider } from './ImageProvider.js';
 import { MaterialPool, SingleUserPool, Pool, TexturePool } from './pools/index.js';
 
 export interface DocumentViewSubjectAPI {

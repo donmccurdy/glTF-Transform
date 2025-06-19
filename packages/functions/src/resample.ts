@@ -3,12 +3,12 @@ import {
 	AnimationSampler,
 	ComponentTypeToTypedArray,
 	Document,
-	GLTF,
+	type GLTF,
 	MathUtils,
 	PropertyType,
 	Root,
-	Transform,
-	TypedArray,
+	type Transform,
+	type TypedArray,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { assignDefaults, createTransform } from './utils.js';

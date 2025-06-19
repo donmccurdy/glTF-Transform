@@ -1,4 +1,4 @@
-import { vec3, mat4, Accessor, Primitive, MathUtils } from '@gltf-transform/core';
+import { type vec3, type mat4, Accessor, Primitive, MathUtils } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { weldPrimitive } from './weld.js';

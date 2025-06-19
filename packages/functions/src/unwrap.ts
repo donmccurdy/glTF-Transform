@@ -1,4 +1,12 @@
-import { Document, Transform, Primitive, TypedArrayConstructor, vec2, Mesh, Node, vec3 } from '@gltf-transform/core';
+import {
+	Document,
+	type Transform,
+	Primitive,
+	type TypedArrayConstructor,
+	type vec2,
+	Mesh,
+	Node,
+} from '@gltf-transform/core';
 import { Accessor } from '@gltf-transform/core';
 import { createTransform, isUsed, shallowCloneAccessor } from './utils.js';
 import type * as watlas from 'watlas';
@@ -178,7 +186,7 @@ export function unwrap(_options: UnwrapOptions): Transform {
  *
  * @experimental
  */
-export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimitivesOptions) {
+export function unwrapPrimitives(primitives: Primitive[], options: UnwrapPrimitivesOptions): void {
 	const document = Document.fromGraph(primitives[0].getGraph())!;
 	const watlas = options.watlas as IWatlas | undefined;
 	const dstTexCoordIndex = options.texcoord ?? 0;

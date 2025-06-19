@@ -59,7 +59,7 @@ export class NodeIO extends PlatformIO {
 	 * @param fetch Implementation of Fetch API.
 	 * @param fetchConfig Configuration object for Fetch API.
 	 */
-	constructor(_fetch: unknown = null, _fetchConfig = HTTPUtils.DEFAULT_INIT) {
+	constructor(_fetch: unknown = null, _fetchConfig: RequestInit = HTTPUtils.DEFAULT_INIT) {
 		super();
 		this._fetch = _fetch as typeof fetch | null;
 		this._fetchConfig = _fetchConfig;

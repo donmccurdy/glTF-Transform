@@ -2,8 +2,6 @@ import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-tra
 import { KHR_MATERIALS_IOR } from '../constants.js';
 import { IOR } from './ior.js';
 
-const NAME = KHR_MATERIALS_IOR;
-
 interface IORDef {
 	ior?: number;
 }
@@ -36,10 +34,10 @@ interface IORDef {
  * ```
  */
 export class KHRMaterialsIOR extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_IOR = KHR_MATERIALS_IOR;
+	public readonly extensionName: typeof KHR_MATERIALS_IOR = KHR_MATERIALS_IOR;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new IOR property for use on a {@link Material}. */
 	public createIOR(): IOR {
@@ -61,11 +59,11 @@ export class KHRMaterialsIOR extends Extension {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_IOR]) {
 				const ior = this.createIOR();
-				context.materials[materialIndex].setExtension(NAME, ior);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_IOR, ior);
 
-				const iorDef = materialDef.extensions[NAME] as IORDef;
+				const iorDef = materialDef.extensions[KHR_MATERIALS_IOR] as IORDef;
 
 				// Factors.
 
@@ -86,7 +84,7 @@ export class KHRMaterialsIOR extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const ior = material.getExtension<IOR>(NAME);
+				const ior = material.getExtension<IOR>(KHR_MATERIALS_IOR);
 				if (ior) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -94,7 +92,7 @@ export class KHRMaterialsIOR extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					materialDef.extensions[KHR_MATERIALS_IOR] = {
 						ior: ior.getIOR(),
 					};
 				}

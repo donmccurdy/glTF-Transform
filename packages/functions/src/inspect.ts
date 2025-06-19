@@ -2,7 +2,7 @@ import {
 	Accessor,
 	Document,
 	ExtensionProperty,
-	GLTF,
+	type GLTF,
 	ImageUtils,
 	Texture,
 	getBounds,

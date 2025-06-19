@@ -5,8 +5,8 @@ import {
 	ImageUtils,
 	Texture,
 	TextureChannel,
-	Transform,
-	vec2,
+	type Transform,
+	type vec2,
 } from '@gltf-transform/core';
 import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { getTextureChannelMask } from './list-texture-channels.js';
@@ -256,7 +256,7 @@ export function textureCompress(_options: TextureCompressOptions): Transform {
  * });
  * ```
  */
-export async function compressTexture(texture: Texture, _options: CompressTextureOptions) {
+export async function compressTexture(texture: Texture, _options: CompressTextureOptions): Promise<void> {
 	const options = { ...TEXTURE_COMPRESS_DEFAULTS, ..._options } as Required<CompressTextureOptions>;
 	const encoder = options.encoder as typeof sharp | null;
 

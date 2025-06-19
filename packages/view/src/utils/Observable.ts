@@ -1,4 +1,4 @@
-import { Subscription } from '../constants.js';
+import type { Subscription } from '../constants.js';
 
 export class Observable<Value> {
 	public value: Value;
@@ -17,7 +17,7 @@ export class Observable<Value> {
 		return () => (this._subscriber = null);
 	}
 
-	public next(value: Value) {
+	public next(value: Value): void {
 		const prevValue = this.value;
 		this.value = value;
 		if (this._subscriber) {
@@ -25,7 +25,7 @@ export class Observable<Value> {
 		}
 	}
 
-	public dispose() {
+	public dispose(): void {
 		this._subscriber = null;
 	}
 }

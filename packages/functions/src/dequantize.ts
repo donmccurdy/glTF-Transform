@@ -5,7 +5,7 @@ import {
 	type GLTF,
 	type Primitive,
 	type Transform,
-	TypedArray,
+	type TypedArray,
 } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import { assignDefaults, createTransform } from './utils.js';
@@ -72,7 +72,7 @@ export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): T
  * }
  * ```
  */
-export function dequantizePrimitive(prim: Primitive, _options = DEQUANTIZE_DEFAULTS): void {
+export function dequantizePrimitive(prim: Primitive, _options: DequantizeOptions = DEQUANTIZE_DEFAULTS): void {
 	const options = assignDefaults(DEQUANTIZE_DEFAULTS, _options);
 
 	for (const semantic of prim.listSemantics()) {

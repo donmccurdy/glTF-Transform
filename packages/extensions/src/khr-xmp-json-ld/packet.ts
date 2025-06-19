@@ -1,4 +1,4 @@
-import { Nullable, PropertyType, ExtensionProperty, IProperty } from '@gltf-transform/core';
+import { type Nullable, PropertyType, ExtensionProperty, type IProperty } from '@gltf-transform/core';
 import { KHR_XMP_JSON_LD } from '../constants.js';
 
 type Term = string;
@@ -6,7 +6,7 @@ type TermDefinition = string | Record<string, string>;
 
 type Value = string | number | boolean;
 
-const PARENT_TYPES = [
+const PARENT_TYPES: PropertyType[] = [
 	PropertyType.ROOT,
 	PropertyType.SCENE,
 	PropertyType.NODE,
@@ -29,7 +29,7 @@ export class Packet extends ExtensionProperty<IPacket> {
 	public declare propertyType: 'Packet';
 	public declare parentTypes: typeof PARENT_TYPES;
 	public declare extensionName: typeof KHR_XMP_JSON_LD;
-	public static EXTENSION_NAME = KHR_XMP_JSON_LD;
+	public static EXTENSION_NAME: typeof KHR_XMP_JSON_LD = KHR_XMP_JSON_LD;
 
 	protected init(): void {
 		this.extensionName = KHR_XMP_JSON_LD;

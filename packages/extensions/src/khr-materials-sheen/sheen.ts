@@ -1,12 +1,12 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 
@@ -25,7 +25,7 @@ const { R, G, B, A } = TextureChannel;
  * Defines sheen on a PBR {@link Material}. See {@link KHRMaterialsSheen}.
  */
 export class Sheen extends ExtensionProperty<ISheen> {
-	public static EXTENSION_NAME = KHR_MATERIALS_SHEEN;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_SHEEN = KHR_MATERIALS_SHEEN;
 	public declare extensionName: typeof KHR_MATERIALS_SHEEN;
 	public declare propertyType: 'Sheen';
 	public declare parentTypes: [PropertyType.MATERIAL];

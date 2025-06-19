@@ -1,4 +1,4 @@
-import { Document, Primitive, ComponentTypeToTypedArray, Accessor, TypedArray } from '@gltf-transform/core';
+import { Document, Primitive, ComponentTypeToTypedArray, Accessor, type TypedArray } from '@gltf-transform/core';
 import { assignDefaults, createIndicesEmpty, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
 import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 

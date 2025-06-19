@@ -1,4 +1,4 @@
-import { PlatformIO, WebIO, NodeIO, Logger, bbox, vec3 as _vec3 } from '@gltf-transform/core';
+import { PlatformIO, WebIO, NodeIO, Logger, type bbox, type vec3 as _vec3 } from '@gltf-transform/core';
 
 export enum Environment {
 	WEB,
@@ -8,7 +8,7 @@ export enum Environment {
 
 export const environment = (typeof window !== 'undefined' ? Environment.WEB : Environment.NODE) as Environment;
 
-export const logger = new Logger(Logger.Verbosity.SILENT);
+export const logger: Logger = new Logger(Logger.Verbosity.SILENT);
 
 export const createPlatformIO = async (): Promise<PlatformIO> => {
 	switch (environment) {

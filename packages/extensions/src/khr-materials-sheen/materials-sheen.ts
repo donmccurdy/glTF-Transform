@@ -1,8 +1,6 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext, type vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 import { Sheen } from './sheen.js';
-
-const NAME = KHR_MATERIALS_SHEEN;
 
 interface SheenDef {
 	sheenColorFactor?: vec3;
@@ -47,10 +45,10 @@ interface SheenDef {
  * ```
  */
 export class KHRMaterialsSheen extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_SHEEN = KHR_MATERIALS_SHEEN;
+	public readonly extensionName: typeof KHR_MATERIALS_SHEEN = KHR_MATERIALS_SHEEN;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Sheen property for use on a {@link Material}. */
 	public createSheen(): Sheen {
@@ -73,11 +71,11 @@ export class KHRMaterialsSheen extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_SHEEN]) {
 				const sheen = this.createSheen();
-				context.materials[materialIndex].setExtension(NAME, sheen);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_SHEEN, sheen);
 
-				const sheenDef = materialDef.extensions[NAME] as SheenDef;
+				const sheenDef = materialDef.extensions[KHR_MATERIALS_SHEEN] as SheenDef;
 
 				// Factors.
 
@@ -116,7 +114,7 @@ export class KHRMaterialsSheen extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const sheen = material.getExtension<Sheen>(NAME);
+				const sheen = material.getExtension<Sheen>(KHR_MATERIALS_SHEEN);
 				if (sheen) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -124,7 +122,7 @@ export class KHRMaterialsSheen extends Extension {
 
 					// Factors.
 
-					const sheenDef = (materialDef.extensions[NAME] = {
+					const sheenDef = (materialDef.extensions[KHR_MATERIALS_SHEEN] = {
 						sheenColorFactor: sheen.getSheenColorFactor(),
 						sheenRoughnessFactor: sheen.getSheenRoughnessFactor(),
 					} as SheenDef);

@@ -1,7 +1,7 @@
-import { Nullable, PropertyType } from '../constants.js';
+import { type Nullable, PropertyType } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
 import type { AnimationSampler } from './animation-sampler.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Node } from './node.js';
 
 interface IAnimationChannel extends IExtensibleProperty {

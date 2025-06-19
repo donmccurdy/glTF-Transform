@@ -1,4 +1,4 @@
-import { ExtensionProperty, IProperty, Nullable, PropertyType, vec3 } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType, type vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 
 interface ILight extends IProperty {
@@ -16,7 +16,7 @@ type PunctualLightType = 'point' | 'spot' | 'directional';
  * Defines a light attached to a {@link Node}. See {@link KHRLightsPunctual}.
  */
 export class Light extends ExtensionProperty<ILight> {
-	public static EXTENSION_NAME = KHR_LIGHTS_PUNCTUAL;
+	public static EXTENSION_NAME: typeof KHR_LIGHTS_PUNCTUAL = KHR_LIGHTS_PUNCTUAL;
 	public declare extensionName: typeof KHR_LIGHTS_PUNCTUAL;
 	public declare propertyType: 'Light';
 	public declare parentTypes: [PropertyType.NODE];

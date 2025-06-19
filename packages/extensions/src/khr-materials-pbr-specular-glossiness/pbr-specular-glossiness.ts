@@ -1,13 +1,13 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec3,
-	vec4,
+	type vec3,
+	type vec4,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
 
@@ -27,7 +27,7 @@ const { R, G, B, A } = TextureChannel;
  * Converts a {@link Material} to a spec/gloss workflow. See {@link KHRMaterialsPBRSpecularGlossiness}.
  */
 export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossiness> {
-	public static EXTENSION_NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 	public declare extensionName: typeof KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 	public declare propertyType: 'PBRSpecularGlossiness';
 	public declare parentTypes: [PropertyType.MATERIAL];

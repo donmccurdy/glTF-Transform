@@ -1,6 +1,6 @@
 import { Property as PropertyDef, Mesh as MeshDef, Node as NodeDef, uuid } from '@gltf-transform/core';
 import { Object3D } from 'three';
-import { LightLike } from '../constants.js';
+import type { LightLike } from '../constants.js';
 import { Pool } from './Pool.js';
 
 export interface SingleUserParams {

@@ -1,8 +1,6 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants.js';
 import { Transmission } from './transmission.js';
-
-const NAME = KHR_MATERIALS_TRANSMISSION;
 
 interface TransmissionDef {
 	transmissionFactor?: number;
@@ -47,10 +45,10 @@ interface TransmissionDef {
  * ```
  */
 export class KHRMaterialsTransmission extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_TRANSMISSION = KHR_MATERIALS_TRANSMISSION;
+	public readonly extensionName: typeof KHR_MATERIALS_TRANSMISSION = KHR_MATERIALS_TRANSMISSION;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Transmission property for use on a {@link Material}. */
 	public createTransmission(): Transmission {
@@ -73,11 +71,11 @@ export class KHRMaterialsTransmission extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_TRANSMISSION]) {
 				const transmission = this.createTransmission();
-				context.materials[materialIndex].setExtension(NAME, transmission);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_TRANSMISSION, transmission);
 
-				const transmissionDef = materialDef.extensions[NAME] as TransmissionDef;
+				const transmissionDef = materialDef.extensions[KHR_MATERIALS_TRANSMISSION] as TransmissionDef;
 
 				// Factors.
 
@@ -107,7 +105,7 @@ export class KHRMaterialsTransmission extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const transmission = material.getExtension<Transmission>(NAME);
+				const transmission = material.getExtension<Transmission>(KHR_MATERIALS_TRANSMISSION);
 				if (transmission) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -115,7 +113,7 @@ export class KHRMaterialsTransmission extends Extension {
 
 					// Factors.
 
-					const transmissionDef = (materialDef.extensions[NAME] = {
+					const transmissionDef = (materialDef.extensions[KHR_MATERIALS_TRANSMISSION] = {
 						transmissionFactor: transmission.getTransmissionFactor(),
 					} as TransmissionDef);
 

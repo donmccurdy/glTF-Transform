@@ -1,4 +1,4 @@
-import { Document, Extension, Graph, Property, PropertyResolver, PropertyType } from '@gltf-transform/core';
+import { Document, Extension, Graph, Property, type PropertyResolver, PropertyType } from '@gltf-transform/core';
 
 const { TEXTURE_INFO, ROOT } = PropertyType;
 type PropertyConstructor = new (g: Graph<Property>) => Property;

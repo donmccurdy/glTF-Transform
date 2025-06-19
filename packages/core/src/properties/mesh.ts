@@ -1,6 +1,6 @@
 import { RefSet } from 'property-graph';
-import { Nullable, PropertyType } from '../constants.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { type Nullable, PropertyType } from '../constants.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Primitive } from './primitive.js';
 
 interface IMesh extends IExtensibleProperty {

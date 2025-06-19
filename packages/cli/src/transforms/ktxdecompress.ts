@@ -4,7 +4,7 @@ import os from 'os';
 import tmp from 'tmp';
 import pLimit from 'p-limit';
 
-import { uuid, Document, FileUtils, ImageUtils, Transform } from '@gltf-transform/core';
+import { uuid, Document, FileUtils, ImageUtils, type Transform } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
 import { spawn, formatBytes, waitExit } from '../util.js';

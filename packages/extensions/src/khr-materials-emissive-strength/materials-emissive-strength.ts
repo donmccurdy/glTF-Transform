@@ -2,8 +2,6 @@ import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-tra
 import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants.js';
 import { EmissiveStrength } from './emissive-strength.js';
 
-const NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
-
 interface EmissiveStrengthDef {
 	emissiveStrength?: number;
 }
@@ -53,10 +51,10 @@ interface EmissiveStrengthDef {
  * ```
  */
 export class KHRMaterialsEmissiveStrength extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_EMISSIVE_STRENGTH = KHR_MATERIALS_EMISSIVE_STRENGTH;
+	public readonly extensionName: typeof KHR_MATERIALS_EMISSIVE_STRENGTH = KHR_MATERIALS_EMISSIVE_STRENGTH;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new EmissiveStrength property for use on a {@link Material}. */
 	public createEmissiveStrength(): EmissiveStrength {
@@ -78,11 +76,13 @@ export class KHRMaterialsEmissiveStrength extends Extension {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_EMISSIVE_STRENGTH]) {
 				const emissiveStrength = this.createEmissiveStrength();
-				context.materials[materialIndex].setExtension(NAME, emissiveStrength);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_EMISSIVE_STRENGTH, emissiveStrength);
 
-				const emissiveStrengthDef = materialDef.extensions[NAME] as EmissiveStrengthDef;
+				const emissiveStrengthDef = materialDef.extensions[
+					KHR_MATERIALS_EMISSIVE_STRENGTH
+				] as EmissiveStrengthDef;
 
 				// Factors.
 
@@ -103,7 +103,7 @@ export class KHRMaterialsEmissiveStrength extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const emissiveStrength = material.getExtension<EmissiveStrength>(NAME);
+				const emissiveStrength = material.getExtension<EmissiveStrength>(KHR_MATERIALS_EMISSIVE_STRENGTH);
 				if (emissiveStrength) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -111,7 +111,7 @@ export class KHRMaterialsEmissiveStrength extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					materialDef.extensions[KHR_MATERIALS_EMISSIVE_STRENGTH] = {
 						emissiveStrength: emissiveStrength.getEmissiveStrength(),
 					} as EmissiveStrengthDef;
 				}

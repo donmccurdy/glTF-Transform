@@ -1,11 +1,11 @@
 import type { Document, JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
 import {
-	InspectAnimationReport,
-	InspectMaterialReport,
-	InspectMeshReport,
-	InspectPropertyReport,
-	InspectSceneReport,
-	InspectTextureReport,
+	type InspectAnimationReport,
+	type InspectMaterialReport,
+	type InspectMeshReport,
+	type InspectPropertyReport,
+	type InspectSceneReport,
+	type InspectTextureReport,
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
 import { formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP, TableFormat } from './util.js';

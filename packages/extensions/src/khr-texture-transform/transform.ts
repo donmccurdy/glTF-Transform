@@ -1,4 +1,4 @@
-import { ExtensionProperty, IProperty, Nullable, vec2 } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, type vec2 } from '@gltf-transform/core';
 import { PropertyType } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
 
@@ -13,7 +13,7 @@ interface ITransform extends IProperty {
  * Defines UV transform for a {@link TextureInfo}. See {@link KHRTextureTransform}.
  */
 export class Transform extends ExtensionProperty<ITransform> {
-	public static EXTENSION_NAME = KHR_TEXTURE_TRANSFORM;
+	public static EXTENSION_NAME: typeof KHR_TEXTURE_TRANSFORM = KHR_TEXTURE_TRANSFORM;
 	public declare extensionName: typeof KHR_TEXTURE_TRANSFORM;
 	public declare propertyType: 'Transform';
 	public declare parentTypes: [PropertyType.TEXTURE_INFO];

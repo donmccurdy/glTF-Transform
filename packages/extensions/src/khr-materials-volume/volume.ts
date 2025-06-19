@@ -1,12 +1,12 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 
@@ -24,7 +24,7 @@ const { G } = TextureChannel;
  * Defines volume on a PBR {@link Material}. See {@link KHRMaterialsVolume}.
  */
 export class Volume extends ExtensionProperty<IVolume> {
-	public static EXTENSION_NAME = KHR_MATERIALS_VOLUME;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_VOLUME = KHR_MATERIALS_VOLUME;
 	public declare extensionName: typeof KHR_MATERIALS_VOLUME;
 	public declare propertyType: 'Volume';
 	public declare parentTypes: [PropertyType.MATERIAL];

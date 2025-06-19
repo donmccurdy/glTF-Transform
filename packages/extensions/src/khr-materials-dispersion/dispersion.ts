@@ -1,4 +1,4 @@
-import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_DISPERSION } from '../constants.js';
 
 interface IDispersion extends IProperty {
@@ -9,7 +9,7 @@ interface IDispersion extends IProperty {
  * Defines dispersion for a PBR {@link Material}. See {@link KHRMaterialsDispersion}.
  */
 export class Dispersion extends ExtensionProperty<IDispersion> {
-	public static EXTENSION_NAME = KHR_MATERIALS_DISPERSION;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_DISPERSION = KHR_MATERIALS_DISPERSION;
 	public declare extensionName: typeof KHR_MATERIALS_DISPERSION;
 	public declare propertyType: 'Dispersion';
 	public declare parentTypes: [PropertyType.MATERIAL];

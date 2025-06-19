@@ -1,4 +1,12 @@
-import { Accessor, Document, ILogger, Primitive, Transform, TypedArray, uuid } from '@gltf-transform/core';
+import {
+	Accessor,
+	Document,
+	type ILogger,
+	Primitive,
+	type Transform,
+	type TypedArray,
+	uuid,
+} from '@gltf-transform/core';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'tangents';

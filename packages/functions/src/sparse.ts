@@ -1,4 +1,4 @@
-import { Document, MathUtils, Transform } from '@gltf-transform/core';
+import { Document, MathUtils, type Transform } from '@gltf-transform/core';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'sparse';

@@ -1,13 +1,13 @@
 import {
 	AnimationChannel,
 	Document,
-	mat4,
+	type mat4,
 	Mesh,
 	Node,
 	Primitive,
 	PropertyType,
 	Scene,
-	Transform,
+	type Transform,
 } from '@gltf-transform/core';
 import { invert, multiply } from 'gl-matrix/mat4';
 import { joinPrimitives } from './join-primitives.js';
