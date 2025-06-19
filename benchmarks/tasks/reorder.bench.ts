@@ -1,7 +1,7 @@
 import { Document } from '@gltf-transform/core';
-import { unwrap } from '@gltf-transform/functions';
+import { reorder } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
-import * as watlas from 'watlas';
+import { MeshoptEncoder } from 'meshoptimizer';
 import type { Task } from '../constants';
 import { LOGGER } from '../utils';
 
@@ -9,14 +9,11 @@ let _document: Document;
 
 export const tasks: Task[] = [
 	[
-		'unwrap',
+		'reorder',
 		async () => {
-			await _document.transform(unwrap({ watlas, overwrite: true, groupBy: 'scene' }));
+			await _document.transform(reorder({ encoder: MeshoptEncoder }));
 		},
-		{
-			beforeAll: async () => watlas.Initialize(),
-			beforeEach: () => void (_document = createDocument(10, 10, 8)), // ~100 vertices / prim
-		},
+		{ beforeEach: () => void (_document = createDocument(75, 64, 64)) }, // ~4000 vertices / prim
 	],
 ];
 
