@@ -4,8 +4,8 @@ import {
 	ImageUtils,
 	type ImageUtilsFormat,
 	PropertyType,
-	ReaderContext,
-	WriterContext,
+	type ReaderContext,
+	type WriterContext,
 	type vec2,
 } from '@gltf-transform/core';
 import { EXT_TEXTURE_WEBP } from '../constants.js';

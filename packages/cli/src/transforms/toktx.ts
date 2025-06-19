@@ -8,11 +8,11 @@ import tmp from 'tmp';
 
 import {
 	BufferUtils,
-	Document,
+	type Document,
 	FileUtils,
 	type ILogger,
 	ImageUtils,
-	Texture,
+	type Texture,
 	TextureChannel,
 	type Transform,
 	uuid,

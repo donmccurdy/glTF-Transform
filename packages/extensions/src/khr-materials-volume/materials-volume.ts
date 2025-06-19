@@ -3,8 +3,8 @@ import {
 	type GLTF,
 	MathUtils,
 	PropertyType,
-	ReaderContext,
-	WriterContext,
+	type ReaderContext,
+	type WriterContext,
 	type vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';

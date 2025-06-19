@@ -1,10 +1,10 @@
 import { Document } from '@gltf-transform/core';
 import {
-	IOR,
+	type IOR,
 	KHRMaterialsIOR,
 	KHRMaterialsPBRSpecularGlossiness,
 	KHRMaterialsSpecular,
-	Specular,
+	type Specular,
 } from '@gltf-transform/extensions';
 import { metalRough } from '@gltf-transform/functions';
 import test from 'ava';

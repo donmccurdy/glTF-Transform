@@ -15,11 +15,13 @@
 		"target": "es2022",
 		"module": "nodenext",
 		"isolatedModules": true,
-		"isolatedDeclarations": true,
+		// TODO(v5): Blocked on Microbundle or https://github.com/microsoft/TypeScript/issues/58262.
+		// "isolatedDeclarations": true,
 		"allowJs": false,
 		"declaration": true,
 		"stripInternal": true,
-		// TODO(feat): "erasableSyntaxOnly": true,
+		// TODO(v5): Blocked on major version.
+		// "erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"useDefineForClassFields": true,
 

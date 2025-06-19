@@ -1,5 +1,5 @@
 import type { Node as NodeDef, Scene as SceneDef } from '@gltf-transform/core';
-import { Group, Object3D } from 'three';
+import { Group, type Object3D } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { RefListObserver } from '../observers/index.js';
 import { Subject } from './Subject.js';

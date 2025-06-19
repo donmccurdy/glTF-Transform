@@ -1,6 +1,6 @@
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Accessor, Document, GLTF, Primitive, getBounds } from '@gltf-transform/core';
+import { type Accessor, Document, type GLTF, Primitive, getBounds } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

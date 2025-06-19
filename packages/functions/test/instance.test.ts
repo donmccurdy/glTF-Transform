@@ -1,5 +1,5 @@
 import { Document } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
 import { instance } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 import test from 'ava';

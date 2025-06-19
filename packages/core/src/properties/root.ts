@@ -11,7 +11,7 @@ import type { ExtensionProperty } from './extension-property.js';
 import { Material } from './material.js';
 import { Mesh } from './mesh.js';
 import { Node } from './node.js';
-import { COPY_IDENTITY, Property } from './property.js';
+import { COPY_IDENTITY, type Property } from './property.js';
 import { Scene } from './scene.js';
 import { Skin } from './skin.js';
 import { Texture } from './texture.js';

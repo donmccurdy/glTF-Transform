@@ -1,9 +1,9 @@
 import {
-	Accessor,
+	type Accessor,
 	type GLTF,
 	MathUtils,
-	Primitive,
-	PrimitiveTarget,
+	type Primitive,
+	type PrimitiveTarget,
 	type TypedArray,
 	type vec4,
 } from '@gltf-transform/core';

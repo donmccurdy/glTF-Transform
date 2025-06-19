@@ -1,4 +1,4 @@
-import { Document, Scene } from '@gltf-transform/core';
+import { Document, type Scene } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { VertexCountMethod, getSceneVertexCount } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';

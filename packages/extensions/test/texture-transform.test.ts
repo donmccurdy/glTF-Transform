@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Clearcoat, KHRMaterialsClearcoat, KHRTextureTransform, Transform } from '@gltf-transform/extensions';
+import { type Clearcoat, KHRMaterialsClearcoat, KHRTextureTransform, type Transform } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

@@ -1,4 +1,4 @@
-import { Node, Scene } from '@gltf-transform/core';
+import { type Node, Scene } from '@gltf-transform/core';
 
 /**
  * Finds the parent {@link Scene Scenes} associated with the given {@link Node}.

@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { DiffuseTransmission, KHRMaterialsDiffuseTransmission } from '@gltf-transform/extensions';
+import { type DiffuseTransmission, KHRMaterialsDiffuseTransmission } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

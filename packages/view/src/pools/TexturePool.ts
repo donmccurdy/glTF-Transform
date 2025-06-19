@@ -1,4 +1,4 @@
-import { TextureInfo, type vec2 } from '@gltf-transform/core';
+import type { TextureInfo, vec2 } from '@gltf-transform/core';
 import type { Transform } from '@gltf-transform/extensions';
 import {
 	ClampToEdgeWrapping,
@@ -13,7 +13,7 @@ import {
 	NearestMipmapLinearFilter,
 	NearestMipmapNearestFilter,
 	RepeatWrapping,
-	Texture,
+	type Texture,
 	type TextureFilter,
 	type Wrapping,
 } from 'three';

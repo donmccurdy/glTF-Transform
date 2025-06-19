@@ -3,7 +3,7 @@ import {
 	type IProperty,
 	type Nullable,
 	PropertyType,
-	Texture,
+	type Texture,
 	TextureChannel,
 	TextureInfo,
 	type vec3,

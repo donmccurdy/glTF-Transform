@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, vec2 } from '@gltf-transform/core';
+import { type Accessor, Document, type Primitive, type vec2 } from '@gltf-transform/core';
 import {
 	VertexCountMethod,
 	getPrimitiveVertexCount,

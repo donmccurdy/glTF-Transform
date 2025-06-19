@@ -1,4 +1,4 @@
-import { Extension, MathUtils, ReaderContext, WriterContext, type vec3 } from '@gltf-transform/core';
+import { Extension, MathUtils, type ReaderContext, type WriterContext, type vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 import { Light } from './light.js';
 

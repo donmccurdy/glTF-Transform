@@ -1,8 +1,8 @@
 import {
 	Accessor,
-	AnimationSampler,
+	type AnimationSampler,
 	ComponentTypeToTypedArray,
-	Document,
+	type Document,
 	type GLTF,
 	MathUtils,
 	PropertyType,

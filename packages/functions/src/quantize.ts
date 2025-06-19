@@ -1,15 +1,15 @@
 import {
 	Accessor,
 	AnimationChannel,
-	Document,
+	type Document,
 	type ILogger,
 	MathUtils,
-	Mesh,
+	type Mesh,
 	Node,
 	Primitive,
 	PrimitiveTarget,
 	PropertyType,
-	Skin,
+	type Skin,
 	type Transform,
 	type bbox,
 	type mat4,
@@ -17,7 +17,7 @@ import {
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
-import { InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
+import { type InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';

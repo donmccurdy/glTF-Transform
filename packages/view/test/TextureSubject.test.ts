@@ -2,7 +2,7 @@ import { Document } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
 import test from 'ava';
 import { JSDOM } from 'jsdom';
-import { MeshStandardMaterial, NoColorSpace, SRGBColorSpace, Texture } from 'three';
+import { type MeshStandardMaterial, NoColorSpace, SRGBColorSpace, type Texture } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();

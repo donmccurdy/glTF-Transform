@@ -1,6 +1,6 @@
 import {
-	Accessor,
-	Document,
+	type Accessor,
+	type Document,
 	ExtensionProperty,
 	type GLTF,
 	ImageUtils,

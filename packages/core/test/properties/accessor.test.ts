@@ -1,4 +1,4 @@
-import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
+import { Accessor, Document, type GLTF, type TypedArray } from '@gltf-transform/core';
 import { createPlatformIO, round } from '@gltf-transform/test-utils';
 import test from 'ava';
 

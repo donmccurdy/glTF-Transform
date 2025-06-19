@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { program, programReady } from '@gltf-transform/cli';
+import { mockConsoleLog, program, programReady } from '@gltf-transform/cli';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import test from 'ava';
@@ -78,6 +78,8 @@ test('optimize', async (t) => {
 });
 
 test('validate', async (t) => {
+	mockConsoleLog(() => {});
+
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });
@@ -93,6 +95,8 @@ test('validate', async (t) => {
 });
 
 test('inspect', async (t) => {
+	mockConsoleLog(() => {});
+
 	await programReady;
 	const io = new NodeIO();
 	const input = tmp.tmpNameSync({ postfix: '.glb' });

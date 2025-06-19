@@ -1,6 +1,6 @@
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Accessor, Buffer, Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
+import { Accessor, type Buffer, Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

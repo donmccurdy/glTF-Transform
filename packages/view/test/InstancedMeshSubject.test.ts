@@ -3,7 +3,7 @@ import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
 import test from 'ava';
 import { JSDOM } from 'jsdom';
-import { Group, InstancedMesh, Object3D } from 'three';
+import type { Group, InstancedMesh, Object3D } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();

@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsSpecular, Specular } from '@gltf-transform/extensions';
+import { KHRMaterialsSpecular, type Specular } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

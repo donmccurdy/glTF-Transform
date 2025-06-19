@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive, PropertyType } from '@gltf-transform/core';
+import { type Accessor, Document, Primitive, PropertyType } from '@gltf-transform/core';
 import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
 import { prune } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';

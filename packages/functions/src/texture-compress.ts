@@ -1,9 +1,9 @@
 import {
 	BufferUtils,
-	Document,
+	type Document,
 	FileUtils,
 	ImageUtils,
-	Texture,
+	type Texture,
 	TextureChannel,
 	type Transform,
 	type vec2,

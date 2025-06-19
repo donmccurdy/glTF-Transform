@@ -1,6 +1,12 @@
-import { Mesh as MeshDef, Node as NodeDef, Skin as SkinDef, type vec3, type vec4 } from '@gltf-transform/core';
-import { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
-import { Bone, Group, InstancedMesh, Matrix4, Mesh, Object3D, Skeleton, SkinnedMesh } from 'three';
+import {
+	type Mesh as MeshDef,
+	type Node as NodeDef,
+	Skin as SkinDef,
+	type vec3,
+	type vec4,
+} from '@gltf-transform/core';
+import type { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
+import { Bone, Group, InstancedMesh, Matrix4, type Mesh, Object3D, type Skeleton, SkinnedMesh } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { LightLike } from '../constants.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';

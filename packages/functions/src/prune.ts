@@ -1,15 +1,15 @@
 import {
 	AnimationChannel,
 	ColorUtils,
-	Document,
+	type Document,
 	ExtensionProperty,
-	Graph,
+	type Graph,
 	type ILogger,
 	Material,
-	Node,
+	type Node,
 	Primitive,
-	PrimitiveTarget,
-	Property,
+	type PrimitiveTarget,
+	type Property,
 	PropertyType,
 	Root,
 	Scene,
@@ -21,7 +21,7 @@ import {
 } from '@gltf-transform/core';
 import { mul as mulVec3 } from 'gl-matrix/vec3';
 import { add, create, len, mul, scale, sub } from 'gl-matrix/vec4';
-import { type NdArray } from 'ndarray';
+import type { NdArray } from 'ndarray';
 import { getPixels } from 'ndarray-pixels';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';

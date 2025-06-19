@@ -1,4 +1,4 @@
-import { Texture } from '@gltf-transform/core';
+import type { Texture } from '@gltf-transform/core';
 
 const SRGB_PATTERN = /color|emissive|diffuse/i;
 

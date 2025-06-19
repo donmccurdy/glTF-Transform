@@ -1,4 +1,4 @@
-import { Accessor, Document, Primitive } from '@gltf-transform/core';
+import { type Accessor, Document, type Primitive } from '@gltf-transform/core';
 import { joinPrimitives } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

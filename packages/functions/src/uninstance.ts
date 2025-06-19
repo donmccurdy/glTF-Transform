@@ -1,5 +1,5 @@
-import { Accessor, Document, Node, type Transform } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
+import { type Accessor, Document, type Node, type Transform } from '@gltf-transform/core';
+import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
 
 const NAME = 'uninstance';

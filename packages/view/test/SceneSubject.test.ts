@@ -1,4 +1,4 @@
-import { Document, Node } from '@gltf-transform/core';
+import { Document, type Node } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
 import test from 'ava';
 import { JSDOM } from 'jsdom';

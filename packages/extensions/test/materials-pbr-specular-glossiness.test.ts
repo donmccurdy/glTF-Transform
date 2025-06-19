@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsPBRSpecularGlossiness, PBRSpecularGlossiness } from '@gltf-transform/extensions';
+import { KHRMaterialsPBRSpecularGlossiness, type PBRSpecularGlossiness } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

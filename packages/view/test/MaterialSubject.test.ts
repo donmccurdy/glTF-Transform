@@ -3,7 +3,7 @@ import { KHRMaterialsClearcoat, KHRMaterialsUnlit } from '@gltf-transform/extens
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
 import test from 'ava';
 import { JSDOM } from 'jsdom';
-import {
+import type {
 	BufferGeometry,
 	LineBasicMaterial,
 	LineSegments,

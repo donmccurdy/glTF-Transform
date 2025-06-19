@@ -1,4 +1,4 @@
-import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, type ReaderContext, type WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_ANISOTROPY } from '../constants.js';
 import { Anisotropy } from './anisotropy.js';
 

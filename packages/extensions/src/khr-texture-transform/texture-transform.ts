@@ -1,4 +1,4 @@
-import { Extension, MathUtils, ReaderContext, WriterContext, type vec2 } from '@gltf-transform/core';
+import { Extension, MathUtils, type ReaderContext, type WriterContext, type vec2 } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
 import { Transform } from './transform.js';
 

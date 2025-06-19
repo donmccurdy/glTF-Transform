@@ -10,7 +10,7 @@ import {
 import type { Document } from '../document.js';
 import type { Extension } from '../extension.js';
 import type { JSONDocument } from '../json-document.js';
-import { Accessor, AnimationSampler, Camera, Material } from '../properties/index.js';
+import { Accessor, type AnimationSampler, Camera, Material } from '../properties/index.js';
 import type { GLTF } from '../types/gltf.js';
 import { BufferUtils, Logger, MathUtils } from '../utils/index.js';
 import { WriterContext } from './writer-context.js';

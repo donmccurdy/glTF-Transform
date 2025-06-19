@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Anisotropy, KHRMaterialsAnisotropy } from '@gltf-transform/extensions';
+import { type Anisotropy, KHRMaterialsAnisotropy } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

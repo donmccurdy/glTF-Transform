@@ -1,4 +1,4 @@
-import { Document, Primitive } from '@gltf-transform/core';
+import { type Document, Primitive } from '@gltf-transform/core';
 
 const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 

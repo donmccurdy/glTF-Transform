@@ -1,4 +1,4 @@
-import { Document, Texture } from '@gltf-transform/core';
+import { Document, type Texture } from '@gltf-transform/core';
 import { Material, PropertyType, TextureChannel } from '@gltf-transform/core';
 
 /**

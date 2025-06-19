@@ -1,4 +1,4 @@
-import { Accessor, Document, GLTF, Primitive } from '@gltf-transform/core';
+import { Accessor, Document, type GLTF, Primitive } from '@gltf-transform/core';
 import { reorder } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ILogger } from '@gltf-transform/core';
-import { TableFormat, formatHeader, formatTable } from './util.js';
+import { TableFormat, formatHeader, formatTable, log } from './util.js';
 
 export interface ValidateOptions {
 	limit: number;
@@ -64,12 +64,12 @@ async function printTable(
 	logger: ILogger,
 	format: TableFormat,
 ): Promise<void> {
-	console.log(formatHeader(header));
+	log(formatHeader(header));
 	const messages = report.issues.messages.filter((msg) => msg.severity === severity);
 	if (messages.length) {
-		console.log(await formatTable(format, HEADER, messages.map(Object.values)));
+		log(await formatTable(format, HEADER, messages.map(Object.values)));
 	} else {
 		logger.info(`No ${header}s found.`);
 	}
-	console.log('\n');
+	log('\n');
 }

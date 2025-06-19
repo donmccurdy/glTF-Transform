@@ -1,17 +1,17 @@
 import {
-	Accessor,
-	AnimationChannel,
+	type Accessor,
+	type AnimationChannel,
 	Document,
-	Mesh,
-	Node,
+	type Mesh,
+	type Node,
 	Primitive,
-	PrimitiveTarget,
-	Scene,
-	bbox,
+	type PrimitiveTarget,
+	type Scene,
+	type bbox,
 	getBounds,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, KHRMaterialsVolume, type Volume } from '@gltf-transform/extensions';
 import { quantize } from '@gltf-transform/functions';
 import { logger, round, roundBbox } from '@gltf-transform/test-utils';
 import test from 'ava';

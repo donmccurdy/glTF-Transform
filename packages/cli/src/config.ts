@@ -3,7 +3,7 @@ import type { Extension, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
-import { program } from './program.js';
+import type { program } from './program.js';
 import type { Session } from './session.js';
 
 interface Config {

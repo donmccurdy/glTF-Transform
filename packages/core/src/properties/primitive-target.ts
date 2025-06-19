@@ -1,6 +1,6 @@
 import { RefMap } from 'property-graph';
 import { BufferViewUsage, type Nullable, PropertyType } from '../constants.js';
-import { Accessor } from './accessor.js';
+import type { Accessor } from './accessor.js';
 import type { IExtensibleProperty } from './extensible-property.js';
 import { Property } from './property.js';
 

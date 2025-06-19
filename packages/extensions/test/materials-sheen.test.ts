@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsSheen, Sheen } from '@gltf-transform/extensions';
+import { KHRMaterialsSheen, type Sheen } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

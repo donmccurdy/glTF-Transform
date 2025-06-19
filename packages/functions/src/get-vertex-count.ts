@@ -1,5 +1,5 @@
-import { Accessor, Mesh, Node, Primitive, Scene } from '@gltf-transform/core';
-import { InstancedMesh } from '@gltf-transform/extensions';
+import type { Accessor, Mesh, Node, Primitive, Scene } from '@gltf-transform/core';
+import type { InstancedMesh } from '@gltf-transform/extensions';
 
 /**
  * Various methods of estimating a vertex count. For some background on why

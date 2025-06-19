@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Dispersion, KHRMaterialsDispersion } from '@gltf-transform/extensions';
+import { type Dispersion, KHRMaterialsDispersion } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

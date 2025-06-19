@@ -3,8 +3,8 @@ import {
 	ImageUtils,
 	type ImageUtilsFormat,
 	PropertyType,
-	ReaderContext,
-	WriterContext,
+	type ReaderContext,
+	type WriterContext,
 	type vec2,
 } from '@gltf-transform/core';
 import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';

@@ -1,4 +1,4 @@
-import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, PropertyType, type ReaderContext, type WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_UNLIT } from '../constants.js';
 import { Unlit } from './unlit.js';
 

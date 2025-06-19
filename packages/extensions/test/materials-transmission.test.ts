@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsTransmission, Transmission } from '@gltf-transform/extensions';
+import { KHRMaterialsTransmission, type Transmission } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

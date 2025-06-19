@@ -1,4 +1,4 @@
-import { Accessor, AnimationChannel, AnimationSampler, Document, type Transform } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, AnimationSampler, type Document, type Transform } from '@gltf-transform/core';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'sequence';

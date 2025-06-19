@@ -1,13 +1,13 @@
 import {
 	Accessor,
 	BufferUtils,
-	Document,
+	type Document,
 	Extension,
 	GLB_BUFFER,
 	Primitive,
 	PropertyType,
-	ReaderContext,
-	WriterContext,
+	type ReaderContext,
+	type WriterContext,
 	type bbox,
 	getBounds,
 } from '@gltf-transform/core';

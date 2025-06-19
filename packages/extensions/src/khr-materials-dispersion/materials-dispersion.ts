@@ -1,4 +1,4 @@
-import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, PropertyType, type ReaderContext, type WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_DISPERSION } from '../constants.js';
 import { Dispersion } from './dispersion.js';
 

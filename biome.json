@@ -21,7 +21,6 @@
         "noUselessElse": "off",
         "useEnumInitializers": "off",
         "useExponentiationOperator": "off",
-        "useImportType": "off",
         "useNodejsImportProtocol": "off",
         "useNumberNamespace": "off",
         "useSingleVarDeclarator": "off",

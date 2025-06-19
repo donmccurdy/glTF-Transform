@@ -1,4 +1,4 @@
-import { Document, Node, PropertyType, type Transform } from '@gltf-transform/core';
+import { type Document, type Node, PropertyType, type Transform } from '@gltf-transform/core';
 import { clearNodeParent } from './clear-node-parent.js';
 import { prune } from './prune.js';
 import { assignDefaults, createTransform } from './utils.js';

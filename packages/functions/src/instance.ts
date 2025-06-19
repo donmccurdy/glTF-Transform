@@ -1,15 +1,15 @@
 import {
-	Document,
+	type Document,
 	type ILogger,
 	MathUtils,
-	Mesh,
-	Node,
-	Primitive,
+	type Mesh,
+	type Node,
+	type Primitive,
 	type Transform,
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'instance';

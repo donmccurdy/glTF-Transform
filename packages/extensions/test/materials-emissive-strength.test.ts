@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { EmissiveStrength, KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
+import { type EmissiveStrength, KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

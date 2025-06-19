@@ -1,7 +1,7 @@
 import {
 	$attributes,
 	$immutableKeys,
-	Graph,
+	type Graph,
 	GraphEdge,
 	GraphNode,
 	type Literal,

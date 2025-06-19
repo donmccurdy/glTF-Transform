@@ -1,6 +1,6 @@
 import {
 	type Validator as CaporalValidator,
-	Command,
+	type Command,
 	type ParsedOption,
 	type Logger as WinstonLogger,
 	program as _program,

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { ktxfix } from '@gltf-transform/cli';
-import { Document, Texture } from '@gltf-transform/core';
+import { Document, type Texture } from '@gltf-transform/core';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';

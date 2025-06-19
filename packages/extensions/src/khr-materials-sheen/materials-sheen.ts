@@ -1,4 +1,11 @@
-import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext, type vec3 } from '@gltf-transform/core';
+import {
+	Extension,
+	type GLTF,
+	PropertyType,
+	type ReaderContext,
+	type WriterContext,
+	type vec3,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 import { Sheen } from './sheen.js';
 

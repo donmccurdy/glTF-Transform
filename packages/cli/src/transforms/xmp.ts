@@ -1,6 +1,6 @@
 import path from 'path';
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
-import { KHRXMP, Packet } from '@gltf-transform/extensions';
+import { KHRXMP, type Packet } from '@gltf-transform/extensions';
 import fs from 'fs/promises';
 import languageTags from 'language-tags';
 import prompts, { type PromptObject } from 'prompts';

@@ -1,4 +1,4 @@
-import { Document, Property } from '@gltf-transform/core';
+import { Document, type Property } from '@gltf-transform/core';
 import { KHRMaterialsUnlit, KHRTextureTransform, Transform, Unlit } from '@gltf-transform/extensions';
 import { cloneDocument, copyToDocument, mergeDocuments, moveToDocument, prune } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';

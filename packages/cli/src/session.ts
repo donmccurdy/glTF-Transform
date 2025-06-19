@@ -1,9 +1,9 @@
-import { Document, FileUtils, Format, NodeIO, type Transform, Verbosity } from '@gltf-transform/core';
+import { Document, FileUtils, Format, type NodeIO, type Transform, Verbosity } from '@gltf-transform/core';
 import type { KHRXMP, Packet } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, type ListrTask } from 'listr2';
 import { performance } from 'perf_hooks'; // global in Node.js v16+
-import { Logger } from './program.js';
+import type { Logger } from './program.js';
 import { XMPContext, dim, formatBytes, formatLong } from './util.js';
 
 /** Helper class for managing a CLI command session. */
@@ -67,7 +67,11 @@ export class Session {
 
 			// Disable signal listeners so Ctrl+C works. Note that 'simple' and 'default'
 			// renderers have different capability to display errors and warnings.
-			await new Listr(tasks, { renderer: 'default', registerSignalListeners: false }).run();
+			await new Listr(tasks, {
+				renderer: 'default',
+				registerSignalListeners: false,
+				silentRendererCondition: process.env.NODE_ENV === 'test',
+			}).run();
 			console.log('');
 
 			logger.setVerbosity(prevLevel);

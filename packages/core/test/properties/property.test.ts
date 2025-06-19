@@ -1,4 +1,4 @@
-import { Document, vec3 } from '@gltf-transform/core';
+import { Document, type vec3 } from '@gltf-transform/core';
 import test from 'ava';
 
 test('equals', async (t) => {

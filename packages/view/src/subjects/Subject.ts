@@ -1,4 +1,4 @@
-import { Property as PropertyDef } from '@gltf-transform/core';
+import type { Property as PropertyDef } from '@gltf-transform/core';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { Subscription, THREEObject } from '../constants.js';
 import type { Output } from '../observers/index.js';

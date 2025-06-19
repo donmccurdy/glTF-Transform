@@ -1,4 +1,4 @@
-import { Document, JSONDocument, NodeIO } from '@gltf-transform/core';
+import { Document, type JSONDocument, NodeIO } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';

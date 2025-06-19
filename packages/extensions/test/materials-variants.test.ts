@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsVariants, MappingList } from '@gltf-transform/extensions';
+import { KHRMaterialsVariants, type MappingList } from '@gltf-transform/extensions';
 import test from 'ava';
 
 test('basic', async (t) => {

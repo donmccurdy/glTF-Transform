@@ -1,4 +1,4 @@
-import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type ReaderContext, type WriterContext } from '@gltf-transform/core';
 import { KHR_MESH_QUANTIZATION } from '../constants.js';
 
 /**

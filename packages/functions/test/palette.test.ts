@@ -1,4 +1,4 @@
-import { Document, GLTF, Material, vec4 } from '@gltf-transform/core';
+import { Document, type GLTF, type Material, type vec4 } from '@gltf-transform/core';
 import { KHRMaterialsSpecular } from '@gltf-transform/extensions';
 import { palette } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';

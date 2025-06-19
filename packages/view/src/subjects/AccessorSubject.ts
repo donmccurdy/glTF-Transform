@@ -1,4 +1,4 @@
-import { Accessor as AccessorDef } from '@gltf-transform/core';
+import type { Accessor as AccessorDef } from '@gltf-transform/core';
 import { BufferAttribute } from 'three';
 import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import type { ValuePool } from '../pools/index.js';

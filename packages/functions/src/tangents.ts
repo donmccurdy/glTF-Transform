@@ -1,6 +1,6 @@
 import {
-	Accessor,
-	Document,
+	type Accessor,
+	type Document,
 	type ILogger,
 	Primitive,
 	type Transform,

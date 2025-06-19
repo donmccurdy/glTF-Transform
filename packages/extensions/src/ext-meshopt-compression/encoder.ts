@@ -3,7 +3,7 @@ import {
 	AnimationChannel,
 	AnimationSampler,
 	BufferUtils,
-	Document,
+	type Document,
 	type GLTF,
 	MathUtils,
 	Primitive,

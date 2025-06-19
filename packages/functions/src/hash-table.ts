@@ -1,4 +1,4 @@
-import { Accessor, BufferUtils, Primitive } from '@gltf-transform/core';
+import { type Accessor, BufferUtils, type Primitive } from '@gltf-transform/core';
 import { deepListAttributes } from './utils.js';
 
 /** Flags 'empty' values in a Uint32Array index. */

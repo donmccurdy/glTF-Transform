@@ -1,4 +1,4 @@
-import { Document, MathUtils, mat4, vec3, vec4 } from '@gltf-transform/core';
+import { Document, MathUtils, type mat4, type vec3, type vec4 } from '@gltf-transform/core';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 import test from 'ava';

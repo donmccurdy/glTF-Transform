@@ -1,11 +1,11 @@
-import {
+import type {
 	ExtensionProperty as ExtensionPropertyDef,
 	Material as MaterialDef,
 	Texture as TextureDef,
 	TextureInfo as TextureInfoDef,
-	type vec3,
+	vec3,
 } from '@gltf-transform/core';
-import {
+import type {
 	Anisotropy,
 	Clearcoat,
 	EmissiveStrength,
@@ -20,13 +20,13 @@ import {
 	type ColorSpace,
 	DoubleSide,
 	FrontSide,
-	Material,
+	type Material,
 	MeshBasicMaterial,
 	MeshPhysicalMaterial,
 	MeshStandardMaterial,
 	NoColorSpace,
 	SRGBColorSpace,
-	Texture,
+	type Texture,
 } from 'three';
 import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import type { Subscription } from '../constants.js';

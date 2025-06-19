@@ -1,13 +1,13 @@
 import {
 	Accessor,
-	Buffer,
+	type Buffer,
 	BufferUtils,
 	Extension,
 	GLB_BUFFER,
 	type GLTF,
-	Property,
+	type Property,
 	PropertyType,
-	ReaderContext,
+	type ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
 import type { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';

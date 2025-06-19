@@ -1,6 +1,6 @@
 import type { ChildProcess } from 'child_process';
 import { Mode, mockCommandExists, mockSpawn, mockWaitExit, toktx } from '@gltf-transform/cli';
-import { Document, TextureChannel, vec2 } from '@gltf-transform/core';
+import { Document, TextureChannel, type vec2 } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';

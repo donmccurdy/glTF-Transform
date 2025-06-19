@@ -1,11 +1,11 @@
 import {
 	AnimationChannel,
-	Document,
-	Mesh,
-	Node,
-	Primitive,
+	type Document,
+	type Mesh,
+	type Node,
+	type Primitive,
 	PropertyType,
-	Scene,
+	type Scene,
 	type Transform,
 	type mat4,
 } from '@gltf-transform/core';

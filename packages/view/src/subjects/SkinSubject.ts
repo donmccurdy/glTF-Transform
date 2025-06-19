@@ -1,5 +1,5 @@
-import { Accessor as AccessorDef, Node as NodeDef, Skin as SkinDef } from '@gltf-transform/core';
-import { Bone, BufferAttribute, Matrix4, Skeleton } from 'three';
+import type { Accessor as AccessorDef, Node as NodeDef, Skin as SkinDef } from '@gltf-transform/core';
+import { type Bone, type BufferAttribute, Matrix4, Skeleton } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
 import type { ValuePool } from '../pools/index.js';

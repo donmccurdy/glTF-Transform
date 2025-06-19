@@ -1,4 +1,4 @@
-import { ExtensionProperty, type IProperty, Material, type Nullable, RefSet } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Material, type Nullable, RefSet } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 import type { Variant } from './variant.js';
 

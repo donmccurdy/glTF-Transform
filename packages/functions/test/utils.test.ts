@@ -1,4 +1,4 @@
-import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
+import { Accessor, Document, type GLTF, Primitive, type Transform, type TransformContext } from '@gltf-transform/core';
 import { assignDefaults, createTransform, getGLPrimitiveCount, isTransformPending } from '@gltf-transform/functions';
 import test from 'ava';
 

@@ -1,4 +1,4 @@
-import { Document, Property } from '@gltf-transform/core';
+import { Document, type Property } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 import test from 'ava';
 

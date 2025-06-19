@@ -1,8 +1,8 @@
 import {
 	Document,
-	Mesh,
+	type Mesh,
 	Node,
-	Primitive,
+	type Primitive,
 	type Transform,
 	type TypedArrayConstructor,
 	type vec2,

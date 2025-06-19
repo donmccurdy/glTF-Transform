@@ -1,6 +1,6 @@
 import { promises as fs, readFileSync } from 'fs';
 import { URL } from 'url';
-import { Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
+import { type Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
 	DRACO_DEFAULTS,

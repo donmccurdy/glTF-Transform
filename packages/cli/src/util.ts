@@ -33,6 +33,8 @@ export let spawn: typeof _spawn = _spawn;
 export let commandExists = (cmd: string): Promise<string | boolean> => _commandExists(cmd).catch(() => false);
 export let waitExit: typeof _waitExit = _waitExit;
 
+export let log: typeof console.log = console.log;
+
 export function mockSpawn(_spawn: unknown): void {
 	spawn = _spawn as typeof spawn;
 }
@@ -63,6 +65,10 @@ export async function _waitExit(process: ChildProcess): Promise<[unknown, string
 		process.on('close', resolve);
 	});
 	return [status, stdout, stderr];
+}
+
+export function mockConsoleLog(_log: (...data: unknown[]) => void): void {
+	log = _log;
 }
 
 // Formatting.

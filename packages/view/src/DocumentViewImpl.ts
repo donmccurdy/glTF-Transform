@@ -26,7 +26,7 @@ import {
 	PrimitiveSubject,
 	SceneSubject,
 	SkinSubject,
-	Subject,
+	type Subject,
 	TextureSubject,
 } from './subjects/index.js';
 

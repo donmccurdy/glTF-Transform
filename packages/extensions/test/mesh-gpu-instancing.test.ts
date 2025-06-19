@@ -1,5 +1,5 @@
 import { Accessor, Document, NodeIO } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

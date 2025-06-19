@@ -1,5 +1,5 @@
 import { Document, NodeIO } from '@gltf-transform/core';
-import { IOR, KHRMaterialsIOR } from '@gltf-transform/extensions';
+import { type IOR, KHRMaterialsIOR } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import test from 'ava';
 

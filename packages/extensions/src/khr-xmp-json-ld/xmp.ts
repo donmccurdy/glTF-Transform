@@ -1,15 +1,15 @@
 import {
-	Animation,
+	type Animation,
 	Extension,
 	type GLTF,
-	Material,
-	Mesh,
-	Node,
+	type Material,
+	type Mesh,
+	type Node,
 	PropertyType,
-	ReaderContext,
-	Scene,
-	Texture,
-	WriterContext,
+	type ReaderContext,
+	type Scene,
+	type Texture,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_XMP_JSON_LD } from '../constants.js';
 import { Packet } from './packet.js';

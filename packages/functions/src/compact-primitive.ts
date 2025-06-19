@@ -1,4 +1,10 @@
-import { Accessor, Document, Primitive, type TypedArray, type TypedArrayConstructor } from '@gltf-transform/core';
+import {
+	type Accessor,
+	Document,
+	type Primitive,
+	type TypedArray,
+	type TypedArrayConstructor,
+} from '@gltf-transform/core';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 import { EMPTY_U32 } from './hash-table.js';
 import { createIndices, createIndicesEmpty, deepListAttributes, shallowCloneAccessor } from './utils.js';

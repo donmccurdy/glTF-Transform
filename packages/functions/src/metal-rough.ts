@@ -3,7 +3,7 @@ import {
 	KHRMaterialsIOR,
 	KHRMaterialsPBRSpecularGlossiness,
 	KHRMaterialsSpecular,
-	PBRSpecularGlossiness,
+	type PBRSpecularGlossiness,
 } from '@gltf-transform/extensions';
 import { createTransform, rewriteTexture } from './utils.js';
 

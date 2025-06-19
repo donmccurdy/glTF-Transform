@@ -1,5 +1,5 @@
-import { Mesh as MeshDef, Node as NodeDef, Property as PropertyDef, uuid } from '@gltf-transform/core';
-import { Object3D } from 'three';
+import { type Mesh as MeshDef, type Node as NodeDef, type Property as PropertyDef, uuid } from '@gltf-transform/core';
+import type { Object3D } from 'three';
 import type { LightLike } from '../constants.js';
 import { Pool } from './Pool.js';
 

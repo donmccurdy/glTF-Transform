@@ -2,8 +2,8 @@ import {
 	Extension,
 	type GLTF,
 	PropertyType,
-	ReaderContext,
-	WriterContext,
+	type ReaderContext,
+	type WriterContext,
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';

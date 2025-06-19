@@ -1,4 +1,10 @@
-import { Accessor, Document, Primitive, type Transform, type TypedArrayConstructor } from '@gltf-transform/core';
+import {
+	type Accessor,
+	Document,
+	type Primitive,
+	type Transform,
+	type TypedArrayConstructor,
+} from '@gltf-transform/core';
 import { createTransform, formatDeltaOp, shallowCloneAccessor } from './utils.js';
 
 const NAME = 'unweld';

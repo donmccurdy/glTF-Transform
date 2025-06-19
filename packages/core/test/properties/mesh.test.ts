@@ -1,4 +1,4 @@
-import { Accessor, Document, GLTF, Primitive, Property, VertexLayout } from '@gltf-transform/core';
+import { Accessor, Document, type GLTF, Primitive, type Property, VertexLayout } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 import test from 'ava';
 

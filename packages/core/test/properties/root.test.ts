@@ -1,4 +1,4 @@
-import { Document, JSONDocument } from '@gltf-transform/core';
+import { Document, type JSONDocument } from '@gltf-transform/core';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 import test from 'ava';

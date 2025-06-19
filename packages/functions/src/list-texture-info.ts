@@ -1,4 +1,4 @@
-import { ExtensionProperty, Material, Property, Texture, TextureInfo } from '@gltf-transform/core';
+import { ExtensionProperty, type Material, type Property, Texture, TextureInfo } from '@gltf-transform/core';
 
 /**
  * Lists all {@link TextureInfo} definitions associated with a given

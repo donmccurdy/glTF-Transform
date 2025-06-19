@@ -1,4 +1,13 @@
-import { Document, Logger, Primitive, PrimitiveTarget, Scene, bbox, getBounds, vec3 } from '@gltf-transform/core';
+import {
+	Document,
+	Logger,
+	Primitive,
+	type PrimitiveTarget,
+	type Scene,
+	type bbox,
+	getBounds,
+	type vec3,
+} from '@gltf-transform/core';
 import { dequantize } from '@gltf-transform/functions';
 import test from 'ava';
 
