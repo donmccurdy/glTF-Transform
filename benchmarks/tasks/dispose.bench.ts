@@ -1,5 +1,5 @@
-import { Document } from '@gltf-transform/core';
-import { Size, Task } from '../constants';
+import type { Document } from '@gltf-transform/core';
+import { Size, type Task } from '../constants';
 import { createLargeDocument } from '../utils';
 
 let _document: Document;

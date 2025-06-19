@@ -1,6 +1,7 @@
 import { Document } from '@gltf-transform/core';
-import { join } from '@gltf-transform/functions';
+import { reorder } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
+import { MeshoptEncoder } from 'meshoptimizer';
 import type { Task } from '../constants';
 import { BENCHMARK_LOGGER } from '../utils';
 
@@ -8,11 +9,11 @@ let _document: Document;
 
 export const tasks: Task[] = [
 	[
-		'join',
+		'reorder',
 		async () => {
-			await _document.transform(join());
+			await _document.transform(reorder({ encoder: MeshoptEncoder }));
 		},
-		{ beforeEach: () => void (_document = createDocument(10, 64, 64)) }, // ~4000 vertices / prim
+		{ beforeEach: () => void (_document = createDocument(75, 64, 64)) }, // ~4000 vertices / prim
 	],
 ];
 
