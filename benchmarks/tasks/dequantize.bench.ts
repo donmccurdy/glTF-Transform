@@ -2,7 +2,7 @@ import { Document } from '@gltf-transform/core';
 import { dequantize, quantize } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import type { Task } from '../constants';
-import { LOGGER } from '../utils';
+import { BENCHMARK_LOGGER } from '../utils';
 
 let _document: Document;
 
@@ -15,7 +15,7 @@ export const tasks: Task[] = [
 		{
 			beforeEach: async () => {
 				// ~250,000 vertices / prim
-				_document = new Document().setLogger(LOGGER);
+				_document = new Document().setLogger(BENCHMARK_LOGGER);
 				const prim = createTorusKnotPrimitive(_document, { radialSegments: 512, tubularSegments: 512 });
 				const mesh = _document.createMesh().addPrimitive(prim);
 				const node = _document.createNode().setMesh(mesh);

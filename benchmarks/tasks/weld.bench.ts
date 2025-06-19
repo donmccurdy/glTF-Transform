@@ -2,7 +2,7 @@ import { Document } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import type { Task } from '../constants';
-import { LOGGER } from '../utils';
+import { BENCHMARK_LOGGER } from '../utils';
 
 let _document: Document;
 
@@ -17,7 +17,7 @@ export const tasks: Task[] = [
 ];
 
 function createTorusKnotDocument(radialSegments: number, tubularSegments: number): Document {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(BENCHMARK_LOGGER);
 	const prim = createTorusKnotPrimitive(document, { radialSegments, tubularSegments });
 	const mesh = document.createMesh().addPrimitive(prim);
 	const node = document.createNode().setMesh(mesh);

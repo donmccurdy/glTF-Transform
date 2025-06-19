@@ -1,13 +1,13 @@
-import { Document, Logger, Mesh, Node, Scene } from '@gltf-transform/core';
+import { Document, Logger, type Mesh, type Node, Scene } from '@gltf-transform/core';
 
-export const LOGGER = new Logger(Logger.Verbosity.SILENT);
+export const BENCHMARK_LOGGER = new Logger(Logger.Verbosity.SILENT);
 
 /******************************************************************************
  * PROPERTY CONSTRUCTORS
  */
 
 export function createLargeDocument(rootNodeCount: number): Document {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(BENCHMARK_LOGGER);
 	createSubtree(document, document.createScene('Scene'), rootNodeCount);
 	return document;
 }

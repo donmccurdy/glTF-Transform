@@ -3,7 +3,7 @@ import { unwrap } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
 import * as watlas from 'watlas';
 import type { Task } from '../constants';
-import { LOGGER } from '../utils';
+import { BENCHMARK_LOGGER } from '../utils';
 
 let _document: Document;
 
@@ -21,7 +21,7 @@ export const tasks: Task[] = [
 ];
 
 function createDocument(primCount: number, radialSegments: number, tubularSegments: number): Document {
-	const document = new Document().setLogger(LOGGER);
+	const document = new Document().setLogger(BENCHMARK_LOGGER);
 
 	const scene = document.createScene();
 	for (let i = 0; i < primCount; i++) {
