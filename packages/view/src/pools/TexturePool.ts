@@ -1,4 +1,5 @@
 import { TextureInfo, type vec2 } from '@gltf-transform/core';
+import type { Transform } from '@gltf-transform/extensions';
 import {
 	ClampToEdgeWrapping,
 	type ColorSpace,
@@ -16,7 +17,6 @@ import {
 	type TextureFilter,
 	type Wrapping,
 } from 'three';
-import type { Transform } from '@gltf-transform/extensions';
 import { Pool } from './Pool.js';
 
 const WEBGL_FILTERS: Record<number, TextureFilter> = {

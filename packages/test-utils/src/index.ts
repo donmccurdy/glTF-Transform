@@ -1,4 +1,4 @@
-import { PlatformIO, WebIO, NodeIO, Logger, type bbox, type vec3 as _vec3 } from '@gltf-transform/core';
+import { Logger, NodeIO, PlatformIO, WebIO, type vec3 as _vec3, type bbox } from '@gltf-transform/core';
 
 export enum Environment {
 	WEB,
@@ -41,14 +41,14 @@ export function roundBbox(bbox: bbox, decimals = 4): bbox {
 	};
 }
 
+import * as mat3 from 'gl-matrix/mat3';
 // bundle and re-export these, because the tests can't import them directly.
 // https://github.com/toji/gl-matrix/issues/444
 import * as mat4 from 'gl-matrix/mat4';
-import * as mat3 from 'gl-matrix/mat3';
 import * as quat from 'gl-matrix/quat';
-import * as vec4 from 'gl-matrix/vec4';
-import * as vec3 from 'gl-matrix/vec3';
 import * as vec2 from 'gl-matrix/vec2';
+import * as vec3 from 'gl-matrix/vec3';
+import * as vec4 from 'gl-matrix/vec4';
 export { mat4, mat3, quat, vec4, vec3, vec2 };
 
 export * from './create-basic-primitive.js';

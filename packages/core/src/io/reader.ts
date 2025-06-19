@@ -1,11 +1,11 @@
 import {
+	ComponentTypeToTypedArray,
 	GLB_BUFFER,
 	PropertyType,
 	type TypedArray,
 	type mat4,
 	type vec3,
 	type vec4,
-	ComponentTypeToTypedArray,
 } from '../constants.js';
 import { Document } from '../document.js';
 import type { Extension } from '../extension.js';

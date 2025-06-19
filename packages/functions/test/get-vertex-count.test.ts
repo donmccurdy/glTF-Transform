@@ -1,8 +1,8 @@
-import test from 'ava';
 import { Document, Scene } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
+import { VertexCountMethod, getSceneVertexCount } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
 

@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { Anisotropy, KHRMaterialsAnisotropy } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
+import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

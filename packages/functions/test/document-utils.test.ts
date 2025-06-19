@@ -1,8 +1,8 @@
-import test from 'ava';
 import { Document, Property } from '@gltf-transform/core';
 import { KHRMaterialsUnlit, KHRTextureTransform, Transform, Unlit } from '@gltf-transform/extensions';
 import { cloneDocument, copyToDocument, mergeDocuments, moveToDocument, prune } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('cloneDocument', (t) => {
 	const document1 = new Document().setLogger(logger);

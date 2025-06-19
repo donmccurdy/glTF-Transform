@@ -1,5 +1,5 @@
-import { PlatformIO } from './platform-io.js';
 import { HTTPUtils } from '../utils/index.js';
+import { PlatformIO } from './platform-io.js';
 
 /**
  * *I/O service for Web.*

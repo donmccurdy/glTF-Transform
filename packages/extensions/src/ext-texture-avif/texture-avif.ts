@@ -1,4 +1,5 @@
 import {
+	BufferUtils,
 	Extension,
 	ImageUtils,
 	type ImageUtilsFormat,
@@ -6,7 +7,6 @@ import {
 	ReaderContext,
 	WriterContext,
 	type vec2,
-	BufferUtils,
 } from '@gltf-transform/core';
 import { EXT_TEXTURE_AVIF } from '../constants.js';
 

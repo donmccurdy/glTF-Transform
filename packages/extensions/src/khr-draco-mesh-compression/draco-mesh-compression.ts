@@ -1,7 +1,5 @@
 import {
 	Accessor,
-	type bbox,
-	getBounds,
 	BufferUtils,
 	Document,
 	Extension,
@@ -10,18 +8,20 @@ import {
 	PropertyType,
 	ReaderContext,
 	WriterContext,
+	type bbox,
+	getBounds,
 } from '@gltf-transform/core';
+import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
+import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder.js';
 import {
 	type EncodedPrimitive,
-	encodeGeometry,
 	EncoderMethod,
 	type EncoderOptions,
 	EncodingError,
+	encodeGeometry,
 	initEncoderModule,
 } from './encoder.js';
-import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
-import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
 
 interface DracoPrimitiveExtension {
 	bufferView: number;

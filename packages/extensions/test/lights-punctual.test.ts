@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { Light, KHRLightsPunctual } from '@gltf-transform/extensions';
+import { KHRLightsPunctual, Light } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
+import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

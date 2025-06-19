@@ -10,9 +10,9 @@ import {
 	type Transform,
 	type TypedArray,
 } from '@gltf-transform/core';
+import { resampleDebug } from 'keyframe-resample';
 import { dedup } from './dedup.js';
 import { assignDefaults, createTransform } from './utils.js';
-import { resampleDebug } from 'keyframe-resample';
 
 const NAME = 'resample';
 

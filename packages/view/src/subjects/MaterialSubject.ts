@@ -1,16 +1,4 @@
 import {
-	DoubleSide,
-	FrontSide,
-	Material,
-	MeshBasicMaterial,
-	MeshPhysicalMaterial,
-	MeshStandardMaterial,
-	Texture,
-	SRGBColorSpace,
-	NoColorSpace,
-	type ColorSpace,
-} from 'three';
-import {
 	ExtensionProperty as ExtensionPropertyDef,
 	Material as MaterialDef,
 	Texture as TextureDef,
@@ -28,12 +16,24 @@ import {
 	Transmission,
 	Volume,
 } from '@gltf-transform/extensions';
+import {
+	type ColorSpace,
+	DoubleSide,
+	FrontSide,
+	Material,
+	MeshBasicMaterial,
+	MeshPhysicalMaterial,
+	MeshStandardMaterial,
+	NoColorSpace,
+	SRGBColorSpace,
+	Texture,
+} from 'three';
 import type { DocumentViewImpl } from '../DocumentViewImpl.js';
+import type { Subscription } from '../constants.js';
+import { RefListObserver, RefObserver } from '../observers/index.js';
+import { type TextureParams, TexturePool, type ValuePool } from '../pools/index.js';
 import { eq } from '../utils/index.js';
 import { Subject } from './Subject.js';
-import { RefListObserver, RefObserver } from '../observers/index.js';
-import type { Subscription } from '../constants.js';
-import { type TextureParams, TexturePool, type ValuePool } from '../pools/index.js';
 
 const _vec3: vec3 = [0, 0, 0];
 

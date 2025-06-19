@@ -1,12 +1,12 @@
-import test from 'ava';
-import { BufferUtils, Document } from '@gltf-transform/core';
-import { KHRTextureBasisu } from '@gltf-transform/extensions';
-import { mockCommandExists, mockSpawn, mockWaitExit, ktxdecompress } from '@gltf-transform/cli';
-import { logger } from '@gltf-transform/test-utils';
 import type { ChildProcess } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ktxdecompress, mockCommandExists, mockSpawn, mockWaitExit } from '@gltf-transform/cli';
+import { BufferUtils, Document } from '@gltf-transform/core';
+import { KHRTextureBasisu } from '@gltf-transform/extensions';
+import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

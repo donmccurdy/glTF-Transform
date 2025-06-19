@@ -1,6 +1,6 @@
-import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read, write } from 'ktx-parse';
 import type { Document, Transform } from '@gltf-transform/core';
 import { getTextureColorSpace, listTextureSlots } from '@gltf-transform/functions';
+import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read, write } from 'ktx-parse';
 
 const NAME = 'ktxfix';
 

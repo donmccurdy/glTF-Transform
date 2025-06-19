@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { normals } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', async (t) => {
 	const doc = new Document().setLogger(logger);

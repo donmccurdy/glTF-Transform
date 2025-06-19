@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, JSONDocument } from '@gltf-transform/core';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', (t) => {
 	const document = new Document();

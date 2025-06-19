@@ -1,4 +1,5 @@
-import type { Document, JSONDocument, ILogger, NodeIO, WebIO } from '@gltf-transform/core';
+import type { Document, ILogger, JSONDocument, NodeIO, WebIO } from '@gltf-transform/core';
+import type { Packet } from '@gltf-transform/extensions';
 import {
 	type InspectAnimationReport,
 	type InspectMaterialReport,
@@ -8,8 +9,7 @@ import {
 	type InspectTextureReport,
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
-import { formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP, TableFormat } from './util.js';
-import type { Packet } from '@gltf-transform/extensions';
+import { TableFormat, formatBytes, formatHeader, formatLong, formatParagraph, formatTable, formatXMP } from './util.js';
 
 type AnyPropertyReport =
 	| InspectSceneReport

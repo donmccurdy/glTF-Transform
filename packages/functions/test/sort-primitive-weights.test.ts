@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '@gltf-transform/functions';
 import { round } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('unlimited weights', async (t) => {
 	const prim = createSkinnedPrimitive();

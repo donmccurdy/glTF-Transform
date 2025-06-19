@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, Document } from '@gltf-transform/core';
 import { vertexColorSpace } from '@gltf-transform/functions';
+import test from 'ava';
 
 test('basic', (t) => {
 	const input = [0.25882352941176473, 0.5215686274509804, 0.9568627450980393]; // sRGB

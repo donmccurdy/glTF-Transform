@@ -41,9 +41,6 @@
       }
     }
   },
-  "organizeImports": {
-    "enabled": false
-  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single"

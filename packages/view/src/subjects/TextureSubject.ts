@@ -1,5 +1,5 @@
-import { Texture } from 'three';
 import { Texture as TextureDef } from '@gltf-transform/core';
+import { Texture } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { Subject } from './Subject.js';
 

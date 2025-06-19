@@ -1,5 +1,3 @@
-import type { NdArray } from 'ndarray';
-import { getPixels, savePixels } from 'ndarray-pixels';
 import {
 	Accessor,
 	Document,
@@ -12,6 +10,8 @@ import {
 	type TransformContext,
 	type vec2,
 } from '@gltf-transform/core';
+import type { NdArray } from 'ndarray';
+import { getPixels, savePixels } from 'ndarray-pixels';
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 

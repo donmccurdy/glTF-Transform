@@ -1,7 +1,7 @@
 import { RefMap } from 'property-graph';
 import type { Nullable } from '../constants.js';
 import type { ExtensionProperty } from './extension-property.js';
-import { Property, type IProperty } from './property.js';
+import { type IProperty, Property } from './property.js';
 
 export interface IExtensibleProperty extends IProperty {
 	extensions: RefMap<ExtensionProperty>;

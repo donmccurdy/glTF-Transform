@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', async (t) => {
 	const document = new Document();

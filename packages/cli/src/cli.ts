@@ -1,3 +1,5 @@
+import { promises as fs, readFileSync } from 'fs';
+import { URL } from 'url';
 import { Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
@@ -49,14 +51,12 @@ import {
 	unwrap,
 	weld,
 } from '@gltf-transform/functions';
-import { promises as fs, readFileSync } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import { gzip } from 'node-gzip';
-import { URL } from 'url';
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
 import { inspect } from './inspect.js';

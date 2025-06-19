@@ -1,4 +1,3 @@
-import { type PreparedAccessor, MeshoptFilter, MeshoptMode } from './constants.js';
 import {
 	Accessor,
 	AnimationChannel,
@@ -15,6 +14,7 @@ import {
 	WriterContext,
 } from '@gltf-transform/core';
 import type { MeshoptEncoder } from 'meshoptimizer';
+import { MeshoptFilter, MeshoptMode, type PreparedAccessor } from './constants.js';
 
 const { BYTE, SHORT, FLOAT } = Accessor.ComponentType;
 const { encodeNormalizedInt, decodeNormalizedInt } = MathUtils;

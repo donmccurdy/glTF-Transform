@@ -1,4 +1,4 @@
-import { PropertyType, ExtensionProperty as ExtensionPropertyDef } from '@gltf-transform/core';
+import { ExtensionProperty as ExtensionPropertyDef, PropertyType } from '@gltf-transform/core';
 import type {
 	Accessor as AccessorDef,
 	Material as MaterialDef,
@@ -10,25 +10,25 @@ import type {
 	Skin as SkinDef,
 	Texture as TextureDef,
 } from '@gltf-transform/core';
-import type { Light as LightDef, InstancedMesh as InstancedMeshDef } from '@gltf-transform/extensions';
-import type { Object3D, BufferAttribute, Group, Texture, Material, Skeleton, InstancedMesh } from 'three';
+import type { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
+import type { BufferAttribute, Group, InstancedMesh, Material, Object3D, Skeleton, Texture } from 'three';
+import { DefaultImageProvider, type ImageProvider } from './ImageProvider.js';
+import type { LightLike, MeshLike, THREEObject } from './constants.js';
+import { MaterialPool, Pool, SingleUserPool, TexturePool } from './pools/index.js';
 import {
 	AccessorSubject,
-	Subject,
 	ExtensionSubject,
+	InstancedMeshSubject,
+	LightSubject,
 	MaterialSubject,
 	MeshSubject,
 	NodeSubject,
 	PrimitiveSubject,
 	SceneSubject,
 	SkinSubject,
+	Subject,
 	TextureSubject,
-	LightSubject,
-	InstancedMeshSubject,
 } from './subjects/index.js';
-import type { LightLike, MeshLike, THREEObject } from './constants.js';
-import { DefaultImageProvider, type ImageProvider } from './ImageProvider.js';
-import { MaterialPool, SingleUserPool, Pool, TexturePool } from './pools/index.js';
 
 export interface DocumentViewSubjectAPI {
 	readonly accessorPool: Pool<BufferAttribute>;

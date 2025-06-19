@@ -1,6 +1,3 @@
-import ndarray from 'ndarray';
-import { savePixels, getPixels } from 'ndarray-pixels';
-import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import {
 	IOR,
@@ -10,6 +7,9 @@ import {
 	Specular,
 } from '@gltf-transform/extensions';
 import { metalRough } from '@gltf-transform/functions';
+import test from 'ava';
+import ndarray from 'ndarray';
+import { getPixels, savePixels } from 'ndarray-pixels';
 
 const ZEROS = ndarray(new Uint8Array([0, 0, 0, 0]), [1, 1, 4]);
 

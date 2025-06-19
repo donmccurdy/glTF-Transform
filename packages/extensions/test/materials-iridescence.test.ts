@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsIridescence, Iridescence } from '@gltf-transform/extensions';
+import { Iridescence, KHRMaterialsIridescence } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
+import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

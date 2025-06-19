@@ -9,7 +9,7 @@ import {
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
-import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
+import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'instance';

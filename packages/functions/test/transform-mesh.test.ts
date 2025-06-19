@@ -1,7 +1,7 @@
-import test from 'ava';
-import { bbox, Document, Primitive, PrimitiveTarget, vec3 } from '@gltf-transform/core';
-import { logger, mat4, round, roundBbox } from '@gltf-transform/test-utils';
+import { Document, Primitive, PrimitiveTarget, bbox, vec3 } from '@gltf-transform/core';
 import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
+import { logger, mat4, round, roundBbox } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);

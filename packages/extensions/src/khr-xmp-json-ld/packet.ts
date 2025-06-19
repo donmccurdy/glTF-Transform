@@ -1,4 +1,4 @@
-import { type Nullable, PropertyType, ExtensionProperty, type IProperty } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_XMP_JSON_LD } from '../constants.js';
 
 type Term = string;

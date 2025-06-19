@@ -1,7 +1,7 @@
 import { Extension, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
-import { Mapping } from './mapping.js';
 import { MappingList } from './mapping-list.js';
+import { Mapping } from './mapping.js';
 import { Variant } from './variant.js';
 
 interface VariantsRootDef {
