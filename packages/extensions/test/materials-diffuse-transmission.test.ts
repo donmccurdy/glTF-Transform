@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsDiffuseTransmission, DiffuseTransmission } from '@gltf-transform/extensions';
+import { DiffuseTransmission, KHRMaterialsDiffuseTransmission } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
+import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

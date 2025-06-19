@@ -1,17 +1,17 @@
 import {
 	Document,
-	type Transform,
-	Primitive,
-	type TypedArrayConstructor,
-	type vec2,
 	Mesh,
 	Node,
+	Primitive,
+	type Transform,
+	type TypedArrayConstructor,
+	type vec2,
 } from '@gltf-transform/core';
 import { Accessor } from '@gltf-transform/core';
-import { createTransform, isUsed, shallowCloneAccessor } from './utils.js';
 import type * as watlas from 'watlas';
-import { dequantizeAttributeArray } from './dequantize.js';
 import { compactPrimitive } from './compact-primitive.js';
+import { dequantizeAttributeArray } from './dequantize.js';
+import { createTransform, isUsed, shallowCloneAccessor } from './utils.js';
 
 const NAME = 'unwrap';
 

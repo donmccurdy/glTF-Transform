@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Property, VertexLayout } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', (t) => {
 	const document = new Document();

@@ -1,8 +1,8 @@
-import test from 'ava';
-import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 import fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { BufferUtils, ImageUtils } from '@gltf-transform/core';
+import test from 'ava';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 

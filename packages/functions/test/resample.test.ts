@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Accessor, Document } from '@gltf-transform/core';
-import { logger, quat } from '@gltf-transform/test-utils';
 import { resample } from '@gltf-transform/functions';
+import { logger, quat } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('all', async (t) => {
 	const doc = new Document().setLogger(logger);

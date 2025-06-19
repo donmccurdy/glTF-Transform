@@ -1,21 +1,21 @@
 import {
 	AnimationChannel,
 	Document,
-	type mat4,
 	Mesh,
 	Node,
 	Primitive,
 	PropertyType,
 	Scene,
 	type Transform,
+	type mat4,
 } from '@gltf-transform/core';
 import { invert, multiply } from 'gl-matrix/mat4';
+import { compactPrimitive } from './compact-primitive.js';
+import { dequantizeAttribute } from './dequantize.js';
 import { joinPrimitives } from './join-primitives.js';
 import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
 import { assignDefaults, createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
-import { dequantizeAttribute } from './dequantize.js';
-import { compactPrimitive } from './compact-primitive.js';
 
 const NAME = 'join';
 

@@ -1,5 +1,5 @@
 import type { ExtensibleProperty } from './extensible-property.js';
-import { Property, type IProperty } from './property.js';
+import { type IProperty, Property } from './property.js';
 
 /**
  * *Base class for all {@link Property} types that can be attached by an {@link Extension}.*

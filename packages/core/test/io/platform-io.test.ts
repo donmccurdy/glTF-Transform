@@ -1,7 +1,7 @@
-import test from 'ava';
 import fs from 'fs';
 import { BufferUtils, Document, Format, GLB_BUFFER, GLTF, JSONDocument } from '@gltf-transform/core';
-import { createPlatformIO, resolve, logger } from '@gltf-transform/test-utils';
+import { createPlatformIO, logger, resolve } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('common', async (t) => {
 	const io = await createPlatformIO();

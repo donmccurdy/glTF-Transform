@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { MappingList, KHRMaterialsVariants } from '@gltf-transform/extensions';
+import { KHRMaterialsVariants, MappingList } from '@gltf-transform/extensions';
+import test from 'ava';
 
 test('basic', async (t) => {
 	const doc = new Document();

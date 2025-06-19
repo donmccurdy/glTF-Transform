@@ -1,8 +1,8 @@
 import { Format } from '../constants.js';
 import type { Document } from '../document.js';
 import { FileUtils } from '../utils/index.js';
-import { PlatformIO } from './platform-io.js';
 import { HTTPUtils } from '../utils/index.js';
+import { PlatformIO } from './platform-io.js';
 
 /**
  * *I/O service for Node.js.*

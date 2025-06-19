@@ -1,4 +1,3 @@
-import { read as readKTX, KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC } from 'ktx-parse';
 import {
 	Extension,
 	ImageUtils,
@@ -8,6 +7,7 @@ import {
 	WriterContext,
 	type vec2,
 } from '@gltf-transform/core';
+import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 import { KHR_TEXTURE_BASISU } from '../constants.js';
 
 interface BasisuDef {

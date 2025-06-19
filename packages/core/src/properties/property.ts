@@ -1,23 +1,23 @@
-import type { Nullable } from '../constants.js';
 import {
 	$attributes,
 	$immutableKeys,
 	Graph,
-	GraphNode,
 	GraphEdge,
-	type LiteralKeys,
-	RefList,
-	RefSet,
-	RefMap,
-	type Ref,
+	GraphNode,
 	type Literal,
+	type LiteralKeys,
+	type Ref,
+	RefList,
+	RefMap,
+	RefSet,
 } from 'property-graph';
+import type { Nullable } from '../constants.js';
 import {
 	equalsArray,
 	equalsObject,
 	equalsRef,
-	equalsRefSet,
 	equalsRefMap,
+	equalsRefSet,
 	isArray,
 	isPlainObject,
 } from '../utils/index.js';

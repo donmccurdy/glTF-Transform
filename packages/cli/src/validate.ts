@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ILogger } from '@gltf-transform/core';
-import { formatHeader, formatTable, TableFormat } from './util.js';
+import { TableFormat, formatHeader, formatTable } from './util.js';
 
 export interface ValidateOptions {
 	limit: number;

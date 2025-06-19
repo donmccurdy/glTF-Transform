@@ -1,27 +1,27 @@
-import test from 'ava';
 import path, { dirname } from 'path';
-import { getBounds, Document, NodeIO, Primitive } from '@gltf-transform/core';
+import { fileURLToPath } from 'url';
+import { Document, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import {
-	weld,
-	unweld,
-	simplify,
-	getSceneVertexCount,
 	VertexCountMethod,
-	simplifyPrimitive,
 	getGLPrimitiveCount,
+	getSceneVertexCount,
+	simplify,
+	simplifyPrimitive,
+	unweld,
+	weld,
 } from '@gltf-transform/functions';
 import {
-	logger,
-	roundBbox,
-	createTorusKnotPrimitive,
 	createLineLoopPrim,
+	createTorusKnotPrimitive,
 	createTriangleFanPrim,
 	createTriangleStripPrim,
+	logger,
+	roundBbox,
 } from '@gltf-transform/test-utils';
-import { MeshoptSimplifier } from 'meshoptimizer';
+import test from 'ava';
 import draco3d from 'draco3dgltf';
-import { fileURLToPath } from 'url';
+import { MeshoptSimplifier } from 'meshoptimizer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

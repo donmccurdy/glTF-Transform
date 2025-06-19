@@ -1,7 +1,7 @@
 import type { Ref, RefList, RefMap, RefSet } from 'property-graph';
-import { isPlainObject } from './is-plain-object.js';
 import type { BufferViewUsage } from '../constants.js';
 import type { Property } from '../properties/index.js';
+import { isPlainObject } from './is-plain-object.js';
 
 export type UnknownRef = Ref<Property> | RefList<Property> | RefSet<Property> | RefMap<Property>;
 

@@ -1,21 +1,21 @@
 import { Document, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
+import type { MeshoptSimplifier } from 'meshoptimizer';
+import { compactAttribute, compactPrimitive } from './compact-primitive.js';
+import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
+import { dedup } from './dedup.js';
+import { dequantizeAttributeArray } from './dequantize.js';
+import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { prune } from './prune.js';
+import { unweldPrimitive } from './unweld.js';
 import {
+	assignDefaults,
 	createTransform,
-	formatDeltaOp,
 	deepListAttributes,
 	deepSwapAttribute,
+	formatDeltaOp,
 	shallowCloneAccessor,
-	assignDefaults,
 } from './utils.js';
 import { weld } from './weld.js';
-import type { MeshoptSimplifier } from 'meshoptimizer';
-import { dedup } from './dedup.js';
-import { prune } from './prune.js';
-import { dequantizeAttributeArray } from './dequantize.js';
-import { unweldPrimitive } from './unweld.js';
-import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
-import { compactAttribute, compactPrimitive } from './compact-primitive.js';
-import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 
 const NAME = 'simplify';
 

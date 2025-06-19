@@ -1,5 +1,5 @@
-import type { Extension } from './extension.js';
 import { Graph } from 'property-graph';
+import type { Extension } from './extension.js';
 import {
 	Accessor,
 	Animation,

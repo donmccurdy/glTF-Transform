@@ -1,9 +1,9 @@
 import type { Property as PropertyDef } from '@gltf-transform/core';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
-import type { Subject } from '../subjects/index.js';
 import type { Subscription } from '../constants.js';
-import { Observable } from '../utils/index.js';
 import type { EmptyParams } from '../pools/index.js';
+import type { Subject } from '../subjects/index.js';
+import { Observable } from '../utils/index.js';
 import { RefObserver } from './RefObserver.js';
 
 /** @internal */

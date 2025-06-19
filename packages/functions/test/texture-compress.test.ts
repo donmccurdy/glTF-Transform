@@ -1,8 +1,8 @@
-import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { EXTTextureWebP } from '@gltf-transform/extensions';
 import { compressTexture, textureCompress } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 

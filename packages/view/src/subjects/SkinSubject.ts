@@ -1,9 +1,9 @@
-import { Bone, BufferAttribute, Matrix4, Skeleton } from 'three';
 import { Accessor as AccessorDef, Node as NodeDef, Skin as SkinDef } from '@gltf-transform/core';
+import { Bone, BufferAttribute, Matrix4, Skeleton } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
-import { Subject } from './Subject.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
 import type { ValuePool } from '../pools/index.js';
+import { Subject } from './Subject.js';
 
 /**
  * SkinSubject transforms `nodeDef.skin` into a THREE.Skeleton instance. The upstream

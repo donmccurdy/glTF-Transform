@@ -1,11 +1,11 @@
-import { BufferAttribute, BufferGeometry, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
 import { Accessor as AccessorDef } from '@gltf-transform/core';
+import { InstancedMesh as InstancedMeshDef } from '@gltf-transform/extensions';
+import { BufferAttribute, BufferGeometry, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
-import { Subject } from './Subject.js';
 import { RefMapObserver } from '../observers/index.js';
 import type { ValuePool } from '../pools/index.js';
-import { InstancedMesh as InstancedMeshDef } from '@gltf-transform/extensions';
 import { DEFAULT_MATERIAL, semanticToAttributeName } from '../utils/index.js';
+import { Subject } from './Subject.js';
 
 const _t = new Vector3();
 const _r = new Quaternion();

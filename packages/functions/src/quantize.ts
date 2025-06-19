@@ -1,10 +1,8 @@
 import {
 	Accessor,
 	AnimationChannel,
-	type bbox,
 	Document,
 	type ILogger,
-	type mat4,
 	MathUtils,
 	Mesh,
 	Node,
@@ -13,20 +11,22 @@ import {
 	PropertyType,
 	Skin,
 	type Transform,
+	type bbox,
+	type mat4,
 	type vec2,
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
-import { dedup } from './dedup.js';
-import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
-import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
-import { prune } from './prune.js';
-import { assignDefaults, createTransform } from './utils.js';
-import { sortPrimitiveWeights } from './sort-primitive-weights.js';
-import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
+import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
+import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { compactPrimitive } from './compact-primitive.js';
+import { dedup } from './dedup.js';
+import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { prune } from './prune.js';
+import { sortPrimitiveWeights } from './sort-primitive-weights.js';
+import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'quantize';
 

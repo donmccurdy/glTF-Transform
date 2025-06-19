@@ -1,8 +1,8 @@
-import test from 'ava';
-import { Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
-import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import fs from 'fs';
 import path from 'path';
+import { Document, GLTF, ImageUtils, JSONDocument, NodeIO } from '@gltf-transform/core';
+import { KHRTextureBasisu } from '@gltf-transform/extensions';
+import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

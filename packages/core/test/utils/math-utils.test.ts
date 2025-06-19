@@ -1,5 +1,5 @@
-import test from 'ava';
 import { MathUtils } from '@gltf-transform/core';
+import test from 'ava';
 
 test('identity', (t) => {
 	t.is(MathUtils.identity(25), 25, 'identity');

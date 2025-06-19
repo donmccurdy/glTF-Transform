@@ -1,5 +1,5 @@
-import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
 import type { GLTF } from '@gltf-transform/core';
+import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
 import type { MeshoptBufferExtension } from './constants.js';
 
 /**

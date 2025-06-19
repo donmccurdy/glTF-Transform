@@ -1,8 +1,8 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { EXTMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
-import { reorder } from './reorder.js';
 import { QUANTIZE_DEFAULTS, type QuantizeOptions, quantize } from './quantize.js';
+import { reorder } from './reorder.js';
 import { assignDefaults, createTransform } from './utils.js';
 
 export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern' | 'patternTargets'> {

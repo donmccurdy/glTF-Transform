@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { PageData } from './$types';
 // biome-ignore lint/suspicious/noShadowRestrictedNames: TODO
-import { Class, Interface, Enum, Function } from '@greendoc/svelte';
+import { Class, Enum, Function, Interface } from '@greendoc/svelte';
+import type { PageData } from './$types';
 export let data: PageData;
 </script>
 

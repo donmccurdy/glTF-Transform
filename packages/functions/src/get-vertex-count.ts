@@ -1,4 +1,4 @@
-import { Scene, Node, Mesh, Primitive, Accessor } from '@gltf-transform/core';
+import { Accessor, Mesh, Node, Primitive, Scene } from '@gltf-transform/core';
 import { InstancedMesh } from '@gltf-transform/extensions';
 
 /**

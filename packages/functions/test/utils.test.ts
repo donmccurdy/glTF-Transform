@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, Document, GLTF, Primitive, Transform, TransformContext } from '@gltf-transform/core';
-import { getGLPrimitiveCount, createTransform, isTransformPending, assignDefaults } from '@gltf-transform/functions';
+import { assignDefaults, createTransform, getGLPrimitiveCount, isTransformPending } from '@gltf-transform/functions';
+import test from 'ava';
 
 test('assignDefaults', (t) => {
 	t.deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: 4 }), { a: 1, b: 4, c: 3 }, 'number ← number');

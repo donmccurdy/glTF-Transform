@@ -1,5 +1,5 @@
-import test from 'ava';
 import { BufferUtils } from '@gltf-transform/core';
+import test from 'ava';
 
 const IS_NODEJS = typeof window === 'undefined';
 

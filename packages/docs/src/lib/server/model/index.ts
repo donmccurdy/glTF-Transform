@@ -1,8 +1,8 @@
-import { Encoder, GD, Parser, createPrefixSort } from '@greendoc/parse';
-import { resolve, dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Project } from 'ts-morph';
+import { Encoder, GD, Parser, createPrefixSort } from '@greendoc/parse';
 import he from 'he';
+import { Project } from 'ts-morph';
 
 const ROOT_DELTA = '../../../../../../';
 const ROOT_FILE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), ROOT_DELTA);

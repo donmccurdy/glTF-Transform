@@ -1,10 +1,10 @@
-import { Document, NodeIO, FileUtils, type Transform, Format, Verbosity } from '@gltf-transform/core';
-import type { Packet, KHRXMP } from '@gltf-transform/extensions';
+import { Document, FileUtils, Format, NodeIO, type Transform, Verbosity } from '@gltf-transform/core';
+import type { KHRXMP, Packet } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, type ListrTask } from 'listr2';
-import { dim, formatBytes, formatLong, XMPContext } from './util.js';
 import { performance } from 'perf_hooks'; // global in Node.js v16+
 import { Logger } from './program.js';
+import { XMPContext, dim, formatBytes, formatLong } from './util.js';
 
 /** Helper class for managing a CLI command session. */
 export class Session {

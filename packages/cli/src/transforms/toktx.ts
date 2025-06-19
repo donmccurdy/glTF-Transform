@@ -1,22 +1,22 @@
-import fs, { rm } from 'fs/promises';
-import { join } from 'path';
-import micromatch from 'micromatch';
 import os from 'os';
-import tmp from 'tmp';
+import { join } from 'path';
+import fs, { rm } from 'fs/promises';
+import micromatch from 'micromatch';
 import pLimit from 'p-limit';
 import type sharp from 'sharp';
+import tmp from 'tmp';
 
 import {
+	BufferUtils,
 	Document,
 	FileUtils,
 	type ILogger,
 	ImageUtils,
+	Texture,
 	TextureChannel,
 	type Transform,
-	type vec2,
 	uuid,
-	Texture,
-	BufferUtils,
+	type vec2,
 } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import {
@@ -28,7 +28,7 @@ import {
 	getTextureColorSpace,
 	listTextureSlots,
 } from '@gltf-transform/functions';
-import { spawn, commandExists, formatBytes, waitExit, MICROMATCH_OPTIONS } from '../util.js';
+import { MICROMATCH_OPTIONS, commandExists, formatBytes, spawn, waitExit } from '../util.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';

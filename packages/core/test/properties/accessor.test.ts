@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, Document, GLTF, TypedArray } from '@gltf-transform/core';
 import { createPlatformIO, round } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT } = Accessor.ComponentType;
 

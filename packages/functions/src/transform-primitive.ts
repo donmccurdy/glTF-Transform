@@ -1,8 +1,8 @@
-import { type vec3, type mat4, Accessor, Primitive, MathUtils } from '@gltf-transform/core';
+import { Accessor, MathUtils, Primitive, type mat4, type vec3 } from '@gltf-transform/core';
 import { create as createMat3, fromMat4, invert, transpose } from 'gl-matrix/mat3';
+import { determinant } from 'gl-matrix/mat4';
 import { create as createVec3, normalize as normalizeVec3, transformMat3, transformMat4 } from 'gl-matrix/vec3';
 import { weldPrimitive } from './weld.js';
-import { determinant } from 'gl-matrix/mat4';
 
 const { FLOAT } = Accessor.ComponentType;
 

@@ -1,5 +1,5 @@
-import test from 'ava';
 import { uuid } from '@gltf-transform/core';
+import test from 'ava';
 
 test('basic', (t) => {
 	const set = new Set();

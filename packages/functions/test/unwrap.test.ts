@@ -1,13 +1,13 @@
-import test from 'ava';
 import { Accessor, Document, Primitive, vec2 } from '@gltf-transform/core';
 import {
+	VertexCountMethod,
 	getPrimitiveVertexCount,
 	unweld,
 	unwrap,
 	unwrapPrimitives,
-	VertexCountMethod,
 } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 import * as watlas from 'watlas';
 
 await watlas.Initialize();

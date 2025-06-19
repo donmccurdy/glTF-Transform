@@ -1,5 +1,6 @@
-import test from 'ava';
-import { getBounds, Document, Primitive } from '@gltf-transform/core';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { Document, Primitive, getBounds } from '@gltf-transform/core';
 import { join, quantize, transformPrimitive } from '@gltf-transform/functions';
 import {
 	createLineLoopPrim,
@@ -8,11 +9,10 @@ import {
 	createTriangleFanPrim,
 	createTriangleStripPrim,
 	logger,
-	roundBbox,
 	mat4,
+	roundBbox,
 } from '@gltf-transform/test-utils';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import test from 'ava';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

@@ -1,4 +1,4 @@
-import { Scene, Node, getBounds as _getBounds, type bbox } from '@gltf-transform/core';
+import { Node, Scene, getBounds as _getBounds, type bbox } from '@gltf-transform/core';
 
 /**
  * Computes bounding box (AABB) in world space for the given {@link Node} or {@link Scene}.

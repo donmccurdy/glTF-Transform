@@ -1,7 +1,7 @@
-import test from 'ava';
 import { Document, TextureChannel } from '@gltf-transform/core';
-import { listTextureChannels, getTextureChannelMask } from '@gltf-transform/functions';
 import { KHRMaterialsSheen } from '@gltf-transform/extensions';
+import { getTextureChannelMask, listTextureChannels } from '@gltf-transform/functions';
+import test from 'ava';
 
 const { R, G, B, A } = TextureChannel;
 

@@ -1,20 +1,20 @@
-import test from 'ava';
 import {
 	Accessor,
 	AnimationChannel,
-	bbox,
-	getBounds,
 	Document,
 	Mesh,
 	Node,
 	Primitive,
 	PrimitiveTarget,
 	Scene,
+	bbox,
+	getBounds,
 	vec3,
 } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, KHRMaterialsVolume, Volume } from '@gltf-transform/extensions';
 import { quantize } from '@gltf-transform/functions';
 import { logger, round, roundBbox } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('noop', async (t) => {
 	const document = new Document().setLogger(logger);

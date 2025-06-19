@@ -1,5 +1,5 @@
-import test from 'ava';
 import { Logger } from '@gltf-transform/core';
+import test from 'ava';
 
 test('basic', (t) => {
 	const { debug, info, warn, error } = console;

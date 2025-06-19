@@ -1,13 +1,13 @@
-import fs, { rm } from 'fs/promises';
-import { join } from 'path';
 import os from 'os';
-import tmp from 'tmp';
+import { join } from 'path';
+import fs, { rm } from 'fs/promises';
 import pLimit from 'p-limit';
+import tmp from 'tmp';
 
-import { uuid, Document, FileUtils, ImageUtils, type Transform } from '@gltf-transform/core';
+import { Document, FileUtils, ImageUtils, type Transform, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
-import { spawn, formatBytes, waitExit } from '../util.js';
+import { formatBytes, spawn, waitExit } from '../util.js';
 import { checkKTXSoftware } from './toktx.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122

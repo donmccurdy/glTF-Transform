@@ -1,5 +1,5 @@
-import { render } from 'svelte/server';
 import { error } from '@sveltejs/kit';
+import { render } from 'svelte/server';
 
 export const load = async ({ params }) => {
 	try {

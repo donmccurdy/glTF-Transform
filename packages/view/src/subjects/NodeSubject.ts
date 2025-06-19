@@ -1,12 +1,12 @@
-import { Bone, Group, Matrix4, Object3D, Skeleton, SkinnedMesh, InstancedMesh, Mesh } from 'three';
 import { Mesh as MeshDef, Node as NodeDef, Skin as SkinDef, type vec3, type vec4 } from '@gltf-transform/core';
-import { Light as LightDef, InstancedMesh as InstancedMeshDef } from '@gltf-transform/extensions';
+import { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
+import { Bone, Group, InstancedMesh, Matrix4, Mesh, Object3D, Skeleton, SkinnedMesh } from 'three';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
-import { eq } from '../utils/index.js';
-import { Subject } from './Subject.js';
+import type { LightLike } from '../constants.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
 import { SingleUserPool } from '../pools/index.js';
-import type { LightLike } from '../constants.js';
+import { eq } from '../utils/index.js';
+import { Subject } from './Subject.js';
 
 const _vec3: vec3 = [0, 0, 0];
 const _vec4: vec4 = [0, 0, 0, 0];

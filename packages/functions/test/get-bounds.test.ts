@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { getBounds } from '@gltf-transform/core';
+import test from 'ava';
 
 test('unindexed', (t) => {
 	const document = new Document();

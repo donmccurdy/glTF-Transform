@@ -1,9 +1,9 @@
 import path, { dirname } from 'path';
-import test from 'ava';
-import { Document, NodeIO, getBounds, Format, Primitive } from '@gltf-transform/core';
-import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
-import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import { fileURLToPath } from 'url';
+import { Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
+import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
+import test from 'ava';
+import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
 const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
 

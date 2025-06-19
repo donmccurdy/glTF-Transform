@@ -1,13 +1,13 @@
 import fs from 'fs';
 import {
+	Buffer,
 	Document,
 	FileUtils,
 	ImageUtils,
 	NodeIO,
-	type Transform,
-	Texture,
-	Buffer,
 	PropertyType,
+	Texture,
+	type Transform,
 } from '@gltf-transform/core';
 import { dedup, mergeDocuments, unpartition } from '@gltf-transform/functions';
 

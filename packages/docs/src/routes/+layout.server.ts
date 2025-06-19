@@ -1,6 +1,6 @@
-import type { LayoutServerLoad } from './$types';
 import { parser } from '$lib/server/model';
 import type { Node } from 'ts-morph';
+import type { LayoutServerLoad } from './$types';
 
 export const prerender = true;
 

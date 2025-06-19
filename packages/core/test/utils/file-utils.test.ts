@@ -1,5 +1,5 @@
-import test from 'ava';
 import { FileUtils } from '@gltf-transform/core';
+import test from 'ava';
 
 test('basename', (t) => {
 	t.is(FileUtils.basename('http://foo.com/path/to/index.html'), 'index', 'URI');

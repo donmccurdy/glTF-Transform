@@ -1,8 +1,8 @@
 import {
-	MathUtils,
 	type Accessor,
 	type Document,
 	type GLTF,
+	MathUtils,
 	type Primitive,
 	type Transform,
 	type TypedArray,

@@ -1,10 +1,10 @@
-import test from 'ava';
-import fs from 'fs/promises';
 import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { Accessor, Document, GLTF, Primitive, getBounds } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import { fileURLToPath } from 'url';
+import test from 'ava';
+import fs from 'fs/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

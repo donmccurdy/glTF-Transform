@@ -1,8 +1,8 @@
-import { BufferAttribute } from 'three';
 import { Accessor as AccessorDef } from '@gltf-transform/core';
+import { BufferAttribute } from 'three';
 import type { DocumentViewImpl } from '../DocumentViewImpl.js';
-import { Subject } from './Subject.js';
 import type { ValuePool } from '../pools/index.js';
+import { Subject } from './Subject.js';
 
 /** @internal */
 export class AccessorSubject extends Subject<AccessorDef, BufferAttribute> {

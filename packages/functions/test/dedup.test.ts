@@ -1,9 +1,9 @@
 import path, { dirname } from 'path';
-import test from 'ava';
-import { Document, NodeIO, Property, PropertyType } from '@gltf-transform/core';
-import { dedup } from '@gltf-transform/functions';
-import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 import { fileURLToPath } from 'url';
+import { Document, NodeIO, Property, PropertyType } from '@gltf-transform/core';
+import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
+import { dedup } from '@gltf-transform/functions';
+import test from 'ava';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 

@@ -1,6 +1,6 @@
-import test from 'ava';
 import { Document, Format, JSONDocument, TextureInfo } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('read', async (t) => {
 	const jsonDoc = {

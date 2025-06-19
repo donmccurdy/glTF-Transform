@@ -4,13 +4,13 @@ import {
 	ExtensionProperty,
 	type GLTF,
 	ImageUtils,
+	PropertyType,
 	Texture,
 	getBounds,
-	PropertyType,
 } from '@gltf-transform/core';
-import { getGLPrimitiveCount } from './utils.js';
 import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 import { VertexCountMethod, getMeshVertexCount, getSceneVertexCount } from './get-vertex-count.js';
+import { getGLPrimitiveCount } from './utils.js';
 
 /** Inspects the contents of a glTF file and returns a JSON report. */
 export function inspect(doc: Document): InspectReport {

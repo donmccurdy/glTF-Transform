@@ -1,8 +1,8 @@
-import test from 'ava';
 import { Document } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { uninstance } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);

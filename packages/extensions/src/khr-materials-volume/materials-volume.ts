@@ -1,11 +1,11 @@
 import {
 	Extension,
 	type GLTF,
+	MathUtils,
+	PropertyType,
 	ReaderContext,
 	WriterContext,
 	type vec3,
-	MathUtils,
-	PropertyType,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 import { Volume } from './volume.js';

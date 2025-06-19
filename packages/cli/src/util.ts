@@ -1,10 +1,10 @@
 import { spawn as _spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
-import _commandExists from 'command-exists';
 import CLITable from 'cli-table3';
+import _commandExists from 'command-exists';
 import { stringify } from 'csv-stringify';
-import stripAnsi from 'strip-ansi';
 import micromatch from 'micromatch';
+import stripAnsi from 'strip-ansi';
 
 // Constants.
 

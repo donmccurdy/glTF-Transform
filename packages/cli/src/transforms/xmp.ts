@@ -1,10 +1,10 @@
-import type { Document, ILogger, Transform } from '@gltf-transform/core';
-import { Packet, KHRXMP } from '@gltf-transform/extensions';
-import prompts, { type PromptObject } from 'prompts';
-import languageTags from 'language-tags';
-import validateSPDX from 'spdx-correct';
-import fs from 'fs/promises';
 import path from 'path';
+import type { Document, ILogger, Transform } from '@gltf-transform/core';
+import { KHRXMP, Packet } from '@gltf-transform/extensions';
+import fs from 'fs/promises';
+import languageTags from 'language-tags';
+import prompts, { type PromptObject } from 'prompts';
+import validateSPDX from 'spdx-correct';
 import { XMPContext } from '../util.js';
 
 const DEFAULT_LANG = 'en-US';

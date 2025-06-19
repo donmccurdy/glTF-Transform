@@ -1,9 +1,9 @@
-import test from 'ava';
-import { getPixels } from 'ndarray-pixels';
 import { Document, GLTF, Material, vec4 } from '@gltf-transform/core';
 import { KHRMaterialsSpecular } from '@gltf-transform/extensions';
 import { palette } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
+import test from 'ava';
+import { getPixels } from 'ndarray-pixels';
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
