@@ -1,12 +1,12 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
 	TextureInfo,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 
@@ -25,7 +25,7 @@ const { R, G, B, A } = TextureChannel;
  * Defines specular reflectivity on a PBR {@link Material}. See {@link KHRMaterialsSpecular}.
  */
 export class Specular extends ExtensionProperty<ISpecular> {
-	public static EXTENSION_NAME = KHR_MATERIALS_SPECULAR;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_SPECULAR = KHR_MATERIALS_SPECULAR;
 	public declare extensionName: typeof KHR_MATERIALS_SPECULAR;
 	public declare propertyType: 'Specular';
 	public declare parentTypes: [PropertyType.MATERIAL];

@@ -3,8 +3,8 @@ import { Mesh as MeshDef, Primitive as PrimitiveDef } from '@gltf-transform/core
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { Subject } from './Subject.js';
 import { RefListObserver } from '../observers/index.js';
-import { MeshLike } from '../constants.js';
-import { SingleUserParams, SingleUserPool } from '../pools/index.js';
+import { type MeshLike } from '../constants.js';
+import { type SingleUserParams, SingleUserPool } from '../pools/index.js';
 
 /** @internal */
 export class MeshSubject extends Subject<MeshDef, Group> {

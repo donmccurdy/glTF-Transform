@@ -1,10 +1,10 @@
 import {
 	Accessor,
 	AnimationChannel,
-	bbox,
+	type bbox,
 	Document,
-	ILogger,
-	mat4,
+	type ILogger,
+	type mat4,
 	MathUtils,
 	Mesh,
 	Node,
@@ -12,10 +12,10 @@ import {
 	PrimitiveTarget,
 	PropertyType,
 	Skin,
-	Transform,
-	vec2,
-	vec3,
-	vec4,
+	type Transform,
+	type vec2,
+	type vec3,
+	type vec4,
 } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';

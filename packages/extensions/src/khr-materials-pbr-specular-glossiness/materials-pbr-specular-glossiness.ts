@@ -1,8 +1,14 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext, vec3, vec4 } from '@gltf-transform/core';
+import {
+	Extension,
+	type GLTF,
+	PropertyType,
+	ReaderContext,
+	WriterContext,
+	type vec3,
+	type vec4,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
 import { PBRSpecularGlossiness } from './pbr-specular-glossiness.js';
-
-const NAME = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
 
 interface SpecularGlossinessDef {
 	diffuseFactor?: vec4;
@@ -45,10 +51,11 @@ interface SpecularGlossinessDef {
  * ```
  */
 export class KHRMaterialsPBRSpecularGlossiness extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS =
+		KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+	public readonly extensionName: typeof KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS = KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new PBRSpecularGlossiness property for use on a {@link Material}. */
 	public createPBRSpecularGlossiness(): PBRSpecularGlossiness {
@@ -71,11 +78,13 @@ export class KHRMaterialsPBRSpecularGlossiness extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS]) {
 				const specGloss = this.createPBRSpecularGlossiness();
-				context.materials[materialIndex].setExtension(NAME, specGloss);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS, specGloss);
 
-				const specGlossDef = materialDef.extensions[NAME] as SpecularGlossinessDef;
+				const specGlossDef = materialDef.extensions[
+					KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS
+				] as SpecularGlossinessDef;
 
 				// Factors.
 
@@ -117,7 +126,7 @@ export class KHRMaterialsPBRSpecularGlossiness extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const specGloss = material.getExtension<PBRSpecularGlossiness>(NAME);
+				const specGloss = material.getExtension<PBRSpecularGlossiness>(KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS);
 				if (specGloss) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -125,7 +134,7 @@ export class KHRMaterialsPBRSpecularGlossiness extends Extension {
 
 					// Factors.
 
-					const specGlossDef = (materialDef.extensions[NAME] = {
+					const specGlossDef = (materialDef.extensions[KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS] = {
 						diffuseFactor: specGloss.getDiffuseFactor(),
 						specularFactor: specGloss.getSpecularFactor(),
 						glossinessFactor: specGloss.getGlossinessFactor(),

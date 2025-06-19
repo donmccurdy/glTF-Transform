@@ -1,8 +1,6 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_IRIDESCENCE } from '../constants.js';
 import { Iridescence } from './iridescence.js';
-
-const NAME = KHR_MATERIALS_IRIDESCENCE;
 
 interface IridescenceDef {
 	iridescenceFactor: number;
@@ -54,10 +52,10 @@ interface IridescenceDef {
  * ```
  */
 export class KHRMaterialsIridescence extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_IRIDESCENCE = KHR_MATERIALS_IRIDESCENCE;
+	public readonly extensionName: typeof KHR_MATERIALS_IRIDESCENCE = KHR_MATERIALS_IRIDESCENCE;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Iridescence property for use on a {@link Material}. */
 	public createIridescence(): Iridescence {
@@ -80,11 +78,11 @@ export class KHRMaterialsIridescence extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_IRIDESCENCE]) {
 				const iridescence = this.createIridescence();
-				context.materials[materialIndex].setExtension(NAME, iridescence);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_IRIDESCENCE, iridescence);
 
-				const iridescenceDef = materialDef.extensions[NAME] as IridescenceDef;
+				const iridescenceDef = materialDef.extensions[KHR_MATERIALS_IRIDESCENCE] as IridescenceDef;
 
 				// Factors.
 
@@ -129,7 +127,7 @@ export class KHRMaterialsIridescence extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const iridescence = material.getExtension<Iridescence>(NAME);
+				const iridescence = material.getExtension<Iridescence>(KHR_MATERIALS_IRIDESCENCE);
 				if (iridescence) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -137,7 +135,7 @@ export class KHRMaterialsIridescence extends Extension {
 
 					// Factors.
 
-					const iridescenceDef = (materialDef.extensions[NAME] = {} as IridescenceDef);
+					const iridescenceDef = (materialDef.extensions[KHR_MATERIALS_IRIDESCENCE] = {} as IridescenceDef);
 
 					if (iridescence.getIridescenceFactor() > 0) {
 						iridescenceDef.iridescenceFactor = iridescence.getIridescenceFactor();

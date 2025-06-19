@@ -4,19 +4,17 @@ import {
 	BufferUtils,
 	Extension,
 	GLB_BUFFER,
-	GLTF,
+	type GLTF,
 	Property,
 	PropertyType,
 	ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
-import { EncoderMethod, MeshoptBufferViewExtension, MeshoptFilter } from './constants.js';
+import { EncoderMethod, type MeshoptBufferViewExtension, MeshoptFilter } from './constants.js';
 import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
 import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder.js';
 import { isFallbackBuffer } from './decoder.js';
 import type { MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
-
-const NAME = EXT_MESHOPT_COMPRESSION;
 
 interface EncoderOptions {
 	method?: EncoderMethod;
@@ -26,7 +24,7 @@ const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
 	method: EncoderMethod.QUANTIZE,
 };
 
-type MeshoptBufferView = { extensions: { [NAME]: MeshoptBufferViewExtension } };
+type MeshoptBufferView = { extensions: { [EXT_MESHOPT_COMPRESSION]: MeshoptBufferViewExtension } };
 type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
 
 /**
@@ -127,18 +125,18 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * class.
  */
 export class EXTMeshoptCompression extends Extension {
-	public readonly extensionName = NAME;
+	public readonly extensionName: typeof EXT_MESHOPT_COMPRESSION = EXT_MESHOPT_COMPRESSION;
 	/** @hidden */
-	public readonly prereadTypes = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
+	public readonly prereadTypes: PropertyType[] = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
 	/** @hidden */
-	public readonly prewriteTypes = [PropertyType.BUFFER, PropertyType.ACCESSOR];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.BUFFER, PropertyType.ACCESSOR];
 	/** @hidden */
-	public readonly readDependencies = ['meshopt.decoder'];
+	public readonly readDependencies: string[] = ['meshopt.decoder'];
 	/** @hidden */
-	public readonly writeDependencies = ['meshopt.encoder'];
+	public readonly writeDependencies: string[] = ['meshopt.encoder'];
 
-	public static readonly EXTENSION_NAME = NAME;
-	public static readonly EncoderMethod = EncoderMethod;
+	public static readonly EXTENSION_NAME: typeof EXT_MESHOPT_COMPRESSION = EXT_MESHOPT_COMPRESSION;
+	public static readonly EncoderMethod: typeof EncoderMethod = EncoderMethod;
 
 	private _decoder: typeof MeshoptDecoder | null = null;
 	private _decoderFallbackBufferMap = new Map<Buffer, Buffer>();
@@ -202,11 +200,11 @@ export class EXTMeshoptCompression extends Extension {
 	public preread(context: ReaderContext, propertyType: PropertyType): this {
 		if (!this._decoder) {
 			if (!this.isRequired()) return this;
-			throw new Error(`[${NAME}] Please install extension dependency, "meshopt.decoder".`);
+			throw new Error(`[${EXT_MESHOPT_COMPRESSION}] Please install extension dependency, "meshopt.decoder".`);
 		}
 		if (!this._decoder.supported) {
 			if (!this.isRequired()) return this;
-			throw new Error(`[${NAME}]: Missing WASM support.`);
+			throw new Error(`[${EXT_MESHOPT_COMPRESSION}]: Missing WASM support.`);
 		}
 
 		if (propertyType === PropertyType.BUFFER) {
@@ -224,9 +222,9 @@ export class EXTMeshoptCompression extends Extension {
 
 		const viewDefs = jsonDoc.json.bufferViews || [];
 		viewDefs.forEach((viewDef, index) => {
-			if (!viewDef.extensions || !viewDef.extensions[NAME]) return;
+			if (!viewDef.extensions || !viewDef.extensions[EXT_MESHOPT_COMPRESSION]) return;
 
-			const meshoptDef = viewDef.extensions[NAME] as MeshoptBufferViewExtension;
+			const meshoptDef = viewDef.extensions[EXT_MESHOPT_COMPRESSION] as MeshoptBufferViewExtension;
 			const byteOffset = meshoptDef.byteOffset || 0;
 			const byteLength = meshoptDef.byteLength || 0;
 			const count = meshoptDef.count;
@@ -257,9 +255,9 @@ export class EXTMeshoptCompression extends Extension {
 
 		//
 		viewDefs.forEach((viewDef) => {
-			if (!viewDef.extensions || !viewDef.extensions[NAME]) return;
+			if (!viewDef.extensions || !viewDef.extensions[EXT_MESHOPT_COMPRESSION]) return;
 
-			const meshoptDef = viewDef.extensions[NAME] as MeshoptBufferViewExtension;
+			const meshoptDef = viewDef.extensions[EXT_MESHOPT_COMPRESSION] as MeshoptBufferViewExtension;
 
 			const buffer = context.buffers[meshoptDef.buffer];
 			const fallbackBuffer = context.buffers[viewDef.buffer];
@@ -347,7 +345,7 @@ export class EXTMeshoptCompression extends Extension {
 			const { array, byteStride } = preparedAccessor;
 
 			const buffer = accessor.getBuffer();
-			if (!buffer) throw new Error(`${NAME}: Missing buffer for accessor.`);
+			if (!buffer) throw new Error(`${EXT_MESHOPT_COMPRESSION}: Missing buffer for accessor.`);
 			const bufferIndex = this.document.getRoot().listBuffers().indexOf(buffer);
 
 			// Buffer view grouping key.
@@ -368,7 +366,7 @@ export class EXTMeshoptCompression extends Extension {
 					byteLength: 0,
 					byteStride: usage === WriterContext.BufferViewUsage.ARRAY_BUFFER ? byteStride : undefined,
 					extensions: {
-						[NAME]: {
+						[EXT_MESHOPT_COMPRESSION]: {
 							buffer: bufferIndex,
 							byteOffset: 0,
 							byteLength: 0,
@@ -406,15 +404,15 @@ export class EXTMeshoptCompression extends Extension {
 		for (const key in this._encoderBufferViews) {
 			const bufferView = this._encoderBufferViews[key];
 			const bufferViewData = this._encoderBufferViewData[key];
-			const buffer = this.document.getRoot().listBuffers()[bufferView.extensions[NAME].buffer];
+			const buffer = this.document.getRoot().listBuffers()[bufferView.extensions[EXT_MESHOPT_COMPRESSION].buffer];
 			const otherBufferViews = context.otherBufferViews.get(buffer) || [];
 
-			const { count, byteStride, mode } = bufferView.extensions[NAME];
+			const { count, byteStride, mode } = bufferView.extensions[EXT_MESHOPT_COMPRESSION];
 			const srcArray = BufferUtils.concat(bufferViewData);
 			const dstArray = encoder.encodeGltfBuffer(srcArray, count, byteStride, mode);
 			const compressedData = BufferUtils.pad(dstArray);
 
-			bufferView.extensions[NAME].byteLength = dstArray.byteLength;
+			bufferView.extensions[EXT_MESHOPT_COMPRESSION].byteLength = dstArray.byteLength;
 
 			bufferViewData.length = 0;
 			bufferViewData.push(compressedData);
@@ -443,7 +441,9 @@ export class EXTMeshoptCompression extends Extension {
 
 			Object.assign(finalBufferViewDef, bufferView);
 			finalBufferViewDef.byteOffset = fallbackBufferByteOffset;
-			const bufferViewExtensionDef = finalBufferViewDef.extensions![NAME] as MeshoptBufferViewExtension;
+			const bufferViewExtensionDef = finalBufferViewDef.extensions![
+				EXT_MESHOPT_COMPRESSION
+			] as MeshoptBufferViewExtension;
 			bufferViewExtensionDef.byteOffset = compressedByteOffset;
 
 			fallbackBufferByteOffset += BufferUtils.padNumber(bufferView.byteLength);
@@ -454,7 +454,7 @@ export class EXTMeshoptCompression extends Extension {
 		const fallbackBufferIndex = context.bufferIndexMap.get(fallbackBuffer)!;
 		const fallbackBufferDef = context.jsonDoc.json.buffers![fallbackBufferIndex];
 		fallbackBufferDef.byteLength = fallbackBufferByteOffset;
-		fallbackBufferDef.extensions = { [NAME]: { fallback: true } };
+		fallbackBufferDef.extensions = { [EXT_MESHOPT_COMPRESSION]: { fallback: true } };
 		fallbackBuffer.dispose();
 
 		return this;

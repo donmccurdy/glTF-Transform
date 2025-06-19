@@ -16,7 +16,7 @@ import type {
 	TextureInfo,
 } from '../properties/index.js';
 import type { GLTF } from '../types/gltf.js';
-import { ILogger, ImageUtils } from '../utils/index.js';
+import { type ILogger, ImageUtils } from '../utils/index.js';
 import type { WriterOptions } from './writer.js';
 
 type PropertyDef = GLTF.IScene | GLTF.INode | GLTF.IMaterial | GLTF.ISkin | GLTF.ITexture;
@@ -34,45 +34,45 @@ enum BufferViewTarget {
  */
 export class WriterContext {
 	/** Explicit buffer view targets defined by glTF specification. */
-	public static readonly BufferViewTarget = BufferViewTarget;
+	public static readonly BufferViewTarget: typeof BufferViewTarget = BufferViewTarget;
 	/**
 	 * Implicit buffer view usage, not required by glTF specification, but nonetheless useful for
 	 * proper grouping of accessors into buffer views. Additional usages are defined by extensions,
 	 * like `EXT_mesh_gpu_instancing`.
 	 */
-	public static readonly BufferViewUsage = BufferViewUsage;
+	public static readonly BufferViewUsage: typeof BufferViewUsage = BufferViewUsage;
 	/** Maps usage type to buffer view target. Usages not mapped have undefined targets. */
 	public static readonly USAGE_TO_TARGET: { [key: string]: BufferViewTarget | undefined } = {
 		[BufferViewUsage.ARRAY_BUFFER]: BufferViewTarget.ARRAY_BUFFER,
 		[BufferViewUsage.ELEMENT_ARRAY_BUFFER]: BufferViewTarget.ELEMENT_ARRAY_BUFFER,
 	};
 
-	public readonly accessorIndexMap = new Map<Accessor, number>();
-	public readonly animationIndexMap = new Map<Animation, number>();
-	public readonly bufferIndexMap = new Map<Buffer, number>();
-	public readonly cameraIndexMap = new Map<Camera, number>();
-	public readonly skinIndexMap = new Map<Skin, number>();
-	public readonly materialIndexMap = new Map<Material, number>();
-	public readonly meshIndexMap = new Map<Mesh, number>();
-	public readonly nodeIndexMap = new Map<Node, number>();
-	public readonly imageIndexMap = new Map<Texture, number>();
-	public readonly textureDefIndexMap = new Map<string, number>(); // textureDef JSON -> index
-	public readonly textureInfoDefMap = new Map<TextureInfo, GLTF.ITextureInfo>();
-	public readonly samplerDefIndexMap = new Map<string, number>(); // samplerDef JSON -> index
-	public readonly sceneIndexMap = new Map<Scene, number>();
+	public readonly accessorIndexMap: Map<Accessor, number> = new Map();
+	public readonly animationIndexMap: Map<Animation, number> = new Map();
+	public readonly bufferIndexMap: Map<Buffer, number> = new Map();
+	public readonly cameraIndexMap: Map<Camera, number> = new Map();
+	public readonly skinIndexMap: Map<Skin, number> = new Map();
+	public readonly materialIndexMap: Map<Material, number> = new Map();
+	public readonly meshIndexMap: Map<Mesh, number> = new Map();
+	public readonly nodeIndexMap: Map<Node, number> = new Map();
+	public readonly imageIndexMap: Map<Texture, number> = new Map();
+	public readonly textureDefIndexMap: Map<string, number> = new Map(); // textureDef JSON -> index
+	public readonly textureInfoDefMap: Map<TextureInfo, GLTF.ITextureInfo> = new Map();
+	public readonly samplerDefIndexMap: Map<string, number> = new Map(); // samplerDef JSON -> index
+	public readonly sceneIndexMap: Map<Scene, number> = new Map();
 
 	public readonly imageBufferViews: Uint8Array[] = [];
-	public readonly otherBufferViews = new Map<Buffer, Uint8Array[]>();
-	public readonly otherBufferViewsIndexMap = new Map<Uint8Array, number>();
+	public readonly otherBufferViews: Map<Buffer, Uint8Array[]> = new Map();
+	public readonly otherBufferViewsIndexMap: Map<Uint8Array, number> = new Map();
 	public readonly extensionData: { [key: string]: unknown } = {};
 
 	public bufferURIGenerator: UniqueURIGenerator<Buffer>;
 	public imageURIGenerator: UniqueURIGenerator<Texture>;
 	public logger: ILogger;
 
-	private readonly _accessorUsageMap = new Map<Accessor, BufferViewUsage | string>();
-	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
-	public readonly accessorParents = new Map<Accessor, Property>();
+	private readonly _accessorUsageMap: Map<Accessor, BufferViewUsage | string> = new Map();
+	public readonly accessorUsageGroupedByParent: Set<string> = new Set(['ARRAY_BUFFER']);
+	public readonly accessorParents: Map<Accessor, Property> = new Map();
 
 	constructor(
 		private readonly _doc: Document,

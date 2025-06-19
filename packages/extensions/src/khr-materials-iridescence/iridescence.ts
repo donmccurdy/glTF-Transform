@@ -1,7 +1,7 @@
 import {
 	ExtensionProperty,
-	IProperty,
-	Nullable,
+	type IProperty,
+	type Nullable,
 	PropertyType,
 	Texture,
 	TextureChannel,
@@ -26,7 +26,7 @@ const { R, G } = TextureChannel;
  * Defines iridescence (thin film interference) on a PBR {@link Material}. See {@link KHRMaterialsIridescence}.
  */
 export class Iridescence extends ExtensionProperty<IIridescence> {
-	public static EXTENSION_NAME = KHR_MATERIALS_IRIDESCENCE;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_IRIDESCENCE = KHR_MATERIALS_IRIDESCENCE;
 	public declare extensionName: typeof KHR_MATERIALS_IRIDESCENCE;
 	public declare propertyType: 'Iridescence';
 	public declare parentTypes: [PropertyType.MATERIAL];

@@ -3,7 +3,7 @@ import {
 	Format,
 	GLB_BUFFER,
 	PropertyType,
-	TypedArray,
+	type TypedArray,
 	VERSION,
 	VertexLayout,
 } from '../constants.js';

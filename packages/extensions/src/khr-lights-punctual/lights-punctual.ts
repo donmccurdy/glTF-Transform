@@ -1,8 +1,6 @@
-import { Extension, MathUtils, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, MathUtils, ReaderContext, WriterContext, type vec3 } from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 import { Light } from './light.js';
-
-const NAME = KHR_LIGHTS_PUNCTUAL;
 
 interface LightsPunctualRootDef {
 	lights?: LightDef[];
@@ -54,8 +52,8 @@ interface LightDef {
  * ```
  */
 export class KHRLightsPunctual extends Extension {
-	public readonly extensionName = NAME;
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName: typeof KHR_LIGHTS_PUNCTUAL = KHR_LIGHTS_PUNCTUAL;
+	public static readonly EXTENSION_NAME: typeof KHR_LIGHTS_PUNCTUAL = KHR_LIGHTS_PUNCTUAL;
 
 	/** Creates a new punctual Light property for use on a {@link Node}. */
 	public createLight(name = ''): Light {
@@ -66,9 +64,9 @@ export class KHRLightsPunctual extends Extension {
 	public read(context: ReaderContext): this {
 		const jsonDoc = context.jsonDoc;
 
-		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[NAME]) return this;
+		if (!jsonDoc.json.extensions || !jsonDoc.json.extensions[KHR_LIGHTS_PUNCTUAL]) return this;
 
-		const rootDef = jsonDoc.json.extensions[NAME] as LightsPunctualRootDef;
+		const rootDef = jsonDoc.json.extensions[KHR_LIGHTS_PUNCTUAL] as LightsPunctualRootDef;
 		const lightDefs = rootDef.lights || ([] as LightDef[]);
 		const lights = lightDefs.map((lightDef) => {
 			const light = this.createLight()
@@ -90,9 +88,9 @@ export class KHRLightsPunctual extends Extension {
 		});
 
 		jsonDoc.json.nodes!.forEach((nodeDef, nodeIndex) => {
-			if (!nodeDef.extensions || !nodeDef.extensions[NAME]) return;
-			const lightNodeDef = nodeDef.extensions[NAME] as LightsPunctualNodeDef;
-			context.nodes[nodeIndex].setExtension(NAME, lights[lightNodeDef.light]);
+			if (!nodeDef.extensions || !nodeDef.extensions[KHR_LIGHTS_PUNCTUAL]) return;
+			const lightNodeDef = nodeDef.extensions[KHR_LIGHTS_PUNCTUAL] as LightsPunctualNodeDef;
+			context.nodes[nodeIndex].setExtension(KHR_LIGHTS_PUNCTUAL, lights[lightNodeDef.light]);
 		});
 
 		return this;
@@ -132,17 +130,17 @@ export class KHRLightsPunctual extends Extension {
 			.getRoot()
 			.listNodes()
 			.forEach((node) => {
-				const light = node.getExtension<Light>(NAME);
+				const light = node.getExtension<Light>(KHR_LIGHTS_PUNCTUAL);
 				if (light) {
 					const nodeIndex = context.nodeIndexMap.get(node)!;
 					const nodeDef = jsonDoc.json.nodes![nodeIndex];
 					nodeDef.extensions = nodeDef.extensions || {};
-					nodeDef.extensions[NAME] = { light: lightIndexMap.get(light) };
+					nodeDef.extensions[KHR_LIGHTS_PUNCTUAL] = { light: lightIndexMap.get(light) };
 				}
 			});
 
 		jsonDoc.json.extensions = jsonDoc.json.extensions || {};
-		jsonDoc.json.extensions[NAME] = { lights: lightDefs };
+		jsonDoc.json.extensions[KHR_LIGHTS_PUNCTUAL] = { lights: lightDefs };
 
 		return this;
 	}

@@ -25,7 +25,7 @@ export async function validate(input: string, options: ValidateOptions, logger: 
 		.validateBytes(new Uint8Array(buffer), {
 			maxIssues: options.limit,
 			ignoredIssues: options.ignore,
-			externalResourceFunction: (uri: string) => {
+			externalResourceFunction: async (uri: string) => {
 				uri = path.resolve(path.dirname(input), decodeURIComponent(uri));
 				return fs.readFile(uri).catch((err) => {
 					logger.warn(`Unable to validate "${uri}": ${err.toString()}.`);

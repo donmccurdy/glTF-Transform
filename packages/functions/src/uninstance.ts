@@ -1,4 +1,4 @@
-import { Accessor, Document, Node, Transform } from '@gltf-transform/core';
+import { Accessor, Document, Node, type Transform } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, InstancedMesh } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
 

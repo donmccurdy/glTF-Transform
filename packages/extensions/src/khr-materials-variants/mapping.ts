@@ -1,4 +1,4 @@
-import { ExtensionProperty, IProperty, Material, Nullable, RefSet } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, Material, type Nullable, RefSet } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 import type { Variant } from './variant.js';
 
@@ -11,7 +11,7 @@ interface IMapping extends IProperty {
  * Maps {@link Variant}s to {@link Material}s. See {@link KHRMaterialsVariants}.
  */
 export class Mapping extends ExtensionProperty<IMapping> {
-	public static EXTENSION_NAME = KHR_MATERIALS_VARIANTS;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_VARIANTS = KHR_MATERIALS_VARIANTS;
 	public declare extensionName: typeof KHR_MATERIALS_VARIANTS;
 	public declare propertyType: 'Mapping';
 	public declare parentTypes: ['MappingList'];

@@ -3,7 +3,7 @@ import { Accessor as AccessorDef, Node as NodeDef, Skin as SkinDef } from '@gltf
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { Subject } from './Subject.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
-import { ValuePool } from '../pools/index.js';
+import type { ValuePool } from '../pools/index.js';
 
 /**
  * SkinSubject transforms `nodeDef.skin` into a THREE.Skeleton instance. The upstream

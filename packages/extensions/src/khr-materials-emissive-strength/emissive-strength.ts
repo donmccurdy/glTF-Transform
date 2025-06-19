@@ -1,4 +1,4 @@
-import { ExtensionProperty, IProperty, Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants.js';
 
 interface IEmissiveStrength extends IProperty {
@@ -10,7 +10,7 @@ interface IEmissiveStrength extends IProperty {
  * (HDR) emissive materials. See {@link KHRMaterialsEmissiveStrength}.
  */
 export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
-	public static EXTENSION_NAME = KHR_MATERIALS_EMISSIVE_STRENGTH;
+	public static EXTENSION_NAME: typeof KHR_MATERIALS_EMISSIVE_STRENGTH = KHR_MATERIALS_EMISSIVE_STRENGTH;
 	public declare extensionName: typeof KHR_MATERIALS_EMISSIVE_STRENGTH;
 	public declare propertyType: 'EmissiveStrength';
 	public declare parentTypes: [PropertyType.MATERIAL];

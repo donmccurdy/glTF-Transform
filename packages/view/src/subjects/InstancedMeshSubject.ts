@@ -3,7 +3,7 @@ import { Accessor as AccessorDef } from '@gltf-transform/core';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { Subject } from './Subject.js';
 import { RefMapObserver } from '../observers/index.js';
-import { ValuePool } from '../pools/index.js';
+import type { ValuePool } from '../pools/index.js';
 import { InstancedMesh as InstancedMeshDef } from '@gltf-transform/extensions';
 import { DEFAULT_MATERIAL, semanticToAttributeName } from '../utils/index.js';
 

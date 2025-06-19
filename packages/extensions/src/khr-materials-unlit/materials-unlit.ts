@@ -2,8 +2,6 @@ import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-tra
 import { KHR_MATERIALS_UNLIT } from '../constants.js';
 import { Unlit } from './unlit.js';
 
-const NAME = KHR_MATERIALS_UNLIT;
-
 /**
  * [`KHR_materials_unlit`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_materials_unlit/)
  * defines an unlit shading model for use in glTF 2.0 materials.
@@ -41,10 +39,10 @@ const NAME = KHR_MATERIALS_UNLIT;
  * ```
  */
 export class KHRMaterialsUnlit extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_UNLIT = KHR_MATERIALS_UNLIT;
+	public readonly extensionName: typeof KHR_MATERIALS_UNLIT = KHR_MATERIALS_UNLIT;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Unlit property for use on a {@link Material}. */
 	public createUnlit(): Unlit {
@@ -65,8 +63,8 @@ export class KHRMaterialsUnlit extends Extension {
 	public preread(context: ReaderContext): this {
 		const materialDefs = context.jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
-				context.materials[materialIndex].setExtension(NAME, this.createUnlit());
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_UNLIT]) {
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_UNLIT, this.createUnlit());
 			}
 		});
 
@@ -81,11 +79,11 @@ export class KHRMaterialsUnlit extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				if (material.getExtension<Unlit>(NAME)) {
+				if (material.getExtension<Unlit>(KHR_MATERIALS_UNLIT)) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
 					materialDef.extensions = materialDef.extensions || {};
-					materialDef.extensions[NAME] = {};
+					materialDef.extensions[KHR_MATERIALS_UNLIT] = {};
 				}
 			});
 

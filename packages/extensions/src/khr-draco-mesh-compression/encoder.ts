@@ -1,4 +1,4 @@
-import { Accessor, bbox, GLTF, Primitive, TypedArray } from '@gltf-transform/core';
+import { Accessor, type bbox, type GLTF, Primitive, type TypedArray } from '@gltf-transform/core';
 import type { EncoderModule, Mesh, MeshBuilder } from 'draco3dgltf';
 
 export let encoderModule: EncoderModule;

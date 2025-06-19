@@ -1,8 +1,6 @@
-import { Extension, GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
+import { Extension, type GLTF, PropertyType, ReaderContext, WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_ANISOTROPY } from '../constants.js';
 import { Anisotropy } from './anisotropy.js';
-
-const NAME = KHR_MATERIALS_ANISOTROPY;
 
 interface AnisotropyDef {
 	anisotropyStrength: number;
@@ -52,10 +50,10 @@ interface AnisotropyDef {
  * ```
  */
 export class KHRMaterialsAnisotropy extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_ANISOTROPY = KHR_MATERIALS_ANISOTROPY;
+	public readonly extensionName: typeof KHR_MATERIALS_ANISOTROPY = KHR_MATERIALS_ANISOTROPY;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Anisotropy property for use on a {@link Material}. */
 	public createAnisotropy(): Anisotropy {
@@ -78,11 +76,11 @@ export class KHRMaterialsAnisotropy extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_ANISOTROPY]) {
 				const anisotropy = this.createAnisotropy();
-				context.materials[materialIndex].setExtension(NAME, anisotropy);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_ANISOTROPY, anisotropy);
 
-				const anisotropyDef = materialDef.extensions[NAME] as AnisotropyDef;
+				const anisotropyDef = materialDef.extensions[KHR_MATERIALS_ANISOTROPY] as AnisotropyDef;
 
 				// Factors.
 
@@ -115,7 +113,7 @@ export class KHRMaterialsAnisotropy extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const anisotropy = material.getExtension<Anisotropy>(NAME);
+				const anisotropy = material.getExtension<Anisotropy>(KHR_MATERIALS_ANISOTROPY);
 				if (anisotropy) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -123,7 +121,7 @@ export class KHRMaterialsAnisotropy extends Extension {
 
 					// Factors.
 
-					const anisotropyDef = (materialDef.extensions[NAME] = {} as AnisotropyDef);
+					const anisotropyDef = (materialDef.extensions[KHR_MATERIALS_ANISOTROPY] = {} as AnisotropyDef);
 
 					if (anisotropy.getAnisotropyStrength() > 0) {
 						anisotropyDef.anisotropyStrength = anisotropy.getAnisotropyStrength();

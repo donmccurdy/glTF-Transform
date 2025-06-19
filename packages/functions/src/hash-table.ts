@@ -2,7 +2,7 @@ import { Accessor, BufferUtils, Primitive } from '@gltf-transform/core';
 import { deepListAttributes } from './utils.js';
 
 /** Flags 'empty' values in a Uint32Array index. */
-export const EMPTY_U32 = 2 ** 32 - 1;
+export const EMPTY_U32: number = 2 ** 32 - 1;
 
 export class VertexStream {
 	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
@@ -88,7 +88,7 @@ export function hashLookup(
 	buckets: number,
 	stream: VertexStream,
 	key: number,
-	empty = EMPTY_U32,
+	empty: number = EMPTY_U32,
 ): number {
 	const hashmod = buckets - 1;
 	const hashval = stream.hash(key);

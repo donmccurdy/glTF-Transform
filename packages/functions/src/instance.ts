@@ -1,4 +1,14 @@
-import { Document, ILogger, MathUtils, Mesh, Node, Primitive, Transform, vec3, vec4 } from '@gltf-transform/core';
+import {
+	Document,
+	type ILogger,
+	MathUtils,
+	Mesh,
+	Node,
+	Primitive,
+	type Transform,
+	type vec3,
+	type vec4,
+} from '@gltf-transform/core';
 import { InstancedMesh, EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { assignDefaults, createTransform } from './utils.js';
 

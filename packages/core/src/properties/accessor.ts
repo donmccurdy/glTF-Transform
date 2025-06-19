@@ -1,8 +1,8 @@
-import { Nullable, PropertyType, TypedArray } from '../constants.js';
+import { type Nullable, PropertyType, type TypedArray } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
 import { MathUtils } from '../utils/index.js';
 import type { Buffer } from './buffer.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 
 interface IAccessor extends IExtensibleProperty {
 	array: TypedArray | null;

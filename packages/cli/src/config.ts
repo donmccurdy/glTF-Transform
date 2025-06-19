@@ -47,7 +47,7 @@ export function createDefaultConfig(): Promise<Config> {
 	});
 }
 
-export function loadConfig(path: string) {
+export function loadConfig(path: string): void {
 	path = resolve(process.cwd(), path);
 	path = `file:${path}`; // Required on Windows.
 	customConfigPromise = import(path).then(validateConfig) as Promise<ConfigModule>;

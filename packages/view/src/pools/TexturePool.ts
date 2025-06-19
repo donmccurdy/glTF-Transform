@@ -1,20 +1,20 @@
-import { TextureInfo, vec2 } from '@gltf-transform/core';
+import { TextureInfo, type vec2 } from '@gltf-transform/core';
 import {
 	ClampToEdgeWrapping,
-	ColorSpace,
+	type ColorSpace,
 	LinearFilter,
 	LinearMipmapLinearFilter,
 	LinearMipmapNearestFilter,
-	MagnificationTextureFilter,
-	MinificationTextureFilter,
+	type MagnificationTextureFilter,
+	type MinificationTextureFilter,
 	MirroredRepeatWrapping,
 	NearestFilter,
 	NearestMipmapLinearFilter,
 	NearestMipmapNearestFilter,
 	RepeatWrapping,
 	Texture,
-	TextureFilter,
-	Wrapping,
+	type TextureFilter,
+	type Wrapping,
 } from 'three';
 import type { Transform } from '@gltf-transform/extensions';
 import { Pool } from './Pool.js';

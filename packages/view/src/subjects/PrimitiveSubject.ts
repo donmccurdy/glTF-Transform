@@ -13,8 +13,8 @@ import { Accessor as AccessorDef, Material as MaterialDef, Primitive as Primitiv
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { Subject } from './Subject.js';
 import { RefMapObserver, RefObserver } from '../observers/index.js';
-import { MeshLike } from '../constants.js';
-import { MaterialParams, MaterialPool, ValuePool } from '../pools/index.js';
+import { type MeshLike } from '../constants.js';
+import { type MaterialParams, MaterialPool, type ValuePool } from '../pools/index.js';
 import { DEFAULT_MATERIAL, semanticToAttributeName } from '../utils/index.js';
 
 /** @internal */

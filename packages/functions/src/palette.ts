@@ -6,12 +6,12 @@ import {
 	PropertyType,
 	Texture,
 	TextureInfo,
-	Transform,
-	vec4,
+	type Transform,
+	type vec4,
 } from '@gltf-transform/core';
 import { assignDefaults, createTransform } from './utils.js';
 import { prune } from './prune.js';
-import ndarray, { NdArray, TypedArray } from 'ndarray';
+import ndarray, { type NdArray, type TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
 
 const NAME = 'palette';

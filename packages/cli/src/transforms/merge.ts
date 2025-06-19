@@ -4,7 +4,7 @@ import {
 	FileUtils,
 	ImageUtils,
 	NodeIO,
-	Transform,
+	type Transform,
 	Texture,
 	Buffer,
 	PropertyType,

@@ -1,8 +1,8 @@
 import { Property as PropertyDef } from '@gltf-transform/core';
-import { Output } from '../observers/index.js';
+import type { Output } from '../observers/index.js';
 import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { Subscription, THREEObject } from '../constants.js';
-import { EmptyParams, ValuePool } from '../pools/index.js';
+import type { EmptyParams, ValuePool } from '../pools/index.js';
 
 /**
  * Implementation of BehaviorSubject pattern, emitting three.js objects when changes

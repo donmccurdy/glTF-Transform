@@ -1,4 +1,4 @@
-import { Document, Primitive, PropertyType, Transform } from '@gltf-transform/core';
+import { Document, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
 import { dedup } from './dedup.js';
 import { prune } from './prune.js';
 import { EMPTY_U32, VertexStream, hashLookup } from './hash-table.js';

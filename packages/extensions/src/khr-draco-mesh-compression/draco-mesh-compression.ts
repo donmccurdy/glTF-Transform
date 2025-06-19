@@ -1,6 +1,6 @@
 import {
 	Accessor,
-	bbox,
+	type bbox,
 	getBounds,
 	BufferUtils,
 	Document,
@@ -13,17 +13,15 @@ import {
 } from '@gltf-transform/core';
 import { decodeAttribute, decodeGeometry, decodeIndex, initDecoderModule } from './decoder.js';
 import {
-	EncodedPrimitive,
+	type EncodedPrimitive,
 	encodeGeometry,
 	EncoderMethod,
-	EncoderOptions,
+	type EncoderOptions,
 	EncodingError,
 	initEncoderModule,
 } from './encoder.js';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';
 import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
-
-const NAME = KHR_DRACO_MESH_COMPRESSION;
 
 interface DracoPrimitiveExtension {
 	bufferView: number;
@@ -140,23 +138,23 @@ interface DracoWriterContext {
  * I/O class.
  */
 export class KHRDracoMeshCompression extends Extension {
-	public readonly extensionName = NAME;
+	public readonly extensionName: typeof KHR_DRACO_MESH_COMPRESSION = KHR_DRACO_MESH_COMPRESSION;
 	/** @hidden */
-	public readonly prereadTypes = [PropertyType.PRIMITIVE];
+	public readonly prereadTypes: PropertyType[] = [PropertyType.PRIMITIVE];
 	/** @hidden */
-	public readonly prewriteTypes = [PropertyType.ACCESSOR];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.ACCESSOR];
 	/** @hidden */
-	public readonly readDependencies = ['draco3d.decoder'];
+	public readonly readDependencies: string[] = ['draco3d.decoder'];
 	/** @hidden */
-	public readonly writeDependencies = ['draco3d.encoder'];
+	public readonly writeDependencies: string[] = ['draco3d.encoder'];
 
-	public static readonly EXTENSION_NAME = NAME;
+	public static readonly EXTENSION_NAME: typeof KHR_DRACO_MESH_COMPRESSION = KHR_DRACO_MESH_COMPRESSION;
 
 	/**
 	 * Compression method. `EncoderMethod.EDGEBREAKER` usually provides a higher compression ratio,
 	 * while `EncoderMethod.SEQUENTIAL` better preserves original vertex order.
 	 */
-	public static readonly EncoderMethod = EncoderMethod;
+	public static readonly EncoderMethod: typeof EncoderMethod = EncoderMethod;
 
 	private _decoderModule: DecoderModule | null = null;
 	private _encoderModule: EncoderModule | null = null;
@@ -196,7 +194,7 @@ export class KHRDracoMeshCompression extends Extension {
 	/** @hidden */
 	public preread(context: ReaderContext): this {
 		if (!this._decoderModule) {
-			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.decoder".`);
+			throw new Error(`[${KHR_DRACO_MESH_COMPRESSION}] Please install extension dependency, "draco3d.decoder".`);
 		}
 
 		const logger = this.document.getLogger();
@@ -207,9 +205,9 @@ export class KHRDracoMeshCompression extends Extension {
 			const meshDefs = jsonDoc.json.meshes || [];
 			for (const meshDef of meshDefs) {
 				for (const primDef of meshDef.primitives) {
-					if (!primDef.extensions || !primDef.extensions[NAME]) continue;
+					if (!primDef.extensions || !primDef.extensions[KHR_DRACO_MESH_COMPRESSION]) continue;
 
-					const dracoDef = primDef.extensions[NAME] as DracoPrimitiveExtension;
+					const dracoDef = primDef.extensions[KHR_DRACO_MESH_COMPRESSION] as DracoPrimitiveExtension;
 					let [decoder, dracoMesh] = dracoMeshes.get(dracoDef.bufferView) || [];
 
 					if (!dracoMesh || !decoder) {
@@ -227,7 +225,9 @@ export class KHRDracoMeshCompression extends Extension {
 						decoder = new this._decoderModule.Decoder();
 						dracoMesh = decodeGeometry(decoder, compressedData);
 						dracoMeshes.set(dracoDef.bufferView, [decoder, dracoMesh]);
-						logger.debug(`[${NAME}] Decompressed ${compressedData.byteLength} bytes.`);
+						logger.debug(
+							`[${KHR_DRACO_MESH_COMPRESSION}] Decompressed ${compressedData.byteLength} bytes.`,
+						);
 					}
 
 					// Attributes.
@@ -262,11 +262,11 @@ export class KHRDracoMeshCompression extends Extension {
 	/** @hidden */
 	public prewrite(context: WriterContext, _propertyType: PropertyType): this {
 		if (!this._encoderModule) {
-			throw new Error(`[${NAME}] Please install extension dependency, "draco3d.encoder".`);
+			throw new Error(`[${KHR_DRACO_MESH_COMPRESSION}] Please install extension dependency, "draco3d.encoder".`);
 		}
 
 		const logger = this.document.getLogger();
-		logger.debug(`[${NAME}] Compression options: ${JSON.stringify(this._encoderOptions)}`);
+		logger.debug(`[${KHR_DRACO_MESH_COMPRESSION}] Compression options: ${JSON.stringify(this._encoderOptions)}`);
 
 		const primitiveHashMap = listDracoPrimitives(this.document);
 		const primitiveEncodingMap = new Map<string, EncodedPrimitive>();
@@ -274,7 +274,7 @@ export class KHRDracoMeshCompression extends Extension {
 		let quantizationVolume: bbox | 'mesh' = 'mesh';
 		if (this._encoderOptions.quantizationVolume === 'scene') {
 			if (this.document.getRoot().listScenes().length !== 1) {
-				logger.warn(`[${NAME}]: quantizationVolume=scene requires exactly 1 scene.`);
+				logger.warn(`[${KHR_DRACO_MESH_COMPRESSION}]: quantizationVolume=scene requires exactly 1 scene.`);
 			} else {
 				quantizationVolume = getBounds(this.document.getRoot().listScenes().pop()!);
 			}
@@ -299,7 +299,7 @@ export class KHRDracoMeshCompression extends Extension {
 				encodedPrim = encodeGeometry(prim, { ...this._encoderOptions, quantizationVolume });
 			} catch (e) {
 				if (e instanceof EncodingError) {
-					logger.warn(`[${NAME}]: ${e.message} Skipping primitive compression.`);
+					logger.warn(`[${KHR_DRACO_MESH_COMPRESSION}]: ${e.message} Skipping primitive compression.`);
 					continue;
 				}
 				throw e;
@@ -338,9 +338,9 @@ export class KHRDracoMeshCompression extends Extension {
 			context.otherBufferViews.get(buffer)!.push(encodedPrim.data);
 		}
 
-		logger.debug(`[${NAME}] Compressed ${primitiveHashMap.size} primitives.`);
+		logger.debug(`[${KHR_DRACO_MESH_COMPRESSION}] Compressed ${primitiveHashMap.size} primitives.`);
 
-		context.extensionData[NAME] = {
+		context.extensionData[KHR_DRACO_MESH_COMPRESSION] = {
 			primitiveHashMap,
 			primitiveEncodingMap,
 		} as DracoWriterContext;
@@ -350,7 +350,9 @@ export class KHRDracoMeshCompression extends Extension {
 
 	/** @hidden */
 	public write(context: WriterContext): this {
-		const dracoContext: DracoWriterContext = context.extensionData[NAME] as DracoWriterContext;
+		const dracoContext: DracoWriterContext = context.extensionData[
+			KHR_DRACO_MESH_COMPRESSION
+		] as DracoWriterContext;
 
 		for (const mesh of this.document.getRoot().listMeshes()) {
 			const meshDef = context.jsonDoc.json.meshes![context.meshIndexMap.get(mesh)!];
@@ -365,7 +367,7 @@ export class KHRDracoMeshCompression extends Extension {
 				if (!encodedPrim) continue;
 
 				primDef.extensions = primDef.extensions || {};
-				primDef.extensions[NAME] = {
+				primDef.extensions[KHR_DRACO_MESH_COMPRESSION] = {
 					bufferView: context.otherBufferViewsIndexMap.get(encodedPrim.data),
 					attributes: encodedPrim.attributeIDs,
 				};
@@ -375,8 +377,10 @@ export class KHRDracoMeshCompression extends Extension {
 		// Omit the extension if nothing was compressed.
 		if (!dracoContext.primitiveHashMap.size) {
 			const json = context.jsonDoc.json;
-			json.extensionsUsed = (json.extensionsUsed || []).filter((name) => name !== NAME);
-			json.extensionsRequired = (json.extensionsRequired || []).filter((name) => name !== NAME);
+			json.extensionsUsed = (json.extensionsUsed || []).filter((name) => name !== KHR_DRACO_MESH_COMPRESSION);
+			json.extensionsRequired = (json.extensionsRequired || []).filter(
+				(name) => name !== KHR_DRACO_MESH_COMPRESSION,
+			);
 		}
 
 		return this;
@@ -411,10 +415,14 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	}
 
 	if (nonIndexed > 0) {
-		logger.warn(`[${NAME}] Skipping Draco compression of ${nonIndexed} non-indexed primitives.`);
+		logger.warn(
+			`[${KHR_DRACO_MESH_COMPRESSION}] Skipping Draco compression of ${nonIndexed} non-indexed primitives.`,
+		);
 	}
 	if (nonTriangles > 0) {
-		logger.warn(`[${NAME}] Skipping Draco compression of ${nonTriangles} non-TRIANGLES primitives.`);
+		logger.warn(
+			`[${KHR_DRACO_MESH_COMPRESSION}] Skipping Draco compression of ${nonTriangles} non-TRIANGLES primitives.`,
+		);
 	}
 
 	// Create an Accessor->index mapping.
@@ -470,7 +478,9 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	for (const accessor of Array.from(includedAccessors.keys())) {
 		const parentTypes = new Set(accessor.listParents().map((prop) => prop.propertyType));
 		if (parentTypes.size !== 2 || !parentTypes.has(PropertyType.PRIMITIVE) || !parentTypes.has(PropertyType.ROOT)) {
-			throw new Error(`[${NAME}] Compressed accessors must only be used as indices or vertex attributes.`);
+			throw new Error(
+				`[${KHR_DRACO_MESH_COMPRESSION}] Compressed accessors must only be used as indices or vertex attributes.`,
+			);
 		}
 	}
 
@@ -482,7 +492,7 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 			includedAccessors.get(indices) !== hashKey ||
 			prim.listAttributes().some((attr) => includedAccessors.get(attr) !== hashKey)
 		) {
-			throw new Error(`[${NAME}] Draco primitives must share all, or no, accessors.`);
+			throw new Error(`[${KHR_DRACO_MESH_COMPRESSION}] Draco primitives must share all, or no, accessors.`);
 		}
 	}
 
@@ -490,7 +500,9 @@ function listDracoPrimitives(doc: Document): Map<Primitive, string> {
 	for (const prim of Array.from(excluded)) {
 		const indices = prim.getIndices()!; // Condition for 'included' list.
 		if (includedAccessors.has(indices) || prim.listAttributes().some((attr) => includedAccessors.has(attr))) {
-			throw new Error(`[${NAME}] Accessor cannot be shared by compressed and uncompressed primitives.`);
+			throw new Error(
+				`[${KHR_DRACO_MESH_COMPRESSION}] Accessor cannot be shared by compressed and uncompressed primitives.`,
+			);
 		}
 	}
 

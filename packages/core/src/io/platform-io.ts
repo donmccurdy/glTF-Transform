@@ -3,9 +3,9 @@ import type { Document } from '../document.js';
 import type { Extension } from '../extension.js';
 import type { JSONDocument } from '../json-document.js';
 import type { GLTF } from '../types/gltf.js';
-import { BufferUtils, FileUtils, ILogger, Logger, uuid } from '../utils/index.js';
+import { BufferUtils, FileUtils, type ILogger, Logger, uuid } from '../utils/index.js';
 import { GLTFReader } from './reader.js';
-import { GLTFWriter, WriterOptions } from './writer.js';
+import { GLTFWriter, type WriterOptions } from './writer.js';
 
 enum ChunkType {
 	JSON = 0x4e4f534a,

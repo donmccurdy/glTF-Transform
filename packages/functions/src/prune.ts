@@ -4,7 +4,7 @@ import {
 	Document,
 	ExtensionProperty,
 	Graph,
-	ILogger,
+	type ILogger,
 	Material,
 	Node,
 	Primitive,
@@ -15,13 +15,13 @@ import {
 	Scene,
 	Texture,
 	TextureInfo,
-	Transform,
-	vec3,
-	vec4,
+	type Transform,
+	type vec3,
+	type vec4,
 } from '@gltf-transform/core';
 import { mul as mulVec3 } from 'gl-matrix/vec3';
 import { add, create, len, mul, scale, sub } from 'gl-matrix/vec4';
-import { NdArray } from 'ndarray';
+import { type NdArray } from 'ndarray';
 import { getPixels } from 'ndarray-pixels';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { listTextureInfoByMaterial } from './list-texture-info.js';

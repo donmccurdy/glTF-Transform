@@ -5,12 +5,12 @@ import {
 	Graph,
 	GraphNode,
 	GraphEdge,
-	LiteralKeys,
+	type LiteralKeys,
 	RefList,
 	RefSet,
 	RefMap,
-	Ref,
-	Literal,
+	type Ref,
+	type Literal,
 } from 'property-graph';
 import {
 	equalsArray,
@@ -244,7 +244,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * materials with equivalent content — but not necessarily the same specific accessors
 	 * and materials.
 	 */
-	public equals(other: this, skip = EMPTY_SET): boolean {
+	public equals(other: this, skip: Set<string> = EMPTY_SET): boolean {
 		if (this === other) return true;
 		if (this.propertyType !== other.propertyType) return false;
 

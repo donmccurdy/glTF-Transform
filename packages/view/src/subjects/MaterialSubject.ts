@@ -8,14 +8,14 @@ import {
 	Texture,
 	SRGBColorSpace,
 	NoColorSpace,
-	ColorSpace,
+	type ColorSpace,
 } from 'three';
 import {
 	ExtensionProperty as ExtensionPropertyDef,
 	Material as MaterialDef,
 	Texture as TextureDef,
 	TextureInfo as TextureInfoDef,
-	vec3,
+	type vec3,
 } from '@gltf-transform/core';
 import {
 	Anisotropy,
@@ -32,8 +32,8 @@ import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import { eq } from '../utils/index.js';
 import { Subject } from './Subject.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
-import { Subscription } from '../constants.js';
-import { TextureParams, TexturePool, ValuePool } from '../pools/index.js';
+import type { Subscription } from '../constants.js';
+import { type TextureParams, TexturePool, type ValuePool } from '../pools/index.js';
 
 const _vec3: vec3 = [0, 0, 0];
 

@@ -1,11 +1,11 @@
 import {
 	program as _program,
 	Command,
-	ParsedOption,
-	Validator as CaporalValidator,
-	Logger as WinstonLogger,
+	type ParsedOption,
+	type Validator as CaporalValidator,
+	type Logger as WinstonLogger,
 } from '@donmccurdy/caporal';
-import { ILogger, Verbosity } from '@gltf-transform/core';
+import { type ILogger, Verbosity } from '@gltf-transform/core';
 
 const PAD_EMOJI = new Set(['🫖', '🖼', '⏯']);
 
@@ -49,19 +49,19 @@ export interface IHelpOptions {
 }
 
 class ProgramImpl implements IInternalProgram {
-	version(version: string) {
+	version(version: string): this {
 		_program.version(version);
 		return this;
 	}
-	description(desc: string) {
+	description(desc: string): this {
 		_program.description(desc);
 		return this;
 	}
-	help(help: string, options?: IHelpOptions) {
+	help(help: string, options?: IHelpOptions): this {
 		_program.help(help, options);
 		return this;
 	}
-	section(_name: string, _icon: string) {
+	section(_name: string, _icon: string): this {
 		const icon = _icon + (PAD_EMOJI.has(_icon) ? ' ' : '');
 		const name = _name.toUpperCase();
 		const line = ''.padEnd(50 - name.length - 1, '─');
@@ -71,20 +71,20 @@ class ProgramImpl implements IInternalProgram {
 	command(name: string, desc: string): ICommand {
 		return new CommandImpl(_program, name, desc);
 	}
-	option<T>(name: string, desc: string, options: IProgramOptions<T>) {
+	option<T>(name: string, desc: string, options: IProgramOptions<T>): this {
 		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		_program.option(name, desc, { global: true, ...options } as any);
 		return this;
 	}
-	disableGlobalOption(name: string) {
+	disableGlobalOption(name: string): this {
 		_program.disableGlobalOption(name);
 		return this;
 	}
-	run() {
+	run(): this {
 		_program.run();
 		return this;
 	}
-	async exec(args: unknown[], options?: IExecOptions) {
+	async exec(args: unknown[], options?: IExecOptions): Promise<void> {
 		// biome-ignore lint/suspicious/noExplicitAny: TODO
 		await _program.exec(args as any, options as any);
 	}
@@ -141,7 +141,7 @@ class CommandImpl implements ICommand {
 	}
 }
 
-export const program = new ProgramImpl();
+export const program: ProgramImpl = new ProgramImpl();
 
 /**********************************************************************************************
  * Validator.
@@ -179,10 +179,10 @@ export class Logger implements ILogger {
 				this._verbosity = Verbosity.DEBUG;
 		}
 	}
-	getVerbosity() {
+	getVerbosity(): Verbosity {
 		return this._verbosity;
 	}
-	setVerbosity(verbosity: Verbosity) {
+	setVerbosity(verbosity: Verbosity): void {
 		switch (verbosity) {
 			case Verbosity.INFO:
 				this._logger.level = 'info';
@@ -201,16 +201,16 @@ export class Logger implements ILogger {
 		}
 		this._verbosity = verbosity;
 	}
-	debug(msg: string) {
+	debug(msg: string): void {
 		this._logger.debug(msg);
 	}
-	info(msg: string) {
+	info(msg: string): void {
 		this._logger.info(msg);
 	}
-	warn(msg: string) {
+	warn(msg: string): void {
 		this._logger.warn(msg);
 	}
-	error(msg: string) {
+	error(msg: string): void {
 		this._logger.error(msg);
 	}
 }

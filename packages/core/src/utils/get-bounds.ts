@@ -1,5 +1,5 @@
 import { transformMat4 } from 'gl-matrix/vec3';
-import { PropertyType, bbox, mat4, vec3 } from '../constants.js';
+import { PropertyType, type bbox, type mat4, type vec3 } from '../constants.js';
 import type { Mesh, Node, Scene } from '../properties/index.js';
 
 /** @hidden Implemented in /core for use by /extensions, publicly exported from /functions. */

@@ -1,6 +1,6 @@
-import { Nullable, PropertyType, TextureChannel, vec3, vec4 } from '../constants.js';
+import { type Nullable, PropertyType, TextureChannel, type vec3, type vec4 } from '../constants.js';
 import type { GLTF } from '../types/gltf.js';
-import { ExtensibleProperty, IExtensibleProperty } from './extensible-property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 import type { Texture } from './texture.js';
 import { TextureInfo } from './texture-info.js';
 

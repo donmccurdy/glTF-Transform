@@ -10,8 +10,8 @@ import {
 	Texture as TextureDef,
 } from '@gltf-transform/core';
 import { Light as LightDef } from '@gltf-transform/extensions';
-import { DocumentViewConfig, DocumentViewImpl } from './DocumentViewImpl.js';
-import { LightLike, MeshLike } from './constants.js';
+import { type DocumentViewConfig, DocumentViewImpl } from './DocumentViewImpl.js';
+import { type LightLike, type MeshLike } from './constants.js';
 
 /**
  * Constructs a three.js subtree from a glTF-Transform Document, and maintains a

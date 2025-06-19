@@ -5,7 +5,7 @@ declare const PACKAGE_VERSION: string;
  * Current version of the package.
  * @hidden
  */
-export const VERSION = `v${PACKAGE_VERSION}`;
+export const VERSION: string = `v${PACKAGE_VERSION}`;
 
 /** @internal */
 export const NAME = '@gltf-transform/core';
@@ -152,7 +152,7 @@ export enum Format {
 	GLB = 'GLB',
 }
 
-export const ComponentTypeToTypedArray = {
+export const ComponentTypeToTypedArray: Record<string, TypedArrayConstructor> = {
 	'5120': Int8Array,
 	'5121': Uint8Array,
 	'5122': Int16Array,

@@ -1,8 +1,6 @@
-import { Extension, GLTF, ReaderContext, WriterContext, vec3 } from '@gltf-transform/core';
+import { Extension, type GLTF, ReaderContext, WriterContext, type vec3 } from '@gltf-transform/core';
 import { KHR_MATERIALS_DIFFUSE_TRANSMISSION } from '../constants.js';
 import { DiffuseTransmission } from './diffuse-transmission.js';
-
-const NAME = KHR_MATERIALS_DIFFUSE_TRANSMISSION;
 
 interface DiffuseTransmissionDef {
 	diffuseTransmissionFactor?: number;
@@ -49,8 +47,9 @@ interface DiffuseTransmissionDef {
  * @experimental KHR_materials_diffuse_transmission is not yet ratified by the Khronos Group.
  */
 export class KHRMaterialsDiffuseTransmission extends Extension {
-	public readonly extensionName = NAME;
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName: typeof KHR_MATERIALS_DIFFUSE_TRANSMISSION = KHR_MATERIALS_DIFFUSE_TRANSMISSION;
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_DIFFUSE_TRANSMISSION =
+		KHR_MATERIALS_DIFFUSE_TRANSMISSION;
 
 	/** Creates a new DiffuseTransmission property for use on a {@link Material}. */
 	public createDiffuseTransmission(): DiffuseTransmission {
@@ -63,11 +62,13 @@ export class KHRMaterialsDiffuseTransmission extends Extension {
 		const materialDefs = jsonDoc.json.materials || [];
 		const textureDefs = jsonDoc.json.textures || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_DIFFUSE_TRANSMISSION]) {
 				const transmission = this.createDiffuseTransmission();
-				context.materials[materialIndex].setExtension(NAME, transmission);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_DIFFUSE_TRANSMISSION, transmission);
 
-				const transmissionDef = materialDef.extensions[NAME] as DiffuseTransmissionDef;
+				const transmissionDef = materialDef.extensions[
+					KHR_MATERIALS_DIFFUSE_TRANSMISSION
+				] as DiffuseTransmissionDef;
 
 				// Factors.
 
@@ -105,7 +106,7 @@ export class KHRMaterialsDiffuseTransmission extends Extension {
 		const jsonDoc = context.jsonDoc;
 
 		for (const material of this.document.getRoot().listMaterials()) {
-			const transmission = material.getExtension<DiffuseTransmission>(NAME);
+			const transmission = material.getExtension<DiffuseTransmission>(KHR_MATERIALS_DIFFUSE_TRANSMISSION);
 			if (!transmission) continue;
 
 			const materialIndex = context.materialIndexMap.get(material)!;
@@ -114,7 +115,7 @@ export class KHRMaterialsDiffuseTransmission extends Extension {
 
 			// Factors.
 
-			const transmissionDef = (materialDef.extensions[NAME] = {
+			const transmissionDef = (materialDef.extensions[KHR_MATERIALS_DIFFUSE_TRANSMISSION] = {
 				diffuseTransmissionFactor: transmission.getDiffuseTransmissionFactor(),
 				diffuseTransmissionColorFactor: transmission.getDiffuseTransmissionColorFactor(),
 			} as DiffuseTransmissionDef);

@@ -11,7 +11,7 @@ export function eq(a: number[], b: number[]): boolean {
 }
 
 // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#default-material
-export const DEFAULT_MATERIAL = new MeshStandardMaterial({
+export const DEFAULT_MATERIAL: MeshStandardMaterial = new MeshStandardMaterial({
 	name: '__DefaultMaterial',
 	color: 0xffffff,
 	roughness: 1.0,

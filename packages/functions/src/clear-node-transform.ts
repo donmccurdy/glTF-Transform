@@ -1,4 +1,4 @@
-import { mat4, MathUtils, Node } from '@gltf-transform/core';
+import { type mat4, MathUtils, Node } from '@gltf-transform/core';
 import { multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { transformMesh } from './transform-mesh.js';
 

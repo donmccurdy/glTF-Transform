@@ -2,8 +2,6 @@ import { Extension, PropertyType, ReaderContext, WriterContext } from '@gltf-tra
 import { KHR_MATERIALS_DISPERSION } from '../constants.js';
 import { Dispersion } from './dispersion.js';
 
-const NAME = KHR_MATERIALS_DISPERSION;
-
 interface DispersionDef {
 	dispersion?: number;
 }
@@ -40,10 +38,10 @@ interface DispersionDef {
  * ```
  */
 export class KHRMaterialsDispersion extends Extension {
-	public static readonly EXTENSION_NAME = NAME;
-	public readonly extensionName = NAME;
-	public readonly prereadTypes = [PropertyType.MESH];
-	public readonly prewriteTypes = [PropertyType.MESH];
+	public static readonly EXTENSION_NAME: typeof KHR_MATERIALS_DISPERSION = KHR_MATERIALS_DISPERSION;
+	public readonly extensionName: typeof KHR_MATERIALS_DISPERSION = KHR_MATERIALS_DISPERSION;
+	public readonly prereadTypes: PropertyType[] = [PropertyType.MESH];
+	public readonly prewriteTypes: PropertyType[] = [PropertyType.MESH];
 
 	/** Creates a new Dispersion property for use on a {@link Material}. */
 	public createDispersion(): Dispersion {
@@ -65,11 +63,11 @@ export class KHRMaterialsDispersion extends Extension {
 		const jsonDoc = context.jsonDoc;
 		const materialDefs = jsonDoc.json.materials || [];
 		materialDefs.forEach((materialDef, materialIndex) => {
-			if (materialDef.extensions && materialDef.extensions[NAME]) {
+			if (materialDef.extensions && materialDef.extensions[KHR_MATERIALS_DISPERSION]) {
 				const dispersion = this.createDispersion();
-				context.materials[materialIndex].setExtension(NAME, dispersion);
+				context.materials[materialIndex].setExtension(KHR_MATERIALS_DISPERSION, dispersion);
 
-				const dispersionDef = materialDef.extensions[NAME] as DispersionDef;
+				const dispersionDef = materialDef.extensions[KHR_MATERIALS_DISPERSION] as DispersionDef;
 
 				// Factors.
 
@@ -90,7 +88,7 @@ export class KHRMaterialsDispersion extends Extension {
 			.getRoot()
 			.listMaterials()
 			.forEach((material) => {
-				const dispersion = material.getExtension<Dispersion>(NAME);
+				const dispersion = material.getExtension<Dispersion>(KHR_MATERIALS_DISPERSION);
 				if (dispersion) {
 					const materialIndex = context.materialIndexMap.get(material)!;
 					const materialDef = jsonDoc.json.materials![materialIndex];
@@ -98,7 +96,7 @@ export class KHRMaterialsDispersion extends Extension {
 
 					// Factors.
 
-					materialDef.extensions[NAME] = {
+					materialDef.extensions[KHR_MATERIALS_DISPERSION] = {
 						dispersion: dispersion.getDispersion(),
 					};
 				}

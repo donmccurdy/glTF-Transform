@@ -30,10 +30,10 @@ export interface ILogger {
  */
 export class Logger implements ILogger {
 	/** Logger verbosity thresholds. */
-	static Verbosity = Verbosity;
+	static Verbosity: typeof Verbosity = Verbosity;
 
 	/** Default logger instance. */
-	public static DEFAULT_INSTANCE = new Logger(Logger.Verbosity.INFO);
+	public static DEFAULT_INSTANCE: Logger = new Logger(Logger.Verbosity.INFO);
 
 	/** Constructs a new Logger instance. */
 	constructor(private readonly verbosity: number) {}

@@ -1,7 +1,7 @@
-import { Document, NodeIO, FileUtils, Transform, Format, Verbosity } from '@gltf-transform/core';
+import { Document, NodeIO, FileUtils, type Transform, Format, Verbosity } from '@gltf-transform/core';
 import type { Packet, KHRXMP } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
-import { Listr, ListrTask } from 'listr2';
+import { Listr, type ListrTask } from 'listr2';
 import { dim, formatBytes, formatLong, XMPContext } from './util.js';
 import { performance } from 'perf_hooks'; // global in Node.js v16+
 import { Logger } from './program.js';

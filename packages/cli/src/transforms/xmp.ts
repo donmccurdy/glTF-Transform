@@ -1,6 +1,6 @@
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { Packet, KHRXMP } from '@gltf-transform/extensions';
-import prompts, { PromptObject } from 'prompts';
+import prompts, { type PromptObject } from 'prompts';
 import languageTags from 'language-tags';
 import validateSPDX from 'spdx-correct';
 import fs from 'fs/promises';

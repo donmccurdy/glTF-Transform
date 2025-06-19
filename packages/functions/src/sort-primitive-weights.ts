@@ -1,4 +1,12 @@
-import { Accessor, GLTF, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4 } from '@gltf-transform/core';
+import {
+	Accessor,
+	type GLTF,
+	MathUtils,
+	Primitive,
+	PrimitiveTarget,
+	type TypedArray,
+	type vec4,
+} from '@gltf-transform/core';
 
 /**
  * Sorts skinning weights from high to low, for each vertex of the input
@@ -26,7 +34,7 @@ import { Accessor, GLTF, MathUtils, Primitive, PrimitiveTarget, TypedArray, vec4
  * @param prim Input, to be modified in place.
  * @param limit Maximum number of joint influences per vertex. Must be a multiple of four.
  */
-export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit = Infinity) {
+export function sortPrimitiveWeights(prim: Primitive | PrimitiveTarget, limit: number = Infinity): void {
 	if ((Number.isFinite(limit) && limit % 4) || limit <= 0) {
 		throw new Error(`Limit must be positive multiple of four.`);
 	}

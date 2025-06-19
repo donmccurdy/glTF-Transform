@@ -1,8 +1,6 @@
-import { Extension, MathUtils, ReaderContext, WriterContext, vec2 } from '@gltf-transform/core';
+import { Extension, MathUtils, ReaderContext, WriterContext, type vec2 } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
 import { Transform } from './transform.js';
-
-const NAME = KHR_TEXTURE_TRANSFORM;
 
 interface TransformDef {
 	offset?: vec2;
@@ -46,8 +44,8 @@ interface TransformDef {
  * ```
  */
 export class KHRTextureTransform extends Extension {
-	public readonly extensionName = NAME;
-	public static readonly EXTENSION_NAME = NAME;
+	public readonly extensionName: typeof KHR_TEXTURE_TRANSFORM = KHR_TEXTURE_TRANSFORM;
+	public static readonly EXTENSION_NAME: typeof KHR_TEXTURE_TRANSFORM = KHR_TEXTURE_TRANSFORM;
 
 	/** Creates a new Transform property for use on a {@link TextureInfo}. */
 	public createTransform(): Transform {
@@ -57,17 +55,17 @@ export class KHRTextureTransform extends Extension {
 	/** @hidden */
 	public read(context: ReaderContext): this {
 		for (const [textureInfo, textureInfoDef] of Array.from(context.textureInfos.entries())) {
-			if (!textureInfoDef.extensions || !textureInfoDef.extensions[NAME]) continue;
+			if (!textureInfoDef.extensions || !textureInfoDef.extensions[KHR_TEXTURE_TRANSFORM]) continue;
 
 			const transform = this.createTransform();
-			const transformDef = textureInfoDef.extensions[NAME] as TransformDef;
+			const transformDef = textureInfoDef.extensions[KHR_TEXTURE_TRANSFORM] as TransformDef;
 
 			if (transformDef.offset !== undefined) transform.setOffset(transformDef.offset);
 			if (transformDef.rotation !== undefined) transform.setRotation(transformDef.rotation);
 			if (transformDef.scale !== undefined) transform.setScale(transformDef.scale);
 			if (transformDef.texCoord !== undefined) transform.setTexCoord(transformDef.texCoord);
 
-			textureInfo.setExtension(NAME, transform);
+			textureInfo.setExtension(KHR_TEXTURE_TRANSFORM, transform);
 		}
 		return this;
 	}
@@ -76,7 +74,7 @@ export class KHRTextureTransform extends Extension {
 	public write(context: WriterContext): this {
 		const textureInfoEntries = Array.from(context.textureInfoDefMap.entries());
 		for (const [textureInfo, textureInfoDef] of textureInfoEntries) {
-			const transform = textureInfo.getExtension<Transform>(NAME);
+			const transform = textureInfo.getExtension<Transform>(KHR_TEXTURE_TRANSFORM);
 			if (!transform) continue;
 
 			textureInfoDef.extensions = textureInfoDef.extensions || {};
@@ -88,7 +86,7 @@ export class KHRTextureTransform extends Extension {
 			if (!eq(transform.getScale(), [1, 1])) transformDef.scale = transform.getScale();
 			if (transform.getTexCoord() != null) transformDef.texCoord = transform.getTexCoord()!;
 
-			textureInfoDef.extensions[NAME] = transformDef;
+			textureInfoDef.extensions[KHR_TEXTURE_TRANSFORM] = transformDef;
 		}
 		return this;
 	}
