@@ -247,10 +247,8 @@ function _simplifyPoints(document: Document, prim: Primitive, options: Required<
 
 	// (2) Run simplification.
 
-	simplifier.useExperimentalFeatures = true;
 	const targetCount = Math.floor(options.ratio * srcVertexCount);
 	const dstIndicesArray = simplifier.simplifyPoints(positionArray, 3, targetCount, colorArray, colorStride);
-	simplifier.useExperimentalFeatures = false;
 
 	// (3) Write vertex attributes.
 
