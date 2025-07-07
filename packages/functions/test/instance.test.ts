@@ -1,4 +1,4 @@
-import { Document } from '@gltf-transform/core';
+import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
 import { instance } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
@@ -172,4 +172,47 @@ test('idempotence', async (t) => {
 	await doc.transform(instance());
 
 	t.is(doc.getRoot().listExtensionsUsed().length, 1, 'does not remove EXT_mesh_gpu_instancing');
+});
+
+test('animated nodes are ignored', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const buffer = doc.createBuffer();
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const mesh = doc.createMesh().addPrimitive(prim);
+	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 0]);
+	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
+	const node3 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 2]);
+	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	// Animate Node 1 only.
+	const input = doc
+		.createAccessor('times')
+		.setArray(new Float32Array([0, 1, 2]))
+		.setType(Accessor.Type.SCALAR)
+		.setBuffer(buffer);
+
+	const output = doc
+		.createAccessor('values')
+		.setArray(new Float32Array([0, 0, 0, 0, 1, 0, 0, 0, 0]))
+		.setType(Accessor.Type.VEC3)
+		.setBuffer(buffer);
+
+	const sampler = doc.createAnimationSampler().setInput(input).setOutput(output).setInterpolation('LINEAR');
+
+	const channel = doc
+		.createAnimationChannel()
+		.setTargetNode(node1)
+		.setTargetPath('translation')
+		.setSampler(sampler);
+
+	doc.createAnimation('Animation').addChannel(channel).addSampler(sampler);
+
+	// Apply instance optimisation.
+	await doc.transform(instance({ min: 2 }));
+
+	t.is(root.listNodes().length, 2, 'batch node and animated node remain');
+	t.falsy(node1.isDisposed(), 'animated node 1 remains');
+	t.truthy(node2.isDisposed(), 'disposed node 2');
+	t.truthy(node3.isDisposed(), 'disposed node 3');
 });
