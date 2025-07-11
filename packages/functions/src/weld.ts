@@ -4,7 +4,7 @@ import { dedup } from './dedup.js';
 import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
 import { EMPTY_U32, VertexStream, hashLookup } from './hash-table.js';
 import { prune } from './prune.js';
-import { assignDefaults, ceilPowerOfTwo, createTransform, formatDeltaOp } from './utils.js';
+import { assignDefaults, ceilPowerOfTwo, createTransform, deepDisposePrimitive, formatDeltaOp } from './utils.js';
 
 /**
  * CONTRIBUTOR NOTES
@@ -57,20 +57,10 @@ const NAME = 'weld';
 export interface WeldOptions {
 	/** Whether to overwrite existing indices. */
 	overwrite?: boolean;
-	/**
-	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
-	 * default. Cleanup removes temporary resources created during the operation, but may also remove
-	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
-	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
-	 * {@link prune} manually (with customized options) later in the processing pipeline.
-	 * @experimental
-	 */
-	cleanup?: boolean;
 }
 
 export const WELD_DEFAULTS: Required<WeldOptions> = {
 	overwrite: true,
-	cleanup: true,
 };
 
 /**
@@ -102,24 +92,11 @@ export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 				weldPrimitive(prim, options);
 
 				if (getPrimitiveVertexCount(prim, VertexCountMethod.RENDER) === 0) {
-					prim.dispose();
+					deepDisposePrimitive(prim);
 				}
 			}
 
 			if (mesh.listPrimitives().length === 0) mesh.dispose();
-		}
-
-		// Welding removes degenerate meshes; prune leaf nodes afterward.
-		if (options.cleanup) {
-			await doc.transform(
-				prune({
-					propertyTypes: [PropertyType.ACCESSOR, PropertyType.NODE],
-					keepAttributes: true,
-					keepIndices: true,
-					keepLeaves: false,
-				}),
-				dedup({ propertyTypes: [PropertyType.ACCESSOR] }),
-			);
 		}
 
 		logger.debug(`${NAME}: Complete.`);
