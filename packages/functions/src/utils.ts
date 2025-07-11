@@ -189,6 +189,29 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 	}
 }
 
+/**
+ * Disposes of a {@link Primitive} and any {@link Accessor Accesors} for which
+ * it is the last remaining parent.
+ * @hidden
+ */
+export function deepDisposePrimitive(prim: Primitive): void {
+	const material = prim.getMaterial();
+	const indices = prim.getIndices();
+	const attributes = deepListAttributes(prim);
+
+	prim.dispose();
+
+	if (indices && !isUsed(indices)) {
+		indices.dispose();
+	}
+
+	for (const attribute of attributes) {
+		if (!isUsed(attribute)) {
+			attribute.dispose();
+		}
+	}
+}
+
 /** @hidden */
 export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
 	if (a == null && b == null) return true;
