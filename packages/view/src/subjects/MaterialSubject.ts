@@ -433,6 +433,16 @@ export class MaterialSubject extends Subject<MaterialDef, Material> {
 		if (normalScale !== target.normalScale.x) {
 			target.normalScale.setScalar(normalScale);
 		}
+
+		// KHR_materials_emissive_strength
+		const emissiveStrength = def.getExtension<EmissiveStrength>('KHR_materials_emissive_strength');
+		if (emissiveStrength) {
+			if (emissiveStrength.getEmissiveStrength() !== target.emissiveIntensity) {
+				target.emissiveIntensity = emissiveStrength.getEmissiveStrength();
+			}
+		} else {
+			target.emissiveIntensity = 1.0;
+		}
 	}
 
 	private _updatePhysical(target: MeshPhysicalMaterial) {
@@ -472,16 +482,6 @@ export class MaterialSubject extends Subject<MaterialDef, Material> {
 			}
 		} else {
 			target.clearcoat = 0;
-		}
-
-		// KHR_materials_emissive_strength
-		const emissiveStrength = def.getExtension<EmissiveStrength>('KHR_materials_emissive_strength');
-		if (emissiveStrength) {
-			if (emissiveStrength.getEmissiveStrength() !== target.emissiveIntensity) {
-				target.emissiveIntensity = emissiveStrength.getEmissiveStrength();
-			}
-		} else {
-			target.emissiveIntensity = 1.0;
 		}
 
 		// KHR_materials_ior
