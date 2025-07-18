@@ -83,7 +83,7 @@ export function simplify(_options: SimplifyOptions): Transform {
 	const simplifier = options.simplifier as typeof MeshoptSimplifier | undefined;
 
 	if (!simplifier) {
-		throw new Error(`${NAME}: Dependency required — install "meshoptimizer".`);
+		throw new Error(`${NAME}: simplifier dependency required — install "meshoptimizer".`);
 	}
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
