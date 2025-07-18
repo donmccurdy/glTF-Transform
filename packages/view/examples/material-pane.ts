@@ -1,6 +1,7 @@
 import { ColorUtils, type Document, type Material, type Texture } from '@gltf-transform/core';
 import {
 	KHRMaterialsClearcoat,
+	KHRMaterialsEmissiveStrength,
 	KHRMaterialsIOR,
 	KHRMaterialsSheen,
 	KHRMaterialsSpecular,
@@ -34,6 +35,8 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 
 	const clearcoatExtension = document.createExtension(KHRMaterialsClearcoat);
 	const clearcoat = clearcoatExtension.createClearcoat();
+	const emissiveStrengthExtension = document.createExtension(KHRMaterialsEmissiveStrength);
+	const emissiveStrength = emissiveStrengthExtension.createEmissiveStrength();
 	const iorExtension = document.createExtension(KHRMaterialsIOR);
 	const ior = iorExtension.createIOR();
 	const sheenExtension = document.createExtension(KHRMaterialsSheen);
@@ -83,6 +86,10 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 		clearcoatRoughnessTexture: textureValue(clearcoat.getClearcoatRoughnessTexture(), textureOptions),
 		clearcoatNormalScale: clearcoat.getClearcoatNormalScale(),
 		clearcoatNormalTexture: textureValue(clearcoat.getClearcoatNormalTexture(), textureOptions),
+
+		// Emissive strength.
+		emissiveStrengthEnabled: !!material.getExtension('KHR_materials_emissive_strength'),
+		emissiveStrength: emissiveStrength.getEmissiveStrength(),
 
 		// IOR.
 		iorEnabled: !!material.getExtension('KHR_materials_ior'),
@@ -183,6 +190,18 @@ export function createMaterialPane(_pane: Pane, document: Document, material: Ma
 			.setClearcoatFactor(params.clearcoatFactor)
 			.setClearcoatRoughnessFactor(params.clearcoatRoughnessFactor)
 			.setClearcoatNormalScale(params.clearcoatNormalScale);
+	});
+
+	const emissiveStrengthFolder = pane.addFolder({ title: 'KHR_materials_emissive_strength', expanded: false });
+	emissiveStrengthFolder.addInput(params, 'emissiveStrengthEnabled');
+	emissiveStrengthFolder.addSeparator();
+	emissiveStrengthFolder.addInput(params, 'emissiveStrength', { min: 0, max: 50, step: 0.1 });
+	emissiveStrengthFolder.on('change', () => {
+		material.setExtension(
+			'KHR_materials_emissive_strength',
+			params.emissiveStrengthEnabled ? emissiveStrength : null,
+		);
+		emissiveStrength.setEmissiveStrength(params.emissiveStrength);
 	});
 
 	const iorFolder = pane.addFolder({ title: 'KHR_materials_ior', expanded: false });
