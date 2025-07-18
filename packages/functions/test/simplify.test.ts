@@ -124,7 +124,7 @@ test('degenerate', async (t) => {
 
 	t.true(prim.isDisposed(), 'prim disposed');
 	t.true(mesh.isDisposed(), 'mesh disposed');
-	t.true(node.isDisposed(), 'node disposed');
+	t.false(node.isDisposed(), 'node kept');
 	t.false(scene.isDisposed(), 'scene kept');
 	t.is(getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE), 0, '0 vertices');
 });
@@ -229,9 +229,9 @@ test('no side effects', async (t) => {
 	const attributeA = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
 	attributeA.clone();
 
-	await document.transform(simplify({ cleanup: false, simplifier: MeshoptSimplifier }));
+	await document.transform(simplify({ simplifier: MeshoptSimplifier }));
 
-	t.is(document.getRoot().listAccessors().length, 2, 'skips prune and dedup');
+	t.is(document.getRoot().listAccessors().length, 2, 'skips unused accessors');
 });
 
 /* UTILITIES */
