@@ -1,14 +1,25 @@
-import { ACESFilmicToneMapping, AmbientLight, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer, Object3D, Mesh, Material, Box3, Vector3 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Document, Material as MaterialDef } from '@gltf-transform/core';
+import type { Document, Material as MaterialDef } from '@gltf-transform/core';
 import { metalRough } from '@gltf-transform/functions';
+import {
+	ACESFilmicToneMapping,
+	AmbientLight,
+	Box3,
+	DirectionalLight,
+	type Material,
+	type Mesh,
+	type Object3D,
+	PerspectiveCamera,
+	Scene,
+	Vector3,
+	WebGLRenderer,
+} from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { DocumentView } from '../dist/view.modern.js';
 import { createEnvironment, createGLTFLoader, createIO } from './util.js';
 
-const renderer = new WebGLRenderer({antialias: true});
+const renderer = new WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.useLegacyLights = false;
 renderer.toneMapping = ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
 
@@ -25,12 +36,11 @@ const light2 = new DirectionalLight();
 light2.position.set(1, 2, 3);
 scene.add(light1, light2);
 
-createEnvironment(renderer)
-	.then((environment) => {
-		scene.environment = environment;
-		scene.background = environment;
-		render();
-	});
+createEnvironment(renderer).then((environment) => {
+	scene.environment = environment;
+	scene.background = environment;
+	render();
+});
 
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
 camera.position.set(-1.8, 0.6, 2.7);
@@ -67,9 +77,9 @@ document.body.addEventListener('gltf-document', async (event) => {
 	console.timeEnd('WebIO::writeBinary');
 
 	console.time('GLTFLoader::parse');
-	modelBefore = await new Promise((resolve, reject) => {
-		loader.parse(glb.buffer, '', ({scene}) => resolve(scene), reject);
-	}) as Object3D;
+	modelBefore = (await new Promise((resolve, reject) => {
+		loader.parse(glb.buffer, '', ({ scene }) => resolve(scene), reject);
+	})) as Object3D;
 	console.timeEnd('GLTFLoader::parse');
 
 	frameContent(modelBefore, -1);
@@ -124,9 +134,9 @@ function frameContent(object: Object3D, offset: 1 | -1) {
 
 	controls.reset();
 
-	object.position.x += (object.position.x - center.x) + offset * size.x / 2;
-	object.position.y += (object.position.y - center.y);
-	object.position.z += (object.position.z - center.z);
+	object.position.x += object.position.x - center.x + (offset * size.x) / 2;
+	object.position.y += object.position.y - center.y;
+	object.position.z += object.position.z - center.z;
 	controls.maxDistance = length * 10;
 	camera.near = length / 100;
 	camera.far = length * 100;
@@ -165,7 +175,8 @@ async function checkMaterials(document: Document) {
 }
 
 async function checkExtensions(document: Document) {
-	const extensions = document.getRoot()
+	const extensions = document
+		.getRoot()
 		.listExtensionsUsed()
 		.map((ext) => ext.extensionName);
 	console.debug(`EXTENSIONS: ${extensions.join() || 'None'}`);
