@@ -6,6 +6,7 @@ import { weld } from './weld.js';
 const NAME = 'draco';
 
 export interface DracoOptions {
+	skipWeld?: boolean;
 	method?: 'edgebreaker' | 'sequential';
 	encodeSpeed?: number;
 	decodeSpeed?: number;
@@ -18,6 +19,7 @@ export interface DracoOptions {
 }
 
 export const DRACO_DEFAULTS: Required<DracoOptions> = {
+	skipWeld: false,
 	method: 'edgebreaker',
 	encodeSpeed: 5,
 	decodeSpeed: 5,
@@ -64,7 +66,9 @@ export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
 	const options = assignDefaults(DRACO_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
-		await document.transform(weld());
+		if (!options.skipWeld) {
+			await document.transform(weld());
+		}
 		document
 			.createExtension(KHRDracoMeshCompression)
 			.setRequired(true)
