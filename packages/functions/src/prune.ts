@@ -39,7 +39,11 @@ export interface PruneOptions {
 	keepLeaves?: boolean;
 	/** Whether to keep unused vertex attributes, such as UVs without an assigned texture. */
 	keepAttributes?: boolean;
-	/** Whether to keep redundant mesh indices, where vertex count equals index count. */
+	/**
+	 * Whether to keep redundant mesh indices, where vertex count equals index count.
+	 * @deprecated Disabled. To remove indices, use {@link unweld} or other APIs.
+	 * @privateRemarks TODO(v5): Remove this option.
+	 */
 	keepIndices?: boolean;
 	/** Whether to keep single-color textures that can be converted to material factors. */
 	keepSolidTextures?: boolean;
@@ -184,15 +188,6 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 			}
 		}
 
-		// Prune unused mesh indices.
-		if (!options.keepIndices && propertyTypes.has(PropertyType.ACCESSOR)) {
-			for (const mesh of root.listMeshes()) {
-				for (const prim of mesh.listPrimitives()) {
-					pruneIndices(prim);
-				}
-			}
-		}
-
 		// Pruning animations is a bit more complicated:
 		// (1) Remove channels without target nodes.
 		// (2) Remove animations without channels.
@@ -333,28 +328,6 @@ function pruneAttributes(prim: Primitive | PrimitiveTarget, unused: string[]) {
 	for (const semantic of unused) {
 		prim.setAttribute(semantic, null);
 	}
-}
-
-function pruneIndices(prim: Primitive) {
-	const indices = prim.getIndices();
-	const indicesArray = indices && indices.getArray();
-	const attribute = prim.listAttributes()[0];
-
-	if (!indicesArray || !attribute) {
-		return;
-	}
-
-	if (indices.getCount() !== attribute.getCount()) {
-		return;
-	}
-
-	for (let i = 0, il = indicesArray.length; i < il; i++) {
-		if (i !== indicesArray[i]) {
-			return;
-		}
-	}
-
-	prim.setIndices(null);
 }
 
 /**
