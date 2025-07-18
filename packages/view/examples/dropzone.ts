@@ -1,4 +1,4 @@
-import { Document, JSONDocument } from '@gltf-transform/core';
+import type { Document, JSONDocument } from '@gltf-transform/core';
 import { SimpleDropzone } from 'simple-dropzone';
 import { createIO } from './util';
 
@@ -13,21 +13,21 @@ const placeholderEl = document.querySelector<HTMLElement>('.dropzone-placeholder
 const inputEl = document.querySelector('#file-input')!;
 
 document.addEventListener('DOMContentLoaded', () => {
-	const dropzone = new SimpleDropzone(dropEl, inputEl) as any;
-	dropzone.on('drop', async ({files}) => {
+	const dropzone = new SimpleDropzone(dropEl, inputEl);
+	dropzone.on('drop', async ({ files }) => {
 		try {
 			await load(files);
-            placeholderEl.style.display = 'none';
+			placeholderEl.style.display = 'none';
 		} catch (e) {
 			alert(e.message);
 		}
 	});
 });
 
-async function load (fileMap: Map<string, File>) {
+async function load(fileMap: Map<string, File>) {
 	let rootFile: File | null = null;
 	let rootPath = '';
-	let images: File[] = [];
+	const images: File[] = [];
 	Array.from(fileMap).forEach(([path, file]) => {
 		if (file.name.match(/\.(gltf|glb)$/)) {
 			rootFile = file;
@@ -44,7 +44,6 @@ async function load (fileMap: Map<string, File>) {
 async function loadDocument(fileMap: Map<string, File>, rootFile: File, rootPath: string) {
 	const io = createIO();
 	let jsonDocument: JSONDocument;
-	let doc: Document;
 
 	if (rootFile.name.match(/\.(glb)$/)) {
 		const arrayBuffer = await rootFile.arrayBuffer();
@@ -62,9 +61,9 @@ async function loadDocument(fileMap: Map<string, File>, rootFile: File, rootPath
 	}
 
 	normalizeURIs(jsonDocument);
-	doc = await io.readJSON(jsonDocument);
+	const doc = await io.readJSON(jsonDocument);
 	removeCompression(doc);
-    document.body.dispatchEvent(new CustomEvent('gltf-document', {detail: doc}));
+	document.body.dispatchEvent(new CustomEvent('gltf-document', { detail: doc }));
 }
 
 /**
@@ -73,7 +72,7 @@ async function loadDocument(fileMap: Map<string, File>, rootFile: File, rootPath
  * from an un-escaped source, and decode all URIs before lookups.
  * See: https://github.com/donmccurdy/three-gltf-viewer/issues/146
  */
-function normalizeURIs (jsonDocument: JSONDocument) {
+function normalizeURIs(jsonDocument: JSONDocument) {
 	const images = jsonDocument.json.images || [];
 	const buffers = jsonDocument.json.buffers || [];
 	for (const resource of [...images, ...buffers]) {
@@ -90,7 +89,9 @@ function normalizeURIs (jsonDocument: JSONDocument) {
 /** Remove compression extensions now so further writes don't recompress. */
 function removeCompression(document: Document) {
 	for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-		const extension = document.getRoot().listExtensionsUsed()
+		const extension = document
+			.getRoot()
+			.listExtensionsUsed()
 			.find((extension) => extension.extensionName === extensionName);
 		if (extension) extension.dispose();
 	}

@@ -1,16 +1,24 @@
-import { ACESFilmicToneMapping, AmbientLight, DirectionalLight, PMREMGenerator, PerspectiveCamera, Scene, WebGLRenderer, TorusKnotGeometry } from 'three';
+import { Document, type Material } from '@gltf-transform/core';
+import {
+	ACESFilmicToneMapping,
+	AmbientLight,
+	DirectionalLight,
+	PMREMGenerator,
+	PerspectiveCamera,
+	Scene,
+	TorusKnotGeometry,
+	WebGLRenderer,
+} from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Document, Material } from '@gltf-transform/core';
+import { Pane } from 'tweakpane';
 import { DocumentView, NullImageProvider } from '../dist/view.modern.js';
 import { createMaterialPane } from './material-pane';
 import { createStatsPane } from './stats-pane.js';
-import { Pane } from 'tweakpane';
 import { createEnvironment } from './util.js';
 
-const renderer = new WebGLRenderer({antialias: true});
+const renderer = new WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.useLegacyLights = false;
 renderer.toneMapping = ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
 
@@ -27,12 +35,11 @@ const light2 = new DirectionalLight();
 light2.position.set(1, 2, 3);
 scene.add(light1, light2);
 
-createEnvironment(renderer)
-	.then((environment) => {
-		scene.environment = environment;
-		scene.background = environment;
-		render();
-	});
+createEnvironment(renderer).then((environment) => {
+	scene.environment = environment;
+	scene.background = environment;
+	render();
+});
 
 const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
 camera.position.set(-4, 1.2, 5.4);
@@ -42,7 +49,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener('change', render);
 controls.minDistance = 2;
 controls.maxDistance = 10;
-controls.target.set(0, 0, - 0.2);
+controls.target.set(0, 0, -0.2);
 controls.update();
 
 window.addEventListener('resize', onWindowResize);
@@ -59,7 +66,8 @@ const doc = (() => {
 	const positionArray = primTemplate.attributes.position.array as Float32Array;
 	const normalArray = primTemplate.attributes.normal.array as Float32Array;
 	const texcoordArray = primTemplate.attributes.uv.array as Float32Array;
-	const prim = doc.createPrimitive()
+	const prim = doc
+		.createPrimitive()
 		.setIndices(doc.createAccessor('indices').setType('SCALAR').setArray(indicesArray))
 		.setAttribute('POSITION', doc.createAccessor('p').setType('VEC3').setArray(positionArray))
 		.setAttribute('NORMAL', doc.createAccessor('n').setType('VEC3').setArray(normalArray))
@@ -72,14 +80,14 @@ const doc = (() => {
 })();
 
 const imageProvider = new NullImageProvider();
-const documentView = new DocumentView(doc, {imageProvider});
+const documentView = new DocumentView(doc, { imageProvider });
 const modelDef = doc.getRoot().getDefaultScene() || doc.getRoot().listScenes()[0];
 const model = documentView.view(modelDef);
 scene.add(model);
 
 //
 
-const pane = new Pane({title: 'DamagedHelmet.glb'});
+const pane = new Pane({ title: 'DamagedHelmet.glb' });
 createMaterialPane(pane, doc, material);
 const updateStats = createStatsPane(renderer, pane);
 
