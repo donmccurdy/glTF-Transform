@@ -1,11 +1,11 @@
-import type { Bench } from 'tinybench';
-import os from 'node:os';
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { csvParse, csvFormat } from 'd3-dsv';
+import { csvFormat, csvParse } from 'd3-dsv';
 import semver from 'semver';
+import type { Bench } from 'tinybench';
 import { bright, dim, max } from './utils';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,10 +43,14 @@ export async function updateReport(results: BenchResult[], bench: Bench, version
 }
 
 /** Displays historical benchmark results in stdout. */
-export async function printReport(results: BenchResult[]): Promise<void> {
+export async function printReport(results: BenchResult[], filter: string | false): Promise<void> {
 	const tasks = Object.keys(results[0]).filter((name) => name !== 'version');
 	const versions = results.map(({ version }) => version);
 	for (const task of tasks) {
+		if (filter && !task.startsWith(filter as string)) {
+			continue;
+		}
+
 		const taskTimes = results.map((result) => Number(result[task]));
 		const taskTimeMax = max(taskTimes);
 		const scale = 40 / taskTimeMax;

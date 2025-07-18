@@ -1,7 +1,7 @@
-import { Bench } from 'tinybench';
-import { tasks } from './tasks/index.js';
-import { printReport, readReport, updateReport, writeReport } from './report.js';
 import { VERSION } from '@gltf-transform/core';
+import { Bench } from 'tinybench';
+import { printReport, readReport, updateReport, writeReport } from './report.js';
+import { tasks } from './tasks/index.js';
 
 /**
  * DEVELOPER NOTES:
@@ -21,12 +21,13 @@ const parseFlag = (flag: string, value: string): string => {
 };
 
 const flags = {
-	filter: argv.includes('--filter') ? parseFlag('--filter', argv[argv.indexOf('--filter') + 1]) : false,
-	past: argv.includes('--past'),
-	table: argv.includes('--table'),
+	filter: argv.includes('--filter')
+		? parseFlag('--filter', argv[argv.indexOf('--filter') + 1])
+		: (false as string | false),
+	show: argv.includes('--show') ? parseFlag('--show', argv[argv.indexOf('--show') + 1]) : 'detail',
+	noExec: argv.includes('--no-exec'),
 	report: argv.includes('--report') ? parseFlag('--report', argv[argv.indexOf('--report') + 1]) : false,
 	reportVersion: argv.includes('--report-version'),
-	print: argv.includes('--print'),
 	help: argv.includes('--help') || argv.includes('-h'),
 };
 
@@ -36,12 +37,9 @@ if (flags.help) {
 Usage: yarn bench [options]
 
 Execution:
-	--filter <pattern>: runs only benchmarks matching <pattern>
-	--past: skip running benchmarks, show historical output only
-
-Display:
-	--print: show historical results for all benchmarks
-	--table: show detailed report for current benchmark run only
+	--include <pattern>: runs only benchmarks matching <pattern>
+	--show <mode>: show current results ('detail') or historical data ('history')
+	--no-exec: do not run benchmarks
 
 History:
 	--report <version>: append run to history as <version>, default to 'dev'
@@ -72,7 +70,7 @@ for (const [title, fn, options] of tasks) {
 const version = flags.reportVersion ? VERSION : flags.report || 'dev';
 const report = await readReport();
 
-if (flags.past === false) {
+if (flags.noExec === false) {
 	await bench.run();
 	await updateReport(report, bench, version as string);
 }
@@ -81,14 +79,14 @@ if (flags.past === false) {
  * REPORT
  */
 
-if (flags.table && flags.past === false) {
+if (flags.show === 'detail' && flags.noExec === false) {
 	console.table(bench.table());
-} else if (flags.table) {
-	console.warn('Skipping table, bench did not run');
+} else if (flags.show === 'detail') {
+	console.warn('No output to show, benchmarks did not run');
 }
 
-if (flags.print) {
-	await printReport(report);
+if (flags.show === 'history') {
+	await printReport(report, flags.filter);
 }
 
 if (flags.report || flags.reportVersion) {
