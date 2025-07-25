@@ -25,6 +25,9 @@ interface DiffuseTransmissionDef {
  * scattering behavior, a diffuse transmission lobe is a phenomenological
  * plausible and cheap approximation.
  *
+ * {@link KHRMaterialsDiffuseTransmission} is often combined with {@link KHRMaterialsVolume} and
+ * {@link KHRMaterialsVolumeScatter} to model dense subsurface scattering materials like skin or wax.
+ *
  * Properties:
  * - {@link DiffuseTransmission}
  *

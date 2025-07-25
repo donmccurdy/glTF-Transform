@@ -18,6 +18,7 @@ import { KHRMaterialsSpecular } from './khr-materials-specular/index.js';
 import { KHRMaterialsTransmission } from './khr-materials-transmission/index.js';
 import { KHRMaterialsUnlit } from './khr-materials-unlit/index.js';
 import { KHRMaterialsVariants } from './khr-materials-variants/index.js';
+import { KHRMaterialsVolumeScatter } from './khr-materials-volume-scatter/index.js';
 import { KHRMaterialsVolume } from './khr-materials-volume/index.js';
 import { KHRMeshQuantization } from './khr-mesh-quantization/index.js';
 import { KHRTextureBasisu } from './khr-texture-basisu/index.js';
@@ -41,6 +42,7 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 	KHRMaterialsUnlit,
 	KHRMaterialsVariants,
 	KHRMaterialsVolume,
+	KHRMaterialsVolumeScatter,
 	KHRMeshQuantization,
 	KHRTextureBasisu,
 	KHRTextureTransform,
@@ -75,6 +77,7 @@ export * from './khr-materials-transmission/index.js';
 export * from './khr-materials-unlit/index.js';
 export * from './khr-materials-variants/index.js';
 export * from './khr-materials-volume/index.js';
+export * from './khr-materials-volume-scatter/index.js';
 export * from './khr-mesh-quantization/index.js';
 export * from './khr-texture-basisu/index.js';
 export * from './khr-texture-transform/index.js';
