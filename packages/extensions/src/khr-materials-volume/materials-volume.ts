@@ -35,11 +35,11 @@ interface VolumeDef {
  * infinitely thin volume. The surface defined by the mesh represents a thin wall. The volume
  * extension makes it possible to turn the surface into an interface between volumes. The mesh to
  * which the material is attached defines the boundaries of an homogeneous medium and therefore must
- * be manifold. Volumes provide effects like refraction, absorption and scattering. Scattering
- * effects will require future (TBD) extensions.
+ * be manifold. Volumes enable effects like refraction, absorption, and scattering.
  *
  * The volume extension must be combined with {@link KHRMaterialsTransmission} or
- * `KHR_materials_translucency` in order to define entry of light into the volume.
+ * {@link KHRMaterialsDiffuseTransmission} to define entry of light into the volume. To display
+ * scattering, {@link KHRMaterialsVolumeScatter} must also be enabled.
  *
  * Properties:
  * - {@link Volume}
