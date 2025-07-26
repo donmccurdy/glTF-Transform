@@ -30,6 +30,7 @@ export abstract class PlatformIO {
 	private _extensions = new Set<typeof Extension>();
 	private _dependencies: { [key: string]: unknown } = {};
 	private _vertexLayout = VertexLayout.INTERLEAVED;
+	private _strictResources = true;
 
 	/** @hidden */
 	public lastReadBytes = 0;
@@ -64,6 +65,15 @@ export abstract class PlatformIO {
 	 */
 	public setVertexLayout(layout: VertexLayout): this {
 		this._vertexLayout = layout;
+		return this;
+	}
+
+	/**
+	 * Sets whether missing external resources should throw errors (strict mode) or
+	 * be ignored with warnings. Defaults to true (strict mode).
+	 */
+	public setStrictResources(strict: boolean): this {
+		this._strictResources = strict;
 		return this;
 	}
 
@@ -181,6 +191,7 @@ export abstract class PlatformIO {
 	 */
 
 	private async _readResourcesExternal(jsonDoc: JSONDocument, base: string): Promise<void> {
+		const failedImageIndices = new Set<number>();
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
@@ -188,14 +199,163 @@ export abstract class PlatformIO {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
-				jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
-				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
+				try {
+					jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
+					this.lastReadBytes += jsonDoc.resources[uri].byteLength;
+				} catch (error) {
+					if (this._strictResources) {
+						throw error;
+					}
+
+					// In non-strict mode, log warning and track failed images.
+					const isImage = images.includes(resource as GLTF.IImage);
+					const resourceType = isImage ? 'image' : 'buffer';
+					const resourceIndex = isImage
+						? images.indexOf(resource as GLTF.IImage)
+						: buffers.indexOf(resource as GLTF.IBuffer);
+
+					this._logger.warn(`Failed to load external ${resourceType} at index ${resourceIndex}: ${uri}`);
+
+					if (isImage) {
+						failedImageIndices.add(resourceIndex);
+					}
+					// Remove the URI to mark as failed.
+					delete resource.uri;
+				}
 			},
 		);
 		await Promise.all(pendingResources);
+
+		// Remove textures that reference failed images.
+		if (!this._strictResources && failedImageIndices.size > 0) {
+			this._removeTexturesWithFailedImages(jsonDoc, failedImageIndices);
+		}
+	}
+
+	private _removeTexturesWithFailedImages(jsonDoc: JSONDocument, failedImageIndices: Set<number>): void {
+		const textures = jsonDoc.json.textures || [];
+		const materials = jsonDoc.json.materials || [];
+
+		// Find texture indices that reference failed images.
+		const failedTextureIndices = new Set<number>();
+		textures.forEach((texture, index) => {
+			if (texture.source !== undefined && failedImageIndices.has(texture.source)) {
+				failedTextureIndices.add(index);
+				this._logger.warn(`Removing texture at index ${index} that references failed image ${texture.source}`);
+			}
+		});
+
+		// Remove texture references from materials.
+		if (failedTextureIndices.size > 0) {
+			// Helper to handle texture info objects with proper typing
+			type TextureInfo = { index?: number };
+			const processTextureReferences = (
+				material: GLTF.IMaterial,
+				processor: (textureInfo: TextureInfo) => boolean | undefined,
+			): void => {
+				// Process standard texture slots
+				const processSlot = (parent: object | undefined, key: string): void => {
+					if (!parent || !(key in parent)) return;
+					const textureInfo = (parent as Record<string, unknown>)[key] as TextureInfo | undefined;
+					if (textureInfo && processor(textureInfo)) {
+						delete (parent as Record<string, unknown>)[key];
+					}
+				};
+
+				const pbr = material.pbrMetallicRoughness;
+				processSlot(pbr, 'baseColorTexture');
+				processSlot(pbr, 'metallicRoughnessTexture');
+				processSlot(material, 'normalTexture');
+				processSlot(material, 'occlusionTexture');
+				processSlot(material, 'emissiveTexture');
+
+				// Process extensions
+				if (material.extensions) {
+					for (const extensionData of Object.values(material.extensions)) {
+						if (extensionData && typeof extensionData === 'object') {
+							for (const [key, value] of Object.entries(extensionData)) {
+								if (
+									value &&
+									typeof value === 'object' &&
+									'index' in value &&
+									typeof value.index === 'number' &&
+									processor(value as TextureInfo)
+								) {
+									delete (extensionData as Record<string, unknown>)[key];
+								}
+							}
+						}
+					}
+				}
+			};
+
+			// First pass: remove references to failed textures
+			materials.forEach((material) => {
+				processTextureReferences(material, (textureInfo) => {
+					return failedTextureIndices.has(textureInfo.index!);
+				});
+			});
+
+			// Create new textures array and index mapping
+			const newTextures: GLTF.ITexture[] = [];
+			const textureIndexMap = new Map<number, number>();
+
+			textures.forEach((texture, oldIndex) => {
+				if (!failedTextureIndices.has(oldIndex)) {
+					textureIndexMap.set(oldIndex, newTextures.length);
+					newTextures.push(texture);
+				}
+			});
+
+			// Second pass: update texture indices
+			materials.forEach((material) => {
+				processTextureReferences(material, (textureInfo) => {
+					if (textureInfo.index !== undefined) {
+						const newIdx = textureIndexMap.get(textureInfo.index);
+						if (newIdx !== undefined) {
+							textureInfo.index = newIdx;
+						}
+					}
+					return false; // Don't delete, just update
+				});
+			});
+
+			// Replace the textures array
+			jsonDoc.json.textures = newTextures;
+		}
+
+		// Also remove the failed images themselves.
+		if (failedImageIndices.size > 0) {
+			const images = jsonDoc.json.images || [];
+			const newImages: GLTF.IImage[] = [];
+			const imageIndexMap = new Map<number, number>();
+			let newImageIndex = 0;
+
+			images.forEach((image, oldIndex) => {
+				if (!failedImageIndices.has(oldIndex)) {
+					newImages.push(image);
+					imageIndexMap.set(oldIndex, newImageIndex);
+					newImageIndex++;
+				}
+			});
+
+			jsonDoc.json.images = newImages;
+
+			// Update source indices in remaining textures.
+			const remainingTextures = jsonDoc.json.textures || [];
+			remainingTextures.forEach((texture) => {
+				if (texture.source !== undefined) {
+					const newIdx = imageIndexMap.get(texture.source);
+					if (newIdx !== undefined) {
+						texture.source = newIdx;
+					}
+				}
+			});
+		}
 	}
 
 	private _readResourcesInternal(jsonDoc: JSONDocument): void {
+		const failedImageIndices = new Set<number>();
 		// NOTICE: This method may be called more than once during the loading
 		// process (e.g. WebIO.read) and should handle that safely.
 
@@ -217,9 +377,14 @@ export abstract class PlatformIO {
 
 		// Unpack images.
 		const images = jsonDoc.json.images || [];
-		images.forEach((image: GLTF.IImage) => {
+		images.forEach((image: GLTF.IImage, index: number) => {
 			if (image.bufferView === undefined && image.uri === undefined) {
-				throw new Error('Missing resource URI or buffer view.');
+				if (this._strictResources) {
+					throw new Error('Missing resource URI or buffer view.');
+				}
+				// In non-strict mode, track as failed image.
+				failedImageIndices.add(index);
+				return;
 			}
 
 			resolveResource(image);
@@ -228,6 +393,11 @@ export abstract class PlatformIO {
 		// Unpack buffers.
 		const buffers = jsonDoc.json.buffers || [];
 		buffers.forEach(resolveResource);
+
+		// Remove textures that reference failed images
+		if (!this._strictResources && failedImageIndices.size > 0) {
+			this._removeTexturesWithFailedImages(jsonDoc, failedImageIndices);
+		}
 	}
 
 	/**
