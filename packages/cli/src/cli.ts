@@ -469,6 +469,9 @@ commands or using the scripting API.
 		// Mesh compression last. Doesn't matter here, but in one-off CLI
 		// commands we want to avoid recompressing mesh data.
 		if (opts.compress === 'draco') {
+			if (opts.weld === false) {
+				logger.warn('Ignoring --no-weld, required for Draco compression.');
+			}
 			transforms.push(draco());
 		} else if (opts.compress === 'meshopt') {
 			transforms.push(meshopt({ encoder: MeshoptEncoder, level: opts.meshoptLevel }));
