@@ -64,7 +64,7 @@
     "tweakpane": "^3.1.10",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
     "typescript": "5.8.3",
-    "vite": "^6.3.5",
+    "vite": "^7.0.0",
     "watlas": "^1.0.0"
   },
   "ava": {
