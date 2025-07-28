@@ -3,7 +3,7 @@ import { KHRLightsPunctual, Light as LightDef } from '@gltf-transform/extensions
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
 import test from 'ava';
 import { JSDOM } from 'jsdom';
-import type { DirectionalLight, PointLight, SpotLight } from 'three';
+import type { DirectionalLight, Object3D, PointLight, SpotLight } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
@@ -79,4 +79,39 @@ test('LightSubject | directional', async (t) => {
 	t.deepEqual(light.position.toArray(), [0, 0, 0], 'node → light → position');
 	t.is(light.intensity, 1.5, 'node → light → intensity');
 	t.deepEqual(light.color.toArray(), [1, 1, 1], 'node → light → color');
+});
+
+test('LightSubject | instances', async (t) => {
+	const document = new Document();
+	const lightExt = document.createExtension(KHRLightsPunctual);
+	const lightDef = lightExt.createLight('MyLight').setColor([1, 1, 1]).setIntensity(2000).setType(LightDef.Type.SPOT);
+	const nodeDefA = document
+		.createNode('NodeA')
+		.setRotation([1, 0, 0, 0])
+		.setExtension('KHR_lights_punctual', lightDef);
+	const nodeDefB = document
+		.createNode('NodeA')
+		.setRotation([0, 1, 0, 0])
+		.setExtension('KHR_lights_punctual', lightDef);
+
+	const documentView = new DocumentView(document, { imageProvider });
+	const nodeA = documentView.view(nodeDefA);
+	const nodeB = documentView.view(nodeDefB);
+	const lightA = nodeA.children[0] as SpotLight;
+	const lightB = nodeB.children[0] as SpotLight;
+
+	const toUUID = (object: Object3D): string => object.uuid;
+
+	t.deepEqual(nodeA.rotation.toArray(), [-Math.PI, 0, -0, 'XYZ'], 'nodeA.rotation');
+	t.deepEqual(nodeB.rotation.toArray(), [-Math.PI, 0, -Math.PI, 'XYZ'], 'nodeB.rotation');
+
+	t.is(lightA.type, 'SpotLight', 'lightA.type');
+	t.is(lightB.type, 'SpotLight', 'lightB.type');
+	t.true(lightA !== lightB, 'lightA !== lightB');
+
+	t.is(lightA.target.type, 'Object3D', 'lightA.target.type');
+	t.is(lightB.target.type, 'Object3D', 'lightB.target.type');
+	t.deepEqual([lightA.target.uuid], lightA.children.map(toUUID), 'lightA.children');
+	t.deepEqual([lightB.target.uuid], lightB.children.map(toUUID), 'lightB.children');
+	t.true(lightA.target !== lightB.target, 'lightA.target !== lightB.target');
 });

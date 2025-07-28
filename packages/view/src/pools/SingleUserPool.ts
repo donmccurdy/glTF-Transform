@@ -30,7 +30,7 @@ export class SingleUserPool<T extends Object3D> extends Pool<T, SingleUserParams
 
 		// A clone of spot lights and directional lights clones its children and target separately, which results in duplicates.
 		if (dstObject instanceof SpotLight || dstObject instanceof DirectionalLight) {
-			dstObject.children[0]?.remove();
+			dstObject.clear();
 			// Target is cloned but its parent needs to be restored to the cloned light.
 			dstObject.add(dstObject.target);
 		}
