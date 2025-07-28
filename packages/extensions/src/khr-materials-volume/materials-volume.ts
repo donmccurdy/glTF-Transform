@@ -4,8 +4,8 @@ import {
 	MathUtils,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec3,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 import { Volume } from './volume.js';

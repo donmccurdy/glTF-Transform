@@ -32,7 +32,7 @@
     "docs:deploy": "yarn build && vercel"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.1.2",
     "@tweakpane/core": "^1.1.9",
     "@types/command-exists": "1.2.3",
     "@types/d3-dsv": "^3.0.7",

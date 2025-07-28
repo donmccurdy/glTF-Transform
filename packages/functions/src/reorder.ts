@@ -2,7 +2,7 @@ import { type Accessor, type Document, type GLTF, Primitive, PropertyType, type 
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { compactAttribute } from './compact-primitive.js';
 import { prune } from './prune.js';
-import { SetMap, assignDefaults, createTransform, deepListAttributes, shallowCloneAccessor } from './utils.js';
+import { assignDefaults, createTransform, deepListAttributes, SetMap, shallowCloneAccessor } from './utils.js';
 
 const NAME = 'reorder';
 

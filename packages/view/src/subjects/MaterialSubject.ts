@@ -28,8 +28,8 @@ import {
 	SRGBColorSpace,
 	type Texture,
 } from 'three';
-import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import type { Subscription } from '../constants.js';
+import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
 import { type TextureParams, TexturePool, type ValuePool } from '../pools/index.js';
 import { eq } from '../utils/index.js';

@@ -1,10 +1,10 @@
+import { Document, NodeIO } from '@gltf-transform/core';
+import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
+import test from 'ava';
 import fs from 'fs';
+import { glob } from 'glob';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { Document, NodeIO } from '@gltf-transform/core';
-import { Environment, createPlatformIO, environment, logger } from '@gltf-transform/test-utils';
-import test from 'ava';
-import { glob } from 'glob';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

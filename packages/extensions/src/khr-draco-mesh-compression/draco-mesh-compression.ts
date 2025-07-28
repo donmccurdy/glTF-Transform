@@ -1,15 +1,15 @@
 import {
 	Accessor,
 	BufferUtils,
+	type bbox,
 	type Document,
 	Extension,
 	GLB_BUFFER,
+	getBounds,
 	Primitive,
 	PropertyType,
 	type ReaderContext,
 	type WriterContext,
-	type bbox,
-	getBounds,
 } from '@gltf-transform/core';
 import type { Decoder, DecoderModule, EncoderModule, Mesh } from 'draco3dgltf';
 import { KHR_DRACO_MESH_COMPRESSION } from '../constants.js';

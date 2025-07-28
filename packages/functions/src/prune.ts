@@ -259,7 +259,7 @@ class DisposeCounter {
 	public readonly disposed: Record<string, number> = {};
 
 	empty(): boolean {
-		for (const key in this.disposed) return false;
+		for (const _key in this.disposed) return false;
 		return true;
 	}
 

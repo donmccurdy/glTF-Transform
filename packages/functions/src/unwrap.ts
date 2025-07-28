@@ -1,4 +1,5 @@
 import {
+	Accessor,
 	Document,
 	type Mesh,
 	Node,
@@ -7,7 +8,6 @@ import {
 	type TypedArrayConstructor,
 	type vec2,
 } from '@gltf-transform/core';
-import { Accessor } from '@gltf-transform/core';
 import type * as watlas from 'watlas';
 import { compactPrimitive } from './compact-primitive.js';
 import { dequantizeAttributeArray } from './dequantize.js';

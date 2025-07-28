@@ -1,10 +1,10 @@
 import { type Accessor, Document, type Primitive, type vec2 } from '@gltf-transform/core';
 import {
-	VertexCountMethod,
 	getPrimitiveVertexCount,
 	unweld,
 	unwrap,
 	unwrapPrimitives,
+	VertexCountMethod,
 } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 import test from 'ava';

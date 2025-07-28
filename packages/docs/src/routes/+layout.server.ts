@@ -1,5 +1,5 @@
-import { parser } from '$lib/server/model';
 import type { Node } from 'ts-morph';
+import { parser } from '$lib/server/model';
 import type { LayoutServerLoad } from './$types';
 
 export const prerender = true;

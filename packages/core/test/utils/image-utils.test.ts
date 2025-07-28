@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { BufferUtils, ImageUtils } from '@gltf-transform/core';
 import test from 'ava';
+import fs from 'fs';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

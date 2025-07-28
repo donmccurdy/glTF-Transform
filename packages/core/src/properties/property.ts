@@ -12,6 +12,7 @@ import {
 	RefSet,
 } from 'property-graph';
 import type { Nullable } from '../constants.js';
+import type { UnknownRef } from '../utils/index.js';
 import {
 	equalsArray,
 	equalsObject,
@@ -21,7 +22,6 @@ import {
 	isArray,
 	isPlainObject,
 } from '../utils/index.js';
-import type { UnknownRef } from '../utils/index.js';
 
 export type PropertyResolver<T extends Property> = (p: T) => T;
 export const COPY_IDENTITY = <T extends Property>(t: T): T => t;

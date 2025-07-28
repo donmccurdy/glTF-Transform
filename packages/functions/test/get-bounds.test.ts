@@ -1,5 +1,4 @@
-import { Accessor, Document, Primitive } from '@gltf-transform/core';
-import { getBounds } from '@gltf-transform/core';
+import { Accessor, Document, getBounds, Primitive } from '@gltf-transform/core';
 import test from 'ava';
 
 test('unindexed', (t) => {

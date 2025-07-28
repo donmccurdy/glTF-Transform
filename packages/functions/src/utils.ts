@@ -195,7 +195,6 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
  * @hidden
  */
 export function deepDisposePrimitive(prim: Primitive): void {
-	const material = prim.getMaterial();
 	const indices = prim.getIndices();
 	const attributes = deepListAttributes(prim);
 
@@ -253,7 +252,7 @@ export function isUsed(prop: Property): boolean {
 
 /** @hidden */
 export function isEmptyObject(object: Record<string, unknown>): boolean {
-	for (const key in object) return false;
+	for (const _key in object) return false;
 	return true;
 }
 

@@ -1,4 +1,4 @@
-import { Logger, NodeIO, type PlatformIO, WebIO, type vec3 as _vec3, type bbox } from '@gltf-transform/core';
+import { type vec3 as _vec3, type bbox, Logger, NodeIO, type PlatformIO, WebIO } from '@gltf-transform/core';
 
 export enum Environment {
 	WEB,

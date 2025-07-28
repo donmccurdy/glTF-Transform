@@ -1,4 +1,4 @@
-import { Mesh, Primitive, type mat4 } from '@gltf-transform/core';
+import { Mesh, type mat4, Primitive } from '@gltf-transform/core';
 import { compactPrimitive } from './compact-primitive.js';
 import { transformPrimitive } from './transform-primitive.js';
 

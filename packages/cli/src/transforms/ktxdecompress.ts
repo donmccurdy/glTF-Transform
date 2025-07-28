@@ -1,12 +1,11 @@
-import os from 'os';
-import { join } from 'path';
-import fs, { rm } from 'fs/promises';
-import pLimit from 'p-limit';
-import tmp from 'tmp';
-
 import { type Document, FileUtils, ImageUtils, type Transform, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
+import fs, { rm } from 'fs/promises';
+import os from 'os';
+import pLimit from 'p-limit';
+import { join } from 'path';
+import tmp from 'tmp';
 import { formatBytes, spawn, waitExit } from '../util.js';
 import { checkKTXSoftware } from './toktx.js';
 

@@ -2,12 +2,12 @@ import {
 	AnimationChannel,
 	type Document,
 	type Mesh,
+	type mat4,
 	type Node,
 	type Primitive,
 	PropertyType,
 	type Scene,
 	type Transform,
-	type mat4,
 } from '@gltf-transform/core';
 import { invert, multiply } from 'gl-matrix/mat4';
 import { compactPrimitive } from './compact-primitive.js';

@@ -1,4 +1,3 @@
-import { ExtensionProperty as ExtensionPropertyDef, PropertyType } from '@gltf-transform/core';
 import type {
 	Accessor as AccessorDef,
 	Material as MaterialDef,
@@ -10,10 +9,11 @@ import type {
 	Skin as SkinDef,
 	Texture as TextureDef,
 } from '@gltf-transform/core';
+import { ExtensionProperty as ExtensionPropertyDef, PropertyType } from '@gltf-transform/core';
 import type { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
 import type { BufferAttribute, Group, InstancedMesh, Material, Object3D, Skeleton, Texture } from 'three';
-import { DefaultImageProvider, type ImageProvider } from './ImageProvider.js';
 import type { LightLike, MeshLike, THREEObject } from './constants.js';
+import { DefaultImageProvider, type ImageProvider } from './ImageProvider.js';
 import { MaterialPool, Pool, SingleUserPool, TexturePool } from './pools/index.js';
 import {
 	AccessorSubject,

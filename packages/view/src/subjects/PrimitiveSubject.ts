@@ -14,8 +14,8 @@ import {
 	Points,
 	SkinnedMesh,
 } from 'three';
-import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { MeshLike } from '../constants.js';
+import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { RefMapObserver, RefObserver } from '../observers/index.js';
 import { type MaterialParams, MaterialPool, type ValuePool } from '../pools/index.js';
 import { DEFAULT_MATERIAL, semanticToAttributeName } from '../utils/index.js';

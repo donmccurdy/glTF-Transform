@@ -1,13 +1,13 @@
-import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { mockConsoleLog, program, programReady } from '@gltf-transform/cli';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import test from 'ava';
 import draco3d from 'draco3dgltf';
+import fs from 'fs';
 import { MeshoptDecoder } from 'meshoptimizer';
+import path, { dirname } from 'path';
 import tmp from 'tmp';
+import { fileURLToPath } from 'url';
 
 tmp.setGracefulCleanup();
 

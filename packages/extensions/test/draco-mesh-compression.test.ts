@@ -1,10 +1,10 @@
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { Accessor, type Buffer, Document, Format, NodeIO, Primitive, getBounds } from '@gltf-transform/core';
+import { Accessor, type Buffer, Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

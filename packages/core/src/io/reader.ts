@@ -1,9 +1,9 @@
 import {
 	ComponentTypeToTypedArray,
 	GLB_BUFFER,
+	type mat4,
 	PropertyType,
 	type TypedArray,
-	type mat4,
 	type vec3,
 	type vec4,
 } from '../constants.js';

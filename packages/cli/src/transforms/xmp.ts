@@ -1,8 +1,8 @@
-import path from 'path';
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { KHRXMP, type Packet } from '@gltf-transform/extensions';
 import fs from 'fs/promises';
 import languageTags from 'language-tags';
+import path from 'path';
 import prompts, { type PromptObject } from 'prompts';
 import validateSPDX from 'spdx-correct';
 import { XMPContext } from '../util.js';

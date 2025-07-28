@@ -1,7 +1,7 @@
 import type { Mesh as MeshDef, Primitive as PrimitiveDef } from '@gltf-transform/core';
 import { Group } from 'three';
-import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { MeshLike } from '../constants.js';
+import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { RefListObserver } from '../observers/index.js';
 import { type SingleUserParams, SingleUserPool } from '../pools/index.js';
 import { Subject } from './Subject.js';

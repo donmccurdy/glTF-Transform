@@ -3,9 +3,9 @@ import {
 	type GLTF,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec3,
 	type vec4,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
 import { PBRSpecularGlossiness } from './pbr-specular-glossiness.js';
