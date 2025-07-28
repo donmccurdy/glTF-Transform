@@ -1,9 +1,7 @@
-import { Document, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
+import { Document, Primitive, type Transform } from '@gltf-transform/core';
 import { compactPrimitive } from './compact-primitive.js';
-import { dedup } from './dedup.js';
-import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
-import { EMPTY_U32, VertexStream, hashLookup } from './hash-table.js';
-import { prune } from './prune.js';
+import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
+import { EMPTY_U32, hashLookup, VertexStream } from './hash-table.js';
 import { assignDefaults, ceilPowerOfTwo, createTransform, deepDisposePrimitive, formatDeltaOp } from './utils.js';
 
 /**

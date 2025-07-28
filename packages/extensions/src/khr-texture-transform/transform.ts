@@ -1,5 +1,4 @@
-import { ExtensionProperty, type IProperty, type Nullable, type vec2 } from '@gltf-transform/core';
-import { PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType, type vec2 } from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
 
 interface ITransform extends IProperty {

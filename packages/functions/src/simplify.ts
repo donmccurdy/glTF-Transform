@@ -1,11 +1,9 @@
-import { Document, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
+import { Document, Primitive, type Transform } from '@gltf-transform/core';
 import type { MeshoptSimplifier } from 'meshoptimizer';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
-import { dedup } from './dedup.js';
 import { dequantizeAttributeArray } from './dequantize.js';
-import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
-import { prune } from './prune.js';
+import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
 import { unweldPrimitive } from './unweld.js';
 import {
 	assignDefaults,

@@ -4,8 +4,8 @@ import {
 	type ImageUtilsFormat,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec2,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 import { KHR_TEXTURE_BASISU } from '../constants.js';
@@ -142,7 +142,7 @@ export class KHRTextureBasisu extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
 		return this;
 	}
 

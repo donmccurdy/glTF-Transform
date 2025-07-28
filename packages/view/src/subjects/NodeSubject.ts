@@ -7,8 +7,8 @@ import {
 } from '@gltf-transform/core';
 import type { InstancedMesh as InstancedMeshDef, Light as LightDef } from '@gltf-transform/extensions';
 import { Bone, Group, InstancedMesh, Matrix4, type Mesh, Object3D, type Skeleton, SkinnedMesh } from 'three';
-import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { LightLike } from '../constants.js';
+import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import { RefListObserver, RefObserver } from '../observers/index.js';
 import { SingleUserPool } from '../pools/index.js';
 import { eq } from '../utils/index.js';

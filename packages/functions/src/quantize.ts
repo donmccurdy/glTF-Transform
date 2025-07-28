@@ -1,29 +1,29 @@
 import {
 	Accessor,
 	AnimationChannel,
+	type bbox,
 	type Document,
 	type ILogger,
 	MathUtils,
 	type Mesh,
+	type mat4,
 	Node,
 	Primitive,
 	PrimitiveTarget,
 	PropertyType,
 	type Skin,
 	type Transform,
-	type bbox,
-	type mat4,
 	type vec2,
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
-import { type InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import type { Volume } from '@gltf-transform/extensions';
+import { type InstancedMesh, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { fromRotationTranslationScale, fromScaling, invert, multiply as multiplyMat4 } from 'gl-matrix/mat4';
 import { max, min, scale, transformMat4 } from 'gl-matrix/vec3';
 import { compactPrimitive } from './compact-primitive.js';
 import { dedup } from './dedup.js';
-import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
 import { prune } from './prune.js';
 import { sortPrimitiveWeights } from './sort-primitive-weights.js';
 import { assignDefaults, createTransform } from './utils.js';
@@ -142,7 +142,7 @@ export function quantize(_options: QuantizeOptions = QUANTIZE_DEFAULTS): Transfo
 		const root = document.getRoot();
 
 		// Compute vertex position quantization volume.
-		let nodeTransform: VectorTransform<vec3> | undefined = undefined;
+		let nodeTransform: VectorTransform<vec3> | undefined;
 		if (options.quantizationVolume === 'scene') {
 			nodeTransform = getNodeTransform(expandBounds(root.listMeshes().map(getPositionQuantizationVolume)));
 		}

@@ -1,56 +1,56 @@
 {
-  "formatter": {
-    "indentStyle": "tab",
-    "indentWidth": 4,
-    "lineWidth": 120
-  },
-  "linter": {
-    "rules": {
-      "suspicious": {
-        "noApproximativeNumericConstant": "off",
-        "noAssignInExpressions": "off",
-        "noEmptyInterface": "off",
-        "noFallthroughSwitchClause": "off",
-        "noGlobalIsFinite": "off",
-        "noImplicitAnyLet": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off",
-        "noParameterAssign": "off",
-        "noUnusedTemplateLiteral": "off",
-        "noUselessElse": "off",
-        "useEnumInitializers": "off",
-        "useExponentiationOperator": "off",
-        "useNodejsImportProtocol": "off",
-        "useNumberNamespace": "off",
-        "useSingleVarDeclarator": "off",
-        "useTemplate": "off"
-      },
-      "complexity": {
-        "noForEach": "off",
-        "noStaticOnlyClass": "off",
-        "noThisInStatic": "off",
-        "noUselessSwitchCase": "off",
-        "useArrowFunction": "off",
-        "useLiteralKeys": "off",
-        "useOptionalChain": "off"
-      },
-      "performance": {
-        "noDelete": "off"
-      }
-    }
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single"
-    }
-  },
-  "json": {
-    "formatter": {
-      "enabled": false
-    }
-  },
-  "files": {
-    "ignore": ["coverage/**", "packages/*/dist/**", "**/build", "**/.svelte-kit"]
-  }
+	"formatter": {
+		"indentStyle": "tab",
+		"indentWidth": 4,
+		"lineWidth": 120
+	},
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noApproximativeNumericConstant": "off",
+				"noAssignInExpressions": "off",
+				"noEmptyInterface": "off",
+				"noFallthroughSwitchClause": "off",
+				"noGlobalIsFinite": "off",
+				"noImplicitAnyLet": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "off",
+				"noUnusedTemplateLiteral": "off",
+				"noUselessElse": "off",
+				"useEnumInitializers": "off",
+				"useExponentiationOperator": "off",
+				"useNodejsImportProtocol": "off",
+				"useNumberNamespace": "off",
+				"useSingleVarDeclarator": "off",
+				"useTemplate": "off"
+			},
+			"complexity": {
+				"noForEach": "off",
+				"noStaticOnlyClass": "off",
+				"noThisInStatic": "off",
+				"noUselessSwitchCase": "off",
+				"useArrowFunction": "off",
+				"useLiteralKeys": "off",
+				"useOptionalChain": "off"
+			},
+			"performance": {
+				"noDelete": "off"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": false
+		}
+	},
+	"files": {
+		"includes": ["**", "!**/coverage/**", "!**/packages/**/*/dist/**", "!**/build", "!**/.svelte-kit", "!**/*.svelte"]
+	}
 }

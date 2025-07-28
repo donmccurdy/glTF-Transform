@@ -142,7 +142,7 @@ export abstract class Extension {
 	 */
 
 	/** @hidden Installs dependencies required by the extension. */
-	public install(key: string, dependency: unknown): this {
+	public install(_key: string, _dependency: unknown): this {
 		return this;
 	}
 

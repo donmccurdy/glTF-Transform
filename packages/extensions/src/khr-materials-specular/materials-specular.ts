@@ -4,8 +4,8 @@ import {
 	MathUtils,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec3,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 import { Specular } from './specular.js';

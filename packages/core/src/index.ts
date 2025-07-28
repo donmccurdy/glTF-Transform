@@ -1,6 +1,26 @@
+export { Graph, GraphEdge, type Ref, RefList, RefMap, RefSet } from 'property-graph';
+export {
+	type bbox,
+	ComponentTypeToTypedArray,
+	Format,
+	GLB_BUFFER,
+	type mat3,
+	type mat4,
+	type Nullable,
+	PropertyType,
+	TextureChannel,
+	type TypedArray,
+	type TypedArrayConstructor,
+	VERSION,
+	VertexLayout,
+	type vec2,
+	type vec3,
+	type vec4,
+} from './constants.js';
 export { Document, type Transform, type TransformContext } from './document.js';
-export type { JSONDocument } from './json-document.js';
 export { Extension } from './extension.js';
+export { DenoIO, NodeIO, PlatformIO, ReaderContext, WebIO, WriterContext } from './io/index.js';
+export type { JSONDocument } from './json-document.js';
 export {
 	Accessor,
 	Animation,
@@ -8,55 +28,35 @@ export {
 	AnimationSampler,
 	Buffer,
 	Camera,
-	ExtensionProperty,
+	COPY_IDENTITY,
 	ExtensibleProperty,
-	Property,
+	ExtensionProperty,
 	type IProperty,
 	Material,
 	Mesh,
 	Node,
 	Primitive,
 	PrimitiveTarget,
+	Property,
+	type PropertyResolver,
 	Root,
 	Scene,
 	Skin,
 	Texture,
 	TextureInfo,
-	type PropertyResolver,
-	COPY_IDENTITY,
 } from './properties/index.js';
-export { Graph, GraphEdge, type Ref, RefList, RefSet, RefMap } from 'property-graph';
-export { DenoIO, PlatformIO, NodeIO, WebIO, ReaderContext, WriterContext } from './io/index.js';
+export type { GLTF } from './types/gltf.js';
 export {
 	BufferUtils,
-	HTTPUtils,
 	ColorUtils,
 	FileUtils,
+	getBounds,
+	HTTPUtils,
+	type ILogger,
 	ImageUtils,
 	type ImageUtilsFormat,
-	type ILogger,
 	Logger,
 	MathUtils,
-	Verbosity,
-	getBounds,
 	uuid,
+	Verbosity,
 } from './utils/index.js';
-export {
-	type TypedArray,
-	type TypedArrayConstructor,
-	ComponentTypeToTypedArray,
-	PropertyType,
-	Format,
-	type Nullable,
-	TextureChannel,
-	VertexLayout,
-	type vec2,
-	type vec3,
-	type vec4,
-	type mat3,
-	type mat4,
-	type bbox,
-	GLB_BUFFER,
-	VERSION,
-} from './constants.js';
-export type { GLTF } from './types/gltf.js';

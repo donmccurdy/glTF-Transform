@@ -1,5 +1,4 @@
-import { Document, type Texture } from '@gltf-transform/core';
-import { Material, PropertyType, TextureChannel } from '@gltf-transform/core';
+import { Document, Material, PropertyType, type Texture, TextureChannel } from '@gltf-transform/core';
 
 /**
  * Returns a list of {@link TextureChannel TextureChannels} used by the given

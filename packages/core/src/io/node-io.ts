@@ -1,7 +1,6 @@
 import { Format } from '../constants.js';
 import type { Document } from '../document.js';
-import { FileUtils } from '../utils/index.js';
-import { HTTPUtils } from '../utils/index.js';
+import { FileUtils, HTTPUtils } from '../utils/index.js';
 import { PlatformIO } from './platform-io.js';
 
 /**

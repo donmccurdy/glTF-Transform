@@ -1,4 +1,4 @@
-import { Extension, type GLTF, type ReaderContext, type WriterContext, type vec3 } from '@gltf-transform/core';
+import { Extension, type GLTF, type ReaderContext, type vec3, type WriterContext } from '@gltf-transform/core';
 import { KHR_MATERIALS_DIFFUSE_TRANSMISSION } from '../constants.js';
 import { DiffuseTransmission } from './diffuse-transmission.js';
 

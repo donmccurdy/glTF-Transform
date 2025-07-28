@@ -1,4 +1,3 @@
-export * from './Subject.js';
 export * from './AccessorSubject.js';
 export * from './ExtensionSubject.js';
 export * from './InstancedMeshSubject.js';
@@ -9,4 +8,5 @@ export * from './NodeSubject.js';
 export * from './PrimitiveSubject.js';
 export * from './SceneSubject.js';
 export * from './SkinSubject.js';
+export * from './Subject.js';
 export * from './TextureSubject.js';

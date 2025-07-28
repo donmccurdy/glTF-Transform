@@ -320,7 +320,7 @@ function listPropertyDependencies(parent: Property, visited: Set<Property>): Set
 	const graph = parent.getGraph();
 	const queue: Property[] = [parent];
 
-	let next: Property | undefined = undefined;
+	let next: Property | undefined;
 	while ((next = queue.pop())) {
 		visited.add(next);
 		for (const child of graph.listChildren(next)) {

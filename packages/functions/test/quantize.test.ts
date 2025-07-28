@@ -1,14 +1,14 @@
 import {
 	type Accessor,
 	type AnimationChannel,
+	type bbox,
 	Document,
+	getBounds,
 	type Mesh,
 	type Node,
 	Primitive,
 	type PrimitiveTarget,
 	type Scene,
-	type bbox,
-	getBounds,
 	type vec3,
 } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, KHRMaterialsVolume, type Volume } from '@gltf-transform/extensions';

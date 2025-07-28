@@ -1,11 +1,3 @@
-import os from 'os';
-import { join } from 'path';
-import fs, { rm } from 'fs/promises';
-import micromatch from 'micromatch';
-import pLimit from 'p-limit';
-import type sharp from 'sharp';
-import tmp from 'tmp';
-
 import {
 	BufferUtils,
 	type Document,
@@ -20,15 +12,22 @@ import {
 } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import {
-	TextureResizeFilter,
 	createTransform,
 	fitPowerOfTwo,
 	fitWithin,
 	getTextureChannelMask,
 	getTextureColorSpace,
 	listTextureSlots,
+	TextureResizeFilter,
 } from '@gltf-transform/functions';
-import { MICROMATCH_OPTIONS, commandExists, formatBytes, spawn, waitExit } from '../util.js';
+import fs, { rm } from 'fs/promises';
+import micromatch from 'micromatch';
+import os from 'os';
+import pLimit from 'p-limit';
+import { join } from 'path';
+import type sharp from 'sharp';
+import tmp from 'tmp';
+import { commandExists, formatBytes, MICROMATCH_OPTIONS, spawn, waitExit } from '../util.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
@@ -263,7 +262,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				const params = [
 					'create',
-					...createParams(texture, slots, channels, srcSize, logger, numTextures, options),
+					...createParams(texture, slots, channels, numTextures, options),
 					srcPath,
 					dstPath,
 				];
@@ -313,8 +312,6 @@ function createParams(
 	texture: Texture,
 	slots: string[],
 	channels: number,
-	size: vec2,
-	logger: ILogger,
 	numTextures: number,
 	options: ETC1SOptions | UASTCOptions,
 ): (string | number)[] {

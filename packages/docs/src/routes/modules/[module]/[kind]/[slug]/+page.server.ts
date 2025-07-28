@@ -1,6 +1,6 @@
-import { encoder, getMetadata, parser } from '$lib/server/model';
 import type { GD } from '@greendoc/parse';
 import { error } from '@sveltejs/kit';
+import { encoder, getMetadata, parser } from '$lib/server/model';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad<{ export: GD.ApiItem }> = async ({ params }) => {

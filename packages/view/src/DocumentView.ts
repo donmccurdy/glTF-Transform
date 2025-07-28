@@ -10,8 +10,8 @@ import type {
 } from '@gltf-transform/core';
 import type { Light as LightDef } from '@gltf-transform/extensions';
 import type { Group, Material, Object3D, Texture } from 'three';
-import { type DocumentViewConfig, DocumentViewImpl } from './DocumentViewImpl.js';
 import type { LightLike, MeshLike } from './constants.js';
+import { type DocumentViewConfig, DocumentViewImpl } from './DocumentViewImpl.js';
 
 /**
  * Constructs a three.js subtree from a glTF-Transform Document, and maintains a
@@ -21,6 +21,7 @@ import type { LightLike, MeshLike } from './constants.js';
  */
 export class DocumentView {
 	/** @internal */ private _ready = false;
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: For future use.
 	/** @internal */ private _document: Document;
 	/** @internal */ private _impl: DocumentViewImpl;
 

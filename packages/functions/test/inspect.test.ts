@@ -1,9 +1,9 @@
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { NodeIO } from '@gltf-transform/core';
 import { inspect } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

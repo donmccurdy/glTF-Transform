@@ -1,5 +1,5 @@
-import { spawn as _spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
+import { spawn as _spawn } from 'child_process';
 import CLITable from 'cli-table3';
 import _commandExists from 'command-exists';
 import { stringify } from 'csv-stringify';

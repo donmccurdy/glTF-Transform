@@ -314,6 +314,7 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	 * `VEC2` accessor is 2. This value is determined automatically based on array length and
 	 * accessor type, specified with {@link Accessor.setType setType()}.
 	 */
+	// biome-ignore lint/suspicious/useAdjacentOverloadSignatures: Static vs. non-static.
 	public getElementSize(): number {
 		return Accessor.getElementSize(this.get('type'));
 	}

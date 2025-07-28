@@ -1,6 +1,6 @@
 import { Document, type Scene } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { VertexCountMethod, getSceneVertexCount } from '@gltf-transform/functions';
+import { getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 

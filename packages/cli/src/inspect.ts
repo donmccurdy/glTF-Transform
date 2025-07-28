@@ -10,7 +10,6 @@ import {
 	inspect as inspectDoc,
 } from '@gltf-transform/functions';
 import {
-	TableFormat,
 	formatBytes,
 	formatHeader,
 	formatLong,
@@ -18,6 +17,7 @@ import {
 	formatTable,
 	formatXMP,
 	log,
+	TableFormat,
 } from './util.js';
 
 type AnyPropertyReport =
@@ -100,7 +100,7 @@ async function reportSection(
 	});
 	const header = Object.keys(formattedRecords[0]);
 	const rows = formattedRecords.map((p: Record<string, string>) => Object.values(p));
-	const footnotes = format !== TableFormat.CSV ? getFootnotes(type, rows, header) : [];
+	const footnotes = format !== TableFormat.CSV ? getFootnotes(type, header) : [];
 	log(await formatTable(format, header, rows));
 	if (footnotes.length) log('\n' + footnotes.join('\n'));
 	if (section.warnings) {
@@ -128,7 +128,7 @@ function formatPropertyReport(property: AnyPropertyReport, index: number, format
 	return row as Record<string, string>;
 }
 
-function getFootnotes(type: string, rows: string[][], header: string[]): string[] {
+function getFootnotes(type: string, header: string[]): string[] {
 	const footnotes = [];
 	if (type === 'scenes') {
 		for (let i = 0; i < header.length; i++) {

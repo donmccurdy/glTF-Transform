@@ -3,8 +3,8 @@ import {
 	type GLTF,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec3,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 import { Sheen } from './sheen.js';

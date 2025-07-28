@@ -5,8 +5,8 @@ import {
 	type ImageUtilsFormat,
 	PropertyType,
 	type ReaderContext,
-	type WriterContext,
 	type vec2,
+	type WriterContext,
 } from '@gltf-transform/core';
 import { EXT_TEXTURE_AVIF } from '../constants.js';
 
@@ -114,7 +114,7 @@ export class EXTTextureAVIF extends Extension {
 	}
 
 	/** @hidden */
-	public read(context: ReaderContext): this {
+	public read(_context: ReaderContext): this {
 		return this;
 	}
 

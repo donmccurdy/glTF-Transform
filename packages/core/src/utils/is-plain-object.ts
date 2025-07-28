@@ -16,7 +16,7 @@ export function isPlainObject(o: unknown): o is object {
 	if (isObject(prot) === false) return false;
 
 	// If constructor does not have an Object-specific method
-	if (Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf') === false) {
+	if (Object.hasOwn(prot, 'isPrototypeOf') === false) {
 		return false;
 	}
 

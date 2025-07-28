@@ -1,6 +1,4 @@
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { Document, Primitive, getBounds } from '@gltf-transform/core';
+import { Document, getBounds, Primitive } from '@gltf-transform/core';
 import { join, quantize, transformPrimitive } from '@gltf-transform/functions';
 import {
 	createLineLoopPrim,
@@ -13,6 +11,8 @@ import {
 	roundBbox,
 } from '@gltf-transform/test-utils';
 import test from 'ava';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

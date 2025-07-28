@@ -1,9 +1,9 @@
 import {
+	program as _program,
 	type Validator as CaporalValidator,
 	type Command,
 	type ParsedOption,
 	type Logger as WinstonLogger,
-	program as _program,
 } from '@donmccurdy/caporal';
 import { type ILogger, Verbosity } from '@gltf-transform/core';
 

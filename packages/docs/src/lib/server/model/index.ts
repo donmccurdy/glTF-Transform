@@ -1,6 +1,6 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Encoder, type GD, Parser, createPrefixSort } from '@greendoc/parse';
+import { createPrefixSort, Encoder, type GD, Parser } from '@greendoc/parse';
 import he from 'he';
 import { Project } from 'ts-morph';
 

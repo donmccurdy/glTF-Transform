@@ -1,80 +1,80 @@
-import { promises as fs, readFileSync } from 'fs';
-import { URL } from 'url';
 import { type Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
+	center,
 	DRACO_DEFAULTS,
 	type DracoOptions,
-	type FlattenOptions,
-	INSTANCE_DEFAULTS,
-	type InstanceOptions,
-	JOIN_DEFAULTS,
-	type JoinOptions,
-	MESHOPT_DEFAULTS,
-	PALETTE_DEFAULTS,
-	PRUNE_DEFAULTS,
-	type PaletteOptions,
-	type PartitionOptions,
-	type PruneOptions,
-	QUANTIZE_DEFAULTS,
-	type ResampleOptions,
-	SIMPLIFY_DEFAULTS,
-	type SequenceOptions,
-	type SparseOptions,
-	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
-	TextureResizeFilter,
-	UNWRAP_DEFAULTS,
-	type UnweldOptions,
-	type WeldOptions,
-	center,
 	dedup,
 	dequantize,
 	draco,
+	type FlattenOptions,
 	flatten,
+	INSTANCE_DEFAULTS,
+	type InstanceOptions,
 	instance,
+	JOIN_DEFAULTS,
+	type JoinOptions,
 	join,
+	MESHOPT_DEFAULTS,
 	meshopt,
 	metalRough,
+	PALETTE_DEFAULTS,
+	type PaletteOptions,
+	type PartitionOptions,
+	PRUNE_DEFAULTS,
+	type PruneOptions,
 	palette,
 	partition,
 	prune,
+	QUANTIZE_DEFAULTS,
 	quantize,
+	type ResampleOptions,
 	reorder,
 	resample,
+	type SequenceOptions,
+	SIMPLIFY_DEFAULTS,
+	type SparseOptions,
 	sequence,
 	simplify,
 	sparse,
+	TEXTURE_COMPRESS_SUPPORTED_FORMATS,
+	TextureResizeFilter,
 	tangents,
 	textureCompress,
+	UNWRAP_DEFAULTS,
+	type UnweldOptions,
 	unlit,
 	unweld,
 	unwrap,
+	type WeldOptions,
 	weld,
 } from '@gltf-transform/functions';
+import { promises as fs, readFileSync } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import { gzip } from 'node-gzip';
+import { URL } from 'url';
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
 import { inspect } from './inspect.js';
-import { Validator, program } from './program.js';
+import { program, Validator } from './program.js';
 import { Session } from './session.js';
 import {
 	ETC1S_DEFAULTS,
 	Filter,
-	Mode,
-	UASTC_DEFAULTS,
-	type XMPOptions,
 	ktxdecompress,
 	ktxfix,
+	Mode,
 	merge,
 	toktx,
+	UASTC_DEFAULTS,
+	type XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { MICROMATCH_OPTIONS, TableFormat, dim, formatBytes, regexFromArray, underline } from './util.js';
+import { dim, formatBytes, MICROMATCH_OPTIONS, regexFromArray, TableFormat, underline } from './util.js';
 import { type ValidateOptions, validate } from './validate.js';
 
 let io: NodeIO;

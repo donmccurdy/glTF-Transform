@@ -1,6 +1,6 @@
 import { multiply } from 'gl-matrix/mat4';
 import { RefSet } from 'property-graph';
-import { type Nullable, PropertyType, type mat4, type vec3, type vec4 } from '../constants.js';
+import { type mat4, type Nullable, PropertyType, type vec3, type vec4 } from '../constants.js';
 import { MathUtils } from '../utils/index.js';
 import type { Camera } from './camera.js';
 import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';

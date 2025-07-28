@@ -5,7 +5,7 @@ import {
 	type TypedArray,
 	type TypedArrayConstructor,
 } from '@gltf-transform/core';
-import { VertexCountMethod, getPrimitiveVertexCount } from './get-vertex-count.js';
+import { getPrimitiveVertexCount, VertexCountMethod } from './get-vertex-count.js';
 import { EMPTY_U32 } from './hash-table.js';
 import { createIndices, createIndicesEmpty, deepListAttributes, shallowCloneAccessor } from './utils.js';
 

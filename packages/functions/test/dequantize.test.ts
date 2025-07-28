@@ -1,11 +1,11 @@
 import {
+	type bbox,
 	Document,
+	getBounds,
 	Logger,
 	Primitive,
 	type PrimitiveTarget,
 	type Scene,
-	type bbox,
-	getBounds,
 	type vec3,
 } from '@gltf-transform/core';
 import { dequantize } from '@gltf-transform/functions';

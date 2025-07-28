@@ -1,11 +1,11 @@
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { Document, NodeIO, type Property, PropertyType } from '@gltf-transform/core';
 import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 import { dedup } from '@gltf-transform/functions';
 import test from 'ava';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

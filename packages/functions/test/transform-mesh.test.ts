@@ -1,4 +1,4 @@
-import { Document, Primitive, type PrimitiveTarget, type bbox, type vec3 } from '@gltf-transform/core';
+import { type bbox, Document, Primitive, type PrimitiveTarget, type vec3 } from '@gltf-transform/core';
 import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
 import { logger, mat4, round, roundBbox } from '@gltf-transform/test-utils';
 import test from 'ava';

@@ -1,7 +1,7 @@
 import { Light as LightDef } from '@gltf-transform/extensions';
 import { DirectionalLight, PointLight, SpotLight } from 'three';
-import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { LightLike } from '../constants.js';
+import type { DocumentViewSubjectAPI } from '../DocumentViewImpl.js';
 import type { ValuePool } from '../pools/index.js';
 import { Subject } from './Subject.js';
 
