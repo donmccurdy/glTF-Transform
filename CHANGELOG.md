@@ -12,6 +12,14 @@ _Special thanks to [Brandon Jones](https://github.com/toji) for contributing the
 
 - functions,cli: Adds `unwrap()` and `unwrapPrimitives()` to generate texture coordinates [#1660](https://github.com/donmccurdy/glTF-Transform/pull/1660), [#1661](https://github.com/donmccurdy/glTF-Transform/pull/1661), [#1662](https://github.com/donmccurdy/glTF-Transform/pull/1662), [#1663](https://github.com/donmccurdy/glTF-Transform/pull/1663), [#1666](https://github.com/donmccurdy/glTF-Transform/pull/1666)
 
+**Other:**
+
+- fix(cli): Warn when calling 'optimize' with Draco enabled and welding disabled [#1698](https://github.com/donmccurdy/glTF-Transform/pull/1698)
+- fix(functions): Remove side effects from simplify() and weld() [#1685](https://github.com/donmccurdy/glTF-Transform/pull/1685)
+- fix(functions): Deprecate 'keepIndices' option in prune() [#1691](https://github.com/donmccurdy/glTF-Transform/pull/1691)
+- fix(view): Fix light targets in instanced lights [#1491](https://github.com/donmccurdy/glTF-Transform/pull/1491), [#1699](https://github.com/donmccurdy/glTF-Transform/pull/1699)
+- fix(view): Fix emissive intensity on MeshStandardMaterial [#1690](https://github.com/donmccurdy/glTF-Transform/pull/1690)
+
 ### v4.1
 
 **Features:**
