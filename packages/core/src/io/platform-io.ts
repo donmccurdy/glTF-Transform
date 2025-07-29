@@ -191,7 +191,6 @@ export abstract class PlatformIO {
 	 */
 
 	private async _readResourcesExternal(jsonDoc: JSONDocument, base: string): Promise<void> {
-		const failedImageIndices = new Set<number>();
 		const images = jsonDoc.json.images || [];
 		const buffers = jsonDoc.json.buffers || [];
 		const pendingResources: Array<Promise<void>> = [...images, ...buffers].map(
@@ -207,7 +206,7 @@ export abstract class PlatformIO {
 						throw error;
 					}
 
-					// In non-strict mode, log warning and track failed images.
+					// In non-strict mode, log warning.
 					const isImage = images.includes(resource as GLTF.IImage);
 					const resourceType = isImage ? 'image' : 'buffer';
 					const resourceIndex = isImage
@@ -216,20 +215,15 @@ export abstract class PlatformIO {
 
 					this._logger.warn(`Failed to load external ${resourceType} at index ${resourceIndex}: ${uri}`);
 
-					if (isImage) {
-						failedImageIndices.add(resourceIndex);
-					}
 					// Remove the URI to mark as failed.
 					delete resource.uri;
 				}
 			},
 		);
 		await Promise.all(pendingResources);
-
 	}
 
 	private _readResourcesInternal(jsonDoc: JSONDocument): void {
-		const failedImageIndices = new Set<number>();
 		// NOTICE: This method may be called more than once during the loading
 		// process (e.g. WebIO.read) and should handle that safely.
 
@@ -251,13 +245,13 @@ export abstract class PlatformIO {
 
 		// Unpack images.
 		const images = jsonDoc.json.images || [];
-		images.forEach((image: GLTF.IImage, index: number) => {
+		images.forEach((image: GLTF.IImage) => {
 			if (image.bufferView === undefined && image.uri === undefined) {
 				if (this._strictResources) {
 					throw new Error('Missing resource URI or buffer view.');
 				}
-				// In non-strict mode, track as failed image.
-				failedImageIndices.add(index);
+				// In non-strict mode, continue without error.
+				// The reader will create a texture with null image.
 				return;
 			}
 
@@ -267,7 +261,6 @@ export abstract class PlatformIO {
 		// Unpack buffers.
 		const buffers = jsonDoc.json.buffers || [];
 		buffers.forEach(resolveResource);
-
 	}
 
 	/**
