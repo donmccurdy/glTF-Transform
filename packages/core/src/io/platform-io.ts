@@ -152,7 +152,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted Uint8Array. */
-	public async writeBinary(doc: Document): Promise<Uint8Array> {
+	public async writeBinary(doc: Document): Promise<Uint8Array<ArrayBuffer>> {
 		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
 
 		const header = new Uint32Array([0x46546c67, 2, 12]);
