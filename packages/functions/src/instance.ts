@@ -49,11 +49,13 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 		const logger = doc.getLogger();
 		const root = doc.getRoot();
 
-		if (root.listAnimations().length) {
-			logger.warn(`${NAME}: Instancing is not currently supported for animated models.`);
-			logger.debug(`${NAME}: Complete.`);
-			return;
-		}
+		// Animated nodes are not supported yet for instancing - so find which ones are animated.
+		const allAnimationTargetNodes = root
+			.listAnimations()
+			.map(a => a.listChannels())
+			.flat()
+			.map(c => c.getTargetNode())
+			.filter(n => n != null)
 
 		const batchExtension = doc.createExtension(EXTMeshGPUInstancing);
 
@@ -64,6 +66,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 			// Gather a one-to-many Mesh/Node mapping, identifying what we can instance.
 			const meshInstances = new Map<Mesh, Set<Node>>();
 			scene.traverse((node) => {
+				if (allAnimationTargetNodes.includes(node)) return;
 				const mesh = node.getMesh();
 				if (!mesh) return;
 				if (node.getExtension('EXT_mesh_gpu_instancing')) return;
