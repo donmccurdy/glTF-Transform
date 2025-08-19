@@ -19,7 +19,7 @@ export interface TangentsOptions {
 	 * [mikktspace](https://github.com/donmccurdy/mikktspace-wasm) library, which is not
 	 * included by default.
 	 */
-	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array;
+	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array<ArrayBuffer>;
 	/** Whether to overwrite existing `TANGENT` attributes. */
 	overwrite?: boolean;
 }

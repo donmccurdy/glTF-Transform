@@ -148,13 +148,13 @@ export function compactAttribute(
  * @hidden
  * @internal
  */
-function createCompactPlan(prim: Primitive): [Uint32Array, number] {
+function createCompactPlan(prim: Primitive): [Uint32Array<ArrayBuffer>, number] {
 	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
 
 	const indices = prim.getIndices();
 	const indicesArray = indices ? indices.getArray() : null;
 	if (!indices || !indicesArray) {
-		return [createIndices(srcVertexCount, 1_000_000) as Uint32Array, srcVertexCount];
+		return [createIndices(srcVertexCount, 1_000_000) as Uint32Array<ArrayBuffer>, srcVertexCount];
 	}
 
 	const remap = new Uint32Array(srcVertexCount).fill(EMPTY_U32);

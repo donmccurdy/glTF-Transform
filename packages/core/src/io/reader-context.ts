@@ -23,7 +23,7 @@ import type { GLTF } from '../types/gltf.js';
  */
 export class ReaderContext {
 	public buffers: Buffer[] = [];
-	public bufferViews: Uint8Array[] = [];
+	public bufferViews: Uint8Array<ArrayBuffer>[] = [];
 	public bufferViewBuffers: Buffer[] = [];
 	public accessors: Accessor[] = [];
 	public textures: Texture[] = [];

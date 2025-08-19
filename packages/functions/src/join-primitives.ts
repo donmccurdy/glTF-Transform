@@ -63,7 +63,7 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 		}
 	}
 
-	const primRemaps = [] as Uint32Array[]; // remap[srcIndex] → dstIndex, by prim
+	const primRemaps = [] as Uint32Array<ArrayBuffer>[]; // remap[srcIndex] → dstIndex, by prim
 	const primVertexCounts = new Uint32Array(prims.length); // vertex count, by prim
 
 	let dstVertexCount = 0;

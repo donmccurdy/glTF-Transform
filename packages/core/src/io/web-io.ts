@@ -38,9 +38,9 @@ export class WebIO extends PlatformIO {
 		this._fetchConfig = fetchConfig;
 	}
 
-	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array<ArrayBuffer>>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
-	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array<ArrayBuffer> | string> {
 		const response = await fetch(uri, this._fetchConfig);
 		switch (type) {
 			case 'view':
