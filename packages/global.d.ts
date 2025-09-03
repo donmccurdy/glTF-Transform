@@ -49,6 +49,6 @@ declare module 'gl-matrix/quat2' {
 /** Deno */
 
 declare const Deno: {
-	readFile: (path: string) => Promise<Uint8Array>;
+	readFile: (path: string) => Promise<Uint8Array<ArrayBuffer>>;
 	readTextFile: (path: string) => Promise<string>;
 };

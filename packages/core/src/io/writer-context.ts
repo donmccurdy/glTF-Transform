@@ -172,7 +172,7 @@ export class WriterContext {
 		return accessorDef;
 	}
 
-	public createImageData(imageDef: GLTF.IImage, data: Uint8Array, texture: Texture): void {
+	public createImageData(imageDef: GLTF.IImage, data: Uint8Array<ArrayBuffer>, texture: Texture): void {
 		if (this.options.format === Format.GLB) {
 			this.imageBufferViews.push(data);
 			imageDef.bufferView = this.jsonDoc.json.bufferViews!.length;
@@ -188,7 +188,7 @@ export class WriterContext {
 		}
 	}
 
-	public assignResourceURI(uri: string, data: Uint8Array, throwOnConflict: boolean): void {
+	public assignResourceURI(uri: string, data: Uint8Array<ArrayBuffer>, throwOnConflict: boolean): void {
 		const resources = this.jsonDoc.resources;
 
 		// https://github.com/KhronosGroup/glTF/issues/2446

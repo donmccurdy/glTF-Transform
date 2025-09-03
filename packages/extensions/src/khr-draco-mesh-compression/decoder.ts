@@ -31,12 +31,12 @@ export function decodeGeometry(decoder: Decoder, data: Uint8Array): Mesh {
 	}
 }
 
-export function decodeIndex(decoder: Decoder, mesh: Mesh): Uint16Array | Uint32Array {
+export function decodeIndex(decoder: Decoder, mesh: Mesh): Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> {
 	const numFaces = mesh.num_faces();
 	const numIndices = numFaces * 3;
 
 	let ptr: number;
-	let indices: Uint16Array | Uint32Array;
+	let indices: Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer>;
 
 	if (mesh.num_points() <= 65534) {
 		const byteLength = numIndices * Uint16Array.BYTES_PER_ELEMENT;
@@ -70,7 +70,7 @@ export function decodeAttribute(
 
 	const ptr = decoderModule._malloc(byteLength);
 	decoder.GetAttributeDataArrayForAllPoints(mesh, attribute, dataType, byteLength, ptr);
-	const array: TypedArray = new ArrayCtor(decoderModule.HEAPF32.buffer, ptr, numValues).slice();
+	const array: TypedArray = new ArrayCtor(decoderModule.HEAPF32.buffer as ArrayBuffer, ptr, numValues).slice();
 	decoderModule._free(ptr);
 
 	return array;

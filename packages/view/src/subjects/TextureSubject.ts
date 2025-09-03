@@ -19,7 +19,7 @@ export class TextureSubject extends Subject<TextureDef, Texture> {
 			value.name = def.getName();
 		}
 
-		const image = def.getImage() as ArrayBuffer;
+		const image = def.getImage()?.buffer as ArrayBuffer;
 		if (image !== this._image) {
 			this._image = image;
 			if (this.value !== this._documentView.imageProvider.loadingTexture) {

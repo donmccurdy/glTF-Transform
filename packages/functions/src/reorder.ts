@@ -87,7 +87,7 @@ export function reorder(_options: ReorderOptions): Transform {
 			// Update affected primitives.
 			for (const srcAttribute of plan.indicesToAttributes.get(srcIndices)) {
 				const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-				compactAttribute(srcAttribute, srcIndices, remap, dstAttribute, unique);
+				compactAttribute(srcAttribute, srcIndices, remap as Uint32Array<ArrayBuffer>, dstAttribute, unique);
 
 				for (const prim of plan.indicesToPrimitives.get(srcIndices)) {
 					if (prim.getIndices() === srcIndices) {

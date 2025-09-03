@@ -180,7 +180,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 
 	// (4) Assign subset of indexes; compact primitive.
 
-	prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray));
+	prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray as Uint32Array<ArrayBuffer>));
 	if (srcIndices.listParents().length === 1) srcIndices.dispose();
 	compactPrimitive(prim);
 
@@ -231,7 +231,7 @@ function _simplifyPoints(document: Document, prim: Primitive, options: Required<
 
 	for (const srcAttribute of deepListAttributes(prim)) {
 		const dstAttribute = shallowCloneAccessor(document, srcAttribute);
-		compactAttribute(srcAttribute, null, remap, dstAttribute, unique);
+		compactAttribute(srcAttribute, null, remap as Uint32Array<ArrayBuffer>, dstAttribute, unique);
 		deepSwapAttribute(prim, srcAttribute, dstAttribute);
 		if (srcAttribute.listParents().length === 1) srcAttribute.dispose();
 	}

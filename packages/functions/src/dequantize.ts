@@ -103,7 +103,7 @@ export function dequantizeAttributeArray(
 	srcArray: TypedArray,
 	componentType: GLTF.AccessorComponentType,
 	normalized: boolean,
-): Float32Array {
+): Float32Array<ArrayBuffer> {
 	const dstArray = new Float32Array(srcArray.length);
 
 	for (let i = 0, il = srcArray.length; i < il; i++) {

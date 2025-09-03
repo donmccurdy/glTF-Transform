@@ -247,7 +247,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					logger.debug(`${prefix}: Resizing ${srcSize.join('x')} → ${dstSize.join('x')}px`);
 					instance.resize(dstSize[0], dstSize[1], { fit: 'fill', kernel: options.resizeFilter });
 
-					srcImage = BufferUtils.toView(await instance.toBuffer());
+					srcImage = BufferUtils.toView((await instance.toBuffer()) as Buffer<ArrayBuffer>);
 					srcExtension = 'png';
 					srcMimeType = 'image/png';
 				}

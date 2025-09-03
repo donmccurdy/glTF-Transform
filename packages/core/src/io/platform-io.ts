@@ -71,9 +71,15 @@ export abstract class PlatformIO {
 	 * Abstract.
 	 */
 
-	protected abstract readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected abstract readURI(
+		uri: string,
+		type: 'view',
+	): Promise<Uint8Array<ArrayBuffer>>;
 	protected abstract readURI(uri: string, type: 'text'): Promise<string>;
-	protected abstract readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string>;
+	protected abstract readURI(
+		uri: string,
+		type: 'view' | 'text',
+	): Promise<Uint8Array | string>;
 
 	protected abstract resolve(base: string, path: string): string;
 	protected abstract dirname(uri: string): string;
@@ -152,7 +158,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Converts a {@link Document} to a GLB-formatted Uint8Array. */
-	public async writeBinary(doc: Document): Promise<Uint8Array> {
+	public async writeBinary(doc: Document): Promise<Uint8Array<ArrayBuffer>> {
 		const { json, resources } = await this.writeJSON(doc, { format: Format.GLB });
 
 		const header = new Uint32Array([0x46546c67, 2, 12]);
@@ -253,7 +259,7 @@ export abstract class PlatformIO {
 	}
 
 	/** Internal version of binaryToJSON; does not warn about external resources. */
-	private _binaryToJSON(glb: Uint8Array): JSONDocument {
+	private _binaryToJSON(glb: Uint8Array<ArrayBuffer>): JSONDocument {
 		// Decode and verify GLB header.
 		if (!isGLB(glb)) {
 			throw new Error('Invalid glTF 2.0 binary.');

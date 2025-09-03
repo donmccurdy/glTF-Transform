@@ -81,7 +81,13 @@ export const GLB_BUFFER = '@glb.bin';
  * Abstraction representing any one of the typed array classes supported by glTF and JavaScript.
  * @hidden
  */
-export type TypedArray = Float32Array | Uint32Array | Uint16Array | Uint8Array | Int16Array | Int8Array;
+export type TypedArray =
+	| Float32Array<ArrayBuffer>
+	| Uint32Array<ArrayBuffer>
+	| Uint16Array<ArrayBuffer>
+	| Uint8Array<ArrayBuffer>
+	| Int16Array<ArrayBuffer>
+	| Int8Array<ArrayBuffer>;
 
 /**
  * Abstraction representing the typed array constructors supported by glTF and JavaScript.

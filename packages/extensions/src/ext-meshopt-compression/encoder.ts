@@ -44,7 +44,7 @@ export function prepareAccessor(
 				result.byteStride = accessor.getElementSize() * 4;
 				result.componentType = FLOAT;
 				result.normalized = false;
-				result.array = encoder.encodeFilterExp(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterExp(array, accessor.getCount(), result.byteStride, bits) as Uint8Array<ArrayBuffer>;
 				break;
 
 			case MeshoptFilter.OCTAHEDRAL: // → four 8- or 16-bit normalized values.
@@ -52,14 +52,14 @@ export function prepareAccessor(
 				result.componentType = bits > 8 ? SHORT : BYTE;
 				result.normalized = true;
 				array = accessor.getElementSize() === 3 ? padNormals(array) : array;
-				result.array = encoder.encodeFilterOct(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterOct(array, accessor.getCount(), result.byteStride, bits) as Uint8Array<ArrayBuffer>;
 				break;
 
 			case MeshoptFilter.QUATERNION: // → four 16-bit normalized values.
 				result.byteStride = 8;
 				result.componentType = SHORT;
 				result.normalized = true;
-				result.array = encoder.encodeFilterQuat(array, accessor.getCount(), result.byteStride, bits);
+				result.array = encoder.encodeFilterQuat(array, accessor.getCount(), result.byteStride, bits) as Uint8Array<ArrayBuffer>;
 				break;
 
 			default:

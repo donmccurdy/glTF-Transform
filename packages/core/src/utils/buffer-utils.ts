@@ -7,7 +7,7 @@ import type { TypedArray } from '../constants.js';
  */
 export class BufferUtils {
 	/** Creates a byte array from a Data URI. */
-	static createBufferFromDataURI(dataURI: string): Uint8Array {
+	static createBufferFromDataURI(dataURI: string): Uint8Array<ArrayBuffer> {
 		if (typeof Buffer === 'undefined') {
 			// Browser.
 			const byteString = atob(dataURI.split(',')[1]);
@@ -37,7 +37,7 @@ export class BufferUtils {
 	/**
 	 * Concatenates N byte arrays.
 	 */
-	static concat(arrays: Uint8Array[]): Uint8Array {
+	static concat(arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
 		let totalByteLength = 0;
 		for (const array of arrays) {
 			totalByteLength += array.byteLength;
@@ -108,18 +108,26 @@ export class BufferUtils {
 	 * ```
 	 *
 	 */
-	static toView(a: TypedArray, byteOffset = 0, byteLength: number = Infinity): Uint8Array {
-		return new Uint8Array(a.buffer, a.byteOffset + byteOffset, Math.min(a.byteLength, byteLength));
+	static toView(
+		a: TypedArray,
+		byteOffset = 0,
+		byteLength: number = Infinity,
+	): Uint8Array<ArrayBuffer> {
+		return new Uint8Array<ArrayBuffer>(
+			a.buffer,
+			a.byteOffset + byteOffset,
+			Math.min(a.byteLength, byteLength),
+		);
 	}
 
 	/** @internal */
 	static assertView(view: null): null;
-	static assertView(view: Uint8Array): Uint8Array;
-	static assertView(view: Uint8Array | null): Uint8Array | null;
-	static assertView(view: Uint8Array | null): Uint8Array | null {
+	static assertView(view: Uint8Array): Uint8Array<ArrayBuffer>;
+	static assertView(view: Uint8Array | null): Uint8Array<ArrayBuffer> | null;
+	static assertView(view: Uint8Array | null): Uint8Array<ArrayBuffer> | null {
 		if (view && !ArrayBuffer.isView(view)) {
 			throw new Error(`Method requires Uint8Array parameter; received "${typeof view}".`);
 		}
-		return view as Uint8Array;
+		return view as Uint8Array<ArrayBuffer>;
 	}
 }

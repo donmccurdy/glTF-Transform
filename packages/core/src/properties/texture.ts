@@ -3,7 +3,7 @@ import { BufferUtils, FileUtils, ImageUtils } from '../utils/index.js';
 import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
 
 interface ITexture extends IExtensibleProperty {
-	image: Uint8Array | null;
+	image: Uint8Array<ArrayBuffer> | null;
 	mimeType: string;
 	uri: string;
 }
@@ -79,7 +79,7 @@ export class Texture extends ExtensibleProperty<ITexture> {
 	 */
 
 	/** Returns the raw image data for this texture. */
-	public getImage(): Uint8Array | null {
+	public getImage(): Uint8Array<ArrayBuffer> | null {
 		return this.get('image');
 	}
 
