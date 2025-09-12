@@ -91,7 +91,7 @@ export interface TextureCompressOptions {
 	 * Allows lower resolution for chroma than for luma, reducing file size. For
 	 * non-color textures such as normal maps, the chroma/luma distinction does
 	 * not apply, and chroma subsampling should be disabled. Options are '4:4:4'
-	 * (off) and '4:2:0' (on). WebP and AVIF only. Default: auto.
+	 * (off) and '4:2:0' (on). JPEG and AVIF only. Default: auto.
 	 */
 	chromaSubsampling?: '4:2:0' | '4:4:4';
 
