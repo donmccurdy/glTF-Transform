@@ -23,7 +23,7 @@ const SRGB_PATTERN = /color|emissive|diffuse/i;
  * getTextureColorSpace(normalTexture); // → null
  * ```
  */
-export function getTextureColorSpace(texture: Texture): string | null {
+export function getTextureColorSpace(texture: Texture): 'srgb' | null {
 	const graph = texture.getGraph();
 	const edges = graph.listParentEdges(texture);
 	const isSRGB = edges.some((edge) => {
