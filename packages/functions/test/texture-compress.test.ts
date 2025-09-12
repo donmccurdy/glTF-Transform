@@ -50,7 +50,7 @@ test('size increase', async (t) => {
 	const document = new Document().setLogger(logger);
 	const texture = document.createTexture('AVIF').setImage(ORIGINAL_AVIF).setMimeType('image/avif');
 	await document.transform(textureCompress({ encoder, formats: /.*/i, slots: /.*/i, targetFormat: 'avif' }));
-	t.deepEqual(calls, [['toFormat', ['avif', { quality: undefined, effort: undefined, lossless: false }]]], '1 call');
+	t.deepEqual(calls, [['toFormat', ['avif', { quality: undefined, effort: undefined, lossless: false, chromaSubsampling: '4:4:4' }]]], '1 call');
 	t.is(texture.getImage(), ORIGINAL_AVIF, 'file size not increased');
 });
 
@@ -64,7 +64,7 @@ test('original formats', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['jpeg', { quality: undefined }]],
+			['toFormat', ['jpeg', { quality: undefined, chromaSubsampling: '4:4:4' }]],
 			['toFormat', ['png', { quality: undefined, effort: undefined }]],
 		],
 		'2 calls',
@@ -112,8 +112,8 @@ test('jpeg', async (t) => {
 	t.deepEqual(
 		calls,
 		[
-			['toFormat', ['jpeg', { quality: undefined }]],
-			['toFormat', ['jpeg', { quality: undefined }]],
+			['toFormat', ['jpeg', { quality: undefined, chromaSubsampling: '4:4:4' }]],
+			['toFormat', ['jpeg', { quality: undefined, chromaSubsampling: '4:4:4' }]],
 		],
 		'2 calls',
 	);
