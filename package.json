@@ -53,7 +53,7 @@
     "jsdom": "^26.1.0",
     "keyframe-resample": "^0.1.0",
     "lerna": "8.2.2",
-    "meshoptimizer": "0.24.0",
+    "meshoptimizer": "0.25.0",
     "microbundle": "0.15.1",
     "mikktspace": "1.1.1",
     "semver": "^7.7.2",
