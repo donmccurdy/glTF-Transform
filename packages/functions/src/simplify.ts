@@ -35,6 +35,10 @@ export interface SimplifyOptions {
 	 */
 	lockBorder?: boolean;
 
+	/**
+	 * Produces more regular triangle sizes and shapes during simplification, at some cost to geometric quality. This can improve geometric quality under deformation such as skinning.
+	 * @default false
+	 */
 	regularize?: boolean;
 
 	normalWeight?: number;
@@ -132,83 +136,6 @@ export function simplify(_options: SimplifyOptions): Transform {
 /** @hidden */
 export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
-	const simplifier = options.simplifier as typeof MeshoptSimplifier;
-	const graph = prim.getGraph();
-	const document = Document.fromGraph(graph)!;
-	const logger = document.getLogger();
-
-	switch (prim.getMode()) {
-		case POINTS:
-			return _simplifyPoints(document, prim, options);
-		case LINES:
-		case LINE_STRIP:
-		case LINE_LOOP:
-			logger.warn(`${NAME}: Skipping primitive simplification: Unsupported draw mode.`);
-			return prim;
-		case TRIANGLE_STRIP:
-		case TRIANGLE_FAN:
-			convertPrimitiveToTriangles(prim);
-			break;
-	}
-
-	// (1) If primitive draws <50% of its vertex stream, compact before simplification.
-
-	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
-	const srcIndexCount = getPrimitiveVertexCount(prim, VertexCountMethod.RENDER);
-	if (srcIndexCount < srcVertexCount / 2) {
-		compactPrimitive(prim);
-	}
-
-	const position = prim.getAttribute('POSITION')!;
-	const srcIndices = prim.getIndices()!;
-
-	let positionArray = position.getArray()!;
-	let indicesArray = srcIndices.getArray()!;
-
-	// (2) Gather attributes and indices in Meshopt-compatible format.
-
-	if (!(positionArray instanceof Float32Array)) {
-		positionArray = dequantizeAttributeArray(positionArray, position.getComponentType(), position.getNormalized());
-	}
-	if (!(indicesArray instanceof Uint32Array)) {
-		indicesArray = new Uint32Array(indicesArray);
-	}
-
-	// (3) Run simplification.
-
-	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
-	const flags = options.lockBorder ? ['LockBorder'] : [];
-
-	const [dstIndicesArray, error] = simplifier.simplify(
-		indicesArray,
-		positionArray,
-		3,
-		targetCount,
-		options.error,
-		flags as 'LockBorder'[],
-	);
-
-	// (4) Assign subset of indexes; compact primitive.
-
-	prim.setIndices(shallowCloneAccessor(document, srcIndices).setArray(dstIndicesArray));
-	if (srcIndices.listParents().length === 1) srcIndices.dispose();
-	compactPrimitive(prim);
-
-	const dstVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
-	if (dstVertexCount <= 65534) {
-		prim.getIndices()!.setArray(new Uint16Array(prim.getIndices()!.getArray()!));
-	}
-
-	logger.debug(`${NAME}: ${formatDeltaOp(srcVertexCount, dstVertexCount)} vertices, error: ${error.toFixed(4)}.`);
-
-	return prim;
-}
-
-
-
-/** @hidden */
-export function simplifyPrimitiveWithAttributes(prim: Primitive, _options: SimplifyOptions): Primitive {
-	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
 	const simplifier = options.simplifier as typeof MeshoptSimplifier & { simplifyWithUpdate: typeof MeshoptSimplifier.simplifyWithAttributes };
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
@@ -292,7 +219,7 @@ export function simplifyPrimitiveWithAttributes(prim: Primitive, _options: Simpl
 	// (3) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
-	const flags = new Array<string>();
+	const flags : import("meshoptimizer").Flags[] = [];
 	if (options.lockBorder) {
 		flags.push('LockBorder');
 	}
@@ -302,7 +229,6 @@ export function simplifyPrimitiveWithAttributes(prim: Primitive, _options: Simpl
 
 
 	/*
-
 			indices,
 			vertex_positions,
 			vertex_positions_stride,
@@ -314,12 +240,10 @@ export function simplifyPrimitiveWithAttributes(prim: Primitive, _options: Simpl
 			target_error,
 			flags
 	*/
-	console.log(positionArray.length / 3, attributes, attributesArray.length, positionArray.length / 3 * attributes)
+	// console.log(positionArray.length / 3, attributes, attributesArray.length, positionArray.length / 3 * attributes)
 
 	// size_t meshopt_simplifyWithUpdate(unsigned int* indices, size_t index_count, float* vertex_positions_data, size_t vertex_count, size_t vertex_positions_stride, float* vertex_attributes_data, size_t vertex_attributes_stride, const float* attribute_weights, size_t attribute_count, const unsigned char* vertex_lock, size_t target_index_count, float target_error, unsigned int options, float* out_result_error)
-
 	// size_t meshopt_simplifyWithAttributes(unsigned int* destination, const unsigned int* indices, size_t index_count, const float* vertex_positions_data, size_t vertex_count, size_t vertex_positions_stride, const float* vertex_attributes_data, size_t vertex_attributes_stride, const float* attribute_weights, size_t attribute_count, const unsigned char* vertex_lock, size_t target_index_count, float target_error, unsigned int options, float* out_result_error)
-
 
 	// const [dstIndicesArray, error] = simplifier.simplifyWithUpdate(
 	const [dstIndicesArray, error] = simplifier.simplifyWithAttributes(
@@ -332,7 +256,7 @@ export function simplifyPrimitiveWithAttributes(prim: Primitive, _options: Simpl
 		null,
 		targetCount,
 		options.error,
-		flags as 'LockBorder'[],
+		flags,
 	);
 
 	// (4) Assign subset of indexes; compact primitive.
