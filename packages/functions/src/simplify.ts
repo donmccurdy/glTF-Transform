@@ -51,8 +51,8 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
 	error: 0.0001,
 	lockBorder: false,
 	regularize: false,
-	normalWeight: 0.01,
-	colorWeight: 0.01,
+	normalWeight: 0.5,
+	colorWeight: 0.5,
 	textureWeight: 0.1,
 };
 
@@ -183,7 +183,6 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 	const colorAttributes = prim.getAttribute('COLOR_0')?.getArray();
 	const uvAttributes = prim.getAttribute('TEXCOORD_0')?.getArray();
 
-	// Assume we have color, normal, and uv attributes. TODO: test if we can remove some of these.
 	let attributes = 8; // 3 color, 3 normal, 2 uv
 	const attributesArray = new Float32Array(positionArray.length / 3 * attributes);
 
@@ -200,14 +199,31 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 
 	for (let i = 0; i < positionArray.length; i += 3) {
 		if (normalAttributes) {
-			attributesArray[i * attributes + 0] = normalAttributes[i * 3 + 0];
-			attributesArray[i * attributes + 1] = normalAttributes[i * 3 + 1];
-			attributesArray[i * attributes + 2] = normalAttributes[i * 3 + 2];
+			// normalize normal vectors
+			let x = normalAttributes[i + 0];
+			let y = normalAttributes[i + 1];
+			let z = normalAttributes[i + 2];
+			const len = Math.sqrt(x * x + y * y + z * z);
+			if (len > 0) {
+				x /= len;
+				y /= len;
+				z /= len;
+			}
+			attributesArray[i * attributes + 0] = x;
+			attributesArray[i * attributes + 1] = y;
+			attributesArray[i * attributes + 2] = z;
 		}
 		if (colorAttributes) {
-			attributesArray[i * attributes + 3] = colorAttributes[i * 3 + 0];
-			attributesArray[i * attributes + 4] = colorAttributes[i * 3 + 1];
-			attributesArray[i * attributes + 5] = colorAttributes[i * 3 + 2];
+			// clamp color to [0,1] range
+			let r = colorAttributes[i * 3 + 0];
+			let g = colorAttributes[i * 3 + 1];
+			let b = colorAttributes[i * 3 + 2];
+			r = Math.min(Math.max(r, 0), 1);
+			g = Math.min(Math.max(g, 0), 1);
+			b = Math.min(Math.max(b, 0), 1);
+			attributesArray[i * attributes + 3] = r;
+			attributesArray[i * attributes + 4] = g;
+			attributesArray[i * attributes + 5] = b;
 		}
 		if (uvAttributes) {
 			attributesArray[i * attributes + 6] = uvAttributes[i * 2 + 0];
@@ -219,7 +235,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 	// (3) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
-	const flags : import("meshoptimizer").Flags[] = [];
+	const flags: import("meshoptimizer").Flags[] = [];
 	if (options.lockBorder) {
 		flags.push('LockBorder');
 	}
