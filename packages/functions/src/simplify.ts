@@ -1,5 +1,5 @@
 import { Document, Primitive, type Transform } from '@gltf-transform/core';
-import type { MeshoptSimplifier } from 'meshoptimizer';
+import type { Flags, MeshoptSimplifier } from 'meshoptimizer';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { dequantizeAttributeArray } from './dequantize.js';
@@ -235,7 +235,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 	// (3) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
-	const flags: import("meshoptimizer").Flags[] = [];
+	const flags: Array<Flags | "Regularize"> = [];
 	if (options.lockBorder) {
 		flags.push('LockBorder');
 	}
@@ -272,7 +272,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		null,
 		targetCount,
 		options.error,
-		flags,
+		flags as Flags[],
 	);
 
 	// (4) Assign subset of indexes; compact primitive.
