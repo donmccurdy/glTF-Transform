@@ -1,5 +1,5 @@
 import { Document } from '@gltf-transform/core';
-import { EXTTextureWebP } from '@gltf-transform/extensions';
+import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import { compressTexture, textureCompress } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
@@ -239,6 +239,40 @@ test('fallback to ndarray-pixels', async (t) => {
 
 	t.deepEqual(textureA.getSize(), [64, 128]);
 	t.deepEqual(textureB.getSize(), [64, 128]);
+});
+
+test('chroma subsampling', async (t) => {
+	const { encoder, calls } = createMockEncoder();
+	const document = new Document().setLogger(logger);
+	document.createExtension(EXTTextureAVIF);
+
+	const textureA = document
+		.createTexture('color')
+		.setImage(await savePixels(NON_SQUARE, 'image/png'))
+		.setMimeType('image/png');
+	const textureB = document
+		.createTexture('non-color')
+		.setImage(await savePixels(NON_SQUARE, 'image/png'))
+		.setMimeType('image/png');
+	document.createMaterial('material').setBaseColorTexture(textureA).setNormalTexture(textureB);
+
+	await document.transform(textureCompress({ encoder, targetFormat: 'avif' }));
+
+	t.is(textureA.getMimeType(), 'image/avif');
+	t.is(textureB.getMimeType(), 'image/avif');
+
+	t.is(calls[0][1][1].chromaSubsampling, '4:2:0', 'default (color)');
+	t.is(calls[1][1][1].chromaSubsampling, '4:4:4', 'default -> 4:4:4 (non-color)');
+
+	await document.transform(textureCompress({ encoder, targetFormat: 'avif', chromaSubsampling: '4:2:0' }));
+
+	t.is(calls[2][1][1].chromaSubsampling, '4:2:0', '4:2:0 (color)');
+	t.is(calls[3][1][1].chromaSubsampling, '4:2:0', '4:2:0 (non-color)');
+
+	await document.transform(textureCompress({ encoder, targetFormat: 'avif', chromaSubsampling: '4:4:4' }));
+
+	t.is(calls[4][1][1].chromaSubsampling, '4:4:4', '4:4:4 (color)');
+	t.is(calls[5][1][1].chromaSubsampling, '4:4:4', '4:4:4 (non-color)');
 });
 
 test('resize - sharp', async (t) => {

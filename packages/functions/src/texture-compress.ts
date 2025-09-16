@@ -171,7 +171,6 @@ export function textureCompress(_options: TextureCompressOptions): Transform {
 			textures.map(async (texture, textureIndex) => {
 				const slots = listTextureSlots(texture);
 				const channels = getTextureChannelMask(texture);
-				const colorSpace = getTextureColorSpace(texture);
 				const textureLabel =
 					texture.getURI() ||
 					texture.getName() ||
@@ -205,9 +204,7 @@ export function textureCompress(_options: TextureCompressOptions): Transform {
 				const srcImage = texture.getImage()!;
 				const srcByteLength = srcImage.byteLength;
 
-				const chromaSubsampling = options.chromaSubsampling || (colorSpace === 'srgb' ? '4:2:0' : '4:4:4');
-
-				await compressTexture(texture, { ...options, chromaSubsampling });
+				await compressTexture(texture, options);
 
 				const dstImage = texture.getImage()!;
 				const dstByteLength = dstImage.byteLength;
@@ -275,14 +272,16 @@ export async function compressTexture(texture: Texture, _options: CompressTextur
 
 	const srcURI = texture.getURI();
 	const srcFormat = getFormat(texture);
+	const colorSpace = getTextureColorSpace(texture);
 	const dstFormat = options.targetFormat || srcFormat;
 	const srcMimeType = texture.getMimeType();
 	const dstMimeType = `image/${dstFormat}`;
+	const chromaSubsampling = options.chromaSubsampling || (colorSpace === 'srgb' ? '4:2:0' : '4:4:4');
 
 	const srcImage = texture.getImage()!;
 	const dstImage = encoder
-		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, options)
-		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, options);
+		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, { ...options, chromaSubsampling })
+		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, { ...options, chromaSubsampling });
 
 	const srcByteLength = srcImage.byteLength;
 	const dstByteLength = dstImage.byteLength;
