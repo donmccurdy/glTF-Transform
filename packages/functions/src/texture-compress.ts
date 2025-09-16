@@ -13,6 +13,7 @@ import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
 import type sharp from 'sharp';
+import { getTextureColorSpace } from './get-texture-color-space.js';
 import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
 import { assignDefaults, createTransform, fitPowerOfTwo, fitWithin, formatBytes } from './utils.js';
@@ -87,6 +88,14 @@ export interface TextureCompressOptions {
 	nearLossless?: boolean;
 
 	/**
+	 * Allows lower resolution for chroma than for luma, reducing file size. For
+	 * non-color textures such as normal maps, the chroma/luma distinction does
+	 * not apply, and chroma subsampling should be disabled. Options are '4:4:4'
+	 * (off) and '4:2:0' (on). JPEG and AVIF only. Default: auto.
+	 */
+	chromaSubsampling?: '4:2:0' | '4:4:4';
+
+	/**
 	 * Attempts to avoid processing images that could exceed memory or other other
 	 * limits, throwing an error instead. Default: true.
 	 * @experimental
@@ -106,6 +115,7 @@ export const TEXTURE_COMPRESS_DEFAULTS: Omit<TextureCompressOptions, 'resize' | 
 	effort: undefined,
 	lossless: false,
 	nearLossless: false,
+	chromaSubsampling: undefined,
 	limitInputPixels: true,
 };
 
@@ -262,14 +272,16 @@ export async function compressTexture(texture: Texture, _options: CompressTextur
 
 	const srcURI = texture.getURI();
 	const srcFormat = getFormat(texture);
+	const colorSpace = getTextureColorSpace(texture);
 	const dstFormat = options.targetFormat || srcFormat;
 	const srcMimeType = texture.getMimeType();
 	const dstMimeType = `image/${dstFormat}`;
+	const chromaSubsampling = options.chromaSubsampling || (colorSpace === 'srgb' ? '4:2:0' : '4:4:4');
 
 	const srcImage = texture.getImage()!;
 	const dstImage = encoder
-		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, options)
-		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, options);
+		? await _encodeWithSharp(srcImage, srcMimeType, dstMimeType, { ...options, chromaSubsampling })
+		: await _encodeWithNdarrayPixels(srcImage, srcMimeType, dstMimeType, { ...options, chromaSubsampling });
 
 	const srcByteLength = srcImage.byteLength;
 	const dstByteLength = dstImage.byteLength;
@@ -302,7 +314,10 @@ async function _encodeWithSharp(
 
 	switch (dstFormat) {
 		case 'jpeg':
-			encoderOptions = { quality: options.quality } as sharp.JpegOptions;
+			encoderOptions = {
+				quality: options.quality,
+				chromaSubsampling: options.chromaSubsampling,
+			} as sharp.JpegOptions;
 			break;
 		case 'png':
 			encoderOptions = {
@@ -323,6 +338,7 @@ async function _encodeWithSharp(
 				quality: options.quality,
 				effort: remap(options.effort, 100, 9),
 				lossless: options.lossless,
+				chromaSubsampling: options.chromaSubsampling,
 			} as sharp.AvifOptions;
 			break;
 	}
