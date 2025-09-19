@@ -55,24 +55,49 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 
 	/** Type of primitives to render. All valid values correspond to WebGL enums. */
 	public static Mode: Record<string, GLTF.MeshPrimitiveMode> = {
-		/** Draw single points. */
-		POINTS: 0,
-		/** Draw lines. Each vertex connects to the one after it. */
-		LINES: 1,
 		/**
-		 * Draw lines. Each set of two vertices is treated as a separate line segment.
+		 * Each vertex defines a single point primitive.
+		 * Sequence: {0}, {1}, {2}, ... {i}
+   		 */
+		POINTS: 0,
+
+		/**
+		 * Each consecutive pair of vertices defines a single line primitive.
+		 * Sequence: {0,1}, {2,3}, {4,5}, ... {i, i+1}
+		 */
+		LINES: 1,
+
+		/**
+		 * Each vertex is connected to the next, and the last vertex is connected to the first,
+		 * forming a closed loop of line primitives.
+		 * Sequence: {0,1}, {1,2}, {2,3}, ... {i, i+1}, {n–1, 0}
+		 *
 		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
 		 */
 		LINE_LOOP: 2,
-		/** Draw a connected group of line segments from the first vertex to the last,  */
-		LINE_STRIP: 3,
-		/** Draw triangles. Each set of three vertices creates a separate triangle. */
-		TRIANGLES: 4,
-		/** Draw a connected strip of triangles. */
-		TRIANGLE_STRIP: 5,
+
 		/**
-		 * Draw a connected group of triangles. Each vertex connects to the previous and the first
-		 * vertex in the fan.
+		 * Each vertex is connected to the next, forming a contiguous series of line primitives.
+		 * Sequence: {0,1}, {1,2}, {2,3}, ... {i, i+1}
+		 */
+		LINE_STRIP: 3,
+
+		/**
+		 * Each consecutive set of three vertices defines a single triangle primitive.
+		 * Sequence: {0,1,2}, {3,4,5}, {6,7,8}, ... {i, i+1, i+2}
+		 */
+		TRIANGLES: 4,
+
+		/**
+		 * Each vertex defines one triangle primitive, using the two vertices that follow it.
+		 * Sequence: {0,1,2}, {1,3,2}, {2,3,4}, ... {i, i+(1+i%2), i+(2–i%2)}
+		 */
+		TRIANGLE_STRIP: 5,
+
+		/**
+		 * Each consecutive pair of vertices defines a triangle primitive sharing a common vertex at index 0.
+   		 * Sequence: {1,2,0}, {2,3,0}, {3,4,0}, ... {i, i+1, 0}
+   		 *
 		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
 		 */
 		TRIANGLE_FAN: 6,
