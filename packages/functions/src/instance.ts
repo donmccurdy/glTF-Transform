@@ -3,9 +3,6 @@ import {
 	type ILogger,
 	MathUtils,
 	type Mesh,
-	// type mat2,
-	// type mat3,
-	// type mat4,
 	type Node,
 	type Primitive,
 	type Transform,
@@ -106,24 +103,6 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 									batchCustomAttributeType[name] = 'VEC3';
 								} else if (value.length === 4 && typeof value[0] === 'number') {
 									batchCustomAttributeType[name] = 'VEC4';
-								} else if (
-									value.length === 2 &&
-									Array.isArray(value[0]) &&
-									typeof value[0][0] === 'number'
-								) {
-									batchCustomAttributeType[name] = 'MAT2';
-								} else if (
-									value.length === 3 &&
-									Array.isArray(value[0]) &&
-									typeof value[0][0] === 'number'
-								) {
-									batchCustomAttributeType[name] = 'MAT3';
-								} else if (
-									value.length === 4 &&
-									Array.isArray(value[0]) &&
-									typeof value[0][0] === 'number'
-								) {
-									batchCustomAttributeType[name] = 'MAT4';
 								}
 							}
 						}
@@ -170,7 +149,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec3);
 									break;
 								case 'VEC4':
-									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec3);
+									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec4);
 									break;
 							}
 						}
