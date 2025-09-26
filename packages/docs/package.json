@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@gltf-transform/core": "^4.2.1",
-    "@gltf-transform/extensions": "^4.2.1",
-    "@gltf-transform/functions": "^4.2.1",
+    "@gltf-transform/extensions": "4.2.1-cds.1.0.6-dev.0",
+    "@gltf-transform/functions": "4.2.1-cds.1.0.6-dev.0",
     "@greendoc/parse": "^0.4.1",
     "@greendoc/svelte": "^0.4.1",
     "@sveltejs/adapter-static": "^3.0.8",
