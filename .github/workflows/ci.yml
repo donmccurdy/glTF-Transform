@@ -20,7 +20,7 @@ jobs:
       LINT: ${{ matrix.node-version == 'v20' && true || false }}
     steps:
       # Setup.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -47,7 +47,7 @@ jobs:
       NODE_VERSION: v18
     steps:
       # Setup.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
@@ -75,7 +75,7 @@ jobs:
       NODE_VERSION: v18
     steps:
       # Setup.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
@@ -104,7 +104,7 @@ jobs:
       NODE_VERSION: 18.x
     steps:
       # Setup.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
