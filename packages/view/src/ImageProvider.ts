@@ -55,7 +55,7 @@ export class DefaultImageProvider implements ImageProvider {
 	readonly nullTexture: Texture = createTexture('__NULL_TEXTURE', NULL_IMAGE_URI);
 	readonly loadingTexture: Texture = createTexture('__LOADING_TEXTURE', LOADING_IMAGE_URI);
 
-	private _cache = new Map<ArrayBuffer, Texture | CompressedTexture>();
+	private _cache = new Map<Uint8Array<ArrayBuffer>, Texture | CompressedTexture>();
 	private _ktx2Loader: KTX2Loader | null = null;
 
 	async initTexture(textureDef: TextureDef): Promise<void> {
@@ -66,13 +66,13 @@ export class DefaultImageProvider implements ImageProvider {
 		const image = textureDef.getImage()!;
 		const mimeType = textureDef.getMimeType();
 
-		let texture = this._cache.get(image.buffer);
+		let texture = this._cache.get(image);
 
 		if (texture) return texture;
 
-		texture = mimeType === 'image/ktx2' ? await this._loadKTX2Image(image.buffer) : await this._loadImage(image.buffer, mimeType);
+		texture = mimeType === 'image/ktx2' ? await this._loadKTX2Image(image) : await this._loadImage(image, mimeType);
 
-		this._cache.set(image.buffer, texture);
+		this._cache.set(image, texture);
 		return texture;
 	}
 
@@ -94,7 +94,7 @@ export class DefaultImageProvider implements ImageProvider {
 	}
 
 	/** Load PNG, JPEG, or other browser-supported image format. */
-	private async _loadImage(image: ArrayBuffer, mimeType: string): Promise<Texture> {
+	private async _loadImage(image: Uint8Array<ArrayBuffer>, mimeType: string): Promise<Texture> {
 		return new Promise((resolve, reject) => {
 			const blob = new Blob([image], { type: mimeType });
 			const imageURL = URL.createObjectURL(blob);
@@ -113,7 +113,7 @@ export class DefaultImageProvider implements ImageProvider {
 	}
 
 	/** Load KTX2 + Basis Universal compressed texture format. */
-	private async _loadKTX2Image(image: ArrayBuffer): Promise<CompressedTexture> {
+	private async _loadKTX2Image(image: Uint8Array<ArrayBuffer>): Promise<CompressedTexture> {
 		this._ktx2Loader ||= createKTX2Loader();
 		const blob = new Blob([image], { type: 'image/ktx2' });
 		const imageURL = URL.createObjectURL(blob);

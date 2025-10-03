@@ -234,14 +234,20 @@ export function shallowCloneAccessor(document: Document, accessor: Accessor): Ac
 }
 
 /** @hidden */
-export function createIndices(count: number, maxIndex: number = count): Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> {
+export function createIndices(
+	count: number,
+	maxIndex: number = count,
+): Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> {
 	const array = createIndicesEmpty(count, maxIndex);
 	for (let i = 0; i < array.length; i++) array[i] = i;
 	return array;
 }
 
 /** @hidden */
-export function createIndicesEmpty(count: number, maxIndex: number = count): Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> {
+export function createIndicesEmpty(
+	count: number,
+	maxIndex: number = count,
+): Uint16Array<ArrayBuffer> | Uint32Array<ArrayBuffer> {
 	return maxIndex <= 65534 ? new Uint16Array(count) : new Uint32Array(count);
 }
 
