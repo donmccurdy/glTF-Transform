@@ -7931,9 +7931,9 @@ __metadata:
   linkType: hard
 
 "ktx-parse@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "ktx-parse@npm:1.0.1"
-  checksum: 10c0/458aebe0b56bd610269df9e1d417822fef997daa211e4dc2352ab3b6a941f74a169cbfd1daecac53c1b6abf24930b9c495c3d5382d85e144c5c3e2ab6efbf47d
+  version: 1.1.0
+  resolution: "ktx-parse@npm:1.1.0"
+  checksum: 10c0/7c57982bb53cf022a23740478966056f0055f1fb6cb0225d0c2a395156b134b046da59ac1f59c7474cd62d2e8e6d6378bcd2758bbf208ce83e65f8d022a2a2bd
   languageName: node
   linkType: hard
 
