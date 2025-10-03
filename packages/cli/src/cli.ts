@@ -1063,8 +1063,6 @@ compute MikkTSpace tangents at runtime.
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(
 			unweld(),
-			// @ts-expect-error
-			// TODO: Update the types here for TypeScript 5.9: https://github.com/donmccurdy/mikktspace-wasm
 			tangents({ generateTangents: mikktspace.generateTangents, ...options }),
 			weld(),
 		),

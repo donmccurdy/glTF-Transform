@@ -19,7 +19,7 @@ export interface TangentsOptions {
 	 * [mikktspace](https://github.com/donmccurdy/mikktspace-wasm) library, which is not
 	 * included by default.
 	 */
-	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array<ArrayBuffer>;
+	generateTangents?: (pos: Float32Array, norm: Float32Array, uv: Float32Array) => Float32Array;
 	/** Whether to overwrite existing `TANGENT` attributes. */
 	overwrite?: boolean;
 }
@@ -107,7 +107,7 @@ export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transfo
 					position instanceof Float32Array ? position : new Float32Array(position),
 					normal instanceof Float32Array ? normal : new Float32Array(normal),
 					texcoord instanceof Float32Array ? texcoord : new Float32Array(texcoord),
-				);
+				) as Float32Array<ArrayBuffer>;
 
 				// See: https://github.com/KhronosGroup/glTF-Sample-Models/issues/174
 				for (let i = 3; i < tangentArray.length; i += 4) tangentArray[i] *= -1;

@@ -5,7 +5,7 @@ import { Subject } from './Subject.js';
 
 /** @internal */
 export class TextureSubject extends Subject<TextureDef, Texture> {
-	private _image: ArrayBuffer | null = null;
+	private _image: Uint8Array<ArrayBuffer> | null = null;
 
 	constructor(documentView: DocumentViewSubjectAPI, def: TextureDef) {
 		super(documentView, def, documentView.imageProvider.loadingTexture, documentView.texturePool);
@@ -19,7 +19,7 @@ export class TextureSubject extends Subject<TextureDef, Texture> {
 			value.name = def.getName();
 		}
 
-		const image = def.getImage()?.buffer as ArrayBuffer;
+		const image = def.getImage();
 		if (image !== this._image) {
 			this._image = image;
 			if (this.value !== this._documentView.imageProvider.loadingTexture) {
