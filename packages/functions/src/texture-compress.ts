@@ -354,7 +354,7 @@ async function _encodeWithSharp(
 		instance.resize(dstSize[0], dstSize[1], { fit: 'fill', kernel: options.resizeFilter });
 	}
 
-	return BufferUtils.toView(await instance.toBuffer());
+	return BufferUtils.toView((await instance.toBuffer()) as Buffer<ArrayBuffer>);
 }
 
 async function _encodeWithNdarrayPixels(

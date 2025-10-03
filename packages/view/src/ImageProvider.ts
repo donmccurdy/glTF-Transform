@@ -66,13 +66,13 @@ export class DefaultImageProvider implements ImageProvider {
 		const image = textureDef.getImage()!;
 		const mimeType = textureDef.getMimeType();
 
-		let texture = this._cache.get(image);
+		let texture = this._cache.get(image.buffer);
 
 		if (texture) return texture;
 
-		texture = mimeType === 'image/ktx2' ? await this._loadKTX2Image(image) : await this._loadImage(image, mimeType);
+		texture = mimeType === 'image/ktx2' ? await this._loadKTX2Image(image.buffer) : await this._loadImage(image.buffer, mimeType);
 
-		this._cache.set(image, texture);
+		this._cache.set(image.buffer, texture);
 		return texture;
 	}
 

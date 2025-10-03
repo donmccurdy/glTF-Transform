@@ -81,9 +81,9 @@ export class NodeIO extends PlatformIO {
 		return this;
 	}
 
-	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array<ArrayBuffer>>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
-	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array<ArrayBuffer> | string> {
 		await this.init();
 		if (HTTPUtils.isAbsoluteURL(uri)) {
 			if (!this._fetchEnabled || !this._fetch) {

@@ -42,9 +42,15 @@ export class DenoIO extends PlatformIO {
 		this._path = path as Path;
 	}
 
-	protected async readURI(uri: string, type: 'view'): Promise<Uint8Array>;
+	protected async readURI(
+		uri: string,
+		type: 'view',
+	): Promise<Uint8Array<ArrayBuffer>>;
 	protected async readURI(uri: string, type: 'text'): Promise<string>;
-	protected async readURI(uri: string, type: 'view' | 'text'): Promise<Uint8Array | string> {
+	protected async readURI(
+		uri: string,
+		type: 'view' | 'text',
+	): Promise<Uint8Array<ArrayBuffer> | string> {
 		switch (type) {
 			case 'view':
 				return Deno.readFile(uri);
