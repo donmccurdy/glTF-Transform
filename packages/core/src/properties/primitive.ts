@@ -58,7 +58,7 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 		/**
 		 * Each vertex defines a single point primitive.
 		 * Sequence: {0}, {1}, {2}, ... {i}
-   		 */
+		 */
 		POINTS: 0,
 
 		/**
@@ -96,8 +96,8 @@ export class Primitive extends ExtensibleProperty<IPrimitive> {
 
 		/**
 		 * Each consecutive pair of vertices defines a triangle primitive sharing a common vertex at index 0.
-   		 * Sequence: {1,2,0}, {2,3,0}, {3,4,0}, ... {i, i+1, 0}
-   		 *
+		 * Sequence: {1,2,0}, {2,3,0}, {3,4,0}, ... {i, i+1, 0}
+		 *
 		 * @deprecated See {@link https://github.com/KhronosGroup/glTF/issues/1883 KhronosGroup/glTF#1883}.
 		 */
 		TRIANGLE_FAN: 6,
