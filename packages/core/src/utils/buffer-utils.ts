@@ -108,16 +108,8 @@ export class BufferUtils {
 	 * ```
 	 *
 	 */
-	static toView(
-		a: TypedArray,
-		byteOffset = 0,
-		byteLength: number = Infinity,
-	): Uint8Array<ArrayBuffer> {
-		return new Uint8Array<ArrayBuffer>(
-			a.buffer,
-			a.byteOffset + byteOffset,
-			Math.min(a.byteLength, byteLength),
-		);
+	static toView(a: TypedArray, byteOffset = 0, byteLength: number = Infinity): Uint8Array<ArrayBuffer> {
+		return new Uint8Array<ArrayBuffer>(a.buffer, a.byteOffset + byteOffset, Math.min(a.byteLength, byteLength));
 	}
 
 	/** @internal */

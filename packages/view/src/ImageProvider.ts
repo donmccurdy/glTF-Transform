@@ -70,7 +70,10 @@ export class DefaultImageProvider implements ImageProvider {
 
 		if (texture) return texture;
 
-		texture = mimeType === 'image/ktx2' ? await this._loadKTX2Image(image.buffer) : await this._loadImage(image.buffer, mimeType);
+		texture =
+			mimeType === 'image/ktx2'
+				? await this._loadKTX2Image(image.buffer)
+				: await this._loadImage(image.buffer, mimeType);
 
 		this._cache.set(image.buffer, texture);
 		return texture;
