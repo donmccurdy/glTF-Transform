@@ -6,6 +6,7 @@ import {
 	type Node,
 	type Primitive,
 	type Transform,
+	type vec2,
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
@@ -17,10 +18,13 @@ const NAME = 'instance';
 export interface InstanceOptions {
 	/** Minimum number of meshes considered eligible for instancing. Default: 5. */
 	min?: number;
+	/** Whether to keep existing custom properties on animated instances. Default: false. */
+	keepCustomProperties?: boolean;
 }
 
 export const INSTANCE_DEFAULTS: Required<InstanceOptions> = {
 	min: 5,
+	keepCustomProperties: false,
 };
 
 /**
@@ -72,6 +76,7 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 
 			// For each Mesh, create an InstancedMesh and collect transforms.
 			const modifiedNodes = [];
+			doc.getLogger().info(`meshInstances generate ${meshInstances.size} instanced meshes`);
 			for (const mesh of Array.from(meshInstances.keys())) {
 				const nodes = Array.from(meshInstances.get(mesh)!);
 				if (nodes.length < options.min) continue;
@@ -81,7 +86,31 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 				// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/AttenuationTest
 				if (mesh.listPrimitives().some(hasVolume) && nodes.some(hasScale)) continue;
 
-				const batch = createBatch(doc, batchExtension, mesh, nodes.length);
+				// other attributes
+				const batchCustomAttributeType: Record<string, string> = {};
+				if (options.keepCustomProperties) {
+					for (const node of nodes) {
+						for (const [name, value] of Object.entries(node.getExtras())) {
+							if (Object.hasOwn(batchCustomAttributeType, name)) {
+								continue;
+							}
+							if (typeof value === 'number') {
+								batchCustomAttributeType[name] = 'SCALAR';
+							} else if (Array.isArray(value)) {
+								if (value.length === 2 && typeof value[0] === 'number') {
+									batchCustomAttributeType[name] = 'VEC2';
+								} else if (value.length === 3 && typeof value[0] === 'number') {
+									batchCustomAttributeType[name] = 'VEC3';
+								} else if (value.length === 4 && typeof value[0] === 'number') {
+									batchCustomAttributeType[name] = 'VEC4';
+								}
+							}
+						}
+					}
+				}
+				doc.getLogger().info(`batch custom attribute type: ${JSON.stringify(batchCustomAttributeType)}`);
+
+				const batch = createBatch(doc, batchExtension, mesh, nodes.length, batchCustomAttributeType);
 				const batchTranslation = batch.getAttribute('TRANSLATION')!;
 				const batchRotation = batch.getAttribute('ROTATION')!;
 				const batchScale = batch.getAttribute('SCALE')!;
@@ -105,6 +134,26 @@ export function instance(_options: InstanceOptions = INSTANCE_DEFAULTS): Transfo
 					if (!MathUtils.eq(t, [0, 0, 0])) needsTranslation = true;
 					if (!MathUtils.eq(r, [0, 0, 0, 1])) needsRotation = true;
 					if (!MathUtils.eq(s, [1, 1, 1])) needsScale = true;
+
+					if (options.keepCustomProperties) {
+						for (const name of Object.keys(batchCustomAttributeType)) {
+							const accessorType = batchCustomAttributeType[name];
+							switch (accessorType) {
+								case 'SCALAR':
+									batch.getAttribute(name)?.setElement(i, [node.getExtras()[name] as number]);
+									break;
+								case 'VEC2':
+									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec2);
+									break;
+								case 'VEC3':
+									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec3);
+									break;
+								case 'VEC4':
+									batch.getAttribute(name)?.setElement(i, node.getExtras()[name] as vec4);
+									break;
+							}
+						}
+					}
 				}
 
 				if (!needsTranslation) batchTranslation.dispose();
@@ -176,7 +225,13 @@ function hasScale(node: Node) {
 	return !MathUtils.eq(scale, [1, 1, 1]);
 }
 
-function createBatch(doc: Document, batchExtension: EXTMeshGPUInstancing, mesh: Mesh, count: number): InstancedMesh {
+function createBatch(
+	doc: Document,
+	batchExtension: EXTMeshGPUInstancing,
+	mesh: Mesh,
+	count: number,
+	customPropertyKeys: Record<string, string> = {},
+): InstancedMesh {
 	const buffer = mesh.listPrimitives()[0].getAttribute('POSITION')!.getBuffer();
 
 	const batchTranslation = doc
@@ -195,9 +250,51 @@ function createBatch(doc: Document, batchExtension: EXTMeshGPUInstancing, mesh: 
 		.setArray(new Float32Array(3 * count))
 		.setBuffer(buffer);
 
-	return batchExtension
+	const instancedMesh = batchExtension
 		.createInstancedMesh()
 		.setAttribute('TRANSLATION', batchTranslation)
 		.setAttribute('ROTATION', batchRotation)
 		.setAttribute('SCALE', batchScale);
+	Object.keys(customPropertyKeys).forEach((k) => {
+		const accessorType = customPropertyKeys[k];
+		switch (accessorType) {
+			case 'SCALAR':
+				instancedMesh.setAttribute(
+					k,
+					doc.createAccessor().setType('SCALAR').setArray(new Float32Array(count)).setBuffer(buffer),
+				);
+				break;
+			case 'VEC2':
+				instancedMesh.setAttribute(
+					k,
+					doc
+						.createAccessor()
+						.setType('VEC2')
+						.setArray(new Float32Array(2 * count))
+						.setBuffer(buffer),
+				);
+				break;
+			case 'VEC3':
+				instancedMesh.setAttribute(
+					k,
+					doc
+						.createAccessor()
+						.setType('VEC3')
+						.setArray(new Float32Array(3 * count))
+						.setBuffer(buffer),
+				);
+				break;
+			case 'VEC4':
+				instancedMesh.setAttribute(
+					k,
+					doc
+						.createAccessor()
+						.setType('VEC4')
+						.setArray(new Float32Array(4 * count))
+						.setBuffer(buffer),
+				);
+				break;
+		}
+	});
+	return instancedMesh;
 }

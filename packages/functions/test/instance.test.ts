@@ -128,6 +128,134 @@ test('skip distinct meshes', async (t) => {
 	t.falsy(batch, 'does not create batch');
 });
 
+test('custom_properties_scalar', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const buffer = doc.createBuffer();
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const mesh = doc.createMesh().addPrimitive(prim);
+	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
+	node1.setExtras({ ELEMENT_ID: 1 });
+	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 1, 1]);
+	node2.setExtras({ ELEMENT_ID: 2 });
+	const node3 = doc.createNode().setMesh(mesh).setTranslation([1, 0, 1]);
+	node3.setExtras({ ELEMENT_ID: 3 });
+	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	await doc.transform(instance({ min: 2, keepCustomProperties: true }));
+
+	t.is(root.listNodes().length, 1, 'creates batch node');
+	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
+	t.truthy(node1.isDisposed(), 'disposed node (1/3)');
+	t.truthy(node2.isDisposed(), 'disposed node (2/3)');
+	t.truthy(node3.isDisposed(), 'disposed node (3/3)');
+
+	const batchNode = root.listNodes()[0];
+	const batch = batchNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+
+	t.truthy(batch, 'creates batch');
+	t.deepEqual(batch.getAttribute('ELEMENT_ID').getArray(), new Float32Array([1, 2, 3]), 'sets batch custom property');
+});
+
+test('custom_properties_vec2', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const buffer = doc.createBuffer();
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const mesh = doc.createMesh().addPrimitive(prim);
+	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
+	node1.setExtras({ OFFSET: [1, 2] });
+	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 1, 1]);
+	node2.setExtras({ OFFSET: [1, 3] });
+	const node3 = doc.createNode().setMesh(mesh).setTranslation([1, 0, 1]);
+	node3.setExtras({ OFFSET: [1, 4] });
+	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	await doc.transform(instance({ min: 2, keepCustomProperties: true }));
+
+	t.is(root.listNodes().length, 1, 'creates batch node');
+	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
+	t.truthy(node1.isDisposed(), 'disposed node (1/3)');
+	t.truthy(node2.isDisposed(), 'disposed node (2/3)');
+	t.truthy(node3.isDisposed(), 'disposed node (3/3)');
+
+	const batchNode = root.listNodes()[0];
+	const batch = batchNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+
+	t.truthy(batch, 'creates batch');
+	t.deepEqual(
+		batch.getAttribute('OFFSET').getArray(),
+		new Float32Array([1, 2, 1, 3, 1, 4]),
+		'sets batch custom property',
+	);
+});
+
+test('custom_properties_vec3', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const buffer = doc.createBuffer();
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const mesh = doc.createMesh().addPrimitive(prim);
+	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
+	node1.setExtras({ OFFSET: [1, 2, 1] });
+	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 1, 1]);
+	node2.setExtras({ OFFSET: [1, 3, 2] });
+	const node3 = doc.createNode().setMesh(mesh).setTranslation([1, 0, 1]);
+	node3.setExtras({ OFFSET: [1, 4, 3] });
+	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	await doc.transform(instance({ min: 2, keepCustomProperties: true }));
+
+	t.is(root.listNodes().length, 1, 'creates batch node');
+	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
+	t.truthy(node1.isDisposed(), 'disposed node (1/3)');
+	t.truthy(node2.isDisposed(), 'disposed node (2/3)');
+	t.truthy(node3.isDisposed(), 'disposed node (3/3)');
+
+	const batchNode = root.listNodes()[0];
+	const batch = batchNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+
+	t.truthy(batch, 'creates batch');
+	t.deepEqual(
+		batch.getAttribute('OFFSET').getArray(),
+		new Float32Array([1, 2, 1, 1, 3, 2, 1, 4, 3]),
+		'sets batch custom property',
+	);
+});
+
+test('custom_properties_vec4', async (t) => {
+	const doc = new Document().setLogger(logger);
+	const root = doc.getRoot();
+	const buffer = doc.createBuffer();
+	const prim = doc.createPrimitive().setAttribute('POSITION', doc.createAccessor().setBuffer(buffer));
+	const mesh = doc.createMesh().addPrimitive(prim);
+	const node1 = doc.createNode().setMesh(mesh).setTranslation([0, 0, 1]);
+	node1.setExtras({ OTHER: [1, 2, 1, 1] });
+	const node2 = doc.createNode().setMesh(mesh).setTranslation([0, 1, 1]);
+	node2.setExtras({ OTHER: [1, 3, 2, 2] });
+	const node3 = doc.createNode().setMesh(mesh).setTranslation([1, 0, 1]);
+	node3.setExtras({ OTHER: [1, 4, 3, 2] });
+	doc.createScene().addChild(node1).addChild(node2).addChild(node3);
+
+	await doc.transform(instance({ min: 2, keepCustomProperties: true }));
+
+	t.is(root.listNodes().length, 1, 'creates batch node');
+	t.is(root.listScenes()[0].listChildren().length, 1, 'attaches batch node');
+	t.truthy(node1.isDisposed(), 'disposed node (1/3)');
+	t.truthy(node2.isDisposed(), 'disposed node (2/3)');
+	t.truthy(node3.isDisposed(), 'disposed node (3/3)');
+
+	const batchNode = root.listNodes()[0];
+	const batch = batchNode.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+
+	t.truthy(batch, 'creates batch');
+	t.deepEqual(
+		batch.getAttribute('OTHER').getArray(),
+		new Float32Array([1, 2, 1, 1, 1, 3, 2, 2, 1, 4, 3, 2]),
+		'sets batch custom property',
+	);
+});
+
 test('skip existing instances', async (t) => {
 	const document = new Document().setLogger(logger);
 	const root = document.getRoot();
@@ -135,7 +263,10 @@ test('skip existing instances', async (t) => {
 	const batchExtension = document.createExtension(EXTMeshGPUInstancing);
 	const batch = batchExtension.createInstancedMesh();
 
-	const prim = createTorusKnotPrimitive(document, { radialSegments: 4, tubularSegments: 6 });
+	const prim = createTorusKnotPrimitive(document, {
+		radialSegments: 4,
+		tubularSegments: 6,
+	});
 	const mesh = document.createMesh().addPrimitive(prim);
 	const node1 = document.createNode().setMesh(mesh).setExtension('EXT_mesh_gpu_instancing', batch);
 	const node2 = document.createNode().setMesh(mesh).setTranslation([0, 0, 0]);
