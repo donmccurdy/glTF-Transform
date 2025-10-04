@@ -240,7 +240,7 @@ function _joinLevel(document: Document, parent: Node | Scene, options: Required<
 
 			// Transform Primitive into new local coordinate space.
 			if (primNode !== dstNode) {
-				multiply(_matrix, invert(_matrix, dstMatrix), primNode.getMatrix());
+				multiply(_matrix, invert(_matrix, dstMatrix)!, primNode.getMatrix());
 				transformPrimitive(prim, _matrix);
 			}
 		}
