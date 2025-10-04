@@ -12,7 +12,8 @@
 				"noEmptyInterface": "off",
 				"noFallthroughSwitchClause": "off",
 				"noGlobalIsFinite": "off",
-				"noImplicitAnyLet": "off"
+				"noImplicitAnyLet": "off",
+				"useIterableCallbackReturn": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off",
@@ -51,6 +52,6 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!**/coverage/**", "!**/packages/**/*/dist/**", "!**/build", "!**/.svelte-kit", "!**/*.svelte"]
+		"includes": ["**", "!**/coverage", "!**/packages/**/*/dist", "!**/build", "!**/.svelte-kit", "!**/*.svelte"]
 	}
 }
