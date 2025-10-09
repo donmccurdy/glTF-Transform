@@ -30,6 +30,7 @@ export abstract class PlatformIO {
 	private _extensions = new Set<typeof Extension>();
 	private _dependencies: { [key: string]: unknown } = {};
 	private _vertexLayout = VertexLayout.INTERLEAVED;
+	private _strictResources = true;
 
 	/** @hidden */
 	public lastReadBytes = 0;
@@ -64,6 +65,15 @@ export abstract class PlatformIO {
 	 */
 	public setVertexLayout(layout: VertexLayout): this {
 		this._vertexLayout = layout;
+		return this;
+	}
+
+	/**
+	 * Sets whether missing external resources should throw errors (strict mode) or
+	 * be ignored with warnings. Defaults to true (strict mode).
+	 */
+	public setStrictResources(strict: boolean): this {
+		this._strictResources = strict;
 		return this;
 	}
 
@@ -188,8 +198,26 @@ export abstract class PlatformIO {
 				const uri = resource.uri;
 				if (!uri || uri.match(/data:/)) return Promise.resolve();
 
-				jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
-				this.lastReadBytes += jsonDoc.resources[uri].byteLength;
+				try {
+					jsonDoc.resources[uri] = await this.readURI(this.resolve(base, uri), 'view');
+					this.lastReadBytes += jsonDoc.resources[uri].byteLength;
+				} catch (error) {
+					if (this._strictResources) {
+						throw error;
+					}
+
+					// In non-strict mode, log warning.
+					const isImage = images.includes(resource as GLTF.IImage);
+					const resourceType = isImage ? 'image' : 'buffer';
+					const resourceIndex = isImage
+						? images.indexOf(resource as GLTF.IImage)
+						: buffers.indexOf(resource as GLTF.IBuffer);
+
+					this._logger.warn(`Failed to load external ${resourceType} at index ${resourceIndex}: ${uri}`);
+
+					// Remove the URI to mark as failed.
+					delete resource.uri;
+				}
 			},
 		);
 		await Promise.all(pendingResources);
@@ -219,7 +247,12 @@ export abstract class PlatformIO {
 		const images = jsonDoc.json.images || [];
 		images.forEach((image: GLTF.IImage) => {
 			if (image.bufferView === undefined && image.uri === undefined) {
-				throw new Error('Missing resource URI or buffer view.');
+				if (this._strictResources) {
+					throw new Error('Missing resource URI or buffer view.');
+				}
+				// In non-strict mode, continue without error.
+				// The reader will create a texture with null image.
+				return;
 			}
 
 			resolveResource(image);
