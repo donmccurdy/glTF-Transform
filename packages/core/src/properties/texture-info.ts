@@ -10,6 +10,7 @@ interface ITextureInfo extends IExtensibleProperty {
 	minFilter: GLTF.TextureMinFilter | null;
 	wrapS: GLTF.TextureWrapMode;
 	wrapT: GLTF.TextureWrapMode;
+	samplerExtras: Record<string, unknown>;
 }
 
 /**
@@ -85,6 +86,7 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 			minFilter: null,
 			wrapS: TextureInfo.WrapMode.REPEAT,
 			wrapT: TextureInfo.WrapMode.REPEAT,
+			samplerExtras: {},
 		});
 	}
 
@@ -148,5 +150,15 @@ export class TextureInfo extends ExtensibleProperty<ITextureInfo> {
 	/** Sets the T (V) wrapping mode for UVs used by the texture. */
 	public setWrapT(wrapT: GLTF.TextureWrapMode): this {
 		return this.set('wrapT', wrapT);
+	}
+
+	/** Returns the extras property of the sampler this texture info is mapped to. */
+	public getSamplerExtras(): Record<string, unknown> {
+		return this.get('samplerExtras');
+	}
+
+	/** Sets the extras property of the sampler this texture info is mapped to. */
+	public setSamplerExtras(extras: Record<string, unknown>): this {
+		return this.set('samplerExtras', extras) as this;
 	}
 }

@@ -66,5 +66,8 @@ export class ReaderContext {
 		if (samplerDef.wrapT !== undefined) {
 			textureInfo.setWrapT(samplerDef.wrapT);
 		}
+		if (samplerDef.extras !== undefined) {
+			textureInfo.setSamplerExtras(samplerDef.extras);
+		}
 	}
 }
