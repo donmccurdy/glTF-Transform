@@ -307,6 +307,15 @@ commands or using the scripting API.
 		},
 	)
 	.option(
+		'--sparse <bool>',
+		'Reduces storage for zero-filled arrays. If disabled, existing accessors (sparse or not) ' +
+			'are left unchanged.',
+		{
+			validator: Validator.BOOLEAN,
+			default: true,
+		},
+	)
+	.option(
 		'--compress <method>',
 		'Floating point compression method. Draco compresses geometry; Meshopt ' +
 			'and quantization compress geometry and animation.',
@@ -366,6 +375,7 @@ commands or using the scripting API.
 			prune: boolean;
 			pruneAttributes: boolean;
 			pruneSolidTextures: boolean;
+			sparse: boolean;
 			compress: 'draco' | 'meshopt' | 'quantize' | false;
 			textureCompress: 'ktx2' | 'webp' | 'webp' | 'auto' | false;
 			textureSize: number;
@@ -426,7 +436,7 @@ commands or using the scripting API.
 			);
 		}
 
-		transforms.push(sparse());
+		if (opts.sparse) transforms.push(sparse());
 
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
