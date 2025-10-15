@@ -20,6 +20,10 @@ export function createPrimitiveOutline(_option: PrimitiveOutlineOptions = PRIMIT
 		for (const mesh of meshes) {
 			const srcPrims = mesh.listPrimitives();
 			for (const prim of srcPrims) {
+				if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
+					// Only create outlines for triangle primitives.
+					continue;
+				}
 				mesh.addPrimitive(createEdgePrim(doc, prim, options));
 			}
 		}
