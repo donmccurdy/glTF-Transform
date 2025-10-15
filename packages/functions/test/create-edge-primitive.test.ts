@@ -1,7 +1,7 @@
 import { Document, type vec3 } from '@gltf-transform/core';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
-import { createEdgePrimitive } from '../src/primitive-outline';
+import { createEdgePrimitive } from '../src/create-edge-primitive';
 
 function createGeometries(doc: Document, vertices: vec3[], indices: number[]) {
 	const node = doc.createNode('test-primitive-node');
@@ -11,9 +11,9 @@ function createGeometries(doc: Document, vertices: vec3[], indices: number[]) {
 		.setName('test-primitive')
 		.setAttribute(
 			'POSITION',
-			doc.createAccessor('test-primitive-positions').setArray(new Float32Array(vertices.flat())),
+			doc.createAccessor('test-primitive-positions').setType('VEC3').setArray(new Float32Array(vertices.flat())),
 		)
-		.setIndices(doc.createAccessor('test-primitive-indices').setArray(new Uint32Array(indices)));
+		.setIndices(doc.createAccessor('test-primitive-indices').setType('SCALAR').setArray(new Uint32Array(indices)));
 	mesh.addPrimitive(primitive);
 	node.setMesh(mesh);
 	doc.createScene().addChild(node);

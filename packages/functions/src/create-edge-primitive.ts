@@ -40,12 +40,13 @@ export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): 
 			indexArr[1] = i * 3 + 1;
 			indexArr[2] = i * 3 + 2;
 		}
-		const _triangle = new Triangle(
-			[positions[indexArr[0] * 3 + 0], positions[indexArr[0] * 3 + 1], positions[indexArr[0] * 3 + 2]] as vec3,
-			[positions[indexArr[1] * 3 + 0], positions[indexArr[1] * 3 + 1], positions[indexArr[1] * 3 + 2]] as vec3,
-			[positions[indexArr[2] * 3 + 0], positions[indexArr[2] * 3 + 1], positions[indexArr[2] * 3 + 2]] as vec3,
-		);
-		const { a, b, c } = _triangle;
+		const a = [] as vec3;
+		positionAccessor.getElement(indexArr[0], a);
+		const b = [] as vec3;
+		positionAccessor.getElement(indexArr[1], b);
+		const c = [] as vec3;
+		positionAccessor.getElement(indexArr[2], c);
+		const _triangle = new Triangle(a, b, c);
 		const normal = [0, 0, 0] as vec3;
 		Triangle.getNormal(a, b, c, normal);
 
@@ -99,16 +100,10 @@ export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): 
 	for (const key in edgeData) {
 		if (edgeData[key]) {
 			const { index0, index1 } = edgeData[key];
-			const v0 = glvec3.fromValues(
-				positions[index0 * 3 + 0],
-				positions[index0 * 3 + 1],
-				positions[index0 * 3 + 2],
-			);
-			const v1 = glvec3.fromValues(
-				positions[index1 * 3 + 0],
-				positions[index1 * 3 + 1],
-				positions[index1 * 3 + 2],
-			);
+			const v0 = [] as vec3;
+			positionAccessor.getElement(index0, v0);
+			const v1 = [] as vec3;
+			positionAccessor.getElement(index1, v1);
 
 			vertices.push(v0[0], v0[1], v0[2]);
 			vertices.push(v1[0], v1[1], v1[2]);
