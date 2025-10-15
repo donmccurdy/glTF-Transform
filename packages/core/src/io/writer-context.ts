@@ -102,6 +102,10 @@ export class WriterContext {
 			wrapT: textureInfo.getWrapT(),
 		} as GLTF.ISampler;
 
+		if (Object.keys(textureInfo.getSamplerExtras()).length > 0) {
+			samplerDef.extras = textureInfo.getSamplerExtras();
+		}
+
 		const samplerKey = JSON.stringify(samplerDef);
 		if (!this.samplerDefIndexMap.has(samplerKey)) {
 			this.samplerDefIndexMap.set(samplerKey, this.jsonDoc.json.samplers!.length);
