@@ -1,7 +1,7 @@
 import { Document, type vec3 } from '@gltf-transform/core';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
-import { createPrimitiveOutline } from '../src/primitive-outline';
+import { createEdgePrimitive } from '../src/primitive-outline';
 
 function createGeometries(doc: Document, vertices: vec3[], indices: number[]) {
 	const node = doc.createNode('test-primitive-node');
@@ -47,25 +47,7 @@ test('primitiveOutline_2', async (t) => {
 async function testEdges(doc: Document, indices: number[], edgesCount: number, t) {
 	createGeometries(doc, vertices, indices);
 	const root = doc.getRoot();
-	const primCountBefore = root.listMeshes()[0].listPrimitives().length;
-	t.deepEqual(primCountBefore, 1, 'primitive count before');
-	await doc.transform(createPrimitiveOutline({ thresholdAngel: 1 }));
-	const primCountAfter = root.listMeshes()[0].listPrimitives().length;
-	t.deepEqual(primCountAfter, 2, 'primitive count after');
-
-	logger.info(
-		`primitives: ${root
-			.listMeshes()[0]
-			.listPrimitives()
-			.map((prim) => prim.getName())
-			.join(',')}`,
-	);
-
-	const prim = root
-		.listMeshes()[0]
-		.listPrimitives()
-		.find((prim) => prim.getName() === 'test-primitive_edges');
-	t.assert(prim !== undefined, 'edge primitive exists');
-	const lineCount = prim.getAttribute('POSITION').getCount() / 2;
-	t.deepEqual(lineCount, edgesCount, 'zero line');
+	const edgePrimitive = createEdgePrimitive(root.listMeshes()[0].listPrimitives()[0], 0.05);
+	const lineCount = edgePrimitive.getAttribute('POSITION').getCount() / 2;
+	t.deepEqual(lineCount, edgesCount, 'count edge line');
 }

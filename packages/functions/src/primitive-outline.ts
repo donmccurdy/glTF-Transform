@@ -1,4 +1,4 @@
-import { type Document, Primitive, Triangle, type vec3 } from '@gltf-transform/core';
+import { Document, Primitive, Triangle, type vec3 } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
 import { murmurHash2 } from './hash-table.js';
 import { assignDefaults, createTransform } from './utils.js';
@@ -13,33 +13,15 @@ export const PRIMITIVE_OUTLINE_DEFAULTS: Required<PrimitiveOutlineOptions> = {
 	thresholdAngel: 0.05,
 };
 
-export function createPrimitiveOutline(_option: PrimitiveOutlineOptions = PRIMITIVE_OUTLINE_DEFAULTS): Primitive {
-	const options = assignDefaults(PRIMITIVE_OUTLINE_DEFAULTS, _option);
-
-	return createTransform(NAME, (doc: Document) => {
-		const meshes = doc.getRoot().listMeshes();
-		for (const mesh of meshes) {
-			const srcPrims = mesh.listPrimitives();
-			for (const prim of srcPrims) {
-				if (prim.getMode() !== Primitive.Mode.TRIANGLES) {
-					// Only create outlines for triangle primitives.
-					continue;
-				}
-				mesh.addPrimitive(createEdgePrim(doc, prim, options));
-			}
-		}
-	});
-}
-
-function createEdgePrim(document: Document, prim: Primitive, options: PrimitiveOutlineOptions): Primitive {
+export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): Primitive {
+	const graph = prim.getGraph();
+	const document = Document.fromGraph(graph)!;
 	const positionAccessor = prim.getAttribute('POSITION');
 	const positions = positionAccessor?.getArray();
 	const indices = prim.getIndices()?.getArray();
 	const indexCount = indices ? indices.length : positions!.length / 3;
 	const precisionCount = 4;
 	const precision = Math.pow(10, precisionCount);
-
-	const thresholdAngle = options.thresholdAngle;
 
 	const indexArr = [0, 0, 0];
 	const vertKeys = ['a', 'b', 'c'];
@@ -96,7 +78,7 @@ function createEdgePrim(document: Document, prim: Primitive, options: PrimitiveO
 			if (reverseHash in edgeData && edgeData[reverseHash]) {
 				// if we found a sibling edge add it into the vertex array if
 				// it meets the angle threshold and delete the edge from the map.
-				if (glvec3.dot(normal, edgeData[reverseHash].normal) <= thresholdAngle) {
+				if (glvec3.dot(normal, edgeData[reverseHash].normal) <= thresholdRadians) {
 					vertices.push(v0[0], v0[1], v0[2]);
 					vertices.push(v1[0], v1[1], v1[2]);
 				}
