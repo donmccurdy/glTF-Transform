@@ -13,10 +13,7 @@ export const PRIMITIVE_OUTLINE_DEFAULTS: Required<PrimitiveOutlineOptions> = {
 	thresholdAngel: 0.05,
 };
 
-export function createEdgePrimitive(
-	prim: Primitive,
-	thresholdRadians: number
-): Primitive {
+export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): Primitive {
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
 	const positionAccessor = prim.getAttribute('POSITION');
@@ -66,23 +63,19 @@ export function createEdgePrimitive(
 
 		hashes[0] = murmurHash2(
 			0,
-			a.map((v) => Math.round(v * precision))
+			a.map((v) => Math.round(v * precision)),
 		);
 		hashes[1] = murmurHash2(
 			0,
-			b.map((v) => Math.round(v * precision))
+			b.map((v) => Math.round(v * precision)),
 		);
 		hashes[2] = murmurHash2(
 			0,
-			c.map((v) => Math.round(v * precision))
+			c.map((v) => Math.round(v * precision)),
 		);
 
 		// skip degenerate triangles
-		if (
-			hashes[0] === hashes[1] ||
-			hashes[1] === hashes[2] ||
-			hashes[2] === hashes[0]
-		) {
+		if (hashes[0] === hashes[1] || hashes[1] === hashes[2] || hashes[2] === hashes[0]) {
 			continue;
 		}
 
@@ -97,10 +90,7 @@ export function createEdgePrimitive(
 			if (reverseHash in edgeData && edgeData[reverseHash]) {
 				// if we found a sibling edge add it into the vertex array if
 				// it meets the angle threshold and delete the edge from the map.
-				if (
-					glvec3.dot(normal, edgeData[reverseHash].normal) <=
-					thresholdRadians
-				) {
+				if (glvec3.dot(normal, edgeData[reverseHash].normal) <= thresholdRadians) {
 					vertices.push(v0[0], v0[1], v0[2]);
 					vertices.push(v1[0], v1[1], v1[2]);
 				}
