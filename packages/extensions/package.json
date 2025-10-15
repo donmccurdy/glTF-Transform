@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/extensions",
-  "version": "4.2.1-cds.1.0.6-dev.1",
+  "version": "4.2.1-cds.1.0.7-dev.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "homepage": "https://gltf-transform.dev/extensions.html",
   "description": "Adds extension support to @gltf-transform/core",
@@ -35,7 +35,7 @@
     "threejs"
   ],
   "dependencies": {
-    "@gltf-transform/core": "4.2.1-cds.1.0.6-dev.1",
+    "@gltf-transform/core": "4.2.1-cds.1.0.7-dev.0",
     "ktx-parse": "^1.0.1"
   },
   "files": [
@@ -45,5 +45,5 @@
     "LICENSE.md"
   ],
   "gitHead": "895b70777fda68aa321358d17dab2105e8564d08",
-  "stableVersion": "4.2.1-cds.1.0.6-dev.0"
+  "stableVersion": "4.2.1-cds.1.0.7-dev.0"
 }
