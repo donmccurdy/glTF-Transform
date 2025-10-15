@@ -1,5 +1,6 @@
 import { type Document, Primitive, Triangle, type vec3 } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
+import { murmurHash2 } from './hash-table.js';
 import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'primitive-outline';
@@ -66,9 +67,18 @@ function createEdgePrim(document: Document, prim: Primitive, options: PrimitiveO
 		const normal = [0, 0, 0] as vec3;
 		Triangle.getNormal(a, b, c, normal);
 
-		hashes[0] = `${Math.round(a[0] * precision)},${Math.round(a[1] * precision)},${Math.round(a[2] * precision)}`;
-		hashes[1] = `${Math.round(b[0] * precision)},${Math.round(b[1] * precision)},${Math.round(b[2] * precision)}`;
-		hashes[2] = `${Math.round(c[0] * precision)},${Math.round(c[1] * precision)},${Math.round(c[2] * precision)}`;
+		hashes[0] = murmurHash2(
+			0,
+			a.map((v) => Math.round(v * precision)),
+		);
+		hashes[1] = murmurHash2(
+			0,
+			b.map((v) => Math.round(v * precision)),
+		);
+		hashes[2] = murmurHash2(
+			0,
+			c.map((v) => Math.round(v * precision)),
+		);
 
 		// skip degenerate triangles
 		if (hashes[0] === hashes[1] || hashes[1] === hashes[2] || hashes[2] === hashes[0]) {
