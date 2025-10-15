@@ -1,7 +1,7 @@
 import { Document, Primitive, Triangle, type vec3 } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
+import { dequantizeAttribute } from './dequantize.js';
 import { murmurHash2 } from './hash-table.js';
-import { assignDefaults, createTransform } from './utils.js';
 
 const NAME = 'primitive-outline';
 
@@ -17,9 +17,15 @@ export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): 
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
 	const positionAccessor = prim.getAttribute('POSITION');
-	const positions = positionAccessor?.getArray();
+
+	if (prim.getExtension('KHR_mesh_quantization')) {
+		for (const semantic of ['POSITION', 'NORMAL', 'TANGENT']) {
+			const attribute = prim.getAttribute(semantic);
+			if (attribute) dequantizeAttribute(attribute);
+		}
+	}
 	const indices = prim.getIndices()?.getArray();
-	const indexCount = indices ? indices.length : positions!.length / 3;
+	const indexCount = indices ? indices.length : positionAccessor?.getCount();
 	const precisionCount = 4;
 	const precision = Math.pow(10, precisionCount);
 

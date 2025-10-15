@@ -1,9 +1,10 @@
 import { Document, type vec3 } from '@gltf-transform/core';
+import { quantize } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { createEdgePrimitive } from '../src/create-edge-primitive';
 
-function createGeometries(doc: Document, vertices: vec3[], indices: number[]) {
+function createGeometries(doc: Document, vertices: vec3[], indices: number[], quantized: boolean = false) {
 	const node = doc.createNode('test-primitive-node');
 	const mesh = doc.createMesh('test-primitive-mesh');
 	const primitive = doc
@@ -17,6 +18,9 @@ function createGeometries(doc: Document, vertices: vec3[], indices: number[]) {
 	mesh.addPrimitive(primitive);
 	node.setMesh(mesh);
 	doc.createScene().addChild(node);
+	if (quantized) {
+		quantize();
+	}
 }
 
 const vertices: vec3[] = [
@@ -31,21 +35,26 @@ function testEdge(doc: Document, vertices: vec3[], indices: number[], expectedLi
 
 test('primitiveOutline_zero0', async (t) => {
 	const doc = new Document().setLogger(logger);
-	await testEdges(doc, [1, 1, 1], 0, t);
+	await testEdges(doc, [1, 1, 1], 0, false, t);
 });
 
 test('primitiveOutline_zero1', async (t) => {
 	const doc = new Document().setLogger(logger);
-	await testEdges(doc, [0, 0, 1], 0, t);
+	await testEdges(doc, [0, 0, 1], 0, false, t);
 });
 
 test('primitiveOutline_2', async (t) => {
 	const doc = new Document().setLogger(logger);
-	await testEdges(doc, [0, 1, 2], 3, t);
+	await testEdges(doc, [0, 1, 2], 3, false, t);
 });
 
-async function testEdges(doc: Document, indices: number[], edgesCount: number, t) {
-	createGeometries(doc, vertices, indices);
+test('quanztized_primitive_edge', async (t) => {
+	const doc = new Document().setLogger(logger);
+	await testEdges(doc, [0, 1, 2], 3, true, t);
+});
+
+async function testEdges(doc: Document, indices: number[], edgesCount: number, quantize: boolean, t) {
+	createGeometries(doc, vertices, indices, quantize);
 	const root = doc.getRoot();
 	const edgePrimitive = createEdgePrimitive(root.listMeshes()[0].listPrimitives()[0], 0.05);
 	const lineCount = edgePrimitive.getAttribute('POSITION').getCount() / 2;

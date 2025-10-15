@@ -367,10 +367,7 @@ function transformBatch(document: Document, batch: InstancedMesh, nodeTransform:
 
 	// biome-ignore format: Readability.
 	const instanceMatrix = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1,
+		1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
 	] as mat4;
 
 	const transformMatrix = fromTransform(nodeTransform);
