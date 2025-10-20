@@ -1,7 +1,7 @@
 import { Document, Primitive, Triangle, type vec3 } from '@gltf-transform/core';
 import { vec3 as glvec3 } from 'gl-matrix';
 import { dequantizeAttribute } from './dequantize.js';
-import { murmurHash2 } from './hash-table.js';
+import { VertexStream } from './hash-table.js';
 
 const NAME = 'primitive-outline';
 
@@ -40,6 +40,7 @@ export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): 
 	const hashes = new Array(3);
 	const edgeData = {};
 	const vertices = [];
+	const vertexStream = new VertexStream(prim);
 
 	for (let i = 0; i < indexCount; i += 3) {
 		if (indices) {
@@ -61,18 +62,9 @@ export function createEdgePrimitive(prim: Primitive, thresholdRadians: number): 
 		const normal = [0, 0, 0] as vec3;
 		Triangle.getNormal(a, b, c, normal);
 
-		hashes[0] = murmurHash2(
-			0,
-			a.map((v) => Math.round(v * precision)),
-		);
-		hashes[1] = murmurHash2(
-			0,
-			b.map((v) => Math.round(v * precision)),
-		);
-		hashes[2] = murmurHash2(
-			0,
-			c.map((v) => Math.round(v * precision)),
-		);
+		hashes[0] = vertexStream.hash(indexArr[0]);
+		hashes[1] = vertexStream.hash(indexArr[1]);
+		hashes[2] = vertexStream.hash(indexArr[2]);
 
 		// skip degenerate triangles
 		if (hashes[0] === hashes[1] || hashes[1] === hashes[2] || hashes[2] === hashes[0]) {

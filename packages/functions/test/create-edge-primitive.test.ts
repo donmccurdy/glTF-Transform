@@ -1,6 +1,6 @@
 import { Document, type vec3 } from '@gltf-transform/core';
 import { quantize } from '@gltf-transform/functions';
-import { logger, vec2 } from '@gltf-transform/test-utils';
+import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { createEdgePrimitive } from '../src/create-edge-primitive';
 
