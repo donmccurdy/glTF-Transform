@@ -123,12 +123,6 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		// Prune empty Meshes.
 		if (propertyTypes.has(PropertyType.MESH)) {
 			for (const mesh of root.listMeshes()) {
-				for (const prim of mesh.listPrimitives()) {
-					// Skip meshes with primitives, or with extras.
-					if (prim.getAttribute('POSITION') == null) {
-						prim.dispose();
-					}
-				}
 				if (mesh.listPrimitives().length > 0) continue;
 				mesh.dispose();
 			}

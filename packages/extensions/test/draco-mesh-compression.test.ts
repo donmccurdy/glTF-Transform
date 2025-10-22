@@ -1,5 +1,6 @@
 import { Accessor, type Buffer, Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+import { instance } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
@@ -347,6 +348,58 @@ test('non-primitive parent', async (t) => {
 		() => io.writeJSON(document, { format: Format.GLB }),
 		{ message: /indices or vertex attributes/ },
 		'invalid accessor reuse',
+	);
+});
+
+test('getBounds: mixed instanced and non-instanced nodes', async (t) => {
+	// Initialize a new document and enable the Draco compression extension.
+	const document = new Document().setLogger(logger);
+	document.createExtension(KHRDracoMeshCompression).setRequired(true);
+
+	// Create a shared buffer and mesh primitives.
+	const buffer = document.createBuffer();
+	const prim1 = createMeshPrimitive(document, buffer);
+	const prim2 = createMeshPrimitive(document, buffer);
+
+	// Create a mesh composed of multiple primitives.
+	const mesh = document.createMesh().addPrimitive(prim1).addPrimitive(prim2).addPrimitive(prim2.clone());
+
+	// Create two nodes using the same mesh.
+	// These nodes will be candidates for GPU instancing.
+	const node0 = document.createNode().setMesh(mesh);
+	const node1 = document.createNode().setMesh(mesh).setTranslation([0, 0, 2]);
+
+	// Add the nodes to the scene.
+	document.createScene().addChild(node0).addChild(node1);
+
+	// Apply the `instance()` transform with a minimum threshold of 2.
+	// This will convert node0 and node1 into a single instanced mesh node.
+	await document.transform(instance({ min: 2 }));
+
+	// Create a third node using the same mesh, but add it *after* the transform.
+	// This node will remain a regular (non-instanced) mesh node.
+	const node2 = document.createNode().setMesh(mesh).setTranslation([0, 0, 3]);
+
+	// Attach the non-instanced node as a child of the instanced node.
+	document.getRoot().listNodes()[0].addChild(node2);
+
+	// Compute the bounding box of the parent node (which now contains both instanced and non-instanced children).
+	const bbox = getBounds(document.getRoot().listNodes()[0]);
+
+	// Validate the bounding box:
+	// - The instanced meshes (node0 and node1) should be excluded from bounds calculation.
+	// - Only node2 should contribute to the bounds.
+	// - Since node2 is translated to [0, 0, 3] and its mesh spans from [-1, -1, -1] to [1, 1, 1],
+	//   the expected bounds are [0, -1, 2] to [1, 1, 4].
+	t.deepEqual(
+		bbox.min.map((v) => +v.toFixed(3)),
+		[0, -1, 2],
+		'Incorrect model bounds (min): Instanced meshes shouldn be excluded',
+	);
+	t.deepEqual(
+		bbox.max.map((v) => +v.toFixed(3)),
+		[1, 1, 4],
+		'Incorrect model bounds (max): Instanced meshes should be excluded',
 	);
 });
 
