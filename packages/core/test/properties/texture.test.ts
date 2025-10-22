@@ -113,6 +113,24 @@ test('textureInfo extras', async (t) => {
 	t.deepEqual(rtMaterial.getBaseColorTextureInfo()!.getExtras(), { textureInfoID: 12345 }, 'roundtrip');
 });
 
+test('sampler extras', async (t) => {
+	const io = await createPlatformIO();
+	const document = new Document();
+	document.createBuffer();
+	const texture = document
+		.createTexture('A')
+		.setExtras({ foo: 1, bar: 2 })
+		.setImage(new Uint8Array(10))
+		.setMimeType('image/png');
+	const material = document.createMaterial().setBaseColorTexture(texture);
+	material.getBaseColorTextureInfo()!.setSamplerExtras({ textureSamplerID: 12345 });
+	const doc2 = await io.readJSON(await io.writeJSON(document));
+	const rtMaterial = doc2.getRoot().listMaterials()[0];
+
+	t.deepEqual(material.getBaseColorTextureInfo()!.getSamplerExtras(), { textureSamplerID: 12345 }, 'storage');
+	t.deepEqual(rtMaterial.getBaseColorTextureInfo()!.getSamplerExtras(), { textureSamplerID: 12345 }, 'roundtrip');
+});
+
 test('padding', async (t) => {
 	// Ensure that buffer views are padded to 8-byte boundaries. See:
 	// https://github.com/KhronosGroup/glTF/issues/1935
