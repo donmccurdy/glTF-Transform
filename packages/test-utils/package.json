@@ -15,8 +15,8 @@
     "build:watch": "microbundle watch --format modern --no-compress"
   },
   "dependencies": {
-    "@gltf-transform/core": "^4.2.1",
-    "@gltf-transform/extensions": "^4.2.1",
-    "@gltf-transform/functions": "^4.2.1"
+    "@gltf-transform/core": "4.2.1-cds.1.0.7-dev.0",
+    "@gltf-transform/extensions": "4.2.1-cds.1.0.7-dev.0",
+    "@gltf-transform/functions": "4.2.1-cds.1.0.7-dev.0"
   }
 }

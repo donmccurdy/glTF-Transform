@@ -173,3 +173,41 @@ test('idempotence', async (t) => {
 
 	t.is(doc.getRoot().listExtensionsUsed().length, 1, 'does not remove EXT_mesh_gpu_instancing');
 });
+
+test('extras', async (t) => {
+	// Create a new document and initialize the logger.
+	const document = new Document().setLogger(logger);
+
+	const root = document.getRoot();
+
+	// Create a buffer and a primitive with a POSITION attribute.
+	const buffer = document.createBuffer();
+	const prim = document.createPrimitive().setAttribute('POSITION', document.createAccessor().setBuffer(buffer));
+
+	// Create a mesh using the primitive.
+	const mesh = document.createMesh().addPrimitive(prim);
+
+	// Create two nodes using the same mesh, each with a unique name.
+	// These nodes will be candidates for instancing.
+	const node0 = document.createNode().setMesh(mesh).setName('node0');
+	const node1 = document.createNode().setMesh(mesh).setName('node1').setTranslation([0, 0, 2]);
+
+	// Add both nodes to the scene.
+	document.createScene().addChild(node0).addChild(node1);
+
+	// Apply the `instance()` transform with a minimum threshold of 2.
+	// This will convert node0 and node1 into a single instanced mesh node.
+	// The transform also stores the original node names in the `extras.instanceNames` field.
+	await document.transform(instance({ min: 2 }));
+
+	// Retrieve the resulting instanced node and its extras.
+	const parentNode = root.listNodes()[0].getName();
+	const parentExtras = root.listNodes()[0].getExtras();
+
+	// Validate that the instanced node retains the name of the first node.
+	t.is(parentNode, 'node0', 'get the name of the node');
+
+	// Validate that the extras field contains both original node names.
+	t.is(parentExtras['instanceNames'].length, 2, 'node\'s extras should have 2 instances');
+	t.deepEqual(parentExtras['instanceNames'], ['node0', 'node1'], '2 instances should keep their names');
+});
