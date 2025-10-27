@@ -1,5 +1,5 @@
 import { type Accessor, Document, type Node, type Transform } from '@gltf-transform/core';
-import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extensions';
+import type { InstancedMesh } from '@gltf-transform/extensions';
 import { createTransform } from './utils.js';
 
 const NAME = 'uninstance';
@@ -64,8 +64,7 @@ export function uninstance(_options: UninstanceOptions = UNINSTANCE_DEFAULTS): T
 			}
 		}
 
-		// Remove Extension from Document.
-		document.createExtension(EXTMeshGPUInstancing).dispose();
+		document.disposeExtension('EXT_mesh_gpu_instancing');
 
 		logger.debug(`${NAME}: Complete.`);
 	});
