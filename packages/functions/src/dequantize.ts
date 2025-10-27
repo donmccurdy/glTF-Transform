@@ -43,14 +43,14 @@ const DEQUANTIZE_DEFAULTS: Required<DequantizeOptions> = {
 export function dequantize(_options: DequantizeOptions = DEQUANTIZE_DEFAULTS): Transform {
 	const options = assignDefaults(DEQUANTIZE_DEFAULTS, _options);
 
-	return createTransform(NAME, (doc: Document): void => {
-		const logger = doc.getLogger();
-		for (const mesh of doc.getRoot().listMeshes()) {
+	return createTransform(NAME, (document: Document): void => {
+		const logger = document.getLogger();
+		for (const mesh of document.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				dequantizePrimitive(prim, options);
 			}
 		}
-		doc.createExtension(KHRMeshQuantization).dispose();
+		document.disposeExtension('KHR_mesh_quantization');
 		logger.debug(`${NAME}: Complete.`);
 	});
 }

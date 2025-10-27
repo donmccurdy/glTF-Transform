@@ -177,7 +177,7 @@ export class Document {
 	}
 
 	/**********************************************************************************************
-	 * Extension factory method.
+	 * Extension factory methods.
 	 */
 
 	/**
@@ -190,6 +190,17 @@ export class Document {
 			.listExtensionsUsed()
 			.find((ext) => ext.extensionName === extensionName);
 		return (prevExtension || new ctor(this)) as T;
+	}
+
+	/**
+	 * Disables and removes an {@link Extension} from the Document. If no Extension exists with
+	 * the given name, this method has no effect.
+	 */
+	disposeExtension(extensionName: string): void {
+		const extension = this.getRoot()
+			.listExtensionsUsed()
+			.find((ext) => ext.extensionName === extensionName);
+		if (extension) extension.dispose();
 	}
 
 	/**********************************************************************************************
