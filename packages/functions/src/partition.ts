@@ -1,6 +1,6 @@
 import { type Document, type ILogger, PropertyType, type Transform } from '@gltf-transform/core';
 import { prune } from './prune.js';
-import { assignDefaults, createTransform } from './utils.js';
+import { assignDefaults, createTransform, deepListAttributes } from './utils.js';
 
 const NAME = 'partition';
 
@@ -72,14 +72,12 @@ function partitionMeshes(doc: Document, logger: ILogger, options: Required<Parti
 				.createBuffer(mesh.getName())
 				.setURI(createBufferURI(mesh.getName() || 'mesh', existingURIs));
 
-			mesh.listPrimitives().forEach((primitive) => {
-				const indices = primitive.getIndices();
-				if (indices) indices.setBuffer(buffer);
-				primitive.listAttributes().forEach((attribute) => attribute.setBuffer(buffer));
-				primitive.listTargets().forEach((primTarget) => {
-					primTarget.listAttributes().forEach((attribute) => attribute.setBuffer(buffer));
-				});
-			});
+			for (const prim of mesh.listPrimitives()) {
+				prim.getIndices()?.setBuffer(buffer);
+				for (const attribute of deepListAttributes(prim)) {
+					attribute.setBuffer(buffer);
+				}
+			}
 		});
 }
 
