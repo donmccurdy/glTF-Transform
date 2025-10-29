@@ -37,5 +37,5 @@ import type { GLTF } from './types/gltf.js';
  */
 export interface JSONDocument {
 	json: GLTF.IGLTF;
-	resources: { [s: string]: Uint8Array<ArrayBuffer> | null };
+	resources: { [s: string]: Uint8Array<ArrayBuffer> };
 }

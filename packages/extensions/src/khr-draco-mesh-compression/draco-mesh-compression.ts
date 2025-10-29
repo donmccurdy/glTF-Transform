@@ -215,8 +215,8 @@ export class KHRDracoMeshCompression extends Extension {
 						const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 						// TODO(cleanup): Should be encapsulated in writer-context.ts.
 						const resource = bufferDef.uri
-							? jsonDoc.resources[bufferDef.uri]!
-							: jsonDoc.resources[GLB_BUFFER]!;
+							? jsonDoc.resources[bufferDef.uri]
+							: jsonDoc.resources[GLB_BUFFER];
 
 						const byteOffset = bufferViewDef.byteOffset || 0;
 						const byteLength = bufferViewDef.byteLength;

@@ -211,7 +211,7 @@ export abstract class PlatformIO {
 				} catch (error) {
 					if (!this._strictResources && images.includes(resource as GLTF.IImage)) {
 						this._logger.warn(`Failed to load image URI, "${uri}". ${error}`);
-						jsonDoc.resources[uri] = null;
+						jsonDoc.resources[uri] = null!;
 					} else {
 						throw error;
 					}
