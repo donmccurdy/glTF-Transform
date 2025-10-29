@@ -120,7 +120,7 @@ export class GLTFReader {
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
 				const resource = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
 				const byteOffset = bufferViewDef.byteOffset || 0;
-				context.bufferViews[index] = BufferUtils.toView(resource, byteOffset, bufferViewDef.byteLength);
+				context.bufferViews[index] = BufferUtils.toView(resource!, byteOffset, bufferViewDef.byteLength);
 			}
 
 			return context.buffers[bufferViewDef.buffer];
@@ -172,7 +172,7 @@ export class GLTFReader {
 			if (imageDef.bufferView !== undefined) {
 				const bufferViewDef = json.bufferViews![imageDef.bufferView];
 				const bufferDef = jsonDoc.json.buffers![bufferViewDef.buffer];
-				const bufferData = bufferDef.uri ? jsonDoc.resources[bufferDef.uri] : jsonDoc.resources[GLB_BUFFER];
+				const bufferData = bufferDef.uri ? jsonDoc.resources[bufferDef.uri]! : jsonDoc.resources[GLB_BUFFER]!;
 				const byteOffset = bufferViewDef.byteOffset || 0;
 				const byteLength = bufferViewDef.byteLength;
 				const imageData = bufferData.slice(byteOffset, byteOffset + byteLength);
