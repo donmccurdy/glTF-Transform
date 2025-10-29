@@ -84,7 +84,7 @@ export class Texture extends ExtensibleProperty<ITexture> {
 	}
 
 	/** Sets the raw image data for this texture. */
-	public setImage(image: Uint8Array): this {
+	public setImage(image: Uint8Array | null): this {
 		return this.set('image', BufferUtils.assertView(image));
 	}
 
