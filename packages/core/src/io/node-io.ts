@@ -167,7 +167,7 @@ export class NodeIO extends PlatformIO {
 					const resourcePath = path.join(dir, decodeURIComponent(resourceURI));
 					await fs.mkdir(path.dirname(resourcePath), { recursive: true });
 					await fs.writeFile(resourcePath, resources[resourceURI]);
-					this.lastWriteBytes += resources[resourceURI].byteLength;
+					this.lastWriteBytes += resources[resourceURI]!.byteLength;
 				}),
 			);
 		}
