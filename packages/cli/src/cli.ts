@@ -832,11 +832,11 @@ ${underline('References')}
 		validator: ['edgebreaker', 'sequential'],
 		default: 'edgebreaker',
 	})
-	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 1–10.', {
+	.option('--encode-speed <encodeSpeed>', 'Encoding speed vs. compression level, 0–10.', {
 		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.encodeSpeed,
 	})
-	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 1–10.', {
+	.option('--decode-speed <decodeSpeed>', 'Decoding speed vs. compression level, 0–10.', {
 		validator: Validator.NUMBER,
 		default: DRACO_DEFAULTS.decodeSpeed,
 	})
