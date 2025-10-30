@@ -1,5 +1,5 @@
 import type { Document, Transform } from '@gltf-transform/core';
-import { EXTMeshoptCompression } from '@gltf-transform/extensions';
+import { KHRMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { QUANTIZE_DEFAULTS, type QuantizeOptions, quantize } from './quantize.js';
 import { reorder } from './reorder.js';
@@ -18,12 +18,12 @@ export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = {
 const NAME = 'meshopt';
 
 /**
- * Applies Meshopt compression using {@link EXTMeshoptCompression EXT_meshopt_compression}.
+ * Applies Meshopt compression using {@link KHRMeshoptCompression KHR_meshopt_compression}.
  * This type of compression can reduce the size of point, line, and triangle geometry,
  * morph targets, and animation data.
  *
  * This function is a thin wrapper around {@link reorder}, {@link quantize}, and
- * {@link EXTMeshoptCompression}, and exposes relatively few configuration options.
+ * {@link KHRMeshoptCompression}, and exposes relatively few configuration options.
  * To access more options (like quantization bits) direct use of the underlying
  * functions is recommended.
  *
@@ -89,13 +89,13 @@ export function meshopt(_options: MeshoptOptions): Transform {
 		);
 
 		document
-			.createExtension(EXTMeshoptCompression)
+			.createExtension(KHRMeshoptCompression)
 			.setRequired(true)
 			.setEncoderOptions({
 				method:
 					options.level === 'medium'
-						? EXTMeshoptCompression.EncoderMethod.QUANTIZE
-						: EXTMeshoptCompression.EncoderMethod.FILTER,
+						? KHRMeshoptCompression.EncoderMethod.QUANTIZE
+						: KHRMeshoptCompression.EncoderMethod.FILTER,
 			});
 	});
 }

@@ -887,7 +887,7 @@ ${underline('Documentation')}
 
 ${underline('References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
-- EXT_meshopt_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/
+- KHR_meshopt_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/KHR_meshopt_compression/
 `.trim(),
 	)
 	.argument('<input>', INPUT_DESC)

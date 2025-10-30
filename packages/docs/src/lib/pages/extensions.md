@@ -42,6 +42,7 @@ as prescribed by the extension itself.
 - [KHR_materials_variants](/modules/extensions/classes/KHRMaterialsVariants)
 - [KHR_materials_volume](/modules/extensions/classes/KHRMaterialsVolume)
 - [KHR_mesh_quantization](/modules/extensions/classes/KHRMeshQuantization)
+- [KHR_meshopt_compression](/modules/extensions/classes/KHRMeshoptCompression)
 - [KHR_texture_basisu](/modules/extensions/classes/KHRTextureBasisu)
 - [KHR_texture_transform](/modules/extensions/classes/KHRTextureTransform)
 - [KHR_xmp_json_ld](/modules/extensions/classes/KHRXMP)

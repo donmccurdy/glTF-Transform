@@ -112,7 +112,7 @@ export const QUANTIZE_DEFAULTS: Required<Omit<QuantizeOptions, 'patternTargets'>
  *
  * In most cases, quantization requires {@link KHRMeshQuantization}; the extension will be added
  * automatically when `quantize()` is applied. When applying meshopt compression with
- * {@link EXTMeshoptCompression}, quantization is usually applied before compression.
+ * {@link KHRMeshoptCompression}, quantization is usually applied before compression.
  *
  * Example:
  *
