@@ -1,5 +1,5 @@
 import { Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
-import { KHRMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
+import { EXTMeshoptCompression, KHRMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import test from 'ava';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import path, { dirname } from 'path';
@@ -41,7 +41,11 @@ test('encoding', async (t) => {
 		.map((ext) => ext.extensionName);
 	const bbox = getBounds(doc.getRoot().listScenes()[0]);
 
-	t.truthy(extensionsRequired.includes('KHR_meshopt_compression'), 'retains KHR_meshopt_compression');
+	t.deepEqual(
+		extensionsRequired,
+		['EXT_meshopt_compression', 'KHR_mesh_quantization'],
+		'retains EXT_meshopt_compression',
+	);
 	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
@@ -200,8 +204,10 @@ test('encoding grouped buffer views', async (t) => {
 
 async function createEncoderIO(): Promise<NodeIO> {
 	await Promise.all([MeshoptDecoder.ready, MeshoptEncoder.ready]);
-	return new NodeIO().registerExtensions([KHRMeshoptCompression, KHRMeshQuantization]).registerDependencies({
-		'meshopt.decoder': MeshoptDecoder,
-		'meshopt.encoder': MeshoptEncoder,
-	});
+	return new NodeIO()
+		.registerExtensions([KHRMeshoptCompression, KHRMeshQuantization, EXTMeshoptCompression])
+		.registerDependencies({
+			'meshopt.decoder': MeshoptDecoder,
+			'meshopt.encoder': MeshoptEncoder,
+		});
 }

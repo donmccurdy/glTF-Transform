@@ -1,6 +1,6 @@
 import type { Extension } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
-// TODO: Add EXTMeshoptCompression fallback.
+import { EXTMeshoptCompression } from './ext-meshopt-compression/ext-meshopt-compression.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
 import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
@@ -51,13 +51,14 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 
 export const ALL_EXTENSIONS: (typeof Extension)[] = [
 	EXTMeshGPUInstancing,
-	// TODO: EXTMeshoptCompression,
+	EXTMeshoptCompression,
 	EXTTextureAVIF,
 	EXTTextureWebP,
 	...KHRONOS_EXTENSIONS,
 ];
 
 export * from './ext-mesh-gpu-instancing/index.js';
+export * from './ext-meshopt-compression/index.js';
 export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';
 export * from './khr-draco-mesh-compression/index.js';
