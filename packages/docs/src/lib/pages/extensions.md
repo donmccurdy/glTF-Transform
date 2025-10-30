@@ -45,6 +45,7 @@ as prescribed by the extension itself.
 - [KHR_materials_volume](/modules/extensions/classes/KHRMaterialsVolume)
 - [KHR_mesh_primitive_restart](/modules/extensions/classes/KHRMeshPrimitiveRestart) *(🧪 experimental)*
 - [KHR_mesh_quantization](/modules/extensions/classes/KHRMeshQuantization)
+- [KHR_meshopt_compression](/modules/extensions/classes/KHRMeshoptCompression)
 - [KHR_node_visibility](/modules/extensions/classes/KHRNodeVisibility)
 - [KHR_texture_basisu](/modules/extensions/classes/KHRTextureBasisu)
 - [KHR_texture_transform](/modules/extensions/classes/KHRTextureTransform)

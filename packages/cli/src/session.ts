@@ -7,6 +7,12 @@ import { XMPContext } from './constants.js';
 import type { Logger } from './program.js';
 import { formatBytes, formatLong } from './utils/format.js';
 
+const MESH_COMPRESSION_EXTENSIONS = [
+	'KHR_draco_mesh_compression',
+	'KHR_meshopt_compression',
+	'EXT_meshopt_compression',
+];
+
 /** Helper class for managing a CLI command session. */
 export class Session {
 	private _outputFormat: Format;
@@ -38,9 +44,8 @@ export class Session {
 			: new Document().setLogger(this._logger);
 
 		// Warn and remove lossy compression, to avoid increasing loss on round trip.
-		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-			if (document.hasExtension(extensionName)) {
-				document.disposeExtension(extensionName);
+		for (const extensionName of MESH_COMPRESSION_EXTENSIONS) {
+			if (document.disposeExtension(extensionName)) {
 				this._logger.warn(`Decoded ${extensionName}. Further compression will be lossy.`);
 			}
 		}
