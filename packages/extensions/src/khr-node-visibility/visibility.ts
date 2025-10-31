@@ -7,6 +7,8 @@ interface IVisibility extends IProperty {
 
 /**
  * Defines visibility of a {@link Node} and its descendants. See {@link KHRNodeVisibility}.
+ *
+ * @experimental KHR_node_visibility is not yet ratified by the Khronos Group.
  */
 export class Visibility extends ExtensionProperty<IVisibility> {
 	public static EXTENSION_NAME: typeof KHR_NODE_VISIBILITY = KHR_NODE_VISIBILITY;

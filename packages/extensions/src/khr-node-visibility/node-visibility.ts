@@ -27,6 +27,8 @@ interface VisibilityDef {
  * // Assign to a Node.
  * node.setExtension('KHR_node_visibility', visibility);
  * ```
+ *
+ * @experimental KHR_node_visibility is not yet ratified by the Khronos Group.
  */
 export class KHRNodeVisibility extends Extension {
 	public static readonly EXTENSION_NAME: typeof KHR_NODE_VISIBILITY = KHR_NODE_VISIBILITY;
