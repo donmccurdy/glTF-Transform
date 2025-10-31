@@ -11,7 +11,7 @@ import {
 	WriterContext,
 } from '@gltf-transform/core';
 import type { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
-import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
+import { type EXT_MESHOPT_COMPRESSION, KHR_MESHOPT_COMPRESSION } from '../constants.js';
 import { EncoderMethod, type MeshoptBufferViewExtension, MeshoptFilter } from './constants.js';
 import { isFallbackBuffer } from './decoder.js';
 import { getMeshoptFilter, getMeshoptMode, getTargetPath, prepareAccessor } from './encoder.js';
@@ -24,108 +24,18 @@ const DEFAULT_ENCODER_OPTIONS: Required<EncoderOptions> = {
 	method: EncoderMethod.QUANTIZE,
 };
 
-type MeshoptBufferView = { extensions: { [EXT_MESHOPT_COMPRESSION]: MeshoptBufferViewExtension } };
-type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
+type UnknownMeshoptCompressionName = typeof KHR_MESHOPT_COMPRESSION | typeof EXT_MESHOPT_COMPRESSION;
 
-/**
- * [`EXT_meshopt_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/)
- * provides compression and fast decoding for geometry, morph targets, and animations.
- *
- * Meshopt compression (based on the [meshoptimizer](https://github.com/zeux/meshoptimizer)
- * library) offers a lightweight decoder with very fast runtime decompression, and is
- * appropriate for models of any size. Meshopt can reduce the transmission sizes of geometry,
- * morph targets, animation, and other numeric data stored in buffer views. When textures are
- * large, other complementary compression methods should be used as well.
- *
- * For the full benefits of meshopt compression, **apply gzip, brotli, or another lossless
- * compression method** to the resulting .glb, .gltf, or .bin files. Meshopt specifically
- * pre-optimizes assets for this purpose — without this secondary compression, the size
- * reduction is considerably less.
- *
- * Be aware that decompression happens before uploading to the GPU. While Meshopt decoding is
- * considerably faster than Draco decoding, neither compression method will improve runtime
- * performance directly. To improve framerate, you'll need to simplify the geometry by reducing
- * vertex count or draw calls — not just compress it. Finally, be aware that Meshopt compression is
- * lossy: repeatedly compressing and decompressing a model in a pipeline will lose precision, so
- * compression should generally be the last stage of an art workflow, and uncompressed original
- * files should be kept.
- *
- * The meshoptimizer library ([github](https://github.com/zeux/meshoptimizer/tree/master/js),
- * [npm](https://www.npmjs.com/package/meshoptimizer)) is a required dependency for reading or
- * writing files, and must be provided by the application. Compression may alternatively be applied
- * with the [gltfpack](https://github.com/zeux/meshoptimizer/tree/master/gltf) tool.
- *
- * ### Example — Read
- *
- * To read glTF files using Meshopt compression, ensure that the extension
- * and a decoder are registered. Geometry and other data are decompressed
- * while reading the file.
- *
- * ```typescript
- * import { NodeIO } from '@gltf-transform/core';
- * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptDecoder } from 'meshoptimizer';
- *
- * await MeshoptDecoder.ready;
- *
- * const io = new NodeIO()
- * 	.registerExtensions([EXTMeshoptCompression])
- * 	.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
- *
- * // Read and decode.
- * const document = await io.read('compressed.glb');
- * ```
- *
- * ### Example — Write
- *
- * The simplest way to apply Meshopt compression is with the {@link meshopt}
- * transform. The extension and an encoder must be registered.
- *
- * ```typescript
- * import { NodeIO } from '@gltf-transform/core';
- * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { meshopt } from '@gltf-transform/functions';
- * import { MeshoptEncoder } from 'meshoptimizer';
- *
- * await MeshoptEncoder.ready;
- *
- * const io = new NodeIO()
- * 	.registerExtensions([EXTMeshoptCompression])
- * 	.registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
- *
- * await document.transform(
- *   meshopt({encoder: MeshoptEncoder, level: 'medium'})
- * );
- *
- * await io.write('compressed-medium.glb', document);
- * ```
- *
- * ### Example — Advanced
- *
- * Internally, the {@link meshopt} transform reorders and quantizes vertex data
- * to preparate for compression. If you prefer different pre-processing, the
- * EXTMeshoptCompression extension can be added to the document manually:
- *
- * ```typescript
- * import { reorder, quantize } from '@gltf-transform/functions';
- * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptEncoder } from 'meshoptimizer';
- *
- * await document.transform(
- * 	reorder({encoder: MeshoptEncoder}),
- * 	quantize()
- * );
- *
- * document.createExtension(EXTMeshoptCompression)
- * 	.setRequired(true)
- * 	.setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
- * ```
- *
- * In either case, compression is deferred until generating output with an I/O
- * class.
- */
-export class EXTMeshoptCompression extends Extension {
-	public readonly extensionName: typeof EXT_MESHOPT_COMPRESSION = EXT_MESHOPT_COMPRESSION;
+type EncodedBufferView = GLTF.IBufferView & {
+	extensions: {
+		[KHR_MESHOPT_COMPRESSION]?: MeshoptBufferViewExtension;
+		[EXT_MESHOPT_COMPRESSION]?: MeshoptBufferViewExtension | undefined;
+	};
+};
+
+/** @hidden */
+export class _MeshoptCompression extends Extension {
+	public readonly extensionName: UnknownMeshoptCompressionName = KHR_MESHOPT_COMPRESSION;
 	/** @hidden */
 	public readonly prereadTypes: PropertyType[] = [PropertyType.BUFFER, PropertyType.PRIMITIVE];
 	/** @hidden */
@@ -135,7 +45,7 @@ export class EXTMeshoptCompression extends Extension {
 	/** @hidden */
 	public readonly writeDependencies: string[] = ['meshopt.encoder'];
 
-	public static readonly EXTENSION_NAME: typeof EXT_MESHOPT_COMPRESSION = EXT_MESHOPT_COMPRESSION;
+	public static readonly EXTENSION_NAME: UnknownMeshoptCompressionName = KHR_MESHOPT_COMPRESSION;
 	public static readonly EncoderMethod: typeof EncoderMethod = EncoderMethod;
 
 	private _decoder: typeof MeshoptDecoder | null = null;
@@ -178,12 +88,12 @@ export class EXTMeshoptCompression extends Extension {
 	 * Example:
 	 *
 	 * ```ts
-	 * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
+	 * import { KHRMeshoptCompression } from '@gltf-transform/extensions';
 	 *
-	 * doc.createExtension(EXTMeshoptCompression)
+	 * doc.createExtension(KHRMeshoptCompression)
 	 * 	.setRequired(true)
 	 * 	.setEncoderOptions({
-	 * 		method: EXTMeshoptCompression.EncoderMethod.QUANTIZE
+	 * 		method: KHRMeshoptCompression.EncoderMethod.QUANTIZE
 	 * 	});
 	 * ```
 	 */
@@ -200,11 +110,11 @@ export class EXTMeshoptCompression extends Extension {
 	public preread(context: ReaderContext, propertyType: PropertyType): this {
 		if (!this._decoder) {
 			if (!this.isRequired()) return this;
-			throw new Error(`[${EXT_MESHOPT_COMPRESSION}] Please install extension dependency, "meshopt.decoder".`);
+			throw new Error(`[${this.extensionName}] Please install extension dependency, "meshopt.decoder".`);
 		}
 		if (!this._decoder.supported) {
 			if (!this.isRequired()) return this;
-			throw new Error(`[${EXT_MESHOPT_COMPRESSION}]: Missing WASM support.`);
+			throw new Error(`[${this.extensionName}]: Missing WASM support.`);
 		}
 
 		if (propertyType === PropertyType.BUFFER) {
@@ -222,9 +132,9 @@ export class EXTMeshoptCompression extends Extension {
 
 		const viewDefs = jsonDoc.json.bufferViews || [];
 		viewDefs.forEach((viewDef, index) => {
-			if (!viewDef.extensions || !viewDef.extensions[EXT_MESHOPT_COMPRESSION]) return;
+			if (!viewDef.extensions || !viewDef.extensions[this.extensionName]) return;
 
-			const meshoptDef = viewDef.extensions[EXT_MESHOPT_COMPRESSION] as MeshoptBufferViewExtension;
+			const meshoptDef = viewDef.extensions[this.extensionName] as MeshoptBufferViewExtension;
 			const byteOffset = meshoptDef.byteOffset || 0;
 			const byteLength = meshoptDef.byteLength || 0;
 			const count = meshoptDef.count;
@@ -255,9 +165,9 @@ export class EXTMeshoptCompression extends Extension {
 
 		//
 		viewDefs.forEach((viewDef) => {
-			if (!viewDef.extensions || !viewDef.extensions[EXT_MESHOPT_COMPRESSION]) return;
+			if (!viewDef.extensions || !viewDef.extensions[this.extensionName]) return;
 
-			const meshoptDef = viewDef.extensions[EXT_MESHOPT_COMPRESSION] as MeshoptBufferViewExtension;
+			const meshoptDef = viewDef.extensions[this.extensionName] as MeshoptBufferViewExtension;
 
 			const buffer = context.buffers[meshoptDef.buffer];
 			const fallbackBuffer = context.buffers[viewDef.buffer];
@@ -345,7 +255,7 @@ export class EXTMeshoptCompression extends Extension {
 			const { array, byteStride } = preparedAccessor;
 
 			const buffer = accessor.getBuffer();
-			if (!buffer) throw new Error(`${EXT_MESHOPT_COMPRESSION}: Missing buffer for accessor.`);
+			if (!buffer) throw new Error(`${this.extensionName}: Missing buffer for accessor.`);
 			const bufferIndex = this.document.getRoot().listBuffers().indexOf(buffer);
 
 			// Buffer view grouping key.
@@ -366,7 +276,7 @@ export class EXTMeshoptCompression extends Extension {
 					byteLength: 0,
 					byteStride: usage === WriterContext.BufferViewUsage.ARRAY_BUFFER ? byteStride : undefined,
 					extensions: {
-						[EXT_MESHOPT_COMPRESSION]: {
+						[this.extensionName]: {
 							buffer: bufferIndex,
 							byteOffset: 0,
 							byteLength: 0,
@@ -393,7 +303,7 @@ export class EXTMeshoptCompression extends Extension {
 			// Update buffer view.
 			bufferViewData.push(new Uint8Array(array.buffer, array.byteOffset, array.byteLength));
 			bufferView.byteLength += array.byteLength;
-			bufferView.extensions.EXT_meshopt_compression.count += accessor.getCount();
+			bufferView.extensions[this.extensionName]!.count += accessor.getCount();
 		}
 	}
 
@@ -404,15 +314,15 @@ export class EXTMeshoptCompression extends Extension {
 		for (const key in this._encoderBufferViews) {
 			const bufferView = this._encoderBufferViews[key];
 			const bufferViewData = this._encoderBufferViewData[key];
-			const buffer = this.document.getRoot().listBuffers()[bufferView.extensions[EXT_MESHOPT_COMPRESSION].buffer];
+			const buffer = this.document.getRoot().listBuffers()[bufferView.extensions[this.extensionName]!.buffer];
 			const otherBufferViews = context.otherBufferViews.get(buffer) || [];
 
-			const { count, byteStride, mode } = bufferView.extensions[EXT_MESHOPT_COMPRESSION];
+			const { count, byteStride, mode } = bufferView.extensions[this.extensionName]!;
 			const srcArray = BufferUtils.concat(bufferViewData);
 			const dstArray = encoder.encodeGltfBuffer(srcArray, count, byteStride, mode);
 			const compressedData = BufferUtils.pad(dstArray);
 
-			bufferView.extensions[EXT_MESHOPT_COMPRESSION].byteLength = dstArray.byteLength;
+			bufferView.extensions[this.extensionName]!.byteLength = dstArray.byteLength;
 
 			bufferViewData.length = 0;
 			bufferViewData.push(compressedData);
@@ -442,7 +352,7 @@ export class EXTMeshoptCompression extends Extension {
 			Object.assign(finalBufferViewDef, bufferView);
 			finalBufferViewDef.byteOffset = fallbackBufferByteOffset;
 			const bufferViewExtensionDef = finalBufferViewDef.extensions![
-				EXT_MESHOPT_COMPRESSION
+				this.extensionName
 			] as MeshoptBufferViewExtension;
 			bufferViewExtensionDef.byteOffset = compressedByteOffset;
 
@@ -454,9 +364,111 @@ export class EXTMeshoptCompression extends Extension {
 		const fallbackBufferIndex = context.bufferIndexMap.get(fallbackBuffer)!;
 		const fallbackBufferDef = context.jsonDoc.json.buffers![fallbackBufferIndex];
 		fallbackBufferDef.byteLength = fallbackBufferByteOffset;
-		fallbackBufferDef.extensions = { [EXT_MESHOPT_COMPRESSION]: { fallback: true } };
+		fallbackBufferDef.extensions = { [this.extensionName]: { fallback: true } };
 		fallbackBuffer.dispose();
 
 		return this;
 	}
+}
+
+/**
+ * [`KHR_meshopt_compression`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/KHR_meshopt_compression/)
+ * provides compression and fast decoding for geometry, morph targets, and animations.
+ *
+ * Meshopt compression (based on the [meshoptimizer](https://github.com/zeux/meshoptimizer)
+ * library) offers a lightweight decoder with very fast runtime decompression, and is
+ * appropriate for models of any size. Meshopt can reduce the transmission sizes of geometry,
+ * morph targets, animation, and other numeric data stored in buffer views. When textures are
+ * large, other complementary compression methods should be used as well.
+ *
+ * For the full benefits of meshopt compression, **apply gzip, brotli, or another lossless
+ * compression method** to the resulting .glb, .gltf, or .bin files. Meshopt specifically
+ * pre-optimizes assets for this purpose — without this secondary compression, the size
+ * reduction is considerably less.
+ *
+ * Be aware that decompression happens before uploading to the GPU. While Meshopt decoding is
+ * considerably faster than Draco decoding, neither compression method will improve runtime
+ * performance directly. To improve framerate, you'll need to simplify the geometry by reducing
+ * vertex count or draw calls — not just compress it. Finally, be aware that Meshopt compression is
+ * lossy: repeatedly compressing and decompressing a model in a pipeline will lose precision, so
+ * compression should generally be the last stage of an art workflow, and uncompressed original
+ * files should be kept.
+ *
+ * The meshoptimizer library ([github](https://github.com/zeux/meshoptimizer/tree/master/js),
+ * [npm](https://www.npmjs.com/package/meshoptimizer)) is a required dependency for reading or
+ * writing files, and must be provided by the application. Compression may alternatively be applied
+ * with the [gltfpack](https://github.com/zeux/meshoptimizer/tree/master/gltf) tool.
+ *
+ * ### Example — Read
+ *
+ * To read glTF files using Meshopt compression, ensure that the extension
+ * and a decoder are registered. Geometry and other data are decompressed
+ * while reading the file.
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { KHRMeshoptCompression } from '@gltf-transform/extensions';
+ * import { MeshoptDecoder } from 'meshoptimizer';
+ *
+ * await MeshoptDecoder.ready;
+ *
+ * const io = new NodeIO()
+ * 	.registerExtensions([KHRMeshoptCompression])
+ * 	.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
+ *
+ * // Read and decode.
+ * const document = await io.read('compressed.glb');
+ * ```
+ *
+ * ### Example — Write
+ *
+ * The simplest way to apply Meshopt compression is with the {@link meshopt}
+ * transform. The extension and an encoder must be registered.
+ *
+ * ```typescript
+ * import { NodeIO } from '@gltf-transform/core';
+ * import { KHRMeshoptCompression } from '@gltf-transform/extensions';
+ * import { meshopt } from '@gltf-transform/functions';
+ * import { MeshoptEncoder } from 'meshoptimizer';
+ *
+ * await MeshoptEncoder.ready;
+ *
+ * const io = new NodeIO()
+ * 	.registerExtensions([KHRMeshoptCompression])
+ * 	.registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+ *
+ * await document.transform(
+ *   meshopt({encoder: MeshoptEncoder, level: 'medium'})
+ * );
+ *
+ * await io.write('compressed-medium.glb', document);
+ * ```
+ *
+ * ### Example — Advanced
+ *
+ * Internally, the {@link meshopt} transform reorders and quantizes vertex data
+ * to preparate for compression. If you prefer different pre-processing, the
+ * KHRMeshoptCompression extension can be added to the document manually:
+ *
+ * ```typescript
+ * import { reorder, quantize } from '@gltf-transform/functions';
+ * import { KHRMeshoptCompression } from '@gltf-transform/extensions';
+ * import { MeshoptEncoder } from 'meshoptimizer';
+ *
+ * await document.transform(
+ * 	reorder({encoder: MeshoptEncoder}),
+ * 	quantize()
+ * );
+ *
+ * document.createExtension(KHRMeshoptCompression)
+ * 	.setRequired(true)
+ * 	.setEncoderOptions({ method: KHRMeshoptCompression.EncoderMethod.QUANTIZE });
+ * ```
+ *
+ * In either case, compression is deferred until generating output with an I/O
+ * class.
+ */
+export class KHRMeshoptCompression extends _MeshoptCompression {
+	public readonly extensionName: typeof KHR_MESHOPT_COMPRESSION = KHR_MESHOPT_COMPRESSION;
+	public static readonly EXTENSION_NAME: typeof KHR_MESHOPT_COMPRESSION = KHR_MESHOPT_COMPRESSION;
 }

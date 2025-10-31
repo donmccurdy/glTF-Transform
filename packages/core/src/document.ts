@@ -196,11 +196,12 @@ export class Document {
 	 * Disables and removes an {@link Extension} from the Document. If no Extension exists with
 	 * the given name, this method has no effect.
 	 */
-	disposeExtension(extensionName: string): void {
+	disposeExtension<T extends Extension>(extensionName: string): T | null {
 		const extension = this.getRoot()
 			.listExtensionsUsed()
-			.find((ext) => ext.extensionName === extensionName);
+			.find((ext) => ext.extensionName === extensionName) as T;
 		if (extension) extension.dispose();
+		return extension || null;
 	}
 
 	/**********************************************************************************************

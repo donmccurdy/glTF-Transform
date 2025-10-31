@@ -6,6 +6,12 @@ import { performance } from 'perf_hooks'; // global in Node.js v16+
 import type { Logger } from './program.js';
 import { dim, formatBytes, formatLong, XMPContext } from './util.js';
 
+const MESH_COMPRESSION_EXTENSIONS = [
+	'KHR_draco_mesh_compression',
+	'KHR_meshopt_compression',
+	'EXT_meshopt_compression',
+];
+
 /** Helper class for managing a CLI command session. */
 export class Session {
 	private _outputFormat: Format;
@@ -37,13 +43,8 @@ export class Session {
 			: new Document().setLogger(this._logger);
 
 		// Warn and remove lossy compression, to avoid increasing loss on round trip.
-		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-			const extension = document
-				.getRoot()
-				.listExtensionsUsed()
-				.find((extension) => extension.extensionName === extensionName);
-			if (extension) {
-				extension.dispose();
+		for (const extensionName of MESH_COMPRESSION_EXTENSIONS) {
+			if (document.disposeExtension(extensionName)) {
 				this._logger.warn(`Decoded ${extensionName}. Further compression will be lossy.`);
 			}
 		}

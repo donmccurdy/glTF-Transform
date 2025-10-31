@@ -19,6 +19,7 @@ export const KHR_MATERIALS_UNLIT = 'KHR_materials_unlit';
 export const KHR_MATERIALS_VOLUME = 'KHR_materials_volume';
 export const KHR_MATERIALS_VARIANTS = 'KHR_materials_variants';
 export const KHR_MESH_QUANTIZATION = 'KHR_mesh_quantization';
+export const KHR_MESHOPT_COMPRESSION = 'KHR_meshopt_compression';
 export const KHR_TEXTURE_BASISU = 'KHR_texture_basisu';
 export const KHR_TEXTURE_TRANSFORM = 'KHR_texture_transform';
 export const KHR_XMP_JSON_LD = 'KHR_xmp_json_ld';

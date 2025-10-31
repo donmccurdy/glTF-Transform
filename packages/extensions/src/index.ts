@@ -1,6 +1,6 @@
 import type { Extension } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
-import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
+import { EXTMeshoptCompression } from './ext-meshopt-compression/ext-meshopt-compression.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
 import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
@@ -20,6 +20,7 @@ import { KHRMaterialsUnlit } from './khr-materials-unlit/index.js';
 import { KHRMaterialsVariants } from './khr-materials-variants/index.js';
 import { KHRMaterialsVolume } from './khr-materials-volume/index.js';
 import { KHRMeshQuantization } from './khr-mesh-quantization/index.js';
+import { KHRMeshoptCompression } from './khr-meshopt-compression/index.js';
 import { KHRTextureBasisu } from './khr-texture-basisu/index.js';
 import { KHRTextureTransform } from './khr-texture-transform/index.js';
 import { KHRXMP } from './khr-xmp-json-ld/index.js';
@@ -42,6 +43,7 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 	KHRMaterialsVariants,
 	KHRMaterialsVolume,
 	KHRMeshQuantization,
+	KHRMeshoptCompression,
 	KHRTextureBasisu,
 	KHRTextureTransform,
 	KHRXMP,
@@ -76,6 +78,7 @@ export * from './khr-materials-unlit/index.js';
 export * from './khr-materials-variants/index.js';
 export * from './khr-materials-volume/index.js';
 export * from './khr-mesh-quantization/index.js';
+export * from './khr-meshopt-compression/index.js';
 export * from './khr-texture-basisu/index.js';
 export * from './khr-texture-transform/index.js';
 export * from './khr-xmp-json-ld/index.js';

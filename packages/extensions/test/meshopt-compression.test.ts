@@ -1,5 +1,5 @@
 import { Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
-import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
+import { EXTMeshoptCompression, KHRMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import test from 'ava';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import path, { dirname } from 'path';
@@ -41,7 +41,11 @@ test('encoding', async (t) => {
 		.map((ext) => ext.extensionName);
 	const bbox = getBounds(doc.getRoot().listScenes()[0]);
 
-	t.truthy(extensionsRequired.includes('EXT_meshopt_compression'), 'retains EXT_meshopt_compression');
+	t.deepEqual(
+		extensionsRequired,
+		['EXT_meshopt_compression', 'KHR_mesh_quantization'],
+		'retains EXT_meshopt_compression',
+	);
 	t.deepEqual(
 		bbox.min.map((v) => +v.toFixed(3)),
 		[-0.5, -0.5, -0.5],
@@ -58,7 +62,7 @@ test('encoding sparse', async (t) => {
 	const io = await createEncoderIO();
 
 	const doc = new Document();
-	doc.createExtension(EXTMeshoptCompression).setRequired(true);
+	doc.createExtension(KHRMeshoptCompression).setRequired(true);
 
 	// biome-ignore format: Readability.
 	const positionArray = [
@@ -118,7 +122,7 @@ test('encoding grouped buffer views', async (t) => {
 	const node = document.createNode().setMesh(mesh);
 	const scene = document.createScene().addChild(node);
 	document.getRoot().setDefaultScene(scene);
-	document.createExtension(EXTMeshoptCompression).setRequired(true);
+	document.createExtension(KHRMeshoptCompression).setRequired(true);
 
 	const { json } = await io.writeJSON(document);
 
@@ -145,7 +149,7 @@ test('encoding grouped buffer views', async (t) => {
 			{
 				byteLength: 64,
 				extensions: {
-					EXT_meshopt_compression: {
+					KHR_meshopt_compression: {
 						fallback: true,
 					},
 				},
@@ -163,7 +167,7 @@ test('encoding grouped buffer views', async (t) => {
 				byteOffset: 0,
 				byteStride: 8,
 				extensions: {
-					EXT_meshopt_compression: {
+					KHR_meshopt_compression: {
 						buffer: 0,
 						byteLength: 41,
 						byteOffset: 0,
@@ -181,7 +185,7 @@ test('encoding grouped buffer views', async (t) => {
 				byteOffset: 32,
 				byteStride: 8,
 				extensions: {
-					EXT_meshopt_compression: {
+					KHR_meshopt_compression: {
 						buffer: 0,
 						byteLength: 41,
 						byteOffset: 44,
@@ -200,8 +204,10 @@ test('encoding grouped buffer views', async (t) => {
 
 async function createEncoderIO(): Promise<NodeIO> {
 	await Promise.all([MeshoptDecoder.ready, MeshoptEncoder.ready]);
-	return new NodeIO().registerExtensions([EXTMeshoptCompression, KHRMeshQuantization]).registerDependencies({
-		'meshopt.decoder': MeshoptDecoder,
-		'meshopt.encoder': MeshoptEncoder,
-	});
+	return new NodeIO()
+		.registerExtensions([KHRMeshoptCompression, KHRMeshQuantization, EXTMeshoptCompression])
+		.registerDependencies({
+			'meshopt.decoder': MeshoptDecoder,
+			'meshopt.encoder': MeshoptEncoder,
+		});
 }
