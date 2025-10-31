@@ -1,5 +1,5 @@
 import type { Document, Transform } from '@gltf-transform/core';
-import { KHRMeshoptCompression } from '@gltf-transform/extensions';
+import { EXTMeshoptCompression, KHRMeshoptCompression } from '@gltf-transform/extensions';
 import type { MeshoptEncoder } from 'meshoptimizer';
 import { QUANTIZE_DEFAULTS, type QuantizeOptions, quantize } from './quantize.js';
 import { reorder } from './reorder.js';
@@ -8,14 +8,18 @@ import { assignDefaults, createTransform } from './utils.js';
 export interface MeshoptOptions extends Omit<QuantizeOptions, 'pattern' | 'patternTargets'> {
 	encoder: unknown;
 	level?: 'medium' | 'high';
+	extension?: 'KHR_meshopt_compression' | 'EXT_meshopt_compression';
 }
 
 export const MESHOPT_DEFAULTS: Required<Omit<MeshoptOptions, 'encoder'>> = {
 	level: 'high',
+	extension: 'KHR_meshopt_compression',
 	...QUANTIZE_DEFAULTS,
 };
 
 const NAME = 'meshopt';
+
+const { QUANTIZE, FILTER } = KHRMeshoptCompression.EncoderMethod;
 
 /**
  * Applies Meshopt compression using {@link KHRMeshoptCompression KHR_meshopt_compression}.
@@ -88,14 +92,12 @@ export function meshopt(_options: MeshoptOptions): Transform {
 			}),
 		);
 
-		document
-			.createExtension(KHRMeshoptCompression)
-			.setRequired(true)
-			.setEncoderOptions({
-				method:
-					options.level === 'medium'
-						? KHRMeshoptCompression.EncoderMethod.QUANTIZE
-						: KHRMeshoptCompression.EncoderMethod.FILTER,
-			});
+		const method = options.level === 'medium' ? QUANTIZE : FILTER;
+
+		if (options.extension === 'EXT_meshopt_compression') {
+			document.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method });
+		} else {
+			document.createExtension(KHRMeshoptCompression).setRequired(true).setEncoderOptions({ method });
+		}
 	});
 }
