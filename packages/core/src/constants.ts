@@ -82,7 +82,9 @@ export const GLB_BUFFER = '@glb.bin';
  * @hidden
  */
 export type TypedArray =
+	| Float64Array<ArrayBuffer>
 	| Float32Array<ArrayBuffer>
+	| Float16Array<ArrayBuffer>
 	| Uint32Array<ArrayBuffer>
 	| Uint16Array<ArrayBuffer>
 	| Uint8Array<ArrayBuffer>
@@ -94,7 +96,9 @@ export type TypedArray =
  * @hidden
  */
 export type TypedArrayConstructor =
+	| Float64ArrayConstructor
 	| Float32ArrayConstructor
+	| Float16ArrayConstructor
 	| Uint32ArrayConstructor
 	| Uint16ArrayConstructor
 	| Uint8ArrayConstructor
@@ -165,4 +169,5 @@ export const ComponentTypeToTypedArray: Record<string, TypedArrayConstructor> = 
 	'5123': Uint16Array,
 	'5125': Uint32Array,
 	'5126': Float32Array,
+	'5130': Float64Array,
 };

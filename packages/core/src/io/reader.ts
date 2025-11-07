@@ -617,6 +617,10 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, context: ReaderContext
 				case Accessor.ComponentType.BYTE:
 					value = view.getInt8(byteOffset);
 					break;
+				// KHR_accessor_float64
+				case Accessor.ComponentType.FLOAT64:
+					value = view.getFloat64(byteOffset, true);
+					break;
 				default:
 					throw new Error(`Unexpected componentType "${accessorDef.componentType}".`);
 			}
