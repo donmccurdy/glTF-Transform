@@ -46,7 +46,7 @@
     "path": false
   },
   "dependencies": {
-    "property-graph": "^4.0.0-alpha.2"
+    "property-graph": "^4.0.0-alpha.3"
   },
   "mangle": {
     "regex": "^_"
