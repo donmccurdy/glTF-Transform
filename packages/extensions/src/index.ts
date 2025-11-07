@@ -3,6 +3,8 @@ import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
 import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
+import { KHRAccessorFloat16 } from './khr-accessor-float16/index.js';
+import { KHRAccessorFloat64 } from './khr-accessor-float64/index.js';
 import { KHRDracoMeshCompression } from './khr-draco-mesh-compression/index.js';
 import { KHRLightsPunctual } from './khr-lights-punctual/index.js';
 import { KHRMaterialsAnisotropy } from './khr-materials-anisotropy/index.js';
@@ -26,6 +28,8 @@ import { KHRTextureTransform } from './khr-texture-transform/index.js';
 import { KHRXMP } from './khr-xmp-json-ld/index.js';
 
 export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
+	KHRAccessorFloat16,
+	KHRAccessorFloat64,
 	KHRDracoMeshCompression,
 	KHRLightsPunctual,
 	KHRMaterialsAnisotropy,
@@ -61,6 +65,8 @@ export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-meshopt-compression/index.js';
 export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';
+export * from './khr-accessor-float16/index.js';
+export * from './khr-accessor-float64/index.js';
 export * from './khr-draco-mesh-compression/index.js';
 export * from './khr-lights-punctual/index.js';
 export * from './khr-materials-anisotropy/index.js';

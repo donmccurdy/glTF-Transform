@@ -3,7 +3,7 @@
  */
 export declare namespace GLTF {
 	/** Data type of the values composing each element in the accessor. */
-	type AccessorComponentType = 5120 | 5121 | 5122 | 5123 | 5125 | 5126;
+	type AccessorComponentType = 5120 | 5121 | 5122 | 5123 | 5125 | 5126 | 5130 | 5131;
 	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
 	type AccessorType = 'SCALAR' | 'VEC2' | 'VEC3' | 'VEC4' | 'MAT2' | 'MAT3' | 'MAT4';
 	/** Name of the property to be modified by an animation channel. */
