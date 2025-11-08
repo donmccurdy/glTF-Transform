@@ -2,11 +2,9 @@ import type { Ref, RefList, RefMap, RefSet } from 'property-graph';
 import type { Property } from '../properties/property.js';
 import { BufferUtils } from './buffer-utils.js';
 
-// Utilities for computing fast, non-cryptographic hashes on various property
-// types. Built for use in {@link Property.toHash}. Note that hashes on
-// identical inputs are guaranteed to match, but non-matching inputs may
-// result in occasional hash collisions. Use {@link Property.equals} to
-// confirm equality.
+// Utilities for fast, non-cryptographic hashes on various types. Built for {@link Property.toHash}.
+// Deeply-equal inputs will always produce the same hash, but differing inputs may result in rare
+// hash collisions. Use {@link Property.equals} to confirm equality.
 //
 // TODO(perf): Hashes should be computed without heap allocations.
 // TODO(test): Verify that combining hashes with XOR is safe.
