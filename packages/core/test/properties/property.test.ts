@@ -63,3 +63,47 @@ test('listChildren', async (t) => {
 	t.deepEqual(graph.listChildren(nodeA), []);
 	t.deepEqual(graph.listChildren(nodeB), []);
 });
+
+test('toHash', async (t) => {
+	const document = new Document();
+	const materialA = document.createMaterial();
+	const materialB = document.createMaterial();
+
+	t.is(materialA.toHash(), materialB.toHash(), 'default == default');
+
+	materialA.setName('MaterialA');
+	materialB.setName('MaterialB');
+
+	t.not(materialA.toHash(), materialB.toHash(), 'name !== name');
+
+	const skip = new Set(['name']);
+	t.is(materialA.toHash(skip), materialB.toHash(skip), 'skip attributes');
+
+	materialA
+		.setBaseColorFactor([0.5, 0.5, 0.5, 1])
+		.setRoughnessFactor(1.0)
+		.setMetallicFactor(0)
+		.setAlphaMode('MASK')
+		.setDoubleSided(true)
+		.setExtras({ hello: 'world' });
+	materialB.copy(materialA);
+
+	t.is(materialA.toHash(), materialB.toHash(), 'primitive attributes, equal');
+
+	materialB.setDoubleSided(false);
+
+	t.not(materialA.toHash(), materialB.toHash(), 'primitive attributes, not equal');
+
+	const image = new Uint8Array([1, 2, 3, 4]);
+	const textureA = document.createTexture().setImage(image);
+	const textureB = document.createTexture().setImage(image);
+	materialB.copy(materialA);
+	materialA.setBaseColorTexture(textureA);
+	materialB.setBaseColorTexture(textureB);
+
+	t.is(materialA.toHash(), materialB.toHash(), 'ref attributes, equal');
+
+	textureB.setImage(new Uint8Array([5, 6, 7, 8]));
+
+	t.not(materialA.toHash(), materialB.toHash(), 'ref attributes, not equal');
+});
