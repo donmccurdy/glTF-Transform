@@ -14,7 +14,6 @@ import {
 import type { Nullable } from '../constants.js';
 import {
 	hashArray,
-	hashArrayBufferView,
 	hashBoolean,
 	hashNumber,
 	hashObject,
@@ -22,6 +21,7 @@ import {
 	hashRefMap,
 	hashRefSet,
 	hashString,
+	hashView,
 } from '../utils/hash-utils.js';
 import type { UnknownRef } from '../utils/index.js';
 import {
@@ -375,7 +375,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			} else if (typeof value === 'number') {
 				hash ^= hashNumber(value);
 			} else if (ArrayBuffer.isView(value)) {
-				hash ^= hashArrayBufferView(value);
+				hash ^= hashView(value);
 			} else {
 				hash ^= hashString(String(value));
 			}

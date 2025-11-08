@@ -44,7 +44,7 @@ export function hashString(value: string): number {
 }
 
 export function hashNumber(value: number): number {
-	return hashArrayBufferView(new Float64Array([value]));
+	return hashView(new Float64Array([value]));
 }
 
 export function hashBoolean(value: boolean): number {
@@ -59,7 +59,7 @@ export function hashArray(value: unknown[]): number {
 	return hashString(JSON.stringify(value));
 }
 
-export function hashArrayBufferView(value: ArrayBufferView): number {
+export function hashView(value: ArrayBufferView): number {
 	return _hashBytes(new Uint8Array(value.buffer, value.byteOffset, value.byteLength));
 }
 
