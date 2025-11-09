@@ -1707,7 +1707,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gltf-transform/core@workspace:packages/core"
   dependencies:
-    property-graph: "npm:^3.0.0"
+    property-graph: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -10502,10 +10502,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"property-graph@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "property-graph@npm:3.0.0"
-  checksum: 10c0/689c5377535db079f506e8715761e83adeb7aa25b59de91518b45a22718c6f33edffea2c27bf3c12b484156ef457cead97cdbb163624e47641c8afda26c8f74d
+"property-graph@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "property-graph@npm:4.0.0"
+  checksum: 10c0/912047db311a903ec062c11681879998397a60fc6e723a475cb0956ecb6769d72792f0e653bc9a0ea7d5409b13eb03d5b3134ff8a03640d1c3614b4d3145c158
   languageName: node
   linkType: hard
 
