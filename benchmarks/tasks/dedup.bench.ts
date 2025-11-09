@@ -12,7 +12,7 @@ export const tasks: Task[] = [
 		async () => {
 			await _document.transform(dedup());
 		},
-		{ beforeEach: () => void (_document = createDocument(2000, 5)) },
+		{ beforeEach: () => void (_document = createDocument(1500, 5)) },
 	],
 ];
 
