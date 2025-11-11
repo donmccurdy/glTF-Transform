@@ -40,7 +40,7 @@ test('accessors - animation', (t) => {
 
 	t.is(document.getRoot().listAccessors().length, 7, 'has no effect when disabled');
 
-	dedup()(document);
+	dedup({ propertyTypes: [PropertyType.ACCESSOR] })(document);
 
 	t.is(document.getRoot().listAccessors().length, 4, 'prunes duplicate accessors');
 	t.truthy(sampler1.getInput() === a, 'sampler 1 input');
@@ -52,6 +52,12 @@ test('accessors - animation', (t) => {
 	t.truthy(sampler3.getOutput() !== b, 'no mixing input/output');
 	t.truthy(prim.getAttribute('POSITION') !== a, 'no mixing sampler/attribute');
 	t.truthy(prim.getAttribute('POSITION') !== b, 'no mixing sampler/attribute');
+
+	dedup({ propertyTypes: [PropertyType.ANIMATION_SAMPLER] })(document);
+
+	t.false(sampler1.isDisposed(), 'sampler 1 OK');
+	t.true(sampler2.isDisposed(), 'sampler 2 disposed');
+	t.false(sampler3.isDisposed(), 'sampler 3 OK');
 });
 
 test('materials', (t) => {
