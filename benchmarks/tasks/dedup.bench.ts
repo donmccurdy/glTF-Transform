@@ -12,11 +12,11 @@ export const tasks: Task[] = [
 		async () => {
 			await _document.transform(dedup());
 		},
-		{ beforeEach: () => void (_document = createDocument(1500, 5)) },
+		{ beforeEach: () => void (_document = createDocument(25000, 2500, 5)) },
 	],
 ];
 
-function createDocument(resourceCount: number, uniqueCount: number): Document {
+function createDocument(meshCount: number, materialCount: number, uniqueCount: number): Document {
 	const document = new Document().setLogger(BENCHMARK_LOGGER);
 
 	// ~ 4000 vertices each.
@@ -30,14 +30,14 @@ function createDocument(resourceCount: number, uniqueCount: number): Document {
 
 	// ~ 1 MB each.
 	const textures: Texture[] = [];
-	for (let i = 0; i < resourceCount; i++) {
+	for (let i = 0; i < uniqueCount; i++) {
 		const image = new Uint8Array(2 ** 20).fill(i % uniqueCount);
 		const texture = document.createTexture().setImage(image);
 		textures.push(texture);
 	}
 
 	const materials: Material[] = [];
-	for (let i = 0; i < resourceCount; i++) {
+	for (let i = 0; i < materialCount; i++) {
 		const value = i % 2 ? 0.5 : 1;
 		const material = document
 			.createMaterial()
@@ -46,7 +46,7 @@ function createDocument(resourceCount: number, uniqueCount: number): Document {
 		materials.push(material);
 	}
 
-	for (let i = 0; i < resourceCount; i++) {
+	for (let i = 0; i < meshCount; i++) {
 		const material = materials[i % prims.length];
 		const prim = prims[i % prims.length].clone().setMaterial(material);
 		document.createMesh().addPrimitive(prim);

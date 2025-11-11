@@ -36,7 +36,7 @@ export async function writeReport(results: BenchResult[]): Promise<void> {
 
 /** Appends results of a bench run to the historical results. */
 export async function updateReport(results: BenchResult[], bench: Bench, version: string): Promise<BenchResult[]> {
-	const benchEntries = bench.tasks.map(({ name, result }) => [name, formatTime(result!.mean)]);
+	const benchEntries = bench.tasks.map(({ name, result }) => [name, formatTime(result!.latency.mean)]);
 	results.push({ version, ...Object.fromEntries(benchEntries) });
 	results.sort(semverSort);
 	return results;
