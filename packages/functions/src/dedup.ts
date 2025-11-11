@@ -25,6 +25,7 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
 	keepUniqueNames: false,
 	propertyTypes: [
 		PropertyType.ACCESSOR,
+		PropertyType.ANIMATION_SAMPLER,
 		PropertyType.MESH,
 		PropertyType.TEXTURE,
 		PropertyType.MATERIAL,
@@ -61,24 +62,54 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	}
 
 	return createTransform(NAME, (document: Document): void => {
+		const root = document.getRoot();
 		const logger = document.getLogger();
 
 		const cache = new Map<Property, number>();
 
 		// console.time('ACCESSOR');
-		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(document, cache);
+		if (propertyTypes.has(PropertyType.ACCESSOR)) {
+			const accessorSkip = new Set(['name', 'buffer']);
+			const accessorsByUsage = listAccessorsByUsage(document);
+			let accessorDuplicates = dedupProperties(Array.from(accessorsByUsage.attribute), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.indices), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.input), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.output), accessorSkip, cache);
+			logger.debug(`${NAME}: Removed ${accessorDuplicates} duplicate accessors.`);
+		}
 		// console.timeEnd('ACCESSOR');
 
+		if (propertyTypes.has(PropertyType.ANIMATION_SAMPLER)) {
+			const samplerSkip = new Set<string>(['name']);
+			const samplers = new Set(root.listAnimations().flatMap((a) => a.listSamplers()));
+			const samplerDuplicates = dedupProperties(Array.from(samplers), samplerSkip, cache);
+			logger.debug(`${NAME}: Removed ${samplerDuplicates} duplicate animation samplers.`);
+		}
+
 		// console.time('TEXTURE');
-		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(document, cache, options);
+		if (propertyTypes.has(PropertyType.TEXTURE)) {
+			const textureSkip = new Set(options.keepUniqueNames ? ['uri'] : ['uri', 'name']);
+			const textureDuplicates = dedupProperties(root.listTextures(), textureSkip, cache);
+			logger.debug(`${NAME}: Removed ${textureDuplicates} duplicate textures.`);
+		}
 		// console.timeEnd('TEXTURE');
 
 		// console.time('MATERIAL');
-		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(document, cache, options);
+		if (propertyTypes.has(PropertyType.MATERIAL)) {
+			const materialSkip = new Set(options.keepUniqueNames ? [] : ['name']);
+			const materialModifierCache = new Map<Material, boolean>();
+			const materials = root.listMaterials().filter((m) => !hasModifier(m, materialModifierCache));
+			const materialDuplicates = dedupProperties(materials, materialSkip, cache);
+			logger.debug(`${NAME}: Removed ${materialDuplicates} duplicate materials.`);
+		}
 		// console.timeEnd('MATERIAL');
 
 		// console.time('MESH');
-		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(document, cache, options);
+		if (propertyTypes.has(PropertyType.MESH)) {
+			const meshSkip = new Set(options.keepUniqueNames ? [] : ['name']);
+			const meshDuplicates = dedupProperties(root.listMeshes(), meshSkip, cache);
+			logger.debug(`${NAME}: Removed ${meshDuplicates} duplicate meshes.`);
+		}
 		// console.timeEnd('MESH');
 
 		// console.time('SKIN');
@@ -89,55 +120,25 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	});
 }
 
-function dedupAccessors(document: Document, cache: Map<Property, number>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
+function dedupProperties<T extends Property>(
+	srcProperties: T[],
+	skip: Set<string>,
+	cache: Map<Property, number>,
+): number {
+	const dstProperties = new Map<number, T>();
+	const duplicates = new Set<T>();
 
-	const skip = new Set(['name', 'buffer']);
-	const duplicates = new Set<Accessor>();
-
-	// Group and merge by usage.
-	const usage = {
-		attribute: new Map<number, Accessor>(),
-		indices: new Map<number, Accessor>(),
-		input: new Map<number, Accessor>(),
-		output: new Map<number, Accessor>(),
-	};
-
-	for (const mesh of document.getRoot().listMeshes()) {
-		for (const prim of mesh.listPrimitives()) {
-			checkAccessor(prim.getIndices(), usage.indices);
-			for (const attribute of deepListAttributes(prim)) {
-				checkAccessor(attribute, usage.attribute);
-			}
-		}
-	}
-
-	for (const animation of document.getRoot().listAnimations()) {
-		for (const sampler of animation.listSamplers()) {
-			checkAccessor(sampler.getInput(), usage.input);
-			checkAccessor(sampler.getOutput(), usage.output);
-		}
-	}
-
-	// For each 'src' accessor, check if there's a duplicate 'dst' with the same usage. If so,
-	// replace references from src to dst, and mark src for disposal.
-	function checkAccessor(src: Accessor | null, usage: Map<number, Accessor>): void {
-		if (!src) return;
-
+	for (const src of srcProperties) {
 		const hash = src.toHash(skip, cache);
-		const dst = usage.get(hash);
-		if (!dst) {
-			usage.set(hash, src);
-			return;
-		}
+		const dst = dstProperties.get(hash);
 
-		if (dst === src) {
-			return;
+		if (!dst) {
+			dstProperties.set(hash, src);
+			continue;
 		}
 
 		for (const parent of src.listParents()) {
-			if (parent !== root) {
+			if (parent.propertyType !== PropertyType.ROOT) {
 				parent.swap(src, dst);
 			}
 		}
@@ -145,105 +146,13 @@ function dedupAccessors(document: Document, cache: Map<Property, number>): void 
 		duplicates.add(src);
 	}
 
-	logger.debug(`${NAME}: Removed ${duplicates.size} duplicate accessors.`);
 	for (const duplicate of duplicates) {
 		duplicate.dispose();
 	}
+	return duplicates.size;
 }
 
-function dedupMeshes(document: Document, cache: Map<Property, number>, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-
-	const skip = new Set(options.keepUniqueNames ? [] : ['name']);
-	const meshes = new Map<number, Mesh>();
-	let duplicates = 0;
-
-	for (const src of root.listMeshes()) {
-		const hash = src.toHash(skip, cache);
-		const dst = meshes.get(hash);
-		if (!dst) {
-			meshes.set(hash, src);
-			continue;
-		}
-
-		for (const parent of src.listParents()) {
-			if (parent !== root) {
-				parent.swap(src, dst);
-			}
-		}
-
-		src.dispose();
-		duplicates++;
-	}
-
-	logger.debug(`${NAME}: Removed ${duplicates} duplicate meshes.`);
-}
-
-function dedupImages(document: Document, cache: Map<Property, number>, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-
-	const skip = new Set(['uri']);
-	if (!options.keepUniqueNames) skip.add('name');
-
-	const textures = new Map<number, Texture>();
-	let duplicates = 0;
-
-	for (const src of root.listTextures()) {
-		const hash = src.toHash(skip, cache);
-		const dst = textures.get(hash);
-		if (!dst) {
-			textures.set(hash, src);
-			continue;
-		}
-
-		for (const parent of src.listParents()) {
-			if (parent !== root) {
-				parent.swap(src, dst);
-			}
-		}
-
-		src.dispose();
-		duplicates++;
-	}
-
-	logger.debug(`${NAME}: Removed ${duplicates} duplicate textures.`);
-}
-
-function dedupMaterials(document: Document, cache: Map<Property, number>, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-
-	const skip = new Set<string>();
-	if (!options.keepUniqueNames) skip.add('name');
-
-	const modifierCache = new Map<Material, boolean>();
-	const materials = new Map<number, Material>();
-	let duplicates = 0;
-
-	for (const src of root.listMaterials()) {
-		if (hasModifier(src, modifierCache)) continue;
-
-		const hash = src.toHash(skip, cache);
-		const dst = materials.get(hash);
-		if (!dst) {
-			materials.set(hash, src);
-			continue;
-		}
-
-		for (const parent of src.listParents()) {
-			parent.swap(src, dst);
-		}
-
-		src.dispose();
-		duplicates++;
-	}
-
-	logger.debug(`${NAME}: Removed ${duplicates} duplicate materials.`);
-}
-
-// TODO: Use toHash().
+// TODO: Use toHash(). What's with the deep equality thing?
 function dedupSkins(document: Document, cache: Map<Property, number>, options: Required<DedupOptions>): void {
 	const logger = document.getLogger();
 	const root = document.getRoot();
@@ -280,6 +189,37 @@ function dedupSkins(document: Document, cache: Map<Property, number>, options: R
 		});
 		src.dispose();
 	});
+}
+
+/** Similar to {@link BufferViewUsage} but specific to dedup's local needs. */
+type AccessorUsage = 'attribute' | 'indices' | 'input' | 'output';
+
+/** Returns a list of Accessors, grouped by usage as needed for deduplication. */
+function listAccessorsByUsage(document: Document): Record<AccessorUsage, Set<Accessor>> {
+	const usage: Record<AccessorUsage, Set<Accessor>> = {
+		attribute: new Set(),
+		indices: new Set(),
+		input: new Set(),
+		output: new Set(),
+	};
+
+	for (const mesh of document.getRoot().listMeshes()) {
+		for (const prim of mesh.listPrimitives()) {
+			if (prim.getIndices()) usage.indices.add(prim.getIndices()!);
+			for (const attribute of deepListAttributes(prim)) {
+				usage.attribute.add(attribute);
+			}
+		}
+	}
+
+	for (const animation of document.getRoot().listAnimations()) {
+		for (const sampler of animation.listSamplers()) {
+			if (sampler.getInput()) usage.input.add(sampler.getInput()!);
+			if (sampler.getOutput()) usage.output.add(sampler.getOutput()!);
+		}
+	}
+
+	return usage;
 }
 
 /**
