@@ -1675,7 +1675,6 @@ __metadata:
     "@types/micromatch": "npm:~4.0.9"
     "@types/node-fetch": "npm:~2.6.12"
     "@types/prompts": "npm:^2.4.9"
-    "@types/spdx-correct": "npm:~3.1.3"
     "@types/tmp": "npm:~0.2.6"
     cli-table3: "npm:~0.6.5"
     command-exists: "npm:~1.2.9"
@@ -1694,7 +1693,6 @@ __metadata:
     p-limit: "npm:~6.2.0"
     prompts: "npm:^2.4.2"
     sharp: "npm:~0.34.2"
-    spdx-correct: "npm:~3.2.0"
     strip-ansi: "npm:~7.1.0"
     tmp: "npm:~0.2.3"
     watlas: "npm:^1.0.0"
@@ -3461,13 +3459,6 @@ __metadata:
   version: 7.7.1
   resolution: "@types/semver@npm:7.7.1"
   checksum: 10c0/c938aef3bf79a73f0f3f6037c16e2e759ff40c54122ddf0b2583703393d8d3127130823facb880e694caa324eb6845628186aac1997ee8b31dc2d18fafe26268
-  languageName: node
-  linkType: hard
-
-"@types/spdx-correct@npm:~3.1.3":
-  version: 3.1.3
-  resolution: "@types/spdx-correct@npm:3.1.3"
-  checksum: 10c0/380f2290b9c4a85a6415808de64af8b86312c9308a19cbec6d9e93207d566aa7d074a425c9922aadc6bc4f95c40fd8b4f51ef9b19e6a6ff922b3c744afd1c83c
   languageName: node
   linkType: hard
 
@@ -11610,7 +11601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spdx-correct@npm:^3.0.0, spdx-correct@npm:~3.2.0":
+"spdx-correct@npm:^3.0.0":
   version: 3.2.0
   resolution: "spdx-correct@npm:3.2.0"
   dependencies:
