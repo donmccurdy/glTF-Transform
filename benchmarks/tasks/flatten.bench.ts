@@ -1,7 +1,7 @@
 import type { Document } from '@gltf-transform/core';
 import { flatten } from '@gltf-transform/functions';
-import { Size, type Task } from '../constants';
-import { createLargeDocument } from '../utils';
+import { Size, type Task } from '../constants.ts';
+import { createLargeDocument } from '../utils.ts';
 
 let _document: Document;
 

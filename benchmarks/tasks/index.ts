@@ -1,14 +1,14 @@
-import type { Task } from '../constants.js';
-import { tasks as createTasks } from './clone.bench.js';
-import { tasks as cloneTasks } from './create.bench.js';
-import { tasks as dequantizeTasks } from './dequantize.bench.js';
-import { tasks as disposeTasks } from './dispose.bench.js';
-import { tasks as flattenTasks } from './flatten.bench.js';
-import { tasks as joinTasks } from './join.bench.js';
-import { tasks as quantizeTasks } from './quantize.bench.js';
-import { tasks as reorderTasks } from './reorder.bench.js';
-import { tasks as unwrapTasks } from './unwrap.bench.js';
-import { tasks as weldTasks } from './weld.bench.js';
+import type { Task } from '../constants.ts';
+import { tasks as createTasks } from './clone.bench.ts';
+import { tasks as cloneTasks } from './create.bench.ts';
+import { tasks as dequantizeTasks } from './dequantize.bench.ts';
+import { tasks as disposeTasks } from './dispose.bench.ts';
+import { tasks as flattenTasks } from './flatten.bench.ts';
+import { tasks as joinTasks } from './join.bench.ts';
+import { tasks as quantizeTasks } from './quantize.bench.ts';
+import { tasks as reorderTasks } from './reorder.bench.ts';
+import { tasks as unwrapTasks } from './unwrap.bench.ts';
+import { tasks as weldTasks } from './weld.bench.ts';
 
 export const tasks: Task[] = [
 	...createTasks,

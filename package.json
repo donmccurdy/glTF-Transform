@@ -12,7 +12,6 @@
     "build": "lerna run build",
     "build:watch": "lerna run build:watch --parallel --stream",
     "lerna": "lerna",
-    "tsx": "tsx",
     "clean:dist": "rm -rf packages/*/dist/** | true",
     "clean:deps": "rm -rf packages/*/node_modules/** | true",
     "clean:test": "rm -rf packages/*/test/out/** | true",
@@ -23,12 +22,12 @@
     "lint": "biome check packages/*/{src,test}",
     "lint:ci": "biome ci packages/*/{src,test}",
     "validate": "scripts/validate.js",
-    "bench": "tsx benchmarks/benchmark.ts",
+    "bench": "node benchmarks/benchmark.ts",
     "preversion": "yarn test",
     "version": "yarn clean:dist && yarn build && yarn bench --report-version --print && yarn run docs:cli && git add -u benchmarks/results packages/docs",
     "postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
     "docs:cli": "CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
-    "docs:deploy:prod": "tsx scripts/check-release.ts && yarn docs:deploy --prod || echo \"!  Skipping website deployment.\"",
+    "docs:deploy:prod": "node scripts/check-release.ts && yarn docs:deploy --prod || echo \"!  Skipping website deployment.\"",
     "docs:deploy": "yarn build && vercel"
   },
   "devDependencies": {
@@ -60,7 +59,6 @@
     "simple-dropzone": "^0.8.3",
     "three": "^0.177.0",
     "tinybench": "^4.0.0",
-    "tsx": "^4.20.3",
     "tweakpane": "^3.1.10",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
     "typescript": "5.9.3",
@@ -70,10 +68,7 @@
   "ava": {
     "extensions": {
       "ts": "module"
-    },
-    "nodeArguments": [
-      "--import=tsx"
-    ]
+    }
   },
   "packageManager": "yarn@4.9.2"
 }

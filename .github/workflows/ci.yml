@@ -13,11 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # See: https://github.com/privatenumber/tsx/issues/354
-        node-version: [v18, v20]
+        node-version: [v20, v24]
     env:
       CI: true
-      LINT: ${{ matrix.node-version == 'v20' && true || false }}
+      LINT: ${{ matrix.node-version == 'v24' && true || false }}
     steps:
       # Setup.
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
