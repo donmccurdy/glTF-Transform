@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      NODE_VERSION: v18
+      NODE_VERSION: v24
     steps:
       # Setup.
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      NODE_VERSION: v18
+      NODE_VERSION: v24
     steps:
       # Setup.
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
@@ -100,7 +100,7 @@ jobs:
     runs-on: windows-latest
     env:
       CI: true
-      NODE_VERSION: 18.x
+      NODE_VERSION: v24
     steps:
       # Setup.
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
