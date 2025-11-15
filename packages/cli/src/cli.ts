@@ -73,8 +73,9 @@ import {
 	type XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { dim, formatBytes, MICROMATCH_OPTIONS, regexFromArray, TableFormat, underline } from './util.js';
+import { dim, formatBytes, TableFormat, underline } from './utils/format.js';
 import { gzip } from './utils/gzip.js';
+import { MICROMATCH_OPTIONS, regexFromArray } from './utils/match.js';
 import { type ValidateOptions, validate } from './validate.js';
 
 let io: NodeIO;
@@ -1840,5 +1841,7 @@ program.disableGlobalOption('--quiet');
 program.disableGlobalOption('--no-color');
 
 export * from './transforms/index.js';
-export * from './util.js';
+export * from './utils/format.js'; // unit testing
+export * from './utils/log.js'; // unit testing
+export * from './utils/process.js'; // unit testing
 export { Validator, program, programReady };

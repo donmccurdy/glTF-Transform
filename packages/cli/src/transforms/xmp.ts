@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import languageTags from 'language-tags';
 import path from 'path';
 import prompts, { type PromptObject } from 'prompts';
-import { XMPContext } from '../util.js';
+import { XMPContext } from '../constants.js';
 
 const DEFAULT_LANG = 'en-US';
 

@@ -3,8 +3,9 @@ import type { KHRXMP, Packet } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, type ListrTask } from 'listr2';
 import { performance } from 'perf_hooks'; // global in Node.js v16+
+import { XMPContext } from './constants.js';
 import type { Logger } from './program.js';
-import { dim, formatBytes, formatLong, XMPContext } from './util.js';
+import { dim, formatBytes, formatLong } from './utils/format.js';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
