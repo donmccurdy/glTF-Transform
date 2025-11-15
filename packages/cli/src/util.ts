@@ -30,7 +30,7 @@ export function regexFromArray(values: string[]): RegExp {
 // Mocks for tests.
 
 export let spawn: typeof _spawn = _spawn;
-export const commandExists: typeof _commandExists = _commandExists;
+export let commandExists: typeof _commandExists = _commandExists;
 export let waitExit: typeof _waitExit = _waitExit;
 
 export let log: typeof console.log = console.log;
@@ -39,8 +39,8 @@ export function mockSpawn(_spawn: unknown): void {
 	spawn = _spawn as typeof spawn;
 }
 
-export function mockCommandExists(commandExists: (n: string) => Promise<boolean>): void {
-	commandExists = commandExists as unknown as typeof _commandExists;
+export function mockCommandExists(fn: (n: string) => Promise<boolean>): void {
+	commandExists = fn as unknown as typeof _commandExists;
 }
 
 export function mockWaitExit(_waitExit: (process: ChildProcess) => Promise<[unknown, string, string]>): void {
