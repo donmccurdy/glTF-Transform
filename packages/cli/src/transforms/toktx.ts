@@ -27,7 +27,7 @@ import pLimit from 'p-limit';
 import { join } from 'path';
 import type sharp from 'sharp';
 import tmp from 'tmp';
-import { commandExists, formatBytes, MICROMATCH_OPTIONS, spawn, waitExit } from '../util.js';
+import { commandExists, formatBytes, MICROMATCH_OPTIONS, spawn, TrustedCommand, waitExit } from '../util.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
@@ -411,7 +411,7 @@ function createParams(
 }
 
 export async function checkKTXSoftware(logger: ILogger): Promise<string> {
-	if (!(await commandExists('ktx')) && !process.env.CI) {
+	if (!(await commandExists(TrustedCommand.KTX)) && !process.env.CI) {
 		throw new Error(
 			`Command "ktx" not found. Please install KTX-Software ${KTX_SOFTWARE_VERSION_MIN}+, ` +
 				'from:\n\nhttps://github.com/KhronosGroup/KTX-Software',

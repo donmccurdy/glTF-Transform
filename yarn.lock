@@ -1677,7 +1677,6 @@ __metadata:
     "@types/prompts": "npm:^2.4.9"
     "@types/tmp": "npm:~0.2.6"
     cli-table3: "npm:~0.6.5"
-    command-exists: "npm:~1.2.9"
     csv-stringify: "npm:~6.5.2"
     draco3dgltf: "npm:~1.5.7"
     gltf-validator: "npm:~2.0.0-dev.3.10"
@@ -3232,13 +3231,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/command-exists@npm:1.2.3":
-  version: 1.2.3
-  resolution: "@types/command-exists@npm:1.2.3"
-  checksum: 10c0/8e92b72b2e4e85bab6b832b9b95bc0f11b7f2c3b94ffe1ffc577fe70af699d901969e49a6307782bb262c195368ab78111db2fddda4a7dc1c218e319f2b63b9a
-  languageName: node
-  linkType: hard
-
 "@types/cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
@@ -4789,13 +4781,6 @@ __metadata:
   dependencies:
     delayed-stream: "npm:~1.0.0"
   checksum: 10c0/0dbb829577e1b1e839fa82b40c07ffaf7de8a09b935cadd355a73652ae70a88b4320db322f6634a4ad93424292fa80973ac6480986247f1734a1137debf271d5
-  languageName: node
-  linkType: hard
-
-"command-exists@npm:~1.2.9":
-  version: 1.2.9
-  resolution: "command-exists@npm:1.2.9"
-  checksum: 10c0/75040240062de46cd6cd43e6b3032a8b0494525c89d3962e280dde665103f8cc304a8b313a5aa541b91da2f5a9af75c5959dc3a77893a2726407a5e9a0234c16
   languageName: node
   linkType: hard
 
@@ -6709,7 +6694,6 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:^2.1.2"
     "@tweakpane/core": "npm:^1.1.9"
-    "@types/command-exists": "npm:1.2.3"
     "@types/d3-dsv": "npm:^3.0.7"
     "@types/draco3dgltf": "npm:1.4.3"
     "@types/jsdom": "npm:^21.1.7"
