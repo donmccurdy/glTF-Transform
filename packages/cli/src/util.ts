@@ -47,30 +47,39 @@ export function mockWaitExit(_waitExit: (process: ChildProcess) => Promise<[unkn
 	waitExit = _waitExit;
 }
 
+/** A conservative alternative to `shell-quote`, for simple inputs only. */
+function _assertValidCommand(cmd: string) {
+	if (!/^[a-zA-Z0-9_-]+$/.test(cmd)) {
+		throw new Error(`Unexpected command, "${cmd}"`);
+	}
+}
+
 /**
  * Resolves 'true' if an executable command-line command with the given name
  * exists, otherwise returns false. This is a stripped-down version of the
  * npm package, `command-exists` (https://github.com/mathisonian/command-exists).
  */
-async function _commandExists(commandName: string): Promise<boolean> {
+async function _commandExists(cmd: string): Promise<boolean> {
+	_assertValidCommand(cmd);
+
 	if (process.platform === 'win32') {
 		try {
-			return !!execSync('where ' + commandName);
+			return !!execSync('where ' + cmd);
 		} catch {
 			return false;
 		}
 	}
 
-	const isFile = await access(commandName, constants.F_OK)
+	const isFile = await access(cmd, constants.F_OK)
 		.then(() => true)
 		.catch(() => false);
 
 	if (!isFile) {
-		const cmd = `command -v ${commandName} 2>/dev/null && { echo >&1 ${commandName}; exit 0; }`;
-		return !!execSync(cmd, { encoding: 'utf8' });
+		const versionCmd = `command -v ${cmd} 2>/dev/null && { echo >&1 ${cmd}; exit 0; }`;
+		return !!execSync(versionCmd, { encoding: 'utf8' });
 	}
 
-	const isExecutable = access(commandName, constants.F_OK | constants.X_OK)
+	const isExecutable = access(cmd, constants.F_OK | constants.X_OK)
 		.then(() => true)
 		.catch(() => false);
 
