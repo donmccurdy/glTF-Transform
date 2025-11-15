@@ -6,7 +6,8 @@ import os from 'os';
 import pLimit from 'p-limit';
 import { join } from 'path';
 import tmp from 'tmp';
-import { formatBytes, spawn, waitExit } from '../util.js';
+import { formatBytes } from '../utils/format.js';
+import { spawn, waitExit } from '../utils/process.js';
 import { checkKTXSoftware } from './toktx.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122

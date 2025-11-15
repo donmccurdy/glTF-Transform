@@ -16,9 +16,9 @@ import {
 	formatParagraph,
 	formatTable,
 	formatXMP,
-	log,
 	TableFormat,
-} from './util.js';
+} from './utils/format.js';
+import { log } from './utils/log.js';
 
 type AnyPropertyReport =
 	| InspectSceneReport

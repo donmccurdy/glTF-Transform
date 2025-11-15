@@ -27,7 +27,9 @@ import pLimit from 'p-limit';
 import { join } from 'path';
 import type sharp from 'sharp';
 import tmp from 'tmp';
-import { commandExists, formatBytes, MICROMATCH_OPTIONS, spawn, TrustedCommand, waitExit } from '../util.js';
+import { formatBytes } from '../utils/format.js';
+import { MICROMATCH_OPTIONS } from '../utils/match.js';
+import { commandExists, spawn, TrustedCommand, waitExit } from '../utils/process.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
