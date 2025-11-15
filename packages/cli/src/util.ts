@@ -1,11 +1,10 @@
 import type { ChildProcess } from 'node:child_process';
 import { spawn as _spawn, execSync } from 'node:child_process';
-import { constants } from 'node:fs';
-import { access } from 'node:fs/promises';
+import { access, constants } from 'node:fs/promises';
+import { stripVTControlCharacters } from 'node:util';
 import CLITable from 'cli-table3';
 import { stringify } from 'csv-stringify';
 import micromatch from 'micromatch';
-import stripAnsi from 'strip-ansi';
 
 // Constants.
 
@@ -175,7 +174,7 @@ export async function formatTable(format: TableFormat, head: string[], rows: str
 			const table = new CLITable({ head, chars: CLI_TABLE_MARKDOWN_CHARS });
 			table.push(new Array(rows[0].length).fill('---'));
 			table.push(...rows);
-			return stripAnsi(table.toString());
+			return stripVTControlCharacters(table.toString());
 		}
 	}
 }
