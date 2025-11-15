@@ -55,7 +55,6 @@ import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
-import { gzip } from 'node-gzip';
 import { URL } from 'url';
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
@@ -75,6 +74,7 @@ import {
 	xmp,
 } from './transforms/index.js';
 import { dim, formatBytes, MICROMATCH_OPTIONS, regexFromArray, TableFormat, underline } from './util.js';
+import { gzip } from './utils/gzip.js';
 import { type ValidateOptions, validate } from './validate.js';
 
 let io: NodeIO;

@@ -1688,7 +1688,6 @@ __metadata:
     micromatch: "npm:~4.0.8"
     mikktspace: "npm:~1.1.1"
     node-fetch: "npm:~3.3.2"
-    node-gzip: "npm:~1.1.2"
     p-limit: "npm:~6.2.0"
     prompts: "npm:^2.4.2"
     sharp: "npm:~0.34.2"
@@ -3376,15 +3375,6 @@ __metadata:
     "@types/node": "npm:*"
     form-data: "npm:^4.0.4"
   checksum: 10c0/6313c89f62c50bd0513a6839cdff0a06727ac5495ccbb2eeda51bb2bbbc4f3c0a76c0393a491b7610af703d3d2deb6cf60e37e59c81ceeca803ffde745dbf309
-  languageName: node
-  linkType: hard
-
-"@types/node-gzip@npm:1.1.3":
-  version: 1.1.3
-  resolution: "@types/node-gzip@npm:1.1.3"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/dfb240b02a5d8e335942f847b61cd02dda38425b6083b6d7ae1c6fa70624c19faee87e82b470f5880e73d4937bf1aa8e61a06ca52700bce2a1f50e552f137011
   languageName: node
   linkType: hard
 
@@ -6689,7 +6679,6 @@ __metadata:
     "@types/jsdom": "npm:^21.1.7"
     "@types/ndarray": "npm:1.0.14"
     "@types/node": "npm:24.0.3"
-    "@types/node-gzip": "npm:1.1.3"
     "@types/semver": "npm:^7.7.0"
     "@types/three": "npm:^0.177.0"
     ava: "npm:^6.4.0"
@@ -9050,13 +9039,6 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10c0/31ff49586991b38287bb15c3d529dd689cfc32f992eed9e6997b9d712d5d21fe818a8b1bbfe3b76a7e33765c20210c5713212f4aa329306a615b87d8a786da3a
-  languageName: node
-  linkType: hard
-
-"node-gzip@npm:~1.1.2":
-  version: 1.1.2
-  resolution: "node-gzip@npm:1.1.2"
-  checksum: 10c0/c7aec81659bf69065bcfecb596293aaa3bd115ba328a2188a257f3640799f5ae8157ce82d93c17500494c695ff16e718308353ac628a9353679b2353f9e93402
   languageName: node
   linkType: hard
 
