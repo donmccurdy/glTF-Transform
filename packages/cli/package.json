@@ -34,6 +34,7 @@
     "@gltf-transform/functions": "^4.2.1",
     "@types/language-tags": "~1.0.4",
     "@types/node-fetch": "~2.6.12",
+    "@types/picomatch": "^4",
     "@types/prompts": "^2.4.9",
     "@types/tmp": "~0.2.6",
     "cli-table3": "~0.6.5",
@@ -62,8 +63,5 @@
     "LICENSE.md",
     "package-lock.json"
   ],
-  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08",
-  "devDependencies": {
-    "@types/picomatch": "^4"
-  }
+  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
 }
