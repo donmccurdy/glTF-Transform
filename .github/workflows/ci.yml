@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [v20, v24]
+        node-version: [v22, v24]
     env:
       CI: true
       LINT: ${{ matrix.node-version == 'v24' && true || false }}
