@@ -1692,7 +1692,6 @@ __metadata:
     p-limit: "npm:~6.2.0"
     prompts: "npm:^2.4.2"
     sharp: "npm:~0.34.2"
-    strip-ansi: "npm:~7.1.0"
     tmp: "npm:~0.2.3"
     watlas: "npm:^1.0.0"
   bin:
@@ -11823,7 +11822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:~7.1.0":
+"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0":
   version: 7.1.2
   resolution: "strip-ansi@npm:7.1.2"
   dependencies:
