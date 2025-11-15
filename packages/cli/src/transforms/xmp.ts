@@ -4,7 +4,6 @@ import fs from 'fs/promises';
 import languageTags from 'language-tags';
 import path from 'path';
 import prompts, { type PromptObject } from 'prompts';
-import validateSPDX from 'spdx-correct';
 import { XMPContext } from '../util.js';
 
 const DEFAULT_LANG = 'en-US';
@@ -173,8 +172,6 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 					name: 'model3d:spdxLicense',
 					message: 'What is the SPDX license ID?',
 					hint: ' (model3d:spdxLicense)',
-					validate: (input: string) =>
-						validateSPDX(input) ? true : 'Invalid SPDX ID; refer to https://spdx.dev/.',
 				} as PromptObject;
 			} else {
 				yield {
