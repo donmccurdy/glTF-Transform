@@ -39,7 +39,7 @@ export function mockSpawn(_spawn: unknown): void {
 	spawn = _spawn as typeof spawn;
 }
 
-export function mockCommandExists(fn: (n: string) => Promise<boolean>): void {
+export function mockCommandExists(fn: (n: TrustedCommand) => Promise<boolean>): void {
 	commandExists = fn as unknown as typeof _commandExists;
 }
 
@@ -47,11 +47,8 @@ export function mockWaitExit(_waitExit: (process: ChildProcess) => Promise<[unkn
 	waitExit = _waitExit;
 }
 
-/** A conservative alternative to `shell-quote`, for simple inputs only. */
-function _assertValidCommand(cmd: string) {
-	if (!/^[a-zA-Z0-9_-]+$/.test(cmd)) {
-		throw new Error(`Unexpected command, "${cmd}"`);
-	}
+export enum TrustedCommand {
+	KTX = 'ktx',
 }
 
 /**
@@ -59,12 +56,10 @@ function _assertValidCommand(cmd: string) {
  * exists, otherwise returns false. This is a stripped-down version of the
  * npm package, `command-exists` (https://github.com/mathisonian/command-exists).
  */
-async function _commandExists(cmd: string): Promise<boolean> {
-	_assertValidCommand(cmd);
-
+async function _commandExists(cmd: TrustedCommand): Promise<boolean> {
 	if (process.platform === 'win32') {
 		try {
-			return !!execSync('where ' + cmd);
+			return !!execSync(`where ${cmd}`);
 		} catch {
 			return false;
 		}
