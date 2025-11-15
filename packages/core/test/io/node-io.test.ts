@@ -1,7 +1,7 @@
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Document, type GLTF, NodeIO } from '@gltf-transform/core';
+import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 import { glob } from 'glob';
