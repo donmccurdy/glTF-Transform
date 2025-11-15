@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { csvFormat, csvParse } from 'd3-dsv';
 import semver from 'semver';
 import type { Bench } from 'tinybench';
-import { bright, dim, max } from './utils';
+import { bright, dim, max } from './utils.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const formatTime = (ms: number) => Number(ms.toFixed(4));

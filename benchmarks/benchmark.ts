@@ -1,7 +1,7 @@
 import { VERSION } from '@gltf-transform/core';
 import { Bench } from 'tinybench';
-import { printReport, readReport, updateReport, writeReport } from './report.js';
-import { tasks } from './tasks/index.js';
+import { printReport, readReport, updateReport, writeReport } from './report.ts';
+import { tasks } from './tasks/index.ts';
 
 /**
  * DEVELOPER NOTES:
