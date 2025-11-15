@@ -33,7 +33,6 @@
     "@gltf-transform/extensions": "^4.2.1",
     "@gltf-transform/functions": "^4.2.1",
     "@types/language-tags": "~1.0.4",
-    "@types/micromatch": "~4.0.9",
     "@types/node-fetch": "~2.6.12",
     "@types/prompts": "^2.4.9",
     "@types/tmp": "~0.2.6",
@@ -46,10 +45,10 @@
     "language-tags": "^1.0.9",
     "listr2": "~8.3.3",
     "meshoptimizer": "~0.24.0",
-    "micromatch": "~4.0.8",
     "mikktspace": "~1.1.1",
     "node-fetch": "~3.3.2",
     "p-limit": "~6.2.0",
+    "picomatch": "^4.0.3",
     "prompts": "^2.4.2",
     "sharp": "~0.34.2",
     "tmp": "~0.2.3",
@@ -63,5 +62,8 @@
     "LICENSE.md",
     "package-lock.json"
   ],
-  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08"
+  "gitHead": "895b70777fda68aa321358d17dab2105e8564d08",
+  "devDependencies": {
+    "@types/picomatch": "^4"
+  }
 }

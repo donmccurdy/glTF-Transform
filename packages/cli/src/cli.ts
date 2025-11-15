@@ -52,9 +52,9 @@ import {
 import { promises as fs, readFileSync } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
-import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
+import { makeRe } from 'picomatch';
 import { URL } from 'url';
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
@@ -75,7 +75,7 @@ import {
 } from './transforms/index.js';
 import { dim, formatBytes, TableFormat, underline } from './utils/format.js';
 import { gzip } from './utils/gzip.js';
-import { MICROMATCH_OPTIONS, regexFromArray } from './utils/match.js';
+import { MATCH_OPTIONS, regexFromArray } from './utils/match.js';
 import { type ValidateOptions, validate } from './validate.js';
 
 let io: NodeIO;
@@ -442,10 +442,7 @@ commands or using the scripting API.
 		// Texture compression.
 		if (opts.textureCompress === 'ktx2') {
 			const { default: encoder } = await import('sharp');
-			const slotsUASTC = micromatch.makeRe(
-				'{normalTexture,occlusionTexture,metallicRoughnessTexture}',
-				MICROMATCH_OPTIONS,
-			);
+			const slotsUASTC = makeRe('{normalTexture,occlusionTexture,metallicRoughnessTexture}', MATCH_OPTIONS);
 			transforms.push(
 				toktx({
 					encoder,
@@ -985,7 +982,7 @@ Requires KHR_mesh_quantization support.`.trim(),
 		default: QUANTIZE_DEFAULTS.quantizationVolume,
 	})
 	.action(({ args, options, logger }) => {
-		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
+		const pattern = makeRe(String(options.pattern), MATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output).transform(quantize({ ...options, pattern }));
 	});
 
@@ -1007,7 +1004,7 @@ Removes KHR_mesh_quantization, if present.`.trim(),
 		default: '!JOINTS_*',
 	})
 	.action(({ args, options, logger }) => {
-		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
+		const pattern = makeRe(String(options.pattern), MATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output).transform(dequantize({ ...options, pattern }));
 	});
 
@@ -1293,7 +1290,7 @@ preserving original aspect ratio. Texture dimensions are never increased.
 		validator: ['nearest', 'ceil', 'floor'],
 	})
 	.action(async ({ args, options, logger }) => {
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
 		const { default: encoder } = await import('sharp');
 
 		type Preset = 'nearest-pot' | 'ceil-pot' | 'floor-pot';
@@ -1408,8 +1405,8 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 	.action(async ({ args, options, logger }) => {
 		const { default: encoder } = await import('sharp');
 		const mode = Mode.ETC1S;
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
+		const slots = options.slots ? makeRe(String(options.slots), MATCH_OPTIONS) : null;
 		return Session.create(io, logger, args.input, args.output).transform(
 			toktx({ ...options, encoder, mode, pattern, slots }),
 		);
@@ -1521,8 +1518,8 @@ for textures where the quality is sufficient.`.trim(),
 	.action(async ({ args, options, logger }) => {
 		const { default: encoder } = await import('sharp');
 		const mode = Mode.UASTC;
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
-		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
+		const slots = options.slots ? makeRe(String(options.slots), MATCH_OPTIONS) : null;
 		Session.create(io, logger, args.input, args.output).transform(
 			toktx({ ...options, encoder, mode, pattern, slots }),
 		);
@@ -1586,9 +1583,9 @@ program
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.option('--lossless <lossless>', 'Use lossless compression mode', { validator: Validator.BOOLEAN, default: false })
 	.action(async ({ args, options, logger }) => {
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
 		const formats = regexFromArray([options.formats] as string[]);
-		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const slots = makeRe(String(options.slots), MATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
@@ -1628,9 +1625,9 @@ program
 		default: false,
 	})
 	.action(async ({ args, options, logger }) => {
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
 		const formats = regexFromArray([options.formats] as string[]);
-		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const slots = makeRe(String(options.slots), MATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
@@ -1666,9 +1663,9 @@ program
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.option('--effort <effort>', 'Level of CPU effort to reduce file size, 0-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
 		const formats = regexFromArray([options.formats] as string[]);
-		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const slots = makeRe(String(options.slots), MATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
@@ -1701,9 +1698,9 @@ program
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING, default: '*' })
 	.option('--quality <quality>', 'Quality, 1-100', { validator: Validator.NUMBER })
 	.action(async ({ args, options, logger }) => {
-		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
+		const pattern = options.pattern ? makeRe(String(options.pattern), MATCH_OPTIONS) : null;
 		const formats = regexFromArray([options.formats] as string[]);
-		const slots = micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS);
+		const slots = makeRe(String(options.slots), MATCH_OPTIONS);
 		const { default: encoder } = await import('sharp');
 		return Session.create(io, logger, args.input, args.output).transform(
 			textureCompress({
@@ -1786,7 +1783,7 @@ so this workflow is not a replacement for video playback.
 		default: true,
 	})
 	.action(({ args, options, logger }) => {
-		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
+		const pattern = makeRe(String(options.pattern), MATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output).transform(
 			sequence({ ...options, pattern } as SequenceOptions),
 		);

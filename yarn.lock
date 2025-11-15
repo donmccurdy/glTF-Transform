@@ -1672,8 +1672,8 @@ __metadata:
     "@gltf-transform/extensions": "npm:^4.2.1"
     "@gltf-transform/functions": "npm:^4.2.1"
     "@types/language-tags": "npm:~1.0.4"
-    "@types/micromatch": "npm:~4.0.9"
     "@types/node-fetch": "npm:~2.6.12"
+    "@types/picomatch": "npm:^4"
     "@types/prompts": "npm:^2.4.9"
     "@types/tmp": "npm:~0.2.6"
     cli-table3: "npm:~0.6.5"
@@ -1685,10 +1685,10 @@ __metadata:
     language-tags: "npm:^1.0.9"
     listr2: "npm:~8.3.3"
     meshoptimizer: "npm:~0.24.0"
-    micromatch: "npm:~4.0.8"
     mikktspace: "npm:~1.1.1"
     node-fetch: "npm:~3.3.2"
     p-limit: "npm:~6.2.0"
+    picomatch: "npm:^4.0.3"
     prompts: "npm:^2.4.2"
     sharp: "npm:~0.34.2"
     tmp: "npm:~0.2.3"
@@ -3222,13 +3222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/braces@npm:*":
-  version: 3.0.5
-  resolution: "@types/braces@npm:3.0.5"
-  checksum: 10c0/fff17426731376b452abf747e862f0116b80ccc68a2c8e6b56aff240048c26c983d61c456c6792dffe9df407d80c1a504bea21e8c1a56afaed1f311dfe75bc68
-  languageName: node
-  linkType: hard
-
 "@types/cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
@@ -3331,15 +3324,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/micromatch@npm:~4.0.9":
-  version: 4.0.9
-  resolution: "@types/micromatch@npm:4.0.9"
-  dependencies:
-    "@types/braces": "npm:*"
-  checksum: 10c0/b13d7594b4320f20729f20156c51e957d79deb15083f98a736689cd0d3e4ba83b5d125959f6edf65270a6b6db90db9cebef8168d88e1c4eedc9a18aecc0234a3
-  languageName: node
-  linkType: hard
-
 "@types/minimatch@npm:^3.0.3":
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
@@ -3414,6 +3398,13 @@ __metadata:
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
   checksum: 10c0/b1b863ac34a2c2172fbe0807a1ec4d5cb684e48d422d15ec95980b81475fac4fdb3768a8b13eef39130203a7c04340fc167bae057c7ebcafd7dec9fe6c36aeb1
+  languageName: node
+  linkType: hard
+
+"@types/picomatch@npm:^4":
+  version: 4.0.2
+  resolution: "@types/picomatch@npm:4.0.2"
+  checksum: 10c0/0f46198c2d1beb5061816745355888e94a80a449a49af1ef69723f50e850c678b50cff299bd461f71e8009d46705e7cdeda8c8ffa23815b2e942c83877f855b9
   languageName: node
   linkType: hard
 
@@ -8560,7 +8551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.8, micromatch@npm:~4.0.8":
+"micromatch@npm:^4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:

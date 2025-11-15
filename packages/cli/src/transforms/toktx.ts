@@ -21,14 +21,14 @@ import {
 	TextureResizeFilter,
 } from '@gltf-transform/functions';
 import fs, { rm } from 'fs/promises';
-import micromatch from 'micromatch';
 import os from 'os';
 import pLimit from 'p-limit';
 import { join } from 'path';
+import { isMatch, makeRe } from 'picomatch';
 import type sharp from 'sharp';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
-import { MICROMATCH_OPTIONS } from '../utils/match.js';
+import { MATCH_OPTIONS } from '../utils/match.js';
 import { commandExists, spawn, TrustedCommand, waitExit } from '../utils/process.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
@@ -190,7 +190,7 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
 
 				if (typeof options.slots === 'string') {
-					options.slots = micromatch.makeRe(options.slots, MICROMATCH_OPTIONS);
+					options.slots = makeRe(options.slots, MATCH_OPTIONS);
 					logger.warn('ktx: Argument "slots" should be of type `RegExp | null`.');
 				}
 
@@ -329,7 +329,7 @@ function createParams(
 	}
 
 	// See: https://github.com/KhronosGroup/KTX-Software/issues/600
-	const isNormalMap = slots.find((slot) => micromatch.isMatch(slot, '*normal*', MICROMATCH_OPTIONS));
+	const isNormalMap = slots.find((slot) => isMatch(slot, '*normal*', MATCH_OPTIONS));
 
 	if (options.mode === Mode.UASTC) {
 		const _options = options as UASTCOptions;
