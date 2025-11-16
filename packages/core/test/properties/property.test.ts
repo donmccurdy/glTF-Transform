@@ -77,7 +77,7 @@ test('toHash', async (t) => {
 	t.not(materialA.toHash(), materialB.toHash(), 'name !== name');
 
 	const skip = new Set(['name']);
-	t.is(materialA.toHash(skip), materialB.toHash(skip), 'skip attributes');
+	t.is(materialA.toHash({ skip }), materialB.toHash({ skip }), 'skip attributes');
 
 	materialA
 		.setBaseColorFactor([0.5, 0.5, 0.5, 1])
@@ -106,4 +106,24 @@ test('toHash', async (t) => {
 	textureB.setImage(new Uint8Array([5, 6, 7, 8]));
 
 	t.not(materialA.toHash(), materialB.toHash(), 'ref attributes, not equal');
+});
+
+test('toHash - depth', async (t) => {
+	// Use cases:
+	// - Skins may have deeply-equal joint nodes, but nodes are not interchangable.
+	// - Materials reference unique TextureInfos, which must be compared deeply.
+
+	const document = new Document();
+	const nodeA = document.createNode();
+	const nodeB = document.createNode().addChild(nodeA);
+	const nodeC = document.createNode().addChild(nodeB);
+
+	const nodeD = document.createNode();
+	const nodeE = document.createNode().addChild(nodeD);
+	const nodeF = document.createNode().addChild(nodeE);
+
+	t.true(nodeC.toHash({ depth: 0 }) !== nodeF.toHash({ depth: 0 }), 'depth = 0');
+	t.true(nodeC.toHash({ depth: 1 }) !== nodeF.toHash({ depth: 1 }), 'depth = 1');
+	t.true(nodeC.toHash({ depth: 2 }) === nodeF.toHash({ depth: 2 }), 'depth = 2');
+	t.true(nodeC.toHash({ depth: 3 }) === nodeF.toHash({ depth: 3 }), 'depth = 3');
 });

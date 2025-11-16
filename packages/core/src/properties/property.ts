@@ -44,6 +44,14 @@ export interface IProperty {
 
 const EMPTY_SET = new Set<string>();
 
+let _nextPropertyID = 1;
+export const createPropertyID = (): number => {
+	if (++_nextPropertyID > Number.MAX_SAFE_INTEGER) {
+		throw new Error('Property ID out of bounds.');
+	}
+	return _nextPropertyID;
+};
+
 /**
  * *Properties represent distinct resources in a glTF asset, referenced by other properties.*
  *
@@ -82,6 +90,12 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public abstract readonly propertyType: string;
 
 	/**
+	 * Internal ID, used in `toHash()`.
+	 * @internal
+	 */
+	public readonly __id: number;
+
+	/**
 	 * Internal graph used to search and maintain references.
 	 * @override
 	 * @hidden
@@ -91,6 +105,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	/** @hidden */
 	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
+		this.__id = createPropertyID();
 		(this as Property)[$attributes]['name'] = name;
 		this.init();
 		this.dispatchEvent({ type: 'create' });
@@ -348,7 +363,15 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 *
 	 * @experimental
 	 */
-	public toHash(skip: Set<string> = EMPTY_SET, cache: Map<Property, number> = new Map()): number {
+	public toHash({
+		skip = EMPTY_SET,
+		cache = new Map(),
+		depth = 1,
+	}: {
+		skip?: Set<string>;
+		cache?: Map<Property, number>;
+		depth?: number;
+	} = {}): number {
 		if (cache.has(this)) return cache.get(this)!;
 
 		let hash = hashString(this.propertyType);
@@ -359,11 +382,11 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			const value = this[$attributes][key] as UnknownRef | Literal;
 
 			if (value instanceof GraphEdge) {
-				hash ^= hashRef(value, skip, cache);
+				hash ^= hashRef(value, skip, cache, depth);
 			} else if (value instanceof RefSet || value instanceof RefList) {
-				hash ^= hashRefSet(value, skip, cache);
+				hash ^= hashRefSet(value, skip, cache, depth);
 			} else if (value instanceof RefMap) {
-				hash ^= hashRefMap(value, skip, cache);
+				hash ^= hashRefMap(value, skip, cache, depth);
 			} else if (isPlainObject(value)) {
 				hash ^= hashObject(value);
 			} else if (Array.isArray(value)) {

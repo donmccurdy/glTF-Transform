@@ -9,29 +9,38 @@ import { BufferUtils } from './buffer-utils.js';
 // TODO(perf): Hashes should be computed without heap allocations.
 // TODO(test): Verify that combining hashes with XOR is safe.
 
-export function hashRef(value: Ref<Property>, skip: Set<string>, cache: Map<Property, number>): number {
-	return value.getChild().toHash(skip, cache);
+export function hashRef(value: Ref<Property>, skip: Set<string>, cache: Map<Property, number>, depth: number): number {
+	const hashOptions = { skip, cache, depth: depth - 1 };
+	return depth > 0 ? value.getChild().toHash(hashOptions) : value.getChild().__id;
 }
 
 export function hashRefSet(
 	value: RefSet<Property> | RefList<Property>,
 	skip: Set<string>,
 	cache: Map<Property, number>,
+	depth: number,
 ): number {
+	const hashOptions = { skip, cache, depth: depth - 1 };
 	let hash = 0;
 	for (const ref of value.values()) {
-		hash ^= ref.getChild().toHash(skip, cache);
+		hash ^= depth > 0 ? ref.getChild().toHash(hashOptions) : ref.getChild().__id;
 	}
 	return hash;
 }
 
-export function hashRefMap(value: RefMap<Property>, skip: Set<string>, cache: Map<Property, number>): number {
+export function hashRefMap(
+	value: RefMap<Property>,
+	skip: Set<string>,
+	cache: Map<Property, number>,
+	depth: number,
+): number {
+	const hashOptions = { skip, cache, depth: depth - 1 };
 	let hash = 0;
 	for (const key of value.keys()) {
 		const ref = value.get(key);
 		if (ref) {
 			hash ^= hashString(key);
-			hash ^= ref.getChild().toHash(skip, cache);
+			hash ^= depth > 0 ? ref.getChild().toHash(hashOptions) : ref.getChild().__id;
 		}
 	}
 	return hash;
