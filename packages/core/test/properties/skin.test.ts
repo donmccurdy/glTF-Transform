@@ -106,3 +106,14 @@ test('extras', async (t) => {
 	t.deepEqual(document.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'stores extras');
 	t.deepEqual(doc2.getRoot().listSkins()[0].getExtras(), { foo: 1, bar: 2 }, 'roundtrips extras');
 });
+
+test('toHash - circular reference', async (t) => {
+	// Create a circular reference, nodeA -> nodeB -> skin -> nodeA.
+	const document = new Document();
+	const meshNode = document.createNode('Mesh');
+	const skeletonNode = document.createNode('Skeleton').addChild(meshNode);
+	const skin = document.createSkin().addJoint(skeletonNode).setSkeleton(skeletonNode);
+	meshNode.setMesh(document.createMesh()).setSkin(skin);
+
+	t.is(typeof meshNode.toHash(), 'number', 'computes hash');
+});

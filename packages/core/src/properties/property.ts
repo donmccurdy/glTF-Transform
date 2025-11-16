@@ -12,6 +12,17 @@ import {
 	RefSet,
 } from 'property-graph';
 import type { Nullable } from '../constants.js';
+import {
+	hashArray,
+	hashBoolean,
+	hashNumber,
+	hashObject,
+	hashRef,
+	hashRefMap,
+	hashRefSet,
+	hashString,
+	hashView,
+} from '../utils/hash-utils.js';
 import type { UnknownRef } from '../utils/index.js';
 import {
 	equalsArray,
@@ -32,6 +43,14 @@ export interface IProperty {
 }
 
 const EMPTY_SET = new Set<string>();
+
+let _nextPropertyID = 1;
+export const createPropertyID = (): number => {
+	if (++_nextPropertyID > Number.MAX_SAFE_INTEGER) {
+		throw new Error('Property ID out of bounds.');
+	}
+	return _nextPropertyID;
+};
 
 /**
  * *Properties represent distinct resources in a glTF asset, referenced by other properties.*
@@ -71,6 +90,12 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public abstract readonly propertyType: string;
 
 	/**
+	 * Internal ID, used in `toHash()`.
+	 * @internal
+	 */
+	public readonly __id: number;
+
+	/**
 	 * Internal graph used to search and maintain references.
 	 * @override
 	 * @hidden
@@ -80,6 +105,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	/** @hidden */
 	constructor(graph: Graph<Property>, name = '') {
 		super(graph);
+		this.__id = createPropertyID();
 		(this as Property)[$attributes]['name'] = name;
 		this.init();
 		this.dispatchEvent({ type: 'create' });
@@ -244,7 +270,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * materials with equivalent content — but not necessarily the same specific accessors
 	 * and materials.
 	 */
-	public equals(other: this, skip: Set<string> = EMPTY_SET): boolean {
+	public equals(other: this, skip: Set<string> = EMPTY_SET, depth = Infinity): boolean {
 		if (this === other) return true;
 		if (this.propertyType !== other.propertyType) return false;
 
@@ -255,15 +281,15 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			const b = other[$attributes][key] as UnknownRef | Literal;
 
 			if (a instanceof GraphEdge || b instanceof GraphEdge) {
-				if (!equalsRef(a as Ref<Property>, b as Ref<Property>)) {
+				if (!equalsRef(a as Ref<Property>, b as Ref<Property>, depth)) {
 					return false;
 				}
 			} else if (a instanceof RefSet || b instanceof RefSet || a instanceof RefList || b instanceof RefList) {
-				if (!equalsRefSet(a as RefSet<Property>, b as RefSet<Property>)) {
+				if (!equalsRefSet(a as RefSet<Property>, b as RefSet<Property>, depth)) {
 					return false;
 				}
 			} else if (a instanceof RefMap || b instanceof RefMap) {
-				if (!equalsRefMap(a as RefMap<Property>, b as RefMap<Property>)) {
+				if (!equalsRefMap(a as RefMap<Property>, b as RefMap<Property>, depth)) {
 					return false;
 				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {
@@ -304,5 +330,81 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 */
 	public listParents(): Property[] {
 		return this.graph.listParents(this);
+	}
+
+	/**
+	 * Returns a hash computed from all attributes and references held by this property,
+	 * excluding the 'skip' set. Hash collisions are rare, but possible, so hashes alone
+	 * should not be used to check for equality.
+	 *
+	 * ```typescript
+	 * // Properties cannot be equal if hash values differ.
+	 * if (a.toHash() !== b.toHash()) {
+	 *   return false;
+	 * }
+	 *
+	 * // If hash values match, confirm equality.
+	 * return a.equals(b);
+	 * ```
+	 *
+	 * To reduce the cost of deep traversal when hashing many properties (which may
+	 * share resources like textures and accessors), reuse a 'cache' parameter across
+	 * calls. If properties are modified, the cache should be cleared.
+	 *
+	 * ```typescript
+	 * const skip = new Set(['name']);
+	 * const cache = new Map();
+	 *
+	 * const hashes = [];
+	 * for (const material of document.getRoot().listMaterials()) {
+	 *   hashes.push(material.toHash(skip, cache));
+	 * }
+	 * ```
+	 *
+	 * @experimental
+	 */
+	public toHash({
+		skip = EMPTY_SET,
+		cache = new Map(),
+		depth = 1,
+	}: {
+		skip?: Set<string>;
+		cache?: Map<Property, number>;
+		depth?: number;
+	} = {}): number {
+		if (cache.has(this)) return cache.get(this)!;
+
+		let hash = hashString(this.propertyType);
+
+		for (const key in this[$attributes]) {
+			if (skip.has(key)) continue;
+
+			const value = this[$attributes][key] as UnknownRef | Literal;
+
+			if (value instanceof GraphEdge) {
+				hash ^= hashRef(value, skip, cache, depth);
+			} else if (value instanceof RefSet || value instanceof RefList) {
+				hash ^= hashRefSet(value, skip, cache, depth);
+			} else if (value instanceof RefMap) {
+				hash ^= hashRefMap(value, skip, cache, depth);
+			} else if (isPlainObject(value)) {
+				hash ^= hashObject(value);
+			} else if (Array.isArray(value)) {
+				hash ^= hashArray(value);
+			} else if (typeof value === 'string') {
+				hash ^= hashString(value);
+			} else if (typeof value === 'boolean') {
+				hash ^= hashBoolean(value);
+			} else if (typeof value === 'number') {
+				hash ^= hashNumber(value);
+			} else if (ArrayBuffer.isView(value)) {
+				hash ^= hashView(value);
+			} else {
+				hash ^= hashString(String(value));
+			}
+		}
+
+		cache.set(this, hash);
+		return hash;
 	}
 }
