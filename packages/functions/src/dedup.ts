@@ -112,8 +112,11 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 
 		// console.time('SKIN');
 		if (propertyTypes.has(PropertyType.SKIN)) {
+			// Shallow comparison only. Distinct joint nodes, even when identical, are
+			// not interchangable. See 'dedup.test.ts', and:
+			// https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
 			const skinSkip = new Set<string>(options.keepUniqueNames ? [] : ['name']);
-			const skinDuplicates = dedupProperties(root.listSkins(), skinSkip, cache);
+			const skinDuplicates = dedupProperties(root.listSkins(), skinSkip, cache, 0);
 			logger.debug(`${NAME}: Removed ${skinDuplicates} duplicate skins.`);
 		}
 		// console.timeEnd('SKIN');
@@ -126,12 +129,13 @@ function dedupProperties<T extends Property>(
 	srcProperties: T[],
 	skip: Set<string>,
 	cache: Map<Property, number>,
+	depth = 1,
 ): number {
 	const dstProperties = new Map<number, T[]>();
 	const duplicates = new Set<T>();
 
 	for (const src of srcProperties) {
-		const hash = src.toHash(skip, cache);
+		const hash = src.toHash({ skip, cache, depth });
 
 		// (1) If no properties have the same hash, keep 'src'.
 		if (!dstProperties.has(hash)) {
@@ -141,7 +145,7 @@ function dedupProperties<T extends Property>(
 
 		// (2) Search hash matches for any passing the .equals() check.
 		const hashProperties = dstProperties.get(hash)!;
-		const dst = hashProperties.find((prop) => prop.equals(src, skip));
+		const dst = hashProperties.find((prop) => prop.equals(src, skip, depth));
 
 		// (3) If no candidates are equal (only hash collisions), keep 'src'.
 		if (!dst) {
