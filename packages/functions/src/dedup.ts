@@ -125,18 +125,29 @@ function dedupProperties<T extends Property>(
 	skip: Set<string>,
 	cache: Map<Property, number>,
 ): number {
-	const dstProperties = new Map<number, T>();
+	const dstProperties = new Map<number, T[]>();
 	const duplicates = new Set<T>();
 
 	for (const src of srcProperties) {
 		const hash = src.toHash(skip, cache);
-		const dst = dstProperties.get(hash);
 
-		if (!dst) {
-			dstProperties.set(hash, src);
+		// (1) If no properties have the same hash, keep 'src'.
+		if (!dstProperties.has(hash)) {
+			dstProperties.set(hash, [src]);
 			continue;
 		}
 
+		// (2) Search hash matches for any passing the .equals() check.
+		const hashProperties = dstProperties.get(hash)!;
+		const dst = hashProperties.find((prop) => prop.equals(src, skip));
+
+		// (3) If no candidates are equal (only hash collisions), keep 'src'.
+		if (!dst) {
+			hashProperties.push(src);
+			continue;
+		}
+
+		// (4) If we find a match, 'dst', replace all references to 'src' with 'dst'.
 		for (const parent of src.listParents()) {
 			if (parent.propertyType !== PropertyType.ROOT) {
 				parent.swap(src, dst);
