@@ -5,12 +5,10 @@ import {
 	type Mesh,
 	type Property,
 	PropertyType,
-	Root,
-	type Skin,
 	type Texture,
 	type Transform,
 } from '@gltf-transform/core';
-import { assignDefaults, createTransform, deepListAttributes, shallowEqualsArray } from './utils.js';
+import { assignDefaults, createTransform, deepListAttributes } from './utils.js';
 
 const NAME = 'dedup';
 
@@ -113,7 +111,11 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 		// console.timeEnd('MESH');
 
 		// console.time('SKIN');
-		if (propertyTypes.has(PropertyType.SKIN)) dedupSkins(document, cache, options);
+		if (propertyTypes.has(PropertyType.SKIN)) {
+			const skinSkip = new Set<string>(options.keepUniqueNames ? [] : ['name']);
+			const skinDuplicates = dedupProperties(root.listSkins(), skinSkip, cache);
+			logger.debug(`${NAME}: Removed ${skinDuplicates} duplicate skins.`);
+		}
 		// console.timeEnd('SKIN');
 
 		logger.debug(`${NAME}: Complete.`);
@@ -161,45 +163,6 @@ function dedupProperties<T extends Property>(
 		duplicate.dispose();
 	}
 	return duplicates.size;
-}
-
-// TODO: Use toHash(). What's with the deep equality thing?
-function dedupSkins(document: Document, cache: Map<Property, number>, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-	const skins = root.listSkins();
-	const duplicates = new Map<Skin, Skin>();
-	const skip = new Set(['joints']);
-
-	if (!options.keepUniqueNames) {
-		skip.add('name');
-	}
-
-	for (let i = 0; i < skins.length; i++) {
-		const a = skins[i];
-
-		if (duplicates.has(a)) continue;
-
-		for (let j = i + 1; j < skins.length; j++) {
-			const b = skins[j];
-			if (duplicates.has(b)) continue;
-
-			// Check joints with shallow equality, not deep equality.
-			// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
-			if (a.equals(b, skip) && shallowEqualsArray(a.listJoints(), b.listJoints())) {
-				duplicates.set(b, a);
-			}
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${skins.length} skins.`);
-
-	Array.from(duplicates.entries()).forEach(([src, dst]) => {
-		src.listParents().forEach((property) => {
-			if (!(property instanceof Root)) property.swap(src, dst);
-		});
-		src.dispose();
-	});
 }
 
 /** Similar to {@link BufferViewUsage} but specific to dedup's local needs. */
