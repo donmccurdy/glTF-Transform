@@ -1,8 +1,8 @@
 import { Document, type Material, type Primitive, type Texture } from '@gltf-transform/core';
 import { dedup } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
-import type { Task } from '../constants';
-import { BENCHMARK_LOGGER } from '../utils';
+import type { Task } from '../constants.ts';
+import { BENCHMARK_LOGGER } from '../utils.ts';
 
 let _document: Document;
 
