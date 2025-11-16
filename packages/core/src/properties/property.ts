@@ -270,7 +270,7 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 * materials with equivalent content — but not necessarily the same specific accessors
 	 * and materials.
 	 */
-	public equals(other: this, skip: Set<string> = EMPTY_SET): boolean {
+	public equals(other: this, skip: Set<string> = EMPTY_SET, depth = Infinity): boolean {
 		if (this === other) return true;
 		if (this.propertyType !== other.propertyType) return false;
 
@@ -281,15 +281,15 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 			const b = other[$attributes][key] as UnknownRef | Literal;
 
 			if (a instanceof GraphEdge || b instanceof GraphEdge) {
-				if (!equalsRef(a as Ref<Property>, b as Ref<Property>)) {
+				if (!equalsRef(a as Ref<Property>, b as Ref<Property>, depth)) {
 					return false;
 				}
 			} else if (a instanceof RefSet || b instanceof RefSet || a instanceof RefList || b instanceof RefList) {
-				if (!equalsRefSet(a as RefSet<Property>, b as RefSet<Property>)) {
+				if (!equalsRefSet(a as RefSet<Property>, b as RefSet<Property>, depth)) {
 					return false;
 				}
 			} else if (a instanceof RefMap || b instanceof RefMap) {
-				if (!equalsRefMap(a as RefMap<Property>, b as RefMap<Property>)) {
+				if (!equalsRefMap(a as RefMap<Property>, b as RefMap<Property>, depth)) {
 					return false;
 				}
 			} else if (isPlainObject(a) || isPlainObject(b)) {

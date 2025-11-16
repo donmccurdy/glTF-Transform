@@ -5,19 +5,22 @@ import { isPlainObject } from './is-plain-object.js';
 
 export type UnknownRef = Ref<Property> | RefList<Property> | RefSet<Property> | RefMap<Property>;
 
-export function equalsRef(refA: Ref<Property>, refB: Ref<Property>): boolean {
+export function equalsRef(refA: Ref<Property>, refB: Ref<Property>, depth: number): boolean {
 	if (!!refA !== !!refB) return false;
 
 	const a = refA.getChild()!;
 	const b = refB.getChild()!;
+	const isEqualByRef = a === b;
 
-	return a === b || a.equals(b);
+	if (isEqualByRef) return true;
+	if (depth <= 0) return isEqualByRef;
+	return a.equals(b, undefined, depth - 1);
 }
 
 export function equalsRefSet<
 	A extends RefList<Property> | RefSet<Property>,
 	B extends RefList<Property> | RefSet<Property>,
->(refSetA: A, refSetB: B): boolean {
+>(refSetA: A, refSetB: B, depth: number): boolean {
 	if (!!refSetA !== !!refSetB) return false;
 	const refValuesA = refSetA.values();
 	const refValuesB = refSetB.values();
@@ -26,16 +29,17 @@ export function equalsRefSet<
 	for (let i = 0; i < refValuesA.length; i++) {
 		const a = refValuesA[i];
 		const b = refValuesB[i];
+		const isEqualByRef = a.getChild() === b.getChild();
 
-		if (a.getChild() === b.getChild()) continue;
-
-		if (!a.getChild().equals(b.getChild())) return false;
+		if (isEqualByRef) continue;
+		if (depth <= 0) return false;
+		if (!a.getChild().equals(b.getChild(), undefined, depth - 1)) return false;
 	}
 
 	return true;
 }
 
-export function equalsRefMap(refMapA: RefMap<Property>, refMapB: RefMap<Property>): boolean {
+export function equalsRefMap(refMapA: RefMap<Property>, refMapB: RefMap<Property>, depth: number): boolean {
 	if (!!refMapA !== !!refMapB) return false;
 
 	const keysA = refMapA.keys();
@@ -49,9 +53,11 @@ export function equalsRefMap(refMapA: RefMap<Property>, refMapB: RefMap<Property
 
 		const a = refA.getChild();
 		const b = refB.getChild();
-		if (a === b) continue;
+		const isEqualByRef = a === b;
 
-		if (!a.equals(b)) return false;
+		if (isEqualByRef) continue;
+		if (depth <= 0) return false;
+		if (!a.equals(b, undefined, depth - 1)) return false;
 	}
 
 	return true;
