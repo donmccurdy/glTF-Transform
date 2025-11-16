@@ -160,6 +160,28 @@ test('skins', async (t) => {
 	t.false(skinC.isDisposed(), 'keep skin C');
 });
 
+test('skins | joints', async (t) => {
+	// Skins may appear to be duplicates if compared only by "deep" equality,
+	// if each has the same number of joints, and the joint nodes have no
+	// distinguishing features. Ensure nodes are not 'interchangable'.
+	// Example: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
+	const document = new Document();
+	const root = document.getRoot();
+	const boneA = document.createNode();
+	const boneB = document.createNode();
+	const boneC = document.createNode();
+	const boneD = document.createNode();
+	document.createScene().addChild(boneA).addChild(boneB).addChild(boneC).addChild(boneD);
+	const skinA = document.createSkin().addJoint(boneA).addJoint(boneB);
+	const skinB = document.createSkin().addJoint(boneC).addJoint(boneD);
+
+	await document.transform(dedup({ propertyTypes: [PropertyType.SKIN] }));
+
+	t.is(root.listSkins().length, 2, 'distinct but deeply-equal joints are not pruned');
+	t.false(skinA.isDisposed(), 'keep skin A');
+	t.false(skinB.isDisposed(), 'keep skin B');
+});
+
 test('textures', async (t) => {
 	const document = new Document();
 	const transmissionExt = document.createExtension(KHRMaterialsTransmission);

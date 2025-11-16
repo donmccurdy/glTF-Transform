@@ -211,17 +211,6 @@ export function deepDisposePrimitive(prim: Primitive): void {
 	}
 }
 
-/** @hidden */
-export function shallowEqualsArray(a: ArrayLike<unknown> | null, b: ArrayLike<unknown> | null): boolean {
-	if (a == null && b == null) return true;
-	if (a == null || b == null) return false;
-	if (a.length !== b.length) return false;
-	for (let i = 0; i < a.length; i++) {
-		if (a[i] !== b[i]) return false;
-	}
-	return true;
-}
-
 /** Clones an {@link Accessor} without creating a copy of its underlying TypedArray data. */
 export function shallowCloneAccessor(document: Document, accessor: Accessor): Accessor {
 	return document
