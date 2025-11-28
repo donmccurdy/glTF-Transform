@@ -132,12 +132,15 @@ export class KHRTextureBasisu extends Extension {
 
 	/** @hidden */
 	public preread(context: ReaderContext): this {
-		context.jsonDoc.json.textures!.forEach((textureDef) => {
-			if (textureDef.extensions && textureDef.extensions[KHR_TEXTURE_BASISU]) {
-				const basisuDef = textureDef.extensions[KHR_TEXTURE_BASISU] as BasisuDef;
-				textureDef.source = basisuDef.source;
-			}
-		});
+		if (context.jsonDoc.json.textures) {
+			context.jsonDoc.json.textures!.forEach((textureDef) => {
+				if (textureDef.extensions && textureDef.extensions[KHR_TEXTURE_BASISU]) {
+					const basisuDef = textureDef.extensions[KHR_TEXTURE_BASISU] as BasisuDef;
+					textureDef.source = basisuDef.source;
+				}
+			});
+		}
+		
 		return this;
 	}
 
