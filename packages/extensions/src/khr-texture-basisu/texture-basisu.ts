@@ -140,7 +140,7 @@ export class KHRTextureBasisu extends Extension {
 				}
 			});
 		}
-		
+
 		return this;
 	}
 
