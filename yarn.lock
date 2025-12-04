@@ -6690,7 +6690,7 @@ __metadata:
     jsdom: "npm:^26.1.0"
     keyframe-resample: "npm:^0.1.0"
     lerna: "npm:8.2.2"
-    meshoptimizer: "npm:0.24.0"
+    meshoptimizer: "npm:0.25.0"
     microbundle: "npm:0.15.1"
     mikktspace: "npm:1.1.1"
     semver: "npm:^7.7.2"
@@ -8494,10 +8494,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meshoptimizer@npm:0.24.0, meshoptimizer@npm:~0.24.0":
-  version: 0.24.0
-  resolution: "meshoptimizer@npm:0.24.0"
-  checksum: 10c0/54f18dfbf8e6f3ff4d475a55e4514b83966c2af22a49978b91003e583aa31b4972924beab186d99964cd24e6459de0ea146eb2743f327b86a0ae56d11d778c9b
+"meshoptimizer@npm:0.25.0":
+  version: 0.25.0
+  resolution: "meshoptimizer@npm:0.25.0"
+  checksum: 10c0/2d6a5b8a306a3cb615de94e9dab9623d117f456c0bc55bff29ab9fd261971ffc0e5236c20753851774ef15e55b1a44c35f69a80801bf5f1a34ea7db5d70c6273
   languageName: node
   linkType: hard
 
@@ -8505,6 +8505,13 @@ __metadata:
   version: 0.18.1
   resolution: "meshoptimizer@npm:0.18.1"
   checksum: 10c0/8a825c58b20b65585e8d00788843929b60c66ba4297e89afaa49f7c51ab9a0f7b9130f90cc9ad1b9b48b3d1bee3beb1bc93608acba0d73e78995c3e6e5ca436b
+  languageName: node
+  linkType: hard
+
+"meshoptimizer@npm:~0.24.0":
+  version: 0.24.0
+  resolution: "meshoptimizer@npm:0.24.0"
+  checksum: 10c0/54f18dfbf8e6f3ff4d475a55e4514b83966c2af22a49978b91003e583aa31b4972924beab186d99964cd24e6459de0ea146eb2743f327b86a0ae56d11d778c9b
   languageName: node
   linkType: hard
 
