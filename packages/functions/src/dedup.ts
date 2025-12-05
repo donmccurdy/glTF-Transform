@@ -8,6 +8,7 @@ import {
 	type Texture,
 	type Transform,
 } from '@gltf-transform/core';
+import { hashProperty } from './hash-property.js';
 import { assignDefaults, createTransform, deepListAttributes } from './utils.js';
 
 const NAME = 'dedup';
@@ -135,7 +136,7 @@ function dedupProperties<T extends Property>(
 	const duplicates = new Set<T>();
 
 	for (const src of srcProperties) {
-		const hash = src.toHash({ skip, cache, depth });
+		const hash = hashProperty(src, { skip, cache, depth });
 
 		// (1) If no properties have the same hash, keep 'src'.
 		if (!dstProperties.has(hash)) {
