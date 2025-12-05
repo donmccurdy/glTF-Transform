@@ -12,17 +12,6 @@ import {
 	RefSet,
 } from 'property-graph';
 import type { Nullable } from '../constants.js';
-import {
-	hashArray,
-	hashBoolean,
-	hashNumber,
-	hashObject,
-	hashRef,
-	hashRefMap,
-	hashRefSet,
-	hashString,
-	hashView,
-} from '../utils/hash-utils.js';
 import type { UnknownRef } from '../utils/index.js';
 import {
 	equalsArray,
@@ -90,8 +79,8 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	public abstract readonly propertyType: string;
 
 	/**
-	 * Internal ID, used in `toHash()`.
-	 * @internal
+	 * Internal ID, used in `hashProperty()` from `@gltf-transform/functions`.
+	 * @hidden
 	 */
 	public readonly __id: number;
 
@@ -330,81 +319,5 @@ export abstract class Property<T extends IProperty = IProperty> extends GraphNod
 	 */
 	public listParents(): Property[] {
 		return this.graph.listParents(this);
-	}
-
-	/**
-	 * Returns a hash computed from all attributes and references held by this property,
-	 * excluding the 'skip' set. Hash collisions are rare, but possible, so hashes alone
-	 * should not be used to check for equality.
-	 *
-	 * ```typescript
-	 * // Properties cannot be equal if hash values differ.
-	 * if (a.toHash() !== b.toHash()) {
-	 *   return false;
-	 * }
-	 *
-	 * // If hash values match, confirm equality.
-	 * return a.equals(b);
-	 * ```
-	 *
-	 * To reduce the cost of deep traversal when hashing many properties (which may
-	 * share resources like textures and accessors), reuse a 'cache' parameter across
-	 * calls. If properties are modified, the cache should be cleared.
-	 *
-	 * ```typescript
-	 * const skip = new Set(['name']);
-	 * const cache = new Map();
-	 *
-	 * const hashes = [];
-	 * for (const material of document.getRoot().listMaterials()) {
-	 *   hashes.push(material.toHash(skip, cache));
-	 * }
-	 * ```
-	 *
-	 * @experimental
-	 */
-	public toHash({
-		skip = EMPTY_SET,
-		cache = new Map(),
-		depth = 1,
-	}: {
-		skip?: Set<string>;
-		cache?: Map<Property, number>;
-		depth?: number;
-	} = {}): number {
-		if (cache.has(this)) return cache.get(this)!;
-
-		let hash = hashString(this.propertyType);
-
-		for (const key in this[$attributes]) {
-			if (skip.has(key)) continue;
-
-			const value = this[$attributes][key] as UnknownRef | Literal;
-
-			if (value instanceof GraphEdge) {
-				hash ^= hashRef(value, skip, cache, depth);
-			} else if (value instanceof RefSet || value instanceof RefList) {
-				hash ^= hashRefSet(value, skip, cache, depth);
-			} else if (value instanceof RefMap) {
-				hash ^= hashRefMap(value, skip, cache, depth);
-			} else if (isPlainObject(value)) {
-				hash ^= hashObject(value);
-			} else if (Array.isArray(value)) {
-				hash ^= hashArray(value);
-			} else if (typeof value === 'string') {
-				hash ^= hashString(value);
-			} else if (typeof value === 'boolean') {
-				hash ^= hashBoolean(value);
-			} else if (typeof value === 'number') {
-				hash ^= hashNumber(value);
-			} else if (ArrayBuffer.isView(value)) {
-				hash ^= hashView(value);
-			} else {
-				hash ^= hashString(String(value));
-			}
-		}
-
-		cache.set(this, hash);
-		return hash;
 	}
 }
