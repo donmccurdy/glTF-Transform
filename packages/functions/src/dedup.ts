@@ -1,19 +1,15 @@
 import {
 	type Accessor,
-	BufferUtils,
 	type Document,
 	type Material,
 	type Mesh,
-	Primitive,
-	type PrimitiveTarget,
 	type Property,
 	PropertyType,
-	Root,
-	type Skin,
 	type Texture,
 	type Transform,
 } from '@gltf-transform/core';
-import { assignDefaults, createTransform, shallowEqualsArray } from './utils.js';
+import { hashProperty } from './hash-property.js';
+import { assignDefaults, createTransform, deepListAttributes } from './utils.js';
 
 const NAME = 'dedup';
 
@@ -28,6 +24,7 @@ const DEDUP_DEFAULTS: Required<DedupOptions> = {
 	keepUniqueNames: false,
 	propertyTypes: [
 		PropertyType.ACCESSOR,
+		PropertyType.ANIMATION_SAMPLER,
 		PropertyType.MESH,
 		PropertyType.TEXTURE,
 		PropertyType.MATERIAL,
@@ -64,313 +61,144 @@ export function dedup(_options: DedupOptions = DEDUP_DEFAULTS): Transform {
 	}
 
 	return createTransform(NAME, (document: Document): void => {
+		const root = document.getRoot();
 		const logger = document.getLogger();
 
-		if (propertyTypes.has(PropertyType.ACCESSOR)) dedupAccessors(document);
-		if (propertyTypes.has(PropertyType.TEXTURE)) dedupImages(document, options);
-		if (propertyTypes.has(PropertyType.MATERIAL)) dedupMaterials(document, options);
-		if (propertyTypes.has(PropertyType.MESH)) dedupMeshes(document, options);
-		if (propertyTypes.has(PropertyType.SKIN)) dedupSkins(document, options);
+		const cache = new Map<Property, number>();
+
+		// console.time('ACCESSOR');
+		if (propertyTypes.has(PropertyType.ACCESSOR)) {
+			const accessorSkip = new Set(['name', 'buffer']);
+			const accessorsByUsage = listAccessorsByUsage(document);
+			let accessorDuplicates = dedupProperties(Array.from(accessorsByUsage.attribute), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.indices), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.input), accessorSkip, cache);
+			accessorDuplicates += dedupProperties(Array.from(accessorsByUsage.output), accessorSkip, cache);
+			logger.debug(`${NAME}: Removed ${accessorDuplicates} duplicate accessors.`);
+		}
+		// console.timeEnd('ACCESSOR');
+
+		if (propertyTypes.has(PropertyType.ANIMATION_SAMPLER)) {
+			const samplerSkip = new Set<string>(['name']);
+			const samplers = new Set(root.listAnimations().flatMap((a) => a.listSamplers()));
+			const samplerDuplicates = dedupProperties(Array.from(samplers), samplerSkip, cache);
+			logger.debug(`${NAME}: Removed ${samplerDuplicates} duplicate animation samplers.`);
+		}
+
+		// console.time('TEXTURE');
+		if (propertyTypes.has(PropertyType.TEXTURE)) {
+			const textureSkip = new Set(options.keepUniqueNames ? ['uri'] : ['uri', 'name']);
+			const textureDuplicates = dedupProperties(root.listTextures(), textureSkip, cache);
+			logger.debug(`${NAME}: Removed ${textureDuplicates} duplicate textures.`);
+		}
+		// console.timeEnd('TEXTURE');
+
+		// console.time('MATERIAL');
+		if (propertyTypes.has(PropertyType.MATERIAL)) {
+			const materialSkip = new Set(options.keepUniqueNames ? [] : ['name']);
+			const materialModifierCache = new Map<Material, boolean>();
+			const materials = root.listMaterials().filter((m) => !hasModifier(m, materialModifierCache));
+			const materialDuplicates = dedupProperties(materials, materialSkip, cache);
+			logger.debug(`${NAME}: Removed ${materialDuplicates} duplicate materials.`);
+		}
+		// console.timeEnd('MATERIAL');
+
+		// console.time('MESH');
+		if (propertyTypes.has(PropertyType.MESH)) {
+			const meshSkip = new Set(options.keepUniqueNames ? [] : ['name']);
+			const meshDuplicates = dedupProperties(root.listMeshes(), meshSkip, cache);
+			logger.debug(`${NAME}: Removed ${meshDuplicates} duplicate meshes.`);
+		}
+		// console.timeEnd('MESH');
+
+		// console.time('SKIN');
+		if (propertyTypes.has(PropertyType.SKIN)) {
+			// Shallow comparison only. Distinct joint nodes, even when identical, are
+			// not interchangable. See 'dedup.test.ts', and:
+			// https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
+			const skinSkip = new Set<string>(options.keepUniqueNames ? [] : ['name']);
+			const skinDuplicates = dedupProperties(root.listSkins(), skinSkip, cache, 0);
+			logger.debug(`${NAME}: Removed ${skinDuplicates} duplicate skins.`);
+		}
+		// console.timeEnd('SKIN');
 
 		logger.debug(`${NAME}: Complete.`);
 	});
 }
 
-function dedupAccessors(document: Document): void {
-	const logger = document.getLogger();
+function dedupProperties<T extends Property>(
+	srcProperties: T[],
+	skip: Set<string>,
+	cache: Map<Property, number>,
+	depth = 1,
+): number {
+	const dstProperties = new Map<number, T[]>();
+	const duplicates = new Set<T>();
 
-	// Find all accessors used for mesh and animation data.
-	const indicesMap = new Map<string, Set<Accessor>>();
-	const attributeMap = new Map<string, Set<Accessor>>();
-	const inputMap = new Map<string, Set<Accessor>>();
-	const outputMap = new Map<string, Set<Accessor>>();
+	for (const src of srcProperties) {
+		const hash = hashProperty(src, { skip, cache, depth });
 
-	const meshes = document.getRoot().listMeshes();
-	meshes.forEach((mesh) => {
-		mesh.listPrimitives().forEach((primitive) => {
-			primitive.listAttributes().forEach((accessor) => hashAccessor(accessor, attributeMap));
-			hashAccessor(primitive.getIndices(), indicesMap);
-		});
-	});
+		// (1) If no properties have the same hash, keep 'src'.
+		if (!dstProperties.has(hash)) {
+			dstProperties.set(hash, [src]);
+			continue;
+		}
+
+		// (2) Search hash matches for any passing the .equals() check.
+		const hashProperties = dstProperties.get(hash)!;
+		const dst = hashProperties.find((prop) => prop.equals(src, skip, depth));
+
+		// (3) If no candidates are equal (only hash collisions), keep 'src'.
+		if (!dst) {
+			hashProperties.push(src);
+			continue;
+		}
+
+		// (4) If we find a match, 'dst', replace all references to 'src' with 'dst'.
+		for (const parent of src.listParents()) {
+			if (parent.propertyType !== PropertyType.ROOT) {
+				parent.swap(src, dst);
+			}
+		}
+
+		duplicates.add(src);
+	}
+
+	for (const duplicate of duplicates) {
+		duplicate.dispose();
+	}
+	return duplicates.size;
+}
+
+/** Similar to {@link BufferViewUsage} but specific to dedup's local needs. */
+type AccessorUsage = 'attribute' | 'indices' | 'input' | 'output';
+
+/** Returns a list of Accessors, grouped by usage as needed for deduplication. */
+function listAccessorsByUsage(document: Document): Record<AccessorUsage, Set<Accessor>> {
+	const usage: Record<AccessorUsage, Set<Accessor>> = {
+		attribute: new Set(),
+		indices: new Set(),
+		input: new Set(),
+		output: new Set(),
+	};
+
+	for (const mesh of document.getRoot().listMeshes()) {
+		for (const prim of mesh.listPrimitives()) {
+			if (prim.getIndices()) usage.indices.add(prim.getIndices()!);
+			for (const attribute of deepListAttributes(prim)) {
+				usage.attribute.add(attribute);
+			}
+		}
+	}
 
 	for (const animation of document.getRoot().listAnimations()) {
 		for (const sampler of animation.listSamplers()) {
-			hashAccessor(sampler.getInput(), inputMap);
-			hashAccessor(sampler.getOutput(), outputMap);
+			if (sampler.getInput()) usage.input.add(sampler.getInput()!);
+			if (sampler.getOutput()) usage.output.add(sampler.getOutput()!);
 		}
 	}
 
-	// Add accessor to the appropriate hash group. Hashes are _non-unique_,
-	// intended to quickly compare everything accept the underlying array.
-	function hashAccessor(accessor: Accessor | null, group: Map<string, Set<Accessor>>): void {
-		if (!accessor) return;
-
-		const hash = [
-			accessor.getCount(),
-			accessor.getType(),
-			accessor.getComponentType(),
-			accessor.getNormalized(),
-			accessor.getSparse(),
-		].join(':');
-
-		let hashSet = group.get(hash);
-		if (!hashSet) group.set(hash, (hashSet = new Set<Accessor>()));
-		hashSet.add(accessor);
-	}
-
-	// Find duplicate accessors of a given type.
-	function detectDuplicates(accessors: Accessor[], duplicates: Map<Accessor, Accessor>): void {
-		for (let i = 0; i < accessors.length; i++) {
-			const a = accessors[i];
-			const aData = BufferUtils.toView(a.getArray()!);
-
-			if (duplicates.has(a)) continue;
-
-			for (let j = i + 1; j < accessors.length; j++) {
-				const b = accessors[j];
-
-				if (duplicates.has(b)) continue;
-
-				// Just compare the arrays — everything else was covered by the
-				// hash. Comparing uint8 views is faster than comparing the
-				// original typed arrays.
-				if (BufferUtils.equals(aData, BufferUtils.toView(b.getArray()!))) {
-					duplicates.set(b, a);
-				}
-			}
-		}
-	}
-
-	let total = 0;
-	const duplicates = new Map<Accessor, Accessor>();
-	for (const group of [attributeMap, indicesMap, inputMap, outputMap]) {
-		for (const hashGroup of group.values()) {
-			total += hashGroup.size;
-			detectDuplicates(Array.from(hashGroup), duplicates);
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${total} accessors.`);
-
-	// Dissolve duplicate vertex attributes and indices.
-	meshes.forEach((mesh) => {
-		mesh.listPrimitives().forEach((primitive) => {
-			primitive.listAttributes().forEach((accessor) => {
-				if (duplicates.has(accessor)) {
-					primitive.swap(accessor, duplicates.get(accessor) as Accessor);
-				}
-			});
-			const indices = primitive.getIndices();
-			if (indices && duplicates.has(indices)) {
-				primitive.swap(indices, duplicates.get(indices) as Accessor);
-			}
-		});
-	});
-
-	// Dissolve duplicate animation sampler inputs and outputs.
-	for (const animation of document.getRoot().listAnimations()) {
-		for (const sampler of animation.listSamplers()) {
-			const input = sampler.getInput();
-			const output = sampler.getOutput();
-			if (input && duplicates.has(input)) {
-				sampler.swap(input, duplicates.get(input) as Accessor);
-			}
-			if (output && duplicates.has(output)) {
-				sampler.swap(output, duplicates.get(output) as Accessor);
-			}
-		}
-	}
-
-	Array.from(duplicates.keys()).forEach((accessor) => accessor.dispose());
-}
-
-function dedupMeshes(document: Document, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-
-	// Create Reference -> ID lookup table.
-	const refs = new Map<Accessor | Material, number>();
-	root.listAccessors().forEach((accessor, index) => refs.set(accessor, index));
-	root.listMaterials().forEach((material, index) => refs.set(material, index));
-
-	// For each mesh, create a hashkey.
-	const numMeshes = root.listMeshes().length;
-	const uniqueMeshes = new Map<string, Mesh>();
-	for (const src of root.listMeshes()) {
-		// For each mesh, create a hashkey.
-		const srcKeyItems = [];
-		for (const prim of src.listPrimitives()) {
-			srcKeyItems.push(createPrimitiveKey(prim, refs));
-		}
-
-		// If another mesh exists with the same key, replace all instances with that, and dispose
-		// of the duplicate. If not, just cache it.
-		let meshKey = '';
-		if (options.keepUniqueNames) meshKey += src.getName() + ';';
-		meshKey += srcKeyItems.join(';');
-
-		if (uniqueMeshes.has(meshKey)) {
-			const targetMesh = uniqueMeshes.get(meshKey)!;
-			src.listParents().forEach((parent) => {
-				if (parent.propertyType !== PropertyType.ROOT) {
-					parent.swap(src, targetMesh);
-				}
-			});
-			src.dispose();
-		} else {
-			uniqueMeshes.set(meshKey, src);
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${numMeshes - uniqueMeshes.size} of ${numMeshes} meshes.`);
-}
-
-function dedupImages(document: Document, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-	const textures = root.listTextures();
-	const duplicates: Map<Texture, Texture> = new Map();
-
-	// Compare each texture to every other texture — O(n²) — and mark duplicates for replacement.
-	for (let i = 0; i < textures.length; i++) {
-		const a = textures[i];
-		const aData = a.getImage();
-
-		if (duplicates.has(a)) continue;
-
-		for (let j = i + 1; j < textures.length; j++) {
-			const b = textures[j];
-			const bData = b.getImage();
-
-			if (duplicates.has(b)) continue;
-
-			// URIs are intentionally not compared.
-			if (a.getMimeType() !== b.getMimeType()) continue;
-			if (options.keepUniqueNames && a.getName() !== b.getName()) continue;
-
-			const aSize = a.getSize();
-			const bSize = b.getSize();
-			if (!aSize || !bSize) continue;
-			if (aSize[0] !== bSize[0]) continue;
-			if (aSize[1] !== bSize[1]) continue;
-			if (!aData || !bData) continue;
-			if (BufferUtils.equals(aData, bData)) {
-				duplicates.set(b, a);
-			}
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${root.listTextures().length} textures.`);
-
-	Array.from(duplicates.entries()).forEach(([src, dst]) => {
-		src.listParents().forEach((property) => {
-			if (!(property instanceof Root)) property.swap(src, dst);
-		});
-		src.dispose();
-	});
-}
-
-function dedupMaterials(document: Document, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-	const materials = root.listMaterials();
-	const duplicates = new Map<Material, Material>();
-	const modifierCache = new Map<Material, boolean>();
-	const skip = new Set<string>();
-
-	if (!options.keepUniqueNames) {
-		skip.add('name');
-	}
-
-	// Compare each material to every other material — O(n²) — and mark duplicates for replacement.
-	for (let i = 0; i < materials.length; i++) {
-		const a = materials[i];
-
-		if (duplicates.has(a)) continue;
-		if (hasModifier(a, modifierCache)) continue;
-
-		for (let j = i + 1; j < materials.length; j++) {
-			const b = materials[j];
-
-			if (duplicates.has(b)) continue;
-			if (hasModifier(b, modifierCache)) continue;
-
-			if (a.equals(b, skip)) {
-				duplicates.set(b, a);
-			}
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${materials.length} materials.`);
-
-	Array.from(duplicates.entries()).forEach(([src, dst]) => {
-		src.listParents().forEach((property) => {
-			if (!(property instanceof Root)) property.swap(src, dst);
-		});
-		src.dispose();
-	});
-}
-
-function dedupSkins(document: Document, options: Required<DedupOptions>): void {
-	const logger = document.getLogger();
-	const root = document.getRoot();
-	const skins = root.listSkins();
-	const duplicates = new Map<Skin, Skin>();
-	const skip = new Set(['joints']);
-
-	if (!options.keepUniqueNames) {
-		skip.add('name');
-	}
-
-	for (let i = 0; i < skins.length; i++) {
-		const a = skins[i];
-
-		if (duplicates.has(a)) continue;
-
-		for (let j = i + 1; j < skins.length; j++) {
-			const b = skins[j];
-			if (duplicates.has(b)) continue;
-
-			// Check joints with shallow equality, not deep equality.
-			// See: https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/RecursiveSkeletons
-			if (a.equals(b, skip) && shallowEqualsArray(a.listJoints(), b.listJoints())) {
-				duplicates.set(b, a);
-			}
-		}
-	}
-
-	logger.debug(`${NAME}: Merged ${duplicates.size} of ${skins.length} skins.`);
-
-	Array.from(duplicates.entries()).forEach(([src, dst]) => {
-		src.listParents().forEach((property) => {
-			if (!(property instanceof Root)) property.swap(src, dst);
-		});
-		src.dispose();
-	});
-}
-
-/** Generates a key unique to the content of a primitive or target. */
-function createPrimitiveKey(prim: Primitive | PrimitiveTarget, refs: Map<Accessor | Material, number>): string {
-	const primKeyItems = [];
-	for (const semantic of prim.listSemantics()) {
-		const attribute = prim.getAttribute(semantic)!;
-		primKeyItems.push(semantic + ':' + refs.get(attribute));
-	}
-	if (prim instanceof Primitive) {
-		const indices = prim.getIndices();
-		if (indices) {
-			primKeyItems.push('indices:' + refs.get(indices));
-		}
-		const material = prim.getMaterial();
-		if (material) {
-			primKeyItems.push('material:' + refs.get(material));
-		}
-		primKeyItems.push('mode:' + prim.getMode());
-		for (const target of prim.listTargets()) {
-			primKeyItems.push('target:' + createPrimitiveKey(target, refs));
-		}
-	}
-	return primKeyItems.join(',');
+	return usage;
 }
 
 /**
