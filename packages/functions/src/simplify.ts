@@ -1,5 +1,5 @@
 import { Document, Primitive, type Transform } from '@gltf-transform/core';
-import type { MeshoptSimplifier } from 'meshoptimizer';
+import type { Flags, MeshoptSimplifier } from 'meshoptimizer';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { dequantizeAttributeArray } from './dequantize.js';
@@ -34,12 +34,26 @@ export interface SimplifyOptions {
 	 * to ensure no seams appear.
 	 */
 	lockBorder?: boolean;
+
+	/**
+	 * Produces more regular triangle sizes and shapes during simplification, at some cost to geometric quality. This can improve geometric quality under deformation such as skinning.
+	 * @default false
+	 */
+	regularize?: boolean;
+
+	normalWeight?: number;
+	colorWeight?: number;
+	textureWeight?: number;
 }
 
 export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = {
 	ratio: 0.0,
 	error: 0.0001,
 	lockBorder: false,
+	regularize: false,
+	normalWeight: 0.5,
+	colorWeight: 0.5,
+	textureWeight: 0.1,
 };
 
 /**
@@ -122,7 +136,7 @@ export function simplify(_options: SimplifyOptions): Transform {
 /** @hidden */
 export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): Primitive {
 	const options = { ...SIMPLIFY_DEFAULTS, ..._options } as Required<SimplifyOptions>;
-	const simplifier = options.simplifier as typeof MeshoptSimplifier;
+	const simplifier = options.simplifier as typeof MeshoptSimplifier & { simplifyWithUpdate: typeof MeshoptSimplifier.simplifyWithAttributes };
 	const graph = prim.getGraph();
 	const document = Document.fromGraph(graph)!;
 	const logger = document.getLogger();
@@ -164,18 +178,101 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		indicesArray = new Uint32Array(indicesArray);
 	}
 
+	// (2.5) Gather attributes for withAttributes meshopt simplifier
+	const normalAttributes = prim.getAttribute('NORMAL_0')?.getArray();
+	const colorAttributes = prim.getAttribute('COLOR_0')?.getArray();
+	const uvAttributes = prim.getAttribute('TEXCOORD_0')?.getArray();
+
+	let attributes = 8; // 3 color, 3 normal, 2 uv
+	const attributesArray = new Float32Array(positionArray.length / 3 * attributes);
+
+	const attributeWeights = [
+		options.normalWeight,
+		options.normalWeight,
+		options.normalWeight,
+		options.colorWeight,
+		options.colorWeight,
+		options.colorWeight,
+		options.textureWeight,
+		options.textureWeight,
+	];
+
+	for (let i = 0; i < positionArray.length; i += 3) {
+		if (normalAttributes) {
+			// normalize normal vectors
+			let x = normalAttributes[i + 0];
+			let y = normalAttributes[i + 1];
+			let z = normalAttributes[i + 2];
+			const len = Math.sqrt(x * x + y * y + z * z);
+			if (len > 0) {
+				x /= len;
+				y /= len;
+				z /= len;
+			}
+			attributesArray[i * attributes + 0] = x;
+			attributesArray[i * attributes + 1] = y;
+			attributesArray[i * attributes + 2] = z;
+		}
+		if (colorAttributes) {
+			// clamp color to [0,1] range
+			let r = colorAttributes[i * 3 + 0];
+			let g = colorAttributes[i * 3 + 1];
+			let b = colorAttributes[i * 3 + 2];
+			r = Math.min(Math.max(r, 0), 1);
+			g = Math.min(Math.max(g, 0), 1);
+			b = Math.min(Math.max(b, 0), 1);
+			attributesArray[i * attributes + 3] = r;
+			attributesArray[i * attributes + 4] = g;
+			attributesArray[i * attributes + 5] = b;
+		}
+		if (uvAttributes) {
+			attributesArray[i * attributes + 6] = uvAttributes[i * 2 + 0];
+			attributesArray[i * attributes + 7] = uvAttributes[i * 2 + 1];
+		}
+	}
+
+
 	// (3) Run simplification.
 
 	const targetCount = Math.floor((options.ratio * srcIndexCount) / 3) * 3;
-	const flags = options.lockBorder ? ['LockBorder'] : [];
+	const flags: Array<Flags | "Regularize"> = [];
+	if (options.lockBorder) {
+		flags.push('LockBorder');
+	}
+	if (options.regularize) {
+		flags.push('Regularize');
+	}
 
-	const [dstIndicesArray, error] = simplifier.simplify(
+
+	/*
+			indices,
+			vertex_positions,
+			vertex_positions_stride,
+			vertex_attributes,
+			vertex_attributes_stride,
+			attribute_weights,
+			vertex_lock,
+			target_index_count,
+			target_error,
+			flags
+	*/
+	// console.log(positionArray.length / 3, attributes, attributesArray.length, positionArray.length / 3 * attributes)
+
+	// size_t meshopt_simplifyWithUpdate(unsigned int* indices, size_t index_count, float* vertex_positions_data, size_t vertex_count, size_t vertex_positions_stride, float* vertex_attributes_data, size_t vertex_attributes_stride, const float* attribute_weights, size_t attribute_count, const unsigned char* vertex_lock, size_t target_index_count, float target_error, unsigned int options, float* out_result_error)
+	// size_t meshopt_simplifyWithAttributes(unsigned int* destination, const unsigned int* indices, size_t index_count, const float* vertex_positions_data, size_t vertex_count, size_t vertex_positions_stride, const float* vertex_attributes_data, size_t vertex_attributes_stride, const float* attribute_weights, size_t attribute_count, const unsigned char* vertex_lock, size_t target_index_count, float target_error, unsigned int options, float* out_result_error)
+
+	// const [dstIndicesArray, error] = simplifier.simplifyWithUpdate(
+	const [dstIndicesArray, error] = simplifier.simplifyWithAttributes(
 		indicesArray,
 		positionArray,
 		3,
+		attributesArray,
+		attributes,
+		attributeWeights,
+		null,
 		targetCount,
 		options.error,
-		flags as 'LockBorder'[],
+		flags as Flags[],
 	);
 
 	// (4) Assign subset of indexes; compact primitive.
@@ -193,6 +290,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 
 	return prim;
 }
+
 
 function _simplifyPoints(document: Document, prim: Primitive, options: Required<SimplifyOptions>): Primitive {
 	const simplifier = options.simplifier as typeof MeshoptSimplifier;
