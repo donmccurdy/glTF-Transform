@@ -93,6 +93,8 @@ interface GlobalOptions {
 	 * @experimental
 	 */
 	limitInputPixels?: boolean;
+	/** Whether to generate mipmaps. Default: true. */
+	mipmaps?: boolean;
 }
 
 export interface ETC1SOptions extends GlobalOptions {
@@ -125,6 +127,7 @@ const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'encoder' | 'mode'> = {
 	jobs: 2 * NUM_CPUS,
 	cleanup: true,
 	limitInputPixels: true,
+	mipmaps: true,
 };
 
 export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'encoder' | 'mode'> = {
@@ -318,7 +321,11 @@ function createParams(
 	options: ETC1SOptions | UASTCOptions,
 ): (string | number)[] {
 	const colorSpace = getTextureColorSpace(texture);
-	const params: (string | number)[] = ['--generate-mipmap'];
+	const params: (string | number)[] = [];
+
+	if (options.mipmaps) {
+		params.push('--generate-mipmap');
+	}
 
 	if (options.filter !== GLOBAL_DEFAULTS.filter) {
 		params.push('--mipmap-filter', options.filter!);

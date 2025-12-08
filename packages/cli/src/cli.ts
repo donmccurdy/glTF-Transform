@@ -1356,6 +1356,10 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		validator: Validator.STRING,
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
+	.option('--mipmaps <bool>', 'Generate mipmaps.', {
+		validator: Validator.BOOLEAN,
+		default: ETC1S_DEFAULTS.mipmaps,
+	})
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: ETC1S_DEFAULTS.filter,
@@ -1434,6 +1438,10 @@ for textures where the quality is sufficient.`.trim(),
 		validator: Validator.STRING,
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
+	.option('--mipmaps <bool>', 'Generate mipmaps.', {
+		validator: Validator.BOOLEAN,
+		default: UASTC_DEFAULTS.mipmaps,
+	})
 	.option('--filter <filter>', 'Specifies the filter to use when generating mipmaps.', {
 		validator: Object.values(Filter),
 		default: UASTC_DEFAULTS.filter,
