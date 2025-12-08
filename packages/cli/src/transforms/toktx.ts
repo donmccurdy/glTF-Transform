@@ -327,11 +327,11 @@ function createParams(
 		params.push('--generate-mipmap');
 	}
 
-	if (options.filter !== GLOBAL_DEFAULTS.filter) {
+	if (options.mipmaps && options.filter !== GLOBAL_DEFAULTS.filter) {
 		params.push('--mipmap-filter', options.filter!);
 	}
 
-	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
+	if (options.mipmaps && options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
 		params.push('--mipmap-filter-scale', options.filterScale!);
 	}
 
