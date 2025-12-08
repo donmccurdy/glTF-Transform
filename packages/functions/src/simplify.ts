@@ -186,7 +186,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 	let attributes = 8; // 3 color, 3 normal, 2 uv
 	const attributesArray = new Float32Array(positionArray.length / 3 * attributes);
 
-	const attrib_weights = [
+	const attributeWeights = [
 		options.normalWeight,
 		options.normalWeight,
 		options.normalWeight,
@@ -268,7 +268,7 @@ export function simplifyPrimitive(prim: Primitive, _options: SimplifyOptions): P
 		3,
 		attributesArray,
 		attributes,
-		attrib_weights,
+		attributeWeights,
 		null,
 		targetCount,
 		options.error,
