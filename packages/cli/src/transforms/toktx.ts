@@ -6,6 +6,7 @@ import {
 	ImageUtils,
 	type Texture,
 	TextureChannel,
+	TextureInfo,
 	type Transform,
 	uuid,
 	type vec2,
@@ -17,6 +18,7 @@ import {
 	fitWithin,
 	getTextureChannelMask,
 	getTextureColorSpace,
+	listTextureInfo,
 	listTextureSlots,
 	TextureResizeFilter,
 } from '@gltf-transform/functions';
@@ -283,6 +285,18 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					texture.setImage(await fs.readFile(dstPath)).setMimeType('image/ktx2');
 					if (texture.getURI()) {
 						texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
+					}
+
+					// When mipmaps are disabled, downgrade mipmap filters to non-mipmap equivalents.
+					if (!options.mipmaps) {
+						for (const info of listTextureInfo(texture)) {
+							const minFilter = info.getMinFilter();
+							if (minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_LINEAR || minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_NEAREST) {
+								info.setMinFilter(TextureInfo.MinFilter.NEAREST);
+							} else {
+								info.setMinFilter(TextureInfo.MinFilter.LINEAR);
+							}
+						}
 					}
 				}
 
