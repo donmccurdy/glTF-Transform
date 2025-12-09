@@ -10,7 +10,8 @@ import {
 	type ReaderContext,
 	WriterContext,
 } from '@gltf-transform/core';
-import type { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
+import type { MeshoptDecoder } from 'meshoptimizer/decoder';
+import type { MeshoptEncoder } from 'meshoptimizer/encoder';
 import { EXT_MESHOPT_COMPRESSION } from '../constants.js';
 import { EncoderMethod, type MeshoptBufferViewExtension, MeshoptFilter } from './constants.js';
 import { isFallbackBuffer } from './decoder.js';
@@ -64,7 +65,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * ```typescript
  * import { NodeIO } from '@gltf-transform/core';
  * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptDecoder } from 'meshoptimizer';
+ * import { MeshoptDecoder } from 'meshoptimizer/decoder';
  *
  * await MeshoptDecoder.ready;
  *
@@ -85,7 +86,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * import { NodeIO } from '@gltf-transform/core';
  * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
  * import { meshopt } from '@gltf-transform/functions';
- * import { MeshoptEncoder } from 'meshoptimizer';
+ * import { MeshoptEncoder } from 'meshoptimizer/encoder';
  *
  * await MeshoptEncoder.ready;
  *
@@ -109,7 +110,7 @@ type EncodedBufferView = GLTF.IBufferView & MeshoptBufferView;
  * ```typescript
  * import { reorder, quantize } from '@gltf-transform/functions';
  * import { EXTMeshoptCompression } from '@gltf-transform/extensions';
- * import { MeshoptEncoder } from 'meshoptimizer';
+ * import { MeshoptEncoder } from 'meshoptimizer/encoder';
  *
  * await document.transform(
  * 	reorder({encoder: MeshoptEncoder}),

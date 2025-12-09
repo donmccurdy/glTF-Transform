@@ -1,7 +1,7 @@
 import { Document } from '@gltf-transform/core';
 import { reorder } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive } from '@gltf-transform/test-utils';
-import { MeshoptEncoder } from 'meshoptimizer';
+import { MeshoptEncoder } from 'meshoptimizer/encoder';
 import type { Task } from '../constants.ts';
 import { BENCHMARK_LOGGER } from '../utils.ts';
 

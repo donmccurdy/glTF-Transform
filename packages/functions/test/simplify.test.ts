@@ -19,7 +19,7 @@ import {
 } from '@gltf-transform/test-utils';
 import test from 'ava';
 import draco3d from 'draco3dgltf';
-import { MeshoptSimplifier } from 'meshoptimizer';
+import { MeshoptSimplifier } from 'meshoptimizer/simplifier';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 

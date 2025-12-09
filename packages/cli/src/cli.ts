@@ -51,7 +51,8 @@ import {
 } from '@gltf-transform/functions';
 import { promises as fs, readFileSync } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
-import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
+import { MeshoptEncoder } from 'meshoptimizer/encoder';
+import { MeshoptSimplifier } from 'meshoptimizer/simplifier';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
