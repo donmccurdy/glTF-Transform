@@ -4,6 +4,7 @@ import {
 	FileUtils,
 	type ILogger,
 	ImageUtils,
+	Material,
 	type Texture,
 	TextureChannel,
 	type Transform,
@@ -75,6 +76,10 @@ interface GlobalOptions {
 	 * Passing a string (glob) is deprecated; use a RegExp instead.
 	 */
 	slots?: RegExp | null;
+	/** Include only textures where a parent material has this custom property set to true. */
+	matchCustomMaterialBool?: string | null;
+	/** Exclude textures where a parent material has this custom property set to true. */
+	excludeCustomMaterialBool?: string | null;
 	/** Interpolation used for generating mipmaps. Default: 'lanczos4'. */
 	filter?: string;
 	filterScale?: number;
@@ -121,6 +126,8 @@ const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'encoder' | 'mode'> = {
 	filterScale: 1,
 	pattern: null,
 	slots: null,
+	matchCustomMaterialBool: null,
+	excludeCustomMaterialBool: null,
 	// See: https://github.com/donmccurdy/glTF-Transform/pull/389#issuecomment-1089842185
 	jobs: 2 * NUM_CPUS,
 	cleanup: true,
@@ -196,6 +203,24 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 				const patternRe = options.pattern as RegExp | null;
 				const slotsRe = options.slots as RegExp | null;
+
+				// FILTER: Material custom properties.
+				if (options.matchCustomMaterialBool) {
+					const key = options.matchCustomMaterialBool;
+					const match = texture.listParents().some((p) => p instanceof Material && p.getExtras()[key] === true);
+					if (!match) {
+						logger.debug(`${prefix}: Skipping, no parent material has "${key}" = true.`);
+						return;
+					}
+				}
+				if (options.excludeCustomMaterialBool) {
+					const key = options.excludeCustomMaterialBool;
+					const match = texture.listParents().some((p) => p instanceof Material && p.getExtras()[key] === true);
+					if (match) {
+						logger.debug(`${prefix}: Skipping, parent material has "${key}" = true.`);
+						return;
+					}
+				}
 
 				let srcMimeType = texture.getMimeType();
 
