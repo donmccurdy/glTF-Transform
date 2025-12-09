@@ -37,6 +37,7 @@ const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
 const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
 
 const { R, G, A } = TextureChannel;
+const { NEAREST, NEAREST_MIPMAP_LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR, LINEAR_MIPMAP_NEAREST } = TextureInfo.MinFilter;
 
 /**********************************************************************************************
  * Interfaces.
@@ -291,10 +292,10 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					if (!options.mipmaps) {
 						for (const info of listTextureInfo(texture)) {
 							const minFilter = info.getMinFilter();
-							if (minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_LINEAR || minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_NEAREST) {
-								info.setMinFilter(TextureInfo.MinFilter.NEAREST);
-							} else {
-								info.setMinFilter(TextureInfo.MinFilter.LINEAR);
+							if (minFilter === NEAREST_MIPMAP_LINEAR || minFilter === NEAREST_MIPMAP_NEAREST) {
+								info.setMinFilter(NEAREST);
+							} else if (minFilter === LINEAR_MIPMAP_NEAREST) {
+								info.setMinFilter(LINEAR);
 							}
 						}
 					}
