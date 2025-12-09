@@ -4,7 +4,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import test from 'ava';
 import draco3d from 'draco3dgltf';
 import fs from 'fs';
-import { MeshoptDecoder } from 'meshoptimizer';
+import { MeshoptDecoder } from 'meshoptimizer/decoder';
 import path, { dirname } from 'path';
 import tmp from 'tmp';
 import { fileURLToPath } from 'url';

@@ -2,7 +2,7 @@ import { Accessor, Document, type GLTF, Primitive } from '@gltf-transform/core';
 import { reorder } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
-import { MeshoptEncoder } from 'meshoptimizer';
+import { MeshoptEncoder } from 'meshoptimizer/encoder';
 
 const CUBE_INDICES = new Uint32Array([4, 2, 5, 3, 1, 4, 0, 1, 3, 1, 2, 4]);
 
@@ -141,7 +141,12 @@ test('no side effects', async (t) => {
 /* UTILITIES */
 
 /** Builds a new float32 attribute for given type and data. */
-function createFloatAttribute(doc: Document, semantic: string, type: GLTF.AccessorType, array: Float32Array): Accessor {
+function createFloatAttribute(
+	doc: Document,
+	semantic: string,
+	type: GLTF.AccessorType,
+	array: Float32Array<ArrayBuffer>,
+): Accessor {
 	const attribute = doc.createAccessor().setType(type).setArray(array);
 	const prim = doc.createPrimitive().setAttribute(semantic, attribute).setMode(Primitive.Mode.TRIANGLES);
 	doc.createMesh().addPrimitive(prim);

@@ -1,5 +1,5 @@
 import { Document, Primitive, type Transform } from '@gltf-transform/core';
-import type { MeshoptSimplifier } from 'meshoptimizer';
+import type { MeshoptSimplifier } from 'meshoptimizer/simplifier';
 import { compactAttribute, compactPrimitive } from './compact-primitive.js';
 import { convertPrimitiveToTriangles } from './convert-primitive-mode.js';
 import { dequantizeAttributeArray } from './dequantize.js';
@@ -62,7 +62,7 @@ export const SIMPLIFY_DEFAULTS: Required<Omit<SimplifyOptions, 'simplifier'>> = 
  *
  * ```javascript
  * import { simplify, weld } from '@gltf-transform/functions';
- * import { MeshoptSimplifier } from 'meshoptimizer';
+ * import { MeshoptSimplifier } from 'meshoptimizer/simplifier';
  *
  * await document.transform(
  *   weld({}),

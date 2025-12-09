@@ -13,7 +13,7 @@ import {
 	type TypedArrayConstructor,
 	WriterContext,
 } from '@gltf-transform/core';
-import type { MeshoptEncoder } from 'meshoptimizer';
+import type { MeshoptEncoder } from 'meshoptimizer/encoder';
 import { MeshoptFilter, MeshoptMode, type PreparedAccessor } from './constants.js';
 
 const { BYTE, SHORT, FLOAT } = Accessor.ComponentType;

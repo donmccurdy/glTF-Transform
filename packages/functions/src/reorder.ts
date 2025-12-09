@@ -1,5 +1,5 @@
 import { type Accessor, type Document, type GLTF, Primitive, PropertyType, type Transform } from '@gltf-transform/core';
-import type { MeshoptEncoder } from 'meshoptimizer';
+import type { MeshoptEncoder } from 'meshoptimizer/encoder';
 import { compactAttribute } from './compact-primitive.js';
 import { prune } from './prune.js';
 import { assignDefaults, createTransform, deepListAttributes, SetMap, shallowCloneAccessor } from './utils.js';
@@ -39,7 +39,7 @@ const REORDER_DEFAULTS: Required<Omit<ReorderOptions, 'encoder'>> = {
  * Example:
  *
  * ```ts
- * import { MeshoptEncoder } from 'meshoptimizer';
+ * import { MeshoptEncoder } from 'meshoptimizer/encoder';
  * import { reorder } from '@gltf-transform/functions';
  *
  * await MeshoptEncoder.ready;

@@ -1,6 +1,6 @@
 import type { Document, Transform } from '@gltf-transform/core';
 import { EXTMeshoptCompression } from '@gltf-transform/extensions';
-import type { MeshoptEncoder } from 'meshoptimizer';
+import type { MeshoptEncoder } from 'meshoptimizer/encoder';
 import { QUANTIZE_DEFAULTS, type QuantizeOptions, quantize } from './quantize.js';
 import { reorder } from './reorder.js';
 import { assignDefaults, createTransform } from './utils.js';
@@ -30,7 +30,7 @@ const NAME = 'meshopt';
  * Example:
  *
  * ```javascript
- * import { MeshoptEncoder } from 'meshoptimizer';
+ * import { MeshoptEncoder } from 'meshoptimizer/encoder';
  * import { meshopt } from '@gltf-transform/functions';
  *
  * await MeshoptEncoder.ready;

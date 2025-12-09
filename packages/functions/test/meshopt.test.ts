@@ -2,7 +2,7 @@ import { Document } from '@gltf-transform/core';
 import { meshopt } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 import test from 'ava';
-import { MeshoptEncoder } from 'meshoptimizer';
+import { MeshoptEncoder } from 'meshoptimizer/encoder';
 
 test('basic', async (t) => {
 	const document = new Document().setLogger(logger);
