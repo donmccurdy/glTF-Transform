@@ -6,6 +6,7 @@ import {
 	ImageUtils,
 	type Texture,
 	TextureChannel,
+	TextureInfo,
 	type Transform,
 	uuid,
 	type vec2,
@@ -17,6 +18,7 @@ import {
 	fitWithin,
 	getTextureChannelMask,
 	getTextureColorSpace,
+	listTextureInfo,
 	listTextureSlots,
 	TextureResizeFilter,
 } from '@gltf-transform/functions';
@@ -93,6 +95,8 @@ interface GlobalOptions {
 	 * @experimental
 	 */
 	limitInputPixels?: boolean;
+	/** Whether to generate mipmaps. Default: true. */
+	mipmaps?: boolean;
 }
 
 export interface ETC1SOptions extends GlobalOptions {
@@ -125,6 +129,7 @@ const GLOBAL_DEFAULTS: Omit<GlobalOptions, 'encoder' | 'mode'> = {
 	jobs: 2 * NUM_CPUS,
 	cleanup: true,
 	limitInputPixels: true,
+	mipmaps: true,
 };
 
 export const ETC1S_DEFAULTS: Omit<ETC1SOptions, 'encoder' | 'mode'> = {
@@ -281,6 +286,18 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 					if (texture.getURI()) {
 						texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
 					}
+
+					// When mipmaps are disabled, downgrade mipmap filters to non-mipmap equivalents.
+					if (!options.mipmaps) {
+						for (const info of listTextureInfo(texture)) {
+							const minFilter = info.getMinFilter();
+							if (minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_LINEAR || minFilter === TextureInfo.MinFilter.NEAREST_MIPMAP_NEAREST) {
+								info.setMinFilter(TextureInfo.MinFilter.NEAREST);
+							} else {
+								info.setMinFilter(TextureInfo.MinFilter.LINEAR);
+							}
+						}
+					}
 				}
 
 				const dstBytes = texture.getImage()!.byteLength;
@@ -318,13 +335,17 @@ function createParams(
 	options: ETC1SOptions | UASTCOptions,
 ): (string | number)[] {
 	const colorSpace = getTextureColorSpace(texture);
-	const params: (string | number)[] = ['--generate-mipmap'];
+	const params: (string | number)[] = [];
 
-	if (options.filter !== GLOBAL_DEFAULTS.filter) {
+	if (options.mipmaps) {
+		params.push('--generate-mipmap');
+	}
+
+	if (options.mipmaps && options.filter !== GLOBAL_DEFAULTS.filter) {
 		params.push('--mipmap-filter', options.filter!);
 	}
 
-	if (options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
+	if (options.mipmaps && options.filterScale !== GLOBAL_DEFAULTS.filterScale) {
 		params.push('--mipmap-filter-scale', options.filterScale!);
 	}
 
