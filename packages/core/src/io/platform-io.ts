@@ -23,6 +23,8 @@ type PublicWriterOptions = Partial<Pick<WriterOptions, 'format' | 'basename'>>;
  *
  * For platform-specific implementations, see {@link NodeIO}, {@link WebIO}, and {@link DenoIO}.
  *
+ * @privateRemarks TODO(v5): Consider renaming class to IO, AbstractIO, BaseIO, CommonIO, etc.
+ *
  * @category I/O
  */
 export abstract class PlatformIO {
