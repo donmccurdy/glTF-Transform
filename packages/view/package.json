@@ -10,23 +10,14 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "types": "./dist/index.d.ts",
-    "default": "./dist/view.modern.js"
+    "types": "./dist/index.d.mts",
+    "default": "./dist/index.mjs"
   },
-  "types": "./dist/index.d.ts",
-  "module": "./dist/view.modern.js",
-  "source": "./src/index.ts",
-  "browserslist": [
-    "last 2 and_chr versions",
-    "last 2 chrome versions",
-    "last 2 opera versions",
-    "last 2 ios_saf versions",
-    "last 2 safari versions",
-    "last 2 firefox versions"
-  ],
+  "types": "./dist/index.d.mts",
+  "module": "./dist/index.mjs",
   "scripts": {
-    "build": "microbundle --no-compress --format modern",
-    "build:watch": "microbundle watch --no-compress --format modern",
+    "build": "tsdown --format esm --env.PACKAGE_VERSION=$npm_package_version",
+    "build:watch": "tsdown --watch --format esm --env.PACKAGE_VERSION=$npm_package_version",
     "dev": "vite -c examples/vite.config.js"
   },
   "files": [

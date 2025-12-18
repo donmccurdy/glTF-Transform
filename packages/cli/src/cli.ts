@@ -49,13 +49,12 @@ import {
 	type WeldOptions,
 	weld,
 } from '@gltf-transform/functions';
-import { promises as fs, readFileSync } from 'fs';
+import { promises as fs } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
 import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
-import { URL } from 'url';
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
 import { inspect } from './inspect.js';
@@ -98,9 +97,9 @@ const programReady: Promise<void> = new Promise<void>((resolve) => {
 const INPUT_DESC = 'Path to read glTF 2.0 (.glb, .gltf) model';
 const OUTPUT_DESC = 'Path to write output';
 
-const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
-
-program.version(PACKAGE.version).description('Command-line interface (CLI) for the glTF Transform SDK.');
+program
+	.version(import.meta.env.PACKAGE_VERSION)
+	.description('Command-line interface (CLI) for the glTF Transform SDK.');
 
 if (process.argv && !process.argv.includes('--no-editorial')) {
 	program

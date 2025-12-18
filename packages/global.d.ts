@@ -7,6 +7,15 @@
  * name 'Y'.ts(4033)".
  */
 
+interface ImportMetaEnv {
+	readonly PACKAGE_VERSION: string;
+}
+
+// biome-ignore lint/correctness/noUnusedVariables: Ambient type definition.
+interface ImportMeta {
+	readonly env: ImportMetaEnv;
+}
+
 /** GL Matrix */
 
 // See: https://github.com/toji/gl-matrix/issues/423
