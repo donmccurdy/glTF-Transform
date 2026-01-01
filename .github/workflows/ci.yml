@@ -21,7 +21,7 @@ jobs:
       # Setup.
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
@@ -51,7 +51,7 @@ jobs:
         with:
           deno-version: v1.x
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
@@ -76,7 +76,7 @@ jobs:
       # Setup.
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
@@ -105,7 +105,7 @@ jobs:
       # Setup.
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           # TODO(cleanup): https://github.com/actions/setup-node/issues/1027
