@@ -1,3 +1,4 @@
+import { readFile, writeFile } from 'node:fs/promises';
 import { type Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
@@ -49,7 +50,6 @@ import {
 	type WeldOptions,
 	weld,
 } from '@gltf-transform/functions';
-import { promises as fs } from 'fs';
 import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resample';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
@@ -652,12 +652,12 @@ work best when combined with gzip.
 	)
 	.argument('<input>', INPUT_DESC)
 	.action(async ({ args, logger }) => {
-		const inBuffer = await fs.readFile(args.input as string);
+		const inBuffer = await readFile(args.input as string);
 		const outBuffer = await gzip(inBuffer);
 		const fileName = args.input + '.gz';
 		const inSize = formatBytes(inBuffer.byteLength);
 		const outSize = formatBytes(outBuffer.byteLength);
-		await fs.writeFile(fileName, outBuffer);
+		await writeFile(fileName, outBuffer);
 		logger.info(`Created ${fileName} (${inSize} → ${outSize})`);
 	});
 
