@@ -28,7 +28,7 @@
     "postpublish": "git push && git push --tags && yarn run docs:deploy:prod",
     "docs:cli": "CLI_HELP=\"$(gltf-transform -h --no-editorial)\" && perl -i -0pe 's/\\Q<!-- begin:cli_help -->\\E.*\\Q<!-- end:cli_help -->\\E/<!-- begin:cli_help -->\n\\`\\`\\`plaintext$ENV{'CLI_HELP'}\\n\\`\\`\\`\n<!-- end:cli_help -->/gmsi' packages/docs/src/lib/pages/cli.md",
     "docs:deploy:prod": "node scripts/check-release.ts && yarn docs:deploy --prod || echo \"!  Skipping website deployment.\"",
-    "docs:deploy": "yarn build && vercel"
+    "docs:deploy": "yarn build && yarn dlx vercel"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
