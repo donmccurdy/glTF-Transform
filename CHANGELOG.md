@@ -2,7 +2,28 @@
 
 ## v4.x
 
-### v4.3 (🚧 Unreleased)
+### v4.4 (🚧 Unreleased)
+
+### v4.3
+
+**Features:**
+
+- feat(core): Add Document#disposeExtension [#1740](https://github.com/donmccurdy/glTF-Transform/pull/1740)
+- feat(core): Add strict and non-strict I/O modes for missing resources [#1696](https://github.com/donmccurdy/glTF-Transform/pull/1696) by [@Makio64](https://github.com/Makio64)
+- feat(extensions): Add KHR_node_visibility [#1747](https://github.com/donmccurdy/glTF-Transform/pull/1747)
+- feat(functions): Add 'chromaSubsampling' option to textureCompress [#1713](https://github.com/donmccurdy/glTF-Transform/pull/1713)
+- feat(cli): Add --mipmaps flag to etc1s and uastc commands, and `toktx()` [#1777](https://github.com/donmccurdy/glTF-Transform/pull/1777) by [@FrostKiwi]
+- feat(cli): Add --sparse flag in optimize command [#1735](https://github.com/donmccurdy/glTF-Transform/pull/1735)
+
+**Other:**
+
+- fix(docs): Improve documentation of mesh primitive modes [#1718](https://github.com/donmccurdy/glTF-Transform/pull/1718)
+- fix(cli): Fix docs on draco --encode-speed and --decode-speed flags [#1744](https://github.com/donmccurdy/glTF-Transform/pull/1744)
+- fix(extensions): Fix error on input with KHR_texture_basisu and no textures [#1770](https://github.com/donmccurdy/glTF-Transform/pull/1770) by [@chrisdaid](https://github.com/chrisdaid)
+- refactor(types): Update `ArrayBuffer` types to support TypeScript 5.9 [#1702](https://github.com/donmccurdy/glTF-Transform/pull/1702) by [@jamesbvaughan](https://github.com/jamesbvaughan)
+- chore(repo,cli): Remove extraneous dependencies [#1767](https://github.com/donmccurdy/glTF-Transform/pull/1767) [#1766](https://github.com/donmccurdy/glTF-Transform/pull/1766) [#1765](https://github.com/donmccurdy/glTF-Transform/pull/1765) [#1764](https://github.com/donmccurdy/glTF-Transform/pull/1764) [#1762](https://github.com/donmccurdy/glTF-Transform/pull/1762) [#1763](https://github.com/donmccurdy/glTF-Transform/pull/1763)
+- chore(core): Update to property-graph v4 [#1754](https://github.com/donmccurdy/glTF-Transform/pull/1754)
+- chore(cli,extensions,functions): Update to 'meshoptimizer' v1.0.1 [#1778](https://github.com/donmccurdy/glTF-Transform/pull/1778)
 
 ### v4.2
 
