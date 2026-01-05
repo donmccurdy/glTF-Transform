@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: 2.x
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
