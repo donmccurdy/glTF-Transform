@@ -124,6 +124,18 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array Float32Array}.
 		 */
 		FLOAT: 5126,
+		/**
+		 * 2-byte floating point number, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float16Array Float16Array}.
+		 * Requires {@link KHRAccessorFloat16}.
+		 */
+		FLOAT16: 5131,
+		/**
+		 * 8-byte floating point number, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array Float64Array}.
+		 * Requires {@link KHRAccessorFloat64}.
+		 */
+		FLOAT64: 5130,
 	};
 
 	/**********************************************************************************************
@@ -175,17 +187,18 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 	public static getComponentSize(componentType: GLTF.AccessorComponentType): number {
 		switch (componentType) {
 			case Accessor.ComponentType.BYTE:
-				return 1;
 			case Accessor.ComponentType.UNSIGNED_BYTE:
 				return 1;
 			case Accessor.ComponentType.SHORT:
-				return 2;
 			case Accessor.ComponentType.UNSIGNED_SHORT:
 				return 2;
 			case Accessor.ComponentType.UNSIGNED_INT:
-				return 4;
 			case Accessor.ComponentType.FLOAT:
 				return 4;
+			case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
+				return 2;
+			case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
+				return 8;
 			default:
 				throw new Error('Unexpected component type: ' + componentType);
 		}
@@ -549,7 +562,14 @@ function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 			return Accessor.ComponentType.SHORT;
 		case Int8Array:
 			return Accessor.ComponentType.BYTE;
-		default:
-			throw new Error('Unknown accessor componentType.');
+		case Float64Array:
+			return Accessor.ComponentType.FLOAT64; // KHR_accessor_float64
 	}
+
+	// TODO(v5): Remove after Node.js v22 reaches EOL, or adds Float16Array support.
+	if (typeof Float16Array !== 'undefined' && array.constructor === Float16Array) {
+		return Accessor.ComponentType.FLOAT16; // KHR_accessor_float16
+	}
+
+	throw new Error('Unknown accessor componentType.');
 }
