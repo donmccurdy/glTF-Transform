@@ -209,8 +209,10 @@ export class GLTFWriter {
 							case Accessor.ComponentType.UNSIGNED_INT:
 								view.setUint32(viewByteOffset, value, true);
 								break;
-							// KHR_accessor_float64
-							case Accessor.ComponentType.FLOAT64:
+							case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
+								view.setFloat16(viewByteOffset, value, true);
+								break;
+							case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
 								view.setFloat64(viewByteOffset, value, true);
 								break;
 							default:

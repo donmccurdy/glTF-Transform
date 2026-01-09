@@ -168,6 +168,7 @@ export const ComponentTypeToTypedArray: Record<string, TypedArrayConstructor> = 
 	'5122': Int16Array,
 	'5123': Uint16Array,
 	'5125': Uint32Array,
+	'5131': Float16Array,
 	'5126': Float32Array,
 	'5130': Float64Array,
 };

@@ -125,17 +125,17 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 		 */
 		FLOAT: 5126,
 		/**
-		 * 8-byte floating point number, stored as
-		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array Float64Array}.
-		 * Requires KHR_accessor_float64.
-		 */
-		FLOAT64: 5130,
-		/**
 		 * 2-byte floating point number, stored as
 		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float16Array Float16Array}.
-		 * Requires KHR_accessor_float16.
+		 * Requires {@link KHRAccessorFloat16}.
 		 */
 		FLOAT16: 5131,
+		/**
+		 * 8-byte floating point number, stored as
+		 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array Float64Array}.
+		 * Requires {@link KHRAccessorFloat64}.
+		 */
+		FLOAT64: 5130,
 	};
 
 	/**********************************************************************************************
@@ -191,11 +191,12 @@ export class Accessor extends ExtensibleProperty<IAccessor> {
 				return 1;
 			case Accessor.ComponentType.SHORT:
 			case Accessor.ComponentType.UNSIGNED_SHORT:
-			case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
 				return 2;
 			case Accessor.ComponentType.UNSIGNED_INT:
 			case Accessor.ComponentType.FLOAT:
 				return 4;
+			case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
+				return 2;
 			case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
 				return 8;
 			default:
@@ -561,10 +562,10 @@ function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 			return Accessor.ComponentType.SHORT;
 		case Int8Array:
 			return Accessor.ComponentType.BYTE;
+		case Float16Array:
+			return Accessor.ComponentType.FLOAT16; // KHR_accessor_float16
 		case Float64Array:
 			return Accessor.ComponentType.FLOAT64; // KHR_accessor_float64
-		case Float16Array:
-			return Accessor.ComponentType.FLOAT16; // KHR_accessor_float64
 		default:
 			throw new Error('Unknown accessor componentType.');
 	}

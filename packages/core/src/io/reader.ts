@@ -617,8 +617,10 @@ function getInterleavedArray(accessorDef: GLTF.IAccessor, context: ReaderContext
 				case Accessor.ComponentType.BYTE:
 					value = view.getInt8(byteOffset);
 					break;
-				// KHR_accessor_float64
-				case Accessor.ComponentType.FLOAT64:
+				case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
+					value = view.getFloat16(byteOffset, true);
+					break;
+				case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
 					value = view.getFloat64(byteOffset, true);
 					break;
 				default:
