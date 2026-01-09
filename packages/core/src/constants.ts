@@ -162,13 +162,21 @@ export enum Format {
 	GLB = 'GLB',
 }
 
+class UnsupportedArray extends Float32Array {
+	constructor() {
+		super();
+		throw new Error('Unsupported typed array instantiation.');
+	}
+}
+
 export const ComponentTypeToTypedArray: Record<string, TypedArrayConstructor> = {
 	'5120': Int8Array,
 	'5121': Uint8Array,
 	'5122': Int16Array,
 	'5123': Uint16Array,
 	'5125': Uint32Array,
-	'5131': Float16Array,
+	// TODO(v5): Remove after Node.js v22 reaches EOL, or adds Float16Array support.
+	'5131': typeof Float16Array !== 'undefined' ? Float16Array : UnsupportedArray,
 	'5126': Float32Array,
 	'5130': Float64Array,
 };
