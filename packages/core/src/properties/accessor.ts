@@ -562,11 +562,14 @@ function arrayToComponentType(array: TypedArray): GLTF.AccessorComponentType {
 			return Accessor.ComponentType.SHORT;
 		case Int8Array:
 			return Accessor.ComponentType.BYTE;
-		case Float16Array:
-			return Accessor.ComponentType.FLOAT16; // KHR_accessor_float16
 		case Float64Array:
 			return Accessor.ComponentType.FLOAT64; // KHR_accessor_float64
-		default:
-			throw new Error('Unknown accessor componentType.');
 	}
+
+	// TODO(v5): Remove after Node.js v22 reaches EOL, or adds Float16Array support.
+	if (typeof Float16Array !== 'undefined' && array.constructor === Float16Array) {
+		return Accessor.ComponentType.FLOAT16; // KHR_accessor_float16
+	}
+
+	throw new Error('Unknown accessor componentType.');
 }
