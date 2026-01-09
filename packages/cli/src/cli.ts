@@ -1,13 +1,4 @@
-import {
-	Accessor,
-	type Logger,
-	NodeIO,
-	PropertyType,
-	type Transform,
-	VertexLayout,
-	type vec2,
-} from '@gltf-transform/core';
-import { KHRAccessorFloat64 } from '@gltf-transform/extensions';
+import { type Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
 	center,
@@ -1018,40 +1009,6 @@ Removes KHR_mesh_quantization, if present.`.trim(),
 	.action(({ args, options, logger }) => {
 		const pattern = micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS);
 		return Session.create(io, logger, args.input, args.output).transform(dequantize({ ...options, pattern }));
-	});
-
-// F64
-program
-	.command('f64', 'Convert all f32 accessors to f64 (EXPERIMENTAL)')
-	.help(`Experimental testing feature for KHR_accessor_float64`.trim())
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
-	.action(({ args, options, logger }) => {
-		return Session.create(io, logger, args.input, args.output).transform(dequantize({ ...options }), (document) => {
-			document.createExtension(KHRAccessorFloat64).setRequired(true);
-			for (const accessor of document.getRoot().listAccessors()) {
-				if (accessor.getComponentType() === Accessor.ComponentType.FLOAT) {
-					accessor.setArray(new Float64Array(accessor.getArray()!));
-				}
-			}
-		});
-	});
-
-// F32
-program
-	.command('f32', 'Convert all f64 accessors to f32 (EXPERIMENTAL)')
-	.help(`Experimental testing feature for KHR_accessor_float64`.trim())
-	.argument('<input>', 'Path to read glTF 2.0 (.glb, .gltf) input')
-	.argument('<output>', 'Path to write output')
-	.action(({ args, options, logger }) => {
-		return Session.create(io, logger, args.input, args.output).transform(dequantize({ ...options }), (document) => {
-			for (const accessor of document.getRoot().listAccessors()) {
-				if (accessor.getComponentType() === Accessor.ComponentType.FLOAT64) {
-					accessor.setArray(new Float32Array(accessor.getArray()!));
-				}
-				document.disposeExtension('KHR_accessor_float64');
-			}
-		});
 	});
 
 // WELD
