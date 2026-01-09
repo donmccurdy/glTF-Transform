@@ -1,5 +1,5 @@
 import type { Accessor as AccessorDef } from '@gltf-transform/core';
-import { BufferAttribute } from 'three';
+import { BufferAttribute, type TypedArray } from 'three';
 import type { DocumentViewImpl } from '../DocumentViewImpl.js';
 import type { ValuePool } from '../pools/index.js';
 import { Subject } from './Subject.js';
@@ -16,7 +16,8 @@ export class AccessorSubject extends Subject<AccessorDef, BufferAttribute> {
 	}
 
 	private static createValue(def: AccessorDef, pool: ValuePool<BufferAttribute>) {
-		return pool.requestBase(new BufferAttribute(def.getArray()!, def.getElementSize(), def.getNormalized()));
+		const array = def.getArray() as TypedArray;
+		return pool.requestBase(new BufferAttribute(array, def.getElementSize(), def.getNormalized()));
 	}
 
 	update() {
