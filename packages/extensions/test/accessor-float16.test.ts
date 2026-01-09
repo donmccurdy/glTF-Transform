@@ -7,7 +7,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('basic', async (t) => {
 	// TODO(v5): Remove after Node.js v22 reaches EOL, or adds Float16Array support.
-	if (typeof Float16Array === 'undefined') t.pass();
+	if (typeof Float16Array === 'undefined') return t.pass();
 
 	const document = new Document();
 	const io = new NodeIO().registerExtensions([KHRAccessorFloat16]);
