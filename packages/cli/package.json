@@ -8,21 +8,17 @@
   "license": "MIT",
   "funding": "https://github.com/sponsors/donmccurdy",
   "type": "module",
-  "source": "./src/cli.ts",
-  "types": "./dist/cli.d.ts",
+  "types": "./dist/cli.d.mts",
   "exports": {
-    "types": "./dist/cli.d.ts",
-    "default": "./dist/cli.esm.js"
+    "types": "./dist/cli.d.mts",
+    "default": "./dist/cli.mjs"
   },
-  "browserslist": [
-    "node >= 18"
-  ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
-    "build": "microbundle --format esm --target node --no-compress",
-    "build:watch": "microbundle watch --format esm --target node --no-compress"
+    "build": "tsdown src/cli.ts --format esm --env.PACKAGE_VERSION=$npm_package_version",
+    "build:watch": "tsdown src/cli.ts --watch --format esm --env.PACKAGE_VERSION=$npm_package_version"
   },
   "bin": {
     "gltf-transform": "./bin/cli.js"

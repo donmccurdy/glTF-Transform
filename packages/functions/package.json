@@ -9,23 +9,22 @@
   "funding": "https://github.com/sponsors/donmccurdy",
   "type": "module",
   "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "require": "./dist/functions.cjs",
-    "default": "./dist/functions.modern.js"
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    },
+    "default": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
   },
-  "types": "./dist/index.d.ts",
-  "main": "./dist/functions.cjs",
-  "module": "./dist/functions.modern.js",
-  "source": "./src/index.ts",
-  "browserslist": [
-    "defaults",
-    "not IE 11",
-    "node >= 14"
-  ],
   "scripts": {
-    "build": "microbundle --format modern,cjs --no-compress",
-    "build:watch": "microbundle watch --format modern,cjs --no-compress"
+    "build": "tsdown --format esm,cjs --env.PACKAGE_VERSION=$npm_package_version",
+    "build:watch": "tsdown --watch --format esm,cjs --env.PACKAGE_VERSION=$npm_package_version"
   },
   "keywords": [
     "gltf",
@@ -37,6 +36,7 @@
   "dependencies": {
     "@gltf-transform/core": "^4.3.0",
     "@gltf-transform/extensions": "^4.3.0",
+    "keyframe-resample": "^0.1.0",
     "ktx-parse": "^1.0.1",
     "ndarray": "^1.0.19",
     "ndarray-lanczos": "^0.3.0",
