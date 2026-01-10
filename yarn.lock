@@ -590,6 +590,7 @@ __metadata:
   dependencies:
     "@gltf-transform/core": "npm:^4.3.0"
     "@gltf-transform/extensions": "npm:^4.3.0"
+    keyframe-resample: "npm:^0.1.0"
     ktx-parse: "npm:^1.0.1"
     ndarray: "npm:^1.0.19"
     ndarray-lanczos: "npm:^0.3.0"

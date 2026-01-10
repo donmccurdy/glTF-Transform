@@ -10,7 +10,7 @@ import {
 	type Transform,
 	type TypedArray,
 } from '@gltf-transform/core';
-import { resampleDebug } from 'keyframe-resample';
+import { ready, resample as resampleImpl } from 'keyframe-resample';
 import { dedup } from './dedup.js';
 import { assignDefaults, createTransform } from './utils.js';
 
@@ -19,8 +19,19 @@ const NAME = 'resample';
 const EMPTY_ARRAY = new Float32Array(0);
 
 export interface ResampleOptions {
-	ready?: Promise<void>;
+	/**
+	 * Unused.
+	 * @deprecated Unused.
+	 * @privateRemarks TODO(v5): Remove unused parameter
+	 */
+	ready?: unknown;
+	/**
+	 * Unused.
+	 * @deprecated Unused.
+	 * @privateRemarks TODO(v5): Remove unused parameter
+	 */
 	resample?: unknown; // glTF-Transform/issues/996
+	/** Keyframe value tolerance. */
 	tolerance?: number;
 	/**
 	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
@@ -34,8 +45,8 @@ export interface ResampleOptions {
 }
 
 const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
-	ready: Promise.resolve(),
-	resample: resampleDebug,
+	ready: ready,
+	resample: resampleImpl,
 	tolerance: 1e-4,
 	cleanup: true,
 };
@@ -45,24 +56,14 @@ const RESAMPLE_DEFAULTS: Required<ResampleOptions> = {
  * reduce file size. Duplicate keyframes are commonly present in animation 'baked' by the
  * authoring software to apply IK constraints or other software-specific features.
  *
- * Optionally, a WebAssembly implementation from the
- * [`keyframe-resample`](https://github.com/donmccurdy/keyframe-resample-wasm) library may be
- * provided. The WebAssembly version is usually much faster at processing large animation
- * sequences, but may not be compatible with all runtimes and JavaScript build tools.
- *
  * Result: (0,0,0,0,1,1,1,0,0,0,0,0,0,0) → (0,0,1,1,0,0)
  *
  * Example:
  *
  * ```
  * import { resample } from '@gltf-transform/functions';
- * import { ready, resample as resampleWASM } from 'keyframe-resample';
  *
- * // JavaScript (slower)
  * await document.transform(resample());
- *
- * // WebAssembly (faster)
- * await document.transform(resample({ ready, resample: resampleWASM }));
  * ```
  *
  * @privateRemarks Implementation based on THREE.KeyframeTrack#optimize().
@@ -75,9 +76,6 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 		const accessorsVisited = new Set<Accessor>();
 		const srcAccessorCount = document.getRoot().listAccessors().length;
 		const logger = document.getLogger();
-
-		const ready = options.ready;
-		const resample = options.resample as typeof resampleDebug;
 
 		await ready;
 
@@ -114,11 +112,11 @@ export function resample(_options: ResampleOptions = RESAMPLE_DEFAULTS): Transfo
 					let dstCount: number;
 
 					if (samplerInterpolation === 'STEP') {
-						dstCount = resample(tmpTimes, tmpValues, 'step', options.tolerance);
+						dstCount = resampleImpl(tmpTimes, tmpValues, 'step', options.tolerance);
 					} else if (samplerTargetPaths.get(sampler) === 'rotation') {
-						dstCount = resample(tmpTimes, tmpValues, 'slerp', options.tolerance);
+						dstCount = resampleImpl(tmpTimes, tmpValues, 'slerp', options.tolerance);
 					} else {
-						dstCount = resample(tmpTimes, tmpValues, 'lerp', options.tolerance);
+						dstCount = resampleImpl(tmpTimes, tmpValues, 'lerp', options.tolerance);
 					}
 
 					if (dstCount < srcCount) {
