@@ -37,7 +37,7 @@
     "@gltf-transform/core": "^4.3.0",
     "@gltf-transform/extensions": "^4.3.0",
     "keyframe-resample": "^0.1.0",
-    "ktx-parse": "^1.0.1",
+    "ktx-parse": "^1.1.0",
     "ndarray": "^1.0.19",
     "ndarray-lanczos": "^0.3.0",
     "ndarray-pixels": "^5.0.1"
