@@ -4,6 +4,7 @@ import {
 	type ImageUtilsFormat,
 	PropertyType,
 	type ReaderContext,
+	type Texture,
 	type vec2,
 	type WriterContext,
 } from '@gltf-transform/core';
@@ -150,7 +151,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  * ```
  *
  * Compression is not done automatically when adding the extension as shown above — you must
- * compress the image data first, then pass the `.ktx2` payload to @link Texture.setImage. The
+ * compress the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}. The
  * glTF Transform CLI has functions to help with this, or any similar KTX2-capable
  * utility will work.
  *
