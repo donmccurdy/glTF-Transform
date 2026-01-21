@@ -7,11 +7,36 @@ import {
 	type vec2,
 	type WriterContext,
 } from '@gltf-transform/core';
-import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
+import {
+	KHR_DF_MODEL_ETC1S,
+	KHR_DF_MODEL_UASTC,
+	KHR_SUPERCOMPRESSION_NONE,
+	type KTX2Container,
+	read as readKTX,
+	VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK_EXT,
+	VK_FORMAT_E5B9G9R9_UFLOAT_PACK32,
+	VK_FORMAT_UNDEFINED,
+} from 'ktx-parse';
 import { KHR_TEXTURE_BASISU } from '../constants.js';
 
 interface BasisuDef {
 	source: number;
+}
+
+function isUncompressed(container: KTX2Container): boolean {
+	return container.vkFormat > VK_FORMAT_UNDEFINED && container.vkFormat <= VK_FORMAT_E5B9G9R9_UFLOAT_PACK32;
+}
+
+function isUniversal(container: KTX2Container): boolean {
+	// Basis UASTC HDR is a subset of ASTC, which can be transcoded efficiently
+	// to BC6H. To detect whether a KTX2 file uses Basis UASTC HDR, or default
+	// ASTC, inspect the DFD color model.
+	//
+	// Source: https://github.com/BinomialLLC/basis_universal/issues/381
+	const isBasisHDR =
+		container.vkFormat === VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK_EXT &&
+		container.dataFormatDescriptor[0].colorModel === 0xa7;
+	return container.vkFormat === VK_FORMAT_UNDEFINED || isBasisHDR;
 }
 
 class KTX2ImageUtils implements ImageUtilsFormat {
@@ -38,29 +63,52 @@ class KTX2ImageUtils implements ImageUtilsFormat {
 	getChannels(array: Uint8Array): number {
 		const container = readKTX(array);
 		const dfd = container.dataFormatDescriptor[0];
-		if (dfd.colorModel === KHR_DF_MODEL_ETC1S) {
-			return dfd.samples.length === 2 && (dfd.samples[1].channelType & 0xf) === 15 ? 4 : 3;
-		} else if (dfd.colorModel === KHR_DF_MODEL_UASTC) {
-			return (dfd.samples[0].channelType & 0xf) === 3 ? 4 : 3;
+
+		if (isUncompressed(container)) {
+			return dfd.samples.length;
 		}
-		throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
+
+		if (isUniversal(container)) {
+			switch (dfd.colorModel) {
+				case KHR_DF_MODEL_ETC1S:
+					return dfd.samples.length === 2 && (dfd.samples[1].channelType & 0xf) === 15 ? 4 : 3;
+				case KHR_DF_MODEL_UASTC:
+					return (dfd.samples[0].channelType & 0xf) === 3 ? 4 : 3;
+				default:
+					throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
+			}
+		}
+
+		// Support for getChannels() on GPU texture formats not yet implemented.
+		throw new Error(`Unexpected KTX2 vkFormat, "${container.vkFormat}".`);
 	}
 	getVRAMByteLength(array: Uint8Array): number {
 		const container = readKTX(array);
-		const hasAlpha = this.getChannels(array) > 3;
 
 		let uncompressedBytes = 0;
-		for (let i = 0; i < container.levels.length; i++) {
-			const level = container.levels[i];
 
-			// Use level.uncompressedByteLength for UASTC; for ETC1S it's 0.
-			if (level.uncompressedByteLength) {
-				uncompressedBytes += level.uncompressedByteLength;
-			} else {
-				const levelWidth = Math.max(1, Math.floor(container.pixelWidth / Math.pow(2, i)));
-				const levelHeight = Math.max(1, Math.floor(container.pixelHeight / Math.pow(2, i)));
-				const blockSize = hasAlpha ? 16 : 8;
-				uncompressedBytes += (levelWidth / 4) * (levelHeight / 4) * blockSize;
+		if (isUniversal(container)) {
+			const hasAlpha = this.getChannels(array) > 3;
+			for (let i = 0; i < container.levels.length; i++) {
+				const level = container.levels[i];
+
+				// Use level.uncompressedByteLength for UASTC; for ETC1S it's 0.
+				if (level.uncompressedByteLength) {
+					uncompressedBytes += level.uncompressedByteLength;
+				} else {
+					const levelWidth = Math.max(1, Math.floor(container.pixelWidth / Math.pow(2, i)));
+					const levelHeight = Math.max(1, Math.floor(container.pixelHeight / Math.pow(2, i)));
+					const blockSize = hasAlpha ? 16 : 8;
+					uncompressedBytes += (levelWidth / 4) * (levelHeight / 4) * blockSize;
+				}
+			}
+		} else {
+			for (const level of container.levels) {
+				if (container.supercompressionScheme === KHR_SUPERCOMPRESSION_NONE) {
+					uncompressedBytes += level.levelData.byteLength;
+				} else {
+					uncompressedBytes += level.uncompressedByteLength;
+				}
 			}
 		}
 
@@ -102,7 +150,7 @@ class KTX2ImageUtils implements ImageUtilsFormat {
  * ```
  *
  * Compression is not done automatically when adding the extension as shown above — you must
- * compress the image data first, then pass the `.ktx2` payload to {@link Texture.setImage}. The
+ * compress the image data first, then pass the `.ktx2` payload to @link Texture.setImage. The
  * glTF Transform CLI has functions to help with this, or any similar KTX2-capable
  * utility will work.
  *
