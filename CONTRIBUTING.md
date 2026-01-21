@@ -73,10 +73,43 @@ yarn test packages/functions/test/palette.test.ts
 yarn test packages/functions/test/palette.test.ts --watch
 ```
 
+### Debugging
+
 To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
 
 ```bash
 yarn test:debug packages/functions/test/palette.test.ts --break
+```
+
+To use the CLI with a debugger, run:
+
+```bash
+node --inspect-brk packages/cli/bin/cli.js [command] [options] [input] [output]
+```
+
+The CLI hides stack traces in errors by default, which can make debugging in that context more difficult. To access full error output, put a try/catch block in the relevant command implementation in `packages/cli/src/cli.ts`.
+
+It's sometimes helpful to test code by running a custom script. Modern versions of Node.js can execute TypeScript without a build step, so a simple test script in the project directory...
+
+```typescript
+// test.ts
+import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+const document = await io.read('./path/to/model.glb');
+
+console.log(document.getRoot().listMaterials().map((m) => m.getName()));
+```
+
+... can be executed with a locally-built glTF Transform version with either of:
+
+```bash
+# Modern Node.js
+node test.ts
+
+# TSX (extends older Node.js versions to run TypeScript)
+yarn dlx tsx test.ts
 ```
 
 ### Dependencies
