@@ -48,12 +48,79 @@ test('basic', async (t) => {
 	t.is(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 });
 
-test('image-utils', (t) => {
-	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2'));
-
+test('image-utils | basic', (t) => {
 	t.throws(() => ImageUtils.getSize(new Uint8Array(10), 'image/ktx2'), undefined, 'corrupt file');
-	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [256, 256], 'size');
-	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
-	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 65536, 'gpuSize');
 	t.is(ImageUtils.extensionToMimeType('ktx2'), 'image/ktx2', 'extensionToMimeType, inferred');
+});
+
+test('image-utils | etc1s', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_etc1s.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 1065, 'gpuSize');
+});
+
+test('image-utils | uastc', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_uastc.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
+});
+
+test('image-utils | rgb8', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgb8.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 6390, 'gpuSize');
+});
+
+test('image-utils | rgba8', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba8.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 8520, 'gpuSize');
+});
+
+test('image-utils | rgba16', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba16_linear.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 17040, 'gpuSize');
+});
+
+test('image-utils | rgba32', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba32_linear.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.is(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 34080, 'gpuSize');
+});
+
+test('image-utils | astc4x4', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_astc4x4.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
+});
+
+test('image-utils | bc1', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_bc1.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 1120, 'gpuSize');
+});
+
+test('image-utils | bc7', (t) => {
+	const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_bc7.ktx2'));
+
+	t.deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+	t.throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
+	t.is(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
 });
