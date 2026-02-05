@@ -1,6 +1,6 @@
 {
   "name": "@gltf-transform/extensions",
-  "version": "4.3.0",
+  "version": "4.4.0-alpha.0",
   "repository": "github:donmccurdy/glTF-Transform",
   "homepage": "https://gltf-transform.dev/extensions.html",
   "description": "Adds extension support to @gltf-transform/core",
@@ -34,7 +34,7 @@
     "threejs"
   ],
   "dependencies": {
-    "@gltf-transform/core": "^4.3.0",
+    "@gltf-transform/core": "^4.4.0-alpha.0",
     "ktx-parse": "^1.1.0"
   },
   "files": [

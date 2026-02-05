@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@gltf-transform/test-utils",
-  "version": "4.3.0",
+  "version": "4.4.0-alpha.0",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -14,8 +14,8 @@
     "build:watch": "tsdown --watch --format esm --env.PACKAGE_VERSION=$npm_package_version"
   },
   "dependencies": {
-    "@gltf-transform/core": "^4.3.0",
-    "@gltf-transform/extensions": "^4.3.0",
-    "@gltf-transform/functions": "^4.3.0"
+    "@gltf-transform/core": "^4.4.0-alpha.0",
+    "@gltf-transform/extensions": "^4.4.0-alpha.0",
+    "@gltf-transform/functions": "^4.4.0-alpha.0"
   }
 }
