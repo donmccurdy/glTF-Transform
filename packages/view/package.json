@@ -10,11 +10,11 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "types": "./dist/index.d.mts",
-    "default": "./dist/index.mjs"
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
   },
-  "types": "./dist/index.d.mts",
-  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
   "scripts": {
     "build": "tsdown --format esm --env.PACKAGE_VERSION=$npm_package_version",
     "build:watch": "tsdown --watch --format esm --env.PACKAGE_VERSION=$npm_package_version",

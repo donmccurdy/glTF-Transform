@@ -17,8 +17,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsdown src/cli.ts --format esm --env.PACKAGE_VERSION=$npm_package_version",
-    "build:watch": "tsdown src/cli.ts --watch --format esm --env.PACKAGE_VERSION=$npm_package_version"
+    "build": "tsdown src/cli.ts --env.PACKAGE_VERSION=$npm_package_version",
+    "build:watch": "tsdown src/cli.ts --watch --env.PACKAGE_VERSION=$npm_package_version"
   },
   "bin": {
     "gltf-transform": "./bin/cli.js"
