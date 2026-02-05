@@ -1,4 +1,8 @@
 import { defineConfig } from 'tsdown';
 import baseConfig from '../../tsdown.config.ts';
 
-export default defineConfig({ ...baseConfig, format: 'esm' });
+export default defineConfig({
+	...baseConfig,
+	format: 'esm',
+	inlineOnly: ['gl-matrix'],
+});
