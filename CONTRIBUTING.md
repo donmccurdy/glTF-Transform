@@ -143,6 +143,12 @@ Suggestions and PRs for new [Functions](/functions) are also generally welcome.
 
 > NOTE: Only the maintainer can create new releases.
 
+Before publishing, reauthenticate with npm:
+
+```bash
+npm login
+```
+
 All packages are published together. To create a standard release:
 
 ```bash
