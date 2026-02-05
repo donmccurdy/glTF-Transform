@@ -4,10 +4,10 @@
   "version": "4.3.0",
   "type": "module",
   "sideEffects": false,
-  "types": "./dist/index.d.mts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    "types": "./dist/index.d.mts",
-    "default": "./dist/index.mjs"
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
   },
   "scripts": {
     "build": "tsdown --format esm --env.PACKAGE_VERSION=$npm_package_version",

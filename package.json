@@ -31,7 +31,7 @@
     "docs:deploy": "yarn build && yarn dlx vercel"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.3.14",
     "@tweakpane/core": "^1.1.9",
     "@types/d3-dsv": "^3.0.7",
     "@types/draco3dgltf": "1.4.3",
@@ -55,7 +55,7 @@
     "simple-dropzone": "^0.8.3",
     "three": "^0.177.0",
     "tinybench": "^4.1.0",
-    "tsdown": "^0.18.1",
+    "tsdown": "^0.20.3",
     "tweakpane": "^3.1.10",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
     "typescript": "5.9.3",
