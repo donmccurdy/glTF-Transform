@@ -8,4 +8,5 @@ export * from './is-plain-object.js';
 export * from './logger.js';
 export * from './math-utils.js';
 export * from './property-utils.js';
+export * from './triangle.js';
 export * from './uuid.js';

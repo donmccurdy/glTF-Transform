@@ -5,7 +5,11 @@ import { deepListAttributes } from './utils.js';
 export const EMPTY_U32: number = 2 ** 32 - 1;
 
 export class VertexStream {
-	private attributes: { u8: Uint8Array; byteStride: number; paddedByteStride: number }[] = [];
+	private attributes: {
+		u8: Uint8Array;
+		byteStride: number;
+		paddedByteStride: number;
+	}[] = [];
 
 	/** Temporary vertex views in 4-byte-aligned memory. */
 	private u8: Uint8Array;
