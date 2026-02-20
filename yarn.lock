@@ -650,6 +650,7 @@ __metadata:
     ndarray: "npm:^1.0.19"
     ndarray-lanczos: "npm:^0.3.0"
     ndarray-pixels: "npm:^5.0.1"
+    property-graph: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
