@@ -1,10 +1,9 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
 import test from 'ava';
-import { glob } from 'glob';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -28,7 +27,7 @@ test('read glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.glb'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
 		const document = io.read(inputURI);
 
@@ -42,7 +41,7 @@ test('read gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.gltf'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
 		const document = await io.read(inputURI);
 
@@ -56,7 +55,7 @@ test('read glb http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.glb'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
 		const document = await io.read(basepath);
 
@@ -70,7 +69,7 @@ test('read gltf http', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.gltf'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
 		const document = await io.read(basepath);
 
@@ -84,7 +83,7 @@ test('write glb', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.gltf'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
 		const outputURI = resolve(__dirname, `../out/${basepath}`);
 		const document = await io.read(inputURI);
@@ -101,7 +100,7 @@ test('write gltf', async (t) => {
 	if (environment !== Environment.NODE) return t.pass();
 	const io = (await createPlatformIO()) as NodeIO;
 	let count = 0;
-	for await (const inputURI of glob.sync(resolve(__dirname, '../in/**/*.glb'))) {
+	for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
 		const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
 		const outputURI = resolve(__dirname, `../out/${basepath}`);
 		const document = await io.read(inputURI);
