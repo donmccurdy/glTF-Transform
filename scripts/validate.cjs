@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+const fs = require('node:fs');
+const path = require('node:path');
 const validator = require('gltf-validator');
 
 const verbose = process.argv.indexOf('--verbose') > 0;
@@ -53,8 +52,8 @@ const validateURI = (uri) => {
 	pending.push(promise);
 };
 
-glob.sync(path.join(__dirname, '../packages/*/test/out/**/*.glb')).forEach(validateURI);
-glob.sync(path.join(__dirname, '../packages/*/test/out/**/*.gltf')).forEach(validateURI);
+fs.globSync(path.join(__dirname, '../packages/*/test/out/**/*.glb')).forEach(validateURI);
+fs.globSync(path.join(__dirname, '../packages/*/test/out/**/*.gltf')).forEach(validateURI);
 
 Promise.all(pending)
 	.catch(() => true)
