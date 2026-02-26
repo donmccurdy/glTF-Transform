@@ -21,7 +21,7 @@
     "coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
     "lint": "biome check packages/*/{src,test}",
     "lint:ci": "biome ci packages/*/{src,test}",
-    "validate": "scripts/validate.js",
+    "validate": "scripts/validate.cjs",
     "bench": "node benchmarks/benchmark.ts",
     "preversion": "yarn test",
     "version": "yarn clean:dist && yarn build && yarn bench --report-version --print && yarn run docs:cli && git add -u benchmarks/results packages/docs",
