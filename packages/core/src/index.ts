@@ -1,4 +1,11 @@
-export { Graph, GraphEdge, type Ref, RefList, RefMap, RefSet } from 'property-graph';
+export {
+	Graph,
+	GraphEdge,
+	type Ref,
+	RefList,
+	RefMap,
+	RefSet,
+} from 'property-graph';
 export {
 	type bbox,
 	ComponentTypeToTypedArray,
@@ -19,7 +26,14 @@ export {
 } from './constants.js';
 export { Document, type Transform, type TransformContext } from './document.js';
 export { Extension } from './extension.js';
-export { DenoIO, NodeIO, PlatformIO, ReaderContext, WebIO, WriterContext } from './io/index.js';
+export {
+	DenoIO,
+	NodeIO,
+	PlatformIO,
+	ReaderContext,
+	WebIO,
+	WriterContext,
+} from './io/index.js';
 export type { JSONDocument } from './json-document.js';
 export {
 	Accessor,
@@ -57,6 +71,7 @@ export {
 	type ImageUtilsFormat,
 	Logger,
 	MathUtils,
+	Triangle,
 	uuid,
 	Verbosity,
 } from './utils/index.js';
