@@ -3,10 +3,10 @@ import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
 import fs, { rm } from 'fs/promises';
 import os from 'os';
-import pLimit from 'p-limit';
 import { join } from 'path';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
+import { pLimit } from '../utils/p-limit.js';
 import { spawn, waitExit } from '../utils/process.js';
 import { checkKTXSoftware } from './toktx.js';
 
@@ -43,60 +43,53 @@ export const ktxdecompress = function (options: KTXDecompressOptions = KTX_DECOM
 		const batchDir = tmp.dirSync({ prefix: 'gltf-transform-' });
 
 		const basisuExtension = doc.createExtension(KHRTextureBasisu);
-
-		const limit = pLimit(options.jobs!);
 		const textures = doc.getRoot().listTextures();
-		const promises = textures.map((texture, textureIndex) =>
-			limit(async () => {
-				const textureLabel =
-					texture.getURI() ||
-					texture.getName() ||
-					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
-				const prefix = `ktx:texture(${textureLabel})`;
 
-				const srcMimeType = texture.getMimeType();
-				if (srcMimeType !== 'image/ktx2') return;
+		await pLimit(textures, options.jobs!, async (texture, textureIndex) => {
+			const textureLabel =
+				texture.getURI() || texture.getName() || `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
+			const prefix = `ktx:texture(${textureLabel})`;
 
-				const srcImage = texture.getImage()!;
-				const srcExtension = texture.getURI()
-					? FileUtils.extension(texture.getURI())
-					: ImageUtils.mimeTypeToExtension(srcMimeType);
-				const srcSize = texture.getSize();
-				const srcBytes = srcImage ? srcImage.byteLength : null;
+			const srcMimeType = texture.getMimeType();
+			if (srcMimeType !== 'image/ktx2') return;
 
-				if (!srcImage || !srcSize || !srcBytes) {
-					logger.warn(`${prefix}: Skipping, unreadable texture.`);
-					return;
+			const srcImage = texture.getImage()!;
+			const srcExtension = texture.getURI()
+				? FileUtils.extension(texture.getURI())
+				: ImageUtils.mimeTypeToExtension(srcMimeType);
+			const srcSize = texture.getSize();
+			const srcBytes = srcImage ? srcImage.byteLength : null;
+
+			if (!srcImage || !srcSize || !srcBytes) {
+				logger.warn(`${prefix}: Skipping, unreadable texture.`);
+				return;
+			}
+
+			// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
+			// necessary command-line flags.
+
+			const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
+			const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.png`);
+
+			await fs.writeFile(srcPath, srcImage);
+
+			// COMPRESS: Run `ktx create` CLI tool.
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const [status, _stdout, stderr] = await waitExit(spawn('ktx', ['extract', srcPath, dstPath]));
+
+			if (status !== 0) {
+				logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
+			} else {
+				// PACK: Replace image data in the glTF asset.
+				texture.setImage(await fs.readFile(dstPath)).setMimeType('image/png');
+				if (texture.getURI()) {
+					texture.setURI(FileUtils.basename(texture.getURI()) + '.png');
 				}
+			}
 
-				// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
-				// necessary command-line flags.
-
-				const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
-				const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.png`);
-
-				await fs.writeFile(srcPath, srcImage);
-
-				// COMPRESS: Run `ktx create` CLI tool.
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const [status, _stdout, stderr] = await waitExit(spawn('ktx', ['extract', srcPath, dstPath]));
-
-				if (status !== 0) {
-					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
-				} else {
-					// PACK: Replace image data in the glTF asset.
-					texture.setImage(await fs.readFile(dstPath)).setMimeType('image/png');
-					if (texture.getURI()) {
-						texture.setURI(FileUtils.basename(texture.getURI()) + '.png');
-					}
-				}
-
-				const dstBytes = texture.getImage()!.byteLength;
-				logger.debug(`${prefix}: ${formatBytes(srcBytes)} → ${formatBytes(dstBytes)} bytes`);
-			}),
-		);
-
-		await Promise.all(promises);
+			const dstBytes = texture.getImage()!.byteLength;
+			logger.debug(`${prefix}: ${formatBytes(srcBytes)} → ${formatBytes(dstBytes)} bytes`);
+		});
 
 		if (options.cleanup) {
 			await rm(batchDir.name, { recursive: true });

@@ -1,4 +1,4 @@
-import { formatBytes, formatHeader, formatParagraph } from '@gltf-transform/cli';
+import { formatBytes, formatHeader, formatParagraph, pLimit } from '@gltf-transform/cli';
 import test from 'ava';
 
 const HEADER = `
@@ -24,4 +24,14 @@ test('formatHeader', (t) => {
 
 test('formatParagraph', (t) => {
 	t.is(formatParagraph(TEXT), PARAGRAPH, 'formatParagraph');
+});
+
+test('pLimit', async (t) => {
+	const expected = ['a', 'b', 'c', 'd', 'e'];
+
+	for (const limit of [1, 2, 3, 4, 5]) {
+		const actual = [];
+		await pLimit(expected, limit, (item, index) => (actual[index] = item));
+		t.deepEqual(actual, expected, `limit=${limit}`);
+	}
 });
