@@ -25,12 +25,12 @@ import {
 import fs, { rm } from 'fs/promises';
 import micromatch from 'micromatch';
 import os from 'os';
-import pLimit from 'p-limit';
 import { join } from 'path';
 import type sharp from 'sharp';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
 import { MICROMATCH_OPTIONS } from '../utils/match.js';
+import { pLimit } from '../utils/p-limit.js';
 import { commandExists, spawn, TrustedCommand, waitExit } from '../utils/process.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
@@ -179,134 +179,128 @@ export const toktx = function (options: ETC1SOptions | UASTCOptions): Transform 
 
 		const basisuExtension = doc.createExtension(KHRTextureBasisu).setRequired(true);
 
-		const limit = pLimit(options.jobs!);
 		const textures = doc.getRoot().listTextures();
 		const numTextures = textures.length;
-		const promises = textures.map((texture, textureIndex) =>
-			limit(async () => {
-				const slots = listTextureSlots(texture);
-				const channels = getTextureChannelMask(texture);
-				const textureLabel =
-					texture.getURI() ||
-					texture.getName() ||
-					`${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
-				const prefix = `ktx:texture(${textureLabel})`;
-				logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
 
-				// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
+		await pLimit(textures, options.jobs!, async (texture, textureIndex) => {
+			const slots = listTextureSlots(texture);
+			const channels = getTextureChannelMask(texture);
+			const textureLabel =
+				texture.getURI() || texture.getName() || `${textureIndex + 1}/${doc.getRoot().listTextures().length}`;
+			const prefix = `ktx:texture(${textureLabel})`;
+			logger.debug(`${prefix}: Slots → [${slots.join(', ')}]`);
 
-				if (typeof options.slots === 'string') {
-					options.slots = micromatch.makeRe(options.slots, MICROMATCH_OPTIONS);
-					logger.warn('ktx: Argument "slots" should be of type `RegExp | null`.');
+			// FILTER: Exclude textures that don't match (a) 'slots' or (b) expected formats.
+
+			if (typeof options.slots === 'string') {
+				options.slots = micromatch.makeRe(options.slots, MICROMATCH_OPTIONS);
+				logger.warn('ktx: Argument "slots" should be of type `RegExp | null`.');
+			}
+
+			const patternRe = options.pattern as RegExp | null;
+			const slotsRe = options.slots as RegExp | null;
+
+			let srcMimeType = texture.getMimeType();
+
+			if (srcMimeType === 'image/ktx2') {
+				logger.debug(`${prefix}: Skipping, already KTX.`);
+				return;
+			} else if (srcMimeType !== 'image/png' && srcMimeType !== 'image/jpeg') {
+				logger.warn(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
+				return;
+			} else if (slotsRe && !slots.find((slot) => slot.match(slotsRe))) {
+				logger.debug(`${prefix}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
+				return;
+			} else if (patternRe && !(texture.getURI().match(patternRe) || texture.getName().match(patternRe))) {
+				logger.debug(`${prefix}: Skipping, excluded by "pattern" parameter.`);
+				return;
+			}
+
+			let srcImage = texture.getImage()!;
+			let srcExtension = texture.getURI()
+				? FileUtils.extension(texture.getURI())
+				: ImageUtils.mimeTypeToExtension(texture.getMimeType());
+			const srcSize = texture.getSize();
+			const srcBytes = srcImage ? srcImage.byteLength : null;
+
+			if (!srcImage || !srcSize || !srcBytes) {
+				logger.warn(`${prefix}: Skipping, unreadable texture.`);
+				return;
+			}
+
+			// RESIZE: Resize textures using Sharp. KTX Software --width and --height
+			// flags apply only for raw texture creation.
+			// https://github.com/donmccurdy/glTF-Transform/issues/1348
+			//
+			// Minimum size on any dimension is 4px.
+			// https://github.com/donmccurdy/glTF-Transform/issues/502
+
+			if (options.resize || !isMultipleOfFour(srcSize[0]) || !isMultipleOfFour(srcSize[1])) {
+				const limitInputPixels = options.limitInputPixels;
+				const encoder = options.encoder as typeof sharp;
+				const instance = encoder(srcImage, { limitInputPixels }).toFormat('png');
+				const srcSize = ImageUtils.getSize(srcImage, srcMimeType)!;
+
+				const dstSize = options.resize
+					? Array.isArray(options.resize)
+						? fitWithin(srcSize, options.resize)
+						: fitPowerOfTwo(srcSize, options.resize)
+					: srcSize;
+				dstSize[0] = ceilMultipleOfFour(dstSize[0]);
+				dstSize[1] = ceilMultipleOfFour(dstSize[1]);
+
+				logger.debug(`${prefix}: Resizing ${srcSize.join('x')} → ${dstSize.join('x')}px`);
+				instance.resize(dstSize[0], dstSize[1], { fit: 'fill', kernel: options.resizeFilter });
+
+				srcImage = BufferUtils.toView((await instance.toBuffer()) as Buffer<ArrayBuffer>);
+				srcExtension = 'png';
+				srcMimeType = 'image/png';
+			}
+
+			// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
+			// necessary command-line flags.
+
+			const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
+			const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
+
+			await fs.writeFile(srcPath, srcImage);
+
+			const params = [
+				'create',
+				...createParams(texture, slots, channels, numTextures, options),
+				srcPath,
+				dstPath,
+			];
+			logger.debug(`${prefix}: Spawning → ktx ${params.join(' ')}`);
+
+			// COMPRESS: Run `ktx create` CLI tool.
+			const [status, _stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
+
+			if (status !== 0) {
+				logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
+			} else {
+				// PACK: Replace image data in the glTF asset.
+				texture.setImage(await fs.readFile(dstPath)).setMimeType('image/ktx2');
+				if (texture.getURI()) {
+					texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
 				}
 
-				const patternRe = options.pattern as RegExp | null;
-				const slotsRe = options.slots as RegExp | null;
-
-				let srcMimeType = texture.getMimeType();
-
-				if (srcMimeType === 'image/ktx2') {
-					logger.debug(`${prefix}: Skipping, already KTX.`);
-					return;
-				} else if (srcMimeType !== 'image/png' && srcMimeType !== 'image/jpeg') {
-					logger.warn(`${prefix}: Skipping, unsupported texture type "${texture.getMimeType()}".`);
-					return;
-				} else if (slotsRe && !slots.find((slot) => slot.match(slotsRe))) {
-					logger.debug(`${prefix}: Skipping, [${slots.join(', ')}] excluded by "slots" parameter.`);
-					return;
-				} else if (patternRe && !(texture.getURI().match(patternRe) || texture.getName().match(patternRe))) {
-					logger.debug(`${prefix}: Skipping, excluded by "pattern" parameter.`);
-					return;
-				}
-
-				let srcImage = texture.getImage()!;
-				let srcExtension = texture.getURI()
-					? FileUtils.extension(texture.getURI())
-					: ImageUtils.mimeTypeToExtension(texture.getMimeType());
-				const srcSize = texture.getSize();
-				const srcBytes = srcImage ? srcImage.byteLength : null;
-
-				if (!srcImage || !srcSize || !srcBytes) {
-					logger.warn(`${prefix}: Skipping, unreadable texture.`);
-					return;
-				}
-
-				// RESIZE: Resize textures using Sharp. KTX Software --width and --height
-				// flags apply only for raw texture creation.
-				// https://github.com/donmccurdy/glTF-Transform/issues/1348
-				//
-				// Minimum size on any dimension is 4px.
-				// https://github.com/donmccurdy/glTF-Transform/issues/502
-
-				if (options.resize || !isMultipleOfFour(srcSize[0]) || !isMultipleOfFour(srcSize[1])) {
-					const limitInputPixels = options.limitInputPixels;
-					const encoder = options.encoder as typeof sharp;
-					const instance = encoder(srcImage, { limitInputPixels }).toFormat('png');
-					const srcSize = ImageUtils.getSize(srcImage, srcMimeType)!;
-
-					const dstSize = options.resize
-						? Array.isArray(options.resize)
-							? fitWithin(srcSize, options.resize)
-							: fitPowerOfTwo(srcSize, options.resize)
-						: srcSize;
-					dstSize[0] = ceilMultipleOfFour(dstSize[0]);
-					dstSize[1] = ceilMultipleOfFour(dstSize[1]);
-
-					logger.debug(`${prefix}: Resizing ${srcSize.join('x')} → ${dstSize.join('x')}px`);
-					instance.resize(dstSize[0], dstSize[1], { fit: 'fill', kernel: options.resizeFilter });
-
-					srcImage = BufferUtils.toView((await instance.toBuffer()) as Buffer<ArrayBuffer>);
-					srcExtension = 'png';
-					srcMimeType = 'image/png';
-				}
-
-				// PREPARE: Create temporary in/out paths for the 'ktx' CLI tool, and determine
-				// necessary command-line flags.
-
-				const srcPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.${srcExtension}`);
-				const dstPath = join(batchDir.name, `${batchPrefix}_${textureIndex}.ktx2`);
-
-				await fs.writeFile(srcPath, srcImage);
-
-				const params = [
-					'create',
-					...createParams(texture, slots, channels, numTextures, options),
-					srcPath,
-					dstPath,
-				];
-				logger.debug(`${prefix}: Spawning → ktx ${params.join(' ')}`);
-
-				// COMPRESS: Run `ktx create` CLI tool.
-				const [status, _stdout, stderr] = await waitExit(spawn('ktx', params as string[]));
-
-				if (status !== 0) {
-					logger.error(`${prefix}: Failed → \n\n${stderr.toString()}`);
-				} else {
-					// PACK: Replace image data in the glTF asset.
-					texture.setImage(await fs.readFile(dstPath)).setMimeType('image/ktx2');
-					if (texture.getURI()) {
-						texture.setURI(FileUtils.basename(texture.getURI()) + '.ktx2');
-					}
-
-					// When mipmaps are disabled, downgrade mipmap filters to non-mipmap equivalents.
-					if (!options.mipmaps) {
-						for (const info of listTextureInfo(texture)) {
-							const minFilter = info.getMinFilter();
-							if (minFilter === NEAREST_MIPMAP_LINEAR || minFilter === NEAREST_MIPMAP_NEAREST) {
-								info.setMinFilter(NEAREST);
-							} else if (minFilter === LINEAR_MIPMAP_NEAREST) {
-								info.setMinFilter(LINEAR);
-							}
+				// When mipmaps are disabled, downgrade mipmap filters to non-mipmap equivalents.
+				if (!options.mipmaps) {
+					for (const info of listTextureInfo(texture)) {
+						const minFilter = info.getMinFilter();
+						if (minFilter === NEAREST_MIPMAP_LINEAR || minFilter === NEAREST_MIPMAP_NEAREST) {
+							info.setMinFilter(NEAREST);
+						} else if (minFilter === LINEAR_MIPMAP_NEAREST) {
+							info.setMinFilter(LINEAR);
 						}
 					}
 				}
+			}
 
-				const dstBytes = texture.getImage()!.byteLength;
-				logger.debug(`${prefix}: ${formatBytes(srcBytes)} → ${formatBytes(dstBytes)} bytes`);
-			}),
-		);
-
-		await Promise.all(promises);
+			const dstBytes = texture.getImage()!.byteLength;
+			logger.debug(`${prefix}: ${formatBytes(srcBytes)} → ${formatBytes(dstBytes)} bytes`);
+		});
 
 		if (options.cleanup) {
 			await rm(batchDir.name, { recursive: true });

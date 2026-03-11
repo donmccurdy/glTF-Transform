@@ -1850,5 +1850,6 @@ program.disableGlobalOption('--no-color');
 export * from './transforms/index.js';
 export * from './utils/format.js'; // unit testing
 export * from './utils/log.js'; // unit testing
+export * from './utils/p-limit.js'; // unit testing
 export * from './utils/process.js'; // unit testing
 export { Validator, program, programReady };

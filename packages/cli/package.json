@@ -45,7 +45,6 @@
     "micromatch": "~4.0.8",
     "mikktspace": "~1.1.1",
     "node-fetch": "~3.3.2",
-    "p-limit": "~6.2.0",
     "prompts": "^2.4.2",
     "sharp": "~0.34.5",
     "tmp": "~0.2.5",
