@@ -1,11 +1,11 @@
+import { styleText } from 'node:util';
 import { Document, FileUtils, Format, type NodeIO, type Transform, Verbosity } from '@gltf-transform/core';
 import type { KHRXMP, Packet } from '@gltf-transform/extensions';
 import { unpartition } from '@gltf-transform/functions';
 import { Listr, type ListrTask } from 'listr2';
-import { performance } from 'perf_hooks'; // global in Node.js v16+
 import { XMPContext } from './constants.js';
 import type { Logger } from './program.js';
-import { dim, formatBytes, formatLong } from './utils/format.js';
+import { formatBytes, formatLong } from './utils/format.js';
 
 /** Helper class for managing a CLI command session. */
 export class Session {
@@ -58,7 +58,7 @@ export class Session {
 						let time = performance.now();
 						await document.transform(transform);
 						time = Math.round(performance.now() - time);
-						task.title = task.title.padEnd(20) + dim(` ${formatLong(time)}ms`);
+						task.title = task.title.padEnd(20) + styleText('dim', ` ${formatLong(time)}ms`);
 					},
 				});
 			}

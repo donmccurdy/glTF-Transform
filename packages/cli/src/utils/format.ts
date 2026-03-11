@@ -97,11 +97,3 @@ export function formatXMP(value: string | number | boolean | Record<string, unkn
 
 	return JSON.stringify(value);
 }
-
-export function underline(str: string): string {
-	return `\x1b[4m${str}\x1b[0m`;
-}
-
-export function dim(str: string): string {
-	return `\x1b[2m${str}\x1b[0m`;
-}
