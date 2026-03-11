@@ -3,10 +3,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { styleText } from 'node:util';
 import { csvFormat, csvParse } from 'd3-dsv';
 import semver from 'semver';
 import type { Bench } from 'tinybench';
-import { bright, dim, max } from './utils.ts';
+import { max } from './utils.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const formatTime = (ms: number) => Number(ms.toFixed(4));
@@ -55,14 +56,16 @@ export async function printReport(results: BenchResult[], filter: string | false
 		const taskTimeMax = max(taskTimes);
 		const scale = 40 / taskTimeMax;
 
-		console.log(bright(task));
+		console.log(styleText('bold', task));
 		for (let i = 0; i < versions.length; i++) {
 			const version = versions[i];
 			const time = taskTimes[i];
 			const width = Math.round(time * scale);
-			const bar = i === versions.length - 1 ? (str: string) => str : dim;
+			const bar = i === versions.length - 1 ? (str: string) => str : (str: string) => styleText('dim', str);
 			console.log(
-				version.padEnd(20, ' ') + bar('▀'.repeat(width).padEnd(45, ' ')) + dim(formatTime(time) + 'ms'),
+				version.padEnd(20, ' ') +
+					bar('▀'.repeat(width).padEnd(45, ' ')) +
+					styleText('dim', formatTime(time) + 'ms'),
 			);
 		}
 		console.log('');

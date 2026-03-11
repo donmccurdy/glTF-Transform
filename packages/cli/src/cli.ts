@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { styleText } from 'node:util';
 import { type Logger, NodeIO, PropertyType, type Transform, VertexLayout, type vec2 } from '@gltf-transform/core';
 import {
 	type CenterOptions,
@@ -72,7 +73,7 @@ import {
 	type XMPOptions,
 	xmp,
 } from './transforms/index.js';
-import { dim, formatBytes, TableFormat, underline } from './utils/format.js';
+import { formatBytes, TableFormat } from './utils/format.js';
 import { gzip } from './utils/gzip.js';
 import { MICROMATCH_OPTIONS, regexFromArray } from './utils/match.js';
 import { type ValidateOptions, validate } from './validate.js';
@@ -110,7 +111,7 @@ To run the most common optimizations in one easy step, use the 'optimize' comman
 ▸ gltf-transform optimize <input> <output> --compress draco --texture-compress webp
 
 Defaults in the 'optimize' command may not be ideal for all scenes. Some of its
-features can be configured (${dim(`optimize --help`)}), or more advanced users may wish
+features can be configured (${styleText('dim', `optimize --help`)}), or more advanced users may wish
 to inspect their scenes then pick and choose optimizations.
 
 ▸ gltf-transform inspect <input>
@@ -123,11 +124,11 @@ issues as needed.
 		)
 		.help(
 			`
-${underline('Using glTF Transform for a personal project?')} That's great! Sponsorship is
+${styleText('underline', 'Using glTF Transform for a personal project?')} That's great! Sponsorship is
 neither expected nor required. Feel free to share screenshots if you've
 made something you're excited about — I enjoy seeing those!
 
-${underline('Using glTF Transform in for-profit work?')} That's wonderful! Your support is
+${styleText('underline', 'Using glTF Transform in for-profit work?')} That's wonderful! Your support is
 important to keep glTF Transform maintained, independent, and open source under
 MIT License. Please consider a subscription or GitHub sponsorship.
 
@@ -679,7 +680,7 @@ flag, or use the scripting API to manually input JSONLD fields.
 
 To remove XMP metadata and the KHR_xmp_json_ld extension, use the --reset flag.
 
-${underline('Documentation')}
+${styleText('underline', 'Documentation')}
 - https://gltf-transform.dev/classes/extensions.xmp.html
 `,
 	)
@@ -818,10 +819,10 @@ only geometry data — animation and textures are not compressed.
 Compresses
 - geometry (only triangle meshes)
 
-${underline('Documentation')}
+${styleText('underline', 'Documentation')}
 - https://gltf-transform.dev/classes/extensions.dracomeshcompression.html
 
-${underline('References')}
+${styleText('underline', 'References')}
 - draco: https://github.com/google/draco
 - KHR_draco_mesh_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Khronos/KHR_draco_mesh_compression/
 `.trim(),
@@ -882,10 +883,10 @@ Compresses
 - morph targets
 - animation tracks
 
-${underline('Documentation')}
+${styleText('underline', 'Documentation')}
 - https://gltf-transform.dev/classes/extensions.meshoptcompression.html
 
-${underline('References')}
+${styleText('underline', 'References')}
 - meshoptimizer: https://github.com/zeux/meshoptimizer
 - EXT_meshopt_compression: https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_meshopt_compression/
 `.trim(),
@@ -1327,10 +1328,10 @@ more attention to compression settings to get similar visual results.
 
 {DETAILS}
 
-${underline('Documentation')}
+${styleText('underline', 'Documentation')}
 https://gltf-transform.dev/extensions.html#khr_texture_basisu
 
-${underline('Dependencies')}
+${styleText('underline', 'Dependencies')}
 KTX-Software (https://github.com/KhronosGroup/KTX-Software/)
 `;
 

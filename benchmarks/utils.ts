@@ -52,15 +52,3 @@ const _longFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits:
 export function formatLong(x: number): string {
 	return _longFormatter.format(x);
 }
-
-export function underline(str: string): string {
-	return `\x1b[4m${str}\x1b[0m`;
-}
-
-export function dim(str: string): string {
-	return `\x1b[2m${str}\x1b[0m`;
-}
-
-export function bright(str: string): string {
-	return `\x1b[1m${str}\x1b[0m`;
-}
