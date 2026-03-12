@@ -72,12 +72,10 @@ interface InstancedMeshDef {
  * be prefixed with an underscore (`_*`).
  */
 export class EXTMeshGPUInstancing extends Extension {
+	public static readonly EXTENSION_NAME: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 	public readonly extensionName: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 	/** @hidden */
-	public readonly provideTypes: PropertyType[] = [PropertyType.NODE];
-	/** @hidden */
 	public readonly prewriteTypes: PropertyType[] = [PropertyType.ACCESSOR];
-	public static readonly EXTENSION_NAME: typeof EXT_MESH_GPU_INSTANCING = EXT_MESH_GPU_INSTANCING;
 
 	/** Creates a new InstancedMesh property for use on a {@link Node}. */
 	public createInstancedMesh(): InstancedMesh {
