@@ -326,6 +326,23 @@ export class EXTMeshoptCompression extends Extension {
 		this._encoderBufferViewData = {};
 		this._encoderBufferViewAccessors = {};
 
+		const accessorsToUse = new Set<number>();
+		for (const mesh of this.document.getRoot().listMeshes()) {
+			mesh.listPrimitives().forEach((prim, index) => {
+				if(index % 2 === 0) return;
+				prim.listAttributes().forEach((accessor) => {
+					const index = context.accessorIndexMap.get(accessor);
+					if (index !== undefined)
+						accessorsToUse.add(index)
+				});
+			});
+		}
+
+		if (accessorsToUse.size === 0) {
+			console.log("NO ACCESSORS TO USE");
+			throw new Error("NO ACCESSORS TO USE");
+		}
+
 		for (const accessor of this.document.getRoot().listAccessors()) {
 			// See: https://github.com/donmccurdy/glTF-Transform/pull/323#issuecomment-898791251
 			// Example: https://skfb.ly/6qAD8
@@ -333,6 +350,14 @@ export class EXTMeshoptCompression extends Extension {
 
 			// See: https://github.com/donmccurdy/glTF-Transform/issues/289
 			if (accessor.getSparse()) continue;
+
+			// Test: skip every 2nd buffer view
+			const accessorIndex = context.accessorIndexMap.get(accessor);
+			if (accessorIndex !== undefined && !accessorsToUse.has(accessorIndex)) {
+				console.log("skipping accessor " + accessorIndex);
+				continue;
+			}
+			console.log("MESHOPT: compressing accessor " + accessorIndex);
 
 			const usage = context.getAccessorUsage(accessor);
 			const parentID = context.accessorUsageGroupedByParent.has(usage) ? getParentID(accessor) : null;
