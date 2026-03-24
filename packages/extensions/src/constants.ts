@@ -1,5 +1,7 @@
 export const EXT_MESH_GPU_INSTANCING = 'EXT_mesh_gpu_instancing';
+export const EXT_MESH_FEATURES = 'EXT_mesh_features';
 export const EXT_MESHOPT_COMPRESSION = 'EXT_meshopt_compression';
+export const EXT_STRUCTURAL_METADATA = 'EXT_structural_metadata';
 export const EXT_TEXTURE_WEBP = 'EXT_texture_webp';
 export const EXT_TEXTURE_AVIF = 'EXT_texture_avif';
 export const KHR_ACCESSOR_FLOAT16 = 'KHR_accessor_float16';
