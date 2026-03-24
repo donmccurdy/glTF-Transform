@@ -871,7 +871,7 @@ export class EXTStructuralMetadata extends Extension {
 				nodeDef.extensions = nodeDef.extensions || {};
 				nodeDef.extensions[NAME] = elementStructuralMetadataDef;
 			} else {
-				throw new Error(`${NAME}: Invalid property tavle in node`);
+				throw new Error(`${NAME}: Invalid property table in node`);
 			}
 		}
 	}
