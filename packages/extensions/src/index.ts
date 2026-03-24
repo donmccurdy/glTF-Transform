@@ -1,6 +1,8 @@
 import type { Extension } from '@gltf-transform/core';
+import { EXTMeshFeatures } from './ext-mesh-features/index.js';
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
 import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
+import { EXTStructuralMetadata } from './ext-structural-metadata/index.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
 import { KHRAccessorFloat16 } from './khr-accessor-float16/index.js';
@@ -57,14 +59,18 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 
 export const ALL_EXTENSIONS: (typeof Extension)[] = [
 	EXTMeshGPUInstancing,
+	EXTMeshFeatures,
 	EXTMeshoptCompression,
+	EXTStructuralMetadata,
 	EXTTextureAVIF,
 	EXTTextureWebP,
 	...KHRONOS_EXTENSIONS,
 ];
 
 export * from './ext-mesh-gpu-instancing/index.js';
+export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-meshopt-compression/index.js';
+export * from './ext-structural-metadata/index.js';
 export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';
 export * from './khr-accessor-float16/index.js';
