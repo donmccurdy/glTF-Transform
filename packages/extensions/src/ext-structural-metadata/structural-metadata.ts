@@ -230,6 +230,8 @@ export class EXTStructuralMetadata extends Extension {
 	public static override EXTENSION_NAME = NAME;
 
 	public override readonly prewriteTypes = [PropertyType.BUFFER];
+
+	// Must read EXT_structural_metadata before EXT_mesh_features.
 	public override readonly prereadTypes = [PropertyType.SCENE];
 
 	createStructuralMetadata() {
