@@ -1853,4 +1853,4 @@ export * from './utils/format.js'; // unit testing
 export * from './utils/log.js'; // unit testing
 export * from './utils/p-limit.js'; // unit testing
 export * from './utils/process.js'; // unit testing
-export { Validator, program, programReady };
+export { program, programReady, Validator };
