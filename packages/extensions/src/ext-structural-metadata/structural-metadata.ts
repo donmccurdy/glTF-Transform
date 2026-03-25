@@ -1,7 +1,7 @@
-import type { GLTF } from '@gltf-transform/core';
 import {
 	Extension,
 	GLB_BUFFER,
+	type GLTF,
 	MathUtils,
 	type Node,
 	type Primitive,
