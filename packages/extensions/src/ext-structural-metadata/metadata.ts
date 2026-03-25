@@ -40,19 +40,6 @@ interface IClass extends IProperty {
 	properties: RefMap<ClassProperty>;
 }
 
-/* Not supported by glTF-Transform...
-type NumericValue = number | number[] | number[][];
-type NoDataValue = number | string | number[] | string[] | number[][];
-type AnyValue =
-  | number
-  | string
-  | boolean
-  | number[]
-  | string[]
-  | boolean[]
-  | number[][];
-*/
-
 interface IClassProperty extends IProperty {
 	objectName: string | null;
 	description: string | null;
@@ -62,13 +49,13 @@ interface IClassProperty extends IProperty {
 	array: boolean;
 	count: number | null;
 	normalized: boolean;
-	offset: any;
-	scale: any;
-	max: any;
-	min: any;
+	offset: number | number[] | number[][];
+	scale: number | number[] | number[][];
+	max: number | number[] | number[][];
+	min: number | number[] | number[][];
 	required: boolean;
-	noData: any;
-	default: any;
+	noData: number | string | number[] | string[] | number[][];
+	default: boolean | boolean[] | string | string[] | number | number[] | number[][];
 }
 
 interface IEnum extends IProperty {
@@ -97,10 +84,10 @@ interface IPropertyTableProperty extends IProperty {
 	stringOffsets: Uint8Array;
 	arrayOffsetType: PropertyTablePropertyOffsetType;
 	stringOffsetType: PropertyTablePropertyOffsetType;
-	offset: any;
-	scale: any;
-	max: any;
-	min: any;
+	offset: number | number[] | number[][];
+	scale: number | number[] | number[][];
+	max: number | number[] | number[][];
+	min: number | number[] | number[][];
 }
 
 interface IPropertyTexture extends IProperty {
@@ -111,10 +98,10 @@ interface IPropertyTexture extends IProperty {
 
 interface IPropertyTextureProperty extends IProperty {
 	channels: number[];
-	offset: any;
-	scale: any;
-	max: any;
-	min: any;
+	offset: number | number[] | number[][];
+	scale: number | number[] | number[][];
+	max: number | number[] | number[][];
+	min: number | number[] | number[][];
 	texture: Texture;
 	textureInfo: TextureInfo;
 }
@@ -127,10 +114,10 @@ interface IPropertyAttribute extends IProperty {
 
 interface IPropertyAttributeProperty extends IProperty {
 	attribute: string;
-	offset: any;
-	scale: any;
-	max: any;
-	min: any;
+	offset: number | number[] | number[][];
+	scale: number | number[] | number[][];
+	max: number | number[] | number[][];
+	min: number | number[] | number[][];
 }
 
 // This corresponds to the EXT_structural_metadata.schema.json
@@ -455,31 +442,31 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 		return this.set('normalized', normalized);
 	}
 
-	getOffset(): any {
+	getOffset(): number | number[] | number[][] {
 		return this.get('offset');
 	}
-	setOffset(offset: any) {
+	setOffset(offset: number | number[] | number[][]) {
 		return this.set('offset', offset);
 	}
 
-	getScale(): any {
+	getScale(): number | number[] | number[][] {
 		return this.get('scale');
 	}
-	setScale(scale: any) {
+	setScale(scale: number | number[] | number[][]) {
 		return this.set('scale', scale);
 	}
 
-	getMax(): any {
+	getMax(): number | number[] | number[][] {
 		return this.get('max');
 	}
-	setMax(max: any) {
+	setMax(max: number | number[] | number[][]) {
 		return this.set('max', max);
 	}
 
-	getMin(): any {
+	getMin(): number | number[] | number[][] {
 		return this.get('min');
 	}
-	setMin(min: any) {
+	setMin(min: number | number[] | number[][]) {
 		return this.set('min', min);
 	}
 
@@ -490,17 +477,17 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 		return this.set('required', required);
 	}
 
-	getNoData(): any {
+	getNoData(): number | string | number[] | string[] | number[][] {
 		return this.get('noData');
 	}
-	setNoData(noData: any) {
+	setNoData(noData: number | string | number[] | string[] | number[][]) {
 		return this.set('noData', noData);
 	}
 
-	getDefault(): any {
+	getDefault(): boolean | boolean[] | string | string[] | number | number[] | number[][] {
 		return this.get('default');
 	}
-	setDefault(defaultValue: any) {
+	setDefault(defaultValue: boolean | boolean[] | string | string[] | number | number[] | number[][]) {
 		return this.set('default', defaultValue);
 	}
 }
@@ -732,31 +719,31 @@ export class PropertyTableProperty extends ExtensionProperty<IPropertyTablePrope
 		return this.set('stringOffsetType', stringOffsetType);
 	}
 
-	getOffset(): any {
+	getOffset(): number | number[] | number[][] {
 		return this.get('offset');
 	}
-	setOffset(offset: any) {
+	setOffset(offset: number | number[] | number[][]) {
 		return this.set('offset', offset);
 	}
 
-	getScale(): any {
+	getScale(): number | number[] | number[][] {
 		return this.get('scale');
 	}
-	setScale(scale: any) {
+	setScale(scale: number | number[] | number[][]) {
 		return this.set('scale', scale);
 	}
 
-	getMax(): any {
+	getMax(): number | number[] | number[][] {
 		return this.get('max');
 	}
-	setMax(max: any) {
+	setMax(max: number | number[] | number[][]) {
 		return this.set('max', max);
 	}
 
-	getMin(): any {
+	getMin(): number | number[] | number[][] {
 		return this.get('min');
 	}
-	setMin(min: any) {
+	setMin(min: number | number[] | number[][]) {
 		return this.set('min', min);
 	}
 }
@@ -863,31 +850,31 @@ export class PropertyTextureProperty extends ExtensionProperty<IPropertyTextureP
 		return this.getRef('texture') ? this.getRef('textureInfo') : null;
 	}
 
-	getOffset(): any {
+	getOffset(): number | number[] | number[][] {
 		return this.get('offset');
 	}
-	setOffset(offset: any) {
+	setOffset(offset: number | number[] | number[][]) {
 		return this.set('offset', offset);
 	}
 
-	getScale(): any {
+	getScale(): number | number[] | number[][] {
 		return this.get('scale');
 	}
-	setScale(scale: any) {
+	setScale(scale: number | number[] | number[][]) {
 		return this.set('scale', scale);
 	}
 
-	getMax(): any {
+	getMax(): number | number[] | number[][] {
 		return this.get('max');
 	}
-	setMax(max: any) {
+	setMax(max: number | number[] | number[][]) {
 		return this.set('max', max);
 	}
 
-	getMin(): any {
+	getMin(): number | number[] | number[][] {
 		return this.get('min');
 	}
-	setMin(min: any) {
+	setMin(min: number | number[] | number[][]) {
 		return this.set('min', min);
 	}
 }
@@ -977,31 +964,31 @@ export class PropertyAttributeProperty extends ExtensionProperty<IPropertyAttrib
 		return this.set('attribute', attribute);
 	}
 
-	getOffset(): any {
+	getOffset(): number | number[] | number[][] {
 		return this.get('offset');
 	}
-	setOffset(offset: any) {
+	setOffset(offset: number | number[] | number[][]) {
 		return this.set('offset', offset);
 	}
 
-	getScale(): any {
+	getScale(): number | number[] | number[][] {
 		return this.get('scale');
 	}
-	setScale(scale: any) {
+	setScale(scale: number | number[] | number[][]) {
 		return this.set('scale', scale);
 	}
 
-	getMax(): any {
+	getMax(): number | number[] | number[][] {
 		return this.get('max');
 	}
-	setMax(max: any) {
+	setMax(max: number | number[] | number[][]) {
 		return this.set('max', max);
 	}
 
-	getMin(): any {
+	getMin(): number | number[] | number[][] {
 		return this.get('min');
 	}
-	setMin(min: any) {
+	setMin(min: number | number[] | number[][]) {
 		return this.set('min', min);
 	}
 }
