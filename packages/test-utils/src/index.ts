@@ -49,7 +49,7 @@ import * as quat from 'gl-matrix/quat';
 import * as vec2 from 'gl-matrix/vec2';
 import * as vec3 from 'gl-matrix/vec3';
 import * as vec4 from 'gl-matrix/vec4';
-export { mat4, mat3, quat, vec4, vec3, vec2 };
 
 export * from './create-basic-primitive.js';
 export * from './create-torus-primitive.js';
+export { mat3, mat4, quat, vec2, vec3, vec4 };
