@@ -1,5 +1,11 @@
-import { Extension, type GLTF, type Primitive, type ReaderContext, type WriterContext } from '@gltf-transform/core';
-import { MathUtils } from 'core/dist/index.cjs';
+import {
+	Extension,
+	type GLTF,
+	MathUtils,
+	type Primitive,
+	type ReaderContext,
+	type WriterContext,
+} from '@gltf-transform/core';
 import { EXT_MESH_FEATURES, EXT_STRUCTURAL_METADATA } from '../constants.js';
 import type { StructuralMetadata } from '../ext-structural-metadata/index.js';
 import { FeatureId } from './feature-id.js';
