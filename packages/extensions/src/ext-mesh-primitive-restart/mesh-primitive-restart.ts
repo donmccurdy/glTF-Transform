@@ -16,7 +16,7 @@ import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
  * using graphics APIs that do not support primitive restart values may still support this extension,
  * by pre-processing the indices, potentially still receiving some performance benefits.
  *
- * The following {@link PrimitiveMode PrimitiveModes} support primitive restart values:
+ * The following primitive modes support primitive restart values:
  *
  * - `LINE_LOOP`
  * - `LINE_STRIP`
@@ -25,9 +25,9 @@ import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
  *
  * Defining no {@link ExtensionProperty} types, this {@link Extension} is simply attached to the
  * {@link Document}, and affects the entire Document by allowing any {@link Primitive} with an
- * applicable {@link PrimitiveMode} to use primitive restart values in its indices. Without the
- * Extension, the same use of these data types would yield an invalid glTF document, under the
- * stricter core glTF specification.
+ * applicable draw mode to use primitive restart values in indices. Without the Extension, the
+ * same use of these data types would yield an invalid glTF document, under the stricter core
+ * glTF specification.
  *
  * Properties:
  * - N/A
