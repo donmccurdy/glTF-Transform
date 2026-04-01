@@ -1,5 +1,6 @@
 import type { Extension } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
+import { EXTMeshPrimitiveRestart } from './ext-mesh-primitive-restart/index.js';
 import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
@@ -55,6 +56,7 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 
 export const ALL_EXTENSIONS: (typeof Extension)[] = [
 	EXTMeshGPUInstancing,
+	EXTMeshPrimitiveRestart,
 	EXTMeshoptCompression,
 	EXTTextureAVIF,
 	EXTTextureWebP,
@@ -62,6 +64,7 @@ export const ALL_EXTENSIONS: (typeof Extension)[] = [
 ];
 
 export * from './ext-mesh-gpu-instancing/index.js';
+export * from './ext-mesh-primitive-restart/index.js';
 export * from './ext-meshopt-compression/index.js';
 export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';

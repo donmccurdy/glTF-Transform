@@ -1,4 +1,5 @@
 export const EXT_MESH_GPU_INSTANCING = 'EXT_mesh_gpu_instancing';
+export const EXT_MESH_PRIMITIVE_RESTART = 'EXT_mesh_primitive_restart';
 export const EXT_MESHOPT_COMPRESSION = 'EXT_meshopt_compression';
 export const EXT_TEXTURE_WEBP = 'EXT_texture_webp';
 export const EXT_TEXTURE_AVIF = 'EXT_texture_avif';
