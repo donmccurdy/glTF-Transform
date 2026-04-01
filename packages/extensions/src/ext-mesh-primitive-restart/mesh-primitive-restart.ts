@@ -51,7 +51,7 @@ import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
  * const prim = document.createPrimitive()
  *   .setMode(Primitive.Mode.LINE_STRIP)
  *   .setAttribute('POSITION', position)
- * 	 .setIndices(indices);
+ *   .setIndices(indices);
  * ```
  */
 export class EXTMeshPrimitiveRestart extends Extension {
