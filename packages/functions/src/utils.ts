@@ -190,7 +190,7 @@ export function deepSwapAttribute(prim: Primitive, src: Accessor, dst: Accessor)
 }
 
 /**
- * Disposes of a {@link Primitive} and any {@link Accessor Accesors} for which
+ * Disposes of a {@link Primitive} and any {@link Accessor Accessors} for which
  * it is the last remaining parent.
  * @hidden
  */
