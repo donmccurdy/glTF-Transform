@@ -5,11 +5,15 @@
     "JSON": { "formatter": { "language_server": { "name": "biome" } } },
     "JSONC": { "formatter": { "language_server": { "name": "biome" } } },
     "JavaScript": {
+      "use_on_type_format": false,
       "formatter": { "language_server": { "name": "biome" } },
     },
     "Svelte": { "formatter": { "language_server": { "name": "biome" } } },
     "TSX": { "formatter": { "language_server": { "name": "biome" } } },
-    "TypeScript": { "formatter": { "language_server": { "name": "biome" } } },
+    "TypeScript": {
+      "use_on_type_format": false,
+      "formatter": { "language_server": { "name": "biome" } }
+    },
   },
   "lsp": {
     "biome": {
