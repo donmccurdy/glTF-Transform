@@ -9,13 +9,21 @@ import {
 	type Scene,
 	type Transform,
 } from '@gltf-transform/core';
+import { EXTMeshPrimitiveRestart } from '@gltf-transform/extensions';
 import { invert, multiply } from 'gl-matrix/mat4';
 import { compactPrimitive } from './compact-primitive.js';
 import { dequantizeAttribute } from './dequantize.js';
 import { joinPrimitives } from './join-primitives.js';
 import { prune } from './prune.js';
 import { transformPrimitive } from './transform-primitive.js';
-import { assignDefaults, createPrimGroupKey, createTransform, formatLong, isUsed } from './utils.js';
+import {
+	assignDefaults,
+	createPrimGroupKey,
+	createTransform,
+	formatLong,
+	isPrimitiveRestartMode,
+	isUsed,
+} from './utils.js';
 
 const NAME = 'join';
 
@@ -105,10 +113,17 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 		const root = document.getRoot();
 		const logger = document.getLogger();
 
+		const srcRestartModeCount = _getPrimRestartModeCount(document);
+
 		// Join.
 		for (const scene of root.listScenes()) {
 			_joinLevel(document, scene, options);
 			scene.traverse((node) => _joinLevel(document, node, options));
+		}
+
+		// If primitive restart values were added, require EXT_mesh_primitive_restart.
+		if (_getPrimRestartModeCount(document) < srcRestartModeCount) {
+			document.createExtension(EXTMeshPrimitiveRestart).setRequired(true);
 		}
 
 		// Clean up.
@@ -265,6 +280,22 @@ function _deepClonePrimitive(src: Primitive): Primitive {
 	const indices = dst.getIndices();
 	if (indices) dst.setIndices(indices.clone());
 	return dst;
+}
+
+/**
+ * Returns the number of primitives in the document with draw modes compatible
+ * with primitive restart (EXT_mesh_primitive_restart).
+ */
+function _getPrimRestartModeCount(document: Document): number {
+	let count = 0;
+	for (const mesh of document.getRoot().listMeshes()) {
+		for (const prim of mesh.listPrimitives()) {
+			if (isPrimitiveRestartMode(prim.getMode())) {
+				count++;
+			}
+		}
+	}
+	return count;
 }
 
 /**

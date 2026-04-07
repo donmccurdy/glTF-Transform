@@ -1,7 +1,10 @@
-import { type Accessor, Document, type Primitive } from '@gltf-transform/core';
+import { type Accessor, Document, Primitive } from '@gltf-transform/core';
+import { EXTMeshPrimitiveRestart } from '@gltf-transform/extensions';
 import { joinPrimitives } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
+
+const { LINE_STRIP } = Primitive.Mode;
 
 test('unindexed', async (t) => {
 	const document = new Document().setLogger(logger);
@@ -107,6 +110,54 @@ test('indexed', async (t) => {
 	], 'position data');
 
 	t.deepEqual(Array.from(primAB.getIndices().getArray()), [0, 1, 2, 3, 4, 5], 'indices data');
+});
+
+test('indexed - primitive restart', async (t) => {
+	const document = new Document().setLogger(logger);
+	document.createExtension(EXTMeshPrimitiveRestart).setRequired(true);
+
+	const [primA, positionA] = createPrimA(document);
+	const [primB] = createPrimB(document);
+
+	const RESTART_U16 = 2 ** 16 - 1;
+
+	const indicesA = document.createAccessor().setArray(new Uint16Array([0, 1, RESTART_U16, 2, 3, RESTART_U16, 4, 5]));
+	const indicesB = document.createAccessor().setArray(new Uint16Array([0, 1, RESTART_U16, 0, 2, RESTART_U16]));
+
+	primA.setMode(LINE_STRIP).setIndices(indicesA);
+	primB.setMode(LINE_STRIP).setIndices(indicesB);
+
+	const primAB = joinPrimitives([primA, primB]);
+	const indicesAB = Array.from(primAB.getIndices().getArray());
+
+	// biome-ignore format: Readability.
+	t.deepEqual(indicesAB, [
+		0, 1, RESTART_U16,
+		2, 3, RESTART_U16,
+		4, 5, RESTART_U16,
+		6, 7, RESTART_U16,
+		6, 8, RESTART_U16
+	], 'indices data');
+
+	const positionAB = primAB.getAttribute('POSITION');
+
+	t.is(positionAB.getType(), positionA.getType(), 'position.type');
+	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
+
+	// biome-ignore format: Readability.
+	t.deepEqual(Array.from(positionAB.getArray()), [
+		// primA
+		0, 0, 0,
+		0, 0, 1,
+		0, 1, 0,
+		1, 0, 0,
+		0, 1, 1,
+		1, 0, 1,
+		// primB
+		10, 10, 10,
+		10, 10, 12,
+		10, 12, 10,
+	], 'position data');
 });
 
 /******************************************************************************

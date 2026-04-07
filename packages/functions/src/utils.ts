@@ -1,5 +1,5 @@
 import {
-	type Accessor,
+	Accessor,
 	Document,
 	type GLTF,
 	Primitive,
@@ -272,7 +272,7 @@ export function createPrimGroupKey(prim: Primitive): string {
 	const document = Document.fromGraph(prim.getGraph())!;
 	const material = prim.getMaterial();
 	const materialIndex = document.getRoot().listMaterials().indexOf(material!);
-	const mode = BASIC_MODE_MAPPING[prim.getMode()];
+	const mode = prim.getMode();
 	const indices = !!prim.getIndices();
 
 	const attributes = prim
@@ -390,3 +390,31 @@ export const BASIC_MODE_MAPPING = {
 	[TRIANGLE_STRIP]: TRIANGLES,
 	[TRIANGLE_FAN]: TRIANGLES,
 } as Record<GLTF.MeshPrimitiveMode, GLTF.MeshPrimitiveMode>;
+
+/**
+ * Whether the primitive mode supports EXT_mesh_primitive_restart.
+ * @hidden
+ * @internal
+ */
+export function isPrimitiveRestartMode(mode: GLTF.MeshPrimitiveMode): boolean {
+	return mode === LINE_STRIP || mode === LINE_LOOP || mode === TRIANGLE_STRIP || mode === TRIANGLE_FAN;
+}
+
+/**
+ * Returns the applicable primitive restart value (see EXT_mesh_primitive_restart)
+ * for the given index accessor.
+ * @hidden
+ * @internal
+ */
+export function getPrimitiveRestartIndex(componentType: GLTF.AccessorComponentType): number {
+	switch (componentType) {
+		case Accessor.ComponentType.UNSIGNED_INT:
+			return 0xffffffff;
+		case Accessor.ComponentType.UNSIGNED_SHORT:
+			return 0xffff;
+		case Accessor.ComponentType.UNSIGNED_BYTE:
+			return 0xff;
+		default:
+			return -1;
+	}
+}

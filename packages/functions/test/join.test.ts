@@ -16,7 +16,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const { LINES, TRIANGLES } = Primitive.Mode;
+const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 test('basic', async (t) => {
 	const io = await createPlatformIO();
@@ -85,13 +85,11 @@ test('primitive modes', async (t) => {
 
 	await document.transform(join());
 
-	t.true(primLineStrip.isDisposed(), 'line-strip disposed');
-	t.true(primLineLoop.isDisposed(), 'line-loop disposed');
-	t.true(primTriangleStrip.isDisposed(), 'triangle-strip disposed');
-	t.true(primTriangleFan.isDisposed(), 'triangle-fan disposed');
-
 	t.false(mesh.isDisposed(), 'mesh not disposed');
-	t.is(mesh.listPrimitives().length, 2, 'mesh has two (2) prims');
-	t.is(mesh.listPrimitives()[0].getMode(), LINES, 'joins line-strip and line-loop');
-	t.is(mesh.listPrimitives()[1].getMode(), TRIANGLES, 'joins triangle-strip and triangle-fan');
+	t.is(mesh.listPrimitives().length, 4, 'mesh has four (4) prims');
+	t.deepEqual(
+		mesh.listPrimitives().map((prim) => prim.getMode()),
+		[LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN],
+		'line strip, line loop, triangle strip, triangle fan',
+	);
 });
