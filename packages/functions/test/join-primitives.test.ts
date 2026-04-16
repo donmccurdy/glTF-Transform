@@ -1,5 +1,5 @@
 import { type Accessor, Document, Primitive } from '@gltf-transform/core';
-import { EXTMeshPrimitiveRestart } from '@gltf-transform/extensions';
+import { KHRMeshPrimitiveRestart } from '@gltf-transform/extensions';
 import { joinPrimitives } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
@@ -114,7 +114,7 @@ test('indexed', async (t) => {
 
 test('indexed - primitive restart', async (t) => {
 	const document = new Document().setLogger(logger);
-	document.createExtension(EXTMeshPrimitiveRestart).setRequired(true);
+	document.createExtension(KHRMeshPrimitiveRestart).setRequired(true);
 
 	const [primA, positionA] = createPrimA(document);
 	const [primB] = createPrimB(document);

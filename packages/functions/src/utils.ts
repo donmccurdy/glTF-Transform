@@ -392,7 +392,7 @@ export const BASIC_MODE_MAPPING = {
 } as Record<GLTF.MeshPrimitiveMode, GLTF.MeshPrimitiveMode>;
 
 /**
- * Whether the primitive mode supports EXT_mesh_primitive_restart.
+ * Whether the primitive mode supports KHR_mesh_primitive_restart.
  * @hidden
  * @internal
  */
@@ -401,7 +401,7 @@ export function isPrimitiveRestartMode(mode: GLTF.MeshPrimitiveMode): boolean {
 }
 
 /**
- * Returns the applicable primitive restart value (see EXT_mesh_primitive_restart)
+ * Returns the applicable primitive restart value (see KHR_mesh_primitive_restart)
  * for the given index accessor.
  * @hidden
  * @internal

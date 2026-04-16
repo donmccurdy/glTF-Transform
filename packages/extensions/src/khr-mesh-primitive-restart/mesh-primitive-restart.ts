@@ -1,13 +1,13 @@
 import { Extension, type ReaderContext, type WriterContext } from '@gltf-transform/core';
-import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
+import { KHR_MESH_PRIMITIVE_RESTART } from '../constants.js';
 
 /**
- * [`EXT_mesh_primitive_restart`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/EXT_mesh_primitive_restart/)
+ * [`KHR_mesh_primitive_restart`](https://github.com/KhronosGroup/gltf/blob/main/extensions/2.0/Vendor/KHR_mesh_primitive_restart/)
  * enables batching multiple line strips, line loops, triangle strips, or triangle fans into a single draw call.
  *
  * By default, glTF 2.0 prohibits index buffers from containing maximal index values. These values
  * are used in many graphics APIs, including WebGL 2, as primitive restart values. The
- * `EXT_mesh_primitive_restart` extension lifts that restriction, allowing restart values to be used
+ * `KHR_mesh_primitive_restart` extension lifts that restriction, allowing restart values to be used
  * in the indices of any {@link Primitive} with an applicable draw mode. When present in indices,
  * the primitive restart value instructs the graphics API to end the current topological primitive,
  * and to begin a new topological primitive on the next index. Compared to writing separate
@@ -35,10 +35,10 @@ import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
  * ### Example
  *
  * ```typescript
- * import { EXTMeshPrimitiveRestart } from '@gltf-transform/extensions';
+ * import { KHRMeshPrimitiveRestart } from '@gltf-transform/extensions';
  *
  * // Create an Extension attached to the Document.
- * const primRestartExtension = document.createExtension(EXTMeshPrimitiveRestart).setRequired(true);
+ * const primRestartExtension = document.createExtension(KHRMeshPrimitiveRestart).setRequired(true);
  *
  * // Create a LINE_STRIP primitive containing two line strips. The first connects vertices
  * // [0, 1, 2], and the second connects vertices [3, 4, 5].
@@ -54,9 +54,9 @@ import { EXT_MESH_PRIMITIVE_RESTART } from '../constants.js';
  *   .setIndices(indices);
  * ```
  */
-export class EXTMeshPrimitiveRestart extends Extension {
-	public readonly extensionName: typeof EXT_MESH_PRIMITIVE_RESTART = EXT_MESH_PRIMITIVE_RESTART;
-	public static readonly EXTENSION_NAME: typeof EXT_MESH_PRIMITIVE_RESTART = EXT_MESH_PRIMITIVE_RESTART;
+export class KHRMeshPrimitiveRestart extends Extension {
+	public readonly extensionName: typeof KHR_MESH_PRIMITIVE_RESTART = KHR_MESH_PRIMITIVE_RESTART;
+	public static readonly EXTENSION_NAME: typeof KHR_MESH_PRIMITIVE_RESTART = KHR_MESH_PRIMITIVE_RESTART;
 
 	/** @hidden */
 	read(_: ReaderContext): this {

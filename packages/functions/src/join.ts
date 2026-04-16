@@ -9,7 +9,7 @@ import {
 	type Scene,
 	type Transform,
 } from '@gltf-transform/core';
-import { EXTMeshPrimitiveRestart } from '@gltf-transform/extensions';
+import { KHRMeshPrimitiveRestart } from '@gltf-transform/extensions';
 import { invert, multiply } from 'gl-matrix/mat4';
 import { compactPrimitive } from './compact-primitive.js';
 import { dequantizeAttribute } from './dequantize.js';
@@ -121,9 +121,9 @@ export function join(_options: JoinOptions = JOIN_DEFAULTS): Transform {
 			scene.traverse((node) => _joinLevel(document, node, options));
 		}
 
-		// If primitive restart values were added, require EXT_mesh_primitive_restart.
+		// If primitive restart values were added, require KHR_mesh_primitive_restart.
 		if (_getPrimRestartModeCount(document) < srcRestartModeCount) {
-			document.createExtension(EXTMeshPrimitiveRestart).setRequired(true);
+			document.createExtension(KHRMeshPrimitiveRestart).setRequired(true);
 		}
 
 		// Clean up.
@@ -284,7 +284,7 @@ function _deepClonePrimitive(src: Primitive): Primitive {
 
 /**
  * Returns the number of primitives in the document with draw modes compatible
- * with primitive restart (EXT_mesh_primitive_restart).
+ * with primitive restart (KHR_mesh_primitive_restart).
  */
 function _getPrimRestartModeCount(document: Document): number {
 	let count = 0;
