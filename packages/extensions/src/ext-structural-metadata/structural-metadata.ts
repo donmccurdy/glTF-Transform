@@ -629,10 +629,10 @@ function _readEnum(ext: EXTStructuralMetadata, enumDef: EnumDef) {
 	if (enumDef.valueType !== undefined) {
 		enumObject.setValueType(enumDef.valueType);
 	}
+
 	const valueDefs = enumDef.values || {};
 	for (const valueDef of valueDefs) {
-		const enumValue = _readEnumValue(ext, valueDef);
-		enumObject.addEnumValue(enumValue);
+		enumObject.addEnumValue(_readEnumValue(ext, valueDef));
 	}
 
 	return enumObject;
@@ -644,9 +644,11 @@ function _readEnumValue(ext: EXTStructuralMetadata, enumValueDef: EnumValueDef) 
 	if (enumValueDef.name !== undefined) {
 		enumValue.setObjectName(enumValueDef.name);
 	}
+
 	if (enumValueDef.description !== undefined) {
 		enumValue.setDescription(enumValueDef.description);
 	}
+
 	if (enumValueDef.value !== undefined) {
 		enumValue.setValue(enumValueDef.value);
 	}
@@ -987,7 +989,6 @@ function _writeClassPropertyDef(classProperty: ClassProperty): ClassPropertyDef 
 
 function _writeEnumDef(enumObject: Enum): EnumDef {
 	const enumDef: EnumDef = {
-		valueType: enumObject.getValueType(),
 		values: enumObject.listValues().map(_writeEnumValueDef),
 	};
 
@@ -997,6 +998,10 @@ function _writeEnumDef(enumObject: Enum): EnumDef {
 
 	if (enumObject.getDescription()) {
 		enumDef.description = enumObject.getDescription()!;
+	}
+
+	if (enumObject.getValueType() !== 'UINT16') {
+		enumDef.valueType = enumObject.getValueType();
 	}
 
 	return enumDef;

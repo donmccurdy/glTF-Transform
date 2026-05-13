@@ -1,5 +1,5 @@
 import { glob } from 'node:fs/promises';
-import { Document } from '@gltf-transform/core';
+import { Document, type JSONDocument } from '@gltf-transform/core';
 import { EXTStructuralMetadata } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
@@ -19,10 +19,10 @@ test('round trip', async (t) => {
 		const srcJSONDocument = await io.readAsJSON(inputPath);
 		const dstJSONDocument = await io.writeJSON(await io.readJSON(srcJSONDocument));
 
-		const srcExtensionDef = stripBufferViews(srcJSONDocument.json.extensions.EXT_structural_metadata);
-		const dstExtensionDef = stripBufferViews(dstJSONDocument.json.extensions.EXT_structural_metadata);
+		const srcExtensionDef = snapshotExtensionDef(srcJSONDocument);
+		const dstExtensionDef = snapshotExtensionDef(dstJSONDocument);
 
-		t.deepEqual(dstExtensionDef, srcExtensionDef, `${inputBasename} - root.extensions.EXT_structural_metadata`);
+		t.deepEqual(dstExtensionDef, srcExtensionDef, inputBasename);
 	}
 });
 
@@ -34,15 +34,30 @@ test('clone', (t) => {
 });
 
 /**
- * A round-trip will change buffer view indices, and this test cannot yet compare
- * the contents of the buffers. Remove these indices from JSON, for now.
+ * A round-trip will change buffer view indices, so we need to compare buffer view contents.
  */
-// biome-ignore lint/suspicious/noExplicitAny: Internal types not accessible from test.
-function stripBufferViews(extensionDef: any) {
+function snapshotExtensionDef(jsonDocument: JSONDocument) {
+	// biome-ignore lint/suspicious/noExplicitAny: Internal types not accessible from test.
+	const extensionDef = structuredClone(jsonDocument.json.extensions.EXT_structural_metadata) as any;
+
 	for (const propertyTableDef of extensionDef.propertyTables || []) {
 		for (const propertyName in propertyTableDef.properties) {
 			const property = propertyTableDef.properties[propertyName];
-			delete property.values;
+			for (const key of ['values', 'arrayOffsets', 'stringOffsets']) {
+				if (property[key] !== undefined) {
+					const bufferViewIndex = property[key];
+					const bufferViewDef = jsonDocument.json.bufferViews[bufferViewIndex]!;
+					const buffer = jsonDocument.json.buffers[bufferViewDef.buffer]!;
+					const resource = jsonDocument.resources[buffer.uri];
+					property[key] = new Uint8Array(
+						resource.buffer,
+						resource.byteOffset + bufferViewDef.byteOffset,
+						bufferViewDef.byteLength,
+					);
+				}
+			}
 		}
 	}
+
+	return extensionDef;
 }

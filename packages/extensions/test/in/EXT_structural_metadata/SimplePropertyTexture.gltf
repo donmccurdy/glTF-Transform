@@ -31,18 +31,14 @@
         "class" : "buildingComponents",
         "properties" : {
           "insideTemperature" : {
-            "index" : 1,
-            "texCoord" : 0,
-            "channels" : [ 0 ]
+            "index" : 1
           },
           "outsideTemperature" : {
             "index" : 1,
-            "texCoord" : 0,
             "channels" : [ 1 ]
           },
           "insulation" : {
             "index" : 1,
-            "texCoord" : 0,
             "channels" : [ 2 ]
           }
         }
