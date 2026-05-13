@@ -224,7 +224,7 @@ function _writeFeatureIDDef(document: Document, context: WriterContext, featureI
 		featureIDDef.nullFeatureId = featureID.getNullFeatureID()!;
 	}
 
-	if (featureID.getLabel() != null) {
+	if (featureID.getLabel()) {
 		featureIDDef.label = featureID.getLabel()!;
 	}
 
