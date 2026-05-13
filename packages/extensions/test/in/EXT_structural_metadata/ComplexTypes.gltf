@@ -1,0 +1,214 @@
+{
+  "extensions" : {
+    "EXT_structural_metadata" : {
+      "schema" : {
+        "id": "ComplexTypes",
+        "classes" : {
+          "exampleMetadataClass" : {
+            "name" : "Example metadata class",
+            "description" : "An example metadata class with complex types",
+            "properties" : {
+              "example_variable_length_ARRAY_normalized_UINT8" : {
+                "name" : "Example variable-length ARRAY normalized INT8 property",
+                "description" : "An example property, with type ARRAY, with component type UINT8, normalized, and variable length ",
+                "type" : "SCALAR",
+                "componentType" : "UINT8",
+                "array" : true,
+                "normalized" : true
+              },
+              "example_fixed_length_ARRAY_BOOLEAN" : {
+                "name" : "Example fixed-length ARRAY BOOLEAN property",
+                "description" : "An example property, with type ARRAY, with component type BOOLEAN, and fixed length ",
+                "type" : "BOOLEAN",
+                "array" : true,
+                "count" : 10
+              },
+              "example_variable_length_ARRAY_STRING" : {
+                "name" : "Example variable-length ARRAY STRING property",
+                "description" : "An example property, with type ARRAY, with component type STRING, and variable length ",
+                "type" : "STRING",
+                "array" : true
+              },
+              "example_fixed_length_ARRAY_ENUM" : {
+                "name" : "Example fixed-length ARRAY ENUM property",
+                "description" : "An example property, with type ARRAY, with component type ENUM, enum type exampleEnumType, and fixed length ",
+                "type" : "ENUM",
+                "enumType" : "exampleEnumType",
+                "array" : true,
+                "count" : 2
+              }
+            }
+          }
+        },
+        "enums" : {
+          "exampleEnumType" : {
+            "values" : [ {
+              "name" : "ExampleEnumValueA",
+              "value" : 0
+            }, {
+              "name" : "ExampleEnumValueB",
+              "value" : 1
+            }, {
+              "name" : "ExampleEnumValueC",
+              "value" : 2
+            } ]
+          }
+        }
+      },
+      "propertyTables" : [ {
+        "name" : "Example property table",
+        "class" : "exampleMetadataClass",
+        "count" : 4,
+        "properties" : {
+          "example_variable_length_ARRAY_normalized_UINT8" : {
+            "values" : 4,
+            "arrayOffsets" : 5
+          },
+          "example_fixed_length_ARRAY_BOOLEAN" : {
+            "values" : 6
+          },
+          "example_variable_length_ARRAY_STRING" : {
+            "values" : 7,
+            "arrayOffsets" : 9,
+            "stringOffsets" : 8
+          },
+          "example_fixed_length_ARRAY_ENUM" : {
+            "values" : 10
+          }
+        }
+      } ]
+    }
+  },
+  "extensionsUsed" : [ "EXT_mesh_features", "EXT_structural_metadata" ],
+  "accessors" : [ {
+    "bufferView" : 0,
+    "byteOffset" : 0,
+    "componentType" : 5123,
+    "count" : 24,
+    "type" : "SCALAR",
+    "max" : [ 15 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 1,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 1.0, 1.0, 0.0 ],
+    "min" : [ 0.0, 0.0, 0.0 ]
+  }, {
+    "bufferView" : 2,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.0, 0.0, 1.0 ],
+    "min" : [ 0.0, 0.0, 1.0 ]
+  }, {
+    "bufferView" : 3,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  } ],
+  "asset" : {
+    "generator" : "JglTF from https://github.com/javagl/JglTF",
+    "version" : "2.0"
+  },
+  "buffers" : [ {
+    "uri" : "data:application/gltf-buffer;base64,AAABAAIAAQADAAIABAAFAAYABQAHAAYACAAJAAoACQALAAoADAANAA4ADQAPAA4AAAAAAAAAAAAAAAAAZmbmPgAAAAAAAAAAAAAAAGZm5j4AAAAAZmbmPmZm5j4AAAAAzcwMPwAAAAAAAAAAAACAPwAAAAAAAAAAzcwMP2Zm5j4AAAAAAACAP2Zm5j4AAAAAAAAAAM3MDD8AAAAAZmbmPs3MDD8AAAAAAAAAAAAAgD8AAAAAZmbmPgAAgD8AAAAAzcwMP83MDD8AAAAAAACAP83MDD8AAAAAzcwMPwAAgD8AAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAEAAAACAAAAAgAAAAIAAAACAAAAAwAAAAMAAAADAAAAAwAAAA==",
+    "byteLength" : 496
+  }, {
+    "uri" : "data:application/gltf-buffer;base64,AP8AgP8AVar/AECAwP8AAAAAAAACAAAABQAAAAkAAAAOAAAAVc3MjKpPbmVPbmVUd29PbmVUd29UaHJlZU9uZVR3b1RoZWVlRm91cgAAAAADAAAABgAAAAkAAAAMAAAADwAAABQAAAAXAAAAGgAAAB8AAAAjAAAAAAAAAAEAAAADAAAABgAAAAoAAAAAAAEAAQACAAIAAAABAAIA",
+    "byteLength" : 156
+  } ],
+  "bufferViews" : [ {
+    "buffer" : 0,
+    "byteOffset" : 0,
+    "byteLength" : 48,
+    "target" : 34963
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 48,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 240,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 432,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 0,
+    "byteLength" : 14
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 16,
+    "byteLength" : 20
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 36,
+    "byteLength" : 5
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 41,
+    "byteLength" : 35
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 76,
+    "byteLength" : 44
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 120,
+    "byteLength" : 20
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 140,
+    "byteLength" : 16
+  } ],
+  "materials" : [ {
+    "pbrMetallicRoughness" : {
+      "baseColorFactor" : [ 0.5, 1.0, 0.5, 1.0 ],
+      "metallicFactor" : 0.0,
+      "roughnessFactor" : 1.0
+    },
+    "alphaMode" : "OPAQUE",
+    "doubleSided" : true
+  } ],
+  "meshes" : [ {
+    "primitives" : [ {
+      "extensions" : {
+        "EXT_mesh_features" : {
+          "featureIds" : [ {
+            "featureCount" : 4,
+            "attribute" : 0,
+            "propertyTable" : 0
+          } ]
+        }
+      },
+      "attributes" : {
+        "POSITION" : 1,
+        "NORMAL" : 2,
+        "_FEATURE_ID_0" : 3
+      },
+      "indices" : 0,
+      "material" : 0,
+      "mode" : 4
+    } ]
+  } ],
+  "nodes" : [ {
+    "mesh" : 0
+  } ],
+  "scene" : 0,
+  "scenes" : [ {
+    "nodes" : [ 0 ]
+  } ]
+}

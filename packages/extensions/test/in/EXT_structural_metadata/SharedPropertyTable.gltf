@@ -1,0 +1,220 @@
+{
+  "extensions" : {
+    "EXT_structural_metadata" : {
+      "schema" : {
+        "id": "SharedPropertyTableSchema",
+        "classes" : {
+          "exampleMetadataClass" : {
+            "name" : "Example metadata class",
+            "description" : "An example metadata class",
+            "properties" : {
+              "example_VEC3_FLOAT32" : {
+                "name" : "Example VEC3 FLOAT32 property",
+                "description" : "An example property, with type VEC3, with component type FLOAT32",
+                "type" : "VEC3",
+                "componentType" : "FLOAT32"
+              }
+            }
+          }
+        }
+      },
+      "propertyTables" : [ {
+        "name" : "Example property table",
+        "class" : "exampleMetadataClass",
+        "count" : 4,
+        "properties" : {
+          "example_VEC3_FLOAT32" : {
+            "values" : 8
+          }
+        }
+      } ]
+    }
+  },
+  "extensionsUsed" : [ "EXT_mesh_features", "EXT_structural_metadata" ],
+  "accessors" : [ {
+    "bufferView" : 0,
+    "byteOffset" : 0,
+    "componentType" : 5123,
+    "count" : 24,
+    "type" : "SCALAR",
+    "max" : [ 15 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 1,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.25, 1.0, 0.0 ],
+    "min" : [ -0.75, 0.0, 0.0 ]
+  }, {
+    "bufferView" : 2,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.0, 0.0, 1.0 ],
+    "min" : [ 0.0, 0.0, 1.0 ]
+  }, {
+    "bufferView" : 3,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 4,
+    "byteOffset" : 0,
+    "componentType" : 5123,
+    "count" : 24,
+    "type" : "SCALAR",
+    "max" : [ 15 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 5,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 1.75, 1.0, 0.0 ],
+    "min" : [ 0.75, 0.0, 0.0 ]
+  }, {
+    "bufferView" : 6,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.0, 0.0, 1.0 ],
+    "min" : [ 0.0, 0.0, 1.0 ]
+  }, {
+    "bufferView" : 7,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  } ],
+  "asset" : {
+    "generator" : "JglTF from https://github.com/javagl/JglTF",
+    "version" : "2.0"
+  },
+  "buffers" : [ {
+    "uri" : "data:application/gltf-buffer;base64,AAABAAIAAQADAAIABAAFAAYABQAHAAYACAAJAAoACQALAAoADAANAA4ADQAPAA4AAABAvwAAAAAAAAAAmpmZvgAAAAAAAAAAAABAv2Zm5j4AAAAAmpmZvmZm5j4AAAAAzMxMvgAAAAAAAAAAAACAPgAAAAAAAAAAzMxMvmZm5j4AAAAAAACAPmZm5j4AAAAAAABAv83MDD8AAAAAmpmZvs3MDD8AAAAAAABAvwAAgD8AAAAAmpmZvgAAgD8AAAAAzMxMvs3MDD8AAAAAAACAPs3MDD8AAAAAzMxMvgAAgD8AAAAAAACAPgAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAEAAAACAAAAAgAAAAIAAAACAAAAAwAAAAMAAAADAAAAAwAAAAAAAQACAAEAAwACAAQABQAGAAUABwAGAAgACQAKAAkACwAKAAwADQAOAA0ADwAOAAAAQD8AAAAAAAAAAJqZmT8AAAAAAAAAAAAAQD9mZuY+AAAAAJqZmT9mZuY+AAAAAGZmpj8AAAAAAAAAAAAA4D8AAAAAAAAAAGZmpj9mZuY+AAAAAAAA4D9mZuY+AAAAAAAAQD/NzAw/AAAAAJqZmT/NzAw/AAAAAAAAQD8AAIA/AAAAAJqZmT8AAIA/AAAAAGZmpj/NzAw/AAAAAAAA4D/NzAw/AAAAAGZmpj8AAIA/AAAAAAAA4D8AAIA/AAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAgAAAAMAAAADAAAAAwAAAAMAAAA=",
+    "byteLength" : 992
+  }, {
+    "uri" : "data:application/gltf-buffer;base64,AAAAAM3MzD3NzEw+AACAP83MjD+amZk/AAAAQGZmBkDNzAxAAABAQGZmRkDNzExA",
+    "byteLength" : 48
+  } ],
+  "bufferViews" : [ {
+    "buffer" : 0,
+    "byteOffset" : 0,
+    "byteLength" : 48,
+    "target" : 34963
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 48,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 240,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 432,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 496,
+    "byteLength" : 48,
+    "target" : 34963
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 544,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 736,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 928,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 0,
+    "byteLength" : 48
+  } ],
+  "materials" : [ {
+    "pbrMetallicRoughness" : {
+      "baseColorFactor" : [ 0.5, 1.0, 0.5, 1.0 ],
+      "metallicFactor" : 0.0,
+      "roughnessFactor" : 1.0
+    },
+    "alphaMode" : "OPAQUE",
+    "doubleSided" : true
+  }, {
+    "pbrMetallicRoughness" : {
+      "baseColorFactor" : [ 0.5, 0.5, 1.0, 1.0 ],
+      "metallicFactor" : 0.0,
+      "roughnessFactor" : 1.0
+    },
+    "alphaMode" : "OPAQUE",
+    "doubleSided" : true
+  } ],
+  "meshes" : [ {
+    "primitives" : [ {
+      "extensions" : {
+        "EXT_mesh_features" : {
+          "featureIds" : [ {
+            "featureCount" : 4,
+            "attribute" : 0,
+            "propertyTable" : 0
+          } ]
+        }
+      },
+      "attributes" : {
+        "POSITION" : 1,
+        "NORMAL" : 2,
+        "_FEATURE_ID_0" : 3
+      },
+      "indices" : 0,
+      "material" : 0,
+      "mode" : 4
+    }, {
+      "extensions" : {
+        "EXT_mesh_features" : {
+          "featureIds" : [ {
+            "featureCount" : 4,
+            "attribute" : 0,
+            "propertyTable" : 0
+          } ]
+        }
+      },
+      "attributes" : {
+        "POSITION" : 5,
+        "NORMAL" : 6,
+        "_FEATURE_ID_0" : 7
+      },
+      "indices" : 4,
+      "material" : 1,
+      "mode" : 4
+    } ]
+  } ],
+  "nodes" : [ {
+    "mesh" : 0
+  } ],
+  "scene" : 0,
+  "scenes" : [ {
+    "nodes" : [ 0 ]
+  } ]
+}
