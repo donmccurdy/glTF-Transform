@@ -82,10 +82,14 @@ export const WELD_DEFAULTS: Required<WeldOptions> = {
 export function weld(_options: WeldOptions = WELD_DEFAULTS): Transform {
 	const options = assignDefaults(WELD_DEFAULTS, _options);
 
-	return createTransform(NAME, async (doc: Document): Promise<void> => {
-		const logger = doc.getLogger();
+	return createTransform(NAME, async (document: Document): Promise<void> => {
+		const logger = document.getLogger();
 
-		for (const mesh of doc.getRoot().listMeshes()) {
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('weld: Missing support for KHR_mesh_primitive_restart.');
+		}
+
+		for (const mesh of document.getRoot().listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				weldPrimitive(prim, options);
 

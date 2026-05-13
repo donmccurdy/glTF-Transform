@@ -21,8 +21,8 @@ test('basic', async (t) => {
 });
 
 test('copy', (t) => {
-	const doc = new Document();
-	doc.createExtension(KHRMeshPrimitiveRestart);
+	const document = new Document();
+	document.createExtension(KHRMeshPrimitiveRestart);
 
-	t.is(cloneDocument(doc).getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshPrimitiveRestart');
+	t.true(cloneDocument(document).hasExtension('KHR_mesh_primitive_restart'), 'copy KHRMeshPrimitiveRestart');
 });

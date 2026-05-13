@@ -61,6 +61,10 @@ export function meshopt(_options: MeshoptOptions): Transform {
 			return;
 		}
 
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('meshopt: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		// IMPORTANT: Vertex attributes should be quantized in 'high' mode IFF they are
 		// _not_ filtered in 'packages/extensions/src/ext-meshopt-compression/encoder.ts'.
 		// Note that normals and tangents use octahedral filters, but _morph_ normals

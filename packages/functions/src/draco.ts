@@ -64,6 +64,10 @@ export function draco(_options: DracoOptions = DRACO_DEFAULTS): Transform {
 	const options = assignDefaults(DRACO_DEFAULTS, _options);
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('draco: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		await document.transform(weld());
 		document
 			.createExtension(KHRDracoMeshCompression)

@@ -59,6 +59,10 @@ export function tangents(_options: TangentsOptions = TANGENTS_DEFAULTS): Transfo
 		const tangentCache = new Map<string, Accessor>();
 		let modified = 0;
 
+		if (doc.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('tangents: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		for (const mesh of doc.getRoot().listMeshes()) {
 			const meshName = mesh.getName();
 			const meshPrimitives = mesh.listPrimitives();

@@ -87,6 +87,10 @@ export function simplify(_options: SimplifyOptions): Transform {
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('simplify: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		await simplifier.ready;
 		await document.transform(weld({ overwrite: false }));
 

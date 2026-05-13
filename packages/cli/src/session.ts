@@ -39,12 +39,8 @@ export class Session {
 
 		// Warn and remove lossy compression, to avoid increasing loss on round trip.
 		for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-			const extension = document
-				.getRoot()
-				.listExtensionsUsed()
-				.find((extension) => extension.extensionName === extensionName);
-			if (extension) {
-				extension.dispose();
+			if (document.hasExtension(extensionName)) {
+				document.disposeExtension(extensionName);
 				this._logger.warn(`Decoded ${extensionName}. Further compression will be lossy.`);
 			}
 		}
