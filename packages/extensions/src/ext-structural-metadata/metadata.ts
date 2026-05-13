@@ -13,7 +13,11 @@ import type {
 	ClassPropertyType,
 	EnumValueType,
 	PropertyTablePropertyOffsetType,
-} from './structural-metadata.js';
+} from './types.js';
+
+/******************************************************************************
+ * Interfaces.
+ */
 
 // NOTE: The structures that are defined in the EXT_structural_metadata
 // often have a "name" property. This conflicts with the "name" property
@@ -26,6 +30,7 @@ interface IStructuralMetadata extends IProperty {
 	propertyTextures: RefList<PropertyTexture>;
 	propertyAttributes: RefList<PropertyAttribute>;
 }
+
 interface ISchema extends IProperty {
 	id: string;
 	objectName: string | null;
@@ -34,6 +39,7 @@ interface ISchema extends IProperty {
 	classes: RefMap<Class>;
 	enums: RefMap<Enum>;
 }
+
 interface IClass extends IProperty {
 	objectName: string | null;
 	description: string | null;
@@ -120,33 +126,26 @@ interface IPropertyAttributeProperty extends IProperty {
 	min: number | number[] | number[][];
 }
 
-// This corresponds to the EXT_structural_metadata.schema.json
-// schema, which is structural metadata that can be applied
-// to all glTF elements, and is only constrainted to 'nodes' in
-// the specification text for now
-interface IElementStructuralMetadata extends IProperty {
+// Reference: EXT_structural_metadata.schema.json
+interface INodeStructuralMetadata extends IProperty {
 	propertyTable: PropertyTable;
 	index: number | null;
 }
 
-// This corresponds to the mesh.primitive.EXT_structural_metadata.schema.json
-// schema
+// Reference: mesh.primitive.EXT_structural_metadata.schema.json
 interface IMeshPrimitiveStructuralMetadata extends IProperty {
 	propertyTextures: RefList<PropertyTexture>;
 	propertyAttributes: RefList<PropertyAttribute>;
 }
 
-//============================================================================
-
-//============================================================================
-// The actual model classes
-// (See `MeshFeatures` for details about the concepts)
-//
+/******************************************************************************
+ * Extension Properties.
+ */
 
 /**
- * Main model class for `EXT_structural_metadata`
+ * Stores top-level metadata. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class StructuralMetadata extends ExtensionProperty<IStructuralMetadata> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -216,9 +215,9 @@ export class StructuralMetadata extends ExtensionProperty<IStructuralMetadata> {
 }
 
 /**
- * Implementation of a metadata schema for `EXT_structural_metadata`
+ * Defines a chema within {@link StructuralMetadata}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class Schema extends ExtensionProperty<ISchema> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -298,9 +297,9 @@ export class Schema extends ExtensionProperty<ISchema> {
 }
 
 /**
- * Implementation of a metadata class for `EXT_structural_metadata`
+ * Defines a metadata class within a {@link Schema}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class Class extends ExtensionProperty<IClass> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -351,9 +350,9 @@ export class Class extends ExtensionProperty<IClass> {
 }
 
 /**
- * Implementation of a metadata class property for `EXT_structural_metadata`
+ * Defines a metadata property within a metadata {@link Class}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class ClassProperty extends ExtensionProperty<IClassProperty> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -493,9 +492,9 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 }
 
 /**
- * Implementation of a metadata enum for `EXT_structural_metadata`
+ * Defines an enum, as a set of {@link EnumValue EnumValues}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class Enum extends ExtensionProperty<IEnum> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -551,9 +550,9 @@ export class Enum extends ExtensionProperty<IEnum> {
 }
 
 /**
- * Implementation of a metadata enum value for `EXT_structural_metadata`
+ * Defines a value of an {@link Enum}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class EnumValue extends ExtensionProperty<IEnumValue> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -596,9 +595,9 @@ export class EnumValue extends ExtensionProperty<IEnumValue> {
 }
 
 /**
- * Implementation of a property table for `EXT_structural_metadata`
+ * Defines a property table within a {@link StructuralMetadata}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyTable extends ExtensionProperty<IPropertyTable> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -655,9 +654,9 @@ export class PropertyTable extends ExtensionProperty<IPropertyTable> {
 }
 
 /**
- * Implementation of a property table property for `EXT_structural_metadata`
+ * Defines a property within a {@link PropertyTable}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyTableProperty extends ExtensionProperty<IPropertyTableProperty> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -749,9 +748,9 @@ export class PropertyTableProperty extends ExtensionProperty<IPropertyTablePrope
 }
 
 /**
- * Implementation of a property texture for `EXT_structural_metadata`
+ * Defines a property {@link Texture} within a {@link StructuralMetadata}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyTexture extends ExtensionProperty<IPropertyTexture> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -801,9 +800,9 @@ export class PropertyTexture extends ExtensionProperty<IPropertyTexture> {
 }
 
 /**
- * Implementation of a property texture property for `EXT_structural_metadata`
+ * Defines a property of a {@link PropertyTexture}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyTextureProperty extends ExtensionProperty<IPropertyTextureProperty> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -880,9 +879,9 @@ export class PropertyTextureProperty extends ExtensionProperty<IPropertyTextureP
 }
 
 /**
- * Implementation of a property attribute for `EXT_structural_metadata`
+ * Defines a property attribute. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyAttribute extends ExtensionProperty<IPropertyAttribute> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -932,9 +931,9 @@ export class PropertyAttribute extends ExtensionProperty<IPropertyAttribute> {
 }
 
 /**
- * Implementation of a property attribute property for `EXT_structural_metadata`
+ * Defines a property within a {@link PropertyAttribute}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class PropertyAttributeProperty extends ExtensionProperty<IPropertyAttributeProperty> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
@@ -994,19 +993,19 @@ export class PropertyAttributeProperty extends ExtensionProperty<IPropertyAttrib
 }
 
 /**
- * Implementation of a metadata entity for `EXT_structural_metadata`
+ * Defines structural metadata associated with a {@link Node}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
-export class ElementStructuralMetadata extends ExtensionProperty<IElementStructuralMetadata> {
+export class NodeStructuralMetadata extends ExtensionProperty<INodeStructuralMetadata> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
 	public declare extensionName: typeof EXT_STRUCTURAL_METADATA;
-	public declare propertyType: 'ElementStructuralMetadata';
+	public declare propertyType: 'NodeStructuralMetadata';
 	public declare parentTypes: [PropertyType.NODE];
 
 	protected override init(): void {
 		this.extensionName = EXT_STRUCTURAL_METADATA;
-		this.propertyType = 'ElementStructuralMetadata';
+		this.propertyType = 'NodeStructuralMetadata';
 		this.parentTypes = [PropertyType.NODE];
 	}
 
@@ -1030,9 +1029,9 @@ export class ElementStructuralMetadata extends ExtensionProperty<IElementStructu
 }
 
 /**
- * Implementation of a structural metadata in a mesh primitive `EXT_structural_metadata`
+ * Defines structural metadata associated with a {@link Primitive}. See {@link EXTStructuralMetadata}.
  *
- * @internal
+ * @experimental
  */
 export class MeshPrimitiveStructuralMetadata extends ExtensionProperty<IMeshPrimitiveStructuralMetadata> {
 	static override EXTENSION_NAME = EXT_STRUCTURAL_METADATA;
