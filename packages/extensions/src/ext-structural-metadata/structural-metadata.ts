@@ -712,13 +712,12 @@ function _readPropertyTextureProperty(
 }
 
 function _readPropertyTable(ext: EXTStructuralMetadata, context: ReaderContext, propertyTableDef: PropertyTableDef) {
-	const propertyTable = ext.createPropertyTable();
+	const propertyTable = ext.createPropertyTable().setClass(propertyTableDef.class).setCount(propertyTableDef.count);
 
-	propertyTable.setClass(propertyTableDef.class);
 	if (propertyTableDef.name !== undefined) {
-		propertyTable.setName(propertyTableDef.name);
+		propertyTable.setObjectName(propertyTableDef.name);
 	}
-	propertyTable.setCount(propertyTableDef.count);
+
 	const properties = propertyTableDef.properties || {};
 	for (const propertyKey of Object.keys(properties)) {
 		const propertyTableProperty = _readPropertyTableProperty(ext, context, properties[propertyKey]);
@@ -735,8 +734,8 @@ function _readPropertyTableProperty(
 ) {
 	const propertyTableProperty = ext.createPropertyTableProperty();
 
-	const valuesData = getBufferViewData(context, propertyTablePropertyDef.values);
-	propertyTableProperty.setValues(valuesData);
+	const values = getBufferViewData(context, propertyTablePropertyDef.values);
+	propertyTableProperty.setValues(values);
 
 	if (propertyTablePropertyDef.arrayOffsets !== undefined) {
 		const arrayOffsetsData = getBufferViewData(context, propertyTablePropertyDef.arrayOffsets);
@@ -864,233 +863,294 @@ function _writeStructuralMetadataDef(
 }
 
 function _writeSchemaDef(schema: Schema): SchemaDef {
-	let classes: { [key: string]: ClassDef } | undefined;
-	let enums: { [key: string]: EnumDef } | undefined;
+	const schemaDef: SchemaDef = { id: schema.getId() };
 
 	const classKeys = schema.listClassKeys();
 	if (classKeys.length > 0) {
-		classes = {};
+		schemaDef.classes = {};
 		for (const classKey of classKeys) {
-			const classObject = schema.getClass(classKey);
-			if (classObject) {
-				const classDef = _writeClassDef(classObject);
-				classes[classKey] = classDef;
-			}
+			const classObject = schema.getClass(classKey)!;
+			const classDef = _writeClassDef(classObject);
+			schemaDef.classes[classKey] = classDef;
 		}
 	}
 
 	const enumKeys = schema.listEnumKeys();
 	if (enumKeys.length > 0) {
-		enums = {};
+		schemaDef.enums = {};
 		for (const enumKey of enumKeys) {
-			const enumObject = schema.getEnum(enumKey);
-			if (enumObject) {
-				const enumDef = _writeEnumDef(enumObject);
-				enums[enumKey] = enumDef;
-			}
+			const enumObject = schema.getEnum(enumKey)!;
+			const enumDef = _writeEnumDef(enumObject);
+			schemaDef.enums[enumKey] = enumDef;
 		}
 	}
 
-	return {
-		id: schema.getId(),
-		name: schema.getObjectName() ?? undefined,
-		description: schema.getDescription() ?? undefined,
-		version: schema.getVersion() ?? undefined,
-		classes: classes,
-		enums: enums,
-	} satisfies SchemaDef;
+	if (schema.getObjectName()) {
+		schemaDef.name = schema.getObjectName()!;
+	}
+
+	if (schema.getDescription()) {
+		schemaDef.description = schema.getDescription()!;
+	}
+
+	if (schema.getVersion()) {
+		schemaDef.version = schema.getVersion()!;
+	}
+
+	return schemaDef;
 }
 
 function _writeClassDef(classObject: Class): ClassDef {
-	let properties: { [key: string]: ClassPropertyDef } | undefined;
+	const classDef: ClassDef = {};
 
 	const propertyKeys = classObject.listPropertyKeys();
 	if (propertyKeys.length > 0) {
-		properties = {};
+		classDef.properties = {};
 		for (const propertyKey of propertyKeys) {
-			const propertyObject = classObject.getProperty(propertyKey);
-			if (propertyObject) {
-				const propertyDef = _writeClassPropertyDef(propertyObject);
-				properties[propertyKey] = propertyDef;
-			}
+			const propertyObject = classObject.getProperty(propertyKey)!;
+			classDef.properties[propertyKey] = _writeClassPropertyDef(propertyObject);
 		}
 	}
 
-	return {
-		name: classObject.getObjectName() ?? undefined,
-		description: classObject.getDescription() ?? undefined,
-		properties: properties,
-	} satisfies ClassDef;
+	if (classObject.getObjectName()) {
+		classDef.name = classObject.getObjectName()!;
+	}
+
+	if (classObject.getDescription()) {
+		classDef.description = classObject.getDescription()!;
+	}
+
+	return classDef;
 }
 
 function _writeClassPropertyDef(classProperty: ClassProperty): ClassPropertyDef {
-	const classPropertyDef: ClassPropertyDef = {
-		name: classProperty.getObjectName() ?? undefined,
-		description: classProperty.getDescription() ?? undefined,
-		type: classProperty.getType(),
-		componentType: classProperty.getComponentType() ?? undefined,
-		enumType: classProperty.getEnumType() ?? undefined,
-		count: classProperty.getCount() ?? undefined,
-		offset: classProperty.getOffset() ?? undefined,
-		scale: classProperty.getScale() ?? undefined,
-		max: classProperty.getMax() ?? undefined,
-		min: classProperty.getMin() ?? undefined,
-		noData: classProperty.getNoData() ?? undefined,
-		default: classProperty.getDefault() ?? undefined,
-	};
+	const classPropertyDef: ClassPropertyDef = { type: classProperty.getType() };
 
-	if (classProperty.getArray() !== false) {
+	if (classProperty.getArray()) {
 		classPropertyDef.array = classProperty.getArray();
 	}
 
-	if (classProperty.getNormalized() !== false) {
+	if (classProperty.getNormalized()) {
 		classPropertyDef.normalized = classProperty.getNormalized();
 	}
 
-	if (classProperty.getRequired() !== false) {
+	if (classProperty.getRequired()) {
 		classPropertyDef.required = classProperty.getRequired();
+	}
+
+	if (classProperty.getObjectName() != null) {
+		classPropertyDef.name = classProperty.getObjectName()!;
+	}
+
+	if (classProperty.getDescription() != null) {
+		classPropertyDef.description = classProperty.getDescription()!;
+	}
+
+	if (classProperty.getComponentType() != null) {
+		classPropertyDef.componentType = classProperty.getComponentType()!;
+	}
+
+	if (classProperty.getEnumType() != null) {
+		classPropertyDef.enumType = classProperty.getEnumType()!;
+	}
+
+	if (classProperty.getCount() != null) {
+		classPropertyDef.count = classProperty.getCount()!;
+	}
+
+	if (classProperty.getOffset() != null) {
+		classPropertyDef.offset = classProperty.getOffset()!;
+	}
+
+	if (classProperty.getScale() != null) {
+		classPropertyDef.scale = classProperty.getScale()!;
+	}
+
+	if (classProperty.getMax() != null) {
+		classPropertyDef.max = classProperty.getMax()!;
+	}
+
+	if (classProperty.getMin() != null) {
+		classPropertyDef.min = classProperty.getMin()!;
+	}
+
+	if (classProperty.getNoData() != null) {
+		classPropertyDef.noData = classProperty.getNoData()!;
+	}
+
+	if (classProperty.getDefault() != null) {
+		classPropertyDef.default = classProperty.getDefault()!;
 	}
 
 	return classPropertyDef;
 }
 
 function _writeEnumDef(enumObject: Enum): EnumDef {
-	return {
-		name: enumObject.getObjectName() ?? undefined,
-		description: enumObject.getDescription() ?? undefined,
+	const enumDef: EnumDef = {
 		valueType: enumObject.getValueType(),
 		values: enumObject.listValues().map(_writeEnumValueDef),
-	} satisfies EnumDef;
+	};
+
+	if (enumObject.getObjectName()) {
+		enumDef.name = enumObject.getObjectName()!;
+	}
+
+	if (enumObject.getDescription()) {
+		enumDef.description = enumObject.getDescription()!;
+	}
+
+	return enumDef;
 }
 
 function _writeEnumValueDef(enumValue: EnumValue): EnumValueDef {
-	return {
+	const enumValueDef: EnumValueDef = {
 		name: enumValue.getObjectName(),
-		description: enumValue.getDescription() ?? undefined,
 		value: enumValue.getValue(),
-	} satisfies EnumValueDef;
+	};
+
+	if (enumValue.getDescription()) {
+		enumValueDef.description = enumValue.getDescription()!;
+	}
+
+	return enumValueDef;
 }
 
 function _writePropertyTableDef(context: WriterContext, propertyTable: PropertyTable): PropertyTableDef {
-	let propertyDefs: { [key: string]: PropertyTablePropertyDef } | undefined;
-	const propertyKeys = propertyTable.listPropertyKeys();
-	if (propertyKeys.length > 0) {
-		propertyDefs = {};
-		for (const propertyKey of propertyKeys) {
-			const propertyTableProperty = propertyTable.getProperty(propertyKey);
-			if (propertyTableProperty) {
-				const propertyTablePropertyDef = _writePropertyTablePropertyDef(
-					context,
-					propertyKey,
-					propertyTableProperty,
-				);
-				propertyDefs[propertyKey] = propertyTablePropertyDef;
-			}
-		}
-	}
-
-	return {
-		name: propertyTable.getObjectName() ?? undefined,
+	const propertyTableDef: PropertyTableDef = {
 		class: propertyTable.getClass(),
 		count: propertyTable.getCount(),
-		properties: propertyDefs,
-	} satisfies PropertyTableDef;
+	};
+
+	if (propertyTable.getObjectName()) {
+		propertyTableDef.name = propertyTable.getObjectName()!;
+	}
+
+	const propertyKeys = propertyTable.listPropertyKeys();
+	if (propertyKeys.length > 0) {
+		propertyTableDef.properties = {};
+		for (const propertyKey of propertyKeys) {
+			const propertyTableProperty = propertyTable.getProperty(propertyKey)!;
+			const propertyTablePropertyDef = _writePropertyTablePropertyDef(context, propertyTableProperty);
+			propertyTableDef.properties[propertyKey] = propertyTablePropertyDef;
+		}
+	}
+
+	return propertyTableDef;
 }
 
-function _writePropertyTablePropertyDef(
-	context: WriterContext,
-	propertyName: string,
-	propertyTableProperty: PropertyTableProperty,
-) {
-	const valuesData = propertyTableProperty.getValues();
-	const values = context.otherBufferViewsIndexMap.get(valuesData);
-	if (values === undefined) {
-		throw new Error(`${EXT_STRUCTURAL_METADATA}: No values for property table property ${propertyName}`);
+function _writePropertyTablePropertyDef(context: WriterContext, propertyTableProperty: PropertyTableProperty) {
+	const values = propertyTableProperty.getValues();
+	const valuesIndex = context.otherBufferViewsIndexMap.get(values)!;
+
+	const propertyTablePropertyDef: PropertyTablePropertyDef = { values: valuesIndex };
+
+	if (propertyTableProperty.getArrayOffsets()) {
+		const arrayOffsets = propertyTableProperty.getArrayOffsets()!;
+		const arrayOffsetsIndex = context.otherBufferViewsIndexMap.get(arrayOffsets);
+		propertyTablePropertyDef.arrayOffsets = arrayOffsetsIndex;
 	}
 
-	let arrayOffsets: number | undefined;
-	const arrayOffsetsData = propertyTableProperty.getArrayOffsets();
-	if (arrayOffsetsData) {
-		arrayOffsets = context.otherBufferViewsIndexMap.get(arrayOffsetsData);
-		if (arrayOffsets === undefined) {
-			throw new Error(`${EXT_STRUCTURAL_METADATA}: No arrayOffsets for property table property ${propertyName}`);
-		}
+	if (propertyTableProperty.getStringOffsets()) {
+		const stringOffsets = propertyTableProperty.getStringOffsets()!;
+		const stringOffsetsIndex = context.otherBufferViewsIndexMap.get(stringOffsets);
+		propertyTablePropertyDef.stringOffsets = stringOffsetsIndex;
 	}
 
-	let stringOffsets: number | undefined;
-	const stringOffsetsData = propertyTableProperty.getStringOffsets();
-	if (stringOffsetsData) {
-		stringOffsets = context.otherBufferViewsIndexMap.get(stringOffsetsData);
-		if (stringOffsets === undefined) {
-			throw new Error(`${EXT_STRUCTURAL_METADATA}: No stringOffsets for property table property ${propertyName}`);
-		}
+	if (propertyTableProperty.getArrayOffsetType() != null) {
+		propertyTablePropertyDef.arrayOffsetType = propertyTableProperty.getArrayOffsetType();
 	}
 
-	return {
-		values: values,
-		arrayOffsets: arrayOffsets,
-		stringOffsets: stringOffsets,
-		arrayOffsetType: propertyTableProperty.getArrayOffsetType(),
-		stringOffsetType: propertyTableProperty.getStringOffsetType(),
-		offset: propertyTableProperty.getOffset() ?? undefined,
-		scale: propertyTableProperty.getScale() ?? undefined,
-		max: propertyTableProperty.getMax() ?? undefined,
-		min: propertyTableProperty.getMin() ?? undefined,
-	} satisfies PropertyTablePropertyDef;
+	if (propertyTableProperty.getStringOffsetType() != null) {
+		propertyTablePropertyDef.stringOffsetType = propertyTableProperty.getStringOffsetType();
+	}
+
+	if (propertyTableProperty.getOffset() != null) {
+		propertyTablePropertyDef.offset = propertyTableProperty.getOffset();
+	}
+
+	if (propertyTableProperty.getScale() != null) {
+		propertyTablePropertyDef.scale = propertyTableProperty.getScale();
+	}
+
+	if (propertyTableProperty.getMax() != null) {
+		propertyTablePropertyDef.max = propertyTableProperty.getMax();
+	}
+
+	if (propertyTableProperty.getMin() != null) {
+		propertyTablePropertyDef.min = propertyTableProperty.getMin();
+	}
+
+	return propertyTablePropertyDef;
 }
 
 function _writePropertyAttributeDef(propertyAttribute: PropertyAttribute): PropertyAttributeDef {
-	let propertyDefs: { [key: string]: PropertyAttributePropertyDef } | undefined;
+	const propertyAttributeDef: PropertyAttributeDef = {
+		class: propertyAttribute.getClass(),
+	};
+
+	if (propertyAttribute.getObjectName()) {
+		propertyAttributeDef.name = propertyAttribute.getObjectName()!;
+	}
+
 	const propertyKeys = propertyAttribute.listPropertyKeys();
 	if (propertyKeys.length > 0) {
-		propertyDefs = {};
+		propertyAttributeDef.properties = {};
 		for (const propertyKey of propertyKeys) {
-			const propertyAttributeProperty = propertyAttribute.getProperty(propertyKey);
-			if (propertyAttributeProperty) {
-				const propertyAttributePropertyDef = _writePropertyAttributePropertyDef(propertyAttributeProperty);
-				propertyDefs[propertyKey] = propertyAttributePropertyDef;
-			}
+			const propertyAttributeProperty = propertyAttribute.getProperty(propertyKey)!;
+			const propertyAttributePropertyDef = _writePropertyAttributePropertyDef(propertyAttributeProperty);
+			propertyAttributeDef.properties[propertyKey] = propertyAttributePropertyDef;
 		}
 	}
 
-	return {
-		name: propertyAttribute.getObjectName() ?? undefined,
-		class: propertyAttribute.getClass(),
-		properties: propertyDefs,
-	} satisfies PropertyAttributeDef;
+	return propertyAttributeDef;
 }
 
 function _writePropertyAttributePropertyDef(
 	propertyAttributeProperty: PropertyAttributeProperty,
 ): PropertyAttributePropertyDef {
-	return {
+	const propertyAttributePropertyDef: PropertyAttributePropertyDef = {
 		attribute: propertyAttributeProperty.getAttribute(),
-		offset: propertyAttributeProperty.getOffset() ?? undefined,
-		scale: propertyAttributeProperty.getScale() ?? undefined,
-		max: propertyAttributeProperty.getMax() ?? undefined,
-		min: propertyAttributeProperty.getMin() ?? undefined,
-	} satisfies PropertyAttributePropertyDef;
+	};
+
+	if (propertyAttributeProperty.getOffset() != null) {
+		propertyAttributePropertyDef.offset = propertyAttributeProperty.getOffset()!;
+	}
+
+	if (propertyAttributeProperty.getScale() != null) {
+		propertyAttributePropertyDef.scale = propertyAttributeProperty.getScale()!;
+	}
+
+	if (propertyAttributeProperty.getMax() != null) {
+		propertyAttributePropertyDef.max = propertyAttributeProperty.getMax()!;
+	}
+
+	if (propertyAttributeProperty.getMin() != null) {
+		propertyAttributePropertyDef.min = propertyAttributeProperty.getMin()!;
+	}
+
+	return propertyAttributePropertyDef;
 }
 
 function _writePropertyTextureDef(context: WriterContext, propertyTexture: PropertyTexture): PropertyTextureDef {
-	let propertyDefs: { [key: string]: PropertyTexturePropertyDef } | undefined;
+	const propertyTextureDef: PropertyTextureDef = {
+		class: propertyTexture.getClass(),
+	};
+
+	if (propertyTexture.getObjectName()) {
+		propertyTextureDef.name = propertyTexture.getObjectName()!;
+	}
+
 	const propertyKeys = propertyTexture.listPropertyKeys();
 	if (propertyKeys.length > 0) {
-		propertyDefs = {};
+		propertyTextureDef.properties = {};
 		for (const propertyKey of propertyKeys) {
-			const propertyTextureProperty = propertyTexture.getProperty(propertyKey);
-			if (propertyTextureProperty) {
-				const propertyTexturePropertyDef = _writePropertyTexturePropertyDef(context, propertyTextureProperty);
-				propertyDefs[propertyKey] = propertyTexturePropertyDef;
-			}
+			const propertyTextureProperty = propertyTexture.getProperty(propertyKey)!;
+			const propertyTexturePropertyDef = _writePropertyTexturePropertyDef(context, propertyTextureProperty);
+			propertyTextureDef.properties[propertyKey] = propertyTexturePropertyDef;
 		}
 	}
 
-	return {
-		name: propertyTexture.getObjectName() ?? undefined,
-		class: propertyTexture.getClass(),
-		properties: propertyDefs,
-	} satisfies PropertyTextureDef;
+	return propertyTextureDef;
 }
 
 function _writePropertyTexturePropertyDef(
@@ -1099,17 +1159,31 @@ function _writePropertyTexturePropertyDef(
 ): PropertyTexturePropertyDef {
 	const texture = propertyTextureProperty.getTexture()!;
 	const textureInfo = propertyTextureProperty.getTextureInfo()!;
-	const textureInfoDef = context.createTextureInfoDef(texture, textureInfo);
 	const channels = propertyTextureProperty.getChannels();
-	return {
-		channels: MathUtils.eq(channels, [0]) ? undefined : channels,
-		index: textureInfoDef.index,
-		texCoord: textureInfoDef.texCoord,
-		offset: propertyTextureProperty.getOffset() ?? undefined,
-		scale: propertyTextureProperty.getScale() ?? undefined,
-		max: propertyTextureProperty.getMax() ?? undefined,
-		min: propertyTextureProperty.getMin() ?? undefined,
-	} satisfies PropertyTexturePropertyDef;
+
+	const textureInfoDef: PropertyTexturePropertyDef = context.createTextureInfoDef(texture, textureInfo);
+
+	if (!MathUtils.eq(channels, [0])) {
+		textureInfoDef.channels = channels;
+	}
+
+	if (propertyTextureProperty.getOffset() != null) {
+		textureInfoDef.offset = propertyTextureProperty.getOffset();
+	}
+
+	if (propertyTextureProperty.getScale() != null) {
+		textureInfoDef.scale = propertyTextureProperty.getScale();
+	}
+
+	if (propertyTextureProperty.getMax() != null) {
+		textureInfoDef.max = propertyTextureProperty.getMax();
+	}
+
+	if (propertyTextureProperty.getMin() != null) {
+		textureInfoDef.min = propertyTextureProperty.getMin();
+	}
+
+	return textureInfoDef;
 }
 
 /******************************************************************************

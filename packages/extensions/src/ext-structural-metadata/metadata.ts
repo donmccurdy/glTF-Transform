@@ -513,7 +513,7 @@ export class Enum extends ExtensionProperty<IEnum> {
 			objectName: null,
 			description: null,
 			valueType: 'UINT16',
-			values: [],
+			values: new RefList<EnumValue>(),
 		});
 	}
 
@@ -1047,8 +1047,8 @@ export class MeshPrimitiveStructuralMetadata extends ExtensionProperty<IMeshPrim
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			propertyTextures: [],
-			propertyAttributes: [],
+			propertyTextures: new RefList<PropertyTexture>(),
+			propertyAttributes: new RefList<PropertyAttribute>(),
 		});
 	}
 

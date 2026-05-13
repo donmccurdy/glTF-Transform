@@ -1,0 +1,228 @@
+{
+  "extensions" : {
+    "EXT_structural_metadata" : {
+      "schema" : {
+        "id": "MultipleClassesSchema",
+        "classes" : {
+          "exampleMetadataClassA" : {
+            "name" : "Example metadata class A",
+            "description" : "First example metadata class",
+            "properties" : {
+              "example_FLOAT32" : {
+                "name" : "Example FLOAT32 property",
+                "description" : "An example property, with component type FLOAT32",
+                "type" : "SCALAR",
+                "componentType" : "FLOAT32"
+              },
+              "example_INT64" : {
+                "name" : "Example INT64 property",
+                "description" : "An example property, with component type INT64",
+                "type" : "SCALAR",
+                "componentType" : "INT64"
+              }
+            }
+          },
+          "exampleMetadataClassB" : {
+            "name" : "Example metadata class B",
+            "description" : "Second example metadata class",
+            "properties" : {
+              "example_UINT16" : {
+                "name" : "Example UINT16 property",
+                "description" : "An example property, with component type UINT16",
+                "type" : "SCALAR",
+                "componentType" : "UINT16"
+              },
+              "example_FLOAT64" : {
+                "name" : "Example FLOAT64 property",
+                "description" : "An example property, with component type FLOAT64",
+                "type" : "SCALAR",
+                "componentType" : "FLOAT64"
+              }
+            }
+          }
+        },
+        "enums" : {
+          "exampleEnumType" : {
+            "values" : [ {
+              "name" : "ExampleEnumValueA",
+              "value" : 0
+            }, {
+              "name" : "ExampleEnumValueB",
+              "value" : 1
+            }, {
+              "name" : "ExampleEnumValueC",
+              "value" : 2
+            } ]
+          }
+        }
+      },
+      "propertyTables" : [ {
+        "name" : "First example property table",
+        "class" : "exampleMetadataClassA",
+        "count" : 4,
+        "properties" : {
+          "example_FLOAT32" : {
+            "values" : 5
+          },
+          "example_INT64" : {
+            "values" : 6
+          }
+        }
+      }, {
+        "name" : "Second example property table",
+        "class" : "exampleMetadataClassB",
+        "count" : 4,
+        "properties" : {
+          "example_UINT16" : {
+            "values" : 7
+          },
+          "example_FLOAT64" : {
+            "values" : 8
+          }
+        }
+      } ]
+    }
+  },
+  "extensionsUsed" : [ "EXT_mesh_features", "EXT_structural_metadata" ],
+  "accessors" : [ {
+    "bufferView" : 0,
+    "byteOffset" : 0,
+    "componentType" : 5123,
+    "count" : 24,
+    "type" : "SCALAR",
+    "max" : [ 15 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 1,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 1.0, 1.0, 0.0 ],
+    "min" : [ 0.0, 0.0, 0.0 ]
+  }, {
+    "bufferView" : 2,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.0, 0.0, 1.0 ],
+    "min" : [ 0.0, 0.0, 1.0 ]
+  }, {
+    "bufferView" : 3,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 4,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  } ],
+  "asset" : {
+    "generator" : "JglTF from https://github.com/javagl/JglTF",
+    "version" : "2.0"
+  },
+  "buffers" : [ {
+    "uri" : "data:application/gltf-buffer;base64,AAABAAIAAQADAAIABAAFAAYABQAHAAYACAAJAAoACQALAAoADAANAA4ADQAPAA4AAAAAAAAAAAAAAAAAZmbmPgAAAAAAAAAAAAAAAGZm5j4AAAAAZmbmPmZm5j4AAAAAzcwMPwAAAAAAAAAAAACAPwAAAAAAAAAAzcwMP2Zm5j4AAAAAAACAP2Zm5j4AAAAAAAAAAM3MDD8AAAAAZmbmPs3MDD8AAAAAAAAAAAAAgD8AAAAAZmbmPgAAgD8AAAAAzcwMP83MDD8AAAAAAACAP83MDD8AAAAAzcwMPwAAgD8AAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AwAAAAMAAAADAAAAAwAAAAIAAAACAAAAAgAAAAIAAAABAAAAAQAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAADAAAAAwAAAAMAAAACAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "byteLength" : 560
+  }, {
+    "uri" : "data:application/gltf-buffer;base64,zcyMP83MDEAzM1NAzcyMQIfWEgAAAAAAzsojAAAAAAAVvzQAAAAAAFKzRQAAAAAA",
+    "byteLength" : 48
+  }, {
+    "uri" : "data:application/gltf-buffer;base64,OTCgWweHbrKHiJtTycDzP9GSx9PywwJAX2HB/YCnC0Da5sb0hEUSQA==",
+    "byteLength" : 40
+  } ],
+  "bufferViews" : [ {
+    "buffer" : 0,
+    "byteOffset" : 0,
+    "byteLength" : 48,
+    "target" : 34963
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 48,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 240,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 432,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 496,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 0,
+    "byteLength" : 16
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 16,
+    "byteLength" : 32
+  }, {
+    "buffer" : 2,
+    "byteOffset" : 0,
+    "byteLength" : 8
+  }, {
+    "buffer" : 2,
+    "byteOffset" : 8,
+    "byteLength" : 32
+  } ],
+  "materials" : [ {
+    "pbrMetallicRoughness" : {
+      "baseColorFactor" : [ 0.5, 1.0, 0.5, 1.0 ],
+      "metallicFactor" : 0.0,
+      "roughnessFactor" : 1.0
+    },
+    "alphaMode" : "OPAQUE",
+    "doubleSided" : true
+  } ],
+  "meshes" : [ {
+    "primitives" : [ {
+      "extensions" : {
+        "EXT_mesh_features" : {
+          "featureIds" : [ {
+            "featureCount" : 4,
+            "attribute" : 0,
+            "propertyTable" : 0
+          }, {
+            "featureCount" : 4,
+            "attribute" : 1,
+            "propertyTable" : 1
+          } ]
+        }
+      },
+      "attributes" : {
+        "POSITION" : 1,
+        "NORMAL" : 2,
+        "_FEATURE_ID_0" : 3,
+        "_FEATURE_ID_1" : 4
+      },
+      "indices" : 0,
+      "material" : 0,
+      "mode" : 4
+    } ]
+  } ],
+  "nodes" : [ {
+    "mesh" : 0
+  } ],
+  "scene" : 0,
+  "scenes" : [ {
+    "nodes" : [ 0 ]
+  } ]
+}

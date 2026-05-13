@@ -4,7 +4,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 import test from 'ava';
 
-import path, { dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,7 +13,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 test('id attribute', async (t) => {
 	const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
-	const srcDocument = await io.read(path.join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf'));
+	const srcDocument = await io.read(join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf'));
 
 	t.true(srcDocument.hasExtension('EXT_mesh_features'), 'reads EXT_mesh_features');
 
@@ -38,7 +38,7 @@ test('id attribute', async (t) => {
 
 test('id texture', async (t) => {
 	const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
-	const srcDocument = await io.read(path.join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdTexture.gltf'));
+	const srcDocument = await io.read(join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdTexture.gltf'));
 
 	t.true(srcDocument.hasExtension('EXT_mesh_features'), 'reads EXT_mesh_features');
 
@@ -68,5 +68,5 @@ test('clone', (t) => {
 	const doc = new Document();
 	doc.createExtension(EXTMeshFeatures);
 
-	t.is(cloneDocument(doc).getRoot().listExtensionsUsed().length, 1, 'copy EXTMeshFeatures');
+	t.true(cloneDocument(doc).hasExtension('EXT_mesh_features'), 'copy EXTMeshFeatures');
 });

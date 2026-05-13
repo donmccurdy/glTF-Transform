@@ -1,0 +1,177 @@
+{
+  "extensions" : {
+    "EXT_structural_metadata" : {
+      "schema" : {
+        "id": "MultipleFeatureIdsAndPropertiesSchema",
+        "classes" : {
+          "exampleMetadataClass" : {
+            "name" : "Example metadata class",
+            "description" : "An example metadata class",
+            "properties" : {
+              "example_VEC3_FLOAT32" : {
+                "name" : "Example VEC3 FLOAT32 property",
+                "description" : "An example property, with type VEC3, with component type FLOAT32",
+                "type" : "VEC3",
+                "componentType" : "FLOAT32"
+              },
+              "example_STRING" : {
+                "name" : "Example STRING property",
+                "description" : "An example property, with type STRING",
+                "type" : "STRING"
+              }
+            }
+          }
+        }
+      },
+      "propertyTables" : [ {
+        "name" : "Example property table",
+        "class" : "exampleMetadataClass",
+        "count" : 4,
+        "properties" : {
+          "example_VEC3_FLOAT32" : {
+            "values" : 5
+          },
+          "example_STRING" : {
+            "values" : 6,
+            "stringOffsets" : 7
+          }
+        }
+      } ]
+    }
+  },
+  "extensionsUsed" : [ "EXT_mesh_features", "EXT_structural_metadata" ],
+  "accessors" : [ {
+    "bufferView" : 0,
+    "byteOffset" : 0,
+    "componentType" : 5123,
+    "count" : 24,
+    "type" : "SCALAR",
+    "max" : [ 15 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 1,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 1.0, 1.0, 0.0 ],
+    "min" : [ 0.0, 0.0, 0.0 ]
+  }, {
+    "bufferView" : 2,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 16,
+    "type" : "VEC3",
+    "max" : [ 0.0, 0.0, 1.0 ],
+    "min" : [ 0.0, 0.0, 1.0 ]
+  }, {
+    "bufferView" : 3,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  }, {
+    "bufferView" : 4,
+    "byteOffset" : 0,
+    "componentType" : 5121,
+    "count" : 16,
+    "type" : "SCALAR",
+    "max" : [ 3 ],
+    "min" : [ 0 ]
+  } ],
+  "asset" : {
+    "generator" : "JglTF from https://github.com/javagl/JglTF",
+    "version" : "2.0"
+  },
+  "buffers" : [ {
+    "uri" : "data:application/gltf-buffer;base64,AAABAAIAAQADAAIABAAFAAYABQAHAAYACAAJAAoACQALAAoADAANAA4ADQAPAA4AAAAAAAAAAAAAAAAAZmbmPgAAAAAAAAAAAAAAAGZm5j4AAAAAZmbmPmZm5j4AAAAAzcwMPwAAAAAAAAAAAACAPwAAAAAAAAAAzcwMP2Zm5j4AAAAAAACAP2Zm5j4AAAAAAAAAAM3MDD8AAAAAZmbmPs3MDD8AAAAAAAAAAAAAgD8AAAAAZmbmPgAAgD8AAAAAzcwMP83MDD8AAAAAAACAP83MDD8AAAAAzcwMPwAAgD8AAAAAAACAPwAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAEAAAACAAAAAgAAAAIAAAACAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAACAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "byteLength" : 560
+  }, {
+    "uri" : "data:application/gltf-buffer;base64,AAAAAM3MzD3NzEw+AACAP83MjD+amZk/AAAAQGZmBkDNzAxAAABAQGZmRkDNzExAUmFpbiDwn4ynVGh1bmRlciDim4hTdW4g4piAU25vdyDwn4yoAAAAAAkAAAAUAAAAGwAAACQAAAA=",
+    "byteLength" : 104
+  } ],
+  "bufferViews" : [ {
+    "buffer" : 0,
+    "byteOffset" : 0,
+    "byteLength" : 48,
+    "target" : 34963
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 48,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 240,
+    "byteLength" : 192,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 432,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 0,
+    "byteOffset" : 496,
+    "byteLength" : 64,
+    "byteStride" : 4,
+    "target" : 34962
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 0,
+    "byteLength" : 48
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 48,
+    "byteLength" : 36
+  }, {
+    "buffer" : 1,
+    "byteOffset" : 84,
+    "byteLength" : 20
+  } ],
+  "materials" : [ {
+    "pbrMetallicRoughness" : {
+      "baseColorFactor" : [ 0.5, 1.0, 0.5, 1.0 ],
+      "metallicFactor" : 0.0,
+      "roughnessFactor" : 1.0
+    },
+    "alphaMode" : "OPAQUE",
+    "doubleSided" : true
+  } ],
+  "meshes" : [ {
+    "primitives" : [ {
+      "extensions" : {
+        "EXT_mesh_features" : {
+          "featureIds" : [ {
+            "featureCount" : 4,
+            "attribute" : 0,
+            "propertyTable" : 0
+          }, {
+            "featureCount" : 4,
+            "attribute" : 1,
+            "propertyTable" : 0
+          } ]
+        }
+      },
+      "attributes" : {
+        "POSITION" : 1,
+        "NORMAL" : 2,
+        "_FEATURE_ID_0" : 3,
+        "_FEATURE_ID_1" : 4
+      },
+      "indices" : 0,
+      "material" : 0,
+      "mode" : 4
+    } ]
+  } ],
+  "nodes" : [ {
+    "mesh" : 0
+  } ],
+  "scene" : 0,
+  "scenes" : [ {
+    "nodes" : [ 0 ]
+  } ]
+}
