@@ -1,32 +1,32 @@
 import { ExtensionProperty, type IProperty } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 import type { PropertyTable } from '../ext-structural-metadata/index.js';
-import type { FeatureIdTexture } from './feature-id-texture.js';
+import type { FeatureIDTexture } from './feature-id-texture.js';
 
-interface IFeatureId extends IProperty {
+interface IFeatureID extends IProperty {
 	featureCount: number;
 	nullFeatureId: number | null;
 	label: string | null;
 	attribute: number | null;
-	texture: FeatureIdTexture;
+	texture: FeatureIDTexture;
 	propertyTable: PropertyTable;
 }
 
 /**
- * Implementation of a feature ID for `EXT_mesh_features`
+ * Defines a Feature ID on a {@link Primitive}. See {@link EXTMeshFeatures}.
  *
- * @internal
+ * @experimental
  */
-export class FeatureId extends ExtensionProperty<IFeatureId> {
+export class FeatureID extends ExtensionProperty<IFeatureID> {
 	static override EXTENSION_NAME = EXT_MESH_FEATURES;
 	public declare extensionName: typeof EXT_MESH_FEATURES;
-	public declare propertyType: 'FeatureId';
-	public declare parentTypes: ['MeshFeatures'];
+	public declare propertyType: 'FeatureID';
+	public declare parentTypes: ['Features'];
 
 	protected override init(): void {
 		this.extensionName = EXT_MESH_FEATURES;
-		this.propertyType = 'FeatureId';
-		this.parentTypes = ['MeshFeatures'];
+		this.propertyType = 'FeatureID';
+		this.parentTypes = ['Features'];
 	}
 
 	protected override getDefaults() {
@@ -42,20 +42,23 @@ export class FeatureId extends ExtensionProperty<IFeatureId> {
 	getFeatureCount(): number {
 		return this.get('featureCount');
 	}
+
 	setFeatureCount(featureCount: number) {
 		return this.set('featureCount', featureCount);
 	}
 
-	getNullFeatureId(): number | null {
+	getNullFeatureID(): number | null {
 		return this.get('nullFeatureId');
 	}
-	setNullFeatureId(nullFeatureId: number | null) {
+
+	setNullFeatureID(nullFeatureId: number | null) {
 		return this.set('nullFeatureId', nullFeatureId);
 	}
 
 	getLabel(): string | null {
 		return this.get('label');
 	}
+
 	setLabel(label: string | null) {
 		return this.set('label', label);
 	}
@@ -63,20 +66,23 @@ export class FeatureId extends ExtensionProperty<IFeatureId> {
 	getAttribute(): number | null {
 		return this.get('attribute');
 	}
+
 	setAttribute(attribute: number | null) {
 		return this.set('attribute', attribute);
 	}
 
-	getTexture(): FeatureIdTexture | null {
+	getTexture(): FeatureIDTexture | null {
 		return this.getRef('texture');
 	}
-	setTexture(texture: FeatureIdTexture | null) {
+
+	setTexture(texture: FeatureIDTexture | null) {
 		return this.setRef('texture', texture);
 	}
 
 	getPropertyTable(): PropertyTable | null {
 		return this.getRef('propertyTable');
 	}
+
 	setPropertyTable(propertyTable: PropertyTable | null) {
 		return this.setRef('propertyTable', propertyTable);
 	}

@@ -1,28 +1,28 @@
 import { ExtensionProperty, type IProperty, type Texture, TextureInfo } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 
-interface IFeatureIdTexture extends IProperty {
+interface IFeatureIDTexture extends IProperty {
 	channels: number[];
 	texture: Texture;
 	textureInfo: TextureInfo;
 }
 
 /**
- * Implementation of a feature ID texture for `EXT_mesh_features`
+ * Defines a Feature ID {@link Texture}. See {@link EXTMeshFeatures}.
  *
- * @internal
+ * @experimental
  */
-export class FeatureIdTexture extends ExtensionProperty<IFeatureIdTexture> {
+export class FeatureIDTexture extends ExtensionProperty<IFeatureIDTexture> {
 	static override EXTENSION_NAME = EXT_MESH_FEATURES;
 
 	public declare extensionName: typeof EXT_MESH_FEATURES;
-	public declare propertyType: 'FeatureIdTexture';
-	public declare parentTypes: ['FeatureId'];
+	public declare propertyType: 'FeatureIDTexture';
+	public declare parentTypes: ['FeatureID'];
 
 	protected override init(): void {
 		this.extensionName = EXT_MESH_FEATURES;
-		this.propertyType = 'FeatureIdTexture';
-		this.parentTypes = ['FeatureId'];
+		this.propertyType = 'FeatureIDTexture';
+		this.parentTypes = ['FeatureID'];
 	}
 
 	protected override getDefaults() {
@@ -39,6 +39,7 @@ export class FeatureIdTexture extends ExtensionProperty<IFeatureIdTexture> {
 	getChannels(): number[] {
 		return this.get('channels');
 	}
+
 	setChannels(channels: number[]) {
 		return this.set('channels', channels);
 	}
@@ -46,6 +47,7 @@ export class FeatureIdTexture extends ExtensionProperty<IFeatureIdTexture> {
 	getTexture(): Texture | null {
 		return this.getRef('texture');
 	}
+
 	setTexture(texture: Texture | null) {
 		return this.setRef('texture', texture);
 	}

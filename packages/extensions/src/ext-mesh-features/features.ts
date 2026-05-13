@@ -1,13 +1,15 @@
 import { ExtensionProperty, type IProperty, PropertyType, RefSet } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
-import type { FeatureId } from './feature-id.js';
+import type { FeatureID } from './feature-id.js';
 
 interface IFeatures extends IProperty {
-	featureIds: RefSet<FeatureId>;
+	featureIds: RefSet<FeatureID>;
 }
 
 /**
- * TODO
+ * Defines a list of Feature IDs on a {@link Primitive}. See {@Link EXTMeshFeatures}.
+ *
+ * @experimental
  */
 export class Features extends ExtensionProperty<IFeatures> {
 	static override EXTENSION_NAME = EXT_MESH_FEATURES;
@@ -27,13 +29,15 @@ export class Features extends ExtensionProperty<IFeatures> {
 		});
 	}
 
-	listFeatureIds(): FeatureId[] {
+	listFeatureIDs(): FeatureID[] {
 		return this.listRefs('featureIds');
 	}
-	addFeatureId(featureId: FeatureId) {
+
+	addFeatureID(featureId: FeatureID) {
 		return this.addRef('featureIds', featureId);
 	}
-	removeFeatureId(featureId: FeatureId) {
+
+	removeFeatureID(featureId: FeatureID) {
 		return this.removeRef('featureIds', featureId);
 	}
 }

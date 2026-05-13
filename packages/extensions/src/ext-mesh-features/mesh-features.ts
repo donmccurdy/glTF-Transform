@@ -8,8 +8,8 @@ import {
 } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES, EXT_STRUCTURAL_METADATA } from '../constants.js';
 import type { StructuralMetadata } from '../ext-structural-metadata/index.js';
-import { FeatureId } from './feature-id.js';
-import { FeatureIdTexture } from './feature-id-texture.js';
+import { FeatureID } from './feature-id.js';
+import { FeatureIDTexture } from './feature-id-texture.js';
 import { Features } from './features.js';
 
 const NAME = EXT_MESH_FEATURES;
@@ -43,19 +43,19 @@ const NAME = EXT_MESH_FEATURES;
 // `TextureInfo` object from the model class.
 //
 interface MeshFeaturesDef {
-	featureIds: FeatureIdDef[];
+	featureIds: FeatureIDDef[];
 }
 
-interface FeatureIdDef {
+interface FeatureIDDef {
 	featureCount: number;
 	nullFeatureId?: number;
 	label?: string;
 	attribute?: number;
-	texture?: FeatureIdTextureDef;
+	texture?: FeatureIDTextureDef;
 	propertyTable?: number;
 }
 
-interface FeatureIdTextureDef extends GLTF.ITextureInfo {
+interface FeatureIDTextureDef extends GLTF.ITextureInfo {
 	channels?: number[];
 }
 //============================================================================
@@ -66,8 +66,8 @@ interface FeatureIdTextureDef extends GLTF.ITextureInfo {
  *
  * Properties:
  * - {@link Features}
- * - {@link MeshFeaturesFeatureId}
- * - {@link FeatureIdTexture}
+ * - {@link FeatureID}
+ * - {@link FeatureIDTexture}
  *
  * ### Example
  *
@@ -75,7 +75,7 @@ interface FeatureIdTextureDef extends GLTF.ITextureInfo {
  * const document = new Document();
  *
  * // Create an Extension attached to the Document.
- * const extMeshFeatures = document.createExtension(EXTMeshFeatures);
+ * const meshFeaturesExt = document.createExtension(EXTMeshFeatures);
  *
  * // Define an array of IDs
  * const ids = [ 12, 23, 34, 45, 56, 78, 78, 89, 90 ];
@@ -96,16 +96,16 @@ interface FeatureIdTextureDef extends GLTF.ITextureInfo {
  *
  * // Create a `FeatureId` object. This object indicates that the IDs
  * // are stored in the attribute `_FEATURE_ID_${attributeNumber}`
- * const featureId = extMeshFeatures.createFeatureId();
- * featureId.setFeatureCount(new Set(ids).size);
- * featureId.setAttribute(attributeNumber);
+ * const featureID = meshFeaturesExt.createFeatureID();
+ * featureID.setFeatureCount(new Set(ids).size);
+ * featureID.setAttribute(attributeNumber);
  *
- * // Create a `MeshFeatures` object that contains the
+ * // Create a `Features` object that contains the
  * // created `FeatureID`, and store it as an extension
  * // object in the `Primitive`
- * const meshFeatures = extMeshFeatures.createMeshFeatures();
- * meshFeatures.addFeatureId(featureId);
- * primitive.setExtension("EXT_mesh_features", meshFeatures);
+ * const features = meshFeaturesExt.createMeshFeatures();
+ * features.addFeatureID(featureID);
+ * primitive.setExtension("EXT_mesh_features", features);
  *
  * // Assign the `Primitive` to a `Mesh`
  * const mesh = document.createMesh();
@@ -119,7 +119,7 @@ interface FeatureIdTextureDef extends GLTF.ITextureInfo {
  * const written = await io.writeJSON(document);
  * ```
  *
- * @internal
+ * @experimental
  */
 export class EXTMeshFeatures extends Extension {
 	public override readonly extensionName = EXT_MESH_FEATURES;
@@ -130,11 +130,11 @@ export class EXTMeshFeatures extends Extension {
 	}
 
 	createFeatureId() {
-		return new FeatureId(this.document.getGraph());
+		return new FeatureID(this.document.getGraph());
 	}
 
 	createFeatureIdTexture() {
-		return new FeatureIdTexture(this.document.getGraph());
+		return new FeatureIDTexture(this.document.getGraph());
 	}
 
 	public override read(context: ReaderContext): this {
@@ -154,70 +154,69 @@ export class EXTMeshFeatures extends Extension {
 			return;
 		}
 
-		const meshFeatures = this.createFeatures();
+		const features = this.createFeatures();
 
 		const meshFeaturesDef = primDef.extensions[NAME] as MeshFeaturesDef;
-		const featureIdDefs = meshFeaturesDef.featureIds;
-		for (const featureIdDef of featureIdDefs) {
-			const featureId = this.createFeatureId();
-			this.readFeatureId(context, featureId, featureIdDef);
-			meshFeatures.addFeatureId(featureId);
+		for (const featureIDDef of meshFeaturesDef.featureIds) {
+			const featureID = this.createFeatureId();
+			this.readFeatureID(context, featureID, featureIDDef);
+			features.addFeatureID(featureID);
 		}
 
 		const mesh = context.meshes[meshIndex];
-		mesh.listPrimitives()[primIndex].setExtension(NAME, meshFeatures);
+		mesh.listPrimitives()[primIndex].setExtension(NAME, features);
 	}
 
-	private readFeatureId(context: ReaderContext, featureId: FeatureId, featureIdDef: FeatureIdDef) {
-		featureId.setFeatureCount(featureIdDef.featureCount);
-		if (featureIdDef.nullFeatureId !== undefined) {
-			featureId.setNullFeatureId(featureIdDef.nullFeatureId);
+	private readFeatureID(context: ReaderContext, featureID: FeatureID, featureIDDef: FeatureIDDef) {
+		featureID.setFeatureCount(featureIDDef.featureCount);
+
+		if (featureIDDef.nullFeatureId !== undefined) {
+			featureID.setNullFeatureID(featureIDDef.nullFeatureId);
 		}
-		if (featureIdDef.label !== undefined) {
-			featureId.setLabel(featureIdDef.label);
+		if (featureIDDef.label !== undefined) {
+			featureID.setLabel(featureIDDef.label);
 		}
-		if (featureIdDef.attribute !== undefined) {
-			featureId.setAttribute(featureIdDef.attribute);
+		if (featureIDDef.attribute !== undefined) {
+			featureID.setAttribute(featureIDDef.attribute);
 		}
 
-		const featureIdTextureDef = featureIdDef.texture;
-		if (featureIdTextureDef !== undefined) {
-			const featureIdTexture = this.createFeatureIdTexture();
-			this.readFeatureIdTexture(context, featureIdTexture, featureIdTextureDef);
-			featureId.setTexture(featureIdTexture);
+		const featureIDTextureDef = featureIDDef.texture;
+		if (featureIDTextureDef !== undefined) {
+			const featureIDTexture = this.createFeatureIdTexture();
+			this.readFeatureIDTexture(context, featureIDTexture, featureIDTextureDef);
+			featureID.setTexture(featureIDTexture);
 		}
 
-		if (featureIdDef.propertyTable !== undefined) {
+		if (featureIDDef.propertyTable !== undefined) {
 			const root = this.document.getRoot();
 			const structuralMetadata = root.getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA);
-			if (structuralMetadata) {
-				const propertyTables = structuralMetadata.listPropertyTables();
-				const propertyTable = propertyTables[featureIdDef.propertyTable];
-				featureId.setPropertyTable(propertyTable);
-			} else {
-				throw new Error(`${NAME}: No EXT_structural_metadata definition for looking up property tables`);
+			if (!structuralMetadata) {
+				throw new Error(`${NAME}: Missing EXT_structural_metadata root extension.`);
 			}
+
+			const propertyTables = structuralMetadata.listPropertyTables();
+			const propertyTable = propertyTables[featureIDDef.propertyTable];
+			featureID.setPropertyTable(propertyTable);
 		}
 	}
 
-	private readFeatureIdTexture(
+	private readFeatureIDTexture(
 		context: ReaderContext,
-		featureIdTexture: FeatureIdTexture,
-		featureIdTextureDef: FeatureIdTextureDef,
+		featureIDTexture: FeatureIDTexture,
+		featureIDTextureDef: FeatureIDTextureDef,
 	) {
 		const jsonDoc = context.jsonDoc;
 		const textureDefs = jsonDoc.json.textures || [];
-		if (featureIdTextureDef.channels) {
-			featureIdTexture.setChannels(featureIdTextureDef.channels);
+
+		if (featureIDTextureDef.channels) {
+			featureIDTexture.setChannels(featureIDTextureDef.channels);
 		}
-		const source = textureDefs[featureIdTextureDef.index].source;
+
+		const source = textureDefs[featureIDTextureDef.index].source;
 		if (source !== undefined) {
 			const texture = context.textures[source];
-			featureIdTexture.setTexture(texture);
-			const textureInfo = featureIdTexture.getTextureInfo();
-			if (textureInfo) {
-				context.setTextureInfo(textureInfo, featureIdTextureDef);
-			}
+			featureIDTexture.setTexture(texture);
+			context.setTextureInfo(featureIDTexture.getTextureInfo()!, featureIDTextureDef);
 		}
 	}
 
@@ -229,10 +228,7 @@ export class EXTMeshFeatures extends Extension {
 		}
 
 		for (const mesh of this.document.getRoot().listMeshes()) {
-			const meshIndex = context.meshIndexMap.get(mesh);
-			if (meshIndex === undefined) {
-				continue;
-			}
+			const meshIndex = context.meshIndexMap.get(mesh)!;
 			const meshDef = meshDefs[meshIndex];
 			mesh.listPrimitives().forEach((prim, primIndex) => {
 				const primDef = meshDef.primitives[primIndex];
@@ -249,53 +245,53 @@ export class EXTMeshFeatures extends Extension {
 		}
 
 		const meshFeaturesDef = { featureIds: [] } as MeshFeaturesDef;
-		meshFeatures.listFeatureIds().forEach((featureId) => {
-			const featureIdDef = this.createFeatureIdDef(context, featureId);
-			meshFeaturesDef.featureIds.push(featureIdDef);
+		meshFeatures.listFeatureIDs().forEach((featureID) => {
+			const featureIDDef = this.createFeatureIDDef(context, featureID);
+			meshFeaturesDef.featureIds.push(featureIDDef);
 		});
+
 		primDef.extensions = primDef.extensions || {};
 		primDef.extensions[NAME] = meshFeaturesDef;
 	}
 
-	private createFeatureIdDef(context: WriterContext, featureId: FeatureId): FeatureIdDef {
-		let textureDef: FeatureIdTextureDef | undefined;
-		const featureIdTexture = featureId.getTexture();
-		if (featureIdTexture) {
-			const texture = featureIdTexture.getTexture();
-			const textureInfo = featureIdTexture.getTextureInfo();
+	private createFeatureIDDef(context: WriterContext, featureID: FeatureID): FeatureIDDef {
+		let textureDef: FeatureIDTextureDef | undefined;
+		const featureIDTexture = featureID.getTexture();
+		if (featureIDTexture) {
+			const texture = featureIDTexture.getTexture();
+			const textureInfo = featureIDTexture.getTextureInfo();
 			if (texture && textureInfo) {
-				const basicTextureDef = context.createTextureInfoDef(texture, textureInfo);
-				const channels = featureIdTexture.getChannels();
+				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo);
+				const channels = featureIDTexture.getChannels();
 				textureDef = {
-					index: basicTextureDef.index,
-					texCoord: basicTextureDef.texCoord,
+					index: textureInfoDef.index,
+					texCoord: textureInfoDef.texCoord,
 					channels: MathUtils.eq(channels, [0]) ? undefined : channels,
 				};
 			}
 		}
 
 		let propertyTableDef: number | undefined;
-		const propertyTable = featureId.getPropertyTable();
+		const propertyTable = featureID.getPropertyTable();
 		if (propertyTable) {
 			const root = this.document.getRoot();
 			const structuralMetadata = root.getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA);
-			if (structuralMetadata) {
-				const propertyTables = structuralMetadata.listPropertyTables();
-				propertyTableDef = propertyTables.indexOf(propertyTable);
-			} else {
-				throw new Error(`${NAME}: No EXT_structural_metadata definition for looking up property table index`);
+			if (!structuralMetadata) {
+				throw new Error(`${NAME}: Missing EXT_structural_metadata root extension.`);
 			}
+			const propertyTables = structuralMetadata.listPropertyTables();
+			propertyTableDef = propertyTables.indexOf(propertyTable);
 		}
 
-		const featureIdDef: FeatureIdDef = {
-			featureCount: featureId.getFeatureCount(),
-			nullFeatureId: featureId.getNullFeatureId() ?? undefined,
-			label: featureId.getLabel() ?? undefined,
-			attribute: featureId.getAttribute() ?? undefined,
+		const featureIDDef: FeatureIDDef = {
+			featureCount: featureID.getFeatureCount(),
+			nullFeatureId: featureID.getNullFeatureID() ?? undefined,
+			label: featureID.getLabel() ?? undefined,
+			attribute: featureID.getAttribute() ?? undefined,
 			texture: textureDef,
 			propertyTable: propertyTableDef,
 		};
 
-		return featureIdDef;
+		return featureIDDef;
 	}
 }
