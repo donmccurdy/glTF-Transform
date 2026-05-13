@@ -112,6 +112,10 @@ export function unwrap(_options: UnwrapOptions): Transform {
 	}
 
 	return createTransform(NAME, async (document: Document): Promise<void> => {
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('unwrap: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		await watlas!.Initialize();
 
 		switch (options.groupBy) {

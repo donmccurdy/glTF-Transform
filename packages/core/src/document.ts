@@ -177,8 +177,17 @@ export class Document {
 	}
 
 	/**********************************************************************************************
-	 * Extension factory methods.
+	 * Extension management methods.
 	 */
+
+	/**
+	 * Returns true if an {@link Extension} with the given name exists on the document, otherwise false.
+	 */
+	hasExtension(extensionName: string): boolean {
+		return this.getRoot()
+			.listExtensionsUsed()
+			.some((ext) => ext.extensionName === extensionName);
+	}
 
 	/**
 	 * Creates a new {@link Extension}, for the extension type of the given constructor. If the

@@ -1,6 +1,18 @@
-import { type Accessor, ComponentTypeToTypedArray, Document, Primitive, type TypedArray } from '@gltf-transform/core';
-import { convertPrimitiveToLines, convertPrimitiveToTriangles } from './convert-primitive-mode.js';
-import { assignDefaults, createIndicesEmpty, createPrimGroupKey, shallowCloneAccessor } from './utils.js';
+import {
+	type Accessor,
+	ComponentTypeToTypedArray,
+	Document,
+	type Primitive,
+	type TypedArray,
+} from '@gltf-transform/core';
+import {
+	assignDefaults,
+	createIndicesEmpty,
+	createPrimGroupKey,
+	getPrimitiveRestartIndex,
+	isPrimitiveRestartMode,
+	shallowCloneAccessor,
+} from './utils.js';
 
 interface JoinPrimitiveOptions {
 	skipValidation?: boolean;
@@ -11,8 +23,6 @@ const JOIN_PRIMITIVE_DEFAULTS: Required<JoinPrimitiveOptions> = {
 };
 
 const EMPTY_U32 = 2 ** 32 - 1;
-
-const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 /**
  * Given a list of compatible Mesh {@link Primitive Primitives}, returns new Primitive
@@ -43,28 +53,14 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 	// (1) Validation.
 	if (!options.skipValidation && new Set(prims.map(createPrimGroupKey)).size > 1) {
 		throw new Error(
-			'' +
-				'Requires >=2 Primitives, sharing the same Material ' +
+			'Requires >=2 Primitives, sharing the same Material ' +
 				'and Mode, with compatible vertex attributes and indices.',
 		);
 	}
 
-	// (2) Convert all prims to POINTS, LINES, or TRIANGLES.
-	for (const prim of prims) {
-		switch (prim.getMode()) {
-			case LINE_STRIP:
-			case LINE_LOOP:
-				convertPrimitiveToLines(prim);
-				break;
-			case TRIANGLE_STRIP:
-			case TRIANGLE_FAN:
-				convertPrimitiveToTriangles(prim);
-				break;
-		}
-	}
-
 	const primRemaps = [] as Uint32Array<ArrayBuffer>[]; // remap[srcIndex] → dstIndex, by prim
-	const primVertexCounts = new Uint32Array(prims.length); // vertex count, by prim
+
+	const isRestartEnabled = isPrimitiveRestartMode(templatePrim.getMode()) && !!templatePrim.getIndices();
 
 	let dstVertexCount = 0;
 	let dstIndicesCount = 0;
@@ -76,14 +72,14 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 		const srcVertexCount = srcPrim.getAttribute('POSITION')!.getCount();
 		const srcIndicesArray = srcIndices ? srcIndices.getArray() : null;
 		const srcIndicesCount = srcIndices ? srcIndices.getCount() : srcVertexCount;
+		const srcRestart = srcIndices ? getPrimitiveRestartIndex(srcIndices.getComponentType()) : null;
 
 		const remap = new Uint32Array(srcVertexCount).fill(EMPTY_U32);
 
 		for (let i = 0; i < srcIndicesCount; i++) {
 			const index = srcIndicesArray ? srcIndicesArray[i] : i;
-			if (remap[index] === EMPTY_U32) {
+			if (remap[index] === EMPTY_U32 && index !== srcRestart) {
 				remap[index] = dstVertexCount++;
-				primVertexCounts[primIndex]++;
 			}
 		}
 
@@ -102,16 +98,21 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 		dstPrim.setAttribute(semantic, dstAttribute);
 	}
 
+	// Allocate room for primitive restart between joined primitives.
+	if (isRestartEnabled) {
+		dstIndicesCount += prims.length - 1;
+	}
+
 	// (5) Allocate joined indices.
 	const tplIndices = templatePrim.getIndices();
-	const dstIndices = tplIndices
-		? shallowCloneAccessor(document, tplIndices).setArray(createIndicesEmpty(dstIndicesCount, dstVertexCount))
-		: null;
+	const dstIndicesArray = tplIndices ? createIndicesEmpty(dstIndicesCount, dstVertexCount) : null;
+	const dstIndices = tplIndices ? shallowCloneAccessor(document, tplIndices).setArray(dstIndicesArray) : null;
+	const dstRestart = dstIndices ? getPrimitiveRestartIndex(dstIndices.getComponentType()) : null;
 	dstPrim.setIndices(dstIndices);
 
 	// (6) Remap attributes into joined Primitive.
 	let dstIndicesOffset = 0;
-	for (let primIndex = 0; primIndex < primRemaps.length; primIndex++) {
+	for (let primIndex = 0; primIndex < prims.length; primIndex++) {
 		const srcPrim = prims[primIndex];
 		const srcIndices = srcPrim.getIndices();
 		const srcIndicesCount = srcIndices ? srcIndices.getCount() : -1;
@@ -121,6 +122,11 @@ export function joinPrimitives(prims: Primitive[], _options: JoinPrimitiveOption
 		if (srcIndices && dstIndices) {
 			remapIndices(srcIndices, remap, dstIndices, dstIndicesOffset);
 			dstIndicesOffset += srcIndicesCount;
+
+			// Add primitive restart between joined primitives.
+			if (isRestartEnabled && primIndex + 1 < prims.length) {
+				dstIndicesArray![dstIndicesOffset++] = dstRestart!;
+			}
 		}
 
 		for (const semantic of dstPrim.listSemantics()) {
@@ -176,9 +182,16 @@ function remapIndices(srcIndices: Accessor, remap: TypedArray, dstIndices: Acces
 	const srcArray = srcIndices.getArray()!;
 	const dstArray = dstIndices.getArray()!;
 
+	const srcRestart = getPrimitiveRestartIndex(srcIndices.getComponentType());
+	const dstRestart = getPrimitiveRestartIndex(dstIndices.getComponentType());
+
 	for (let i = 0; i < srcCount; i++) {
 		const srcIndex = srcArray[i];
-		const dstIndex = remap[srcIndex];
-		dstArray[dstOffset + i] = dstIndex;
+		if (srcIndex === srcRestart) {
+			dstArray[dstOffset + i] = dstRestart;
+		} else {
+			const dstIndex = remap[srcIndex];
+			dstArray[dstOffset + i] = dstIndex;
+		}
 	}
 }

@@ -62,6 +62,10 @@ export function reorder(_options: ReorderOptions): Transform {
 	return createTransform(NAME, async (document: Document): Promise<void> => {
 		const logger = document.getLogger();
 
+		if (document.hasExtension('KHR_mesh_primitive_restart')) {
+			throw new Error('reorder: Missing support for KHR_mesh_primitive_restart.');
+		}
+
 		await encoder.ready;
 
 		const plan = createLayoutPlan(document);
