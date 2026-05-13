@@ -19,13 +19,9 @@ import type {
  * Interfaces.
  */
 
-// NOTE: The structures that are defined in the EXT_structural_metadata
-// often have a "name" property. This conflicts with the "name" property
-// of the "IProperty". So the "name" is referred to as "objectName" here.
-
 interface IStructuralMetadata extends IProperty {
 	schema: Schema;
-	schemaUri: string | null;
+	schemaUri: string;
 	propertyTables: RefList<PropertyTable>;
 	propertyTextures: RefList<PropertyTexture>;
 	propertyAttributes: RefList<PropertyAttribute>;
@@ -33,22 +29,19 @@ interface IStructuralMetadata extends IProperty {
 
 interface ISchema extends IProperty {
 	id: string;
-	objectName: string | null;
-	description: string | null;
-	version: string | null;
+	description: string;
+	version: string;
 	classes: RefMap<Class>;
 	enums: RefMap<Enum>;
 }
 
 interface IClass extends IProperty {
-	objectName: string | null;
-	description: string | null;
+	description: string;
 	properties: RefMap<ClassProperty>;
 }
 
 interface IClassProperty extends IProperty {
-	objectName: string | null;
-	description: string | null;
+	description: string;
 	type: ClassPropertyType;
 	componentType: ClassPropertyComponentType | null;
 	enumType: string | null;
@@ -65,20 +58,17 @@ interface IClassProperty extends IProperty {
 }
 
 interface IEnum extends IProperty {
-	objectName: string | null;
-	description: string | null;
+	description: string;
 	valueType: EnumValueType;
 	values: RefList<EnumValue>;
 }
 
 interface IEnumValue extends IProperty {
-	objectName: string;
-	description: string | null;
+	description: string;
 	value: number;
 }
 
 interface IPropertyTable extends IProperty {
-	objectName: string | null;
 	class: string;
 	count: number;
 	properties: RefMap<PropertyTableProperty>;
@@ -97,7 +87,6 @@ interface IPropertyTableProperty extends IProperty {
 }
 
 interface IPropertyTexture extends IProperty {
-	objectName: string | null;
 	class: string;
 	properties: RefMap<PropertyTextureProperty>;
 }
@@ -113,7 +102,6 @@ interface IPropertyTextureProperty extends IProperty {
 }
 
 interface IPropertyAttribute extends IProperty {
-	objectName: string | null;
 	class: string;
 	properties: RefMap<PropertyAttributeProperty>;
 }
@@ -128,8 +116,8 @@ interface IPropertyAttributeProperty extends IProperty {
 
 // Reference: EXT_structural_metadata.schema.json
 interface INodeStructuralMetadata extends IProperty {
-	propertyTable: PropertyTable;
-	index: number | null;
+	class: string;
+	properties: Record<string, unknown>;
 }
 
 // Reference: mesh.primitive.EXT_structural_metadata.schema.json
@@ -162,7 +150,7 @@ export class StructuralMetadata extends ExtensionProperty<IStructuralMetadata> {
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
 			schema: null,
-			schemaUri: null,
+			schemaUri: '',
 			propertyTables: new RefList<PropertyTable>(),
 			propertyTextures: new RefList<PropertyTexture>(),
 			propertyAttributes: new RefList<PropertyAttribute>(),
@@ -176,10 +164,10 @@ export class StructuralMetadata extends ExtensionProperty<IStructuralMetadata> {
 		return this.setRef('schema', schema);
 	}
 
-	getSchemaUri(): string | null {
+	getSchemaUri(): string {
 		return this.get('schemaUri');
 	}
-	setSchemaUri(schemaUri: string | null) {
+	setSchemaUri(schemaUri: string) {
 		return this.set('schemaUri', schemaUri);
 	}
 
@@ -233,9 +221,8 @@ export class Schema extends ExtensionProperty<ISchema> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
-			description: null,
-			version: null,
+			description: '',
+			version: '',
 			classes: new RefMap<Class>(),
 			enums: new RefMap<Enum>(),
 		});
@@ -248,24 +235,17 @@ export class Schema extends ExtensionProperty<ISchema> {
 		return this.set('id', name);
 	}
 
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
-	}
-
-	getDescription(): string | null {
+	getDescription(): string {
 		return this.get('description');
 	}
-	setDescription(description: string | null) {
+	setDescription(description: string) {
 		return this.set('description', description);
 	}
 
-	getVersion(): string | null {
+	getVersion(): string {
 		return this.get('version');
 	}
-	setVersion(version: string | null) {
+	setVersion(version: string) {
 		return this.set('version', version);
 	}
 
@@ -315,23 +295,15 @@ export class Class extends ExtensionProperty<IClass> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
-			description: null,
+			description: '',
 			properties: new RefMap<ClassProperty>(),
 		});
 	}
 
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
-	}
-
-	getDescription(): string | null {
+	getDescription(): string {
 		return this.get('description');
 	}
-	setDescription(description: string | null) {
+	setDescription(description: string) {
 		return this.set('description', description);
 	}
 
@@ -368,8 +340,7 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
-			description: null,
+			description: '',
 			componentType: null,
 			enumType: null,
 			array: null,
@@ -385,17 +356,10 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 		});
 	}
 
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
-	}
-
-	getDescription(): string | null {
+	getDescription(): string {
 		return this.get('description');
 	}
-	setDescription(description: string | null) {
+	setDescription(description: string) {
 		return this.set('description', description);
 	}
 
@@ -510,24 +474,16 @@ export class Enum extends ExtensionProperty<IEnum> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
-			description: null,
+			description: '',
 			valueType: 'UINT16',
 			values: new RefList<EnumValue>(),
 		});
 	}
 
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
-	}
-
-	getDescription(): string | null {
+	getDescription(): string {
 		return this.get('description');
 	}
-	setDescription(description: string | null) {
+	setDescription(description: string) {
 		return this.set('description', description);
 	}
 
@@ -572,17 +528,10 @@ export class EnumValue extends ExtensionProperty<IEnumValue> {
 		});
 	}
 
-	getObjectName(): string {
-		return this.get('objectName');
-	}
-	setObjectName(name: string) {
-		return this.set('objectName', name);
-	}
-
-	getDescription(): string | null {
+	getDescription(): string {
 		return this.get('description');
 	}
-	setDescription(description: string | null) {
+	setDescription(description: string) {
 		return this.set('description', description);
 	}
 
@@ -613,16 +562,8 @@ export class PropertyTable extends ExtensionProperty<IPropertyTable> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
 			properties: new RefMap<ClassProperty>(),
 		});
-	}
-
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
 	}
 
 	getClass(): string {
@@ -766,16 +707,8 @@ export class PropertyTexture extends ExtensionProperty<IPropertyTexture> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
 			properties: new RefMap<PropertyTextureProperty>(),
 		});
-	}
-
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
 	}
 
 	getClass(): string {
@@ -897,16 +830,8 @@ export class PropertyAttribute extends ExtensionProperty<IPropertyAttribute> {
 
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
-			objectName: null,
 			properties: new RefMap<PropertyAttributeProperty>(),
 		});
-	}
-
-	getObjectName(): string | null {
-		return this.get('objectName');
-	}
-	setObjectName(name: string | null) {
-		return this.set('objectName', name);
 	}
 
 	getClass(): string {
@@ -1010,21 +935,21 @@ export class NodeStructuralMetadata extends ExtensionProperty<INodeStructuralMet
 	}
 
 	protected override getDefaults() {
-		return Object.assign(super.getDefaults(), {});
+		return Object.assign(super.getDefaults(), { class: '', properties: {} });
 	}
 
-	getPropertyTable(): PropertyTable | null {
-		return this.getRef('propertyTable');
+	getClass(): string {
+		return this.get('class');
 	}
-	setPropertyTable(propertyTable: PropertyTable | null) {
-		return this.setRef('propertyTable', propertyTable);
+	setClass(className: string): this {
+		return this.set('class', className);
 	}
 
-	getIndex(): number | null {
-		return this.get('index');
+	getProperties(): Record<string, unknown> {
+		return this.get('properties');
 	}
-	setIndex(index: number | null) {
-		return this.set('index', index);
+	setProperties(properties: Record<string, unknown>): this {
+		return this.set('properties', properties);
 	}
 }
 

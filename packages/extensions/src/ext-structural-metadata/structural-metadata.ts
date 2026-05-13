@@ -42,7 +42,7 @@ type NumericValue = number | number[] | number[][];
 type NoDataValue = number | string | number[] | string[] | number[][];
 type AnyValue = number | string | boolean | number[] | string[] | boolean[] | number[][];
 
-interface StructuralMetadataDef {
+interface StructuralMetadataDef extends GLTF.IProperty {
 	schema?: SchemaDef;
 	schemaUri?: string;
 	propertyTables?: PropertyTableDef[];
@@ -50,7 +50,7 @@ interface StructuralMetadataDef {
 	propertyAttributes?: PropertyAttributeDef[];
 }
 
-interface SchemaDef {
+interface SchemaDef extends GLTF.IProperty {
 	id: string;
 	name?: string;
 	description?: string;
@@ -59,13 +59,13 @@ interface SchemaDef {
 	enums?: { [key: string]: EnumDef };
 }
 
-interface ClassDef {
+interface ClassDef extends GLTF.IProperty {
 	name?: string;
 	description?: string;
 	properties?: { [key: string]: ClassPropertyDef };
 }
 
-interface ClassPropertyDef {
+interface ClassPropertyDef extends GLTF.IProperty {
 	name?: string;
 	description?: string;
 	type: ClassPropertyType;
@@ -83,27 +83,27 @@ interface ClassPropertyDef {
 	default?: AnyValue;
 }
 
-interface EnumDef {
+interface EnumDef extends GLTF.IProperty {
 	name?: string;
 	description?: string;
 	valueType?: EnumValueType;
 	values: EnumValueDef[];
 }
 
-interface EnumValueDef {
+interface EnumValueDef extends GLTF.IProperty {
 	name: string;
 	description?: string;
 	value: number;
 }
 
-interface PropertyTableDef {
+interface PropertyTableDef extends GLTF.IProperty {
 	name?: string;
 	class: string;
 	count: number;
 	properties?: { [key: string]: PropertyTablePropertyDef };
 }
 
-interface PropertyTablePropertyDef {
+interface PropertyTablePropertyDef extends GLTF.IProperty {
 	values: number;
 	arrayOffsets?: number;
 	stringOffsets?: number;
@@ -115,7 +115,7 @@ interface PropertyTablePropertyDef {
 	min?: NumericValue;
 }
 
-interface PropertyTextureDef {
+interface PropertyTextureDef extends GLTF.IProperty {
 	name?: string;
 	class: string;
 	properties?: { [key: string]: PropertyTexturePropertyDef };
@@ -129,13 +129,13 @@ interface PropertyTexturePropertyDef extends GLTF.ITextureInfo {
 	min?: NumericValue;
 }
 
-interface PropertyAttributeDef {
+interface PropertyAttributeDef extends GLTF.IProperty {
 	name?: string;
 	class: string;
 	properties?: { [key: string]: PropertyAttributePropertyDef };
 }
 
-interface PropertyAttributePropertyDef {
+interface PropertyAttributePropertyDef extends GLTF.IProperty {
 	attribute: string;
 	offset?: NumericValue;
 	scale?: NumericValue;
@@ -144,13 +144,13 @@ interface PropertyAttributePropertyDef {
 }
 
 // Reference: EXT_structural_metadata.schema.json
-interface NodeStructuralMetadataDef {
-	propertyTable?: number;
-	index?: number;
+interface NodeStructuralMetadataDef extends GLTF.IProperty {
+	class: string;
+	properties: Record<string, unknown>;
 }
 
 // Reference: mesh.primitive.EXT_structural_metadata.schema.json
-interface MeshPrimitiveStructuralMetadataDef {
+interface MeshPrimitiveStructuralMetadataDef extends GLTF.IProperty {
 	propertyTextures?: number[];
 	propertyAttributes?: number[];
 }
@@ -232,7 +232,7 @@ export class EXTStructuralMetadata extends Extension {
 		return new PropertyAttributeProperty(this.document.getGraph());
 	}
 
-	createElementStructuralMetadata() {
+	createNodeStructuralMetadata() {
 		return new NodeStructuralMetadata(this.document.getGraph());
 	}
 
@@ -265,8 +265,7 @@ export class EXTStructuralMetadata extends Extension {
 
 		const nodeDefs = json.nodes || [];
 		nodeDefs.forEach((nodeDef, nodeIndex) => {
-			const node = context.nodes[nodeIndex];
-			this._readNode(structuralMetadata, node, nodeDef);
+			this._readNode(context.nodes[nodeIndex], nodeDef);
 		});
 		return this;
 	}
@@ -298,28 +297,19 @@ export class EXTStructuralMetadata extends Extension {
 	}
 
 	/** @hidden */
-	private _readNode(structuralMetadata: StructuralMetadata, node: Node, nodeDef: GLTF.INode) {
+	private _readNode(node: Node, nodeDef: GLTF.INode) {
 		if (!nodeDef.extensions || !nodeDef.extensions[EXT_STRUCTURAL_METADATA]) {
 			return;
 		}
-		const elementStructuralMetadata = this.createElementStructuralMetadata();
 
 		const extensionObject = nodeDef.extensions[EXT_STRUCTURAL_METADATA];
-		const elementStructuralMetadataDef = extensionObject as NodeStructuralMetadataDef;
+		const nodeStructuralMetadataDef = extensionObject as NodeStructuralMetadataDef;
 
-		const propertyTables = structuralMetadata.listPropertyTables();
-		const propertyTableIndex = elementStructuralMetadataDef.propertyTable;
-		const index = elementStructuralMetadataDef.index;
-		if (propertyTableIndex === undefined) {
-			throw new Error(`${EXT_STRUCTURAL_METADATA}: No property table index in structural metadata`);
-		}
-		if (index === undefined) {
-			throw new Error(`${EXT_STRUCTURAL_METADATA}: No index in structural metadata`);
-		}
-		const propertyTable = propertyTables[propertyTableIndex];
-		elementStructuralMetadata.setPropertyTable(propertyTable);
-		elementStructuralMetadata.setIndex(index);
-		node.setExtension(EXT_STRUCTURAL_METADATA, elementStructuralMetadata);
+		const nodeStructuralMetadata = this.createNodeStructuralMetadata()
+			.setClass(nodeStructuralMetadataDef.class)
+			.setProperties(nodeStructuralMetadataDef.properties);
+
+		node.setExtension(EXT_STRUCTURAL_METADATA, nodeStructuralMetadata);
 	}
 
 	public override write(context: WriterContext): this {
@@ -340,10 +330,7 @@ export class EXTStructuralMetadata extends Extension {
 		const meshDefs = gltfDef.meshes;
 		if (meshDefs) {
 			for (const mesh of meshes) {
-				const meshIndex = context.meshIndexMap.get(mesh);
-				if (meshIndex === undefined) {
-					continue;
-				}
+				const meshIndex = context.meshIndexMap.get(mesh)!;
 				const meshDef = meshDefs[meshIndex];
 				mesh.listPrimitives().forEach((prim, primIndex) => {
 					const primDef = meshDef.primitives[primIndex];
@@ -356,12 +343,8 @@ export class EXTStructuralMetadata extends Extension {
 		const nodeDefs = gltfDef.nodes;
 		if (nodeDefs) {
 			for (const node of nodes) {
-				const nodeIndex = context.nodeIndexMap.get(node);
-				if (nodeIndex === undefined) {
-					continue;
-				}
-				const nodeDef = nodeDefs[nodeIndex];
-				this._writeNode(structuralMetadata, node, nodeDef);
+				const nodeIndex = context.nodeIndexMap.get(node)!;
+				this._writeNode(node, nodeDefs[nodeIndex]);
 			}
 		}
 		return this;
@@ -414,26 +397,17 @@ export class EXTStructuralMetadata extends Extension {
 	}
 
 	/** @hidden */
-	private _writeNode(structuralMetadata: StructuralMetadata, node: Node, nodeDef: GLTF.INode) {
-		const nodeStructuralMetadata = node.getExtension<NodeStructuralMetadata>(EXT_STRUCTURAL_METADATA);
+	private _writeNode(node: Node, nodeDef: GLTF.INode) {
+		const nodeStructuralMetadata = node.getExtension<NodeStructuralMetadata>('EXT_structural_metadata');
 		if (!nodeStructuralMetadata) {
 			return;
 		}
 
-		const globalPropertyTables = structuralMetadata.listPropertyTables();
-
-		const propertyTable = nodeStructuralMetadata.getPropertyTable();
-		if (!propertyTable) {
-			return;
-		}
-
-		const nodeStructuralMetadataDef: NodeStructuralMetadataDef = {
-			propertyTable: globalPropertyTables.indexOf(propertyTable),
-			index: nodeStructuralMetadata.getIndex() ?? undefined,
-		};
-
 		nodeDef.extensions = nodeDef.extensions || {};
-		nodeDef.extensions[EXT_STRUCTURAL_METADATA] = nodeStructuralMetadataDef;
+		nodeDef.extensions[EXT_STRUCTURAL_METADATA] = {
+			class: nodeStructuralMetadata.getClass(),
+			properties: nodeStructuralMetadata.getProperties(),
+		} satisfies NodeStructuralMetadataDef;
 	}
 
 	public override prewrite(context: WriterContext, propertyType: PropertyType): this {
@@ -492,7 +466,7 @@ function _readStructuralMetadata(
 	if (structuralMetadataDef.schema !== undefined) {
 		const schema = _readSchema(ext, structuralMetadataDef.schema);
 		structuralMetadata.setSchema(schema);
-	} else if (structuralMetadataDef.schemaUri !== undefined) {
+	} else if (structuralMetadataDef.schemaUri) {
 		const schemaUri = structuralMetadataDef.schemaUri;
 		structuralMetadata.setSchemaUri(schemaUri);
 	}
@@ -522,7 +496,7 @@ function _readSchema(ext: EXTStructuralMetadata, schemaDef: SchemaDef) {
 	const schema = ext.createSchema().setId(schemaDef.id);
 
 	if (schemaDef.name !== undefined) {
-		schema.setObjectName(schemaDef.name);
+		schema.setName(schemaDef.name);
 	}
 
 	if (schemaDef.description !== undefined) {
@@ -551,7 +525,7 @@ function _readClass(ext: EXTStructuralMetadata, classDef: ClassDef): Class {
 	const classObject = ext.createClass();
 
 	if (classDef.name !== undefined) {
-		classObject.setObjectName(classDef.name);
+		classObject.setName(classDef.name);
 	}
 
 	if (classDef.description !== undefined) {
@@ -571,7 +545,7 @@ function _readClassProperty(ext: EXTStructuralMetadata, classPropertyDef: ClassP
 	const classProperty = ext.createClassProperty().setType(classPropertyDef.type);
 
 	if (classPropertyDef.name !== undefined) {
-		classProperty.setObjectName(classPropertyDef.name);
+		classProperty.setName(classPropertyDef.name);
 	}
 	if (classPropertyDef.description !== undefined) {
 		classProperty.setDescription(classPropertyDef.description);
@@ -621,7 +595,7 @@ function _readEnum(ext: EXTStructuralMetadata, enumDef: EnumDef) {
 	const enumObject = ext.createEnum();
 
 	if (enumDef.name !== undefined) {
-		enumObject.setObjectName(enumDef.name);
+		enumObject.setName(enumDef.name);
 	}
 	if (enumDef.description !== undefined) {
 		enumObject.setDescription(enumDef.description);
@@ -642,7 +616,7 @@ function _readEnumValue(ext: EXTStructuralMetadata, enumValueDef: EnumValueDef) 
 	const enumValue = ext.createEnumValue();
 
 	if (enumValueDef.name !== undefined) {
-		enumValue.setObjectName(enumValueDef.name);
+		enumValue.setName(enumValueDef.name);
 	}
 
 	if (enumValueDef.description !== undefined) {
@@ -717,7 +691,7 @@ function _readPropertyTable(ext: EXTStructuralMetadata, context: ReaderContext, 
 	const propertyTable = ext.createPropertyTable().setClass(propertyTableDef.class).setCount(propertyTableDef.count);
 
 	if (propertyTableDef.name !== undefined) {
-		propertyTable.setObjectName(propertyTableDef.name);
+		propertyTable.setName(propertyTableDef.name);
 	}
 
 	const properties = propertyTableDef.properties || {};
@@ -827,7 +801,7 @@ function _writeStructuralMetadataDef(
 		structuralMetadataDef.schema = schemaDef;
 	}
 	const schemaUri = structuralMetadata.getSchemaUri();
-	if (schemaUri !== null) {
+	if (schemaUri) {
 		structuralMetadataDef.schemaUri = schemaUri;
 	}
 
@@ -887,16 +861,16 @@ function _writeSchemaDef(schema: Schema): SchemaDef {
 		}
 	}
 
-	if (schema.getObjectName()) {
-		schemaDef.name = schema.getObjectName()!;
+	if (schema.getName()) {
+		schemaDef.name = schema.getName();
 	}
 
 	if (schema.getDescription()) {
-		schemaDef.description = schema.getDescription()!;
+		schemaDef.description = schema.getDescription();
 	}
 
 	if (schema.getVersion()) {
-		schemaDef.version = schema.getVersion()!;
+		schemaDef.version = schema.getVersion();
 	}
 
 	return schemaDef;
@@ -914,12 +888,12 @@ function _writeClassDef(classObject: Class): ClassDef {
 		}
 	}
 
-	if (classObject.getObjectName()) {
-		classDef.name = classObject.getObjectName()!;
+	if (classObject.getName()) {
+		classDef.name = classObject.getName();
 	}
 
 	if (classObject.getDescription()) {
-		classDef.description = classObject.getDescription()!;
+		classDef.description = classObject.getDescription();
 	}
 
 	return classDef;
@@ -940,12 +914,12 @@ function _writeClassPropertyDef(classProperty: ClassProperty): ClassPropertyDef 
 		classPropertyDef.required = classProperty.getRequired();
 	}
 
-	if (classProperty.getObjectName() != null) {
-		classPropertyDef.name = classProperty.getObjectName()!;
+	if (classProperty.getName()) {
+		classPropertyDef.name = classProperty.getName();
 	}
 
-	if (classProperty.getDescription() != null) {
-		classPropertyDef.description = classProperty.getDescription()!;
+	if (classProperty.getDescription()) {
+		classPropertyDef.description = classProperty.getDescription();
 	}
 
 	if (classProperty.getComponentType() != null) {
@@ -992,12 +966,12 @@ function _writeEnumDef(enumObject: Enum): EnumDef {
 		values: enumObject.listValues().map(_writeEnumValueDef),
 	};
 
-	if (enumObject.getObjectName()) {
-		enumDef.name = enumObject.getObjectName()!;
+	if (enumObject.getName()) {
+		enumDef.name = enumObject.getName();
 	}
 
 	if (enumObject.getDescription()) {
-		enumDef.description = enumObject.getDescription()!;
+		enumDef.description = enumObject.getDescription();
 	}
 
 	if (enumObject.getValueType() !== 'UINT16') {
@@ -1009,12 +983,12 @@ function _writeEnumDef(enumObject: Enum): EnumDef {
 
 function _writeEnumValueDef(enumValue: EnumValue): EnumValueDef {
 	const enumValueDef: EnumValueDef = {
-		name: enumValue.getObjectName(),
+		name: enumValue.getName(),
 		value: enumValue.getValue(),
 	};
 
 	if (enumValue.getDescription()) {
-		enumValueDef.description = enumValue.getDescription()!;
+		enumValueDef.description = enumValue.getDescription();
 	}
 
 	return enumValueDef;
@@ -1026,8 +1000,8 @@ function _writePropertyTableDef(context: WriterContext, propertyTable: PropertyT
 		count: propertyTable.getCount(),
 	};
 
-	if (propertyTable.getObjectName()) {
-		propertyTableDef.name = propertyTable.getObjectName()!;
+	if (propertyTable.getName()) {
+		propertyTableDef.name = propertyTable.getName();
 	}
 
 	const propertyKeys = propertyTable.listPropertyKeys();
@@ -1093,8 +1067,8 @@ function _writePropertyAttributeDef(propertyAttribute: PropertyAttribute): Prope
 		class: propertyAttribute.getClass(),
 	};
 
-	if (propertyAttribute.getObjectName()) {
-		propertyAttributeDef.name = propertyAttribute.getObjectName()!;
+	if (propertyAttribute.getName()) {
+		propertyAttributeDef.name = propertyAttribute.getName();
 	}
 
 	const propertyKeys = propertyAttribute.listPropertyKeys();
@@ -1141,8 +1115,8 @@ function _writePropertyTextureDef(context: WriterContext, propertyTexture: Prope
 		class: propertyTexture.getClass(),
 	};
 
-	if (propertyTexture.getObjectName()) {
-		propertyTextureDef.name = propertyTexture.getObjectName()!;
+	if (propertyTexture.getName()) {
+		propertyTextureDef.name = propertyTexture.getName();
 	}
 
 	const propertyKeys = propertyTexture.listPropertyKeys();
