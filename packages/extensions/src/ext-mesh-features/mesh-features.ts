@@ -14,34 +14,10 @@ import { Features } from './features.js';
 
 const NAME = EXT_MESH_FEATURES;
 
-//============================================================================
-// Interfaces for the JSON structure
-//
-// These interfaces reflect the structure of the JSON input, and can be
-// derived directly from the JSON schema of the extension.
-//
-// The naming convention for these interfaces (and variables that refer
-// to them) is that they end with `...Def`.
-//
-// In the 'read' method of the Extension class, they will be obtained
-// from the `context.jsonDoc.json` in raw form, and translated into
-// the "model" classes that are defined as
-//   export class MeshFeatures extends ExtensionProperty<IMeshFeatures> {...}
-//
-// Note that textures are represented as a `GLTF.ITextureInfo`, with
-// the `index` and `texCoord` properties. The "model" classes offer
-// this as a `TextureInfo` object that is associated with the `Texture`
-// object. This is used internally by glTF-Transform, to automatically
-// do some sort of deduplication magic.
-//
-// In the 'write' method of the Extension class, these objects will be
-// created from the "model" classes, and inserted into the JSON structure
-// from the `context.jsonDoc.json`.
-//
-// The `GLTF.ITextureInfo` objects will be created with
-// `context.createTextureInfoDef`, based on the `Texture´ and
-// `TextureInfo` object from the model class.
-//
+/******************************************************************************
+ * Interfaces.
+ */
+
 interface MeshFeaturesDef {
 	featureIds: FeatureIDDef[];
 }
@@ -54,11 +30,11 @@ interface FeatureIDDef {
 	texture?: FeatureIDTextureDef;
 	propertyTable?: number;
 }
-
 interface FeatureIDTextureDef extends GLTF.ITextureInfo {
 	channels?: number[];
-}
-//============================================================================
+} /******************************************************************************
+ * Implementation.
+ */
 
 /**
  * [`EXT_mesh_features`](https://github.com/CesiumGS/glTF/tree/proposal-EXT_mesh_features/extensions/2.0/Vendor/EXT_mesh_features/)
@@ -72,51 +48,28 @@ interface FeatureIDTextureDef extends GLTF.ITextureInfo {
  * ### Example
  *
  * ```typescript
- * const document = new Document();
- *
  * // Create an Extension attached to the Document.
  * const meshFeaturesExt = document.createExtension(EXTMeshFeatures);
  *
- * // Define an array of IDs
- * const ids = [ 12, 23, 34, 45, 56, 78, 78, 89, 90 ];
+ * // Define per-vertex Feature IDs.
+ * const idArray = new Int16Array([12, 23, 34, 45, 56, 78, 78, 89, 90]);
+ * const idAttribute = document.createAccessor()
+ * 	.setBuffer(document.listBuffers()[0])
+ * 	.setType(Accessor.Type.SCALAR)
+ * 	.setArray(idArray);
+ * const featureID = meshFeaturesExt.createFeatureID()
+ * 	.setFeatureCount(idArray.length)
+ * 	.setAttribute(0); // _FEATURE_ID_0
  *
- * // Put the IDs into an `Accessor`
- * const buffer = document.createBuffer();
- * const accessor = document.createAccessor();
- * accessor.setBuffer(buffer);
- * accessor.setType(Accessor.Type.SCALAR);
- * accessor.setArray(new Int16Array(ids));
+ * // Primitives reference a set of >=1 FeatureID properties. Each property
+ * // defines a mapping from a part of the Primitive to an ID.
+ * const features = meshFeaturesExt.createMeshFeatures()
+ * 	.addFeatureID(featureID);
  *
- * // Create a mesh `Primitive`
- * const primitive = document.createPrimitive();
- *
- * // Set the IDs as one attribute of the `Primitive`
- * const attributeNumber = 2;
- * primitive.setAttribute(`_FEATURE_ID_${attributeNumber}`, accessor);
- *
- * // Create a `FeatureId` object. This object indicates that the IDs
- * // are stored in the attribute `_FEATURE_ID_${attributeNumber}`
- * const featureID = meshFeaturesExt.createFeatureID();
- * featureID.setFeatureCount(new Set(ids).size);
- * featureID.setAttribute(attributeNumber);
- *
- * // Create a `Features` object that contains the
- * // created `FeatureID`, and store it as an extension
- * // object in the `Primitive`
- * const features = meshFeaturesExt.createMeshFeatures();
- * features.addFeatureID(featureID);
- * primitive.setExtension("EXT_mesh_features", features);
- *
- * // Assign the `Primitive` to a `Mesh`
- * const mesh = document.createMesh();
- * mesh.addPrimitive(primitive);
- *
- * // Create an IO object and register the extension
- * const io = new NodeIO();
- * io.registerExtensions([EXTMeshFeatures]);
- *
- * // Write the document as JSON
- * const written = await io.writeJSON(document);
+ * // Assign FeatureID properties to the Primitive.
+ * primitive
+ * 	.setAttribute(`_FEATURE_ID_0`, idAttribute)
+ * 	.setExtension("EXT_mesh_features", features);
  * ```
  *
  * @experimental

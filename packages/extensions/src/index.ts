@@ -67,6 +67,7 @@ export const ALL_EXTENSIONS: (typeof Extension)[] = [
 	...KHRONOS_EXTENSIONS,
 ];
 
+export * from './ext-mesh-features/index.js';
 export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-meshopt-compression/index.js';
