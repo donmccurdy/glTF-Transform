@@ -6,7 +6,7 @@ import type { FeatureIDTexture } from './feature-id-texture.js';
 interface IFeatureID extends IProperty {
 	featureCount: number;
 	nullFeatureId: number | null;
-	label: string | null;
+	label: string;
 	attribute: number | null;
 	texture: FeatureIDTexture;
 	propertyTable: PropertyTable;
@@ -32,7 +32,7 @@ export class FeatureID extends ExtensionProperty<IFeatureID> {
 	protected override getDefaults() {
 		return Object.assign(super.getDefaults(), {
 			nullFeatureId: null,
-			label: null,
+			label: '',
 			attribute: null,
 			texture: null,
 			propertyTable: null,
@@ -55,11 +55,11 @@ export class FeatureID extends ExtensionProperty<IFeatureID> {
 		return this.set('nullFeatureId', nullFeatureId);
 	}
 
-	getLabel(): string | null {
+	getLabel(): string {
 		return this.get('label');
 	}
 
-	setLabel(label: string | null) {
+	setLabel(label: string) {
 		return this.set('label', label);
 	}
 

@@ -1,6 +1,6 @@
 import {
-	Extension,
 	type Document,
+	Extension,
 	type GLTF,
 	MathUtils,
 	type Primitive,
@@ -31,9 +31,12 @@ interface FeatureIDDef {
 	texture?: FeatureIDTextureDef;
 	propertyTable?: number;
 }
+
 interface FeatureIDTextureDef extends GLTF.ITextureInfo {
 	channels?: number[];
-} /******************************************************************************
+}
+
+/******************************************************************************
  * Implementation.
  */
 
