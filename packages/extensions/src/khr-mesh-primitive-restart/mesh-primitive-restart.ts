@@ -53,6 +53,8 @@ import { KHR_MESH_PRIMITIVE_RESTART } from '../constants.js';
  *   .setAttribute('POSITION', position)
  *   .setIndices(indices);
  * ```
+ *
+ * @experimental KHR_mesh_primitive_restart is not yet ratified by the Khronos Group.
  */
 export class KHRMeshPrimitiveRestart extends Extension {
 	public readonly extensionName: typeof KHR_MESH_PRIMITIVE_RESTART = KHR_MESH_PRIMITIVE_RESTART;
