@@ -1,5 +1,6 @@
 import {
 	Extension,
+	type Document,
 	type GLTF,
 	MathUtils,
 	type Primitive,
@@ -82,11 +83,11 @@ export class EXTMeshFeatures extends Extension {
 		return new Features(this.document.getGraph());
 	}
 
-	createFeatureId() {
+	createFeatureID() {
 		return new FeatureID(this.document.getGraph());
 	}
 
-	createFeatureIdTexture() {
+	createFeatureIDTexture() {
 		return new FeatureIDTexture(this.document.getGraph());
 	}
 
@@ -96,13 +97,14 @@ export class EXTMeshFeatures extends Extension {
 		meshDefs.forEach((meshDef, meshIndex) => {
 			const primDefs = meshDef.primitives || [];
 			primDefs.forEach((primDef, primIndex) => {
-				this.readPrimitive(context, meshIndex, primDef, primIndex);
+				this._readPrimitive(context, meshIndex, primDef, primIndex);
 			});
 		});
 		return this;
 	}
 
-	private readPrimitive(context: ReaderContext, meshIndex: number, primDef: GLTF.IMeshPrimitive, primIndex: number) {
+	/** @hidden */
+	private _readPrimitive(context: ReaderContext, meshIndex: number, primDef: GLTF.IMeshPrimitive, primIndex: number) {
 		if (!primDef.extensions || !primDef.extensions[NAME]) {
 			return;
 		}
@@ -111,66 +113,12 @@ export class EXTMeshFeatures extends Extension {
 
 		const meshFeaturesDef = primDef.extensions[NAME] as MeshFeaturesDef;
 		for (const featureIDDef of meshFeaturesDef.featureIds) {
-			const featureID = this.createFeatureId();
-			this.readFeatureID(context, featureID, featureIDDef);
+			const featureID = _readFeatureID(this.document, this, context, featureIDDef);
 			features.addFeatureID(featureID);
 		}
 
 		const mesh = context.meshes[meshIndex];
 		mesh.listPrimitives()[primIndex].setExtension(NAME, features);
-	}
-
-	private readFeatureID(context: ReaderContext, featureID: FeatureID, featureIDDef: FeatureIDDef) {
-		featureID.setFeatureCount(featureIDDef.featureCount);
-
-		if (featureIDDef.nullFeatureId !== undefined) {
-			featureID.setNullFeatureID(featureIDDef.nullFeatureId);
-		}
-		if (featureIDDef.label !== undefined) {
-			featureID.setLabel(featureIDDef.label);
-		}
-		if (featureIDDef.attribute !== undefined) {
-			featureID.setAttribute(featureIDDef.attribute);
-		}
-
-		const featureIDTextureDef = featureIDDef.texture;
-		if (featureIDTextureDef !== undefined) {
-			const featureIDTexture = this.createFeatureIdTexture();
-			this.readFeatureIDTexture(context, featureIDTexture, featureIDTextureDef);
-			featureID.setTexture(featureIDTexture);
-		}
-
-		if (featureIDDef.propertyTable !== undefined) {
-			const root = this.document.getRoot();
-			const structuralMetadata = root.getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA);
-			if (!structuralMetadata) {
-				throw new Error(`${NAME}: Missing EXT_structural_metadata root extension.`);
-			}
-
-			const propertyTables = structuralMetadata.listPropertyTables();
-			const propertyTable = propertyTables[featureIDDef.propertyTable];
-			featureID.setPropertyTable(propertyTable);
-		}
-	}
-
-	private readFeatureIDTexture(
-		context: ReaderContext,
-		featureIDTexture: FeatureIDTexture,
-		featureIDTextureDef: FeatureIDTextureDef,
-	) {
-		const jsonDoc = context.jsonDoc;
-		const textureDefs = jsonDoc.json.textures || [];
-
-		if (featureIDTextureDef.channels) {
-			featureIDTexture.setChannels(featureIDTextureDef.channels);
-		}
-
-		const source = textureDefs[featureIDTextureDef.index].source;
-		if (source !== undefined) {
-			const texture = context.textures[source];
-			featureIDTexture.setTexture(texture);
-			context.setTextureInfo(featureIDTexture.getTextureInfo()!, featureIDTextureDef);
-		}
 	}
 
 	public override write(context: WriterContext): this {
@@ -185,13 +133,14 @@ export class EXTMeshFeatures extends Extension {
 			const meshDef = meshDefs[meshIndex];
 			mesh.listPrimitives().forEach((prim, primIndex) => {
 				const primDef = meshDef.primitives[primIndex];
-				this.writePrimitive(context, prim, primDef);
+				this._writePrimitive(context, prim, primDef);
 			});
 		}
 		return this;
 	}
 
-	private writePrimitive(context: WriterContext, prim: Primitive, primDef: GLTF.IMeshPrimitive) {
+	/** @hidden */
+	private _writePrimitive(context: WriterContext, prim: Primitive, primDef: GLTF.IMeshPrimitive) {
 		const meshFeatures = prim.getExtension<Features>(NAME);
 		if (!meshFeatures) {
 			return;
@@ -199,52 +148,105 @@ export class EXTMeshFeatures extends Extension {
 
 		const meshFeaturesDef = { featureIds: [] } as MeshFeaturesDef;
 		meshFeatures.listFeatureIDs().forEach((featureID) => {
-			const featureIDDef = this.createFeatureIDDef(context, featureID);
-			meshFeaturesDef.featureIds.push(featureIDDef);
+			meshFeaturesDef.featureIds.push(_writeFeatureIDDef(this.document, context, featureID));
 		});
 
 		primDef.extensions = primDef.extensions || {};
 		primDef.extensions[NAME] = meshFeaturesDef;
 	}
+}
 
-	private createFeatureIDDef(context: WriterContext, featureID: FeatureID): FeatureIDDef {
-		let textureDef: FeatureIDTextureDef | undefined;
-		const featureIDTexture = featureID.getTexture();
-		if (featureIDTexture) {
-			const texture = featureIDTexture.getTexture();
-			const textureInfo = featureIDTexture.getTextureInfo();
-			if (texture && textureInfo) {
-				const textureInfoDef = context.createTextureInfoDef(texture, textureInfo);
-				const channels = featureIDTexture.getChannels();
-				textureDef = {
-					index: textureInfoDef.index,
-					texCoord: textureInfoDef.texCoord,
-					channels: MathUtils.eq(channels, [0]) ? undefined : channels,
-				};
-			}
-		}
+/******************************************************************************
+ * Deserialization.
+ */
 
-		let propertyTableDef: number | undefined;
-		const propertyTable = featureID.getPropertyTable();
-		if (propertyTable) {
-			const root = this.document.getRoot();
-			const structuralMetadata = root.getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA);
-			if (!structuralMetadata) {
-				throw new Error(`${NAME}: Missing EXT_structural_metadata root extension.`);
-			}
-			const propertyTables = structuralMetadata.listPropertyTables();
-			propertyTableDef = propertyTables.indexOf(propertyTable);
-		}
+function _readFeatureID(document: Document, ext: EXTMeshFeatures, context: ReaderContext, featureIDDef: FeatureIDDef) {
+	const featureID = ext.createFeatureID().setFeatureCount(featureIDDef.featureCount);
 
-		const featureIDDef: FeatureIDDef = {
-			featureCount: featureID.getFeatureCount(),
-			nullFeatureId: featureID.getNullFeatureID() ?? undefined,
-			label: featureID.getLabel() ?? undefined,
-			attribute: featureID.getAttribute() ?? undefined,
-			texture: textureDef,
-			propertyTable: propertyTableDef,
-		};
-
-		return featureIDDef;
+	if (featureIDDef.nullFeatureId !== undefined) {
+		featureID.setNullFeatureID(featureIDDef.nullFeatureId);
 	}
+	if (featureIDDef.label !== undefined) {
+		featureID.setLabel(featureIDDef.label);
+	}
+	if (featureIDDef.attribute !== undefined) {
+		featureID.setAttribute(featureIDDef.attribute);
+	}
+
+	const featureIDTextureDef = featureIDDef.texture;
+	if (featureIDTextureDef !== undefined) {
+		const featureIDTexture = _readFeatureIDTexture(ext, context, featureIDTextureDef);
+		featureID.setTexture(featureIDTexture);
+	}
+
+	if (featureIDDef.propertyTable !== undefined) {
+		const structuralMetadata = document.getRoot().getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA)!;
+		const propertyTables = structuralMetadata.listPropertyTables();
+		featureID.setPropertyTable(propertyTables[featureIDDef.propertyTable]);
+	}
+
+	return featureID;
+}
+
+function _readFeatureIDTexture(ext: EXTMeshFeatures, context: ReaderContext, featureIDTextureDef: FeatureIDTextureDef) {
+	const featureIDTexture = ext.createFeatureIDTexture();
+
+	const { json } = context.jsonDoc;
+
+	if (featureIDTextureDef.channels) {
+		featureIDTexture.setChannels(featureIDTextureDef.channels);
+	}
+
+	if (featureIDTextureDef.index !== undefined) {
+		const textureIndex = json.textures![featureIDTextureDef.index].source!;
+		featureIDTexture.setTexture(context.textures[textureIndex]);
+		context.setTextureInfo(featureIDTexture.getTextureInfo()!, featureIDTextureDef);
+	}
+
+	return featureIDTexture;
+}
+
+/******************************************************************************
+ * Serialization.
+ */
+
+function _writeFeatureIDDef(document: Document, context: WriterContext, featureID: FeatureID): FeatureIDDef {
+	const root = document.getRoot();
+
+	const featureIDDef: FeatureIDDef = {
+		featureCount: featureID.getFeatureCount(),
+	};
+
+	if (featureID.getNullFeatureID() != null) {
+		featureIDDef.nullFeatureId = featureID.getNullFeatureID()!;
+	}
+
+	if (featureID.getLabel() != null) {
+		featureIDDef.label = featureID.getLabel()!;
+	}
+
+	if (featureID.getAttribute() != null) {
+		featureIDDef.attribute = featureID.getAttribute()!;
+	}
+
+	if (featureID.getTexture()) {
+		const featureIDTexture = featureID.getTexture()!;
+		const texture = featureIDTexture.getTexture()!;
+		const textureInfo = featureIDTexture.getTextureInfo()!;
+		const textureInfoDef = context.createTextureInfoDef(texture, textureInfo);
+		const channels = featureIDTexture.getChannels();
+		featureIDDef.texture = {
+			index: textureInfoDef.index,
+			texCoord: textureInfoDef.texCoord,
+			channels: MathUtils.eq(channels, [0]) ? undefined : channels,
+		};
+	}
+
+	if (featureID.getPropertyTable()) {
+		const structuralMetadata = root.getExtension<StructuralMetadata>(EXT_STRUCTURAL_METADATA)!;
+		const propertyTable = featureID.getPropertyTable()!;
+		featureIDDef.propertyTable = structuralMetadata.listPropertyTables().indexOf(propertyTable);
+	}
+
+	return featureIDDef;
 }
