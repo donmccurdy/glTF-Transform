@@ -38,9 +38,30 @@ test('id attribute', async (t) => {
 
 test('id texture', async (t) => {
 	const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
-	const srcDocument = await io.read(path.join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf'));
+	const srcDocument = await io.read(path.join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdTexture.gltf'));
 
 	t.true(srcDocument.hasExtension('EXT_mesh_features'), 'reads EXT_mesh_features');
+
+	const prim = srcDocument
+		.getRoot()
+		.listMeshes()
+		.flatMap((mesh) => mesh.listPrimitives())[0];
+
+	const features = prim.getExtension<Features>('EXT_mesh_features');
+	t.is(features.listFeatureIDs().length, 1, 'reads 1 FeatureID');
+
+	const featureID = features.listFeatureIDs()[0];
+	const featureIDTexture = featureID.getTexture();
+	const texture = featureIDTexture.getTexture();
+
+	t.deepEqual(featureIDTexture.getChannels(), [0], 'reads channels');
+	t.truthy(texture, 'reads texture');
+
+	const jsonDocument = await io.writeJSON(srcDocument, WRITER_OPTIONS);
+
+	const dstPrimDef = jsonDocument.json.meshes[0].primitives[0];
+	const dstExtensionDef = dstPrimDef.extensions.EXT_mesh_features;
+	t.deepEqual(dstExtensionDef, { featureIds: [{ featureCount: 4, texture: { index: 1 } }] }, 'writes FeatureID');
 });
 
 test('clone', (t) => {

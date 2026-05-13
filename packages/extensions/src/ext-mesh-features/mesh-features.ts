@@ -233,13 +233,13 @@ function _writeFeatureIDDef(document: Document, context: WriterContext, featureI
 		const featureIDTexture = featureID.getTexture()!;
 		const texture = featureIDTexture.getTexture()!;
 		const textureInfo = featureIDTexture.getTextureInfo()!;
-		const textureInfoDef = context.createTextureInfoDef(texture, textureInfo);
+
+		featureIDDef.texture = context.createTextureInfoDef(texture, textureInfo);
+
 		const channels = featureIDTexture.getChannels();
-		featureIDDef.texture = {
-			index: textureInfoDef.index,
-			texCoord: textureInfoDef.texCoord,
-			channels: MathUtils.eq(channels, [0]) ? undefined : channels,
-		};
+		if (!MathUtils.eq(channels, [0])) {
+			featureIDDef.texture.channels = channels;
+		}
 	}
 
 	if (featureID.getPropertyTable()) {
