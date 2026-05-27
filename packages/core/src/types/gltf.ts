@@ -7,7 +7,7 @@ export declare namespace GLTF {
 	/** Element type contained by the accessor (SCALAR, VEC2, ...). */
 	type AccessorType = 'SCALAR' | 'VEC2' | 'VEC3' | 'VEC4' | 'MAT2' | 'MAT3' | 'MAT4';
 	/** Name of the property to be modified by an animation channel. */
-	type AnimationChannelTargetPath = 'translation' | 'rotation' | 'scale' | 'weights';
+	type AnimationChannelTargetPath = 'translation' | 'rotation' | 'scale' | 'weights' | 'pointer';
 	/** Interpolation method. */
 	type AnimationSamplerInterpolation = 'LINEAR' | 'STEP' | 'CUBICSPLINE';
 	/** Projection type used by a camera. */

@@ -6,6 +6,7 @@ export const EXT_TEXTURE_WEBP = 'EXT_texture_webp';
 export const EXT_TEXTURE_AVIF = 'EXT_texture_avif';
 export const KHR_ACCESSOR_FLOAT16 = 'KHR_accessor_float16';
 export const KHR_ACCESSOR_FLOAT64 = 'KHR_accessor_float64';
+export const KHR_ANIMATION_POINTER = 'KHR_animation_pointer';
 export const KHR_DRACO_MESH_COMPRESSION = 'KHR_draco_mesh_compression';
 export const KHR_LIGHTS_PUNCTUAL = 'KHR_lights_punctual';
 export const KHR_MATERIALS_ANISOTROPY = 'KHR_materials_anisotropy';

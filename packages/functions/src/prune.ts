@@ -195,7 +195,7 @@ export function prune(_options: PruneOptions = PRUNE_DEFAULTS): Transform {
 		if (propertyTypes.has(PropertyType.ANIMATION)) {
 			for (const anim of root.listAnimations()) {
 				for (const channel of anim.listChannels()) {
-					if (!channel.getTargetNode()) {
+					if (!channel.getTargetNode() && channel.getTargetPath() !== 'pointer') {
 						channel.dispose();
 					}
 				}
