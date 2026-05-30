@@ -130,6 +130,35 @@ test('meshes', async (t) => {
 	t.is(root.listMeshes().length, 3, 'prunes duplicate meshes');
 });
 
+test('meshes - attribute order', async (t) => {
+	const document = new Document();
+	const root = document.getRoot();
+
+	const position = document
+		.createAccessor()
+		.setType('VEC3')
+		.setArray(new Float32Array([0, 0, 0, 1, 1, 1, 2, 2, 2]));
+	const normal = document
+		.createAccessor()
+		.setType('VEC3')
+		.setArray(new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1]));
+
+	// Two primitives with identical content, but attributes declared in a
+	// different order. They should still be deduplicated.
+	const primA = document.createPrimitive().setAttribute('POSITION', position).setAttribute('NORMAL', normal);
+	const primB = document.createPrimitive().setAttribute('NORMAL', normal).setAttribute('POSITION', position);
+	const meshA = document.createMesh('A').addPrimitive(primA);
+	const meshB = document.createMesh('B').addPrimitive(primB);
+
+	t.is(root.listMeshes().length, 2, 'begins with duplicate meshes');
+
+	await document.transform(dedup({ propertyTypes: [PropertyType.MESH] }));
+
+	t.is(root.listMeshes().length, 1, 'prunes meshes differing only in attribute order');
+	t.false(meshA.isDisposed(), 'keep mesh A');
+	t.true(meshB.isDisposed(), 'dispose mesh B');
+});
+
 test('skins', async (t) => {
 	const document = new Document();
 	const root = document.getRoot();
