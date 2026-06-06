@@ -2,7 +2,22 @@
 
 ## v4.x
 
-### v4.4 (🚧 Unreleased)
+### v4.5 (🚧 Unreleased)
+
+### v4.4
+
+**Features:**
+
+- feat(extensions): Add EXT_mesh_features and EXT_structural_metadata [#1810](https://github.com/donmccurdy/glTF-Transform/pull/1810)
+- feat(extensions): Add KHR_mesh_primitive_restart [#1817](https://github.com/donmccurdy/glTF-Transform/pull/1817)
+- feat(extensions): Add KHR_accessor_float16 and KHR_accessor_float64 [#1417](https://github.com/donmccurdy/glTF-Transform/pull/1417)
+- feat(extensions): Add ImageUtils support for more KTX2 formats [#1792](https://github.com/donmccurdy/glTF-Transform/pull/1792)
+
+**Other:**
+
+- chore(build): Replace bundler with [tsdown](https://tsdown.dev/) [#1789](https://github.com/donmccurdy/glTF-Transform/pull/1789) [#1797](https://github.com/donmccurdy/glTF-Transform/pull/1797)
+- chore(cli): Replace custom terminal formatting with Node.js styleText API [#1808](https://github.com/donmccurdy/glTF-Transform/pull/1808)
+- chore(deps): Removed various devDependencies, and simplified local development requirements [#1804](https://github.com/donmccurdy/glTF-Transform/pull/1804) [#1807](https://github.com/donmccurdy/glTF-Transform/pull/1807)
 
 ### v4.3
 
