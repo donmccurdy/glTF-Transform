@@ -25,6 +25,8 @@ as prescribed by the extension itself.
 
 ## Khronos Extensions
 
+- [KHR_accessor_float16](/modules/extensions/classes/KHRAccessorFloat16) *(🧪 experimental)*
+- [KHR_accessor_float64](/modules/extensions/classes/KHRAccessorFloat64) *(🧪 experimental)*
 - [KHR_draco_mesh_compression](/modules/extensions/classes/KHRDracoMeshCompression)
 - [KHR_lights_punctual](/modules/extensions/classes/KHRLightsPunctual)
 - [KHR_materials_anisotropy](/modules/extensions/classes/KHRMaterialsAnisotropy)
@@ -41,17 +43,21 @@ as prescribed by the extension itself.
 - [KHR_materials_unlit](/modules/extensions/classes/KHRMaterialsUnlit)
 - [KHR_materials_variants](/modules/extensions/classes/KHRMaterialsVariants)
 - [KHR_materials_volume](/modules/extensions/classes/KHRMaterialsVolume)
+- [KHR_mesh_primitive_restart](/modules/extensions/classes/KHRMeshPrimitiveRestart) *(🧪 experimental)*
 - [KHR_mesh_quantization](/modules/extensions/classes/KHRMeshQuantization)
+- [KHR_node_visibility](/modules/extensions/classes/KHRNodeVisibility)
 - [KHR_texture_basisu](/modules/extensions/classes/KHRTextureBasisu)
 - [KHR_texture_transform](/modules/extensions/classes/KHRTextureTransform)
 - [KHR_xmp_json_ld](/modules/extensions/classes/KHRXMP)
 
 ## Vendor Extensions
 
-- [EXT_texture_avif](/modules/extensions/classes/EXTTextureAVIF)
-- [EXT_texture_webp](/modules/extensions/classes/EXTTextureWebP)
+- [EXT_mesh_features](/modules/extensions/classes/EXTMeshFeatures) *(🧪 experimental)*
 - [EXT_mesh_gpu_instancing](/modules/extensions/classes/EXTMeshGPUInstancing)
 - [EXT_meshopt_compression](/modules/extensions/classes/EXTMeshoptCompression)
+- [EXT_structural_metadata](/modules/extensions/classes/EXTStructuralMetadata) *(🧪 experimental)*
+- [EXT_texture_avif](/modules/extensions/classes/EXTTextureAVIF)
+- [EXT_texture_webp](/modules/extensions/classes/EXTTextureWebP)
 
 ## Installation
 
