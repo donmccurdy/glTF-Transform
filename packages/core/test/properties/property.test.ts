@@ -18,6 +18,26 @@ test('equals', async (t) => {
 	t.falsy(nodeA.equals(nodeB), 'different extras');
 });
 
+test('equals - depth', async (t) => {
+	// Use cases:
+	// - Skins may have deeply-equal joint nodes, but nodes are not interchangable.
+	// - Materials reference unique TextureInfos, which must be compared deeply.
+
+	const document = new Document();
+	const nodeA = document.createNode();
+	const nodeB = document.createNode().addChild(nodeA);
+	const nodeC = document.createNode().addChild(nodeB);
+
+	const nodeD = document.createNode();
+	const nodeE = document.createNode().addChild(nodeD);
+	const nodeF = document.createNode().addChild(nodeE);
+
+	t.false(nodeC.equals(nodeF, undefined, 0), 'depth = 0');
+	t.false(nodeC.equals(nodeF, undefined, 1), 'depth = 1');
+	t.true(nodeC.equals(nodeF, undefined, 2), 'depth = 2');
+	t.true(nodeC.equals(nodeF, undefined, 3), 'depth = 3');
+});
+
 test('internal arrays', async (t) => {
 	const document = new Document();
 	const translation = [0, 0, 0] as vec3;
