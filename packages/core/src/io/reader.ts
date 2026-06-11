@@ -140,7 +140,7 @@ export class GLTFReader {
 				accessor.setNormalized(accessorDef.normalized);
 			}
 
-			// Sparse accessors, KHR_draco_mesh_compression, and EXT_meshopt_compression.
+			// Sparse accessors, KHR_draco_mesh_compression, KHR_meshopt_compression, and EXT_meshopt_compression.
 			if (accessorDef.bufferView === undefined) return accessor;
 
 			// NOTICE: We mark sparse accessors at the end of the I/O reading process. Consider an
