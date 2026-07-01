@@ -56,6 +56,8 @@ export class AnimationChannel extends ExtensibleProperty<IAnimationChannel> {
 		SCALE: 'scale',
 		/** Channel targets {@link Node.setWeights}, affecting {@link PrimitiveTarget} weights. */
 		WEIGHTS: 'weights',
+		/** Channel targets a pointer path (KHR_animation_pointer). */
+		POINTER: 'pointer',
 	};
 
 	/**********************************************************************************************

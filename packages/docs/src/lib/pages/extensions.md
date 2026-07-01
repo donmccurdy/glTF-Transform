@@ -49,6 +49,7 @@ as prescribed by the extension itself.
 - [KHR_texture_basisu](/modules/extensions/classes/KHRTextureBasisu)
 - [KHR_texture_transform](/modules/extensions/classes/KHRTextureTransform)
 - [KHR_xmp_json_ld](/modules/extensions/classes/KHRXMP)
+- [KHR_animation_pointer](/modules/extensions/classes/KHRAnimationPointer)
 
 ## Vendor Extensions
 

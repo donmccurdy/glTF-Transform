@@ -856,10 +856,13 @@ export class GLTFWriter {
 			animationDef.channels = animation.listChannels().map((channel) => {
 				const channelDef = context.createPropertyDef(channel) as GLTF.IAnimationChannel;
 				channelDef.sampler = samplerIndexMap.get(channel.getSampler()!)!;
-				channelDef.target = {
-					node: context.nodeIndexMap.get(channel.getTargetNode()!)!,
-					path: channel.getTargetPath()!,
-				};
+
+				const targetNode = channel.getTargetNode();
+				channelDef.target = { path: channel.getTargetPath()! };
+				if (targetNode) {
+					channelDef.target.node = context.nodeIndexMap.get(targetNode)!;
+				}
+
 				return channelDef;
 			});
 
