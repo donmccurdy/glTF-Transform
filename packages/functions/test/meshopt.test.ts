@@ -24,4 +24,4 @@ const hasMeshopt = (document: Document): boolean =>
 	document
 		.getRoot()
 		.listExtensionsUsed()
-		.some((ext) => ext.extensionName === 'EXT_meshopt_compression');
+		.some((ext) => ext.extensionName === 'KHR_meshopt_compression');
