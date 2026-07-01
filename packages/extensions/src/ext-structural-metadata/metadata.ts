@@ -1,6 +1,7 @@
 import {
 	ExtensionProperty,
 	type IProperty,
+	type Nullable,
 	PropertyType,
 	RefList,
 	RefMap,
@@ -147,7 +148,7 @@ export class StructuralMetadata extends ExtensionProperty<IStructuralMetadata> {
 		this.parentTypes = [PropertyType.ROOT];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IStructuralMetadata> {
 		return Object.assign(super.getDefaults(), {
 			schema: null,
 			schemaUri: '',
@@ -219,7 +220,7 @@ export class Schema extends ExtensionProperty<ISchema> {
 		this.parentTypes = ['StructuralMetadata'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<ISchema> {
 		return Object.assign(super.getDefaults(), {
 			description: '',
 			version: '',
@@ -293,7 +294,7 @@ export class Class extends ExtensionProperty<IClass> {
 		this.parentTypes = ['Schema'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IClass> {
 		return Object.assign(super.getDefaults(), {
 			description: '',
 			properties: new RefMap<ClassProperty>(),
@@ -338,7 +339,7 @@ export class ClassProperty extends ExtensionProperty<IClassProperty> {
 		this.parentTypes = ['Class'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IClassProperty> {
 		return Object.assign(super.getDefaults(), {
 			description: '',
 			componentType: null,
@@ -472,7 +473,7 @@ export class Enum extends ExtensionProperty<IEnum> {
 		this.parentTypes = ['Schema'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IEnum> {
 		return Object.assign(super.getDefaults(), {
 			description: '',
 			valueType: 'UINT16',
@@ -522,7 +523,7 @@ export class EnumValue extends ExtensionProperty<IEnumValue> {
 		this.parentTypes = ['Enum'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IEnumValue> {
 		return Object.assign(super.getDefaults(), {
 			description: null,
 		});
@@ -560,7 +561,7 @@ export class PropertyTable extends ExtensionProperty<IPropertyTable> {
 		this.parentTypes = ['StructuralMetadata'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyTable> {
 		return Object.assign(super.getDefaults(), {
 			properties: new RefMap<ClassProperty>(),
 		});
@@ -611,7 +612,7 @@ export class PropertyTableProperty extends ExtensionProperty<IPropertyTablePrope
 		this.parentTypes = ['PropertyTable'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyTableProperty> {
 		return Object.assign(super.getDefaults(), {
 			arrayOffsets: null,
 			stringOffsets: null,
@@ -705,7 +706,7 @@ export class PropertyTexture extends ExtensionProperty<IPropertyTexture> {
 		this.parentTypes = ['StructuralMetadata'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyTexture> {
 		return Object.assign(super.getDefaults(), {
 			properties: new RefMap<PropertyTextureProperty>(),
 		});
@@ -749,7 +750,7 @@ export class PropertyTextureProperty extends ExtensionProperty<IPropertyTextureP
 		this.parentTypes = ['PropertyTexture'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyTextureProperty> {
 		const defaultTextureInfo = new TextureInfo(this.graph, 'textureInfo');
 		defaultTextureInfo.setMinFilter(TextureInfo.MagFilter.NEAREST);
 		defaultTextureInfo.setMagFilter(TextureInfo.MagFilter.NEAREST);
@@ -828,7 +829,7 @@ export class PropertyAttribute extends ExtensionProperty<IPropertyAttribute> {
 		this.parentTypes = ['StructuralMetadata'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyAttribute> {
 		return Object.assign(super.getDefaults(), {
 			properties: new RefMap<PropertyAttributeProperty>(),
 		});
@@ -872,7 +873,7 @@ export class PropertyAttributeProperty extends ExtensionProperty<IPropertyAttrib
 		this.parentTypes = ['PropertyAttribute'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IPropertyAttributeProperty> {
 		return Object.assign(super.getDefaults(), {
 			offset: null,
 			scale: null,
@@ -934,7 +935,7 @@ export class NodeStructuralMetadata extends ExtensionProperty<INodeStructuralMet
 		this.parentTypes = [PropertyType.NODE];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<INodeStructuralMetadata> {
 		return Object.assign(super.getDefaults(), { class: '', properties: {} });
 	}
 
@@ -970,7 +971,7 @@ export class MeshPrimitiveStructuralMetadata extends ExtensionProperty<IMeshPrim
 		this.parentTypes = [PropertyType.PRIMITIVE];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IMeshPrimitiveStructuralMetadata> {
 		return Object.assign(super.getDefaults(), {
 			propertyTextures: new RefList<PropertyTexture>(),
 			propertyAttributes: new RefList<PropertyAttribute>(),

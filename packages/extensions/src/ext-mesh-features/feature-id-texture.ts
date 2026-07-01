@@ -1,4 +1,4 @@
-import { ExtensionProperty, type IProperty, type Texture, TextureInfo } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, type Texture, TextureInfo } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 
 interface IFeatureIDTexture extends IProperty {
@@ -25,7 +25,7 @@ export class FeatureIDTexture extends ExtensionProperty<IFeatureIDTexture> {
 		this.parentTypes = ['FeatureID'];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IFeatureIDTexture> {
 		const defaultTextureInfo = new TextureInfo(this.graph, 'textureInfo');
 		defaultTextureInfo.setMinFilter(TextureInfo.MagFilter.NEAREST);
 		defaultTextureInfo.setMagFilter(TextureInfo.MagFilter.NEAREST);

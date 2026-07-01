@@ -1,4 +1,4 @@
-import { ExtensionProperty, type IProperty, PropertyType, RefSet } from '@gltf-transform/core';
+import { ExtensionProperty, type IProperty, type Nullable, PropertyType, RefSet } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 import type { FeatureID } from './feature-id.js';
 
@@ -23,7 +23,7 @@ export class Features extends ExtensionProperty<IFeatures> {
 		this.parentTypes = [PropertyType.PRIMITIVE];
 	}
 
-	protected override getDefaults() {
+	protected override getDefaults(): Nullable<IFeatures> {
 		return Object.assign(super.getDefaults(), {
 			featureIds: new RefSet([]),
 		});
