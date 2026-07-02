@@ -63,7 +63,7 @@
     "watlas": "^1.0.1"
   },
   "resolutions": {
-    "sharp": "~0.34.5"
+    "sharp": "~0.35.0"
   },
   "ava": {
     "extensions": {
