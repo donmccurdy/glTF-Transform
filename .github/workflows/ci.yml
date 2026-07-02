@@ -47,7 +47,7 @@ jobs:
     steps:
       # Setup.
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: denoland/setup-deno@v1
+      - uses: denoland/setup-deno@v2.0.4
         with:
           deno-version: v1.x
       - name: Use Node.js ${{ env.NODE_VERSION }}
