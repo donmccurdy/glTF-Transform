@@ -3,6 +3,8 @@ import baseConfig from '../../tsdown.config.ts';
 
 export default defineConfig({
 	...baseConfig,
-	inlineOnly: ['gl-matrix'],
-	external: ['node:fs', 'node:path'],
+	deps: {
+		onlyBundle: ['gl-matrix'],
+		neverBundle: ['node:fs', 'node:path'],
+	},
 });
