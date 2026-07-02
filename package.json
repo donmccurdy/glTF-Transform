@@ -55,7 +55,7 @@
     "simple-dropzone": "^0.8.3",
     "three": "^0.177.0",
     "tinybench": "^4.1.0",
-    "tsdown": "^0.21.5",
+    "tsdown": "^0.22.3",
     "tweakpane": "^3.1.10",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
     "typescript": "5.9.3",

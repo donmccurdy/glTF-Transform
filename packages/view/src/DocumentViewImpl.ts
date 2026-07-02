@@ -30,6 +30,7 @@ import {
 	TextureSubject,
 } from './subjects/index.js';
 
+/** @internal */
 export interface DocumentViewSubjectAPI {
 	readonly accessorPool: Pool<BufferAttribute>;
 	readonly extensionPool: Pool<ExtensionPropertyDef>;
