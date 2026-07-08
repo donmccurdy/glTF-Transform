@@ -17,6 +17,7 @@ export * from './flatten.js';
 export * from './get-bounds.js';
 export * from './get-texture-color-space.js';
 export * from './get-vertex-count.js';
+export * from './hash-property.js';
 export * from './inspect.js';
 export * from './instance.js';
 export * from './join.js';
