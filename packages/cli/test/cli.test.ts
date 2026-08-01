@@ -2,16 +2,32 @@ import { mockConsoleLog, program, programReady } from '@gltf-transform/cli';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import test from 'ava';
+import { execFile } from 'child_process';
 import draco3d from 'draco3dgltf';
 import fs from 'fs';
 import { MeshoptDecoder } from 'meshoptimizer';
 import path, { dirname } from 'path';
 import tmp from 'tmp';
 import { fileURLToPath } from 'url';
+import { promisify } from 'util';
 
 tmp.setGracefulCleanup();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const execFileAsync = promisify(execFile);
+
+test('KTX resize option', async (t) => {
+	const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
+
+	for (const command of ['etc1s', 'uastc']) {
+		const { stdout } = await execFileAsync(process.execPath, [
+			cliPath,
+			'help',
+			command,
+		]);
+		t.regex(stdout, /--resize <size>/, command);
+	}
+});
 
 test('copy', async (t) => {
 	await programReady;

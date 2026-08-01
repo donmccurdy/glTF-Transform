@@ -1341,6 +1341,9 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		validator: Validator.STRING,
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
+	.option('--resize <size>', 'Maximum texture dimensions, in pixels.', {
+		validator: Validator.NUMBER,
+	})
 	.option('--mipmaps <bool>', 'Generate mipmaps.', {
 		validator: Validator.BOOLEAN,
 		default: ETC1S_DEFAULTS.mipmaps,
@@ -1399,8 +1402,11 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		const mode = Mode.ETC1S;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		const resize = Number.isInteger(options.resize)
+			? ([Number(options.resize), Number(options.resize)] as vec2)
+			: undefined;
 		return Session.create(io, logger, args.input, args.output).transform(
-			toktx({ ...options, encoder, mode, pattern, slots }),
+			toktx({ ...options, encoder, mode, pattern, slots, resize }),
 		);
 	});
 
@@ -1423,6 +1429,9 @@ for textures where the quality is sufficient.`.trim(),
 		validator: Validator.STRING,
 	})
 	.option('--slots <slots>', 'Texture slots to include (glob)', { validator: Validator.STRING })
+	.option('--resize <size>', 'Maximum texture dimensions, in pixels.', {
+		validator: Validator.NUMBER,
+	})
 	.option('--mipmaps <bool>', 'Generate mipmaps.', {
 		validator: Validator.BOOLEAN,
 		default: UASTC_DEFAULTS.mipmaps,
@@ -1516,8 +1525,11 @@ for textures where the quality is sufficient.`.trim(),
 		const mode = Mode.UASTC;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
+		const resize = Number.isInteger(options.resize)
+			? ([Number(options.resize), Number(options.resize)] as vec2)
+			: undefined;
 		Session.create(io, logger, args.input, args.output).transform(
-			toktx({ ...options, encoder, mode, pattern, slots }),
+			toktx({ ...options, encoder, mode, pattern, slots, resize }),
 		);
 	});
 
