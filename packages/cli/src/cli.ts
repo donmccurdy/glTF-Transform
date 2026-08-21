@@ -55,7 +55,6 @@ import { ready as resampleReady, resample as resampleWASM } from 'keyframe-resam
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import micromatch from 'micromatch';
 import mikktspace from 'mikktspace';
-import fetch from 'node-fetch'; // TODO(deps): Replace when v20 reaches end of maintenance.
 import * as watlas from 'watlas';
 import { getConfig, loadConfig } from './config.js';
 import { inspect } from './inspect.js';
@@ -86,7 +85,7 @@ const programReady: Promise<void> = new Promise<void>((resolve) => {
 		loadConfig(process.argv[process.argv.indexOf('--config') + 1]);
 	}
 	return getConfig().then(async (config) => {
-		io = new NodeIO(fetch).registerExtensions(config.extensions).registerDependencies(config.dependencies);
+		io = new NodeIO(global.fetch).registerExtensions(config.extensions).registerDependencies(config.dependencies);
 		if (config.onProgramReady) {
 			program.section('User', '👤');
 			await config.onProgramReady({ program, io, Session });
