@@ -560,7 +560,6 @@ __metadata:
     "@gltf-transform/core": "npm:^4.4.2"
     "@gltf-transform/extensions": "npm:^4.4.2"
     "@gltf-transform/functions": "npm:^4.4.2"
-    "@types/language-tags": "npm:~1.0.4"
     "@types/micromatch": "npm:~4.0.10"
     "@types/prompts": "npm:^2.4.9"
     "@types/tmp": "npm:~0.2.6"
@@ -570,7 +569,6 @@ __metadata:
     gltf-validator: "npm:~2.0.0-dev.3.10"
     keyframe-resample: "npm:~0.1.0"
     ktx-parse: "npm:^1.1.0"
-    language-tags: "npm:^2.1.0"
     listr2: "npm:~8.3.3"
     meshoptimizer: "npm:~1.0.1"
     micromatch: "npm:~4.0.8"
@@ -2258,13 +2256,6 @@ __metadata:
     "@types/tough-cookie": "npm:*"
     parse5: "npm:^7.0.0"
   checksum: 10c0/1ec7ff7177e1f7266e51279f07f3cd013e1713766b01eebceac783061675b31c672a47b0a508dcbaf040f7f22d90405858378c6c5358991989fbe8b95adde354
-  languageName: node
-  linkType: hard
-
-"@types/language-tags@npm:~1.0.4":
-  version: 1.0.4
-  resolution: "@types/language-tags@npm:1.0.4"
-  checksum: 10c0/09d50165c9718243759af717e4bf04f97a9df6d0bdfe51cd7543e68c91cb9a5b4be7322d2218398716b6e7b09a4fde9529ab0d6d12e41ca0aba23e8d580ad097
   languageName: node
   linkType: hard
 
@@ -6024,22 +6015,6 @@ __metadata:
   version: 2.0.0
   resolution: "kuler@npm:2.0.0"
   checksum: 10c0/0a4e99d92ca373f8f74d1dc37931909c4d0d82aebc94cf2ba265771160fc12c8df34eaaac80805efbda367e2795cb1f1dd4c3d404b6b1cf38aec94035b503d2d
-  languageName: node
-  linkType: hard
-
-"language-subtag-registry@npm:^0.3.20":
-  version: 0.3.23
-  resolution: "language-subtag-registry@npm:0.3.23"
-  checksum: 10c0/e9b05190421d2cd36dd6c95c28673019c927947cb6d94f40ba7e77a838629ee9675c94accf897fbebb07923187deb843b8fbb8935762df6edafe6c28dcb0b86c
-  languageName: node
-  linkType: hard
-
-"language-tags@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "language-tags@npm:2.1.0"
-  dependencies:
-    language-subtag-registry: "npm:^0.3.20"
-  checksum: 10c0/53338a54658a12d88c63f1b9194ee935098cebef07b2b8cdedaaef7fd0145055959bcfb7e2c5ebbebe78d2011b5e394b113c4b9fb2de51f36a4a19f54565862f
   languageName: node
   linkType: hard
 

@@ -59,7 +59,7 @@ async function* generateQuestions(results: Record<string, unknown>): AsyncGenera
 			hint: ' (dc:language)',
 			initial: DEFAULT_LANG,
 			validate: (input: string) =>
-				languageTags.check(input) ? true : 'Invalid language; refer to IETF RFC 3066.',
+				isLanguageTag(input) ? true : 'Unsupported language tag; refer to IETF RFC 3066.',
 		};
 
 		lang = results['dc:language'] as string;
@@ -365,4 +365,17 @@ function createContext(_object: unknown, acc: Record<string, string> = {}): Reco
 	}
 
 	return acc;
+}
+
+/**
+ * Matches basic IANA Language Tags. Some valid tags may fail this check, but
+ * the only fully-reliable alternatives I'm aware of (e.g. the 'language-tags'
+ * package) are too heavy.
+ *
+ * Source: https://stackoverflow.com/a/48300605
+ */
+const IANA_LANGUAGE_TAG_RE = /^[A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?$/;
+
+function isLanguageTag(tag: string): boolean {
+	return IANA_LANGUAGE_TAG_RE.test(tag);
 }
