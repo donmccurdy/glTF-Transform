@@ -1,7 +1,6 @@
 # @gltf-transform/view
 
 [![Latest NPM release](https://img.shields.io/npm/v/@gltf-transform/view.svg)](https://www.npmjs.com/package/@gltf-transform/view)
-[![Minzipped size](https://badgen.net/bundlephobia/minzip/@gltf-transform/view)](https://bundlephobia.com/result?p=@gltf-transform/view)
 [![License](https://img.shields.io/npm/l/@gltf-transform/view.svg)](https://github.com/donmccurdy/glTF-Transform/blob/main/packages/view/LICENSE.md)
 
 > ⚠️ EXPERIMENTAL - The `@gltf-transform/view` module is currently experimental,
