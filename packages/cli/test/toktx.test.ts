@@ -42,13 +42,13 @@ test('compress and resize', async (t) => {
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), R),
-		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8_UNORM',
+		'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8_UNORM',
 		'channels → R',
 	);
 
 	t.is(
 		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), G),
-		'create --generate-mipmap --encode basis-lz --assign-oetf linear --assign-primaries none --format R8G8_UNORM',
+		'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8G8_UNORM',
 		'channels → RG',
 	);
 });

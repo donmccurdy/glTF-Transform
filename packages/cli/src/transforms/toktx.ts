@@ -34,7 +34,10 @@ import { pLimit } from '../utils/p-limit.js';
 import { commandExists, spawn, TrustedCommand, waitExit } from '../utils/process.js';
 
 const NUM_CPUS = os.cpus().length || 1; // microsoft/vscode#112122
-const KTX_SOFTWARE_VERSION_MIN = '4.3.0';
+
+// Options for specifying transfer functions refactored in v4.4.
+// https://github.com/KhronosGroup/KTX-Software/releases#release-v4.4.0
+const KTX_SOFTWARE_VERSION_MIN = '4.4.0';
 
 const { R, G, A } = TextureChannel;
 const { NEAREST, NEAREST_MIPMAP_LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR, LINEAR_MIPMAP_NEAREST } = TextureInfo.MinFilter;
@@ -402,11 +405,11 @@ function createParams(
 
 	// See: https://github.com/donmccurdy/glTF-Transform/issues/215
 	if (colorSpace === 'srgb') {
-		params.push('--assign-oetf', 'srgb', '--assign-primaries', 'bt709');
+		params.push('--assign-tf', 'srgb', '--assign-primaries', 'bt709');
 	} else if (colorSpace === 'srgb-linear') {
-		params.push('--assign-oetf', 'linear', '--assign-primaries', 'bt709');
+		params.push('--assign-tf', 'linear', '--assign-primaries', 'bt709');
 	} else if (slots.length && !colorSpace) {
-		params.push('--assign-oetf', 'linear', '--assign-primaries', 'none');
+		params.push('--assign-tf', 'linear', '--assign-primaries', 'none');
 	}
 
 	if (channels === R) {
