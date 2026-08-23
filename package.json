@@ -31,13 +31,13 @@
     "docs:deploy": "yarn build && yarn dlx vercel"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.6",
+    "@biomejs/biome": "^2.5.10",
     "@tweakpane/core": "^1.1.9",
     "@types/d3-dsv": "^3.0.7",
     "@types/draco3dgltf": "1.4.3",
     "@types/jsdom": "^30.0.0",
     "@types/ndarray": "1.0.14",
-    "@types/node": "24.13.3",
+    "@types/node": "26.2.0",
     "@types/semver": "^7.8.0",
     "@types/three": "^0.177.0",
     "ava": "^7.0.0",
@@ -59,7 +59,7 @@
     "tweakpane": "^3.1.10",
     "tweakpane-plugin-thumbnail-list": "^0.3.0",
     "typescript": "5.9.3",
-    "vite": "^7.3.6",
+    "vite": "^8.2.2",
     "watlas": "^1.0.1"
   },
   "resolutions": {
