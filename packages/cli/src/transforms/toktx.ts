@@ -463,5 +463,5 @@ function isMultipleOfFour(value: number): boolean {
 
 function ceilMultipleOfFour(value: number): number {
 	if (value <= 4) return 4;
-	return value % 4 ? value + 4 - (value % 4) : value;
+	return 4 * Math.ceil(value / 4);
 }
