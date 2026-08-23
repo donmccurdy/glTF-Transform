@@ -86,13 +86,15 @@ function normalizeURIs(jsonDocument: JSONDocument) {
 	}
 }
 
+const MESH_COMPRESSION_EXTENSIONS = [
+	'KHR_draco_mesh_compression',
+	'KHR_meshopt_compression',
+	'EXT_meshopt_compression',
+];
+
 /** Remove compression extensions now so further writes don't recompress. */
 function removeCompression(document: Document) {
-	for (const extensionName of ['KHR_draco_mesh_compression', 'EXT_meshopt_compression']) {
-		const extension = document
-			.getRoot()
-			.listExtensionsUsed()
-			.find((extension) => extension.extensionName === extensionName);
-		if (extension) extension.dispose();
+	for (const extensionName of MESH_COMPRESSION_EXTENSIONS) {
+		document.disposeExtension(extensionName);
 	}
 }

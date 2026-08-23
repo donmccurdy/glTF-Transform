@@ -25,6 +25,7 @@ import { KHRMaterialsVariants } from './khr-materials-variants/index.js';
 import { KHRMaterialsVolume } from './khr-materials-volume/index.js';
 import { KHRMeshPrimitiveRestart } from './khr-mesh-primitive-restart/index.js';
 import { KHRMeshQuantization } from './khr-mesh-quantization/index.js';
+import { KHRMeshoptCompression } from './khr-meshopt-compression/index.js';
 import { KHRNodeVisibility } from './khr-node-visibility/node-visibility.js';
 import { KHRTextureBasisu } from './khr-texture-basisu/index.js';
 import { KHRTextureTransform } from './khr-texture-transform/index.js';
@@ -51,6 +52,7 @@ export const KHRONOS_EXTENSIONS: (typeof Extension)[] = [
 	KHRMaterialsVolume,
 	KHRMeshPrimitiveRestart,
 	KHRMeshQuantization,
+	KHRMeshoptCompression,
 	KHRNodeVisibility,
 	KHRTextureBasisu,
 	KHRTextureTransform,
@@ -94,6 +96,7 @@ export * from './khr-materials-variants/index.js';
 export * from './khr-materials-volume/index.js';
 export * from './khr-mesh-primitive-restart/index.js';
 export * from './khr-mesh-quantization/index.js';
+export * from './khr-meshopt-compression/index.js';
 export * from './khr-node-visibility/index.js';
 export * from './khr-texture-basisu/index.js';
 export * from './khr-texture-transform/index.js';

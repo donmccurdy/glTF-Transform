@@ -38,7 +38,7 @@
     "keyframe-resample": "~0.1.0",
     "ktx-parse": "^1.1.0",
     "listr2": "~8.3.3",
-    "meshoptimizer": "~1.0.1",
+    "meshoptimizer": "~1.1.1",
     "micromatch": "~4.0.8",
     "mikktspace": "~1.1.1",
     "prompts": "^2.4.2",

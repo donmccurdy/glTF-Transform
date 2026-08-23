@@ -1,1 +1,1 @@
-export * from './meshopt-compression.js';
+export * from './ext-meshopt-compression.js';
