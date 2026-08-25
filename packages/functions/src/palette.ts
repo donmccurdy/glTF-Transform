@@ -3,7 +3,6 @@ import {
 	type Document,
 	type Material,
 	type Primitive,
-	PropertyType,
 	type Texture,
 	TextureInfo,
 	type Transform,
@@ -11,8 +10,7 @@ import {
 } from '@gltf-transform/core';
 import ndarray, { type NdArray, type TypedArray } from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
-import { prune } from './prune.js';
-import { assignDefaults, createTransform } from './utils.js';
+import { assignDefaults, createTransform, isUsed } from './utils.js';
 
 const NAME = 'palette';
 
@@ -26,28 +24,11 @@ export interface PaletteOptions {
 	 * material values are found, no palettes will be generated. Default: 5.
 	 */
 	min?: number;
-	/**
-	 * Whether to keep unused vertex attributes, such as UVs without an assigned
-	 * texture. If kept, unused UV coordinates may prevent palette texture
-	 * creation. Default: false.
-	 */
-	keepAttributes?: boolean;
-	/**
-	 * Whether to perform cleanup steps after completing the operation. Recommended, and enabled by
-	 * default. Cleanup removes temporary resources created during the operation, but may also remove
-	 * pre-existing unused or duplicate resources in the {@link Document}. Applications that require
-	 * keeping these resources may need to disable cleanup, instead calling {@link dedup} and
-	 * {@link prune} manually (with customized options) later in the processing pipeline.
-	 * @experimental
-	 */
-	cleanup?: boolean;
 }
 
 export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
 	min: 5,
-	keepAttributes: false,
-	cleanup: true,
 };
 
 /**
@@ -94,18 +75,6 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		const logger = document.getLogger();
 		const root = document.getRoot();
 
-		// Find and remove unused TEXCOORD_n attributes.
-		if (!options.keepAttributes) {
-			await document.transform(
-				prune({
-					propertyTypes: [PropertyType.ACCESSOR],
-					keepAttributes: false,
-					keepIndices: true,
-					keepLeaves: true,
-				}),
-			);
-		}
-
 		const prims = new Set<Primitive>();
 		const materials = new Set<Material>();
 
@@ -114,7 +83,13 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		for (const mesh of root.listMeshes()) {
 			for (const prim of mesh.listPrimitives()) {
 				const material = prim.getMaterial();
-				if (!material || !!prim.getAttribute('TEXCOORD_0')) continue;
+				if (!material) continue;
+
+				const hasTexture =
+					material.getBaseColorTexture() ||
+					material.getEmissiveTexture() ||
+					material.getMetallicRoughnessTexture();
+				if (hasTexture) continue;
 
 				prims.add(prim);
 				materials.add(material);
@@ -201,6 +176,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 		const visitedKeys = new Set<string>();
 		const materialIndices = new Map<string, number>();
 		const paletteMaterials: Material[] = [];
+		const paletteMaterialTexCoords: number[] = [];
 
 		let nextIndex = 0;
 		for (const material of materials) {
@@ -266,11 +242,12 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 			const buffer = position.getBuffer();
 			const array = new Float32Array(position.getCount() * 2).fill(padUV);
 			const uv = document.createAccessor().setType('VEC2').setArray(array).setBuffer(buffer);
+			const texCoord = nextTexCoordIndex(prim);
 
 			let dstMaterial;
-			for (const material of paletteMaterials) {
-				if (material.equals(srcMaterial, skipProps)) {
-					dstMaterial = material;
+			for (let i = 0; i < paletteMaterials.length; i++) {
+				if (paletteMaterials[i].equals(srcMaterial, skipProps) && paletteMaterialTexCoords[i] === texCoord) {
+					dstMaterial = paletteMaterials[i];
 				}
 			}
 
@@ -283,6 +260,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 						.setBaseColorFactor([1, 1, 1, 1])
 						.setBaseColorTexture(baseColorTexture)
 						.getBaseColorTextureInfo()!
+						.setTexCoord(texCoord)
 						.setMinFilter(TextureInfo.MinFilter.NEAREST)
 						.setMagFilter(TextureInfo.MagFilter.NEAREST);
 				}
@@ -291,6 +269,7 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 						.setEmissiveFactor([1, 1, 1])
 						.setEmissiveTexture(emissiveTexture)
 						.getEmissiveTextureInfo()!
+						.setTexCoord(texCoord)
 						.setMinFilter(TextureInfo.MinFilter.NEAREST)
 						.setMagFilter(TextureInfo.MagFilter.NEAREST);
 				}
@@ -300,18 +279,22 @@ export function palette(_options: PaletteOptions = PALETTE_DEFAULTS): Transform 
 						.setRoughnessFactor(1)
 						.setMetallicRoughnessTexture(metallicRoughnessTexture)
 						.getMetallicRoughnessTextureInfo()!
+						.setTexCoord(texCoord)
 						.setMinFilter(TextureInfo.MinFilter.NEAREST)
 						.setMagFilter(TextureInfo.MagFilter.NEAREST);
 				}
 
 				paletteMaterials.push(dstMaterial);
+				paletteMaterialTexCoords.push(texCoord);
 			}
 
-			prim.setMaterial(dstMaterial).setAttribute('TEXCOORD_0', uv);
+			prim.setMaterial(dstMaterial).setAttribute(`TEXCOORD_${texCoord}`, uv);
 		}
 
-		if (options.cleanup) {
-			await document.transform(prune({ propertyTypes: [PropertyType.MATERIAL] }));
+		for (const material of materials) {
+			if (!isUsed(material)) {
+				material.dispose();
+			}
 		}
 
 		logger.debug(`${NAME}: Complete.`);
@@ -345,4 +328,13 @@ function writeBlock(pixels: NdArray<TypedArray>, index: number, value: vec4, blo
 			pixels.set(index * blockSize + i, j, 3, value[3] * 255);
 		}
 	}
+}
+
+/** Returns the next available index for a TEXCOORD attribute. */
+function nextTexCoordIndex(prim: Primitive): number {
+	let index = 0;
+	while (prim.getAttribute(`TEXCOORD_${index}`)) {
+		index++;
+	}
+	return index;
 }

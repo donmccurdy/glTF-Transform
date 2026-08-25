@@ -177,18 +177,37 @@ test('pixel values', async (t) => {
 	);
 });
 
-test('no side effects', async (t) => {
+test('preserve UVs', async (t) => {
 	const document = new Document().setLogger(logger);
+
 	const position = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+	const uv = document.createAccessor().setType('VEC2').setArray(new Uint8Array(6));
+
 	const materialA = document.createMaterial('A').setBaseColorFactor([1, 0, 0, 1]);
 	const materialB = document.createMaterial('B').setBaseColorFactor([0, 1, 0, 1]);
+	const materialC = document.createMaterial('C').setBaseColorFactor([0, 0, 1, 1]);
+
 	const primA = document.createPrimitive().setMaterial(materialA).setAttribute('POSITION', position);
 	const primB = document.createPrimitive().setMaterial(materialB).setAttribute('POSITION', position);
-	document.createMesh().addPrimitive(primA).addPrimitive(primB);
+	const primC = document
+		.createPrimitive()
+		.setMaterial(materialC)
+		.setAttribute('POSITION', position)
+		.setAttribute('TEXCOORD_0', uv);
 
-	await document.transform(palette({ cleanup: false, min: 2 }));
+	document.createMesh().addPrimitive(primA).addPrimitive(primB).addPrimitive(primC);
 
-	t.true(document.getRoot().listMaterials().length >= 2, 'skips prune and dedup');
+	await document.transform(palette({ min: 2 }));
+
+	t.is(document.getRoot().listMaterials().length, 2, 'one material per texCoord index');
+
+	const paletteMaterials = document.getRoot().listMaterials();
+	const paletteMaterialA = paletteMaterials[0];
+	const paletteMaterialB = paletteMaterials[1];
+
+	t.is(paletteMaterialA.getBaseColorTextureInfo().getTexCoord(), 0, 'texCoord = 0');
+	t.is(paletteMaterialB.getBaseColorTextureInfo().getTexCoord(), 1, 'texCoord = 1');
+	t.is(paletteMaterialA.getBaseColorTexture(), paletteMaterialB.getBaseColorTexture(), 'same texture');
 });
 
 /* UTILITIES */

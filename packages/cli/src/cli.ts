@@ -378,12 +378,7 @@ commands or using the scripting API.
 		if (opts.instance) transforms.push(instance({ min: opts.instanceMin }));
 
 		if (opts.palette) {
-			transforms.push(
-				palette({
-					min: opts.paletteMin,
-					keepAttributes: !opts.prune || !opts.pruneAttributes,
-				}),
-			);
+			transforms.push(palette({ min: opts.paletteMin }));
 		}
 
 		if (opts.flatten) transforms.push(flatten());
