@@ -24,11 +24,17 @@ export interface PaletteOptions {
 	 * material values are found, no palettes will be generated. Default: 5.
 	 */
 	min?: number;
+	/**
+	 * @deprecated Unused attributes are no longer considered.
+	 * @privateRemarks TODO(v5): Remove this option.
+	 */
+	keepAttributes?: boolean;
 }
 
 export const PALETTE_DEFAULTS: Required<PaletteOptions> = {
 	blockSize: 4,
 	min: 5,
+	keepAttributes: false,
 };
 
 /**
