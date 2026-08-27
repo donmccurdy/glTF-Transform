@@ -24,6 +24,7 @@
 		// "erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"useDefineForClassFields": true,
+		// "allowSyntheticDefaultImports": true,
 
 		// Components of "strict" mode.
 		"alwaysStrict": true,
@@ -39,5 +40,8 @@
 		"packages/*/src/**/*.ts",
 		// Included to allow TypeDoc to find `pages.ts` content.
 		"docs/*.ts"
-	]
+	],
+	// "exclude": [
+	//   "packages/global.d.ts"
+	// ]
 }

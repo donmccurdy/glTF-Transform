@@ -31,6 +31,7 @@ jobs:
       - run: corepack enable
       - run: yarn install --immutable
       - run: yarn build
+      - run: yarn build:tsc
 
       # Test.
       - run: yarn test
@@ -116,3 +117,4 @@ jobs:
       # See: https://github.com/yarnpkg/yarn/issues/4890
       - run: yarn install --immutable --network-timeout 100000
       - run: yarn build
+      - run: yarn build:tsc

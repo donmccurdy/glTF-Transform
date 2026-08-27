@@ -12,7 +12,7 @@ import { EXTTextureAVIF, EXTTextureWebP } from '@gltf-transform/extensions';
 import ndarray from 'ndarray';
 import { lanczos2, lanczos3 } from 'ndarray-lanczos';
 import { getPixels, savePixels } from 'ndarray-pixels';
-import type sharp from 'sharp';
+import type { AvifOptions, JpegOptions, PngOptions, sharp, WebpOptions } from 'sharp';
 import { getTextureColorSpace } from './get-texture-color-space.js';
 import { getTextureChannelMask } from './list-texture-channels.js';
 import { listTextureSlots } from './list-texture-slots.js';
@@ -308,7 +308,7 @@ async function _encodeWithSharp(
 	options: Required<CompressTextureOptions>,
 ): Promise<Uint8Array> {
 	const encoder = options.encoder as typeof sharp;
-	let encoderOptions: sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions | sharp.AvifOptions = {};
+	let encoderOptions: JpegOptions | PngOptions | WebpOptions | AvifOptions = {};
 
 	const dstFormat = getFormatFromMimeType(dstMimeType);
 
@@ -317,13 +317,13 @@ async function _encodeWithSharp(
 			encoderOptions = {
 				quality: options.quality,
 				chromaSubsampling: options.chromaSubsampling,
-			} as sharp.JpegOptions;
+			} as JpegOptions;
 			break;
 		case 'png':
 			encoderOptions = {
 				quality: options.quality,
 				effort: remap(options.effort, 100, 10),
-			} as sharp.PngOptions;
+			} as PngOptions;
 			break;
 		case 'webp':
 			encoderOptions = {
@@ -331,7 +331,7 @@ async function _encodeWithSharp(
 				effort: remap(options.effort, 100, 6),
 				lossless: options.lossless,
 				nearLossless: options.nearLossless,
-			} as sharp.WebpOptions;
+			} as WebpOptions;
 			break;
 		case 'avif':
 			encoderOptions = {
@@ -339,7 +339,7 @@ async function _encodeWithSharp(
 				effort: remap(options.effort, 100, 9),
 				lossless: options.lossless,
 				chromaSubsampling: options.chromaSubsampling,
-			} as sharp.AvifOptions;
+			} as AvifOptions;
 			break;
 	}
 

@@ -11,6 +11,7 @@
   "scripts": {
     "build": "lerna run build",
     "build:watch": "lerna run build:watch --parallel --stream",
+    "build:tsc": "lerna exec --no-bail --parallel \"tsc --project tsconfig.json --noEmit\"",
     "lerna": "lerna",
     "clean:dist": "rm -rf packages/*/dist/** | true",
     "clean:deps": "rm -rf packages/*/node_modules/** | true",
