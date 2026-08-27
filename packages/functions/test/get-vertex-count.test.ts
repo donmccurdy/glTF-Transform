@@ -1,12 +1,18 @@
 import { Document, type Scene } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
-import { getSceneVertexCount, VertexCountMethod } from '@gltf-transform/functions';
+import {
+	getMeshVertexCount,
+	getNodeVertexCount,
+	getPrimitiveVertexCount,
+	getSceneVertexCount,
+	VertexCountMethod,
+} from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import test from 'ava';
 
 const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
 
-test('render', async (t) => {
+test('method = RENDER', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), RENDER), 32 * 4, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER), 32 + 9, 'indexed');
@@ -15,7 +21,7 @@ test('render', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), RENDER), 15, 'unused');
 });
 
-test('render-cached', async (t) => {
+test('method = RENDER_CACHED', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), RENDER_CACHED), 32 * 4, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER_CACHED), 32 + 5, 'indexed');
@@ -24,7 +30,7 @@ test('render-cached', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), RENDER_CACHED), 11, 'unused');
 });
 
-test('gpu-naive', async (t) => {
+test('method = UPLOAD_NAIVE', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD_NAIVE), 32 * 4, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD_NAIVE), 32 * 2, 'indexed');
@@ -33,7 +39,7 @@ test('gpu-naive', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD_NAIVE), 32 * 2, 'unused');
 });
 
-test('gpu', async (t) => {
+test('method = UPLOAD', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD), 32 * 4, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD), 32, 'indexed');
@@ -42,13 +48,21 @@ test('gpu', async (t) => {
 	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD), 32, 'unused');
 });
 
-test('unused', async (t) => {
+test('method = UNUSED', async (t) => {
 	const document = new Document().setLogger(logger);
 	t.is(getSceneVertexCount(createSceneBasic(document), UNUSED), 0, 'basic');
 	t.is(getSceneVertexCount(createSceneIndexed(document), UNUSED), 0, 'indexed');
 	t.is(getSceneVertexCount(createSceneInstanced(document), UNUSED), 0, 'instanced');
 	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UNUSED), 0, 'mixed attributes');
 	t.is(getSceneVertexCount(createSceneUnused(document), UNUSED), 24, 'unused');
+});
+
+test('empty properties', async (t) => {
+	const document = new Document().setLogger(logger);
+	t.is(getSceneVertexCount(document.createScene(), RENDER), 0, 'scene');
+	t.is(getNodeVertexCount(document.createNode(), RENDER), 0, 'node');
+	t.is(getMeshVertexCount(document.createMesh(), RENDER), 0, 'mesh');
+	t.is(getPrimitiveVertexCount(document.createPrimitive(), RENDER), 0, 'prim');
 });
 
 /**

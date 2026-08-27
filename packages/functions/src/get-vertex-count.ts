@@ -178,8 +178,12 @@ export function getMeshVertexCount(mesh: Mesh, method: VertexCountMethod): numbe
  * specified method. See {@link VertexCountMethod} for available methods.
  */
 export function getPrimitiveVertexCount(prim: Primitive, method: VertexCountMethod): number {
-	const position = prim.getAttribute('POSITION')!;
+	const position = prim.getAttribute('POSITION');
 	const indices = prim.getIndices();
+
+	if (!position) {
+		return 0;
+	}
 
 	switch (method) {
 		case VertexCountMethod.RENDER:
