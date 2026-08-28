@@ -352,7 +352,7 @@ function dedupSkins(document: Document, options: Required<DedupOptions>): void {
 /** Generates a key unique to the content of a primitive or target. */
 function createPrimitiveKey(prim: Primitive | PrimitiveTarget, refs: Map<Accessor | Material, number>): string {
 	const primKeyItems = [];
-	for (const semantic of prim.listSemantics()) {
+	for (const semantic of prim.listSemantics().sort()) {
 		const attribute = prim.getAttribute(semantic)!;
 		primKeyItems.push(semantic + ':' + refs.get(attribute));
 	}
