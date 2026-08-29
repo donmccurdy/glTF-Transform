@@ -1,23 +1,26 @@
+import { ok, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { meshopt } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 import { MeshoptEncoder } from 'meshoptimizer';
 
-test('basic', async (t) => {
-	const document = new Document().setLogger(logger);
-	document.createMesh().addPrimitive(createTorusKnotPrimitive(document, { tubularSegments: 6 }));
+describe('meshopt', () => {
+	test('basic', async () => {
+		const document = new Document().setLogger(logger);
+		document.createMesh().addPrimitive(createTorusKnotPrimitive(document, { tubularSegments: 6 }));
 
-	await document.transform(meshopt({ encoder: MeshoptEncoder }));
+		await document.transform(meshopt({ encoder: MeshoptEncoder }));
 
-	t.true(hasMeshopt(document), 'adds extension');
-});
+		ok(hasMeshopt(document), 'adds extension');
+	});
 
-test('noop', async (t) => {
-	const document = new Document().setLogger(logger);
-	await document.transform(meshopt({ encoder: MeshoptEncoder }));
+	test('noop', async () => {
+		const document = new Document().setLogger(logger);
+		await document.transform(meshopt({ encoder: MeshoptEncoder }));
 
-	t.false(hasMeshopt(document), 'skips extension if no accessors found');
+		strictEqual(hasMeshopt(document), false, 'skips extension if no accessors found');
+	});
 });
 
 const hasMeshopt = (document: Document): boolean =>

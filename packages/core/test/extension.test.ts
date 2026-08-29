@@ -1,7 +1,8 @@
+import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document, Extension, ExtensionProperty, PropertyType, type WriterContext } from '@gltf-transform/core';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
-import test from 'ava';
 
 const EXTENSION_NAME = 'TEST_node_gizmo';
 
@@ -45,54 +46,54 @@ class Gizmo extends ExtensionProperty {
 GizmoExtension.EXTENSION_NAME = EXTENSION_NAME;
 Gizmo.EXTENSION_NAME = EXTENSION_NAME;
 
-test('list', (t) => {
+test('list', () => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension);
 
-	t.deepEqual(document.getRoot().listExtensionsUsed(), [extension], 'listExtensionsUsed()');
-	t.deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
+	deepEqual(document.getRoot().listExtensionsUsed(), [extension], 'listExtensionsUsed()');
+	deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
 
 	extension.setRequired(true);
-	t.deepEqual(document.getRoot().listExtensionsRequired(), [extension], 'listExtensionsRequired()');
+	deepEqual(document.getRoot().listExtensionsRequired(), [extension], 'listExtensionsRequired()');
 
 	extension.dispose();
-	t.deepEqual(document.getRoot().listExtensionsUsed(), [], 'listExtensionsUsed()');
-	t.deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
+	deepEqual(document.getRoot().listExtensionsUsed(), [], 'listExtensionsUsed()');
+	deepEqual(document.getRoot().listExtensionsRequired(), [], 'listExtensionsRequired()');
 });
 
-test('property', (t) => {
+test('property', () => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
 	const node = document.createNode('MyNode');
 
-	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (1)');
+	strictEqual(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (1)');
 
 	// Add ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, gizmo);
-	t.is(node.getExtension(EXTENSION_NAME), gizmo, 'getExtension() → gizmo');
-	t.deepEqual(node.listExtensions(), [gizmo], 'listExtensions() → [gizmo x1]');
+	strictEqual(node.getExtension(EXTENSION_NAME), gizmo, 'getExtension() → gizmo');
+	deepEqual(node.listExtensions(), [gizmo], 'listExtensions() → [gizmo x1]');
 
 	// Remove ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, null);
-	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (2)');
+	strictEqual(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (2)');
 
 	// Dispose ExtensionProperty.
 
 	node.setExtension(EXTENSION_NAME, gizmo);
 	gizmo.dispose();
-	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (3)');
+	strictEqual(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (3)');
 
 	// Dispose Extension.
 
 	node.setExtension(EXTENSION_NAME, extension.createGizmo());
 	extension.dispose();
-	t.is(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (4)');
+	strictEqual(node.getExtension(EXTENSION_NAME), null, 'getExtension() → null (4)');
 });
 
-test('i/o', async (t) => {
+test('i/o', async () => {
 	const io = (await createPlatformIO()).registerExtensions([GizmoExtension]);
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
@@ -106,19 +107,19 @@ test('i/o', async (t) => {
 	// Write (unregistered).
 
 	jsonDoc = await (await createPlatformIO()).writeJSON(document, options);
-	t.deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
+	deepEqual(jsonDoc.json.extensionsUsed, undefined, 'write extensionsUsed (unregistered)');
 
 	// Write (registered).
 
 	jsonDoc = await io.writeJSON(document, options);
-	t.deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)');
-	t.is(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
-	t.is(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
+	deepEqual(jsonDoc.json.extensionsUsed, ['TEST_node_gizmo'], 'write extensionsUsed (registered)');
+	strictEqual(jsonDoc.json.extensionsRequired, undefined, 'omit extensionsRequired');
+	strictEqual(jsonDoc.json.nodes[0].extensions.TEST_node_gizmo.isGizmo, true, 'extend node');
 
 	// Read.
 
 	resultDoc = await io.readJSON(jsonDoc);
-	t.deepEqual(
+	deepEqual(
 		resultDoc
 			.getRoot()
 			.listExtensionsUsed()
@@ -126,8 +127,8 @@ test('i/o', async (t) => {
 		['TEST_node_gizmo'],
 		'roundtrip extensionsUsed',
 	);
-	t.deepEqual(resultDoc.getRoot().listExtensionsRequired(), [], 'roundtrip omit extensionsRequired');
-	t.is(
+	deepEqual(resultDoc.getRoot().listExtensionsRequired(), [], 'roundtrip omit extensionsRequired');
+	strictEqual(
 		resultDoc.getRoot().listNodes()[0].getExtension(EXTENSION_NAME).extensionName,
 		'TEST_node_gizmo',
 		'roundtrip extend node',
@@ -137,9 +138,9 @@ test('i/o', async (t) => {
 
 	extension.setRequired(true);
 	jsonDoc = await io.writeJSON(document, options);
-	t.deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
+	deepEqual(jsonDoc.json.extensionsRequired, ['TEST_node_gizmo'], 'write extensionsRequired');
 	resultDoc = await io.readJSON(jsonDoc);
-	t.deepEqual(
+	deepEqual(
 		resultDoc
 			.getRoot()
 			.listExtensionsRequired()
@@ -149,19 +150,19 @@ test('i/o', async (t) => {
 	);
 });
 
-test('clone', (t) => {
+test('clone', () => {
 	const document = new Document();
 	const extension = document.createExtension(GizmoExtension) as GizmoExtension;
 	const gizmo = extension.createGizmo();
 	document.createNode().setExtension(EXTENSION_NAME, gizmo);
 
 	let docClone: Document;
-	t.truthy(gizmo.clone(), 'clones gizmo');
-	t.truthy((docClone = cloneDocument(document)), 'clones document');
-	t.truthy(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
+	ok(gizmo.clone(), 'clones gizmo');
+	ok((docClone = cloneDocument(document)), 'clones document');
+	ok(docClone.getRoot().listNodes()[0].getExtension(EXTENSION_NAME), 'preserves gizmo');
 });
 
-test('stable execution order', async (t) => {
+test('stable execution order', async () => {
 	const readOrder: string[] = [];
 	const writeOrder: string[] = [];
 
@@ -220,9 +221,9 @@ test('stable execution order', async (t) => {
 		.listExtensionsUsed()
 		.map((ext) => ext.extensionName);
 
-	t.deepEqual(writeOrder, expectedOrder, 'write order');
-	t.deepEqual(readOrder, expectedOrder, 'read order');
-	t.deepEqual(extensionNames, ['A', 'B', 'C'], 'extension order');
+	deepEqual(writeOrder, expectedOrder, 'write order');
+	deepEqual(readOrder, expectedOrder, 'read order');
+	deepEqual(extensionNames, ['A', 'B', 'C'], 'extension order');
 
 	// Reset.
 
@@ -242,7 +243,7 @@ test('stable execution order', async (t) => {
 		.listExtensionsUsed()
 		.map((ext) => ext.extensionName);
 
-	t.deepEqual(writeOrder, expectedOrder, 'write order (reversed)');
-	t.deepEqual(readOrder, expectedOrder, 'read order (reversed)');
-	t.deepEqual(extensionNamesReversed, ['A', 'B', 'C'], 'extension order (reversed)');
+	deepEqual(writeOrder, expectedOrder, 'write order (reversed)');
+	deepEqual(readOrder, expectedOrder, 'read order (reversed)');
+	deepEqual(extensionNamesReversed, ['A', 'B', 'C'], 'extension order (reversed)');
 });

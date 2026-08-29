@@ -1,3 +1,5 @@
+import { deepEqual, notDeepStrictEqual, ok, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { type Accessor, Document, type Primitive, type vec2 } from '@gltf-transform/core';
 import {
 	getPrimitiveVertexCount,
@@ -7,226 +9,227 @@ import {
 	VertexCountMethod,
 } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 import * as watlas from 'watlas';
 
 await watlas.Initialize();
 
-test('unwrapPrimitives - unindexed', async (t) => {
-	const document = new Document().setLogger(logger);
-	const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
-	document.createMesh().addPrimitive(prim);
+describe('unwrap', () => {
+	test('unwrapPrimitives - unindexed', async () => {
+		const document = new Document().setLogger(logger);
+		const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+		document.createMesh().addPrimitive(prim);
 
-	await document.transform(unweld());
+		await document.transform(unweld());
 
-	t.falsy(prim.getIndices(), 'indices = null (initial)');
+		strictEqual(prim.getIndices(), null, 'indices = null (initial)');
 
-	unwrapPrimitives([prim], { watlas, overwrite: false });
+		unwrapPrimitives([prim], { watlas, overwrite: false });
 
-	t.falsy(prim.getIndices(), 'indices = null (overwrite=false)');
+		strictEqual(prim.getIndices(), null, 'indices = null (overwrite=false)');
 
-	unwrapPrimitives([prim], { watlas, overwrite: true });
+		unwrapPrimitives([prim], { watlas, overwrite: true });
 
-	t.truthy(prim.getIndices(), 'indices != null (overwrite=true)');
-});
+		ok(prim.getIndices(), 'indices != null (overwrite=true)');
+	});
 
-test('unwrapPrimitives - vertex count', async (t) => {
-	const document = new Document().setLogger(logger);
-	const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+	test('unwrapPrimitives - vertex count', async () => {
+		const document = new Document().setLogger(logger);
+		const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
 
-	const srcIndexCount = prim.getIndices().getCount();
-	const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+		const srcIndexCount = prim.getIndices().getCount();
+		const srcVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
 
-	unwrapPrimitives([prim], { watlas, overwrite: true });
+		unwrapPrimitives([prim], { watlas, overwrite: true });
 
-	const dstIndexCount = prim.getIndices().getCount();
-	const dstVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
+		const dstIndexCount = prim.getIndices().getCount();
+		const dstVertexCount = getPrimitiveVertexCount(prim, VertexCountMethod.UPLOAD);
 
-	t.is(dstIndexCount, srcIndexCount, 'srcIndexCount == dst.indexCount');
-	t.is(srcVertexCount, 63, 'srcVertexCount = 63');
-	t.true(dstVertexCount > 100 && dstVertexCount < 150, '100 < dstVertexCount < 150');
-	t.is(getPrimitiveVertexCount(prim, VertexCountMethod.UNUSED), 0, 'no unused vertices');
-});
+		strictEqual(dstIndexCount, srcIndexCount, 'srcIndexCount == dst.indexCount');
+		strictEqual(srcVertexCount, 63, 'srcVertexCount = 63');
+		ok(dstVertexCount > 100 && dstVertexCount < 150, '100 < dstVertexCount < 150');
+		strictEqual(getPrimitiveVertexCount(prim, VertexCountMethod.UNUSED), 0, 'no unused vertices');
+	});
 
-test('unwrapPrimitives - texcoord', async (t) => {
-	const document = new Document().setLogger(logger);
-	const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+	test('unwrapPrimitives - texcoord', async () => {
+		const document = new Document().setLogger(logger);
+		const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
 
-	t.truthy(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A (initial)');
-	t.is(prim.getAttribute('TEXCOORD_1'), null, 'TEXCOORD_1 = null (initial)');
-	t.is(prim.getAttribute('TEXCOORD_3'), null, 'TEXCOORD_0 = null (initial)');
+		ok(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A (initial)');
+		strictEqual(prim.getAttribute('TEXCOORD_1'), null, 'TEXCOORD_1 = null (initial)');
+		strictEqual(prim.getAttribute('TEXCOORD_3'), null, 'TEXCOORD_0 = null (initial)');
 
-	unwrapPrimitives([prim], { watlas, texcoord: 1 });
+		unwrapPrimitives([prim], { watlas, texcoord: 1 });
 
-	t.truthy(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A');
-	t.truthy(prim.getAttribute('TEXCOORD_1'), 'TEXCOORD_1 = B');
-	t.is(prim.getAttribute('TEXCOORD_3'), null, 'TEXCOORD_0 = null');
-	t.notDeepEqual(prim.getAttribute('TEXCOORD_0'), prim.getAttribute('TEXCOORD_1'), 'A != B');
+		ok(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A');
+		ok(prim.getAttribute('TEXCOORD_1'), 'TEXCOORD_1 = B');
+		strictEqual(prim.getAttribute('TEXCOORD_3'), null, 'TEXCOORD_0 = null');
+		notDeepStrictEqual(prim.getAttribute('TEXCOORD_0'), prim.getAttribute('TEXCOORD_1'), 'A != B');
 
-	unwrapPrimitives([prim], { watlas, texcoord: 2 });
+		unwrapPrimitives([prim], { watlas, texcoord: 2 });
 
-	t.truthy(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A');
-	t.truthy(prim.getAttribute('TEXCOORD_1'), 'TEXCOORD_1 = B');
-	t.truthy(prim.getAttribute('TEXCOORD_2'), 'TEXCOORD_2 = C');
-	t.notDeepEqual(prim.getAttribute('TEXCOORD_0'), prim.getAttribute('TEXCOORD_1'), 'A != B');
-	t.notDeepEqual(prim.getAttribute('TEXCOORD_1'), prim.getAttribute('TEXCOORD_2'), 'B != C');
-});
+		ok(prim.getAttribute('TEXCOORD_0'), 'TEXCOORD_0 = A');
+		ok(prim.getAttribute('TEXCOORD_1'), 'TEXCOORD_1 = B');
+		ok(prim.getAttribute('TEXCOORD_2'), 'TEXCOORD_2 = C');
+		notDeepStrictEqual(prim.getAttribute('TEXCOORD_0'), prim.getAttribute('TEXCOORD_1'), 'A != B');
+		notDeepStrictEqual(prim.getAttribute('TEXCOORD_1'), prim.getAttribute('TEXCOORD_2'), 'B != C');
+	});
 
-test('unwrapPrimitives - overwrite', async (t) => {
-	const document = new Document().setLogger(logger);
-	const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+	test('unwrapPrimitives - overwrite', async () => {
+		const document = new Document().setLogger(logger);
+		const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });
 
-	const texCoordA = prim.getAttribute('TEXCOORD_0');
-	const texCoordB = texCoordA.clone();
-	prim.setAttribute('TEXCOORD_1', texCoordB);
+		const texCoordA = prim.getAttribute('TEXCOORD_0');
+		const texCoordB = texCoordA.clone();
+		prim.setAttribute('TEXCOORD_1', texCoordB);
 
-	scaleAccessor(texCoordA, 2);
-	scaleAccessor(texCoordB, 0.5);
+		scaleAccessor(texCoordA, 2);
+		scaleAccessor(texCoordB, 0.5);
 
-	const texCoordBoundsA = getTexCoordBounds(texCoordA);
-	const texCoordBoundsB = getTexCoordBounds(texCoordB);
-	const texCoordBoundsC = { min: [0, 0] as vec2, max: [1, 1] as vec2 };
+		const texCoordBoundsA = getTexCoordBounds(texCoordA);
+		const texCoordBoundsB = getTexCoordBounds(texCoordB);
+		const texCoordBoundsC = { min: [0, 0] as vec2, max: [1, 1] as vec2 };
 
-	t.is(prim.getAttribute('TEXCOORD_0'), texCoordA, 'TEXCOORD_0 = A');
-	t.is(prim.getAttribute('TEXCOORD_1'), texCoordB, 'TEXCOORD_1 = B');
-	t.deepEqual(texCoordBoundsA, { min: [0, 0], max: [2, 2] }, 'TEXCOORD_0 bounds');
-	t.deepEqual(texCoordBoundsB, { min: [0, 0], max: [0.5, 0.5] }, 'TEXCOORD_1 bounds');
+		strictEqual(prim.getAttribute('TEXCOORD_0'), texCoordA, 'TEXCOORD_0 = A');
+		strictEqual(prim.getAttribute('TEXCOORD_1'), texCoordB, 'TEXCOORD_1 = B');
+		deepEqual(texCoordBoundsA, { min: [0, 0], max: [2, 2] }, 'TEXCOORD_0 bounds');
+		deepEqual(texCoordBoundsB, { min: [0, 0], max: [0.5, 0.5] }, 'TEXCOORD_1 bounds');
 
-	unwrapPrimitives([prim], { watlas, texcoord: 1, overwrite: false });
+		unwrapPrimitives([prim], { watlas, texcoord: 1, overwrite: false });
 
-	t.is(prim.getAttribute('TEXCOORD_0'), texCoordA, 'TEXCOORD_0 = A');
-	t.is(prim.getAttribute('TEXCOORD_1'), texCoordB, 'TEXCOORD_1 = B');
-	t.deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_0')), texCoordBoundsA, 'TEXCOORD_0 = A');
-	t.deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_1')), texCoordBoundsB, 'TEXCOORD_1 = B');
+		strictEqual(prim.getAttribute('TEXCOORD_0'), texCoordA, 'TEXCOORD_0 = A');
+		strictEqual(prim.getAttribute('TEXCOORD_1'), texCoordB, 'TEXCOORD_1 = B');
+		deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_0')), texCoordBoundsA, 'TEXCOORD_0 = A');
+		deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_1')), texCoordBoundsB, 'TEXCOORD_1 = B');
 
-	unwrapPrimitives([prim], { watlas, texcoord: 1, overwrite: true });
+		unwrapPrimitives([prim], { watlas, texcoord: 1, overwrite: true });
 
-	// accessors may be replaced, and vertices reordered, but UV layout is the same.
-	t.deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_0')), texCoordBoundsA, 'TEXCOORD_0 = A');
-	t.deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_1')), texCoordBoundsC, 'TEXCOORD_1 = C');
-});
+		// accessors may be replaced, and vertices reordered, but UV layout is the same.
+		deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_0')), texCoordBoundsA, 'TEXCOORD_0 = A');
+		deepEqual(getTexCoordBounds(prim.getAttribute('TEXCOORD_1')), texCoordBoundsC, 'TEXCOORD_1 = C');
+	});
 
-test('unwrap - primitive', async (t) => {
-	const document = new Document().setLogger(logger);
+	test('unwrap - primitive', async () => {
+		const document = new Document().setLogger(logger);
 
-	const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
-	const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
-	const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
-	const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
-	const meshB = document.createMesh('B').addPrimitive(primC);
-	const nodeA = document.createNode('A').setMesh(meshA);
-	const nodeB = document.createNode('B').setMesh(meshB);
-	document.createScene().addChild(nodeA).addChild(nodeB);
+		const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+		const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
+		const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
+		const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
+		const meshB = document.createMesh('B').addPrimitive(primC);
+		const nodeA = document.createNode('A').setMesh(meshA);
+		const nodeB = document.createNode('B').setMesh(meshB);
+		document.createScene().addChild(nodeA).addChild(nodeB);
 
-	scaleAccessor(primA.getAttribute('POSITION'), 10);
-	scaleAccessor(primB.getAttribute('POSITION'), 5);
-	scaleAccessor(primC.getAttribute('POSITION'), 0.5);
+		scaleAccessor(primA.getAttribute('POSITION'), 10);
+		scaleAccessor(primB.getAttribute('POSITION'), 5);
+		scaleAccessor(primC.getAttribute('POSITION'), 0.5);
 
-	primA.setAttribute('TEXCOORD_0', null);
-	primB.setAttribute('TEXCOORD_0', null);
-	primC.setAttribute('TEXCOORD_0', null);
+		primA.setAttribute('TEXCOORD_0', null);
+		primB.setAttribute('TEXCOORD_0', null);
+		primC.setAttribute('TEXCOORD_0', null);
 
-	await document.transform(unwrap({ watlas, groupBy: 'primitive', overwrite: true }));
+		await document.transform(unwrap({ watlas, groupBy: 'primitive', overwrite: true }));
 
-	const areaA = getTexCoordArea(primA, 0);
-	const areaB = getTexCoordArea(primB, 0);
-	const areaC = getTexCoordArea(primC, 0);
+		const areaA = getTexCoordArea(primA, 0);
+		const areaB = getTexCoordArea(primB, 0);
+		const areaC = getTexCoordArea(primC, 0);
 
-	t.true(areaA > 0.4 && areaA < 0.6, '0.4 < areaA < 0.6');
-	t.true(areaB > 0.4 && areaB < 0.6, '0.4 < areaB < 0.6');
-	t.true(areaC > 0.4 && areaC < 0.6, '0.4 < areaC < 0.6');
-});
+		ok(areaA > 0.4 && areaA < 0.6, '0.4 < areaA < 0.6');
+		ok(areaB > 0.4 && areaB < 0.6, '0.4 < areaB < 0.6');
+		ok(areaC > 0.4 && areaC < 0.6, '0.4 < areaC < 0.6');
+	});
 
-test('unwrap - mesh', async (t) => {
-	const document = new Document().setLogger(logger);
+	test('unwrap - mesh', async () => {
+		const document = new Document().setLogger(logger);
 
-	const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
-	const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
-	const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
-	const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
-	const meshB = document.createMesh('B').addPrimitive(primC);
-	const nodeA = document.createNode('A').setMesh(meshA);
-	const nodeB = document.createNode('B').setMesh(meshB);
-	document.createScene().addChild(nodeA).addChild(nodeB);
+		const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+		const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
+		const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
+		const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
+		const meshB = document.createMesh('B').addPrimitive(primC);
+		const nodeA = document.createNode('A').setMesh(meshA);
+		const nodeB = document.createNode('B').setMesh(meshB);
+		document.createScene().addChild(nodeA).addChild(nodeB);
 
-	scaleAccessor(primA.getAttribute('POSITION'), 10);
-	scaleAccessor(primB.getAttribute('POSITION'), 5);
-	scaleAccessor(primC.getAttribute('POSITION'), 0.5);
+		scaleAccessor(primA.getAttribute('POSITION'), 10);
+		scaleAccessor(primB.getAttribute('POSITION'), 5);
+		scaleAccessor(primC.getAttribute('POSITION'), 0.5);
 
-	primA.setAttribute('TEXCOORD_0', null);
-	primB.setAttribute('TEXCOORD_0', null);
-	primC.setAttribute('TEXCOORD_0', null);
+		primA.setAttribute('TEXCOORD_0', null);
+		primB.setAttribute('TEXCOORD_0', null);
+		primC.setAttribute('TEXCOORD_0', null);
 
-	await document.transform(unwrap({ watlas, groupBy: 'mesh', overwrite: true }));
+		await document.transform(unwrap({ watlas, groupBy: 'mesh', overwrite: true }));
 
-	const areaA = getTexCoordArea(primA, 0);
-	const areaB = getTexCoordArea(primB, 0);
-	const areaC = getTexCoordArea(primC, 0);
+		const areaA = getTexCoordArea(primA, 0);
+		const areaB = getTexCoordArea(primB, 0);
+		const areaC = getTexCoordArea(primC, 0);
 
-	t.true(areaA > 0.3 && areaA < 0.5, '0.3 < areaA < 0.5');
-	t.true(areaB > 0.05 && areaB < 0.2, '0.05 < areaB < 0.2');
-	t.true(areaC > 0.4 && areaC < 0.6, '0.4 < areaC < 0.6');
-});
+		ok(areaA > 0.3 && areaA < 0.5, '0.3 < areaA < 0.5');
+		ok(areaB > 0.05 && areaB < 0.2, '0.05 < areaB < 0.2');
+		ok(areaC > 0.4 && areaC < 0.6, '0.4 < areaC < 0.6');
+	});
 
-test('unwrap - scene', async (t) => {
-	const document = new Document().setLogger(logger);
+	test('unwrap - scene', async () => {
+		const document = new Document().setLogger(logger);
 
-	const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
-	const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
-	const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
-	const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
-	const meshB = document.createMesh('B').addPrimitive(primC);
-	const nodeA = document.createNode('A').setMesh(meshA);
-	const nodeB = document.createNode('B').setMesh(meshB);
-	document.createScene().addChild(nodeA).addChild(nodeB);
+		const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+		const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
+		const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
+		const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
+		const meshB = document.createMesh('B').addPrimitive(primC);
+		const nodeA = document.createNode('A').setMesh(meshA);
+		const nodeB = document.createNode('B').setMesh(meshB);
+		document.createScene().addChild(nodeA).addChild(nodeB);
 
-	scaleAccessor(primA.getAttribute('POSITION'), 10);
-	scaleAccessor(primB.getAttribute('POSITION'), 5);
-	scaleAccessor(primC.getAttribute('POSITION'), 0.5);
+		scaleAccessor(primA.getAttribute('POSITION'), 10);
+		scaleAccessor(primB.getAttribute('POSITION'), 5);
+		scaleAccessor(primC.getAttribute('POSITION'), 0.5);
 
-	primA.setAttribute('TEXCOORD_0', null);
-	primB.setAttribute('TEXCOORD_0', null);
-	primC.setAttribute('TEXCOORD_0', null);
+		primA.setAttribute('TEXCOORD_0', null);
+		primB.setAttribute('TEXCOORD_0', null);
+		primC.setAttribute('TEXCOORD_0', null);
 
-	await document.transform(unwrap({ watlas, groupBy: 'scene', overwrite: true }));
+		await document.transform(unwrap({ watlas, groupBy: 'scene', overwrite: true }));
 
-	const areaA = getTexCoordArea(primA, 0);
-	const areaB = getTexCoordArea(primB, 0);
-	const areaC = getTexCoordArea(primC, 0);
+		const areaA = getTexCoordArea(primA, 0);
+		const areaB = getTexCoordArea(primB, 0);
+		const areaC = getTexCoordArea(primC, 0);
 
-	t.true(areaA > 0.3 && areaA < 0.5, '0.3 < areaA < 0.5');
-	t.true(areaB > 0.05 && areaB < 0.2, '0.05 < areaB < 0.2');
-	t.true(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
-});
+		ok(areaA > 0.3 && areaA < 0.5, '0.3 < areaA < 0.5');
+		ok(areaB > 0.05 && areaB < 0.2, '0.05 < areaB < 0.2');
+		ok(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
+	});
 
-test('unwrap - scene scaled', async (t) => {
-	const document = new Document().setLogger(logger);
+	test('unwrap - scene scaled', async () => {
+		const document = new Document().setLogger(logger);
 
-	const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
-	const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
-	const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
-	const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
-	const meshB = document.createMesh('B').addPrimitive(primC);
-	const nodeA = document.createNode('A').setMesh(meshA);
-	const nodeB = document.createNode('B').setMesh(meshB);
-	document.createScene().addChild(nodeA).addChild(nodeB);
+		const primA = createTorusKnotPrimitive(document, { tubularSegments: 6 });
+		const primB = createTorusKnotPrimitive(document, { tubularSegments: 7 });
+		const primC = createTorusKnotPrimitive(document, { tubularSegments: 8 });
+		const meshA = document.createMesh('A').addPrimitive(primA).addPrimitive(primB);
+		const meshB = document.createMesh('B').addPrimitive(primC);
+		const nodeA = document.createNode('A').setMesh(meshA);
+		const nodeB = document.createNode('B').setMesh(meshB);
+		document.createScene().addChild(nodeA).addChild(nodeB);
 
-	nodeA.setScale([10, 10, 10]);
-	nodeB.setScale([0.5, 0.5, 0.5]);
+		nodeA.setScale([10, 10, 10]);
+		nodeB.setScale([0.5, 0.5, 0.5]);
 
-	primA.setAttribute('TEXCOORD_0', null);
-	primB.setAttribute('TEXCOORD_0', null);
-	primC.setAttribute('TEXCOORD_0', null);
+		primA.setAttribute('TEXCOORD_0', null);
+		primB.setAttribute('TEXCOORD_0', null);
+		primC.setAttribute('TEXCOORD_0', null);
 
-	await document.transform(unwrap({ watlas, groupBy: 'scene', overwrite: true }));
+		await document.transform(unwrap({ watlas, groupBy: 'scene', overwrite: true }));
 
-	const areaA = getTexCoordArea(primA, 0);
-	const areaB = getTexCoordArea(primB, 0);
-	const areaC = getTexCoordArea(primC, 0);
+		const areaA = getTexCoordArea(primA, 0);
+		const areaB = getTexCoordArea(primB, 0);
+		const areaC = getTexCoordArea(primC, 0);
 
-	t.true(areaA > 0.2 && areaA < 0.3, '0.2 < areaA < 0.3');
-	t.true(areaB > 0.2 && areaB < 0.3, '0.2 < areaB < 0.3');
-	t.true(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
+		ok(areaA > 0.2 && areaA < 0.3, '0.2 < areaA < 0.3');
+		ok(areaB > 0.2 && areaB < 0.3, '0.2 < areaB < 0.3');
+		ok(areaC > 0.0 && areaC < 0.01, '0.0 < areaC < 0.01');
+	});
 });
 
 /* UTILITIES */

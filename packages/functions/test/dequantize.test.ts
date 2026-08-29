@@ -1,3 +1,5 @@
+import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import {
 	type bbox,
 	Document,
@@ -9,38 +11,39 @@ import {
 	type vec3,
 } from '@gltf-transform/core';
 import { dequantize } from '@gltf-transform/functions';
-import test from 'ava';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 
-test('basic', async (t) => {
-	const doc = new Document().setLogger(logger);
-	const scene = createScene(doc);
-	const node = doc.getRoot().listNodes()[0];
-	const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+describe('dequantize', () => {
+	test('basic', async () => {
+		const doc = new Document().setLogger(logger);
+		const scene = createScene(doc);
+		const node = doc.getRoot().listNodes()[0];
+		const prim = doc.getRoot().listMeshes()[0].listPrimitives()[0];
 
-	const bboxScenePrev = getBounds(scene);
-	const bboxNodePrev = getBounds(node);
-	const bboxMeshPrev = primBounds(prim);
+		const bboxScenePrev = getBounds(scene);
+		const bboxNodePrev = getBounds(node);
+		const bboxMeshPrev = primBounds(prim);
 
-	t.deepEqual(bboxScenePrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
-	t.deepEqual(bboxNodePrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - node');
-	t.deepEqual(bboxMeshPrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - mesh');
+		deepEqual(bboxScenePrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - scene');
+		deepEqual(bboxNodePrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - node');
+		deepEqual(bboxMeshPrev, { min: [0, 0, 0], max: [50, 50, 50] }, 'original bbox - mesh');
 
-	await doc.transform(dequantize());
+		await doc.transform(dequantize());
 
-	const bboxScene = getBounds(scene);
-	const bboxNode = getBounds(node);
-	const bboxMesh = primBounds(prim);
+		const bboxScene = getBounds(scene);
+		const bboxNode = getBounds(node);
+		const bboxMesh = primBounds(prim);
 
-	t.truthy(prim.getAttribute('POSITION').getArray() instanceof Float32Array, 'position - float32');
-	t.truthy(prim.getAttribute('JOINTS_0').getArray() instanceof Uint8Array, 'joints - uint8');
-	t.truthy(prim.getAttribute('WEIGHTS_0').getArray() instanceof Float32Array, 'weights - float32');
-	t.deepEqual(bboxScene, bboxScenePrev, 'bbox - scene');
-	t.deepEqual(bboxNode, bboxNodePrev, 'bbox - nodeA');
-	t.deepEqual(bboxMesh, bboxMeshPrev, 'bbox - meshA');
-	t.is(doc.getRoot().listNodes().length, 1, 'total nodes');
-	t.is(doc.getRoot().listAccessors().length, 3, 'total accessors');
+		ok(prim.getAttribute('POSITION').getArray() instanceof Float32Array, 'position - float32');
+		ok(prim.getAttribute('JOINTS_0').getArray() instanceof Uint8Array, 'joints - uint8');
+		ok(prim.getAttribute('WEIGHTS_0').getArray() instanceof Float32Array, 'weights - float32');
+		deepEqual(bboxScene, bboxScenePrev, 'bbox - scene');
+		deepEqual(bboxNode, bboxNodePrev, 'bbox - nodeA');
+		deepEqual(bboxMesh, bboxMeshPrev, 'bbox - meshA');
+		strictEqual(doc.getRoot().listNodes().length, 1, 'total nodes');
+		strictEqual(doc.getRoot().listAccessors().length, 3, 'total accessors');
+	});
 });
 
 /* UTILITIES */

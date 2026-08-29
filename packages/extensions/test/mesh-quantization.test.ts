@@ -1,27 +1,30 @@
+import { deepEqual, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Document, type JSONDocument, NodeIO } from '@gltf-transform/core';
 import { KHRMeshQuantization } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
-import test from 'ava';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-test('basic', async (t) => {
-	const doc = new Document();
-	const quantizationExtension = doc.createExtension(KHRMeshQuantization);
-	let jsonDoc: JSONDocument;
+describe('KHRMeshQuantization', () => {
+	test('basic', async () => {
+		const doc = new Document();
+		const quantizationExtension = doc.createExtension(KHRMeshQuantization);
+		let jsonDoc: JSONDocument;
 
-	jsonDoc = await new NodeIO().registerExtensions([KHRMeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
-	t.deepEqual(jsonDoc.json.extensionsUsed, [KHRMeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
+		jsonDoc = await new NodeIO().registerExtensions([KHRMeshQuantization]).writeJSON(doc, WRITER_OPTIONS);
+		deepEqual(jsonDoc.json.extensionsUsed, [KHRMeshQuantization.EXTENSION_NAME], 'writes extensionsUsed');
 
-	quantizationExtension.dispose();
+		quantizationExtension.dispose();
 
-	jsonDoc = await new NodeIO().writeJSON(doc, WRITER_OPTIONS);
-	t.is(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
-});
+		jsonDoc = await new NodeIO().writeJSON(doc, WRITER_OPTIONS);
+		strictEqual(jsonDoc.json.extensionsUsed, undefined, 'clears extensionsUsed');
+	});
 
-test('copy', (t) => {
-	const doc = new Document();
-	doc.createExtension(KHRMeshQuantization);
+	test('copy', () => {
+		const doc = new Document();
+		doc.createExtension(KHRMeshQuantization);
 
-	t.is(cloneDocument(doc).getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
+		strictEqual(cloneDocument(doc).getRoot().listExtensionsUsed().length, 1, 'copy KHRMeshQuantization');
+	});
 });

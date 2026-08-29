@@ -57,7 +57,7 @@ API functions by the user, rather than being created by the API directly.
 
 ### Testing
 
-Unit tests use [Ava](https://github.com/avajs/ava).
+Unit tests use [`node:test`](https://nodejs.org/api/test.html).
 
 ```bash
 # run all tests
@@ -67,10 +67,10 @@ yarn test
 yarn test --watch
 
 # run one test
-yarn test packages/functions/test/palette.test.ts
+node --test packages/functions/test/palette.test.ts
 
 # run one test, watching for source file changes to re-run
-yarn test packages/functions/test/palette.test.ts --watch
+node --test --watch packages/functions/test/palette.test.ts
 ```
 
 ### Debugging
@@ -78,7 +78,7 @@ yarn test packages/functions/test/palette.test.ts --watch
 To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
 
 ```bash
-yarn test:debug packages/functions/test/palette.test.ts --break
+node --test --inspect-brk packages/functions/test/palette.test.ts
 ```
 
 To use the CLI with a debugger, run:

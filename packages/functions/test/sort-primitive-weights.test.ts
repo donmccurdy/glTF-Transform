@@ -1,23 +1,25 @@
+import { deepEqual, strictEqual, throws } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '@gltf-transform/functions';
 import { round } from '@gltf-transform/test-utils';
-import test from 'ava';
 
-test('unlimited weights', async (t) => {
-	const prim = createSkinnedPrimitive();
+describe('sortPrimitiveWeights', () => {
+	test('unlimited weights', async () => {
+		const prim = createSkinnedPrimitive();
 
-	sortPrimitiveWeights(prim);
+		sortPrimitiveWeights(prim);
 
-	let weights = [
-		...prim.getAttribute('WEIGHTS_0')!.getElement(0, []),
-		...prim.getAttribute('WEIGHTS_1')!.getElement(0, []),
-	];
+		let weights = [
+			...prim.getAttribute('WEIGHTS_0')!.getElement(0, []),
+			...prim.getAttribute('WEIGHTS_1')!.getElement(0, []),
+		];
 
-	t.is(sum(weights), 1, 'sum === 1, vertex #1');
-	t.deepEqual(weights.map(round(2)), [0.38, 0.2, 0.15, 0.13, 0.1, 0.04, 0, 0], 'weights, vertex #1');
+		strictEqual(sum(weights), 1, 'sum === 1, vertex #1');
+		deepEqual(weights.map(round(2)), [0.38, 0.2, 0.15, 0.13, 0.1, 0.04, 0, 0], 'weights, vertex #1');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		[
 			...prim.getAttribute('JOINTS_0')!.getElement(0, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(0, []),
@@ -26,16 +28,16 @@ test('unlimited weights', async (t) => {
 		'joints, vertex #1'
 	);
 
-	weights = [
-		...prim.getAttribute('WEIGHTS_0')!.getElement(1, []),
-		...prim.getAttribute('WEIGHTS_1')!.getElement(1, []),
-	];
+		weights = [
+			...prim.getAttribute('WEIGHTS_0')!.getElement(1, []),
+			...prim.getAttribute('WEIGHTS_1')!.getElement(1, []),
+		];
 
-	t.is(sum(weights), 1, 'sum === 1, vertex #2');
-	t.deepEqual(weights.map(round(2)), [0.74, 0.11, 0.11, 0.02, 0.01, 0, 0, 0], 'weights, vertex #2');
+		strictEqual(sum(weights), 1, 'sum === 1, vertex #2');
+		deepEqual(weights.map(round(2)), [0.74, 0.11, 0.11, 0.02, 0.01, 0, 0, 0], 'weights, vertex #2');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		[
 			...prim.getAttribute('JOINTS_0')!.getElement(1, []),
 			...prim.getAttribute('JOINTS_1')!.getElement(1, []),
@@ -43,50 +45,51 @@ test('unlimited weights', async (t) => {
 		[13, 12, 8, 10, 11, 0, 0, 0],
 		'joints, vertex #2'
 	);
-});
+	});
 
-test('limited weights', async (t) => {
-	const prim = createSkinnedPrimitive();
+	test('limited weights', async () => {
+		const prim = createSkinnedPrimitive();
 
-	sortPrimitiveWeights(prim, 4);
+		sortPrimitiveWeights(prim, 4);
 
-	t.falsy(prim.getAttribute('WEIGHTS_1'), 'limit weights');
-	t.falsy(prim.getAttribute('JOINTS_1'), 'limit joints');
+		strictEqual(prim.getAttribute('WEIGHTS_1'), null, 'limit weights');
+		strictEqual(prim.getAttribute('JOINTS_1'), null, 'limit joints');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		prim.getAttribute('WEIGHTS_0')!.getElement(0, []).map(round(2)),
 		[0.44, 0.23, 0.17, 0.15],
 		'weights, vertex #1 (truncated)'
 	);
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		prim.getAttribute('JOINTS_0')!.getElement(0, []),
 		[1, 6, 3, 5],
 		'joints, vertex #1 (truncated)'
 	);
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		prim.getAttribute('WEIGHTS_0')!.getElement(1, []).map(round(2)),
 		[0.75, 0.12, 0.11, 0.02],
 		'weights, vertex #2 (truncated)'
 	);
 
-	// biome-ignore format: Readability.
-	t.deepEqual(
+		// biome-ignore format: Readability.
+		deepEqual(
 		prim.getAttribute('JOINTS_0')!.getElement(1, []),
 		[13, 12, 8, 10],
 		'joints, vertex #2 (truncated)'
 	);
-});
+	});
 
-test('invalid limits', async (t) => {
-	const prim = createSkinnedPrimitive();
-	t.throws(() => sortPrimitiveWeights(prim, 0), { message: /limit/i }, 'limit = 0');
-	t.throws(() => sortPrimitiveWeights(prim, -1), { message: /limit/i }, 'limit < 0');
-	t.throws(() => sortPrimitiveWeights(prim, 3), { message: /limit/i }, 'limit % 4 > 0');
+	test('invalid limits', async () => {
+		const prim = createSkinnedPrimitive();
+		throws(() => sortPrimitiveWeights(prim, 0), { message: /limit/i }, 'limit = 0');
+		throws(() => sortPrimitiveWeights(prim, -1), { message: /limit/i }, 'limit < 0');
+		throws(() => sortPrimitiveWeights(prim, 3), { message: /limit/i }, 'limit % 4 > 0');
+	});
 });
 
 function createSkinnedPrimitive() {

@@ -1,13 +1,14 @@
+import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
-import test from 'ava';
 import { JSDOM } from 'jsdom';
 import type { Bone, Mesh, SkinnedMesh } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('SkinSubject', async (t) => {
+test('SkinSubject', async () => {
 	const document = new Document();
 	const positionDef = document
 		.createAccessor('POSITION')
@@ -39,12 +40,12 @@ test('SkinSubject', async (t) => {
 	const mesh = armature.children.find((child) => child.name === 'Mesh') as Mesh;
 	const prim = mesh.children.find((child) => child.type === 'SkinnedMesh') as SkinnedMesh;
 
-	t.is(armature.name, 'Armature', 'armature → name');
-	t.is(mesh.type, 'Group', 'armature → mesh');
-	t.is(prim.type, 'SkinnedMesh', 'armature → mesh → prim');
-	t.is(boneA.type, 'Bone', 'armature → jointA');
-	t.is(boneB.type, 'Bone', 'armature → jointA → jointB');
-	t.truthy(prim.skeleton, 'skeleton');
-	t.deepEqual(prim.skeleton.bones, [boneA, boneB], 'skeleton.bones');
-	t.is(prim.skeleton.boneInverses.length, 2, 'skeleton.boneInverses');
+	strictEqual(armature.name, 'Armature', 'armature → name');
+	strictEqual(mesh.type, 'Group', 'armature → mesh');
+	strictEqual(prim.type, 'SkinnedMesh', 'armature → mesh → prim');
+	strictEqual(boneA.type, 'Bone', 'armature → jointA');
+	strictEqual(boneB.type, 'Bone', 'armature → jointA → jointB');
+	ok(prim.skeleton, 'skeleton');
+	deepEqual(prim.skeleton.bones, [boneA, boneB], 'skeleton.bones');
+	strictEqual(prim.skeleton.boneInverses.length, 2, 'skeleton.boneInverses');
 });

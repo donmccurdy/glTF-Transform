@@ -1,159 +1,161 @@
+import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Document, type GLTF, type Material, type vec4 } from '@gltf-transform/core';
 import { KHRMaterialsSpecular } from '@gltf-transform/extensions';
 import { palette } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 import { getPixels } from 'ndarray-pixels';
 
-test('basic', async (t) => {
-	const document = new Document().setLogger(logger);
-	const [materialA, materialB, materialC, materialD, materialE] = createMaterials(
-		document,
-		['A', 'B', 'C', 'D', 'E'],
-		[
-			[1, 0, 0, 1],
-			[0, 1, 0, 1],
-			[0, 0, 1, 1],
-			[0, 1, 0, 1],
-			[1, 0, 0, 1],
-		],
-		[1.0, 1.0, 1.0, 0.0, 1.0],
-		['OPAQUE', 'OPAQUE', 'OPAQUE', 'OPAQUE', 'BLEND'],
-	);
+describe('palette', () => {
+	test('basic', async () => {
+		const document = new Document().setLogger(logger);
+		const [materialA, materialB, materialC, materialD, materialE] = createMaterials(
+			document,
+			['A', 'B', 'C', 'D', 'E'],
+			[
+				[1, 0, 0, 1],
+				[0, 1, 0, 1],
+				[0, 0, 1, 1],
+				[0, 1, 0, 1],
+				[1, 0, 0, 1],
+			],
+			[1.0, 1.0, 1.0, 0.0, 1.0],
+			['OPAQUE', 'OPAQUE', 'OPAQUE', 'OPAQUE', 'BLEND'],
+		);
 
-	await document.transform(palette({ min: 2 }));
+		await document.transform(palette({ min: 2 }));
 
-	t.true(materialA.isDisposed(), 'disposed material A');
-	t.true(materialB.isDisposed(), 'disposed material B');
-	t.true(materialC.isDisposed(), 'disposed material C');
-	t.true(materialD.isDisposed(), 'disposed material D');
-	t.true(materialE.isDisposed(), 'disposed material E');
-	t.is(document.getRoot().listMaterials().length, 2, 'separate opaque and blend materials');
+		ok(materialA.isDisposed(), 'disposed material A');
+		ok(materialB.isDisposed(), 'disposed material B');
+		ok(materialC.isDisposed(), 'disposed material C');
+		ok(materialD.isDisposed(), 'disposed material D');
+		ok(materialE.isDisposed(), 'disposed material E');
+		strictEqual(document.getRoot().listMaterials().length, 2, 'separate opaque and blend materials');
 
-	const [opaquePaletteMaterial, blendPaletteMaterial] = document.getRoot().listMaterials();
+		const [opaquePaletteMaterial, blendPaletteMaterial] = document.getRoot().listMaterials();
 
-	t.is(opaquePaletteMaterial.getName(), 'PaletteMaterial001', 'creates opaque palette material');
-	t.is(opaquePaletteMaterial.getAlphaMode(), 'OPAQUE', 'material.alphaMode === "OPAQUE"');
+		strictEqual(opaquePaletteMaterial.getName(), 'PaletteMaterial001', 'creates opaque palette material');
+		strictEqual(opaquePaletteMaterial.getAlphaMode(), 'OPAQUE', 'material.alphaMode === "OPAQUE"');
 
-	t.is(blendPaletteMaterial.getName(), 'PaletteMaterial002', 'creates blend palette material');
-	t.is(blendPaletteMaterial.getAlphaMode(), 'BLEND', 'material.alphaMode === "BLEND"');
-});
+		strictEqual(blendPaletteMaterial.getName(), 'PaletteMaterial002', 'creates blend palette material');
+		strictEqual(blendPaletteMaterial.getAlphaMode(), 'BLEND', 'material.alphaMode === "BLEND"');
+	});
 
-test('options.blockSize', async (t) => {
-	const document = new Document().setLogger(logger);
-	createMaterials(
-		document,
-		['A', 'B', 'C', 'D', 'E'],
-		[
-			[1, 0, 0, 1],
-			[0, 1, 0, 1],
-			[0, 0, 1, 1],
-			[0, 1, 0, 1],
-			[1, 0, 0, 1],
-		],
-		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE'),
-	);
+	test('options.blockSize', async () => {
+		const document = new Document().setLogger(logger);
+		createMaterials(
+			document,
+			['A', 'B', 'C', 'D', 'E'],
+			[
+				[1, 0, 0, 1],
+				[0, 1, 0, 1],
+				[0, 0, 1, 1],
+				[0, 1, 0, 1],
+				[1, 0, 0, 1],
+			],
+			new Array(5).fill(1.0),
+			new Array(5).fill('OPAQUE'),
+		);
 
-	await document.transform(palette({ min: 2, blockSize: 10 }));
+		await document.transform(palette({ min: 2, blockSize: 10 }));
 
-	t.is(document.getRoot().listMaterials().length, 1, 'only palette material remains');
+		strictEqual(document.getRoot().listMaterials().length, 1, 'only palette material remains');
 
-	const material = document.getRoot().listMaterials()[0]!;
+		const material = document.getRoot().listMaterials()[0]!;
 
-	t.truthy(material.getBaseColorTexture(), 'baseColorTexture = Texture');
-	t.is(material.getEmissiveTexture(), null, 'emissiveTexture = null');
-	t.is(material.getMetallicRoughnessTexture(), null, 'metallicRoughnessTexture = null');
+		ok(material.getBaseColorTexture(), 'baseColorTexture = Texture');
+		strictEqual(material.getEmissiveTexture(), null, 'emissiveTexture = null');
+		strictEqual(material.getMetallicRoughnessTexture(), null, 'metallicRoughnessTexture = null');
 
-	const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');
-	t.deepEqual(baseColorPixels.shape, [32, 16, 4], 'dimensions');
-});
+		const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');
+		deepEqual(baseColorPixels.shape, [32, 16, 4], 'dimensions');
+	});
 
-test('options.min', async (t) => {
-	const document = new Document().setLogger(logger);
-	createMaterials(
-		document,
-		['A', 'B', 'C', 'D', 'E'],
-		[
-			[1, 0, 0, 1],
-			[0, 1, 0, 1],
-			[0, 0, 1, 1],
-			[0, 1, 0, 1],
-			[1, 0, 0, 1],
-		],
-		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE'),
-	);
+	test('options.min', async () => {
+		const document = new Document().setLogger(logger);
+		createMaterials(
+			document,
+			['A', 'B', 'C', 'D', 'E'],
+			[
+				[1, 0, 0, 1],
+				[0, 1, 0, 1],
+				[0, 0, 1, 1],
+				[0, 1, 0, 1],
+				[1, 0, 0, 1],
+			],
+			new Array(5).fill(1.0),
+			new Array(5).fill('OPAQUE'),
+		);
 
-	t.is(document.getRoot().listMaterials().length, 5, 'initial');
+		strictEqual(document.getRoot().listMaterials().length, 5, 'initial');
 
-	await document.transform(palette({ min: 4 }));
+		await document.transform(palette({ min: 4 }));
 
-	t.is(document.getRoot().listMaterials().length, 5, 'min = 4, palette = no');
+		strictEqual(document.getRoot().listMaterials().length, 5, 'min = 4, palette = no');
 
-	await document.transform(palette({ min: 3 }));
+		await document.transform(palette({ min: 3 }));
 
-	t.is(document.getRoot().listMaterials().length, 1, 'min = 3, palette = yes');
-});
+		strictEqual(document.getRoot().listMaterials().length, 1, 'min = 3, palette = yes');
+	});
 
-test('preserve extensions', async (t) => {
-	const document = new Document().setLogger(logger);
-	const [material] = createMaterials(
-		document,
-		['A', 'B', 'C', 'D', 'E'],
-		[
-			[1, 0, 0, 1],
-			[0, 1, 0, 1],
-			[0, 0, 1, 1],
-			[0, 1, 0, 1],
-			[1, 0, 0, 1],
-		],
-		new Array(5).fill(1.0),
-		new Array(5).fill('OPAQUE'),
-	);
+	test('preserve extensions', async () => {
+		const document = new Document().setLogger(logger);
+		const [material] = createMaterials(
+			document,
+			['A', 'B', 'C', 'D', 'E'],
+			[
+				[1, 0, 0, 1],
+				[0, 1, 0, 1],
+				[0, 0, 1, 1],
+				[0, 1, 0, 1],
+				[1, 0, 0, 1],
+			],
+			new Array(5).fill(1.0),
+			new Array(5).fill('OPAQUE'),
+		);
 
-	const specular = document
-		.createExtension(KHRMaterialsSpecular)
-		.createSpecular()
-		.setSpecularColorFactor([0.5, 0.5, 0.5]);
-	material.setExtension('KHR_materials_specular', specular);
+		const specular = document
+			.createExtension(KHRMaterialsSpecular)
+			.createSpecular()
+			.setSpecularColorFactor([0.5, 0.5, 0.5]);
+		material.setExtension('KHR_materials_specular', specular);
 
-	await document.transform(palette({ min: 2 }));
+		await document.transform(palette({ min: 2 }));
 
-	t.is(document.getRoot().listMaterials().length, 2, 'specular + non-specular palette materials');
+		strictEqual(document.getRoot().listMaterials().length, 2, 'specular + non-specular palette materials');
 
-	const [materialA, materialB] = document.getRoot().listMaterials();
+		const [materialA, materialB] = document.getRoot().listMaterials();
 
-	t.is(materialA.getName(), 'PaletteMaterial001', 'palette material #1 - name');
-	t.is(materialB.getName(), 'PaletteMaterial002', 'palette material #2 - name');
-	t.truthy(materialA.getExtension('KHR_materials_specular'), 'palette material #1 - spec');
-	t.is(materialB.getExtension('KHR_materials_specular'), null, 'palette material #1 - nonspec');
-});
+		strictEqual(materialA.getName(), 'PaletteMaterial001', 'palette material #1 - name');
+		strictEqual(materialB.getName(), 'PaletteMaterial002', 'palette material #2 - name');
+		ok(materialA.getExtension('KHR_materials_specular'), 'palette material #1 - spec');
+		strictEqual(materialB.getExtension('KHR_materials_specular'), null, 'palette material #1 - nonspec');
+	});
 
-test('pixel values', async (t) => {
-	const document = new Document().setLogger(logger);
-	createMaterials(
-		document,
-		['A', 'B', 'C'],
-		[
-			[0.218, 0.218, 0.218, 1],
-			[0, 0, 0.218, 1],
-			[0.218, 0, 0, 1],
-		],
-		new Array(3).fill(1.0),
-		new Array(3).fill('OPAQUE'),
-	);
+	test('pixel values', async () => {
+		const document = new Document().setLogger(logger);
+		createMaterials(
+			document,
+			['A', 'B', 'C'],
+			[
+				[0.218, 0.218, 0.218, 1],
+				[0, 0, 0.218, 1],
+				[0.218, 0, 0, 1],
+			],
+			new Array(3).fill(1.0),
+			new Array(3).fill('OPAQUE'),
+		);
 
-	await document.transform(palette({ min: 2, blockSize: 2 }));
+		await document.transform(palette({ min: 2, blockSize: 2 }));
 
-	const material = document.getRoot().listMaterials()[0];
-	const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');
+		const material = document.getRoot().listMaterials()[0];
+		const baseColorPixels = await getPixels(material.getBaseColorTexture().getImage(), 'image/png');
 
-	t.deepEqual(baseColorPixels.shape, [8, 2, 4], 'dimensions');
-	t.deepEqual(
-		Array.from(baseColorPixels.data as Uint8Array),
-		// biome-ignore format: Readability.
-		[
+		deepEqual(baseColorPixels.shape, [8, 2, 4], 'dimensions');
+		deepEqual(
+			Array.from(baseColorPixels.data as Uint8Array),
+			// biome-ignore format: Readability.
+			[
 			// row 1
 			128, 128, 128, 255,
 			128, 128, 128, 255,
@@ -173,41 +175,42 @@ test('pixel values', async (t) => {
 			0, 0, 0, 0,
 			0, 0, 0, 0,
 		],
-		'pixel values',
-	);
-});
+			'pixel values',
+		);
+	});
 
-test('preserve UVs', async (t) => {
-	const document = new Document().setLogger(logger);
+	test('preserve UVs', async () => {
+		const document = new Document().setLogger(logger);
 
-	const position = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
-	const uv = document.createAccessor().setType('VEC2').setArray(new Uint8Array(6));
+		const position = document.createAccessor().setType('VEC3').setArray(new Float32Array(9));
+		const uv = document.createAccessor().setType('VEC2').setArray(new Uint8Array(6));
 
-	const materialA = document.createMaterial('A').setBaseColorFactor([1, 0, 0, 1]);
-	const materialB = document.createMaterial('B').setBaseColorFactor([0, 1, 0, 1]);
-	const materialC = document.createMaterial('C').setBaseColorFactor([0, 0, 1, 1]);
+		const materialA = document.createMaterial('A').setBaseColorFactor([1, 0, 0, 1]);
+		const materialB = document.createMaterial('B').setBaseColorFactor([0, 1, 0, 1]);
+		const materialC = document.createMaterial('C').setBaseColorFactor([0, 0, 1, 1]);
 
-	const primA = document.createPrimitive().setMaterial(materialA).setAttribute('POSITION', position);
-	const primB = document.createPrimitive().setMaterial(materialB).setAttribute('POSITION', position);
-	const primC = document
-		.createPrimitive()
-		.setMaterial(materialC)
-		.setAttribute('POSITION', position)
-		.setAttribute('TEXCOORD_0', uv);
+		const primA = document.createPrimitive().setMaterial(materialA).setAttribute('POSITION', position);
+		const primB = document.createPrimitive().setMaterial(materialB).setAttribute('POSITION', position);
+		const primC = document
+			.createPrimitive()
+			.setMaterial(materialC)
+			.setAttribute('POSITION', position)
+			.setAttribute('TEXCOORD_0', uv);
 
-	document.createMesh().addPrimitive(primA).addPrimitive(primB).addPrimitive(primC);
+		document.createMesh().addPrimitive(primA).addPrimitive(primB).addPrimitive(primC);
 
-	await document.transform(palette({ min: 2 }));
+		await document.transform(palette({ min: 2 }));
 
-	t.is(document.getRoot().listMaterials().length, 2, 'one material per texCoord index');
+		strictEqual(document.getRoot().listMaterials().length, 2, 'one material per texCoord index');
 
-	const paletteMaterials = document.getRoot().listMaterials();
-	const paletteMaterialA = paletteMaterials[0];
-	const paletteMaterialB = paletteMaterials[1];
+		const paletteMaterials = document.getRoot().listMaterials();
+		const paletteMaterialA = paletteMaterials[0];
+		const paletteMaterialB = paletteMaterials[1];
 
-	t.is(paletteMaterialA.getBaseColorTextureInfo().getTexCoord(), 0, 'texCoord = 0');
-	t.is(paletteMaterialB.getBaseColorTextureInfo().getTexCoord(), 1, 'texCoord = 1');
-	t.is(paletteMaterialA.getBaseColorTexture(), paletteMaterialB.getBaseColorTexture(), 'same texture');
+		strictEqual(paletteMaterialA.getBaseColorTextureInfo().getTexCoord(), 0, 'texCoord = 0');
+		strictEqual(paletteMaterialB.getBaseColorTextureInfo().getTexCoord(), 1, 'texCoord = 1');
+		strictEqual(paletteMaterialA.getBaseColorTexture(), paletteMaterialB.getBaseColorTexture(), 'same texture');
+	});
 });
 
 /* UTILITIES */

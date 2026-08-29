@@ -1,12 +1,13 @@
+import { strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document, Primitive as PrimitiveDef } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
-import test from 'ava';
 import { JSDOM } from 'jsdom';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('PrimitiveSubject', async (t) => {
+test('PrimitiveSubject', async () => {
 	const document = new Document();
 	const position = document
 		.createAccessor()
@@ -22,37 +23,37 @@ test('PrimitiveSubject', async (t) => {
 	const disposed = new Set();
 	geometry.addEventListener('dispose', () => disposed.add(geometry));
 
-	t.is(prim.type, 'Mesh', 'Mesh');
+	strictEqual(prim.type, 'Mesh', 'Mesh');
 
 	primDef.setMode(PrimitiveDef.Mode.POINTS);
 	prim = documentView.view(primDef);
 
-	t.is(prim.type, 'Points', 'Points');
+	strictEqual(prim.type, 'Points', 'Points');
 
 	primDef.setMode(PrimitiveDef.Mode.LINES);
 	prim = documentView.view(primDef);
 
-	t.is(prim.type, 'LineSegments', 'LineSegments');
+	strictEqual(prim.type, 'LineSegments', 'LineSegments');
 
 	primDef.setMode(PrimitiveDef.Mode.LINE_LOOP);
 	prim = documentView.view(primDef);
 
-	t.is(prim.type, 'LineLoop', 'LineLoop');
+	strictEqual(prim.type, 'LineLoop', 'LineLoop');
 
 	primDef.setMode(PrimitiveDef.Mode.LINE_STRIP);
 	prim = documentView.view(primDef);
 
-	t.is(prim.type, 'Line', 'Line');
+	strictEqual(prim.type, 'Line', 'Line');
 
-	t.is(prim.material.name, 'MyMaterial', 'prim.material → material');
+	strictEqual(prim.material.name, 'MyMaterial', 'prim.material → material');
 
 	primDef.setMaterial(null);
 
-	t.is(prim.material.name, '__DefaultMaterial', 'prim.material → null');
+	strictEqual(prim.material.name, '__DefaultMaterial', 'prim.material → null');
 
-	t.is(disposed.size, 0, 'preserve geometry');
+	strictEqual(disposed.size, 0, 'preserve geometry');
 
 	primDef.dispose();
 
-	t.is(disposed.size, 1, 'dispose geometry');
+	strictEqual(disposed.size, 1, 'dispose geometry');
 });

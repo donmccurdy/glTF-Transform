@@ -1,3 +1,5 @@
+import { strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Document, type Scene } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import {
@@ -8,61 +10,69 @@ import {
 	VertexCountMethod,
 } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 
 const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
+describe('getVertexCount', () => {
+	test('method = RENDER', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(createSceneBasic(document), RENDER), 32 * 4, 'basic');
+		strictEqual(getSceneVertexCount(createSceneIndexed(document), RENDER), 32 + 9, 'indexed');
+		strictEqual(getSceneVertexCount(createSceneInstanced(document), RENDER), 32 * 5, 'instanced');
+		strictEqual(getSceneVertexCount(createSceneMixedAttributes(document), RENDER), 32 * 2, 'mixed attributes');
+		strictEqual(getSceneVertexCount(createSceneUnused(document), RENDER), 15, 'unused');
+	});
 
-test('method = RENDER', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), RENDER), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER), 32 + 9, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), RENDER), 32 * 5, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), RENDER), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), RENDER), 15, 'unused');
-});
+	test('method = RENDER_CACHED', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(createSceneBasic(document), RENDER_CACHED), 32 * 4, 'basic');
+		strictEqual(getSceneVertexCount(createSceneIndexed(document), RENDER_CACHED), 32 + 5, 'indexed');
+		strictEqual(getSceneVertexCount(createSceneInstanced(document), RENDER_CACHED), 32 * 5, 'instanced');
+		strictEqual(
+			getSceneVertexCount(createSceneMixedAttributes(document), RENDER_CACHED),
+			32 * 2,
+			'mixed attributes',
+		);
+		strictEqual(getSceneVertexCount(createSceneUnused(document), RENDER_CACHED), 11, 'unused');
+	});
 
-test('method = RENDER_CACHED', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), RENDER_CACHED), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), RENDER_CACHED), 32 + 5, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), RENDER_CACHED), 32 * 5, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), RENDER_CACHED), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), RENDER_CACHED), 11, 'unused');
-});
+	test('method = UPLOAD_NAIVE', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(createSceneBasic(document), UPLOAD_NAIVE), 32 * 4, 'basic');
+		strictEqual(getSceneVertexCount(createSceneIndexed(document), UPLOAD_NAIVE), 32 * 2, 'indexed');
+		strictEqual(getSceneVertexCount(createSceneInstanced(document), UPLOAD_NAIVE), 32, 'instanced');
+		strictEqual(
+			getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD_NAIVE),
+			32 * 2,
+			'mixed attributes',
+		);
+		strictEqual(getSceneVertexCount(createSceneUnused(document), UPLOAD_NAIVE), 32 * 2, 'unused');
+	});
 
-test('method = UPLOAD_NAIVE', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD_NAIVE), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD_NAIVE), 32 * 2, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD_NAIVE), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD_NAIVE), 32 * 2, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD_NAIVE), 32 * 2, 'unused');
-});
+	test('method = UPLOAD', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(createSceneBasic(document), UPLOAD), 32 * 4, 'basic');
+		strictEqual(getSceneVertexCount(createSceneIndexed(document), UPLOAD), 32, 'indexed');
+		strictEqual(getSceneVertexCount(createSceneInstanced(document), UPLOAD), 32, 'instanced');
+		strictEqual(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD), 32, 'mixed attributes');
+		strictEqual(getSceneVertexCount(createSceneUnused(document), UPLOAD), 32, 'unused');
+	});
 
-test('method = UPLOAD', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), UPLOAD), 32 * 4, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), UPLOAD), 32, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), UPLOAD), 32, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UPLOAD), 32, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), UPLOAD), 32, 'unused');
-});
+	test('method = UNUSED', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(createSceneBasic(document), UNUSED), 0, 'basic');
+		strictEqual(getSceneVertexCount(createSceneIndexed(document), UNUSED), 0, 'indexed');
+		strictEqual(getSceneVertexCount(createSceneInstanced(document), UNUSED), 0, 'instanced');
+		strictEqual(getSceneVertexCount(createSceneMixedAttributes(document), UNUSED), 0, 'mixed attributes');
+		strictEqual(getSceneVertexCount(createSceneUnused(document), UNUSED), 24, 'unused');
+	});
 
-test('method = UNUSED', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(createSceneBasic(document), UNUSED), 0, 'basic');
-	t.is(getSceneVertexCount(createSceneIndexed(document), UNUSED), 0, 'indexed');
-	t.is(getSceneVertexCount(createSceneInstanced(document), UNUSED), 0, 'instanced');
-	t.is(getSceneVertexCount(createSceneMixedAttributes(document), UNUSED), 0, 'mixed attributes');
-	t.is(getSceneVertexCount(createSceneUnused(document), UNUSED), 24, 'unused');
-});
-
-test('empty properties', async (t) => {
-	const document = new Document().setLogger(logger);
-	t.is(getSceneVertexCount(document.createScene(), RENDER), 0, 'scene');
-	t.is(getNodeVertexCount(document.createNode(), RENDER), 0, 'node');
-	t.is(getMeshVertexCount(document.createMesh(), RENDER), 0, 'mesh');
-	t.is(getPrimitiveVertexCount(document.createPrimitive(), RENDER), 0, 'prim');
+	test('empty properties', async (_t) => {
+		const document = new Document().setLogger(logger);
+		strictEqual(getSceneVertexCount(document.createScene(), RENDER), 0, 'scene');
+		strictEqual(getNodeVertexCount(document.createNode(), RENDER), 0, 'node');
+		strictEqual(getMeshVertexCount(document.createMesh(), RENDER), 0, 'mesh');
+		strictEqual(getPrimitiveVertexCount(document.createPrimitive(), RENDER), 0, 'prim');
+	});
 });
 
 /**

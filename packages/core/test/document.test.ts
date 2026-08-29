@@ -1,7 +1,8 @@
+import { ok, strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document } from '@gltf-transform/core';
-import test from 'ava';
 
-test('transform', async (t) => {
+test('transform', async () => {
 	const document = new Document();
 
 	await document.transform(
@@ -9,11 +10,11 @@ test('transform', async (t) => {
 		(c) => c.createBuffer(''),
 	);
 
-	t.is(document.getRoot().listTextures().length, 1, 'transform 1');
-	t.is(document.getRoot().listBuffers().length, 1, 'transform 2');
+	strictEqual(document.getRoot().listTextures().length, 1, 'transform 1');
+	strictEqual(document.getRoot().listBuffers().length, 1, 'transform 2');
 });
 
-test('defaults', (t) => {
+test('defaults', () => {
 	// offering to the code coverage gods.
 	const document = new Document();
 
@@ -30,5 +31,5 @@ test('defaults', (t) => {
 	document.createScene('test');
 	document.createSkin('test');
 
-	t.truthy(true);
+	ok(true);
 });

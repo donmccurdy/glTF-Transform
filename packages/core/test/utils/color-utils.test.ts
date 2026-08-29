@@ -1,17 +1,18 @@
+import { deepEqual, strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { ColorUtils } from '@gltf-transform/core';
-import test from 'ava';
 
-test('basic', (t) => {
-	t.deepEqual(ColorUtils.hexToFactor(0xff0000, []), [1, 0, 0], 'hexToFactor');
-	t.deepEqual(ColorUtils.factorToHex([1, 0, 0]), 16646144, 'factorToHex');
+test('basic', () => {
+	deepEqual(ColorUtils.hexToFactor(0xff0000, []), [1, 0, 0], 'hexToFactor');
+	deepEqual(ColorUtils.factorToHex([1, 0, 0]), 16646144, 'factorToHex');
 
 	const linear = ColorUtils.convertSRGBToLinear([0.5, 0.5, 0.5], []);
-	t.is(linear[0].toFixed(4), '0.2140', 'convertSRGBToLinear[0]');
-	t.is(linear[1].toFixed(4), '0.2140', 'convertSRGBToLinear[1]');
-	t.is(linear[2].toFixed(4), '0.2140', 'convertSRGBToLinear[2]');
+	strictEqual(linear[0].toFixed(4), '0.2140', 'convertSRGBToLinear[0]');
+	strictEqual(linear[1].toFixed(4), '0.2140', 'convertSRGBToLinear[1]');
+	strictEqual(linear[2].toFixed(4), '0.2140', 'convertSRGBToLinear[2]');
 
 	const srgb = ColorUtils.convertLinearToSRGB([0.5, 0.5, 0.5], []);
-	t.is(srgb[0].toFixed(4), '0.7354', 'convertLinearToSRGB[0]');
-	t.is(srgb[1].toFixed(4), '0.7354', 'convertLinearToSRGB[1]');
-	t.is(srgb[2].toFixed(4), '0.7354', 'convertLinearToSRGB[2]');
+	strictEqual(srgb[0].toFixed(4), '0.7354', 'convertLinearToSRGB[0]');
+	strictEqual(srgb[1].toFixed(4), '0.7354', 'convertLinearToSRGB[1]');
+	strictEqual(srgb[2].toFixed(4), '0.7354', 'convertLinearToSRGB[2]');
 });

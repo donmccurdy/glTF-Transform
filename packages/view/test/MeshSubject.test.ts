@@ -1,12 +1,13 @@
+import { strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
-import test from 'ava';
 import { JSDOM } from 'jsdom';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('MeshSubject', async (t) => {
+test('MeshSubject', async () => {
 	const document = new Document();
 	const position = document
 		.createAccessor()
@@ -18,16 +19,16 @@ test('MeshSubject', async (t) => {
 	const documentView = new DocumentView(document, { imageProvider });
 	const mesh = documentView.view(meshDef);
 
-	t.is(mesh.name, 'MyMesh', 'mesh → name');
+	strictEqual(mesh.name, 'MyMesh', 'mesh → name');
 
 	meshDef.setName('MyMeshRenamed');
-	t.is(mesh.name, 'MyMeshRenamed', 'mesh → name (2)');
+	strictEqual(mesh.name, 'MyMeshRenamed', 'mesh → name (2)');
 
-	t.is(mesh.children[0].type, 'Mesh', 'mesh → prim (initial)');
+	strictEqual(mesh.children[0].type, 'Mesh', 'mesh → prim (initial)');
 
 	meshDef.removePrimitive(primDef);
-	t.is(mesh.children.length, 0, 'mesh → prim (remove)');
+	strictEqual(mesh.children.length, 0, 'mesh → prim (remove)');
 
 	meshDef.addPrimitive(primDef);
-	t.is(mesh.children.length, 1, 'mesh → prim (add)');
+	strictEqual(mesh.children.length, 1, 'mesh → prim (add)');
 });

@@ -1,3 +1,5 @@
+import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import {
 	Document,
 	Format,
@@ -8,356 +10,357 @@ import {
 	TextureInfo,
 } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
-import test from 'ava';
 
 const { R, G, B, A } = TextureChannel;
 
-test('properties', (t) => {
-	const document = new Document();
+describe('Material', () => {
+	test('properties', () => {
+		const document = new Document();
 
-	const mat = document.createMaterial('mat').setDoubleSided(true).setAlphaMode('MASK').setAlphaCutoff(0.33);
+		const mat = document.createMaterial('mat').setDoubleSided(true).setAlphaMode('MASK').setAlphaCutoff(0.33);
 
-	t.is(mat.getDoubleSided(), true, 'doubleSided');
-	t.is(mat.getAlphaMode(), 'MASK', 'alphaMode');
-	t.is(mat.getAlphaCutoff(), 0.33, 'alphaCutoff');
-});
+		strictEqual(mat.getDoubleSided(), true, 'doubleSided');
+		strictEqual(mat.getAlphaMode(), 'MASK', 'alphaMode');
+		strictEqual(mat.getAlphaCutoff(), 0.33, 'alphaCutoff');
+	});
 
-test('factors', (t) => {
-	const document = new Document();
+	test('factors', () => {
+		const document = new Document();
 
-	const mat = document
-		.createMaterial('mat')
-		.setBaseColorFactor([1, 0, 0, 1])
-		.setEmissiveFactor([0.5, 0.5, 0.5])
-		.setMetallicFactor(0.1)
-		.setRoughnessFactor(0.9);
+		const mat = document
+			.createMaterial('mat')
+			.setBaseColorFactor([1, 0, 0, 1])
+			.setEmissiveFactor([0.5, 0.5, 0.5])
+			.setMetallicFactor(0.1)
+			.setRoughnessFactor(0.9);
 
-	t.deepEqual(mat.getBaseColorFactor(), [1, 0, 0, 1], 'baseColorFactor');
-	t.deepEqual(mat.getEmissiveFactor(), [0.5, 0.5, 0.5], 'emissiveFactor');
-	t.is(mat.getMetallicFactor(), 0.1, 'metallicFactor');
-	t.is(mat.getRoughnessFactor(), 0.9, 'roughnessFactor');
-});
+		deepEqual(mat.getBaseColorFactor(), [1, 0, 0, 1], 'baseColorFactor');
+		deepEqual(mat.getEmissiveFactor(), [0.5, 0.5, 0.5], 'emissiveFactor');
+		strictEqual(mat.getMetallicFactor(), 0.1, 'metallicFactor');
+		strictEqual(mat.getRoughnessFactor(), 0.9, 'roughnessFactor');
+	});
 
-test('textures', (t) => {
-	const document = new Document();
+	test('textures', () => {
+		const document = new Document();
 
-	const baseColor = document.createTexture('baseColor');
-	const emissive = document.createTexture('emissive');
-	const normal = document.createTexture('normal');
-	const metalRough = document.createTexture('metalRough');
-	const occlusion = document.createTexture('occlusion');
+		const baseColor = document.createTexture('baseColor');
+		const emissive = document.createTexture('emissive');
+		const normal = document.createTexture('normal');
+		const metalRough = document.createTexture('metalRough');
+		const occlusion = document.createTexture('occlusion');
 
-	const mat = document
-		.createMaterial('mat')
-		.setBaseColorTexture(baseColor)
-		.setEmissiveTexture(emissive)
-		.setNormalTexture(normal)
-		.setNormalScale(0.85)
-		.setMetallicRoughnessTexture(metalRough)
-		.setOcclusionTexture(occlusion)
-		.setOcclusionStrength(0.4);
+		const mat = document
+			.createMaterial('mat')
+			.setBaseColorTexture(baseColor)
+			.setEmissiveTexture(emissive)
+			.setNormalTexture(normal)
+			.setNormalScale(0.85)
+			.setMetallicRoughnessTexture(metalRough)
+			.setOcclusionTexture(occlusion)
+			.setOcclusionStrength(0.4);
 
-	t.is(mat.getBaseColorTexture(), baseColor, 'baseColorTexture');
-	t.is(mat.getEmissiveTexture(), emissive, 'emissiveTexture');
-	t.is(mat.getNormalTexture(), normal, 'normalTexture');
-	t.is(mat.getNormalScale(), 0.85, 'normalTexture.scale');
-	t.is(mat.getMetallicRoughnessTexture(), metalRough, 'metallicRoughnessTexture');
-	t.is(mat.getOcclusionTexture(), occlusion, 'occlusionTexture');
-	t.is(mat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
-});
+		strictEqual(mat.getBaseColorTexture(), baseColor, 'baseColorTexture');
+		strictEqual(mat.getEmissiveTexture(), emissive, 'emissiveTexture');
+		strictEqual(mat.getNormalTexture(), normal, 'normalTexture');
+		strictEqual(mat.getNormalScale(), 0.85, 'normalTexture.scale');
+		strictEqual(mat.getMetallicRoughnessTexture(), metalRough, 'metallicRoughnessTexture');
+		strictEqual(mat.getOcclusionTexture(), occlusion, 'occlusionTexture');
+		strictEqual(mat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
+	});
 
-test('texture samplers', (t) => {
-	const document = new Document();
+	test('texture samplers', () => {
+		const document = new Document();
 
-	const mat = document.createMaterial('mat');
-	const baseColor = document.createTexture('baseColor');
-	const emissive = document.createTexture('emissive');
+		const mat = document.createMaterial('mat');
+		const baseColor = document.createTexture('baseColor');
+		const emissive = document.createTexture('emissive');
 
-	t.is(mat.getBaseColorTextureInfo(), null, 'default baseColorTexture sampler');
-	t.is(mat.getEmissiveTextureInfo(), null, 'default emissiveTexture sampler');
-	t.is(mat.getNormalTextureInfo(), null, 'default normalTexture sampler');
-	t.is(mat.getMetallicRoughnessTextureInfo(), null, 'default metalRoughTexture sampler');
-	t.is(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture sampler');
+		strictEqual(mat.getBaseColorTextureInfo(), null, 'default baseColorTexture sampler');
+		strictEqual(mat.getEmissiveTextureInfo(), null, 'default emissiveTexture sampler');
+		strictEqual(mat.getNormalTextureInfo(), null, 'default normalTexture sampler');
+		strictEqual(mat.getMetallicRoughnessTextureInfo(), null, 'default metalRoughTexture sampler');
+		strictEqual(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture sampler');
 
-	mat.setBaseColorTexture(baseColor)
-		.getBaseColorTextureInfo()
-		.setWrapS(TextureInfo.WrapMode.REPEAT)
-		.setWrapT(TextureInfo.WrapMode.CLAMP_TO_EDGE);
+		mat.setBaseColorTexture(baseColor)
+			.getBaseColorTextureInfo()
+			.setWrapS(TextureInfo.WrapMode.REPEAT)
+			.setWrapT(TextureInfo.WrapMode.CLAMP_TO_EDGE);
 
-	mat.setEmissiveTexture(emissive)
-		.getEmissiveTextureInfo()
-		.setMinFilter(TextureInfo.MinFilter.LINEAR)
-		.setMagFilter(TextureInfo.MagFilter.NEAREST);
+		mat.setEmissiveTexture(emissive)
+			.getEmissiveTextureInfo()
+			.setMinFilter(TextureInfo.MinFilter.LINEAR)
+			.setMagFilter(TextureInfo.MagFilter.NEAREST);
 
-	t.is(mat.getBaseColorTextureInfo().getWrapS(), TextureInfo.WrapMode.REPEAT, 'wrapS');
-	t.is(mat.getBaseColorTextureInfo().getWrapT(), TextureInfo.WrapMode.CLAMP_TO_EDGE, 'wrapT');
-	t.is(mat.getEmissiveTextureInfo().getMinFilter(), TextureInfo.MinFilter.LINEAR, 'minFilter');
-	t.is(mat.getEmissiveTextureInfo().getMagFilter(), TextureInfo.MagFilter.NEAREST, 'magFilter');
-	t.is(mat.getNormalTextureInfo(), null, 'unchanged normalTexture sampler');
-	t.is(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture sampler');
-	t.is(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture sampler');
-});
+		strictEqual(mat.getBaseColorTextureInfo().getWrapS(), TextureInfo.WrapMode.REPEAT, 'wrapS');
+		strictEqual(mat.getBaseColorTextureInfo().getWrapT(), TextureInfo.WrapMode.CLAMP_TO_EDGE, 'wrapT');
+		strictEqual(mat.getEmissiveTextureInfo().getMinFilter(), TextureInfo.MinFilter.LINEAR, 'minFilter');
+		strictEqual(mat.getEmissiveTextureInfo().getMagFilter(), TextureInfo.MagFilter.NEAREST, 'magFilter');
+		strictEqual(mat.getNormalTextureInfo(), null, 'unchanged normalTexture sampler');
+		strictEqual(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture sampler');
+		strictEqual(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture sampler');
+	});
 
-test('texture info', (t) => {
-	const document = new Document();
+	test('texture info', () => {
+		const document = new Document();
 
-	const mat = document.createMaterial('mat');
-	const baseColor = document.createTexture('baseColor');
-	const emissive = document.createTexture('emissive');
+		const mat = document.createMaterial('mat');
+		const baseColor = document.createTexture('baseColor');
+		const emissive = document.createTexture('emissive');
 
-	t.is(mat.getBaseColorTextureInfo(), null, 'default baseColorTexture info');
-	t.is(mat.getEmissiveTextureInfo(), null, 'default emissiveTexture info');
-	t.is(mat.getNormalTextureInfo(), null, 'default normalTexture info');
-	t.is(mat.getMetallicRoughnessTextureInfo(), null, 'default metallicRoughnessTexture info');
-	t.is(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture info');
+		strictEqual(mat.getBaseColorTextureInfo(), null, 'default baseColorTexture info');
+		strictEqual(mat.getEmissiveTextureInfo(), null, 'default emissiveTexture info');
+		strictEqual(mat.getNormalTextureInfo(), null, 'default normalTexture info');
+		strictEqual(mat.getMetallicRoughnessTextureInfo(), null, 'default metallicRoughnessTexture info');
+		strictEqual(mat.getOcclusionTextureInfo(), null, 'default occlusionTexture info');
 
-	mat.setBaseColorTexture(baseColor).getBaseColorTextureInfo().setTexCoord(0);
+		mat.setBaseColorTexture(baseColor).getBaseColorTextureInfo().setTexCoord(0);
 
-	mat.setEmissiveTexture(emissive).getEmissiveTextureInfo().setTexCoord(1);
+		mat.setEmissiveTexture(emissive).getEmissiveTextureInfo().setTexCoord(1);
 
-	t.is(mat.getBaseColorTextureInfo().getTexCoord(), 0, 'baseColorTexture.texCoord');
-	t.is(mat.getEmissiveTextureInfo().getTexCoord(), 1, 'emissiveTexture.texCoord');
-	t.is(mat.getNormalTextureInfo(), null, 'unchanged normalTexture info');
-	t.is(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture info');
-	t.is(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture info');
-});
+		strictEqual(mat.getBaseColorTextureInfo().getTexCoord(), 0, 'baseColorTexture.texCoord');
+		strictEqual(mat.getEmissiveTextureInfo().getTexCoord(), 1, 'emissiveTexture.texCoord');
+		strictEqual(mat.getNormalTextureInfo(), null, 'unchanged normalTexture info');
+		strictEqual(mat.getMetallicRoughnessTextureInfo(), null, 'unchanged metallicRoughnessTexture info');
+		strictEqual(mat.getOcclusionTextureInfo(), null, 'unchanged occlusionTexture info');
+	});
 
-test('texture linking', (t) => {
-	const document = new Document();
+	test('texture linking', () => {
+		const document = new Document();
 
-	const tex1 = document.createTexture('tex1');
-	const tex2 = document.createTexture('tex2');
-	const tex3 = document.createTexture('tex3');
+		const tex1 = document.createTexture('tex1');
+		const tex2 = document.createTexture('tex2');
+		const tex3 = document.createTexture('tex3');
 
-	const mat = document.createMaterial('mat');
+		const mat = document.createMaterial('mat');
 
-	const toType = (p: Property): string => p.propertyType;
+		const toType = (p: Property): string => p.propertyType;
 
-	mat.setBaseColorTexture(tex1);
-	t.is(mat.getBaseColorTexture(), tex1, 'sets baseColorTexture');
-	t.deepEqual(tex1.listParents().map(toType), ['Root', 'Material'], 'links baseColorTexture');
+		mat.setBaseColorTexture(tex1);
+		strictEqual(mat.getBaseColorTexture(), tex1, 'sets baseColorTexture');
+		deepEqual(tex1.listParents().map(toType), ['Root', 'Material'], 'links baseColorTexture');
 
-	mat.setNormalTexture(tex2);
-	t.is(mat.getNormalTexture(), tex2, 'sets normalTexture');
-	t.deepEqual(tex1.listParents().map(toType), ['Root', 'Material'], 'links normalTexture');
-	t.deepEqual(tex2.listParents().map(toType), ['Root', 'Material'], 'links normalTexture');
+		mat.setNormalTexture(tex2);
+		strictEqual(mat.getNormalTexture(), tex2, 'sets normalTexture');
+		deepEqual(tex1.listParents().map(toType), ['Root', 'Material'], 'links normalTexture');
+		deepEqual(tex2.listParents().map(toType), ['Root', 'Material'], 'links normalTexture');
 
-	mat.setBaseColorTexture(tex3);
-	t.is(mat.getBaseColorTexture(), tex3, 'overwrites baseColorTexture');
-	t.deepEqual(tex1.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
-	t.deepEqual(tex3.listParents().map(toType), ['Root', 'Material'], 'links new baseColorTexture');
+		mat.setBaseColorTexture(tex3);
+		strictEqual(mat.getBaseColorTexture(), tex3, 'overwrites baseColorTexture');
+		deepEqual(tex1.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
+		deepEqual(tex3.listParents().map(toType), ['Root', 'Material'], 'links new baseColorTexture');
 
-	mat.setBaseColorTexture(null);
-	t.is(mat.getBaseColorTexture(), null, 'deletes baseColorTexture');
-	t.deepEqual(tex3.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
-});
+		mat.setBaseColorTexture(null);
+		strictEqual(mat.getBaseColorTexture(), null, 'deletes baseColorTexture');
+		deepEqual(tex3.listParents().map(toType), ['Root'], 'unlinks old baseColorTexture');
+	});
 
-test('texture info linking', (t) => {
-	const document = new Document();
+	test('texture info linking', () => {
+		const document = new Document();
 
-	const mat = document.createMaterial('mat');
-	const tex1 = document.createTexture('tex1');
-	const tex2 = document.createTexture('tex2');
-	const tex3 = document.createTexture('tex3');
+		const mat = document.createMaterial('mat');
+		const tex1 = document.createTexture('tex1');
+		const tex2 = document.createTexture('tex2');
+		const tex3 = document.createTexture('tex3');
 
-	t.is(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
+		strictEqual(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
 
-	mat.setBaseColorTexture(tex1);
-	mat.getBaseColorTextureInfo().setTexCoord(2);
+		mat.setBaseColorTexture(tex1);
+		mat.getBaseColorTextureInfo().setTexCoord(2);
 
-	const textureInfo = mat.getBaseColorTextureInfo();
-	t.truthy(textureInfo, 'textureInfo != null');
-	t.is(textureInfo.getTexCoord(), 2, 'textureInfo.texCoord === 2');
+		const textureInfo = mat.getBaseColorTextureInfo();
+		ok(textureInfo, 'textureInfo != null');
+		strictEqual(textureInfo.getTexCoord(), 2, 'textureInfo.texCoord === 2');
 
-	mat.setBaseColorTexture(tex2);
-	t.is(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
+		mat.setBaseColorTexture(tex2);
+		strictEqual(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
 
-	mat.setBaseColorTexture(null);
-	t.is(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
+		mat.setBaseColorTexture(null);
+		strictEqual(mat.getBaseColorTextureInfo(), null, 'textureInfo == null');
 
-	mat.setBaseColorTexture(tex3);
-	t.is(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
+		mat.setBaseColorTexture(tex3);
+		strictEqual(mat.getBaseColorTextureInfo(), textureInfo, 'textureInfo unchanged');
 
-	const baseColorTextureInfo = mat.getBaseColorTextureInfo();
-	mat.dispose();
-	t.is(baseColorTextureInfo.isDisposed(), true, 'textureInfo disposed with material');
-});
+		const baseColorTextureInfo = mat.getBaseColorTextureInfo();
+		mat.dispose();
+		strictEqual(baseColorTextureInfo.isDisposed(), true, 'textureInfo disposed with material');
+	});
 
-test('texture channels', (t) => {
-	const document = new Document();
-	const graph = document.getGraph();
+	test('texture channels', () => {
+		const document = new Document();
+		const graph = document.getGraph();
 
-	const baseColorTexture = document.createTexture('baseColorTexture');
-	const normalTexture = document.createTexture('normalTexture');
-	const occlusionTexture = document.createTexture('occlusionTexture');
-	const metallicRoughnessTexture = document.createTexture('metallicRoughnessTexture');
+		const baseColorTexture = document.createTexture('baseColorTexture');
+		const normalTexture = document.createTexture('normalTexture');
+		const occlusionTexture = document.createTexture('occlusionTexture');
+		const metallicRoughnessTexture = document.createTexture('metallicRoughnessTexture');
 
-	const mat = document
-		.createMaterial('mat')
-		.setBaseColorTexture(baseColorTexture)
-		.setNormalTexture(normalTexture)
-		.setOcclusionTexture(occlusionTexture)
-		.setMetallicRoughnessTexture(metallicRoughnessTexture);
+		const mat = document
+			.createMaterial('mat')
+			.setBaseColorTexture(baseColorTexture)
+			.setNormalTexture(normalTexture)
+			.setOcclusionTexture(occlusionTexture)
+			.setMetallicRoughnessTexture(metallicRoughnessTexture);
 
-	function getChannels(texture: Texture): number {
-		let mask = 0x0000;
-		for (const edge of graph.listParentEdges(texture)) {
-			const { channels } = edge.getAttributes() as { channels: number | undefined };
+		function getChannels(texture: Texture): number {
+			let mask = 0x0000;
+			for (const edge of graph.listParentEdges(texture)) {
+				const { channels } = edge.getAttributes() as { channels: number | undefined };
 
-			if (channels) {
-				mask |= channels;
-				continue;
+				if (channels) {
+					mask |= channels;
+					continue;
+				}
+
+				if (edge.getParent().propertyType !== PropertyType.ROOT) {
+					throw new Error(`Missing attribute ".channels" on link, "${edge.getName()}".`);
+				}
 			}
-
-			if (edge.getParent().propertyType !== PropertyType.ROOT) {
-				throw new Error(`Missing attribute ".channels" on link, "${edge.getName()}".`);
-			}
+			return mask;
 		}
-		return mask;
-	}
 
-	t.is(getChannels(baseColorTexture), R | G | B | A, 'baseColorTexture channels');
-	t.is(getChannels(normalTexture), R | G | B, 'normalTexture channels');
-	t.is(getChannels(occlusionTexture), R, 'occlusionTexture channels');
-	t.is(getChannels(metallicRoughnessTexture), G | B, 'metallicRoughnessTexture channels');
+		strictEqual(getChannels(baseColorTexture), R | G | B | A, 'baseColorTexture channels');
+		strictEqual(getChannels(normalTexture), R | G | B, 'normalTexture channels');
+		strictEqual(getChannels(occlusionTexture), R, 'occlusionTexture channels');
+		strictEqual(getChannels(metallicRoughnessTexture), G | B, 'metallicRoughnessTexture channels');
 
-	mat.setMetallicRoughnessTexture(occlusionTexture);
+		mat.setMetallicRoughnessTexture(occlusionTexture);
 
-	t.is(getChannels(occlusionTexture), R | G | B, 'O/R/M channels');
-});
+		strictEqual(getChannels(occlusionTexture), R | G | B, 'O/R/M channels');
+	});
 
-test('copy', (t) => {
-	const document = new Document();
-	const tex = document.createTexture('MyTex');
-	const mat = document
-		.createMaterial('MyMat')
-		.setAlphaMode('BLEND')
-		.setAlphaCutoff(0.5)
-		.setBaseColorFactor([1, 0, 1, 0.5])
-		.setBaseColorTexture(tex)
-		.setMetallicFactor(0)
-		.setRoughnessFactor(0.9)
-		.setMetallicRoughnessTexture(tex)
-		.setNormalScale(0.9)
-		.setNormalTexture(tex)
-		.setOcclusionStrength(1.5)
-		.setOcclusionTexture(tex)
-		.setEmissiveFactor([2, 2, 2])
-		.setEmissiveTexture(tex);
-	mat.getBaseColorTextureInfo()
-		.setTexCoord(2)
-		.setMagFilter(TextureInfo.MagFilter.LINEAR)
-		.setMinFilter(TextureInfo.MinFilter.NEAREST)
-		.setWrapS(TextureInfo.WrapMode.REPEAT)
-		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
+	test('copy', () => {
+		const document = new Document();
+		const tex = document.createTexture('MyTex');
+		const mat = document
+			.createMaterial('MyMat')
+			.setAlphaMode('BLEND')
+			.setAlphaCutoff(0.5)
+			.setBaseColorFactor([1, 0, 1, 0.5])
+			.setBaseColorTexture(tex)
+			.setMetallicFactor(0)
+			.setRoughnessFactor(0.9)
+			.setMetallicRoughnessTexture(tex)
+			.setNormalScale(0.9)
+			.setNormalTexture(tex)
+			.setOcclusionStrength(1.5)
+			.setOcclusionTexture(tex)
+			.setEmissiveFactor([2, 2, 2])
+			.setEmissiveTexture(tex);
+		mat.getBaseColorTextureInfo()
+			.setTexCoord(2)
+			.setMagFilter(TextureInfo.MagFilter.LINEAR)
+			.setMinFilter(TextureInfo.MinFilter.NEAREST)
+			.setWrapS(TextureInfo.WrapMode.REPEAT)
+			.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
 
-	const mat2 = document.createMaterial().copy(mat);
+		const mat2 = document.createMaterial().copy(mat);
 
-	t.is(mat2.getName(), 'MyMat', 'copy name');
-	t.is(mat2.getAlphaMode(), 'BLEND', 'copy AlphaMode');
-	t.is(mat2.getAlphaCutoff(), 0.5, 'copy AlphaCutoff');
-	t.deepEqual(mat2.getBaseColorFactor(), [1, 0, 1, 0.5], 'copy BaseColorFactor');
-	t.is(mat2.getBaseColorTexture(), tex, 'copy BaseColorTexture');
-	t.is(mat2.getMetallicFactor(), 0, 'copy MetallicFactor');
-	t.is(mat2.getRoughnessFactor(), 0.9, 'copy RoughnessFactor');
-	t.is(mat2.getMetallicRoughnessTexture(), tex, 'copy MetallicRoughnessTexture');
-	t.is(mat2.getNormalScale(), 0.9, 'copy NormalScale');
-	t.is(mat2.getNormalTexture(), tex, 'copy NormalTexture');
-	t.is(mat2.getOcclusionStrength(), 1.5, 'copy OcclusionStrength');
-	t.is(mat2.getOcclusionTexture(), tex, 'copy OcclusionTexture');
-	t.deepEqual(mat2.getEmissiveFactor(), [2, 2, 2], 'copy EmissiveFactor');
-	t.is(mat2.getEmissiveTexture(), tex, 'copy EmissiveTexture');
+		strictEqual(mat2.getName(), 'MyMat', 'copy name');
+		strictEqual(mat2.getAlphaMode(), 'BLEND', 'copy AlphaMode');
+		strictEqual(mat2.getAlphaCutoff(), 0.5, 'copy AlphaCutoff');
+		deepEqual(mat2.getBaseColorFactor(), [1, 0, 1, 0.5], 'copy BaseColorFactor');
+		strictEqual(mat2.getBaseColorTexture(), tex, 'copy BaseColorTexture');
+		strictEqual(mat2.getMetallicFactor(), 0, 'copy MetallicFactor');
+		strictEqual(mat2.getRoughnessFactor(), 0.9, 'copy RoughnessFactor');
+		strictEqual(mat2.getMetallicRoughnessTexture(), tex, 'copy MetallicRoughnessTexture');
+		strictEqual(mat2.getNormalScale(), 0.9, 'copy NormalScale');
+		strictEqual(mat2.getNormalTexture(), tex, 'copy NormalTexture');
+		strictEqual(mat2.getOcclusionStrength(), 1.5, 'copy OcclusionStrength');
+		strictEqual(mat2.getOcclusionTexture(), tex, 'copy OcclusionTexture');
+		deepEqual(mat2.getEmissiveFactor(), [2, 2, 2], 'copy EmissiveFactor');
+		strictEqual(mat2.getEmissiveTexture(), tex, 'copy EmissiveTexture');
 
-	const textureInfo = mat2.getBaseColorTextureInfo();
-	t.is(textureInfo.getTexCoord(), 2, 'copy texCoord');
-	t.is(textureInfo.getMagFilter(), TextureInfo.MagFilter.LINEAR, 'magFilter');
-	t.is(textureInfo.getMinFilter(), TextureInfo.MinFilter.NEAREST, 'minFilter');
-	t.is(textureInfo.getWrapS(), TextureInfo.WrapMode.REPEAT, 'wrapS');
-	t.is(textureInfo.getWrapT(), TextureInfo.WrapMode.MIRRORED_REPEAT, 'wrapT');
-});
+		const textureInfo = mat2.getBaseColorTextureInfo();
+		strictEqual(textureInfo.getTexCoord(), 2, 'copy texCoord');
+		strictEqual(textureInfo.getMagFilter(), TextureInfo.MagFilter.LINEAR, 'magFilter');
+		strictEqual(textureInfo.getMinFilter(), TextureInfo.MinFilter.NEAREST, 'minFilter');
+		strictEqual(textureInfo.getWrapS(), TextureInfo.WrapMode.REPEAT, 'wrapS');
+		strictEqual(textureInfo.getWrapT(), TextureInfo.WrapMode.MIRRORED_REPEAT, 'wrapT');
+	});
 
-test('equals', (t) => {
-	const document = new Document();
-	const tex = document.createTexture('MyTex');
-	const mat = document
-		.createMaterial('MyMat')
-		.setAlphaMode('BLEND')
-		.setAlphaCutoff(0.5)
-		.setBaseColorFactor([1, 0, 1, 0.5])
-		.setBaseColorTexture(tex)
-		.setMetallicFactor(0)
-		.setRoughnessFactor(0.9)
-		.setMetallicRoughnessTexture(tex)
-		.setNormalScale(0.9)
-		.setNormalTexture(tex)
-		.setOcclusionStrength(1.5)
-		.setOcclusionTexture(tex)
-		.setEmissiveFactor([2, 2, 2])
-		.setEmissiveTexture(tex);
-	mat.getBaseColorTextureInfo()
-		.setTexCoord(2)
-		.setMagFilter(TextureInfo.MagFilter.LINEAR)
-		.setMinFilter(TextureInfo.MinFilter.NEAREST)
-		.setWrapS(TextureInfo.WrapMode.REPEAT)
-		.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
+	test('equals', () => {
+		const document = new Document();
+		const tex = document.createTexture('MyTex');
+		const mat = document
+			.createMaterial('MyMat')
+			.setAlphaMode('BLEND')
+			.setAlphaCutoff(0.5)
+			.setBaseColorFactor([1, 0, 1, 0.5])
+			.setBaseColorTexture(tex)
+			.setMetallicFactor(0)
+			.setRoughnessFactor(0.9)
+			.setMetallicRoughnessTexture(tex)
+			.setNormalScale(0.9)
+			.setNormalTexture(tex)
+			.setOcclusionStrength(1.5)
+			.setOcclusionTexture(tex)
+			.setEmissiveFactor([2, 2, 2])
+			.setEmissiveTexture(tex);
+		mat.getBaseColorTextureInfo()
+			.setTexCoord(2)
+			.setMagFilter(TextureInfo.MagFilter.LINEAR)
+			.setMinFilter(TextureInfo.MinFilter.NEAREST)
+			.setWrapS(TextureInfo.WrapMode.REPEAT)
+			.setWrapT(TextureInfo.WrapMode.MIRRORED_REPEAT);
 
-	const mat2 = document.createMaterial();
+		const mat2 = document.createMaterial();
 
-	mat2.copy(mat);
-	t.is(mat.equals(mat), true, 'mat = mat');
-	t.is(mat.equals(mat2), true, 'mat ≅ mat2');
+		mat2.copy(mat);
+		strictEqual(mat.equals(mat), true, 'mat = mat');
+		strictEqual(mat.equals(mat2), true, 'mat ≅ mat2');
 
-	mat2.copy(mat).setAlphaMode('OPAQUE');
-	t.is(mat.equals(mat2), false, '.alphaMode ≠ .alphaMode');
+		mat2.copy(mat).setAlphaMode('OPAQUE');
+		strictEqual(mat.equals(mat2), false, '.alphaMode ≠ .alphaMode');
 
-	mat2.copy(mat).setBaseColorFactor([1, 1, 1, 0]);
-	t.is(mat.equals(mat2), false, '.baseColorFactor ≠ .baseColorFactor');
+		mat2.copy(mat).setBaseColorFactor([1, 1, 1, 0]);
+		strictEqual(mat.equals(mat2), false, '.baseColorFactor ≠ .baseColorFactor');
 
-	mat2.copy(mat).setBaseColorTexture(tex.clone());
-	t.is(mat.equals(mat2), true, '.baseColorTexture ≅ .baseColorTexture');
+		mat2.copy(mat).setBaseColorTexture(tex.clone());
+		strictEqual(mat.equals(mat2), true, '.baseColorTexture ≅ .baseColorTexture');
 
-	mat2.copy(mat).setBaseColorTexture(tex.clone().setURI('other.png'));
-	t.is(mat.equals(mat2), false, '.baseColorTexture ≠ .baseColorTexture');
+		mat2.copy(mat).setBaseColorTexture(tex.clone().setURI('other.png'));
+		strictEqual(mat.equals(mat2), false, '.baseColorTexture ≠ .baseColorTexture');
 
-	mat2.copy(mat).setBaseColorTexture(null);
-	t.is(mat.equals(mat2), false, '.baseColorTexture ≠ null');
+		mat2.copy(mat).setBaseColorTexture(null);
+		strictEqual(mat.equals(mat2), false, '.baseColorTexture ≠ null');
 
-	mat2.copy(mat).getBaseColorTextureInfo().setTexCoord(0);
-	t.is(mat.equals(mat2), false, '.baseColorTextureInfo ≠ .baseColorTextureInfo');
-});
+		mat2.copy(mat).getBaseColorTextureInfo().setTexCoord(0);
+		strictEqual(mat.equals(mat2), false, '.baseColorTextureInfo ≠ .baseColorTextureInfo');
+	});
 
-test('i/o', async (t) => {
-	const document = new Document();
-	document.createBuffer();
+	test('i/o', async () => {
+		const document = new Document();
+		document.createBuffer();
 
-	const createTexture = (name: string) =>
-		document.createTexture(name).setImage(new Uint8Array(10)).setMimeType('image/png');
+		const createTexture = (name: string) =>
+			document.createTexture(name).setImage(new Uint8Array(10)).setMimeType('image/png');
 
-	const baseColor = createTexture('baseColor');
-	const emissive = createTexture('emissive');
-	const normal = createTexture('normal');
-	const metalRough = createTexture('metalRough');
-	const occlusion = createTexture('occlusion');
+		const baseColor = createTexture('baseColor');
+		const emissive = createTexture('emissive');
+		const normal = createTexture('normal');
+		const metalRough = createTexture('metalRough');
+		const occlusion = createTexture('occlusion');
 
-	document
-		.createMaterial('mat')
-		.setBaseColorTexture(baseColor)
-		.setEmissiveTexture(emissive)
-		.setNormalTexture(normal)
-		.setNormalScale(0.85)
-		.setMetallicRoughnessTexture(metalRough)
-		.setOcclusionTexture(occlusion)
-		.setOcclusionStrength(0.4);
+		document
+			.createMaterial('mat')
+			.setBaseColorTexture(baseColor)
+			.setEmissiveTexture(emissive)
+			.setNormalTexture(normal)
+			.setNormalScale(0.85)
+			.setMetallicRoughnessTexture(metalRough)
+			.setOcclusionTexture(occlusion)
+			.setOcclusionStrength(0.4);
 
-	const io = await createPlatformIO();
-	const rtDocument = await io.readJSON(await io.writeJSON(document, { format: Format.GLB }));
-	const rtMat = rtDocument.getRoot().listMaterials()[0];
+		const io = await createPlatformIO();
+		const rtDocument = await io.readJSON(await io.writeJSON(document, { format: Format.GLB }));
+		const rtMat = rtDocument.getRoot().listMaterials()[0];
 
-	t.truthy(rtMat.getBaseColorTexture(), 'baseColorTexture');
-	t.truthy(rtMat.getEmissiveTexture(), 'emissiveTexture');
-	t.truthy(rtMat.getNormalTexture(), 'normalTexture');
-	t.is(rtMat.getNormalScale(), 0.85, 'normalTexture.scale');
-	t.truthy(rtMat.getMetallicRoughnessTexture(), 'metallicRoughnessTexture');
-	t.truthy(rtMat.getOcclusionTexture(), 'occlusionTexture');
-	t.is(rtMat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
+		ok(rtMat.getBaseColorTexture(), 'baseColorTexture');
+		ok(rtMat.getEmissiveTexture(), 'emissiveTexture');
+		ok(rtMat.getNormalTexture(), 'normalTexture');
+		strictEqual(rtMat.getNormalScale(), 0.85, 'normalTexture.scale');
+		ok(rtMat.getMetallicRoughnessTexture(), 'metallicRoughnessTexture');
+		ok(rtMat.getOcclusionTexture(), 'occlusionTexture');
+		strictEqual(rtMat.getOcclusionStrength(), 0.4, 'occlusionTexture.strength');
+	});
 });

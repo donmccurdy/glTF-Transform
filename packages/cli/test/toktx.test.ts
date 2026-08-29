@@ -1,8 +1,9 @@
+import { strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { Mode, mockCommandExists, mockSpawn, mockWaitExit, toktx } from '@gltf-transform/cli';
 import { Document, TextureChannel, type vec2 } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 import type { ChildProcess } from 'child_process';
 import fs from 'fs/promises';
 import ndarray from 'ndarray';
@@ -15,42 +16,44 @@ const createImage = (size: vec2): Promise<Uint8Array> => {
 	return savePixels(pixels, 'image/png');
 };
 
-test('compress and resize', async (t) => {
-	t.is(
-		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508])),
-		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM',
-		'508x508 → no change',
-	);
+describe('toktx', () => {
+	test('compress and resize', async () => {
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S }, await createImage([508, 508])),
+			'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM',
+			'508x508 → no change',
+		);
 
-	t.is(
-		await getParams({ mode: Mode.ETC1S }, await createImage([507, 509])),
-		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 508 --height 512',
-		'507x509 → 508x512',
-	);
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S }, await createImage([507, 509])),
+			'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 508 --height 512',
+			'507x509 → 508x512',
+		);
 
-	t.is(
-		await getParams({ mode: Mode.ETC1S, resize: [504, 504] }, await createImage([508, 508])),
-		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 504 --height 504',
-		'508x508 → 504x504',
-	);
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S, resize: [504, 504] }, await createImage([508, 508])),
+			'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 504 --height 504',
+			'508x508 → 504x504',
+		);
 
-	t.is(
-		await getParams({ mode: Mode.ETC1S, resize: [4, 4] }, await createImage([5, 3])),
-		'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 4 --height 4',
-		'5x3 → 4x4',
-	);
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S, resize: [4, 4] }, await createImage([5, 3])),
+			'create --generate-mipmap --encode basis-lz --format R8G8B8_UNORM --width 4 --height 4',
+			'5x3 → 4x4',
+		);
 
-	t.is(
-		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), R),
-		'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8_UNORM',
-		'channels → R',
-	);
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), R),
+			'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8_UNORM',
+			'channels → R',
+		);
 
-	t.is(
-		await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), G),
-		'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8G8_UNORM',
-		'channels → RG',
-	);
+		strictEqual(
+			await getParams({ mode: Mode.ETC1S }, await createImage([508, 508]), G),
+			'create --generate-mipmap --encode basis-lz --assign-tf linear --assign-primaries none --format R8G8_UNORM',
+			'channels → RG',
+		);
+	});
 });
 
 async function getParams(options: Record<string, unknown>, image: Uint8Array, channels = 0): Promise<string> {

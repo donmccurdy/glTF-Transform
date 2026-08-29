@@ -15,8 +15,7 @@
     "clean:dist": "rm -rf packages/*/dist/** | true",
     "clean:deps": "rm -rf packages/*/node_modules/** | true",
     "clean:test": "rm -rf packages/*/test/out/** | true",
-    "test": "ava --no-worker-threads",
-    "test:debug": "ava debug --no-worker-threads",
+    "test": "node --test packages/*/test/**/*.test.ts",
     "coverage": "c8 --config .github/.c8rc --reporter=lcov --reporter=text yarn test --tap",
     "coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
     "lint": "biome check packages/*/{src,test}",
@@ -40,7 +39,6 @@
     "@types/node": "26.2.0",
     "@types/semver": "^7.8.0",
     "@types/three": "^0.177.0",
-    "ava": "^7.0.0",
     "c8": "^11.0.0",
     "d3-dsv": "^3.0.1",
     "draco3dgltf": "1.5.7",
@@ -64,11 +62,6 @@
   },
   "resolutions": {
     "sharp": "~0.35.0"
-  },
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    }
   },
   "packageManager": "yarn@4.17.0"
 }

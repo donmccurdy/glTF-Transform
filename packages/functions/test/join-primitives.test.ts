@@ -1,31 +1,33 @@
+import { deepEqual, strictEqual } from 'node:assert/strict';
+import { describe, test } from 'node:test';
 import { type Accessor, Document, Primitive } from '@gltf-transform/core';
 import { KHRMeshPrimitiveRestart } from '@gltf-transform/extensions';
 import { joinPrimitives } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import test from 'ava';
 
 const { LINE_STRIP } = Primitive.Mode;
 
-test('unindexed', async (t) => {
-	const document = new Document().setLogger(logger);
-	const [primA, positionA, colorA] = createPrimA(document);
-	const [primB] = createPrimB(document);
+describe('joinPrimitives', () => {
+	test('unindexed', async () => {
+		const document = new Document().setLogger(logger);
+		const [primA, positionA, colorA] = createPrimA(document);
+		const [primB] = createPrimB(document);
 
-	const primAB = joinPrimitives([primA, primB]);
+		const primAB = joinPrimitives([primA, primB]);
 
-	t.false(primA.isDisposed(), 'primA alive');
-	t.false(primB.isDisposed(), 'primB alive');
+		strictEqual(primA.isDisposed(), false, 'primA alive');
+		strictEqual(primB.isDisposed(), false, 'primB alive');
 
-	const positionAB = primAB.getAttribute('POSITION');
-	const colorAB = primAB.getAttribute('COLOR_0');
+		const positionAB = primAB.getAttribute('POSITION');
+		const colorAB = primAB.getAttribute('COLOR_0');
 
-	t.is(positionAB.getType(), positionA.getType(), 'position.type');
-	t.is(colorAB.getType(), colorA.getType(), 'color.type');
-	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
-	t.is(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
+		strictEqual(positionAB.getType(), positionA.getType(), 'position.type');
+		strictEqual(colorAB.getType(), colorA.getType(), 'color.type');
+		strictEqual(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
+		strictEqual(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(Array.from(positionAB.getArray()), [
+		// biome-ignore format: Readability.
+		deepEqual(Array.from(positionAB.getArray()), [
 		// primA
 		0, 0, 0,
 		0, 0, 1,
@@ -38,8 +40,8 @@ test('unindexed', async (t) => {
 		10, 10, 12,
 		10, 12, 10,
 	], 'position data');
-	// biome-ignore format: Readability.
-	t.deepEqual(Array.from(colorAB.getArray()), [
+		// biome-ignore format: Readability.
+		deepEqual(Array.from(colorAB.getArray()), [
 		// primA
 		255, 0, 0, 255,
 		0, 255, 0, 255,
@@ -53,35 +55,35 @@ test('unindexed', async (t) => {
 		0, 0, 0, 0,
 	], 'position data');
 
-	t.is(primAB.getIndices(), null, 'indices data');
-});
+		strictEqual(primAB.getIndices(), null, 'indices data');
+	});
 
-test('indexed', async (t) => {
-	const document = new Document().setLogger(logger);
-	const [primA, positionA, colorA] = createPrimA(document);
-	const [primB] = createPrimB(document);
+	test('indexed', async () => {
+		const document = new Document().setLogger(logger);
+		const [primA, positionA, colorA] = createPrimA(document);
+		const [primB] = createPrimB(document);
 
-	const indicesA = document.createAccessor().setArray(new Uint16Array([0, 2, 4]));
-	const indicesB = document.createAccessor().setArray(new Uint16Array([0, 1, 2]));
+		const indicesA = document.createAccessor().setArray(new Uint16Array([0, 2, 4]));
+		const indicesB = document.createAccessor().setArray(new Uint16Array([0, 1, 2]));
 
-	primA.setIndices(indicesA);
-	primB.setIndices(indicesB);
+		primA.setIndices(indicesA);
+		primB.setIndices(indicesB);
 
-	const primAB = joinPrimitives([primA, primB]);
+		const primAB = joinPrimitives([primA, primB]);
 
-	t.false(primA.isDisposed(), 'primA alive');
-	t.false(primB.isDisposed(), 'primB alive');
+		strictEqual(primA.isDisposed(), false, 'primA alive');
+		strictEqual(primB.isDisposed(), false, 'primB alive');
 
-	const positionAB = primAB.getAttribute('POSITION');
-	const colorAB = primAB.getAttribute('COLOR_0');
+		const positionAB = primAB.getAttribute('POSITION');
+		const colorAB = primAB.getAttribute('COLOR_0');
 
-	t.is(positionAB.getType(), positionA.getType(), 'position.type');
-	t.is(colorAB.getType(), colorA.getType(), 'color.type');
-	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
-	t.is(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
+		strictEqual(positionAB.getType(), positionA.getType(), 'position.type');
+		strictEqual(colorAB.getType(), colorA.getType(), 'color.type');
+		strictEqual(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
+		strictEqual(colorAB.getComponentType(), colorA.getComponentType(), 'color.componentType');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(Array.from(positionAB.getArray()), [
+		// biome-ignore format: Readability.
+		deepEqual(Array.from(positionAB.getArray()), [
 		// primA
 		0, 0, 0,
 		// 0, 0, 1, ❌
@@ -94,8 +96,8 @@ test('indexed', async (t) => {
 		10, 10, 12,
 		10, 12, 10,
 	], 'position data');
-	// biome-ignore format: Readability.
-	t.deepEqual(Array.from(colorAB.getArray()), [
+		// biome-ignore format: Readability.
+		deepEqual(Array.from(colorAB.getArray()), [
 		// primA
 		255, 0, 0, 255,
 		// 0, 255, 0, 255, ❌
@@ -109,29 +111,31 @@ test('indexed', async (t) => {
 		0, 0, 0, 0,
 	], 'position data');
 
-	t.deepEqual(Array.from(primAB.getIndices().getArray()), [0, 1, 2, 3, 4, 5], 'indices data');
-});
+		deepEqual(Array.from(primAB.getIndices().getArray()), [0, 1, 2, 3, 4, 5], 'indices data');
+	});
 
-test('indexed - primitive restart', async (t) => {
-	const document = new Document().setLogger(logger);
-	document.createExtension(KHRMeshPrimitiveRestart).setRequired(true);
+	test('indexed - primitive restart', async () => {
+		const document = new Document().setLogger(logger);
+		document.createExtension(KHRMeshPrimitiveRestart).setRequired(true);
 
-	const [primA, positionA] = createPrimA(document);
-	const [primB] = createPrimB(document);
+		const [primA, positionA] = createPrimA(document);
+		const [primB] = createPrimB(document);
 
-	const RESTART_U16 = 2 ** 16 - 1;
+		const RESTART_U16 = 2 ** 16 - 1;
 
-	const indicesA = document.createAccessor().setArray(new Uint16Array([0, 1, RESTART_U16, 2, 3, RESTART_U16, 4, 5]));
-	const indicesB = document.createAccessor().setArray(new Uint16Array([0, 1, RESTART_U16, 0, 2, RESTART_U16]));
+		const indicesA = document
+			.createAccessor()
+			.setArray(new Uint16Array([0, 1, RESTART_U16, 2, 3, RESTART_U16, 4, 5]));
+		const indicesB = document.createAccessor().setArray(new Uint16Array([0, 1, RESTART_U16, 0, 2, RESTART_U16]));
 
-	primA.setMode(LINE_STRIP).setIndices(indicesA);
-	primB.setMode(LINE_STRIP).setIndices(indicesB);
+		primA.setMode(LINE_STRIP).setIndices(indicesA);
+		primB.setMode(LINE_STRIP).setIndices(indicesB);
 
-	const primAB = joinPrimitives([primA, primB]);
-	const indicesAB = Array.from(primAB.getIndices().getArray());
+		const primAB = joinPrimitives([primA, primB]);
+		const indicesAB = Array.from(primAB.getIndices().getArray());
 
-	// biome-ignore format: Readability.
-	t.deepEqual(indicesAB, [
+		// biome-ignore format: Readability.
+		deepEqual(indicesAB, [
 		0, 1, RESTART_U16,
 		2, 3, RESTART_U16,
 		4, 5, RESTART_U16,
@@ -139,13 +143,13 @@ test('indexed - primitive restart', async (t) => {
 		6, 8, RESTART_U16
 	], 'indices data');
 
-	const positionAB = primAB.getAttribute('POSITION');
+		const positionAB = primAB.getAttribute('POSITION');
 
-	t.is(positionAB.getType(), positionA.getType(), 'position.type');
-	t.is(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
+		strictEqual(positionAB.getType(), positionA.getType(), 'position.type');
+		strictEqual(positionAB.getComponentType(), positionA.getComponentType(), 'position.componentType');
 
-	// biome-ignore format: Readability.
-	t.deepEqual(Array.from(positionAB.getArray()), [
+		// biome-ignore format: Readability.
+		deepEqual(Array.from(positionAB.getArray()), [
 		// primA
 		0, 0, 0,
 		0, 0, 1,
@@ -158,6 +162,7 @@ test('indexed - primitive restart', async (t) => {
 		10, 10, 12,
 		10, 12, 10,
 	], 'position data');
+	});
 });
 
 /******************************************************************************

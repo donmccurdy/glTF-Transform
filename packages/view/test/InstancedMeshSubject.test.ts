@@ -1,14 +1,15 @@
+import { deepEqual, strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { DocumentView, NullImageProvider } from '@gltf-transform/view';
-import test from 'ava';
 import { JSDOM } from 'jsdom';
 import type { Group, InstancedMesh, Object3D } from 'three';
 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('InstancedMeshSubject', async (t) => {
+test('InstancedMeshSubject', async () => {
 	const document = new Document();
 	const batchExt = document.createExtension(EXTMeshGPUInstancing);
 	const batchTranslation = document
@@ -29,10 +30,10 @@ test('InstancedMeshSubject', async (t) => {
 	const group = node.children[0] as Group;
 	const mesh = group.children[0] as InstancedMesh;
 
-	t.deepEqual(node.children.map(toType), ['Group'], 'node.children → [Group]');
-	t.deepEqual(group.children.map(toType), ['Mesh'], 'group.children → [Mesh]');
-	t.is(mesh.isInstancedMesh, true, 'isInstancedMesh → true');
-	t.is(mesh.count, 3, 'count → 3');
+	deepEqual(node.children.map(toType), ['Group'], 'node.children → [Group]');
+	deepEqual(group.children.map(toType), ['Mesh'], 'group.children → [Mesh]');
+	strictEqual(mesh.isInstancedMesh, true, 'isInstancedMesh → true');
+	strictEqual(mesh.count, 3, 'count → 3');
 });
 
 function toType(object: Object3D): string {

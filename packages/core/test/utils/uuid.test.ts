@@ -1,15 +1,16 @@
+import { strictEqual } from 'node:assert/strict';
+import { test } from 'node:test';
 import { uuid } from '@gltf-transform/core';
-import test from 'ava';
 
-test('basic', (t) => {
+test('basic', () => {
 	const set = new Set();
 	for (let i = 0; i < 1000; i++) {
 		set.add(uuid());
 	}
-	t.is(set.size, 1000, 'generates 1000 unique IDs');
+	strictEqual(set.size, 1000, 'generates 1000 unique IDs');
 });
 
-test('conflict', (t) => {
+test('conflict', () => {
 	const { random } = Math;
 
 	// Number of elements must match ID length.
@@ -23,7 +24,7 @@ test('conflict', (t) => {
 	for (let i = 0; i < 3; i++) {
 		set.add(uuid());
 	}
-	t.is(set.size, 3, 'generates 3 unique IDs');
+	strictEqual(set.size, 3, 'generates 3 unique IDs');
 
 	Math.random = random;
 });
