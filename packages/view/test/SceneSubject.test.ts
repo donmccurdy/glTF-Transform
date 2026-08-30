@@ -7,7 +7,7 @@ import { JSDOM } from 'jsdom';
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('SceneBinding', async () => {
+test('SceneSubject', async () => {
 	const document = new Document();
 	let nodeDef: Node;
 	const sceneDef = document

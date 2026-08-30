@@ -15,7 +15,7 @@ Sesame snaps sweet roll icing macaroon croissant jujubes pastry apple pie
 chocolate cake. Liquorice jelly-o pie jujubes fruitcake chocolate bar jelly-o
 tart. Marshmallow icing tart tootsie roll brownie dragée.`.trim();
 
-describe('ktxdecompress', () => {
+describe('util', () => {
 	test('formatBytes', () => {
 		strictEqual(formatBytes(1000), '1 KB', 'formatBytes');
 	});

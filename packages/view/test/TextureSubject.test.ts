@@ -8,7 +8,7 @@ import { type MeshStandardMaterial, NoColorSpace, SRGBColorSpace, type Texture }
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-test('TextureBinding', async () => {
+test('TextureSubject', async () => {
 	const document = new Document();
 	const textureDef = document
 		.createTexture('MyTexture')

@@ -12,6 +12,7 @@ import {
 import { logger } from '@gltf-transform/test-utils';
 
 const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
+
 describe('getVertexCount', () => {
 	test('method = RENDER', async (_t) => {
 		const document = new Document().setLogger(logger);
