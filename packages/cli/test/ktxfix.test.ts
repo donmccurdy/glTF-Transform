@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('ktxfix', () => {
+describe('cli::ktxfix', () => {
 	test('repair', async () => {
 		const document = new Document().setLogger(logger);
 		const material = document.createMaterial();

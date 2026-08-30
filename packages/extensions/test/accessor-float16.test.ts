@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRAccessorFloat16', () => {
+describe('extensions::KHRAccessorFloat16', () => {
 	test('basic', async () => {
 		// TODO(v5): Remove after Node.js v22 reaches EOL, or adds Float16Array support.
 		if (typeof Float16Array === 'undefined') return;

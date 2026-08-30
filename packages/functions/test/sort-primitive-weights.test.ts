@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { sortPrimitiveWeights } from '@gltf-transform/functions';
 import { round } from '@gltf-transform/test-utils';
 
-describe('sortPrimitiveWeights', () => {
+describe('functions::sortPrimitiveWeights', () => {
 	test('unlimited weights', async () => {
 		const prim = createSkinnedPrimitive();
 

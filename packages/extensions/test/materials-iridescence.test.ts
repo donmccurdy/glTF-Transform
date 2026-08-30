@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsIridescence', () => {
+describe('extensions::KHRMaterialsIridescence', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

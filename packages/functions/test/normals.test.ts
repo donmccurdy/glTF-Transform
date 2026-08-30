@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { normals } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('normals', () => {
+describe('functions::normals', () => {
 	test('basic', async () => {
 		const doc = new Document().setLogger(logger);
 		const indicesArray = new Uint16Array([0, 1, 2]);

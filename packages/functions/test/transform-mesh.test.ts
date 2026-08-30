@@ -4,7 +4,7 @@ import { type bbox, Document, Primitive, type PrimitiveTarget, type vec3 } from 
 import { transformMesh, transformPrimitive } from '@gltf-transform/functions';
 import { logger, mat4, round, roundBbox } from '@gltf-transform/test-utils';
 
-describe('transformMesh', () => {
+describe('functions::transformMesh', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		const prim = createPrimitive(document);

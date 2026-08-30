@@ -19,7 +19,7 @@ const EXPECTED_AVIF = new Uint8Array([106, 107, 108]); // larger than original; 
 
 const NON_SQUARE = ndarray(new Uint8Array(256 * 512 * 4), [256, 512, 4]);
 
-describe('textureCompress', () => {
+describe('functions::textureCompress', () => {
 	test('unknown format', async () => {
 		const { encoder, calls } = createMockEncoder();
 		const document = new Document().setLogger(logger);

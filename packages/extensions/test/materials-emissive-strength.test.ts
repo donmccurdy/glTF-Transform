@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsEmissiveStrength', () => {
+describe('extensions::KHRMaterialsEmissiveStrength', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const emissiveStrengthExtension = doc.createExtension(KHRMaterialsEmissiveStrength);

@@ -22,7 +22,7 @@ const MOCK_JSONLD_PACKET = {
 	'xmpRights:Marked': true,
 };
 
-describe('KHRXMP', () => {
+describe('extensions::KHRXMP', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const xmpExtension = document.createExtension(KHRXMP);

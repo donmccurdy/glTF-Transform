@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { flatten } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('flatten', () => {
+describe('functions::flatten', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		const mesh = document.createMesh();

@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsAnisotropy', () => {
+describe('extensions::KHRMaterialsAnisotropy', () => {
 	test('factors', async () => {
 		const document = new Document();
 		const io = await createPlatformIO();

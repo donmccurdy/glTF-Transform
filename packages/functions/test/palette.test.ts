@@ -6,7 +6,7 @@ import { palette } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import { getPixels } from 'ndarray-pixels';
 
-describe('palette', () => {
+describe('functions::palette', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		const [materialA, materialB, materialC, materialD, materialE] = createMaterials(

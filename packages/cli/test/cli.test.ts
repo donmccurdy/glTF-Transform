@@ -14,7 +14,7 @@ tmp.setGracefulCleanup();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('cli', () => {
+describe('cli::cli', () => {
 	test('copy', async () => {
 		await programReady;
 		const io = new NodeIO();

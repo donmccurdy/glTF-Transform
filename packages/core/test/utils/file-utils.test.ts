@@ -2,7 +2,7 @@ import { strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { FileUtils } from '@gltf-transform/core';
 
-describe('FileUtils', () => {
+describe('core::FileUtils', () => {
 	test('basename', () => {
 		strictEqual(FileUtils.basename('http://foo.com/path/to/index.html'), 'index', 'URI');
 		strictEqual(FileUtils.basename('http://foo.com/path/to/index.test.suffix.html'), 'index.test.suffix', 'URI');

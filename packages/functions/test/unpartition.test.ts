@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { unpartition } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('unpartition', () => {
+describe('functions::unpartition', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const root = document.getRoot();

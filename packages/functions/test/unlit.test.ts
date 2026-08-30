@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { unlit } from '@gltf-transform/functions';
 
-describe('unlit', () => {
+describe('functions::unlit', () => {
 	test('basic', async () => {
 		const document = new Document();
 		document.createMaterial();

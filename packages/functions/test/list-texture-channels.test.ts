@@ -6,7 +6,7 @@ import { getTextureChannelMask, listTextureChannels } from '@gltf-transform/func
 
 const { R, G, B, A } = TextureChannel;
 
-describe('listTextureChannels', () => {
+describe('functions::listTextureChannels', () => {
 	test('listTextureChannels', () => {
 		const document = new Document();
 		const textureA = document.createTexture();

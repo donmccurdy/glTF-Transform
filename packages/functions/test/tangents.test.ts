@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { tangents } from '@gltf-transform/functions';
 
-describe('tangents', () => {
+describe('functions::tangents', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const positionArray = new Float32Array([1, 1, 1]);

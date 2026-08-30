@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsDispersion', () => {
+describe('extensions::KHRMaterialsDispersion', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const dispersionExtension = doc.createExtension(KHRMaterialsDispersion);

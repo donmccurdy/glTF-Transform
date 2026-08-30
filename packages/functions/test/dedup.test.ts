@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('dedup', () => {
+describe('functions::dedup', () => {
 	test('accessors - geometry', async () => {
 		const io = new NodeIO();
 		const document = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));

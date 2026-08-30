@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsVariants, type MappingList } from '@gltf-transform/extensions';
 
-describe('KHRMaterialsVariants', () => {
+describe('extensions::KHRMaterialsVariants', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const variantsExtension = doc.createExtension(KHRMaterialsVariants);

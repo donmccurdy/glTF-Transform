@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { listNodeScenes } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('listNodeScenes', () => {
+describe('functions::listNodeScenes', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		const nodeA = document.createNode('A').setTranslation([2, 0, 0]);

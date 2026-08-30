@@ -18,7 +18,7 @@ import type {
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-describe('MaterialSubject', () => {
+describe('view::MaterialSubject', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const texDef1 = document.createTexture('Tex1').setMimeType('image/png').setImage(new Uint8Array(0));

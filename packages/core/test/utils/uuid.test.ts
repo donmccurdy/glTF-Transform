@@ -2,7 +2,7 @@ import { strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { uuid } from '@gltf-transform/core';
 
-describe('uuid', () => {
+describe('core::uuid', () => {
 	test('basic', () => {
 		const set = new Set();
 		for (let i = 0; i < 1000; i++) {

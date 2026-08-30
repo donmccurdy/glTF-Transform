@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Accessor, Document, Primitive } from '@gltf-transform/core';
 import { unweld } from '@gltf-transform/functions';
 
-describe('unweld', () => {
+describe('functions::unweld', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const positionArray = new Float32Array([0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 1, 0, 0, -1, 0, 1, 0, 0, -1, 0, 0]);

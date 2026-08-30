@@ -2,7 +2,7 @@ import { deepEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { Accessor, Document, getBounds, Primitive } from '@gltf-transform/core';
 
-describe('getBounds', () => {
+describe('functions::getBounds', () => {
 	test('unindexed', () => {
 		const document = new Document();
 		const position = document

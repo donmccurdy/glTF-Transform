@@ -13,7 +13,7 @@ import { logger } from '@gltf-transform/test-utils';
 
 const { RENDER, RENDER_CACHED, UPLOAD, UPLOAD_NAIVE, UNUSED } = VertexCountMethod;
 
-describe('getVertexCount', () => {
+describe('functions::getVertexCount', () => {
 	test('method = RENDER', async (_t) => {
 		const document = new Document().setLogger(logger);
 		strictEqual(getSceneVertexCount(createSceneBasic(document), RENDER), 32 * 4, 'basic');

@@ -10,7 +10,7 @@ import { savePixels } from 'ndarray-pixels';
 const PIXELS_SOLID = ndarray(new Uint8Array([128, 128, 192, 1]), [1, 1, 4]);
 const PIXELS_NON_SOLID = ndarray(new Uint8Array([64, 64, 128, 1, 32, 32, 128, 1]), [1, 2, 4]);
 
-describe('prune', () => {
+describe('functions::prune', () => {
 	test('properties', async () => {
 		const doc = new Document().setLogger(logger);
 

@@ -12,7 +12,7 @@ import {
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
-describe('convertPrimitiveToMode', () => {
+describe('functions::convertPrimitiveToMode', () => {
 	test('line-strip to lines', async () => {
 		const document = new Document().setLogger(logger);
 		const prim = createLineStripPrim(document);

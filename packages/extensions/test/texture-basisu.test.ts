@@ -10,7 +10,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-describe('KHRTextureBasisu', () => {
+describe('extensions::KHRTextureBasisu', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

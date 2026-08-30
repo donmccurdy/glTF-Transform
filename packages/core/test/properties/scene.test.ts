@@ -5,7 +5,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const toName = (p: Property) => p.getName();
 
-describe('Scene', () => {
+describe('core::Scene', () => {
 	test('parent', () => {
 		const document = new Document();
 		const sceneA = document.createScene('SceneA');

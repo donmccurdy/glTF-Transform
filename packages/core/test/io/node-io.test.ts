@@ -24,7 +24,7 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 	};
 };
 
-describe('NodeIO', () => {
+describe('core::NodeIO', () => {
 	test('read glb', async () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;

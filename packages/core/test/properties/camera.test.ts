@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Camera', () => {
+describe('core::Camera', () => {
 	test('basic', async () => {
 		const document = new Document();
 

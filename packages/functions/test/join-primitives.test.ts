@@ -7,7 +7,7 @@ import { logger } from '@gltf-transform/test-utils';
 
 const { LINE_STRIP } = Primitive.Mode;
 
-describe('joinPrimitives', () => {
+describe('functions::joinPrimitives', () => {
 	test('unindexed', async () => {
 		const document = new Document().setLogger(logger);
 		const [primA, positionA, colorA] = createPrimA(document);

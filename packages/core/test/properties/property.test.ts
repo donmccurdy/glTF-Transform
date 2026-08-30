@@ -2,7 +2,7 @@ import { deepEqual, ok, strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { Document, type vec3 } from '@gltf-transform/core';
 
-describe('Property', () => {
+describe('core::Property', () => {
 	test('equals', async () => {
 		const document = new Document();
 		const nodeA = document.createNode();

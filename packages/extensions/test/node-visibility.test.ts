@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRNodeVisibility', () => {
+describe('extensions::KHRNodeVisibility', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const visibilityExtension = document.createExtension(KHRNodeVisibility);

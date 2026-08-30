@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Accessor, Document, type GLTF, Primitive, type Property, VertexLayout } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Mesh', () => {
+describe('core::Mesh', () => {
 	test('basic', () => {
 		const document = new Document();
 		const mesh = document.createMesh('mesh');

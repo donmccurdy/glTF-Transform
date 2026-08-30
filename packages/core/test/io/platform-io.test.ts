@@ -4,7 +4,7 @@ import { BufferUtils, Document, Format, GLB_BUFFER, type GLTF, type JSONDocument
 import { createPlatformIO, logger, resolve } from '@gltf-transform/test-utils';
 import fs from 'fs';
 
-describe('PlatformIO', () => {
+describe('core::PlatformIO', () => {
 	test('common', async () => {
 		const io = await createPlatformIO();
 		await rejects(

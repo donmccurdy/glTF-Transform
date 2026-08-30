@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Accessor, Document, getBounds } from '@gltf-transform/core';
 import { center } from '@gltf-transform/functions';
 
-describe('center', () => {
+describe('functions::center', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const position = doc

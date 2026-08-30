@@ -18,7 +18,7 @@ function mockFetch(response: unknown): string[] {
 	return paths;
 }
 
-describe('WebIO', () => {
+describe('core::WebIO', () => {
 	test('read glb', async () => {
 		mockWindow('https://www.example.com/test');
 		mockFetch({

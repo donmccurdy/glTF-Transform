@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { draco } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('draco', () => {
+describe('functions::draco', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		await document.transform(draco({ method: 'edgebreaker' }));

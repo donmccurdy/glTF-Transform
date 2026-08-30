@@ -10,7 +10,7 @@ const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('EXTMeshoptCompression', () => {
+describe('extensions::EXTMeshoptCompression', () => {
 	test('decoding', async () => {
 		const io = await createEncoderIO();
 

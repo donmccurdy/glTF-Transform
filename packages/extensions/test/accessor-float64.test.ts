@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRAccessorFloat64', () => {
+describe('extensions::KHRAccessorFloat64', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const io = new NodeIO().registerExtensions([KHRAccessorFloat64]);

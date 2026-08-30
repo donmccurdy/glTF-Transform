@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('EXTStructuralMetadata', () => {
+describe('extensions::EXTStructuralMetadata', () => {
 	test('round trip', async () => {
 		const io = (await createPlatformIO()).registerExtensions([EXTStructuralMetadata]);
 

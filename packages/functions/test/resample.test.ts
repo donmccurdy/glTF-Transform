@@ -4,7 +4,7 @@ import { Accessor, Document } from '@gltf-transform/core';
 import { resample } from '@gltf-transform/functions';
 import { logger, quat } from '@gltf-transform/test-utils';
 
-describe('resample', () => {
+describe('functions::resample', () => {
 	test('all', async () => {
 		const doc = new Document().setLogger(logger);
 

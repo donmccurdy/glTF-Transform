@@ -7,7 +7,7 @@ import { JSDOM } from 'jsdom';
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-describe('NodeSubject', () => {
+describe('view::NodeSubject', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const nodeDef1 = document

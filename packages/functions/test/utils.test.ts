@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Accessor, Document, type GLTF, Primitive, type Transform, type TransformContext } from '@gltf-transform/core';
 import { assignDefaults, createTransform, getGLPrimitiveCount, isTransformPending } from '@gltf-transform/functions';
 
-describe('utils', () => {
+describe('functions::utils', () => {
 	test('assignDefaults', () => {
 		deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: 4 }), { a: 1, b: 4, c: 3 }, 'number ← number');
 		deepEqual(assignDefaults({ a: 1, b: 2, c: 3 }, { b: null }), { a: 1, b: null, c: 3 }, 'number ← null');

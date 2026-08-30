@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('inspect', () => {
+describe('functions::inspect', () => {
 	test('basic', async () => {
 		const io = new NodeIO();
 		const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));

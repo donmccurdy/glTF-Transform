@@ -14,7 +14,7 @@ import { dequantize } from '@gltf-transform/functions';
 
 const logger = new Logger(Logger.Verbosity.WARN);
 
-describe('dequantize', () => {
+describe('functions::dequantize', () => {
 	test('basic', async () => {
 		const doc = new Document().setLogger(logger);
 		const scene = createScene(doc);

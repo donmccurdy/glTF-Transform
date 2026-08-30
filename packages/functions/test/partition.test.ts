@@ -7,7 +7,7 @@ import path from 'path';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-describe('partition', () => {
+describe('functions::partition', () => {
 	test('basic', async () => {
 		const io = new NodeIO().setLogger(logger);
 		const document = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));

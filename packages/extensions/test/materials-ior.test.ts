@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsIOR', () => {
+describe('extensions::KHRMaterialsIOR', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const iorExtension = doc.createExtension(KHRMaterialsIOR);

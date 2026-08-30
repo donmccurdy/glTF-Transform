@@ -11,7 +11,7 @@ import { logger } from '@gltf-transform/test-utils';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('ktxdecompress', () => {
+describe('cli::ktxdecompress', () => {
 	test('decompress', async () => {
 		KHRTextureBasisu.register();
 

@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMeshPrimitiveRestart', () => {
+describe('extensions::KHRMeshPrimitiveRestart', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const primRestartExtension = document.createExtension(KHRMeshPrimitiveRestart);

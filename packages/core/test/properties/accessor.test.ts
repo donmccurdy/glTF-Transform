@@ -5,7 +5,7 @@ import { createPlatformIO, round } from '@gltf-transform/test-utils';
 
 const { FLOAT, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, BYTE, SHORT } = Accessor.ComponentType;
 
-describe('Accessor', () => {
+describe('core::Accessor', () => {
 	test('getScalar/setScalar', () => {
 		const accessor = new Document()
 			.createAccessor()

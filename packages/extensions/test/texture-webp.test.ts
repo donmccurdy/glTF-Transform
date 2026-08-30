@@ -11,7 +11,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([EXTTextureWebP]);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('EXTTextureWebP', () => {
+describe('extensions::EXTTextureWebP', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

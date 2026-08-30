@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('ImageUtils', () => {
+describe('core::ImageUtils', () => {
 	test('basic', async () => {
 		let pixels = ndarray(new Uint8Array(100 * 50 * 4), [100, 50, 4]);
 		let image = await savePixels(pixels, 'image/png');

@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document, Format, type JSONDocument, TextureInfo } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Texture', () => {
+describe('core::Texture', () => {
 	test('read', async () => {
 		const jsonDoc = {
 			json: {

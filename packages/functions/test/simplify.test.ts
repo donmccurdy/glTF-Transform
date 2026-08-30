@@ -39,7 +39,7 @@ async function createIO(): Promise<NodeIO> {
 	return io;
 }
 
-describe('simplify', () => {
+describe('functions::simplify', () => {
 	test('welded', async () => {
 		const io = await createIO();
 		const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));

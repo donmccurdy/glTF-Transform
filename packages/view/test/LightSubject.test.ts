@@ -9,7 +9,7 @@ import type { DirectionalLight, Object3D, PointLight, SpotLight } from 'three';
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-describe('LightSubject', () => {
+describe('view::LightSubject', () => {
 	test('point', async () => {
 		const document = new Document();
 		const lightExt = document.createExtension(KHRLightsPunctual);

@@ -8,7 +8,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([EXTMeshGPUInstancing]);
 
-describe('EXTMeshGPUInstancing', () => {
+describe('extensions::EXTMeshGPUInstancing', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const data = doc

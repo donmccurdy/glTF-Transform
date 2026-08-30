@@ -9,7 +9,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([KHRTextureTransform]);
 
-describe('KHRTextureTransform', () => {
+describe('extensions::KHRTextureTransform', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

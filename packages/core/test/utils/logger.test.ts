@@ -2,7 +2,7 @@ import { strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { Logger } from '@gltf-transform/core';
 
-describe('Logger', () => {
+describe('core::Logger', () => {
 	test('basic', () => {
 		const { debug, info, warn, error } = console;
 

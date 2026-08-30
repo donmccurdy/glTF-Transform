@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { clearNodeTransform } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('clearNodeTransform', () => {
+describe('functions::clearNodeTransform', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 

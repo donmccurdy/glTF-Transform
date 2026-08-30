@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMeshQuantization', () => {
+describe('extensions::KHRMeshQuantization', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const quantizationExtension = doc.createExtension(KHRMeshQuantization);

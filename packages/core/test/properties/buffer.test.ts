@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Buffer', () => {
+describe('core::Buffer', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const buffer1 = doc.createBuffer().setURI('mybuffer.bin');

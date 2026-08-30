@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Accessor, AnimationChannel, Document } from '@gltf-transform/core';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Skin', () => {
+describe('core::Skin', () => {
 	test('basic', async () => {
 		const document = new Document();
 

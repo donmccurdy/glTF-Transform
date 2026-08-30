@@ -8,7 +8,7 @@ import { type BufferGeometry, Group, type Mesh, type MeshStandardMaterial, type 
 global.document = new JSDOM().window.document;
 const imageProvider = new NullImageProvider();
 
-describe('DocumentView', () => {
+describe('view::DocumentView', () => {
 	test('constructor', () => {
 		ok(new DocumentView(new Document(), { imageProvider }), 'constructor');
 	});

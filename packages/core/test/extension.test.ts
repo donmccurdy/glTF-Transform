@@ -46,7 +46,7 @@ class Gizmo extends ExtensionProperty {
 GizmoExtension.EXTENSION_NAME = EXTENSION_NAME;
 Gizmo.EXTENSION_NAME = EXTENSION_NAME;
 
-describe('Extension', () => {
+describe('core::Extension', () => {
 	test('list', () => {
 		const document = new Document();
 		const extension = document.createExtension(GizmoExtension);

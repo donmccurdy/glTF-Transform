@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { sequence } from '@gltf-transform/functions';
 
-describe('sequence', () => {
+describe('functions::sequence', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const root = doc.getRoot();

@@ -4,7 +4,7 @@ import { Document } from '@gltf-transform/core';
 import { KHRMaterialsSheen } from '@gltf-transform/extensions';
 import { listTextureSlots } from '@gltf-transform/functions';
 
-describe('listTextureSlots', () => {
+describe('functions::listTextureSlots', () => {
 	test('basic', () => {
 		const document = new Document();
 		const textureA = document.createTexture();

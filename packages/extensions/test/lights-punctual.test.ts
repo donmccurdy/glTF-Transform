@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRLightsPunctual', () => {
+describe('extensions::KHRLightsPunctual', () => {
 	test('basic', async () => {
 		const document = new Document();
 		const lightsExtension = document.createExtension(KHRLightsPunctual);

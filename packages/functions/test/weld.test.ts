@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('weld', () => {
+describe('functions::weld', () => {
 	test('tolerance=0', async () => {
 		const doc = new Document().setLogger(logger);
 		// biome-ignore format: Readability.

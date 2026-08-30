@@ -2,7 +2,7 @@ import { deepEqual, strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { ColorUtils } from '@gltf-transform/core';
 
-describe('ColorUtils', () => {
+describe('core::ColorUtils', () => {
 	test('basic', () => {
 		deepEqual(ColorUtils.hexToFactor(0xff0000, []), [1, 0, 0], 'hexToFactor');
 		deepEqual(ColorUtils.factorToHex([1, 0, 0]), 16646144, 'factorToHex');

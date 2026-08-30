@@ -23,7 +23,7 @@ const SPEC = ndarray(new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 
 // orm.G = 1 - specGloss.A * glossFactor
 const ROUGH = ndarray(new Uint8Array([0, 255, 0, 255, 0, 223, 0, 255, 0, 191, 0, 255, 0, 127, 0, 255]), [1, 4, 4]);
 
-describe('metalRough', () => {
+describe('functions::metalRough', () => {
 	test('textures', async () => {
 		const doc = new Document();
 		const baseColorTex = doc

@@ -5,7 +5,7 @@ import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import { uninstance } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 
-describe('uninstance', () => {
+describe('functions::uninstance', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		const buffer = document.createBuffer();

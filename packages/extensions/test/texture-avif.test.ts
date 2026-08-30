@@ -11,7 +11,7 @@ const WRITER_OPTIONS = { basename: 'extensionTest' };
 const io = new NodeIO().registerExtensions([EXTTextureAVIF]);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('EXTTextureAVIF', () => {
+describe('extensions::EXTTextureAVIF', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

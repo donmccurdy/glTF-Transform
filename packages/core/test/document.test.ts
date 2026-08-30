@@ -2,7 +2,7 @@ import { ok, strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 
-describe('Document', () => {
+describe('core::Document', () => {
 	test('transform', async () => {
 		const document = new Document();
 

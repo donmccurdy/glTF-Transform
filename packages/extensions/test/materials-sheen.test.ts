@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsSheen', () => {
+describe('extensions::KHRMaterialsSheen', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		doc.createBuffer();

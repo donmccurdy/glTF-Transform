@@ -4,7 +4,7 @@ import { Document, MathUtils, type mat4, type vec3, type vec4 } from '@gltf-tran
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Node', () => {
+describe('core::Node', () => {
 	test('parent', () => {
 		const document = new Document();
 		const a = document.createNode('A');

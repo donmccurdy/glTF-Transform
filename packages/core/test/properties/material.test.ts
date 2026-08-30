@@ -13,7 +13,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const { R, G, B, A } = TextureChannel;
 
-describe('Material', () => {
+describe('core::Material', () => {
 	test('properties', () => {
 		const document = new Document();
 

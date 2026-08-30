@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsDiffuseTransmission', () => {
+describe('extensions::KHRMaterialsDiffuseTransmission', () => {
 	test('basic', async () => {
 		const document = new Document();
 		document.createBuffer();

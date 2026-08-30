@@ -4,7 +4,7 @@ import { Document, type Property } from '@gltf-transform/core';
 
 const toType = (p: Property): string => p.propertyType;
 
-describe('PrimitiveTarget', () => {
+describe('core::PrimitiveTarget', () => {
 	test('basic', () => {
 		const doc = new Document();
 		const prim1 = doc.createPrimitiveTarget();

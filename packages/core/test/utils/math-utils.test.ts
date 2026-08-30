@@ -2,7 +2,7 @@ import { strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { MathUtils } from '@gltf-transform/core';
 
-describe('MathUtils', () => {
+describe('core::MathUtils', () => {
 	test('identity', () => {
 		strictEqual(MathUtils.identity(25), 25, 'identity');
 	});

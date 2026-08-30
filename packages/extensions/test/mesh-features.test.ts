@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('EXTMeshFeatures', () => {
+describe('extensions::EXTMeshFeatures', () => {
 	test('id attribute', async () => {
 		const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
 		const srcDocument = await io.read(join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf'));

@@ -5,7 +5,7 @@ import { KHRMaterialsUnlit, KHRTextureTransform, Transform, Unlit } from '@gltf-
 import { cloneDocument, copyToDocument, mergeDocuments, moveToDocument, prune } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 
-describe('DocumentUtils', () => {
+describe('functions::DocumentUtils', () => {
 	test('cloneDocument', () => {
 		const document1 = new Document().setLogger(logger);
 		document1.createMaterial('MyMaterial');

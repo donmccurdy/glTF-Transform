@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
-describe('join', () => {
+describe('functions::join', () => {
 	test('basic', async () => {
 		const io = await createPlatformIO();
 		const document = await io.read(path.join(__dirname, './in/ShapeCollection.glb'));

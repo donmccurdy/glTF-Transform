@@ -7,7 +7,7 @@ import { createPlatformIO } from '@gltf-transform/test-utils';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsClearcoat', () => {
+describe('extensions::KHRMaterialsClearcoat', () => {
 	test('factors', async () => {
 		const doc = new Document();
 		const clearcoatExtension = doc.createExtension(KHRMaterialsClearcoat);

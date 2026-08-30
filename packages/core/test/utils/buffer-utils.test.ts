@@ -6,7 +6,7 @@ const IS_NODEJS = typeof window === 'undefined';
 
 const HELLO_WORLD = 'data:application/octet-stream;base64,aGVsbG8gd29ybGQ=';
 
-describe('BufferUtils', () => {
+describe('core::BufferUtils', () => {
 	test('web', () => {
 		if (IS_NODEJS) return;
 		strictEqual(

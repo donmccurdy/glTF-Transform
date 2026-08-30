@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('KHRDracoMeshCompression', () => {
+describe('extensions::KHRDracoMeshCompression', () => {
 	test('decoding', async () => {
 		const io = await createDecoderIO();
 		const document = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));

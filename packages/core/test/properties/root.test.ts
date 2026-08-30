@@ -4,7 +4,7 @@ import { Document, type JSONDocument } from '@gltf-transform/core';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-describe('Root', () => {
+describe('core::Root', () => {
 	test('basic', () => {
 		const document = new Document();
 		const accessor = document.createAccessor();

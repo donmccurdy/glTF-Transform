@@ -21,7 +21,7 @@ for (let i = 0; i < CUBE_POSITIONS.length; i++) {
 	CUBE_POSITIONS_EXPECTED[REMAP[i] * 3 + 2] = CUBE_POSITIONS[i * 3 + 2];
 }
 
-describe('reorder', () => {
+describe('functions::reorder', () => {
 	test('no indices', async () => {
 		// Without indices, don't reorder. Need a lossy weld first.
 		const doc = new Document().setLogger(logger);

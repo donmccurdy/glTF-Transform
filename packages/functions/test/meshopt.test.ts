@@ -5,7 +5,7 @@ import { meshopt } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 import { MeshoptEncoder } from 'meshoptimizer';
 
-describe('meshopt', () => {
+describe('functions::meshopt', () => {
 	test('basic', async () => {
 		const document = new Document().setLogger(logger);
 		document.createMesh().addPrimitive(createTorusKnotPrimitive(document, { tubularSegments: 6 }));

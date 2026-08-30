@@ -5,7 +5,7 @@ import { EXTMeshGPUInstancing, type InstancedMesh } from '@gltf-transform/extens
 import { instance } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
 
-describe('instance', () => {
+describe('functions::instance', () => {
 	test('translation', async () => {
 		const doc = new Document().setLogger(logger);
 		const root = doc.getRoot();

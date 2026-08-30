@@ -6,7 +6,7 @@ import { cloneDocument } from '@gltf-transform/functions';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
-describe('KHRMaterialsUnlit', () => {
+describe('extensions::KHRMaterialsUnlit', () => {
 	test('basic', async () => {
 		const doc = new Document();
 		const unlitExtension = doc.createExtension(KHRMaterialsUnlit);

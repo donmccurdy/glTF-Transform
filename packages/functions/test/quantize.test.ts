@@ -17,7 +17,7 @@ import { EXTMeshGPUInstancing, KHRMaterialsVolume, type Volume } from '@gltf-tra
 import { quantize } from '@gltf-transform/functions';
 import { logger, round, roundBbox } from '@gltf-transform/test-utils';
 
-describe('quantize', () => {
+describe('functions::quantize', () => {
 	test('noop', async () => {
 		const document = new Document().setLogger(logger);
 		await document.transform(quantize());

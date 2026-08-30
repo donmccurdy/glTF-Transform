@@ -13,7 +13,7 @@ import * as watlas from 'watlas';
 
 await watlas.Initialize();
 
-describe('unwrap', () => {
+describe('functions::unwrap', () => {
 	test('unwrapPrimitives - unindexed', async () => {
 		const document = new Document().setLogger(logger);
 		const prim = createTorusKnotPrimitive(document, { tubularSegments: 6 });

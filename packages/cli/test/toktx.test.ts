@@ -16,7 +16,7 @@ const createImage = (size: vec2): Promise<Uint8Array> => {
 	return savePixels(pixels, 'image/png');
 };
 
-describe('toktx', () => {
+describe('cli::toktx', () => {
 	test('compress and resize', async () => {
 		strictEqual(
 			await getParams({ mode: Mode.ETC1S }, await createImage([508, 508])),
