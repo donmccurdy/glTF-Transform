@@ -75,7 +75,7 @@ node --test --watch packages/functions/test/palette.test.ts
 
 ### Debugging
 
-To use a debugger and step through tests using Chrome Developer Tools, see [_Debugging tests with Chrome DevTools_](https://github.com/avajs/ava/blob/main/docs/recipes/debugging-with-chrome-devtools.md). Add a `debugger;` statement to the body of the test, then run:
+To use a debugger and step through tests using Chrome Developer Tools, add a `debugger;` statement to the body of the test, then run:
 
 ```bash
 node --test --inspect-brk packages/functions/test/palette.test.ts
