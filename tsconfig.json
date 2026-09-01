@@ -24,6 +24,8 @@
 		// "erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"useDefineForClassFields": true,
+		// TODO(cleanup): Blocked on fix to watlas types, https://github.com/toji/watlas/pull/3.
+		"skipLibCheck": true,
 
 		// Components of "strict" mode.
 		"alwaysStrict": true,
