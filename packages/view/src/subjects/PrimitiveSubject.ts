@@ -11,6 +11,7 @@ import {
 	LineSegments,
 	type Material,
 	Mesh,
+	MeshStandardMaterial,
 	Points,
 	SkinnedMesh,
 } from 'three';
@@ -41,6 +42,13 @@ export class PrimitiveSubject extends Subject<PrimitiveDef, MeshLike> {
 		this.material.subscribe((material) => {
 			if (this.value.material !== material) {
 				this.value.material = material || DEFAULT_MATERIAL;
+				// When the primitive has no source material, apply the same
+				// flatShading adaptation that MaterialPool would normally
+				// perform, so the implicit default material doesn't render black.
+				// See https://github.com/donmccurdy/glTF-Transform/issues/1686
+				if (!material) {
+					PrimitiveSubject.applyDefaultMaterialAdaptations(this.def, this.value);
+				}
 				this.publishAll();
 			}
 		});
@@ -57,6 +65,12 @@ export class PrimitiveSubject extends Subject<PrimitiveDef, MeshLike> {
 			}
 			for (const key in nextAttributes) {
 				geometry.setAttribute(semanticToAttributeName(key), nextAttributes[key]);
+			}
+			// If the primitive uses the implicit default material and the
+			// NORMAL attribute was removed/changed, re-apply adaptations.
+			// See https://github.com/donmccurdy/glTF-Transform/issues/1686
+			if (this.value.material === DEFAULT_MATERIAL) {
+				PrimitiveSubject.applyDefaultMaterialAdaptations(this.def, this.value);
 			}
 			this.publishAll();
 		});
@@ -122,6 +136,26 @@ export class PrimitiveSubject extends Subject<PrimitiveDef, MeshLike> {
 		this.indices.dispose();
 		this.attributes.dispose();
 		super.dispose();
+	}
+
+	/**
+	 * Applies the flatShading adaptation that MaterialPool applies for
+	 * primitives that DO have a source material — but for primitives that rely
+	 * on the implicit default material (no `getMaterial()`). Without this
+	 * adaptation, a primitive without NORMAL data renders black. See
+	 * https://github.com/donmccurdy/glTF-Transform/issues/1686
+	 *
+	 * The default material is a shared singleton, so flatShading reflects the
+	 * most recently adapted primitive; `needsUpdate` must be set on every
+	 * change because flatShading is a shader-compilation parameter.
+	 */
+	private static applyDefaultMaterialAdaptations(def: PrimitiveDef, value: MeshLike): void {
+		const material = value.material as Material;
+		const hasNormal = !!def.getAttribute('NORMAL');
+		if (material instanceof MeshStandardMaterial && material.flatShading !== !hasNormal) {
+			material.flatShading = !hasNormal;
+			material.needsUpdate = true;
+		}
 	}
 }
 
