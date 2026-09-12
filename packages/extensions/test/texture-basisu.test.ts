@@ -8,10 +8,6 @@ import path from 'path';
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
-console.log('href', new URL(import.meta.url).href);
-console.log('pathname', new URL(import.meta.url).pathname);
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-console.log('dirname', __dirname);
 
 describe('extensions::KHRTextureBasisu', () => {
 	test('basic', async () => {
@@ -59,7 +55,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | etc1s', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_etc1s.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_etc1s.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
@@ -67,7 +63,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | uastc', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_uastc.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_uastc.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
@@ -75,7 +71,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | rgb8', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgb8.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_rgb8.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
@@ -83,7 +79,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | rgba8', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba8.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_rgba8.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
@@ -91,7 +87,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | rgba16', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba16_linear.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_rgba16_linear.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
@@ -99,7 +95,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | rgba32', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_rgba32_linear.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_rgba32_linear.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
@@ -107,7 +103,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | astc4x4', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_astc4x4.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_astc4x4.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
@@ -115,7 +111,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | bc1', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_bc1.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_bc1.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
@@ -123,7 +119,7 @@ describe('extensions::KHRTextureBasisu', () => {
 	});
 
 	test('image-utils | bc7', () => {
-		const ktx2 = fs.readFileSync(path.join(__dirname, 'in', '2d_bc7.ktx2'));
+		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_bc7.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
 		throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
