@@ -108,19 +108,12 @@ export class NodeIO extends PlatformIO {
 	}
 
 	protected resolve(base: string, path: string): string {
-		console.log(`resolving: "${base}", "${path}"`);
 		if (HTTPUtils.isAbsoluteURL(base) || HTTPUtils.isAbsoluteURL(path)) {
-			const httpResolve = HTTPUtils.resolve(base, path);
-			console.log(`HTTPUtils.resolve: "${httpResolve}"`);
-			return httpResolve;
+			return HTTPUtils.resolve(base, path);
 		}
-		const decoded = decodeURIComponent(path);
-		const resolved = this._path.resolve(base, decoded);
-		console.log(`path.resolve("${base}", decodeURIComponent("${path}"))`);
-		console.log(`resolved: "${decoded}", "${resolved}"`);
 		// https://github.com/KhronosGroup/glTF/issues/1449
 		// https://stackoverflow.com/a/27278490/1314762
-		return resolved;
+		return this._path.resolve(base, decodeURIComponent(path));
 	}
 
 	protected dirname(uri: string): string {
