@@ -15,11 +15,7 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 		};
 	}
 	const dirname = resolve(import.meta.dirname, '..', 'in');
-	let relPath = input.toString().replace(MOCK_DOMAIN, dirname);
-	if (process.platform === 'win32') {
-		relPath = relPath.replaceAll('/', sep);
-	}
-	console.log(`MOCK_FETCH: ${input.toString()} -> ${relPath}`);
+	const relPath = input.toString().replace(MOCK_DOMAIN, dirname).replaceAll('/', sep);
 	return {
 		arrayBuffer: () => readFile(decodeURIComponent(relPath)),
 		text: () => readFile(decodeURIComponent(relPath), 'utf8'),
@@ -60,7 +56,9 @@ describe('core::NodeIO', () => {
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
-			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN);
+			const basepath = inputURI
+				.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN)
+				.replaceAll('\\', '/');
 			const document = await io.read(basepath);
 
 			ok(document, `Read "${basepath}".`);
@@ -144,10 +142,6 @@ describe('core::NodeIO', () => {
 
 	test('resource URI encoding', async () => {
 		if (environment !== Environment.NODE) return;
-
-		// Windows does not, apparently, support Unicode filenames.
-		if (process.platform === 'win32') return;
-
 		const io = (await createPlatformIO()) as NodeIO;
 
 		const srcDir = resolve(import.meta.dirname, '..', 'in', 'EncodingTest');
