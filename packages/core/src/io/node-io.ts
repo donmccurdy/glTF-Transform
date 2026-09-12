@@ -116,6 +116,7 @@ export class NodeIO extends PlatformIO {
 		}
 		const decoded = decodeURIComponent(path);
 		const resolved = this._path.resolve(base, decoded);
+		console.log(`path.resolve("${base}", decodeURIComponent("${path}"))`);
 		console.log(`resolved: "${decoded}", "${resolved}"`);
 		// https://github.com/KhronosGroup/glTF/issues/1449
 		// https://stackoverflow.com/a/27278490/1314762
