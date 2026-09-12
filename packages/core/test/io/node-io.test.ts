@@ -17,7 +17,7 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 	const dirname = resolve(import.meta.dirname, '..', 'in');
 	let relPath = input.toString().replace(MOCK_DOMAIN, dirname);
 	if (process.platform === 'win32') {
-		relPath = relPath.replace('/', sep);
+		relPath = relPath.replaceAll('/', sep);
 	}
 	console.log(`MOCK_FETCH: ${input.toString()} -> ${relPath}`);
 	return {
@@ -74,7 +74,9 @@ describe('core::NodeIO', () => {
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
-			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN).replace('\\', '/');
+			const basepath = inputURI
+				.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN)
+				.replaceAll('\\', '/');
 			const document = await io.read(basepath);
 
 			ok(document, `Read "${basepath}".`);
