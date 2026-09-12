@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 describe('functions::inspect', () => {
 	test('basic', async () => {
 		const io = new NodeIO();
-		const doc = await io.read(path.join(__dirname, 'in/TwoCubes.glb'));
+		const doc = await io.read(path.join(__dirname, 'in', 'TwoCubes.glb'));
 		doc.setLogger(logger);
 
 		doc.createAnimation('TestAnim');
