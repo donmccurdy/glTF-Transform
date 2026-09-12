@@ -1,8 +1,6 @@
 import { deepEqual, ok, rejects, strictEqual } from 'node:assert/strict';
 import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { sep as posixSep } from 'node:path/posix';
-import { sep as win32Sep } from 'node:path/win32';
 import { describe, test } from 'node:test';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
@@ -73,9 +71,7 @@ describe('core::NodeIO', () => {
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
-			const basepath = inputURI
-				.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN)
-				.replace(win32Sep, posixSep);
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN).replace('\\', '/');
 			const document = await io.read(basepath);
 
 			ok(document, `Read "${basepath}".`);
