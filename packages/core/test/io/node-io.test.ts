@@ -16,6 +16,7 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 	}
 	const dirname = resolve(import.meta.dirname, '..', 'in');
 	const relPath = input.toString().replace(MOCK_DOMAIN, dirname);
+	console.log(`MOCK_FETCH: ${input.toString()} -> ${relPath}`);
 	return {
 		arrayBuffer: () => readFile(decodeURIComponent(relPath)),
 		text: () => readFile(decodeURIComponent(relPath), 'utf8'),
