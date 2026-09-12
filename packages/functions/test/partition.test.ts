@@ -1,16 +1,14 @@
 import { deepEqual, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { partition } from '@gltf-transform/functions';
 import { createTorusKnotPrimitive, logger } from '@gltf-transform/test-utils';
-import path from 'path';
-
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 describe('functions::partition', () => {
 	test('basic', async () => {
 		const io = new NodeIO().setLogger(logger);
-		const document = await io.read(path.join(__dirname, 'in', 'TwoCubes.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'TwoCubes.glb'));
 		document.setLogger(logger);
 		strictEqual(document.getRoot().listBuffers().length, 1, 'initialized with one buffer');
 

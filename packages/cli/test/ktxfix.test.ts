@@ -5,10 +5,7 @@ import { Document, type Texture } from '@gltf-transform/core';
 import { logger } from '@gltf-transform/test-utils';
 import fs from 'fs';
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import path from 'path';
 
 describe('cli::ktxfix', () => {
 	test('repair', async () => {
@@ -17,7 +14,7 @@ describe('cli::ktxfix', () => {
 		const texture = document
 			.createTexture()
 			.setMimeType('image/ktx2')
-			.setImage(fs.readFileSync(path.join(__dirname, 'in', 'test.ktx2')));
+			.setImage(fs.readFileSync(path.resolve(import.meta.dirname, 'in', 'test.ktx2')));
 
 		strictEqual(getColorPrimaries(texture), KHR_DF_PRIMARIES_BT709, 'initial - sRGB');
 

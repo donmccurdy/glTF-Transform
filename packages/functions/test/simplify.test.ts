@@ -21,10 +21,7 @@ import {
 } from '@gltf-transform/test-utils';
 import draco3d from 'draco3dgltf';
 import { MeshoptSimplifier } from 'meshoptimizer';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import path from 'path';
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES } = Primitive.Mode;
 
@@ -42,7 +39,7 @@ async function createIO(): Promise<NodeIO> {
 describe('functions::simplify', () => {
 	test('welded', async () => {
 		const io = await createIO();
-		const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'DenseSphere.glb'));
 		const scene = document.getRoot().getDefaultScene()!;
 
 		const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
@@ -60,7 +57,7 @@ describe('functions::simplify', () => {
 
 	test('unwelded', async () => {
 		const io = await createIO();
-		const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'DenseSphere.glb'));
 		const scene = document.getRoot().getDefaultScene()!;
 
 		const srcCount = getSceneVertexCount(scene, VertexCountMethod.UPLOAD_NAIVE);
@@ -78,7 +75,7 @@ describe('functions::simplify', () => {
 
 	test('shared accessors', async () => {
 		const io = await createIO();
-		const document = await io.read(path.join(__dirname, 'in', 'DenseSphere.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'DenseSphere.glb'));
 
 		// Remove existing nodes.
 		const scene = document.getRoot().getDefaultScene()!;

@@ -6,13 +6,10 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
 import fs from 'fs';
 import { MeshoptDecoder } from 'meshoptimizer';
-import path, { dirname } from 'path';
+import path from 'path';
 import tmp from 'tmp';
-import { fileURLToPath } from 'url';
 
 tmp.setGracefulCleanup();
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('cli::cli', () => {
 	test('copy', async () => {
@@ -40,7 +37,7 @@ describe('cli::cli', () => {
 		const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
 			'meshopt.decoder': MeshoptDecoder,
 		});
-		const input = path.join(__dirname, 'in', 'chr_knight.glb');
+		const input = path.resolve(import.meta.dirname, 'in', 'chr_knight.glb');
 		const output = tmp.tmpNameSync({ postfix: '.glb' });
 
 		return program.exec(['meshopt', input, output], { silent: true }).then(async () => {
@@ -55,7 +52,7 @@ describe('cli::cli', () => {
 			'draco3d.decoder': await draco3d.createDecoderModule(),
 			'draco3d.encoder': await draco3d.createEncoderModule(),
 		});
-		const input = path.join(__dirname, 'in', 'chr_knight.glb');
+		const input = path.resolve(import.meta.dirname, 'in', 'chr_knight.glb');
 		const output = tmp.tmpNameSync({ postfix: '.glb' });
 
 		return program.exec(['draco', input, output], { silent: true }).then(async () => {
@@ -70,7 +67,7 @@ describe('cli::cli', () => {
 		const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
 			'meshopt.decoder': MeshoptDecoder,
 		});
-		const input = path.join(__dirname, 'in', 'chr_knight.glb');
+		const input = path.resolve(import.meta.dirname, 'in', 'chr_knight.glb');
 		const output = tmp.tmpNameSync({ postfix: '.glb' });
 
 		return program.exec(['optimize', input, output], { silent: true }).then(async () => {

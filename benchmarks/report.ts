@@ -9,7 +9,6 @@ import semver from 'semver';
 import type { Bench } from 'tinybench';
 import { max } from './utils.ts';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const formatTime = (ms: number) => Number(ms.toFixed(4));
 const getCPUIdentifier = () => os.cpus()[0].model.toLowerCase().replace(/\W+/g, '-');
 const semverSort = (a: { version: string }, b: { version: string }): number => {
@@ -18,7 +17,7 @@ const semverSort = (a: { version: string }, b: { version: string }): number => {
 	return semver.gt(a.version, b.version) ? 1 : -1;
 };
 
-const RESULTS_PATH = resolve(__dirname, 'results', `${getCPUIdentifier()}.csv`);
+const RESULTS_PATH = resolve(import.meta.dirname, 'results', `${getCPUIdentifier()}.csv`);
 
 type BenchResult = Record<string, unknown> & { version: string };
 

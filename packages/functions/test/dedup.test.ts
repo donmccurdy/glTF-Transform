@@ -1,19 +1,16 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, NodeIO, type Property, PropertyType } from '@gltf-transform/core';
 import { KHRMaterialsTransmission } from '@gltf-transform/extensions';
 import { dedup } from '@gltf-transform/functions';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('functions::dedup', () => {
 	test('accessors - geometry', async () => {
 		const io = new NodeIO();
-		const document = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in/many-cubes.gltf'));
 		strictEqual(document.getRoot().listAccessors().length, 1503, 'begins with duplicate accessors');
 
 		dedup({ propertyTypes: [PropertyType.TEXTURE] })(document);
@@ -114,7 +111,7 @@ describe('functions::dedup', () => {
 
 	test('meshes', async () => {
 		const io = new NodeIO();
-		const document = await io.read(path.join(__dirname, 'in/many-cubes.gltf'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in/many-cubes.gltf'));
 		const root = document.getRoot();
 		strictEqual(root.listMeshes().length, 501, 'begins with duplicate meshes');
 

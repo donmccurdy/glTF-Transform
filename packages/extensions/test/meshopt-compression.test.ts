@@ -1,21 +1,18 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
 const INPUTS = ['BoxMeshopt.glb', 'BoxMeshopt.gltf'];
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('extensions::EXTMeshoptCompression', () => {
 	test('decoding', async () => {
 		const io = await createEncoderIO();
 
 		for (const input of INPUTS) {
-			const doc = await io.read(path.join(__dirname, 'in', input));
+			const doc = await io.read(path.resolve(import.meta.dirname, 'in', input));
 			const bbox = getBounds(doc.getRoot().listScenes()[0]);
 			deepEqual(
 				bbox.min.map((v) => +v.toFixed(3)),
@@ -33,7 +30,7 @@ describe('extensions::EXTMeshoptCompression', () => {
 	test('encoding', async () => {
 		const io = await createEncoderIO();
 
-		const doc = await io.read(path.join(__dirname, 'in', 'BoxMeshopt.glb'));
+		const doc = await io.read(path.resolve(import.meta.dirname, 'in', 'BoxMeshopt.glb'));
 		const glb = await io.writeBinary(doc);
 		const rtDoc = await io.readBinary(glb);
 

@@ -1,21 +1,18 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
 import type { ChildProcess } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
-import { fileURLToPath } from 'node:url';
 import { ktxdecompress, mockCommandExists, mockSpawn, mockWaitExit } from '@gltf-transform/cli';
 import { BufferUtils, Document } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 describe('cli::ktxdecompress', () => {
 	test('decompress', async () => {
 		KHRTextureBasisu.register();
 
-		const imageKTX2 = BufferUtils.toView(await readFile(join(__dirname, 'in', 'test.ktx2')));
+		const imageKTX2 = BufferUtils.toView(await readFile(resolve(import.meta.dirname, 'in', 'test.ktx2')));
 		const imagePNG = new Uint8Array(32);
 
 		const calls = [] as string[][];

@@ -3,13 +3,11 @@ import { describe, test } from 'node:test';
 import { Document, type GLTF, ImageUtils, type JSONDocument, NodeIO } from '@gltf-transform/core';
 import { EXTTextureAVIF } from '@gltf-transform/extensions';
 import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([EXTTextureAVIF]);
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('extensions::EXTTextureAVIF', () => {
 	test('basic', async () => {
@@ -52,7 +50,7 @@ describe('extensions::EXTTextureAVIF', () => {
 	});
 
 	test('image-utils', () => {
-		const avif = fs.readFileSync(path.join(__dirname, 'in', 'test.avif'));
+		const avif = fs.readFileSync(path.resolve(import.meta.dirname, 'in', 'test.avif'));
 		const buffer = new Uint8Array([0, 1, 2, 3]);
 
 		strictEqual(ImageUtils.getSize(new Uint8Array(8), 'image/avif'), null, 'invalid');
