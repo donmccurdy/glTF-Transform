@@ -69,6 +69,7 @@ describe('core::NodeIO', () => {
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
+			console.log(inputURI);
 			const basepath = inputURI.replace(resolve(import.meta.dirname, '../in'), MOCK_DOMAIN);
 			const document = await io.read(basepath);
 
