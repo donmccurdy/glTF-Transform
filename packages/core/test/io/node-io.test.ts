@@ -137,6 +137,10 @@ describe('core::NodeIO', () => {
 
 	test('resource URI encoding', async () => {
 		if (environment !== Environment.NODE) return;
+
+		// Windows does not, apparently, support Unicode filenames.
+		if (process.platform === 'win32') return;
+
 		const io = (await createPlatformIO()) as NodeIO;
 
 		const srcDir = resolve(import.meta.dirname, '..', 'in', 'EncodingTest');
@@ -155,7 +159,7 @@ describe('core::NodeIO', () => {
 		const buffer = document.getRoot().listBuffers()[0];
 		const texture = document.getRoot().listTextures()[0];
 
-		// TODO(v4): For backward-compatibility, URIs remain encoded in memory.
+		// TODO(v5): For backward-compatibility, URIs remain encoded in memory.
 		deepEqual(
 			[buffer.getURI(), texture.getURI()],
 			['Unicode%20❤♻ Binary.bin', 'Unicode%20❤♻ Texture.png'],
