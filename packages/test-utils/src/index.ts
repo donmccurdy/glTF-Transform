@@ -19,10 +19,6 @@ export const createPlatformIO = async (): Promise<PlatformIO> => {
 	}
 };
 
-export function resolve(path: string, base: string): string {
-	return new URL(path, base).pathname;
-}
-
 /** Creates a rounding function for given decimal precision. */
 export function round(decimals = 4): (v: number) => number {
 	const f = Math.pow(10, decimals);
