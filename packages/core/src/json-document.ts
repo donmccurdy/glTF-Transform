@@ -14,7 +14,7 @@ import type { GLTF } from './types/gltf.js';
  * Usage:
  *
  * ```ts
- * import fs from 'fs/promises';
+ * import fs from 'node:fs/promises';
  *
  * const jsonDocument = {
  * 	// glTF JSON schema.

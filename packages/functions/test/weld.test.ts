@@ -1,13 +1,10 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { type Accessor, Document, type GLTF, getBounds, Primitive } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import fs from 'fs/promises';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('functions::weld', () => {
 	test('tolerance=0', async () => {
@@ -167,7 +164,7 @@ describe('functions::weld', () => {
 	test('modes', async () => {
 		// Extracted primitive data from (unindexed) 01–06 samples:
 		// https://github.com/KhronosGroup/glTF-Asset-Generator/tree/master/Output/Positive/Mesh_PrimitiveMode
-		const datasetPath = path.resolve(__dirname, 'in/Mesh_PrimitiveMode_01_to_06.json');
+		const datasetPath = path.resolve(import.meta.dirname, 'in/Mesh_PrimitiveMode_01_to_06.json');
 		const dataset = JSON.parse(await fs.readFile(datasetPath, 'utf-8'));
 
 		for (let i = 0; i < dataset.length; i++) {

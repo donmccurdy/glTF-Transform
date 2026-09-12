@@ -1,7 +1,7 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import type { Document, ILogger, Transform } from '@gltf-transform/core';
 import { KHRXMP, type Packet } from '@gltf-transform/extensions';
-import fs from 'fs/promises';
-import path from 'path';
 import prompts, { type PromptObject } from 'prompts';
 import { XMPContext } from '../constants.js';
 

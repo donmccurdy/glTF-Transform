@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import {
 	type Buffer,
 	type Document,
@@ -9,7 +10,6 @@ import {
 	type Transform,
 } from '@gltf-transform/core';
 import { dedup, mergeDocuments, unpartition } from '@gltf-transform/functions';
-import fs from 'fs';
 
 const NAME = 'merge';
 

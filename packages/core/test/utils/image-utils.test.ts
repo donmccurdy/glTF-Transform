@@ -1,13 +1,10 @@
 import { deepEqual, strictEqual, throws } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { BufferUtils, ImageUtils } from '@gltf-transform/core';
-import fs from 'fs';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('core::ImageUtils', () => {
 	test('basic', async () => {
@@ -21,7 +18,7 @@ describe('core::ImageUtils', () => {
 	});
 
 	test('png', () => {
-		const png = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.png'));
+		const png = fs.readFileSync(path.resolve(import.meta.dirname, '..', 'in', 'test.png'));
 		const fried = BufferUtils.concat([
 			new Uint8Array(12),
 			BufferUtils.encodeText('CgBI'),
@@ -42,7 +39,7 @@ describe('core::ImageUtils', () => {
 	});
 
 	test('jpeg', () => {
-		const jpg = fs.readFileSync(path.join(__dirname, '..', 'in', 'test.jpg'));
+		const jpg = fs.readFileSync(path.resolve(import.meta.dirname, '..', 'in', 'test.jpg'));
 		const array = new Uint8Array(100);
 		const view = new DataView(array.buffer, array.byteOffset);
 

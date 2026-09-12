@@ -1,8 +1,9 @@
 import { deepEqual, ok, rejects, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import { BufferUtils, Document, Format, GLB_BUFFER, type GLTF, type JSONDocument } from '@gltf-transform/core';
-import { createPlatformIO, logger, resolve } from '@gltf-transform/test-utils';
-import fs from 'fs';
+import { createPlatformIO, logger } from '@gltf-transform/test-utils';
 
 describe('core::PlatformIO', () => {
 	test('common', async () => {
@@ -146,7 +147,7 @@ describe('core::PlatformIO', () => {
 
 	test('gltf embedded', async () => {
 		const io = await createPlatformIO();
-		const jsonPath = resolve('../in/Box_glTF-Embedded/Box.gltf', import.meta.url);
+		const jsonPath = resolve(import.meta.dirname, '../in/Box_glTF-Embedded/Box.gltf');
 		const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
 		const json = JSON.parse(jsonContent);
 		const jsonDoc = { json, resources: {} } as JSONDocument;

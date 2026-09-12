@@ -1,21 +1,18 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import { Document } from '@gltf-transform/core';
 import { EXTMeshFeatures, type Features } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 describe('extensions::EXTMeshFeatures', () => {
 	test('id attribute', async () => {
 		const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
-		const srcDocument = await io.read(join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf'));
+		const srcPath = resolve(import.meta.dirname, 'in', 'EXT_mesh_features', 'FeatureIdAttribute.gltf');
+		const srcDocument = await io.read(srcPath);
 
 		ok(srcDocument.hasExtension('EXT_mesh_features'), 'reads EXT_mesh_features');
 
@@ -40,7 +37,8 @@ describe('extensions::EXTMeshFeatures', () => {
 
 	test('id texture', async () => {
 		const io = (await createPlatformIO()).registerExtensions([EXTMeshFeatures]);
-		const srcDocument = await io.read(join(__dirname, 'in', 'EXT_mesh_features', 'FeatureIdTexture.gltf'));
+		const srcPath = resolve(import.meta.dirname, 'in', 'EXT_mesh_features', 'FeatureIdTexture.gltf');
+		const srcDocument = await io.read(srcPath);
 
 		ok(srcDocument.hasExtension('EXT_mesh_features'), 'reads EXT_mesh_features');
 

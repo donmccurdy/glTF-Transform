@@ -1,12 +1,9 @@
 import { deepEqual, ok, rejects, strictEqual } from 'node:assert/strict';
 import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { describe, test } from 'node:test';
-import { fileURLToPath } from 'node:url';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MOCK_DOMAIN = 'https://mock.site';
 
@@ -17,7 +14,8 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 			text: () => Promise.reject(new Error('[mock] 404 Not Found')),
 		};
 	}
-	const relPath = input.toString().replace(MOCK_DOMAIN, resolve(__dirname, '../in'));
+	const dirname = resolve(import.meta.dirname, '..', 'in');
+	const relPath = input.toString().replace(MOCK_DOMAIN, dirname).replaceAll('/', sep);
 	return {
 		arrayBuffer: () => readFile(decodeURIComponent(relPath)),
 		text: () => readFile(decodeURIComponent(relPath), 'utf8'),
@@ -29,8 +27,8 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), '.');
 			const document = io.read(inputURI);
 
 			ok(document, `Read "${basepath}".`);
@@ -43,8 +41,8 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), '.');
 			const document = await io.read(inputURI);
 
 			ok(document, `Read "${basepath}".`);
@@ -57,8 +55,10 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
+			const basepath = inputURI
+				.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN)
+				.replaceAll('\\', '/');
 			const document = await io.read(basepath);
 
 			ok(document, `Read "${basepath}".`);
@@ -71,8 +71,10 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), MOCK_DOMAIN);
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
+			const basepath = inputURI
+				.replace(resolve(import.meta.dirname, '..', 'in'), MOCK_DOMAIN)
+				.replaceAll('\\', '/');
 			const document = await io.read(basepath);
 
 			ok(document, `Read "${basepath}".`);
@@ -85,9 +87,9 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.gltf'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
-			const outputURI = resolve(__dirname, `../out/${basepath}`);
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '../in'), '.');
+			const outputURI = resolve(import.meta.dirname, `../out/${basepath}`);
 			const document = await io.read(inputURI);
 
 			await mkdir(dirname(outputURI), { recursive: true });
@@ -102,9 +104,9 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
-		for await (const inputURI of glob(resolve(__dirname, '../in/**/*.glb'))) {
-			const basepath = inputURI.replace(resolve(__dirname, '../in'), '.');
-			const outputURI = resolve(__dirname, `../out/${basepath}`);
+		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '../in'), '.');
+			const outputURI = resolve(import.meta.dirname, `../out/${basepath}`);
 			const document = await io.read(inputURI);
 
 			await mkdir(dirname(outputURI), { recursive: true });
@@ -130,7 +132,7 @@ describe('core::NodeIO', () => {
 			.setMimeType('image/png')
 			.setImage(new Uint8Array(1024));
 		const io = (await createPlatformIO()) as NodeIO;
-		const outputURI = resolve(__dirname, '../out/node-io-external-test');
+		const outputURI = resolve(import.meta.dirname, '../out/node-io-external-test');
 		await mkdir(outputURI, { recursive: true });
 		await io.write(join(outputURI, 'scene.gltf'), document);
 		ok((await stat(join(outputURI, 'internal.png'))).isFile(), 'writes internal image');
@@ -142,8 +144,8 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 
-		const srcDir = resolve(__dirname, '..', 'in', 'EncodingTest');
-		const dstDir = resolve(__dirname, '..', 'out', 'EncodingTest');
+		const srcDir = resolve(import.meta.dirname, '..', 'in', 'EncodingTest');
+		const dstDir = resolve(import.meta.dirname, '..', 'out', 'EncodingTest');
 		await mkdir(dstDir, { recursive: true });
 
 		const srcJSONDocument = await io.readAsJSON(resolve(srcDir, 'Unicode ❤♻ Test.gltf'));
@@ -158,7 +160,7 @@ describe('core::NodeIO', () => {
 		const buffer = document.getRoot().listBuffers()[0];
 		const texture = document.getRoot().listTextures()[0];
 
-		// TODO(v4): For backward-compatibility, URIs remain encoded in memory.
+		// TODO(v5): For backward-compatibility, URIs remain encoded in memory.
 		deepEqual(
 			[buffer.getURI(), texture.getURI()],
 			['Unicode%20❤♻ Binary.bin', 'Unicode%20❤♻ Texture.png'],
@@ -184,7 +186,7 @@ describe('core::NodeIO', () => {
 		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 
-		const dstDir = resolve(__dirname, '..', 'out', 'MissingImageTest');
+		const dstDir = resolve(import.meta.dirname, '..', 'out', 'MissingImageTest');
 		const dstPath = resolve(dstDir, 'MissingImage.gltf');
 		await mkdir(dstDir, { recursive: true });
 

@@ -1,21 +1,17 @@
 import { deepEqual, ok } from 'node:assert/strict';
 import { glob } from 'node:fs/promises';
+import { basename, resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, type JSONDocument } from '@gltf-transform/core';
 import { EXTStructuralMetadata } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
 
-import { basename, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 describe('extensions::EXTStructuralMetadata', () => {
 	test('round trip', async () => {
 		const io = (await createPlatformIO()).registerExtensions([EXTStructuralMetadata]);
 
-		for await (const inputPath of glob(resolve(__dirname, 'in', 'EXT_structural_metadata', '*.gltf'))) {
+		for await (const inputPath of glob(resolve(import.meta.dirname, 'in', 'EXT_structural_metadata', '*.gltf'))) {
 			const inputBasename = basename(inputPath);
 
 			const srcJSONDocument = await io.readAsJSON(inputPath);

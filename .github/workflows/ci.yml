@@ -118,3 +118,4 @@ jobs:
       - run: yarn install --immutable --network-timeout 100000
       - run: yarn build
       - run: yarn build:tsc
+      - run: yarn test

@@ -1,15 +1,13 @@
 import { deepEqual, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { BufferUtils, Document, type GLTF, ImageUtils, type JSONDocument, NodeIO } from '@gltf-transform/core';
 import { EXTTextureWebP } from '@gltf-transform/extensions';
-import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([EXTTextureWebP]);
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('extensions::EXTTextureWebP', () => {
 	test('basic', async () => {
@@ -52,8 +50,8 @@ describe('extensions::EXTTextureWebP', () => {
 	});
 
 	test('image-utils', () => {
-		const webpLossy = fs.readFileSync(path.join(__dirname, 'in', 'test-lossy.webp'));
-		const webpLossless = fs.readFileSync(path.join(__dirname, 'in', 'test-lossless.webp'));
+		const webpLossy = fs.readFileSync(path.resolve(import.meta.dirname, 'in', 'test-lossy.webp'));
+		const webpLossless = fs.readFileSync(path.resolve(import.meta.dirname, 'in', 'test-lossless.webp'));
 		const buffer = BufferUtils.concat([
 			BufferUtils.encodeText('RIFF'),
 			new Uint8Array(4),

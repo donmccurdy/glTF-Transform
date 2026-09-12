@@ -52,8 +52,8 @@ const validateURI = (uri) => {
 	pending.push(promise);
 };
 
-fs.globSync(path.join(__dirname, '../packages/*/test/out/**/*.glb')).forEach(validateURI);
-fs.globSync(path.join(__dirname, '../packages/*/test/out/**/*.gltf')).forEach(validateURI);
+fs.globSync(path.resolve(import.meta.dirname, '../packages/*/test/out/**/*.glb')).forEach(validateURI);
+fs.globSync(path.resolve(import.meta.dirname, '../packages/*/test/out/**/*.gltf')).forEach(validateURI);
 
 Promise.all(pending)
 	.catch(() => true)

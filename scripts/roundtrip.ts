@@ -1,7 +1,6 @@
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'child_process';
-import { fileURLToPath } from 'node:url';
 import FULL_INDEX from '../../glTF-Sample-Models/2.0/model-index.json';
 
 /**
@@ -20,12 +19,10 @@ import FULL_INDEX from '../../glTF-Sample-Models/2.0/model-index.json';
  * - TextureLinearInterpolationTest (webp conversion; non-issue)
  */
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 /** Source directory, referencing glTF-Sample-Models. */
-const SOURCE = path.resolve(__dirname, '../../glTF-Sample-Models/2.0/');
+const SOURCE = path.resolve(import.meta.dirname, '../../glTF-Sample-Models/2.0/');
 /** Output directory for generated roundtrip assets. */
-const TARGET = path.resolve(__dirname, './out');
+const TARGET = path.resolve(import.meta.dirname, './out');
 const VARIANT = 'glTF-Binary';
 /** Assets to skip. */
 const SKIPLIST = new Set<string>([]);

@@ -1,18 +1,15 @@
 import { deepEqual, rejects, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Accessor, type Buffer, Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('extensions::KHRDracoMeshCompression', () => {
 	test('decoding', async () => {
 		const io = await createDecoderIO();
-		const document = await io.read(path.join(__dirname, 'in', 'BoxDraco.gltf'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'BoxDraco.gltf'));
 		const bbox = getBounds(document.getRoot().listScenes()[0]);
 		deepEqual(
 			bbox.min.map((v) => +v.toFixed(3)),
@@ -194,7 +191,7 @@ describe('extensions::KHRDracoMeshCompression', () => {
 		// See: https://github.com/donmccurdy/glTF-Transform/issues/1496
 
 		const io = await createDecoderIO();
-		const document = await io.read(path.join(__dirname, 'in', 'DracoSparseMesh.gltf'));
+		const document = await io.read(path.resolve(import.meta.dirname, 'in', 'DracoSparseMesh.gltf'));
 		const root = document.getRoot();
 
 		strictEqual(root.listMeshes().length, 1, 'meshes.length = 1');

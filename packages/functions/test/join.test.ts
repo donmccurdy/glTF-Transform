@@ -1,4 +1,5 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, getBounds, Primitive } from '@gltf-transform/core';
 import { join, quantize, transformPrimitive } from '@gltf-transform/functions';
@@ -12,17 +13,13 @@ import {
 	mat4,
 	roundBbox,
 } from '@gltf-transform/test-utils';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { LINE_STRIP, LINE_LOOP, TRIANGLE_STRIP, TRIANGLE_FAN } = Primitive.Mode;
 
 describe('functions::join', () => {
 	test('basic', async () => {
 		const io = await createPlatformIO();
-		const document = await io.read(path.join(__dirname, './in/ShapeCollection.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, './in/ShapeCollection.glb'));
 		const scene = document.getRoot().getDefaultScene();
 
 		const bboxBefore = getBounds(scene);
@@ -35,7 +32,7 @@ describe('functions::join', () => {
 
 	test('quantization', async () => {
 		const io = await createPlatformIO();
-		const document = await io.read(path.join(__dirname, './in/ShapeCollection.glb'));
+		const document = await io.read(path.resolve(import.meta.dirname, './in/ShapeCollection.glb'));
 		const scene = document.getRoot().getDefaultScene();
 
 		const bboxBefore = getBounds(scene);
