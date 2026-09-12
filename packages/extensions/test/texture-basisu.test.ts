@@ -8,7 +8,10 @@ import path from 'path';
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 
 const io = new NodeIO().registerExtensions([KHRTextureBasisu]);
+console.log('href', new URL(import.meta.url).href);
+console.log('pathname', new URL(import.meta.url).pathname);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+console.log('dirname', __dirname);
 
 describe('extensions::KHRTextureBasisu', () => {
 	test('basic', async () => {
