@@ -117,4 +117,5 @@ jobs:
       # See: https://github.com/yarnpkg/yarn/issues/4890
       - run: yarn install --immutable --network-timeout 100000
       - run: yarn build
-      - run: node --test packages/core/test/io/node-io.test.ts
+      - run: yarn build:tsc
+      - run: yarn test
