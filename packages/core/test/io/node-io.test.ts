@@ -14,7 +14,8 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 			text: () => Promise.reject(new Error('[mock] 404 Not Found')),
 		};
 	}
-	const relPath = input.toString().replace(MOCK_DOMAIN, resolve(import.meta.dirname, '../in'));
+	const dirname = resolve(import.meta.dirname, '..', 'in');
+	const relPath = input.toString().replace(MOCK_DOMAIN, dirname);
 	return {
 		arrayBuffer: () => readFile(decodeURIComponent(relPath)),
 		text: () => readFile(decodeURIComponent(relPath), 'utf8'),
@@ -27,7 +28,7 @@ describe('core::NodeIO', () => {
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
-			const basepath = inputURI.replace(resolve(import.meta.dirname, '../in'), '.');
+			const basepath = inputURI.replace(resolve(import.meta.dirname, '..', 'in'), '.');
 			const document = io.read(inputURI);
 
 			ok(document, `Read "${basepath}".`);
