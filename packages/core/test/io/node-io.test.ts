@@ -1,6 +1,6 @@
 import { deepEqual, ok, rejects, strictEqual } from 'node:assert/strict';
 import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { createPlatformIO, Environment, environment, logger } from '@gltf-transform/test-utils';
@@ -15,7 +15,10 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 		};
 	}
 	const dirname = resolve(import.meta.dirname, '..', 'in');
-	const relPath = input.toString().replace(MOCK_DOMAIN, dirname);
+	let relPath = input.toString().replace(MOCK_DOMAIN, dirname);
+	if (process.platform === 'win32') {
+		relPath = relPath.replace('/', sep);
+	}
 	console.log(`MOCK_FETCH: ${input.toString()} -> ${relPath}`);
 	return {
 		arrayBuffer: () => readFile(decodeURIComponent(relPath)),
