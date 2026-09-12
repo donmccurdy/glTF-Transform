@@ -1396,9 +1396,7 @@ normal maps and ETC1S for other textures, for example.`.trim(),
 		const mode = Mode.ETC1S;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
-		const resize: vec2 | undefined = options.resize
-			? [Number(options.resize), Number(options.resize)]
-			: undefined;
+		const resize: vec2 | undefined = options.resize ? [Number(options.resize), Number(options.resize)] : undefined;
 		return Session.create(io, logger, args.input, args.output).transform(
 			toktx({ ...options, encoder, mode, pattern, slots, resize }),
 		);
@@ -1519,9 +1517,7 @@ for textures where the quality is sufficient.`.trim(),
 		const mode = Mode.UASTC;
 		const pattern = options.pattern ? micromatch.makeRe(String(options.pattern), MICROMATCH_OPTIONS) : null;
 		const slots = options.slots ? micromatch.makeRe(String(options.slots), MICROMATCH_OPTIONS) : null;
-		const resize: vec2 | undefined = options.resize
-			? [Number(options.resize), Number(options.resize)]
-			: undefined;
+		const resize: vec2 | undefined = options.resize ? [Number(options.resize), Number(options.resize)] : undefined;
 		Session.create(io, logger, args.input, args.output).transform(
 			toktx({ ...options, encoder, mode, pattern, slots, resize }),
 		);
