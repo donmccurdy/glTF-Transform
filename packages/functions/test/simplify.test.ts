@@ -1,4 +1,5 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
@@ -21,7 +22,6 @@ import {
 } from '@gltf-transform/test-utils';
 import draco3d from 'draco3dgltf';
 import { MeshoptSimplifier } from 'meshoptimizer';
-import path from 'path';
 
 const { POINTS, LINES, LINE_STRIP, LINE_LOOP, TRIANGLES } = Primitive.Mode;
 

@@ -1,9 +1,9 @@
 import { deepEqual, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, type GLTF, ImageUtils, type JSONDocument, NodeIO } from '@gltf-transform/core';
 import { EXTTextureAVIF } from '@gltf-transform/extensions';
-import fs from 'fs';
-import path from 'path';
 
 const WRITER_OPTIONS = { basename: 'extensionTest' };
 

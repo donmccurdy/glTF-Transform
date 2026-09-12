@@ -1,10 +1,10 @@
 import { deepEqual, strictEqual, throws } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { BufferUtils, ImageUtils } from '@gltf-transform/core';
-import fs from 'fs';
 import ndarray from 'ndarray';
 import { savePixels } from 'ndarray-pixels';
-import path from 'path';
 
 describe('core::ImageUtils', () => {
 	test('basic', async () => {

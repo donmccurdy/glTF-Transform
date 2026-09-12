@@ -1,10 +1,10 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { type Accessor, Document, type GLTF, getBounds, Primitive } from '@gltf-transform/core';
 import { weld } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
-import fs from 'fs/promises';
-import path from 'path';
 
 describe('functions::weld', () => {
 	test('tolerance=0', async () => {

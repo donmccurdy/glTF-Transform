@@ -1,12 +1,12 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { mockConsoleLog, program, programReady } from '@gltf-transform/cli';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
-import fs from 'fs';
 import { MeshoptDecoder } from 'meshoptimizer';
-import path from 'path';
 import tmp from 'tmp';
 
 tmp.setGracefulCleanup();

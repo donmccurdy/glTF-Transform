@@ -41,7 +41,7 @@ export type Transform = (doc: Document, context?: TransformContext) => void;
  * 'create' methods on the document. Resources are destroyed by calling {@link Property.dispose}().
  *
  * ```ts
- * import fs from 'fs/promises';
+ * import fs from 'node:fs/promises';
  * import { Document } from '@gltf-transform/core';
  * import { dedup } from '@gltf-transform/functions';
  *

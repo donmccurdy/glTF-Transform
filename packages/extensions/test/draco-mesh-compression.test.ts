@@ -1,10 +1,10 @@
 import { deepEqual, rejects, strictEqual } from 'node:assert/strict';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { Accessor, type Buffer, Document, Format, getBounds, NodeIO, Primitive } from '@gltf-transform/core';
 import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 import { createDecoderModule, createEncoderModule } from 'draco3dgltf';
-import path from 'path';
 
 describe('extensions::KHRDracoMeshCompression', () => {
 	test('decoding', async () => {

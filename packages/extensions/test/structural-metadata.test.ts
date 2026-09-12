@@ -1,12 +1,11 @@
 import { deepEqual, ok } from 'node:assert/strict';
 import { glob } from 'node:fs/promises';
+import { basename, resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import { Document, type JSONDocument } from '@gltf-transform/core';
 import { EXTStructuralMetadata } from '@gltf-transform/extensions';
 import { cloneDocument } from '@gltf-transform/functions';
 import { createPlatformIO } from '@gltf-transform/test-utils';
-
-import { basename, resolve } from 'path';
 
 describe('extensions::EXTStructuralMetadata', () => {
 	test('round trip', async () => {

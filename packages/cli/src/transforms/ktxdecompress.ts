@@ -1,9 +1,9 @@
+import fs, { rm } from 'node:fs/promises';
+import os from 'node:os';
+import { join } from 'node:path';
 import { type Document, FileUtils, ImageUtils, type Transform, uuid } from '@gltf-transform/core';
 import { KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
-import fs, { rm } from 'fs/promises';
-import os from 'os';
-import { join } from 'path';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
 import { pLimit } from '../utils/p-limit.js';

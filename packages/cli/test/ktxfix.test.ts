@@ -1,11 +1,11 @@
 import { strictEqual } from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { ktxfix } from '@gltf-transform/cli';
 import { Document, type Texture } from '@gltf-transform/core';
 import { logger } from '@gltf-transform/test-utils';
-import fs from 'fs';
 import { KHR_DF_PRIMARIES_BT709, KHR_DF_PRIMARIES_UNSPECIFIED, read } from 'ktx-parse';
-import path from 'path';
 
 describe('cli::ktxfix', () => {
 	test('repair', async () => {

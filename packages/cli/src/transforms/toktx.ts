@@ -1,3 +1,6 @@
+import fs, { rm } from 'node:fs/promises';
+import os from 'node:os';
+import { join } from 'node:path';
 import {
 	BufferUtils,
 	type Document,
@@ -22,10 +25,7 @@ import {
 	listTextureSlots,
 	TextureResizeFilter,
 } from '@gltf-transform/functions';
-import fs, { rm } from 'fs/promises';
 import micromatch from 'micromatch';
-import os from 'os';
-import { join } from 'path';
 import type sharp from 'sharp';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
