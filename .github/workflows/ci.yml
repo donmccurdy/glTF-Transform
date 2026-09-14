@@ -64,7 +64,8 @@ jobs:
       - run: yarn build
 
       # Test.
-      - run: deno test --allow-read --config scripts/deno.json scripts/deno_test.ts
+      - run: deno install
+      - run: yarn test:deno
 
   #############################################################################
   # COVERAGE

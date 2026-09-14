@@ -22,9 +22,8 @@ const fetch = async (input: RequestInfo, _init?: RequestInit) => {
 	};
 };
 
-describe('core::NodeIO', () => {
+const describeFn = () => {
 	test('read glb', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
@@ -38,7 +37,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('read gltf', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
@@ -52,7 +50,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('read glb http', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
@@ -68,7 +65,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('read gltf http', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
@@ -84,7 +80,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('write glb', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.gltf'))) {
@@ -101,7 +96,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('write gltf', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 		let count = 0;
 		for await (const inputURI of glob(resolve(import.meta.dirname, '../in/**/*.glb'))) {
@@ -118,7 +112,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('write gltf with HTTP', async () => {
-		if (environment !== Environment.NODE) return;
 		const document = new Document();
 		document.createBuffer();
 		document
@@ -141,7 +134,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('resource URI encoding', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = (await createPlatformIO()) as NodeIO;
 
 		const srcDir = resolve(import.meta.dirname, '..', 'in', 'EncodingTest');
@@ -183,7 +175,6 @@ describe('core::NodeIO', () => {
 	});
 
 	test('strict / non-strict resource modes', async () => {
-		if (environment !== Environment.NODE) return;
 		const io = new NodeIO(fetch).setLogger(logger).setAllowNetwork(true);
 
 		const dstDir = resolve(import.meta.dirname, '..', 'out', 'MissingImageTest');
@@ -207,4 +198,10 @@ describe('core::NodeIO', () => {
 		strictEqual(textures.length, 1, 'texture != null');
 		strictEqual(textures[0].getImage(), null, 'texture.image == null');
 	});
-});
+};
+
+if (environment === Environment.NODE) {
+	describe('core::NodeIO', describeFn);
+} else if (environment === Environment.DENO) {
+	describe('core::DenoIO', describeFn);
+}

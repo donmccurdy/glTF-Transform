@@ -17,6 +17,7 @@
     "clean:deps": "rm -rf packages/*/node_modules/** | true",
     "clean:test": "rm -rf packages/*/test/out/** | true",
     "test": "node --test packages/*/test/**/*.test.ts",
+    "test:deno": "deno test packages/{core,extensions,functions}/test/**/*.test.ts --no-check --allow-env --allow-ffi --allow-read --allow-write --allow-sys",
     "coverage": "c8 --config .github/.c8rc --reporter=lcov --reporter=text yarn test",
     "coverage:report": "c8 report --config .github/.c8rc --reporter=text-lcov > coverage/coverage.lcov",
     "lint": "biome check packages/*/{src,test}",

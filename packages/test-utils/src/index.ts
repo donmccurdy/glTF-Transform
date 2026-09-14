@@ -1,19 +1,27 @@
-import { type vec3 as _vec3, type bbox, Logger, NodeIO, type PlatformIO, WebIO } from '@gltf-transform/core';
+import { type vec3 as _vec3, type bbox, DenoIO, Logger, NodeIO, type PlatformIO, WebIO } from '@gltf-transform/core';
 
 export enum Environment {
-	WEB,
-	DENO,
-	NODE,
+	WEB = 'web',
+	DENO = 'deno',
+	NODE = 'node',
 }
 
-export const environment = (typeof window !== 'undefined' ? Environment.WEB : Environment.NODE) as Environment;
+export const environment: Environment = (() => {
+	if (typeof window !== 'undefined') return Environment.WEB;
+	if (typeof Deno !== 'undefined') return Environment.DENO;
+	if (typeof process !== 'undefined') return Environment.NODE;
+	throw new Error('Unknown test environment');
+})();
 
 export const logger: Logger = new Logger(Logger.Verbosity.SILENT);
 
+// TODO(deno): DenoIO?
 export const createPlatformIO = async (): Promise<PlatformIO> => {
 	switch (environment) {
 		case Environment.WEB:
 			return new WebIO().setLogger(logger);
+		case Environment.DENO:
+			return new DenoIO().setLogger(logger);
 		case Environment.NODE:
 			return new NodeIO().setLogger(logger);
 	}

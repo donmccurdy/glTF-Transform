@@ -1,0 +1,144 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/internal@^1.0.14": "1.0.14",
+    "jsr:@std/path@*": "1.1.6"
+  },
+  "jsr": {
+    "@std/internal@1.0.14": {
+      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
+    },
+    "@std/path@1.1.6": {
+      "integrity": "c68485c2a4dfbb5ae3cc74fae4e8c4e5d874cf8a8ed12927917235c758b46cbe",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/path@^1.1.6"
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@biomejs/biome@^2.5.10",
+        "npm:@tweakpane/core@^1.1.9",
+        "npm:@types/d3-dsv@^3.0.7",
+        "npm:@types/draco3dgltf@1.4.3",
+        "npm:@types/jsdom@30",
+        "npm:@types/ndarray@1.0.14",
+        "npm:@types/node@26.2.0",
+        "npm:@types/semver@^7.8.0",
+        "npm:@types/three@0.177",
+        "npm:c8@11",
+        "npm:d3-dsv@^3.0.1",
+        "npm:draco3dgltf@1.5.7",
+        "npm:gl-matrix@^3.4.4",
+        "npm:gltf-validator@2.0.0-dev.3.10",
+        "npm:jsdom@^30.0.1",
+        "npm:keyframe-resample@0.1",
+        "npm:lerna@8.2.4",
+        "npm:meshoptimizer@1.2.0",
+        "npm:mikktspace@1.1.1",
+        "npm:semver@^7.8.5",
+        "npm:simple-dropzone@~0.8.3",
+        "npm:three@0.177",
+        "npm:tinybench@^4.1.0",
+        "npm:tsdown@~0.22.14",
+        "npm:tweakpane-plugin-thumbnail-list@0.3",
+        "npm:tweakpane@^3.1.10",
+        "npm:typescript@5.9.3",
+        "npm:vite@^8.2.2",
+        "npm:watlas@^1.0.1"
+      ]
+    },
+    "members": {
+      "packages/cli": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@donmccurdy/caporal@~0.0.10",
+            "npm:@gltf-transform/core@^4.5.0",
+            "npm:@gltf-transform/extensions@^4.5.0",
+            "npm:@gltf-transform/functions@^4.5.0",
+            "npm:@types/micromatch@~4.0.10",
+            "npm:@types/prompts@^2.4.9",
+            "npm:@types/tmp@~0.2.6",
+            "npm:cli-table3@~0.6.5",
+            "npm:csv-stringify@~6.8.3",
+            "npm:draco3dgltf@~1.5.7",
+            "npm:gltf-validator@~2.0.0-dev.3.10",
+            "npm:keyframe-resample@0.1",
+            "npm:ktx-parse@^1.1.0",
+            "npm:listr2@~8.3.3",
+            "npm:meshoptimizer@1.2",
+            "npm:micromatch@~4.0.8",
+            "npm:mikktspace@~1.1.1",
+            "npm:prompts@^2.4.2",
+            "npm:sharp@~0.35.3",
+            "npm:tmp@~0.2.7",
+            "npm:watlas@^1.0.1"
+          ]
+        }
+      },
+      "packages/core": {
+        "packageJson": {
+          "dependencies": [
+            "npm:property-graph@^4.1.0"
+          ]
+        }
+      },
+      "packages/docs": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@gltf-transform/core@^4.5.0",
+            "npm:@gltf-transform/extensions@^4.5.0",
+            "npm:@gltf-transform/functions@^4.5.0",
+            "npm:@greendoc/parse@~0.4.1",
+            "npm:@greendoc/svelte@~0.4.1",
+            "npm:@sveltejs/adapter-static@^3.0.10",
+            "npm:@sveltejs/kit@^2.70.3",
+            "npm:@sveltejs/vite-plugin-svelte@^7.3.0",
+            "npm:@types/he@^1.2.3",
+            "npm:he@^1.2.0",
+            "npm:highlight.js@^11.12.0",
+            "npm:mdsvex@~0.12.8",
+            "npm:svelte-check@^4.7.6",
+            "npm:svelte@^5.56.10",
+            "npm:ts-morph@22",
+            "npm:tslib@^2.8.1",
+            "npm:vite@^8.2.2"
+          ]
+        }
+      },
+      "packages/extensions": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@gltf-transform/core@^4.5.0",
+            "npm:ktx-parse@^1.1.0"
+          ]
+        }
+      },
+      "packages/functions": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@gltf-transform/core@^4.5.0",
+            "npm:@gltf-transform/extensions@^4.5.0",
+            "npm:ktx-parse@^1.1.0",
+            "npm:ndarray-lanczos@0.3",
+            "npm:ndarray-pixels@^5.2.0",
+            "npm:ndarray@^1.0.19"
+          ]
+        }
+      },
+      "packages/test-utils": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@gltf-transform/core@^4.5.0",
+            "npm:@gltf-transform/extensions@^4.5.0",
+            "npm:@gltf-transform/functions@^4.5.0"
+          ]
+        }
+      }
+    }
+  }
+}
