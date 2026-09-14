@@ -5,6 +5,6 @@ export default defineConfig({
 	...baseConfig,
 	deps: {
 		onlyBundle: ['gl-matrix'],
-		neverBundle: ['node:fs', 'node:path', 'jsr:@std/path'],
+		neverBundle: ['node:fs', 'node:path'],
 	},
 });
