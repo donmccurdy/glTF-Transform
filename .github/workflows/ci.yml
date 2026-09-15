@@ -48,9 +48,7 @@ jobs:
     steps:
       # Setup.
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: denoland/setup-deno@v2.0.4
-        with:
-          deno-version: v1.x
+      - uses: denoland/setup-deno@v2
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
@@ -64,7 +62,8 @@ jobs:
       - run: yarn build
 
       # Test.
-      - run: deno test --allow-read --config scripts/deno.json scripts/deno_test.ts
+      - run: deno install
+      - run: yarn test:deno
 
   #############################################################################
   # COVERAGE

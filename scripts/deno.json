@@ -1,9 +1,0 @@
-{
-	"imports": {
-		"@gltf-transform/core": "../packages/core/dist/index.js",
-		"@gltf-transform/extensions": "../packages/extensions/dist/index.js",
-		"@gltf-transform/functions": "../packages/functions/dist/index.js",
-		"property-graph": "npm:property-graph",
-		"ktx-parse": "npm:ktx-parse"
-	}
-}
