@@ -67,7 +67,11 @@ export class NodeIO extends PlatformIO {
 
 	public async init(): Promise<void> {
 		if (this._init) return this._init;
-		return Promise.all([import('node:fs'), import('node:path')]).then(([fs, path]) => {
+		// Unprefixed on purpose: package.json#browser maps 'fs' and 'path' to false, which is how
+		// browser bundles (Vite, esbuild, webpack) drop these imports. Bundlers do not match those
+		// keys against 'node:fs' / 'node:path', and webpack rejects the node: scheme outright.
+		// biome-ignore lint/style/useNodejsImportProtocol: must match package.json#browser keys.
+		return Promise.all([import('fs'), import('path')]).then(([fs, path]) => {
 			this._fs = fs.promises;
 			this._path = path;
 		});
