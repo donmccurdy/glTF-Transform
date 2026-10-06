@@ -42,8 +42,8 @@ import { PlatformIO } from './platform-io.js';
  * @category I/O
  */
 export class NodeIO extends PlatformIO {
-	private declare _fs;
-	private declare _path;
+	declare private _fs;
+	declare private _path;
 	private readonly _fetch: typeof fetch | null;
 	private readonly _fetchConfig: RequestInit;
 
@@ -67,7 +67,8 @@ export class NodeIO extends PlatformIO {
 
 	public async init(): Promise<void> {
 		if (this._init) return this._init;
-		return Promise.all([import('node:fs'), import('node:path')]).then(([fs, path]) => {
+		// biome-ignore lint/style/useNodejsImportProtocol: See `packages/core/tsdown.config.ts`.
+		return Promise.all([import('fs'), import('path')]).then(([fs, path]) => {
 			this._fs = fs.promises;
 			this._path = path;
 		});
