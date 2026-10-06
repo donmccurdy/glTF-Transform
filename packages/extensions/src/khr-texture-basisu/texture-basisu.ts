@@ -7,7 +7,7 @@ import {
 	type WriterContext,
 } from '@gltf-transform/core';
 import { KHR_TEXTURE_BASISU } from '../constants.js';
-import { KTX2ImageUtils } from '../ktx2-utils.js';
+import { isUniversal, KTX2ImageUtils, readKTXOrNull } from '../ktx2-utils.js';
 
 interface BasisuDef {
 	source: number;
@@ -103,6 +103,11 @@ export class KHRTextureBasisu extends Extension {
 			.listTextures()
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/ktx2') {
+					// Other KTX2 payloads (e.g. ASTC, BC7) are not valid for KHR_texture_basisu.
+					// Unparseable payloads are written as before, to avoid breaking existing usage.
+					const container = readKTXOrNull(texture.getImage());
+					if (container && !isUniversal(container)) return;
+
 					const imageIndex = context.imageIndexMap.get(texture);
 					jsonDoc.json.textures!.forEach((textureDef) => {
 						if (textureDef.source === imageIndex) {

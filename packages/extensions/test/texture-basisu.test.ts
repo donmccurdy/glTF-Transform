@@ -49,6 +49,35 @@ describe('extensions::KHRTextureBasisu', () => {
 		strictEqual(jsonDoc.json.textures[0].source, 0, 'includes .source on PNG texture');
 	});
 
+	test('skips non-universal KTX2', async () => {
+		const doc = new Document();
+		doc.createBuffer();
+		doc.createExtension(KHRTextureBasisu);
+		const readFixture = (name: string) => fs.readFileSync(path.resolve(import.meta.dirname, 'in', name));
+		const texUASTC = doc.createTexture('UASTC').setMimeType('image/ktx2').setImage(readFixture('2d_uastc.ktx2'));
+		const texASTC = doc.createTexture('ASTC').setMimeType('image/ktx2').setImage(readFixture('2d_astc4x4.ktx2'));
+		const texBC7 = doc.createTexture('BC7').setMimeType('image/ktx2').setImage(readFixture('2d_bc7.ktx2'));
+		const texRGBA8 = doc.createTexture('RGBA8').setMimeType('image/ktx2').setImage(readFixture('2d_rgba8.ktx2'));
+		doc.createMaterial()
+			.setBaseColorTexture(texUASTC)
+			.setEmissiveTexture(texASTC)
+			.setOcclusionTexture(texBC7)
+			.setNormalTexture(texRGBA8);
+
+		const jsonDoc = await io.writeJSON(doc, WRITER_OPTIONS);
+		const [uastcDef, astcDef, bc7Def, rgba8Def] = jsonDoc.json.textures;
+
+		strictEqual((uastcDef.extensions['KHR_texture_basisu'] as GLTF.ITexture).source, 0, 'UASTC → basisu');
+		for (const [name, def] of [
+			['ASTC', astcDef],
+			['BC7', bc7Def],
+			['RGBA8', rgba8Def],
+		] as const) {
+			strictEqual(def.extensions?.['KHR_texture_basisu'], undefined, `${name} → no basisu`);
+			strictEqual(typeof def.source, 'number', `${name} keeps .source`);
+		}
+	});
+
 	test('image-utils | basic', () => {
 		throws(() => ImageUtils.getSize(new Uint8Array(10), 'image/ktx2'), undefined, 'corrupt file');
 		strictEqual(ImageUtils.extensionToMimeType('ktx2'), 'image/ktx2', 'extensionToMimeType, inferred');

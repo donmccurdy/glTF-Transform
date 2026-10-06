@@ -26,6 +26,16 @@ export function isUniversal(container: KTX2Container): boolean {
 	return container.vkFormat === VK_FORMAT_UNDEFINED || isBasisHDR;
 }
 
+/** Parses a KTX2 container, returning null if the image is missing or cannot be parsed. */
+export function readKTXOrNull(image: Uint8Array | null): KTX2Container | null {
+	if (!image) return null;
+	try {
+		return readKTX(image);
+	} catch {
+		return null;
+	}
+}
+
 export class KTX2ImageUtils implements ImageUtilsFormat {
 	match(array: Uint8Array): boolean {
 		return (
