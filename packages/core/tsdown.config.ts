@@ -5,6 +5,10 @@ export default defineConfig({
 	...baseConfig,
 	deps: {
 		onlyBundle: ['gl-matrix'],
-		neverBundle: ['node:fs', 'node:path'],
+
+		// Omit `node:` scheme in packages/core/src/**/*.ts for Webpack 5.
+		// See: packages/core/package.json#browser
+		// See: https://github.com/donmccurdy/glTF-Transform/pull/1860
+		neverBundle: ['fs', 'path'],
 	},
 });
