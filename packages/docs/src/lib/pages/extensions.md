@@ -56,6 +56,7 @@ as prescribed by the extension itself.
 - [EXT_mesh_gpu_instancing](/modules/extensions/classes/EXTMeshGPUInstancing)
 - [EXT_meshopt_compression](/modules/extensions/classes/EXTMeshoptCompression)
 - [EXT_structural_metadata](/modules/extensions/classes/EXTStructuralMetadata) *(🧪 experimental)*
+- [EXT_texture_astc](/modules/extensions/classes/EXTTextureASTC) *(🧪 experimental)*
 - [EXT_texture_avif](/modules/extensions/classes/EXTTextureAVIF)
 - [EXT_texture_webp](/modules/extensions/classes/EXTTextureWebP)
 

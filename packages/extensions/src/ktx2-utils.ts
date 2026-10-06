@@ -1,5 +1,6 @@
 import type { ImageUtilsFormat, vec2 } from '@gltf-transform/core';
 import {
+	KHR_DF_MODEL_ASTC,
 	KHR_DF_MODEL_ETC1S,
 	KHR_DF_MODEL_UASTC,
 	KHR_SUPERCOMPRESSION_NONE,
@@ -24,6 +25,11 @@ export function isUniversal(container: KTX2Container): boolean {
 		container.vkFormat === VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK_EXT &&
 		container.dataFormatDescriptor[0].colorModel === 0xa7;
 	return container.vkFormat === VK_FORMAT_UNDEFINED || isBasisHDR;
+}
+
+/** Whether the KTX2 container holds ASTC data, as required by EXT_texture_astc. */
+export function isASTC(container: KTX2Container): boolean {
+	return container.dataFormatDescriptor[0].colorModel === KHR_DF_MODEL_ASTC;
 }
 
 /** Parses a KTX2 container, returning null if the image is missing or cannot be parsed. */
