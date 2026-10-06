@@ -42,8 +42,8 @@ import { PlatformIO } from './platform-io.js';
  * @category I/O
  */
 export class NodeIO extends PlatformIO {
-	declare private _fs;
-	declare private _path;
+	private declare _fs;
+	private declare _path;
 	private readonly _fetch: typeof fetch | null;
 	private readonly _fetchConfig: RequestInit;
 
