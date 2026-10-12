@@ -77,6 +77,8 @@ export class KTX2ImageUtils implements ImageUtilsFormat {
 					return dfd.samples.length === 2 && (dfd.samples[1].channelType & 0xf) === 15 ? 4 : 3;
 				case KHR_DF_MODEL_UASTC:
 					return (dfd.samples[0].channelType & 0xf) === 3 ? 4 : 3;
+				case 0xa7: // UASTC HDR, no alpha.
+					return 3;
 				default:
 					throw new Error(`Unexpected KTX2 colorModel, "${dfd.colorModel}".`);
 			}

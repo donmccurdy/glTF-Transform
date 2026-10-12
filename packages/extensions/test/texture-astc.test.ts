@@ -134,4 +134,12 @@ describe('extensions::EXTTextureASTC', () => {
 		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
 		strictEqual(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
 	});
+
+	test('image-utils | uastc hdr', () => {
+		EXTTextureASTC.register();
+		const ktx2 = createUASTCHDR();
+
+		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 3, 'channels');
+		strictEqual(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 16, 'gpuSize');
+	});
 });
