@@ -82,6 +82,11 @@ export class KTX2ImageUtils implements ImageUtilsFormat {
 			}
 		}
 
+		// ASTC DFD doesn't indicate alpha; ASTC decodes to RGBA.
+		if (isASTC(container)) {
+			return 4;
+		}
+
 		// Support for getChannels() on GPU texture formats not yet implemented.
 		throw new Error(`Unexpected KTX2 vkFormat, "${container.vkFormat}".`);
 	}

@@ -131,6 +131,7 @@ describe('extensions::EXTTextureASTC', () => {
 
 		strictEqual(ImageUtils.getMimeType(ktx2), 'image/ktx2', 'mimeType');
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
+		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
 		strictEqual(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
 	});
 });

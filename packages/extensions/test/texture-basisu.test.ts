@@ -135,7 +135,7 @@ describe('extensions::KHRTextureBasisu', () => {
 		const ktx2 = fs.readFileSync(path.resolve(import.meta.dirname, 'in', '2d_astc4x4.ktx2'));
 
 		deepEqual(ImageUtils.getSize(ktx2, 'image/ktx2'), [40, 40], 'size');
-		throws(() => ImageUtils.getChannels(ktx2, 'image/ktx2'), { message: /vkFormat/ }, 'channels');
+		strictEqual(ImageUtils.getChannels(ktx2, 'image/ktx2'), 4, 'channels');
 		strictEqual(ImageUtils.getVRAMByteLength(ktx2, 'image/ktx2'), 2240, 'gpuSize');
 	});
 
