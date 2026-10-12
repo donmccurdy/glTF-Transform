@@ -8,7 +8,7 @@ import {
 	PropertyType,
 	Texture,
 } from '@gltf-transform/core';
-import { KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
+import { KHR_DF_MODEL_ASTC, KHR_DF_MODEL_ETC1S, KHR_DF_MODEL_UASTC, read as readKTX } from 'ktx-parse';
 import { getMeshVertexCount, getSceneVertexCount, VertexCountMethod } from './get-vertex-count.js';
 import { getGLPrimitiveCount } from './utils.js';
 
@@ -160,6 +160,8 @@ function listTextures(doc: Document): InspectPropertyReport<InspectTextureReport
 					compression = 'ETC1S';
 				} else if (dfd.colorModel === KHR_DF_MODEL_UASTC) {
 					compression = 'UASTC';
+				} else if (dfd.colorModel === KHR_DF_MODEL_ASTC) {
+					compression = 'ASTC';
 				}
 			}
 
