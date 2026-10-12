@@ -6,8 +6,9 @@ import {
 	type Texture,
 	type WriterContext,
 } from '@gltf-transform/core';
+import { VK_FORMAT_UNDEFINED } from 'ktx-parse';
 import { KHR_TEXTURE_BASISU } from '../constants.js';
-import { isUniversal, KTX2ImageUtils, readKTXOrNull } from '../ktx2-utils.js';
+import { KTX2ImageUtils, readKTXOrNull } from '../ktx2-utils.js';
 
 interface BasisuDef {
 	source: number;
@@ -103,10 +104,10 @@ export class KHRTextureBasisu extends Extension {
 			.listTextures()
 			.forEach((texture) => {
 				if (texture.getMimeType() === 'image/ktx2') {
-					// Other KTX2 payloads (e.g. ASTC, BC7) are not valid for KHR_texture_basisu.
-					// Unparseable payloads are written as before, to avoid breaking existing usage.
+					// Only ETC1S and UASTC are valid for KHR_texture_basisu. Unparseable payloads are written as before.
+					// TODO(v5): Allow I/O to fail if format cannot be read.
 					const container = readKTXOrNull(texture.getImage());
-					if (container && !isUniversal(container)) return;
+					if (container && container.vkFormat !== VK_FORMAT_UNDEFINED) return;
 
 					const imageIndex = context.imageIndexMap.get(texture);
 					jsonDoc.json.textures!.forEach((textureDef) => {
