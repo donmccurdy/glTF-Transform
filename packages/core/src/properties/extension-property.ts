@@ -1,5 +1,5 @@
-import type { ExtensibleProperty } from './extensible-property.js';
-import { type IProperty, Property } from './property.js';
+import { ExtensibleProperty, type IExtensibleProperty } from './extensible-property.js';
+import { Property } from './property.js';
 
 /**
  * *Base class for all {@link Property} types that can be attached by an {@link Extension}.*
@@ -17,7 +17,9 @@ import { type IProperty, Property } from './property.js';
  *
  * @category Properties
  */
-export abstract class ExtensionProperty<T extends IProperty = IProperty> extends Property<T> {
+export abstract class ExtensionProperty<
+	T extends IExtensibleProperty = IExtensibleProperty,
+> extends ExtensibleProperty<T> {
 	public static EXTENSION_NAME: string;
 	public abstract readonly extensionName: string;
 

@@ -1,8 +1,8 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType, RefSet } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType, RefSet } from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 import type { Mapping } from './mapping.js';
 
-interface IMappingList extends IProperty {
+interface IMappingList extends IExtensibleProperty {
 	mappings: RefSet<Mapping>;
 }
 
@@ -22,7 +22,7 @@ export class MappingList extends ExtensionProperty<IMappingList> {
 	}
 
 	protected getDefaults(): Nullable<IMappingList> {
-		return Object.assign(super.getDefaults() as IProperty, { mappings: new RefSet<Mapping>() });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { mappings: new RefSet<Mapping>() });
 	}
 
 	/** Adds a {@link Mapping} to this mapping. */

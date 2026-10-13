@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	RefList,
@@ -20,7 +20,7 @@ import type {
  * Interfaces.
  */
 
-interface IStructuralMetadata extends IProperty {
+interface IStructuralMetadata extends IExtensibleProperty {
 	schema: Schema;
 	schemaUri: string;
 	propertyTables: RefList<PropertyTable>;
@@ -28,7 +28,7 @@ interface IStructuralMetadata extends IProperty {
 	propertyAttributes: RefList<PropertyAttribute>;
 }
 
-interface ISchema extends IProperty {
+interface ISchema extends IExtensibleProperty {
 	id: string;
 	description: string;
 	version: string;
@@ -36,12 +36,12 @@ interface ISchema extends IProperty {
 	enums: RefMap<Enum>;
 }
 
-interface IClass extends IProperty {
+interface IClass extends IExtensibleProperty {
 	description: string;
 	properties: RefMap<ClassProperty>;
 }
 
-interface IClassProperty extends IProperty {
+interface IClassProperty extends IExtensibleProperty {
 	description: string;
 	type: ClassPropertyType;
 	componentType: ClassPropertyComponentType | null;
@@ -58,24 +58,24 @@ interface IClassProperty extends IProperty {
 	default: boolean | boolean[] | string | string[] | number | number[] | number[][];
 }
 
-interface IEnum extends IProperty {
+interface IEnum extends IExtensibleProperty {
 	description: string;
 	valueType: EnumValueType;
 	values: RefList<EnumValue>;
 }
 
-interface IEnumValue extends IProperty {
+interface IEnumValue extends IExtensibleProperty {
 	description: string;
 	value: number;
 }
 
-interface IPropertyTable extends IProperty {
+interface IPropertyTable extends IExtensibleProperty {
 	class: string;
 	count: number;
 	properties: RefMap<PropertyTableProperty>;
 }
 
-interface IPropertyTableProperty extends IProperty {
+interface IPropertyTableProperty extends IExtensibleProperty {
 	values: Uint8Array;
 	arrayOffsets: Uint8Array;
 	stringOffsets: Uint8Array;
@@ -87,12 +87,12 @@ interface IPropertyTableProperty extends IProperty {
 	min: number | number[] | number[][];
 }
 
-interface IPropertyTexture extends IProperty {
+interface IPropertyTexture extends IExtensibleProperty {
 	class: string;
 	properties: RefMap<PropertyTextureProperty>;
 }
 
-interface IPropertyTextureProperty extends IProperty {
+interface IPropertyTextureProperty extends IExtensibleProperty {
 	channels: number[];
 	offset: number | number[] | number[][];
 	scale: number | number[] | number[][];
@@ -102,12 +102,12 @@ interface IPropertyTextureProperty extends IProperty {
 	textureInfo: TextureInfo;
 }
 
-interface IPropertyAttribute extends IProperty {
+interface IPropertyAttribute extends IExtensibleProperty {
 	class: string;
 	properties: RefMap<PropertyAttributeProperty>;
 }
 
-interface IPropertyAttributeProperty extends IProperty {
+interface IPropertyAttributeProperty extends IExtensibleProperty {
 	attribute: string;
 	offset: number | number[] | number[][];
 	scale: number | number[] | number[][];
@@ -116,13 +116,13 @@ interface IPropertyAttributeProperty extends IProperty {
 }
 
 // Reference: EXT_structural_metadata.schema.json
-interface INodeStructuralMetadata extends IProperty {
+interface INodeStructuralMetadata extends IExtensibleProperty {
 	class: string;
 	properties: Record<string, unknown>;
 }
 
 // Reference: mesh.primitive.EXT_structural_metadata.schema.json
-interface IMeshPrimitiveStructuralMetadata extends IProperty {
+interface IMeshPrimitiveStructuralMetadata extends IExtensibleProperty {
 	propertyTextures: RefList<PropertyTexture>;
 	propertyAttributes: RefList<PropertyAttribute>;
 }

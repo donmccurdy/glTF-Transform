@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -9,7 +9,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_CLEARCOAT } from '../constants.js';
 
-interface IClearcoat extends IProperty {
+interface IClearcoat extends IExtensibleProperty {
 	clearcoatFactor: number;
 	clearcoatTexture: Texture;
 	clearcoatTextureInfo: TextureInfo;
@@ -41,7 +41,7 @@ export class Clearcoat extends ExtensionProperty<IClearcoat> {
 	}
 
 	protected getDefaults(): Nullable<IClearcoat> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			clearcoatFactor: 0,
 			clearcoatTexture: null,
 			clearcoatTextureInfo: new TextureInfo(this.graph, 'clearcoatTextureInfo'),

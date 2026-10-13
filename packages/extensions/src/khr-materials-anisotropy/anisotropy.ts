@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -9,7 +9,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_ANISOTROPY } from '../constants.js';
 
-interface IAnisotropy extends IProperty {
+interface IAnisotropy extends IExtensibleProperty {
 	anisotropyStrength: number;
 	anisotropyRotation: number;
 	anisotropyTexture: Texture;
@@ -35,7 +35,7 @@ export class Anisotropy extends ExtensionProperty<IAnisotropy> {
 	}
 
 	protected getDefaults(): Nullable<IAnisotropy> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			anisotropyStrength: 0.0,
 			anisotropyRotation: 0.0,
 			anisotropyTexture: null,

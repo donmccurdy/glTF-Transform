@@ -1,7 +1,13 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType, type vec2 } from '@gltf-transform/core';
+import {
+	ExtensionProperty,
+	type IExtensibleProperty,
+	type Nullable,
+	PropertyType,
+	type vec2,
+} from '@gltf-transform/core';
 import { KHR_TEXTURE_TRANSFORM } from '../constants.js';
 
-interface ITransform extends IProperty {
+interface ITransform extends IExtensibleProperty {
 	offset: vec2;
 	rotation: number;
 	scale: vec2;
@@ -24,7 +30,7 @@ export class Transform extends ExtensionProperty<ITransform> {
 	}
 
 	protected getDefaults(): Nullable<ITransform> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			offset: [0.0, 0.0] as vec2,
 			rotation: 0,
 			scale: [1.0, 1.0] as vec2,

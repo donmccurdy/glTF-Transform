@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -9,7 +9,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_TRANSMISSION } from '../constants.js';
 
-interface ITransmission extends IProperty {
+interface ITransmission extends IExtensibleProperty {
 	transmissionFactor: number;
 	transmissionTexture: Texture;
 	transmissionTextureInfo: TextureInfo;
@@ -33,7 +33,7 @@ export class Transmission extends ExtensionProperty<ITransmission> {
 	}
 
 	protected getDefaults(): Nullable<ITransmission> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			transmissionFactor: 0.0,
 			transmissionTexture: null,
 			transmissionTextureInfo: new TextureInfo(this.graph, 'transmissionTextureInfo'),

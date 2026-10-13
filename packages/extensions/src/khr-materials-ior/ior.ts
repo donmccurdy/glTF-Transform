@@ -1,7 +1,7 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_IOR } from '../constants.js';
 
-interface IIOR extends IProperty {
+interface IIOR extends IExtensibleProperty {
 	ior: number;
 }
 
@@ -21,7 +21,7 @@ export class IOR extends ExtensionProperty<IIOR> {
 	}
 
 	protected getDefaults(): Nullable<IIOR> {
-		return Object.assign(super.getDefaults() as IProperty, { ior: 1.5 });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { ior: 1.5 });
 	}
 
 	/**********************************************************************************************

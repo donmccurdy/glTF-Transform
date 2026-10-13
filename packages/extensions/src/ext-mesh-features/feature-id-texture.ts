@@ -1,7 +1,13 @@
-import { ExtensionProperty, type IProperty, type Nullable, type Texture, TextureInfo } from '@gltf-transform/core';
+import {
+	ExtensionProperty,
+	type IExtensibleProperty,
+	type Nullable,
+	type Texture,
+	TextureInfo,
+} from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 
-interface IFeatureIDTexture extends IProperty {
+interface IFeatureIDTexture extends IExtensibleProperty {
 	channels: number[];
 	texture: Texture;
 	textureInfo: TextureInfo;
