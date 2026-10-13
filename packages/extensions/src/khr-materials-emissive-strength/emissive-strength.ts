@@ -1,7 +1,7 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_EMISSIVE_STRENGTH } from '../constants.js';
 
-interface IEmissiveStrength extends IProperty {
+interface IEmissiveStrength extends IExtensibleProperty {
 	emissiveStrength: number;
 }
 
@@ -22,7 +22,7 @@ export class EmissiveStrength extends ExtensionProperty<IEmissiveStrength> {
 	}
 
 	protected getDefaults(): Nullable<IEmissiveStrength> {
-		return Object.assign(super.getDefaults() as IProperty, { emissiveStrength: 1.0 });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { emissiveStrength: 1.0 });
 	}
 
 	/**********************************************************************************************

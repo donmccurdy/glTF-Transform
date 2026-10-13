@@ -1,8 +1,14 @@
-import { ExtensionProperty, type IProperty, type Material, type Nullable, RefSet } from '@gltf-transform/core';
+import {
+	ExtensionProperty,
+	type IExtensibleProperty,
+	type Material,
+	type Nullable,
+	RefSet,
+} from '@gltf-transform/core';
 import { KHR_MATERIALS_VARIANTS } from '../constants.js';
 import type { Variant } from './variant.js';
 
-interface IMapping extends IProperty {
+interface IMapping extends IExtensibleProperty {
 	material: Material;
 	variants: RefSet<Variant>;
 }
@@ -23,7 +29,10 @@ export class Mapping extends ExtensionProperty<IMapping> {
 	}
 
 	protected getDefaults(): Nullable<IMapping> {
-		return Object.assign(super.getDefaults() as IProperty, { material: null, variants: new RefSet<Variant>() });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
+			material: null,
+			variants: new RefSet<Variant>(),
+		});
 	}
 
 	/** The {@link Material} designated for this {@link Primitive}, under the given variants. */

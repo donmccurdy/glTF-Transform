@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -10,7 +10,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SPECULAR } from '../constants.js';
 
-interface ISpecular extends IProperty {
+interface ISpecular extends IExtensibleProperty {
 	specularFactor: number;
 	specularTexture: Texture;
 	specularTextureInfo: TextureInfo;
@@ -37,7 +37,7 @@ export class Specular extends ExtensionProperty<ISpecular> {
 	}
 
 	protected getDefaults(): Nullable<ISpecular> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			specularFactor: 1.0,
 			specularTexture: null,
 			specularTextureInfo: new TextureInfo(this.graph, 'specularTextureInfo'),

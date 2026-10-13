@@ -1,7 +1,13 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType, type vec3 } from '@gltf-transform/core';
+import {
+	ExtensionProperty,
+	type IExtensibleProperty,
+	type Nullable,
+	PropertyType,
+	type vec3,
+} from '@gltf-transform/core';
 import { KHR_LIGHTS_PUNCTUAL } from '../constants.js';
 
-interface ILight extends IProperty {
+interface ILight extends IExtensibleProperty {
 	color: vec3;
 	intensity: number;
 	type: PunctualLightType;
@@ -42,7 +48,7 @@ export class Light extends ExtensionProperty<ILight> {
 	}
 
 	protected getDefaults(): Nullable<ILight> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			color: [1, 1, 1] as vec3,
 			intensity: 1,
 			type: Light.Type.POINT,
