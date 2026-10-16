@@ -380,7 +380,7 @@ __metadata:
     "@types/tmp": "npm:~0.2.6"
     cli-table3: "npm:~0.6.5"
     csv-stringify: "npm:~6.8.3"
-    draco3dgltf: "npm:~1.5.7"
+    draco3dgltf: "npm:1.5.7"
     gltf-validator: "npm:~2.0.0-dev.3.10"
     keyframe-resample: "npm:~0.1.0"
     ktx-parse: "npm:^1.1.0"
@@ -3603,7 +3603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"draco3dgltf@npm:1.5.7, draco3dgltf@npm:~1.5.7":
+"draco3dgltf@npm:1.5.7":
   version: 1.5.7
   resolution: "draco3dgltf@npm:1.5.7"
   checksum: 10c0/8bcc272dc26a5772e01643cfd6741ab9e3e0a29acf49b9913fc9e73ec0c0610902b0a758c0f653b0d5ab64d46108ec799dfda4ecd2c3a07cd9486d48485a1472
