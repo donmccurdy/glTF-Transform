@@ -2,7 +2,7 @@ import fs, { rm } from 'node:fs/promises';
 import os from 'node:os';
 import { join } from 'node:path';
 import { type Document, FileUtils, ImageUtils, type Transform, uuid } from '@gltf-transform/core';
-import { KHRTextureBasisu } from '@gltf-transform/extensions';
+import { EXTTextureASTC, KHRTextureBasisu } from '@gltf-transform/extensions';
 import { createTransform } from '@gltf-transform/functions';
 import tmp from 'tmp';
 import { formatBytes } from '../utils/format.js';
@@ -102,6 +102,10 @@ export const ktxdecompress = function (options: KTXDecompressOptions = KTX_DECOM
 
 		if (!usesKTX2) {
 			basisuExtension.dispose();
+			doc.getRoot()
+				.listExtensionsUsed()
+				.find((extension) => extension.extensionName === EXTTextureASTC.EXTENSION_NAME)
+				?.dispose();
 		}
 	});
 };

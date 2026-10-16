@@ -3,6 +3,7 @@ import { EXTMeshFeatures } from './ext-mesh-features/index.js';
 import { EXTMeshGPUInstancing } from './ext-mesh-gpu-instancing/index.js';
 import { EXTMeshoptCompression } from './ext-meshopt-compression/index.js';
 import { EXTStructuralMetadata } from './ext-structural-metadata/index.js';
+import { EXTTextureASTC } from './ext-texture-astc/index.js';
 import { EXTTextureAVIF } from './ext-texture-avif/index.js';
 import { EXTTextureWebP } from './ext-texture-webp/index.js';
 import { KHRAccessorFloat16 } from './khr-accessor-float16/index.js';
@@ -62,6 +63,7 @@ export const ALL_EXTENSIONS: (typeof Extension)[] = [
 	EXTMeshFeatures,
 	EXTMeshoptCompression,
 	EXTStructuralMetadata,
+	EXTTextureASTC,
 	EXTTextureAVIF,
 	EXTTextureWebP,
 	...KHRONOS_EXTENSIONS,
@@ -72,6 +74,7 @@ export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-mesh-gpu-instancing/index.js';
 export * from './ext-meshopt-compression/index.js';
 export * from './ext-structural-metadata/index.js';
+export * from './ext-texture-astc/index.js';
 export * from './ext-texture-avif/index.js';
 export * from './ext-texture-webp/index.js';
 export * from './khr-accessor-float16/index.js';

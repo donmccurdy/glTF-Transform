@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { describe, test } from 'node:test';
 import { ktxdecompress, mockCommandExists, mockSpawn, mockWaitExit } from '@gltf-transform/cli';
 import { BufferUtils, Document } from '@gltf-transform/core';
-import { KHRTextureBasisu } from '@gltf-transform/extensions';
+import { EXTTextureASTC, KHRTextureBasisu } from '@gltf-transform/extensions';
 import { logger } from '@gltf-transform/test-utils';
 
 describe('cli::ktxdecompress', () => {
@@ -40,6 +40,7 @@ describe('cli::ktxdecompress', () => {
 
 		const document = new Document().setLogger(logger);
 		document.createExtension(KHRTextureBasisu);
+		document.createExtension(EXTTextureASTC).setRequired(true);
 		const texture = document.createTexture().setImage(imageKTX2).setMimeType('image/ktx2');
 		await document.transform(ktxdecompress());
 
@@ -50,6 +51,6 @@ describe('cli::ktxdecompress', () => {
 		strictEqual(texture.getMimeType(), 'image/png', 'replaces MIME type');
 		ok(BufferUtils.equals(texture.getImage()!, imagePNG), 'replaces image');
 
-		deepEqual(document.getRoot().listExtensionsUsed(), [], 'removes KHR_texture_basisu extension');
+		deepEqual(document.getRoot().listExtensionsUsed(), [], 'removes KTX2 extensions');
 	});
 });
