@@ -78,6 +78,23 @@ describe('core::PlatformIO', () => {
 		ok(await io.writeBinary(document), 'writeBinary succeeds');
 	});
 
+	test('glb aligns the BIN chunk to 8 bytes', async () => {
+		const io = await createPlatformIO();
+		for (let length = 0; length < 8; length++) {
+			const document = new Document().setLogger(logger);
+			const buffer = document.createBuffer();
+			document
+				.createAccessor('x'.repeat(length))
+				.setArray(new Float32Array([1, 2, 3]))
+				.setBuffer(buffer);
+			const glb = await io.writeBinary(document);
+			const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength);
+			const binStart = 12 + 8 + view.getUint32(12, true) + 8;
+			strictEqual(binStart % 8, 0, `BIN chunk aligned with name length ${length}`);
+			strictEqual(view.getUint32(binStart - 4, true), 0x004e4942, `BIN chunk type with name length ${length}`);
+		}
+	});
+
 	test('glb with texture-only buffer', async () => {
 		const document = new Document().setLogger(logger);
 		document.createTexture('TexA').setImage(new Uint8Array(1)).setMimeType('image/png');

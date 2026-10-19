@@ -40,6 +40,53 @@ describe('extensions::KHRAccessorFloat64', () => {
 		deepEqual(Array.from(rtAccessor.getArray()), [0, 1, 2], 'array contents');
 	});
 
+	test('aligns float64 data to 8 bytes in GLB', async () => {
+		const document = new Document();
+		const io = new NodeIO().registerExtensions([KHRAccessorFloat64]);
+		document.createExtension(KHRAccessorFloat64).setRequired(true);
+
+		const buffer = document.createBuffer();
+		const weights = document
+			.createAccessor()
+			.setType('SCALAR')
+			.setArray(new Float32Array([1]))
+			.setBuffer(buffer);
+		const offsets = document
+			.createAccessor()
+			.setType('SCALAR')
+			.setArray(new Float64Array([0.5, 1.5]))
+			.setBuffer(buffer);
+		const position = document
+			.createAccessor()
+			.setType('VEC3')
+			.setArray(new Float64Array([0, 1, 2]))
+			.setBuffer(buffer);
+		const prim = document.createPrimitive().setAttribute('POSITION', position);
+		document.createMesh().addPrimitive(prim);
+		document.createAnimation().addSampler(document.createAnimationSampler().setInput(weights).setOutput(offsets));
+
+		const glb = await io.writeBinary(document);
+		const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength);
+		const jsonLength = view.getUint32(12, true);
+		const binStart = 12 + 8 + jsonLength + 8;
+		strictEqual(binStart % 8, 0, 'BIN chunk data starts on an 8-byte boundary');
+
+		const json = JSON.parse(new TextDecoder().decode(glb.subarray(20, 20 + jsonLength)));
+		for (const accessorDef of json.accessors) {
+			if (accessorDef.componentType !== Accessor.ComponentType.FLOAT64) continue;
+			const bufferViewDef = json.bufferViews[accessorDef.bufferView];
+			strictEqual(
+				((bufferViewDef.byteOffset || 0) + (accessorDef.byteOffset || 0)) % 8,
+				0,
+				'float64 accessor starts on an 8-byte boundary',
+			);
+		}
+
+		const rtDocument = await io.readBinary(glb);
+		const rtPosition = rtDocument.getRoot().listMeshes()[0].listPrimitives()[0].getAttribute('POSITION');
+		deepEqual(Array.from(rtPosition.getArray()), [0, 1, 2], 'round trip');
+	});
+
 	test('copy', () => {
 		const document = new Document();
 		document.createExtension(KHRAccessorFloat64).setRequired(true);

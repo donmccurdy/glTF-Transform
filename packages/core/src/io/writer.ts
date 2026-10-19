@@ -117,6 +117,12 @@ export class GLTFWriter {
 				const accessorDef = context.createAccessorDef(accessor);
 				accessorDef.bufferView = json.bufferViews!.length;
 
+				if (accessor.getComponentType() === Accessor.ComponentType.FLOAT64 && byteLength % 8) {
+					const padding = new Uint8Array(8 - (byteLength % 8));
+					byteLength += padding.byteLength;
+					buffers.push(padding);
+				}
+
 				const accessorArray = accessor.getArray()!;
 				const data = BufferUtils.pad(BufferUtils.toView(accessorArray));
 				accessorDef.byteOffset = byteLength;
@@ -484,9 +490,21 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
+			const alignForFloat64 = (accessors: Accessor[]) => {
+				const hasFloat64 = accessors.some(
+					(accessor) => accessor.getComponentType() === Accessor.ComponentType.FLOAT64,
+				);
+				if (hasFloat64 && bufferByteLength % 8) {
+					const padding = new Uint8Array(8 - (bufferByteLength % 8));
+					bufferByteLength += padding.byteLength;
+					buffers.push(padding);
+				}
+			};
+
 			for (const { usage, accessors: groupAccessors } of Object.values(accessorGroups)) {
 				if (usage === BufferViewUsage.ARRAY_BUFFER && options.vertexLayout === VertexLayout.INTERLEAVED) {
 					// (1) Interleaved vertex attributes.
+					alignForFloat64(groupAccessors);
 					const result = interleaveAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
 					for (const buffer of result.buffers) {
@@ -497,6 +515,7 @@ export class GLTFWriter {
 					for (const accessor of groupAccessors) {
 						// We 'interleave' a single accessor because the method pads to
 						// 4-byte boundaries, which concatAccessors() does not.
+						alignForFloat64([accessor]);
 						const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
 						bufferByteLength += result.byteLength;
 						for (const buffer of result.buffers) {
@@ -505,6 +524,7 @@ export class GLTFWriter {
 					}
 				} else if (usage === BufferViewUsage.SPARSE) {
 					// (3) Sparse accessors.
+					alignForFloat64(groupAccessors);
 					const result = concatSparseAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
 					for (const buffer of result.buffers) {
@@ -520,6 +540,7 @@ export class GLTFWriter {
 					}
 				} else {
 					// (5) Other.
+					alignForFloat64(groupAccessors);
 					const result = concatAccessors(groupAccessors, bufferIndex, bufferByteLength);
 					bufferByteLength += result.byteLength;
 					for (const buffer of result.buffers) {
