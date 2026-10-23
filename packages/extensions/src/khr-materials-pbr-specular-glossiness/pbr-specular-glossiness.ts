@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -11,7 +11,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS } from '../constants.js';
 
-interface IPBRSpecularGlossiness extends IProperty {
+interface IPBRSpecularGlossiness extends IExtensibleProperty {
 	diffuseFactor: vec4;
 	diffuseTexture: Texture;
 	diffuseTextureInfo: TextureInfo;
@@ -39,7 +39,7 @@ export class PBRSpecularGlossiness extends ExtensionProperty<IPBRSpecularGlossin
 	}
 
 	protected getDefaults(): Nullable<IPBRSpecularGlossiness> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			diffuseFactor: [1.0, 1.0, 1.0, 1.0] as vec4,
 			diffuseTexture: null,
 			diffuseTextureInfo: new TextureInfo(this.graph, 'diffuseTextureInfo'),

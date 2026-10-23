@@ -1,7 +1,7 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_NODE_VISIBILITY } from '../constants.js';
 
-interface IVisibility extends IProperty {
+interface IVisibility extends IExtensibleProperty {
 	visible: boolean;
 }
 
@@ -21,7 +21,7 @@ export class Visibility extends ExtensionProperty<IVisibility> {
 	}
 
 	protected getDefaults(): Nullable<IVisibility> {
-		return Object.assign(super.getDefaults() as IProperty, { visible: true });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { visible: true });
 	}
 
 	/** Visibility of node and descendants. */

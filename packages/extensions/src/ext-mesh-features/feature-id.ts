@@ -1,9 +1,9 @@
-import { ExtensionProperty, type IProperty, type Nullable } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 import type { PropertyTable } from '../ext-structural-metadata/index.js';
 import type { FeatureIDTexture } from './feature-id-texture.js';
 
-interface IFeatureID extends IProperty {
+interface IFeatureID extends IExtensibleProperty {
 	featureCount: number;
 	nullFeatureId: number | null;
 	label: string;

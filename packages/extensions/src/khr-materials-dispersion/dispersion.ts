@@ -1,7 +1,7 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_MATERIALS_DISPERSION } from '../constants.js';
 
-interface IDispersion extends IProperty {
+interface IDispersion extends IExtensibleProperty {
 	dispersion: number;
 }
 
@@ -21,7 +21,7 @@ export class Dispersion extends ExtensionProperty<IDispersion> {
 	}
 
 	protected getDefaults(): Nullable<IDispersion> {
-		return Object.assign(super.getDefaults() as IProperty, { dispersion: 0 });
+		return Object.assign(super.getDefaults() as IExtensibleProperty, { dispersion: 0 });
 	}
 
 	/**********************************************************************************************

@@ -1,8 +1,8 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType, RefSet } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType, RefSet } from '@gltf-transform/core';
 import { EXT_MESH_FEATURES } from '../constants.js';
 import type { FeatureID } from './feature-id.js';
 
-interface IFeatures extends IProperty {
+interface IFeatures extends IExtensibleProperty {
 	featureIds: RefSet<FeatureID>;
 }
 

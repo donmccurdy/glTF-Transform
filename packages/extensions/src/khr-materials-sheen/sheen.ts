@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -10,7 +10,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_SHEEN } from '../constants.js';
 
-interface ISheen extends IProperty {
+interface ISheen extends IExtensibleProperty {
 	sheenColorFactor: vec3;
 	sheenColorTexture: Texture;
 	sheenColorTextureInfo: TextureInfo;
@@ -37,7 +37,7 @@ export class Sheen extends ExtensionProperty<ISheen> {
 	}
 
 	protected getDefaults(): Nullable<ISheen> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			sheenColorFactor: [0.0, 0.0, 0.0] as vec3,
 			sheenColorTexture: null,
 			sheenColorTextureInfo: new TextureInfo(this.graph, 'sheenColorTextureInfo'),

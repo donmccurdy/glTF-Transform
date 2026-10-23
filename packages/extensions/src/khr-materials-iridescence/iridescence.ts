@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -9,7 +9,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_IRIDESCENCE } from '../constants.js';
 
-interface IIridescence extends IProperty {
+interface IIridescence extends IExtensibleProperty {
 	iridescenceFactor: number;
 	iridescenceTexture: Texture;
 	iridescenceTextureInfo: TextureInfo;
@@ -38,7 +38,7 @@ export class Iridescence extends ExtensionProperty<IIridescence> {
 	}
 
 	protected getDefaults(): Nullable<IIridescence> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			iridescenceFactor: 0.0,
 			iridescenceTexture: null,
 			iridescenceTextureInfo: new TextureInfo(this.graph, 'iridescenceTextureInfo'),

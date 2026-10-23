@@ -1,6 +1,6 @@
 import {
 	ExtensionProperty,
-	type IProperty,
+	type IExtensibleProperty,
 	type Nullable,
 	PropertyType,
 	type Texture,
@@ -10,7 +10,7 @@ import {
 } from '@gltf-transform/core';
 import { KHR_MATERIALS_VOLUME } from '../constants.js';
 
-interface IVolume extends IProperty {
+interface IVolume extends IExtensibleProperty {
 	thicknessFactor: number;
 	thicknessTexture: Texture;
 	thicknessTextureInfo: TextureInfo;
@@ -36,7 +36,7 @@ export class Volume extends ExtensionProperty<IVolume> {
 	}
 
 	protected getDefaults(): Nullable<IVolume> {
-		return Object.assign(super.getDefaults() as IProperty, {
+		return Object.assign(super.getDefaults() as IExtensibleProperty, {
 			thicknessFactor: 0.0,
 			thicknessTexture: null,
 			thicknessTextureInfo: new TextureInfo(this.graph, 'thicknessTexture'),

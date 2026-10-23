@@ -31,6 +31,7 @@ export {
 	COPY_IDENTITY,
 	ExtensibleProperty,
 	ExtensionProperty,
+	type IExtensibleProperty,
 	type IProperty,
 	Material,
 	Mesh,

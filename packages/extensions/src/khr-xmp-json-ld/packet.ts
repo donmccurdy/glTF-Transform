@@ -1,4 +1,4 @@
-import { ExtensionProperty, type IProperty, type Nullable, PropertyType } from '@gltf-transform/core';
+import { ExtensionProperty, type IExtensibleProperty, type Nullable, PropertyType } from '@gltf-transform/core';
 import { KHR_XMP_JSON_LD } from '../constants.js';
 
 type Term = string;
@@ -16,7 +16,7 @@ const PARENT_TYPES: PropertyType[] = [
 	PropertyType.ANIMATION,
 ];
 
-interface IPacket extends IProperty {
+interface IPacket extends IExtensibleProperty {
 	// https://json-ld.org/spec/latest/json-ld/#the-context
 	context: Record<Term, TermDefinition>;
 	properties: Record<string, Value | Record<string, unknown>>;
