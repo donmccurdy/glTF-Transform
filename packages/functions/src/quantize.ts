@@ -234,9 +234,17 @@ function quantizePrimitive(
 			prim instanceof Primitive
 				? invert(transform, fromTransform(nodeTransform))
 				: fromScaling(transform, [1 / scale, 1 / scale, 1 / scale]);
-			for (let i = 0, el: vec3 = [0, 0, 0], il = dstAttribute.getCount(); i < il; i++) {
-				dstAttribute.getElement(i, el);
-				dstAttribute.setElement(i, transformMat4(el, el, transform) as vec3);
+			const array = dstAttribute.getArray()!;
+			const normalized = dstAttribute.getNormalized();
+			const componentType = dstAttribute.getComponentType();
+			for (let i = 0, el: vec3 = [0, 0, 0], il = array.length; i < il; i += 3) {
+				for (let j = 0; j < 3; j++) {
+					el[j] = normalized ? MathUtils.decodeNormalizedInt(array[i + j], componentType) : array[i + j];
+				}
+				transformMat4(el, el, transform);
+				for (let j = 0; j < 3; j++) {
+					array[i + j] = normalized ? MathUtils.encodeNormalizedInt(el[j], componentType) : el[j];
+				}
 			}
 		}
 
@@ -439,21 +447,23 @@ function quantizeAttribute(attribute: Accessor, ctor: TypedArrayConstructor, bit
 	const hi = 2 * quantBits - storageBits;
 	const range = [signBits > 0 ? -1 : 0, 1] as vec2;
 
-	for (let i = 0, di = 0, el: number[] = []; i < attribute.getCount(); i++) {
-		attribute.getElement(i, el);
-		for (let j = 0; j < el.length; j++) {
-			// Clamp to range.
-			let value = clamp(el[j], range);
+	const srcArray = attribute.getArray()!;
+	const normalized = attribute.getNormalized();
+	const componentType = attribute.getComponentType();
+	for (let i = 0, il = srcArray.length; i < il; i++) {
+		const el = normalized ? MathUtils.decodeNormalizedInt(srcArray[i], componentType) : srcArray[i];
 
-			// Map [0.0 ... 1.0] to [0 ... scale].
-			value = Math.round(Math.abs(value) * scale);
+		// Clamp to range.
+		let value = clamp(el, range);
 
-			// Replicate msb to missing lsb.
-			value = (value << lo) | (value >> hi);
+		// Map [0.0 ... 1.0] to [0 ... scale].
+		value = Math.round(Math.abs(value) * scale);
 
-			// Restore sign.
-			dstArray[di++] = value * Math.sign(el[j]);
-		}
+		// Replicate msb to missing lsb.
+		value = (value << lo) | (value >> hi);
+
+		// Restore sign.
+		dstArray[i] = value * Math.sign(el);
 	}
 
 	// TODO(feat): Support sparse accessors, https://github.com/donmccurdy/glTF-Transform/issues/795
