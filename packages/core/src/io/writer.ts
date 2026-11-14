@@ -174,52 +174,68 @@ export class GLTFWriter {
 				json.accessors!.push(accessorDef);
 			}
 
-			// Allocate interleaved buffer view.
 			const byteLength = vertexCount * byteStride;
-			const buffer = new ArrayBuffer(byteLength);
-			const view = new DataView(buffer);
 
-			// Write interleaved accessor data to the buffer view.
-			for (let i = 0; i < vertexCount; i++) {
-				let vertexByteOffset = 0;
-				for (const accessor of accessors) {
-					const elementSize = accessor.getElementSize();
-					const componentSize = accessor.getComponentSize();
-					const componentType = accessor.getComponentType();
-					const array = accessor.getArray()!;
-					for (let j = 0; j < elementSize; j++) {
-						const viewByteOffset = i * byteStride + vertexByteOffset + j * componentSize;
-						const value = array[i * elementSize + j];
-						switch (componentType) {
-							case Accessor.ComponentType.FLOAT:
-								view.setFloat32(viewByteOffset, value, true);
-								break;
-							case Accessor.ComponentType.BYTE:
-								view.setInt8(viewByteOffset, value);
-								break;
-							case Accessor.ComponentType.SHORT:
-								view.setInt16(viewByteOffset, value, true);
-								break;
-							case Accessor.ComponentType.UNSIGNED_BYTE:
-								view.setUint8(viewByteOffset, value);
-								break;
-							case Accessor.ComponentType.UNSIGNED_SHORT:
-								view.setUint16(viewByteOffset, value, true);
-								break;
-							case Accessor.ComponentType.UNSIGNED_INT:
-								view.setUint32(viewByteOffset, value, true);
-								break;
-							case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
-								view.setFloat16(viewByteOffset, value, true);
-								break;
-							case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
-								view.setFloat64(viewByteOffset, value, true);
-								break;
-							default:
-								throw new Error('Unexpected component type: ' + componentType);
+			// A single accessor whose elements need no padding (VertexLayout.SEPARATE: VEC3 float32,
+			// VEC2 float32, VEC4 uint8, ...) already holds the bytes of its buffer view. Copy them in
+			// one call, as concatAccessors() does, rather than component by component.
+			const array = accessors.length === 1 ? accessors[0].getArray()! : null;
+			const canCopy =
+				!!array &&
+				array.BYTES_PER_ELEMENT === accessors[0].getComponentSize() &&
+				byteStride === accessors[0].getElementSize() * array.BYTES_PER_ELEMENT &&
+				array.byteLength >= byteLength;
+
+			// Allocate interleaved buffer view.
+			const buffer = canCopy
+				? new Uint8Array(array!.buffer, array!.byteOffset, byteLength).slice().buffer
+				: new ArrayBuffer(byteLength);
+
+			if (!canCopy) {
+				const view = new DataView(buffer);
+
+				// Write interleaved accessor data to the buffer view.
+				for (let i = 0; i < vertexCount; i++) {
+					let vertexByteOffset = 0;
+					for (const accessor of accessors) {
+						const elementSize = accessor.getElementSize();
+						const componentSize = accessor.getComponentSize();
+						const componentType = accessor.getComponentType();
+						const array = accessor.getArray()!;
+						for (let j = 0; j < elementSize; j++) {
+							const viewByteOffset = i * byteStride + vertexByteOffset + j * componentSize;
+							const value = array[i * elementSize + j];
+							switch (componentType) {
+								case Accessor.ComponentType.FLOAT:
+									view.setFloat32(viewByteOffset, value, true);
+									break;
+								case Accessor.ComponentType.BYTE:
+									view.setInt8(viewByteOffset, value);
+									break;
+								case Accessor.ComponentType.SHORT:
+									view.setInt16(viewByteOffset, value, true);
+									break;
+								case Accessor.ComponentType.UNSIGNED_BYTE:
+									view.setUint8(viewByteOffset, value);
+									break;
+								case Accessor.ComponentType.UNSIGNED_SHORT:
+									view.setUint16(viewByteOffset, value, true);
+									break;
+								case Accessor.ComponentType.UNSIGNED_INT:
+									view.setUint32(viewByteOffset, value, true);
+									break;
+								case Accessor.ComponentType.FLOAT16: // KHR_accessor_float16
+									view.setFloat16(viewByteOffset, value, true);
+									break;
+								case Accessor.ComponentType.FLOAT64: // KHR_accessor_float64
+									view.setFloat64(viewByteOffset, value, true);
+									break;
+								default:
+									throw new Error('Unexpected component type: ' + componentType);
+							}
 						}
+						vertexByteOffset += BufferUtils.padNumber(elementSize * componentSize);
 					}
-					vertexByteOffset += BufferUtils.padNumber(elementSize * componentSize);
 				}
 			}
 
