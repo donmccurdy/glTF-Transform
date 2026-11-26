@@ -1,7 +1,12 @@
 import { deepEqual, ok, strictEqual } from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { type Accessor, Document, Primitive, PropertyType } from '@gltf-transform/core';
-import { KHRMaterialsUnlit } from '@gltf-transform/extensions';
+import {
+	KHRMaterialsAnisotropy,
+	KHRMaterialsUnlit,
+	KHRTextureTransform,
+	type Transform,
+} from '@gltf-transform/extensions';
 import { prune } from '@gltf-transform/functions';
 import { logger } from '@gltf-transform/test-utils';
 import ndarray from 'ndarray';
@@ -239,6 +244,80 @@ describe('functions::prune', () => {
 
 		strictEqual(material.getBaseColorTextureInfo().getTexCoord(), 0, 'material.baseColorTexture.texCoord = 0');
 		strictEqual(material.getNormalTextureInfo().getTexCoord(), 1, 'material.normalTexture.texCoord → 1');
+	});
+
+	test('attributes - remaps fallback and texture transform UVs together', async () => {
+		const doc = new Document().setLogger(logger);
+		const transform = doc.createExtension(KHRTextureTransform).createTransform().setTexCoord(10);
+		const material = doc.createMaterial().setBaseColorTexture(doc.createTexture());
+		const info = material.getBaseColorTextureInfo();
+		info.setTexCoord(2).setExtension('KHR_texture_transform', transform);
+		const prim = doc.createPrimitive().setMaterial(material).setAttribute('POSITION', doc.createAccessor());
+		const uvs = Array.from({ length: 11 }, (_, index) => {
+			const uv = doc.createAccessor();
+			prim.setAttribute(`TEXCOORD_${index}`, uv);
+			return uv;
+		});
+		doc.createMesh().addPrimitive(prim);
+
+		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
+
+		strictEqual(info.getTexCoord(), 0);
+		strictEqual(transform.getTexCoord(), 1);
+		ok(prim.getAttribute('TEXCOORD_0') === uvs[2], 'fallback UV accessor moved from 2 to 0');
+		ok(prim.getAttribute('TEXCOORD_1') === uvs[10], 'override UV accessor moved from 10 to 1');
+		strictEqual(prim.getAttribute('TEXCOORD_10'), null);
+	});
+
+	test('attributes - remaps a shared texture transform per material', async () => {
+		const doc = new Document().setLogger(logger);
+		const transform = doc.createExtension(KHRTextureTransform).createTransform().setTexCoord(2).setRotation(0.5);
+		const texture = doc.createTexture();
+		const materialA = doc.createMaterial().setBaseColorTexture(texture);
+		const materialB = doc.createMaterial().setBaseColorTexture(texture);
+		const infoA = materialA.getBaseColorTextureInfo();
+		const infoB = materialB.getBaseColorTextureInfo();
+		infoA.setExtension('KHR_texture_transform', transform);
+		infoB.setTexCoord(2).setExtension('KHR_texture_transform', transform);
+		const primA = doc.createPrimitive().setMaterial(materialA).setAttribute('POSITION', doc.createAccessor());
+		const uv = doc.createAccessor();
+		primA.setAttribute('TEXCOORD_0', doc.createAccessor());
+		primA.setAttribute('TEXCOORD_1', doc.createAccessor());
+		primA.setAttribute('TEXCOORD_2', uv);
+		const primB = primA.clone().setMaterial(materialB);
+		doc.createMesh().addPrimitive(primA).addPrimitive(primB);
+
+		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
+
+		const transformA = infoA.getExtension<Transform>('KHR_texture_transform');
+		const transformB = infoB.getExtension<Transform>('KHR_texture_transform');
+		strictEqual(transformA?.getTexCoord(), 1);
+		strictEqual(transformB?.getTexCoord(), 0);
+		strictEqual(transformA?.getRotation(), 0.5);
+		strictEqual(transformB?.getRotation(), 0.5);
+		ok(primA.getAttribute('TEXCOORD_1') === uv, 'material A uses the remapped override UV accessor');
+		ok(primB.getAttribute('TEXCOORD_0') === uv, 'material B uses the remapped override UV accessor');
+	});
+
+	test('attributes - keeps anisotropy tangents without a normal texture', async () => {
+		const doc = new Document().setLogger(logger);
+		const anisotropy = doc.createExtension(KHRMaterialsAnisotropy).createAnisotropy().setAnisotropyStrength(0.5);
+		const material = doc.createMaterial().setExtension('KHR_materials_anisotropy', anisotropy);
+		const tangent = doc.createAccessor();
+		const anisotropicPrim = doc
+			.createPrimitive()
+			.setAttribute('POSITION', doc.createAccessor())
+			.setAttribute('NORMAL', doc.createAccessor())
+			.setAttribute('TANGENT', tangent)
+			.setMaterial(material);
+		const plainPrim = anisotropicPrim.clone().setMaterial(doc.createMaterial());
+		doc.createMesh().addPrimitive(anisotropicPrim).addPrimitive(plainPrim);
+
+		await doc.transform(prune({ propertyTypes: [PropertyType.ACCESSOR] }));
+
+		strictEqual(material.getNormalTexture(), null);
+		ok(anisotropicPrim.getAttribute('TANGENT') === tangent, 'anisotropy keeps the tangent accessor');
+		strictEqual(plainPrim.getAttribute('TANGENT'), null);
 	});
 
 	test('attributes - normals', async () => {

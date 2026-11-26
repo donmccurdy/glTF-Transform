@@ -19,6 +19,7 @@ import {
 	type vec3,
 	type vec4,
 } from '@gltf-transform/core';
+import type { Transform as TextureTransform } from '@gltf-transform/extensions';
 import { mul as mulVec3 } from 'gl-matrix/vec3';
 import { add, create, len, mul, scale, sub } from 'gl-matrix/vec4';
 import type { NdArray } from 'ndarray';
@@ -377,6 +378,10 @@ function listRequiredSemantics(
 		if (child instanceof TextureInfo) {
 			if (textureNames.has(name.replace(/Info$/, ''))) {
 				semantics.add(`TEXCOORD_${child.getTexCoord()}`);
+				const override = child.getExtension<TextureTransform>('KHR_texture_transform')?.getTexCoord();
+				if (override != null) {
+					semantics.add(`TEXCOORD_${override}`);
+				}
 			}
 		}
 
@@ -387,8 +392,10 @@ function listRequiredSemantics(
 		if (child instanceof ExtensionProperty) {
 			listRequiredSemantics(document, prim, child, semantics);
 		}
+	}
 
-		// TODO(#748): Does KHR_materials_anisotropy imply required vertex attributes?
+	if (material instanceof Material && material.getExtension('KHR_materials_anisotropy')) {
+		semantics.add('TANGENT');
 	}
 
 	const isLit = material instanceof Material && !material.getExtension('KHR_materials_unlit');
@@ -413,8 +420,13 @@ function listRequiredSemantics(
 function shiftTexCoords(material: Material, prims: Primitive[]) {
 	// Create map from srcTexCoord → dstTexCoord.
 	const textureInfoList = listTextureInfoByMaterial(material);
-	const texCoordSet = new Set(textureInfoList.map((info: TextureInfo) => info.getTexCoord()));
-	const texCoordList = Array.from(texCoordSet).sort();
+	const texCoordSet = new Set<number>();
+	for (const info of textureInfoList) {
+		texCoordSet.add(info.getTexCoord());
+		const override = info.getExtension<TextureTransform>('KHR_texture_transform')?.getTexCoord();
+		if (override != null) texCoordSet.add(override);
+	}
+	const texCoordList = Array.from(texCoordSet).sort((a, b) => a - b);
 	const texCoordMap = new Map(texCoordList.map((texCoord, index) => [texCoord, index]));
 	const semanticMap = new Map(texCoordList.map((texCoord, index) => [`TEXCOORD_${texCoord}`, `TEXCOORD_${index}`]));
 
@@ -422,25 +434,34 @@ function shiftTexCoords(material: Material, prims: Primitive[]) {
 	for (const textureInfo of textureInfoList) {
 		const texCoord = textureInfo.getTexCoord();
 		textureInfo.setTexCoord(texCoordMap.get(texCoord)!);
+
+		const transform = textureInfo.getExtension<TextureTransform>('KHR_texture_transform');
+		const override = transform?.getTexCoord();
+		if (transform && override != null) {
+			const dstTexCoord = texCoordMap.get(override)!;
+			if (dstTexCoord === override) continue;
+
+			// Other texture slots may need a different mapping for the same transform.
+			if (transform.listParents().length > 1) {
+				textureInfo.setExtension('KHR_texture_transform', transform.clone().setTexCoord(dstTexCoord));
+			} else {
+				transform.setTexCoord(dstTexCoord);
+			}
+		}
 	}
 
 	// Update prims.
 	for (const prim of prims) {
-		const semantics = prim
-			.listSemantics()
-			.filter((semantic) => semantic.startsWith('TEXCOORD_'))
-			.sort();
-		updatePrim(prim, semantics);
-		prim.listTargets().forEach((target) => updatePrim(target, semantics));
+		updatePrim(prim);
+		prim.listTargets().forEach(updatePrim);
 	}
 
-	function updatePrim(prim: Primitive | PrimitiveTarget, srcSemantics: string[]) {
-		for (const srcSemantic of srcSemantics) {
+	function updatePrim(prim: Primitive | PrimitiveTarget) {
+		for (const [srcSemantic, dstSemantic] of semanticMap) {
+			if (dstSemantic === srcSemantic) continue;
+
 			const uv = prim.getAttribute(srcSemantic);
 			if (!uv) continue;
-
-			const dstSemantic = semanticMap.get(srcSemantic)!;
-			if (dstSemantic === srcSemantic) continue;
 
 			prim.setAttribute(dstSemantic, uv);
 			prim.setAttribute(srcSemantic, null);
